@@ -148,7 +148,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"sort":1,"delay":1,"product_name":null,"product_code":null,"starts_at":null,"ends_at":null,"min_qty":10,"price":90,"discount":0,"product_id":40,"partner_id":23954,"currency_id":1,"company_id":1,"creator_id":1,"created_at":"2026-02-10T13:59:52+00:00","updated_at":"2026-02-12T08:05:04+00:00"},{"id":1,"sort":1,"delay":1,"product_name":null,"product_code":null,"starts_at":null,"ends_at":null,"min_qty":10,"price":90,"discount":0,"product_id":40,"partner_id":23954,"currency_id":1,"company_id":1,"creator_id":1,"created_at":"2026-02-10T13:59:52+00:00","updated_at":"2026-02-12T08:05:04+00:00"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"sort":933724,"delay":30,"product_name":"nostrum qui commodi","product_code":"SUP-4902","starts_at":"2026-02-06T00:00:00.000000Z","ends_at":"2026-07-27T00:00:00.000000Z","min_qty":35,"price":16.1,"discount":44.27,"product_id":80,"partner_id":1121,"currency_id":265,"company_id":275,"creator_id":791,"created_at":null,"updated_at":null},{"id":null,"sort":91,"delay":9,"product_name":"at aut illum","product_code":"SUP-1074","starts_at":"2026-02-01T00:00:00.000000Z","ends_at":"2026-12-29T00:00:00.000000Z","min_qty":25,"price":568.5,"discount":42.73,"product_id":81,"partner_id":1136,"currency_id":266,"company_id":278,"creator_id":802,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -339,7 +339,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"sort":1,"delay":1,"product_name":null,"product_code":null,"starts_at":null,"ends_at":null,"min_qty":10,"price":90,"discount":0,"product_id":40,"partner_id":23954,"currency_id":1,"company_id":1,"creator_id":1,"created_at":"2026-02-10T13:59:52+00:00","updated_at":"2026-02-12T08:05:04+00:00"},"message":"Vendor price list created successfully."}'
+        content: '{"data":{"id":null,"sort":7449171,"delay":7,"product_name":"animi quos velit","product_code":"SUP-9432","starts_at":"2026-02-17T00:00:00.000000Z","ends_at":"2026-05-14T00:00:00.000000Z","min_qty":30,"price":549.73,"discount":15.06,"product_id":82,"partner_id":1151,"currency_id":267,"company_id":281,"creator_id":813,"created_at":null,"updated_at":null},"message":"Vendor price list created successfully."}'
         headers: []
         description: ''
       -
@@ -416,7 +416,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sort":1,"delay":1,"product_name":null,"product_code":null,"starts_at":null,"ends_at":null,"min_qty":10,"price":90,"discount":0,"product_id":40,"partner_id":23954,"currency_id":1,"company_id":1,"creator_id":1,"created_at":"2026-02-10T13:59:52+00:00","updated_at":"2026-02-12T08:05:04+00:00"}}'
+        content: '{"data":{"id":null,"sort":933724,"delay":30,"product_name":"nostrum qui commodi","product_code":"SUP-4902","starts_at":"2026-02-06T00:00:00.000000Z","ends_at":"2026-07-27T00:00:00.000000Z","min_qty":35,"price":16.1,"discount":44.27,"product_id":83,"partner_id":1166,"currency_id":268,"company_id":284,"creator_id":824,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
@@ -626,7 +626,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sort":1,"delay":1,"product_name":null,"product_code":null,"starts_at":null,"ends_at":null,"min_qty":10,"price":90,"discount":0,"product_id":40,"partner_id":23954,"currency_id":1,"company_id":1,"creator_id":1,"created_at":"2026-02-10T13:59:52+00:00","updated_at":"2026-02-12T08:05:04+00:00"},"message":"Vendor price list updated successfully."}'
+        content: '{"data":{"id":null,"sort":7449171,"delay":7,"product_name":"animi quos velit","product_code":"SUP-9432","starts_at":"2026-02-17T00:00:00.000000Z","ends_at":"2026-05-14T00:00:00.000000Z","min_qty":30,"price":549.73,"discount":15.06,"product_id":84,"partner_id":1181,"currency_id":269,"company_id":287,"creator_id":835,"created_at":null,"updated_at":null},"message":"Vendor price list updated successfully."}'
         headers: []
         description: ''
       -
@@ -831,7 +831,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -943,7 +943,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-19T11:42:38'
+        example: '2026-02-20T08:26:25'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1056,7 +1056,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-19T11:42:38'
+        example: '2026-02-20T08:26:25'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1169,7 +1169,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-19T11:42:38'
+      planned_at: '2026-02-20T08:26:25'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -1195,7 +1195,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order created successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order created successfully."}'
         headers: []
         description: ''
       -
@@ -1272,7 +1272,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"}}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1403,7 +1403,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-19T11:42:38'
+        example: '2026-02-20T08:26:25'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1516,7 +1516,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-19T11:42:38'
+        example: '2026-02-20T08:26:25'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1629,7 +1629,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-19T11:42:38'
+      planned_at: '2026-02-20T08:26:25'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -1655,7 +1655,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order updated successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order updated successfully."}'
         headers: []
         description: ''
       -
@@ -1791,7 +1791,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order confirmed successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order confirmed successfully."}'
         headers: []
         description: ''
       -
@@ -1862,7 +1862,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order canceled successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order canceled successfully."}'
         headers: []
         description: ''
       -
@@ -1933,7 +1933,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order set to draft successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order set to draft successfully."}'
         headers: []
         description: ''
       -
@@ -2004,7 +2004,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order lock state updated successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order lock state updated successfully."}'
         headers: []
         description: ''
       -
@@ -2075,7 +2075,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-28T07:03:08.000000Z"},"message":"Purchase order receipt date confirmed successfully."}'
+        content: '{"data":{"id":1,"name":"PO\/1","description":"<p><\/p>","priority":"0","origin":null,"partner_reference":"EH-1234","state":"purchase","invoice_status":"invoiced","receipt_status":"full","untaxed_amount":35000,"tax_amount":5250,"total_amount":40250,"total_cc_amount":40250,"currency_rate":0,"mail_reminder_confirmed":true,"mail_reception_confirmed":false,"mail_reception_declined":false,"invoice_count":0,"ordered_at":"2026-01-08T12:53:13.000000Z","approved_at":"2026-01-08T12:56:13.000000Z","planned_at":"2026-03-11T00:00:00.000000Z","calendar_start_at":"2026-01-08T12:53:13.000000Z","incoterm_location":null,"effective_date":null,"report_grids":false,"requisition_id":null,"purchases_group_id":null,"partner_id":41,"currency_id":1,"fiscal_position_id":null,"payment_term_id":null,"incoterm_id":null,"user_id":1,"company_id":1,"creator_id":1,"operation_type_id":1,"created_at":"2026-01-08T12:55:43.000000Z","updated_at":"2026-01-08T12:56:52.000000Z"},"message":"Purchase order receipt date confirmed successfully."}'
         headers: []
         description: ''
       -
@@ -2694,7 +2694,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"Dr. Brennon Green","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":836,"created_at":null,"updated_at":null,"deleted_at":null},{"id":null,"name":"Rosendo Douglas","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":837,"created_at":null,"updated_at":null,"deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2928,7 +2928,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},"message":"Purchase agreement created successfully."}'
+        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":838,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement created successfully."}'
         headers: []
         description: ''
       -
@@ -3005,7 +3005,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":839,"created_at":null,"updated_at":null,"deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -3258,7 +3258,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},"message":"Purchase agreement updated successfully."}'
+        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":840,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement updated successfully."}'
         headers: []
         description: ''
       -
@@ -3394,7 +3394,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},"message":"Purchase agreement restored successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":841,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement restored successfully."}'
         headers: []
         description: ''
       -
@@ -3524,7 +3524,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},"message":"Purchase agreement confirmed successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":842,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement confirmed successfully."}'
         headers: []
         description: ''
       -
@@ -3595,7 +3595,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},"message":"Purchase agreement closed successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":843,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement closed successfully."}'
         headers: []
         description: ''
       -
@@ -3666,7 +3666,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"BO\/1","type":"blanket_order","state":"draft","reference":null,"starts_at":null,"ends_at":null,"description":"<p><\/p>","currency_id":1,"partner_id":1,"user_id":null,"company_id":1,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:27:32.000000Z","deleted_at":null},"message":"Purchase agreement canceled successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":844,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement canceled successfully."}'
         headers: []
         description: ''
       -
@@ -3795,7 +3795,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"qty":100,"price_unit":95,"requisition_id":1,"product_id":40,"uom_id":1,"company_id":null,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:28:04.000000Z"},{"id":1,"qty":100,"price_unit":95,"requisition_id":1,"product_id":40,"uom_id":1,"company_id":null,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:28:04.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":845,"created_at":null,"updated_at":null},{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":846,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3878,7 +3878,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"qty":100,"price_unit":95,"requisition_id":1,"product_id":40,"uom_id":1,"company_id":null,"creator_id":1,"created_at":"2026-02-19T05:27:32.000000Z","updated_at":"2026-02-19T05:28:04.000000Z"}}'
+        content: '{"data":{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":847,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -

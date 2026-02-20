@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Sale\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
 
 class Tag extends Model
@@ -32,5 +33,10 @@ class Tag extends Model
         static::creating(function ($tag) {
             $tag->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory(): TagFactory
+    {
+        return TagFactory::new();
     }
 }

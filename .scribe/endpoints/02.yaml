@@ -1,4 +1,4 @@
-name: 'Inventories API Management'
+name: 'InventoryAPI Management'
 description: ''
 endpoints:
   -
@@ -8,7 +8,7 @@ endpoints:
     uri: admin/api/v1/inventories/products
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -163,7 +163,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
     responseFields: []
@@ -181,7 +181,7 @@ endpoints:
     uri: admin/api/v1/inventories/products
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -709,7 +709,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},"message":"Product created successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},"message":"Product created successfully."}'
         headers: []
         description: ''
       -
@@ -733,7 +733,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/products/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -780,7 +780,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null}}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null}}'
         headers: []
         description: ''
       -
@@ -805,7 +805,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/products/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -1345,7 +1345,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},"message":"Product updated successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},"message":"Product updated successfully."}'
         headers: []
         description: ''
       -
@@ -1375,7 +1375,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/products/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -1434,7 +1434,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/products/{id}/restore'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -1469,7 +1469,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},"message":"Product restored successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1,"is_storable":true,"tracking":"qty","use_expiration_date":false,"sale_delay":null,"expiration_time":0,"use_time":0,"removal_time":0,"alert_time":0,"responsible_id":null},"message":"Product restored successfully."}'
         headers: []
         description: ''
       -
@@ -1493,7 +1493,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/products/{id}/force'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Products
       subgroupDescription: 'Manage inventory products'
@@ -1552,7 +1552,7 @@ endpoints:
     uri: admin/api/v1/inventories/packages
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Packages
       subgroupDescription: 'Manage inventory packages'
@@ -1659,7 +1659,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"PKG-449171","package_use":"reusable","pack_date":"2026-02-19T00:00:00.000000Z","created_at":null,"updated_at":null},{"id":null,"name":"PKG-601684","package_use":"reusable","pack_date":"2026-02-19T00:00:00.000000Z","created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"PKG-449171","package_use":"reusable","pack_date":"2026-02-20T00:00:00.000000Z","created_at":null,"updated_at":null},{"id":null,"name":"PKG-874297","package_use":"reusable","pack_date":"2026-02-20T00:00:00.000000Z","created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
     responseFields: []
@@ -1677,7 +1677,7 @@ endpoints:
     uri: admin/api/v1/inventories/packages
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Packages
       subgroupDescription: 'Manage inventory packages'
@@ -1748,7 +1748,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"PKG-569775","package_use":"reusable","pack_date":"2026-02-19T00:00:00.000000Z","created_at":null,"updated_at":null},"message":"Package created successfully."}'
+        content: '{"data":{"id":null,"name":"PKG-569775","package_use":"reusable","pack_date":"2026-02-20T00:00:00.000000Z","created_at":null,"updated_at":null},"message":"Package created successfully."}'
         headers: []
         description: ''
       -
@@ -1772,7 +1772,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/packages/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Packages
       subgroupDescription: 'Manage inventory packages'
@@ -1819,7 +1819,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"PKG-757680","package_use":"reusable","pack_date":"2026-02-19T00:00:00.000000Z","created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":null,"name":"PKG-757680","package_use":"reusable","pack_date":"2026-02-20T00:00:00.000000Z","created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
@@ -1844,7 +1844,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/packages/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Packages
       subgroupDescription: 'Manage inventory packages'
@@ -1927,7 +1927,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"PKG-936806","package_use":"reusable","pack_date":"2026-02-19T00:00:00.000000Z","created_at":null,"updated_at":null},"message":"Package updated successfully."}'
+        content: '{"data":{"id":null,"name":"PKG-936806","package_use":"reusable","pack_date":"2026-02-20T00:00:00.000000Z","created_at":null,"updated_at":null},"message":"Package updated successfully."}'
         headers: []
         description: ''
       -
@@ -1957,7 +1957,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/packages/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Packages
       subgroupDescription: 'Manage inventory packages'
@@ -2016,7 +2016,7 @@ endpoints:
     uri: admin/api/v1/inventories/lots
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Lots
       subgroupDescription: 'Manage lot/serial records'
@@ -2135,7 +2135,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"LOT 1","description":"<p><\/p>","reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":"2026-02-13T12:40:37.000000Z","updated_at":"2026-02-13T12:44:34.000000Z"},{"id":1,"name":"LOT 1","description":"<p><\/p>","reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":"2026-02-13T12:40:37.000000Z","updated_at":"2026-02-13T12:44:34.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"LOT-449171","description":null,"reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":null,"updated_at":null},{"id":null,"name":"LOT-198046","description":null,"reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
     responseFields: []
@@ -2153,7 +2153,7 @@ endpoints:
     uri: admin/api/v1/inventories/lots
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Lots
       subgroupDescription: 'Manage lot/serial records'
@@ -2224,7 +2224,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"LOT 1","description":"<p><\/p>","reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":"2026-02-13T12:40:37.000000Z","updated_at":"2026-02-13T12:44:34.000000Z"},"message":"Lot created successfully."}'
+        content: '{"data":{"id":null,"name":"LOT-569775","description":null,"reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":null,"updated_at":null},"message":"Lot created successfully."}'
         headers: []
         description: ''
       -
@@ -2248,7 +2248,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/lots/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Lots
       subgroupDescription: 'Manage lot/serial records'
@@ -2295,7 +2295,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"LOT 1","description":"<p><\/p>","reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":"2026-02-13T12:40:37.000000Z","updated_at":"2026-02-13T12:44:34.000000Z"}}'
+        content: '{"data":{"id":null,"name":"LOT-757680","description":null,"reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
@@ -2320,7 +2320,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/lots/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Lots
       subgroupDescription: 'Manage lot/serial records'
@@ -2403,7 +2403,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"LOT 1","description":"<p><\/p>","reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":"2026-02-13T12:40:37.000000Z","updated_at":"2026-02-13T12:44:34.000000Z"},"message":"Lot updated successfully."}'
+        content: '{"data":{"id":null,"name":"LOT-936806","description":null,"reference":null,"properties":null,"expiry_reminded":false,"expiration_date":null,"use_date":null,"removal_date":null,"alert_date":null,"created_at":null,"updated_at":null},"message":"Lot updated successfully."}'
         headers: []
         description: ''
       -
@@ -2433,7 +2433,7 @@ endpoints:
     uri: 'admin/api/v1/inventories/lots/{id}'
     metadata:
       custom: []
-      groupName: 'Inventories API Management'
+      groupName: 'InventoryAPI Management'
       groupDescription: ''
       subgroup: Lots
       subgroupDescription: 'Manage lot/serial records'

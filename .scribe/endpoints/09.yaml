@@ -674,7 +674,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}},{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"1982-01-18T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":270,"company_id":288,"creator_id":853,"created_at":null,"updated_at":null},{"id":null,"name":"1977-05-02T00:00:00.000000Z","rate":"0.781680","inverse_rate":1.2792958755500972,"currency_id":271,"company_id":289,"creator_id":854,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -769,7 +769,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}},"message":"Currency rate created successfully."}'
+        content: '{"data":{"id":null,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":272,"company_id":290,"creator_id":855,"created_at":null,"updated_at":null},"message":"Currency rate created successfully."}'
         headers: []
         description: ''
       -
@@ -858,7 +858,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}}}'
+        content: '{"data":{"id":null,"name":"1982-01-18T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":273,"company_id":291,"creator_id":856,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
@@ -972,7 +972,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}},"message":"Currency rate updated successfully."}'
+        content: '{"data":{"id":null,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":274,"company_id":292,"creator_id":857,"created_at":null,"updated_at":null},"message":"Currency rate updated successfully."}'
         headers: []
         description: ''
       -
