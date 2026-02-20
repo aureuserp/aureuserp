@@ -27,10 +27,11 @@ return [
             'permissions' => [
                 'title'  => 'Permissions',
                 'fields' => [
-                    'roles'               => 'Roles',
-                    'permissions'         => 'Permissions',
-                    'resource-permission' => 'Resource Permission',
-                    'teams'               => 'Teams',
+                    'roles'                                    => 'Roles',
+                    'permissions'                              => 'Permissions',
+                    'resource-permission'                      => 'Resource Permission',
+                    'resource-permission-self-change-disabled' => 'You cannot change your own resource permission. Ask another administrator to update it.',
+                    'teams'                                    => 'Teams',
                 ],
             ],
 

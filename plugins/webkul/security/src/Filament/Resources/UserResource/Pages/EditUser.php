@@ -8,8 +8,11 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
+use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
@@ -85,5 +88,28 @@ class EditUser extends EditRecord
             ...$data,
             ...$partner->toArray(),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (! (Auth::id() === $this->record->id && array_key_exists('resource_permission', $data))) {
+            return $data;
+        }
+
+        $submittedPermission = $data['resource_permission'];
+
+        if ($submittedPermission instanceof PermissionType) {
+            $submittedPermission = $submittedPermission->value;
+        }
+
+        $currentPermission = $this->record->resource_permission?->value;
+
+        if ((string) $submittedPermission !== (string) $currentPermission) {
+            throw ValidationException::withMessages([
+                'resource_permission' => __('security::filament/resources/user.form.sections.permissions.fields.resource-permission-self-change-disabled'),
+            ]);
+        }
+
+        return $data;
     }
 }
