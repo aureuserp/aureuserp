@@ -7,6 +7,7 @@ return [
         'sale'        => 'المبيعات',
         'purchase'    => 'المشتريات',
         'invoice'     => 'الفواتير',
+        'accounting'  => 'المحاسبة',
         'inventory'   => 'المخزون',
         'project'     => 'المشاريع',
         'employee'    => 'الموظفين',
