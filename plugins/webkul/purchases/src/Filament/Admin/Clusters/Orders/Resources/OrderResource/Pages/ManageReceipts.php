@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
 use Livewire\Livewire;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\PluginManager\Package;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
@@ -51,13 +52,14 @@ class ManageReceipts extends ManageRelatedRecords
         return OperationResource::table($table)
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record) => OperationResource::getUrl('view', ['record' => $record]))
+                    ->url(fn ($record) => ReceiptResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
                 EditAction::make()
-                    ->url(fn ($record) => OperationResource::getUrl('edit', ['record' => $record]))
+                    ->url(fn ($record) => ReceiptResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ])
+            ->defaultSort('created_at', 'desc')
             ->toolbarActions([]);
     }
 }
