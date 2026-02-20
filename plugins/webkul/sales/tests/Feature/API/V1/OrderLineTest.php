@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 
@@ -19,10 +18,7 @@ const SALES_ORDER_LINE_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('sales_order_lines')) {
-        $this->artisan('sales:install', ['--no-interaction' => true])->assertSuccessful();
-    }
-
+    TestBootstrapHelper::ensurePluginInstalled('sales');
     TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });

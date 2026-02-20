@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Partner\Models\Tag;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
@@ -8,12 +7,6 @@ require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
-    if (! Schema::hasTable('partners_tags')) {
-        test()->markTestSkipped(
-            'Partners plugin tables are missing. Run `php artisan partners:install` before this suite.'
-        );
-    }
-
     SecurityHelper::disableUserEvents();
 });
 

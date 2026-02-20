@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Sale\Models\Order;
 
@@ -15,10 +14,7 @@ const SALES_ORDER_DELIVERY_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('inventories_operations') || ! Schema::hasTable('sales_orders')) {
-        $this->artisan('sales:install', ['--no-interaction' => true])->assertSuccessful();
-    }
-
+    TestBootstrapHelper::ensurePluginInstalled('sales');
     TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });

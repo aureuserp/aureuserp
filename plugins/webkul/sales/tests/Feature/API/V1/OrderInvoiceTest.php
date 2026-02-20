@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Models\Move;
 use Webkul\Sale\Models\Order;
@@ -17,10 +16,7 @@ const SALES_ORDER_INVOICE_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('accounts_account_moves') || ! Schema::hasTable('sales_orders')) {
-        $this->artisan('sales:install', ['--no-interaction' => true])->assertSuccessful();
-    }
-
+    TestBootstrapHelper::ensurePluginInstalled('sales');
     TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });

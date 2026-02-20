@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
@@ -11,12 +10,6 @@ require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
-    if (! Schema::hasTable('partners_bank_accounts')) {
-        test()->markTestSkipped(
-            'Partners plugin tables are missing. Run `php artisan partners:install` before this suite.'
-        );
-    }
-
     SecurityHelper::disableUserEvents();
 });
 

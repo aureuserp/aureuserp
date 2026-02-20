@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Project\Models\Milestone;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
@@ -11,10 +10,7 @@ require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
-    if (! Schema::hasTable('projects_projects')) {
-        $this->artisan('projects:install', ['--no-interaction' => true])->assertSuccessful();
-    }
-
+    TestBootstrapHelper::ensurePluginInstalled('projects');
     TestBootstrapHelper::ensureBaseCurrencies();
 
     SecurityHelper::disableUserEvents();

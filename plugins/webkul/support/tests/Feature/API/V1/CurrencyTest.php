@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../Helpers/SecurityHelper.php';
@@ -19,12 +18,6 @@ const CURRENCY_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('currencies')) {
-        test()->markTestSkipped(
-            'Required plugin tables are missing. Install/migrate the plugin before running this suite.'
-        );
-    }
-
     SecurityHelper::disableUserEvents();
 });
 afterEach(fn () => SecurityHelper::restoreUserEvents());

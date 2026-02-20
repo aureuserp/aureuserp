@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Support\Models\UOMCategory;
 
 require_once __DIR__.'/../../../Helpers/SecurityHelper.php';
@@ -15,12 +14,6 @@ const UOM_CATEGORY_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('unit_of_measure_categories')) {
-        test()->markTestSkipped(
-            'Required plugin tables are missing. Install/migrate the plugin before running this suite.'
-        );
-    }
-
     SecurityHelper::disableUserEvents();
 });
 

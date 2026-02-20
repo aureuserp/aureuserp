@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Sale\Models\Tag;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
@@ -19,9 +19,7 @@ const SALES_TAG_REQUIRED_FIELDS = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('sales_tags')) {
-        $this->artisan('sales:install', ['--no-interaction' => true])->assertSuccessful();
-    }
+    TestBootstrapHelper::ensurePluginInstalled('sales');
 
     SecurityHelper::disableUserEvents();
 });

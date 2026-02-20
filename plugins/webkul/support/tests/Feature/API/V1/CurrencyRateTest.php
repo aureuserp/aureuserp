@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 
@@ -21,12 +20,6 @@ const CURRENCY_RATE_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('currency_rates')) {
-        test()->markTestSkipped(
-            'Required plugin tables are missing. Install/migrate the plugin before running this suite.'
-        );
-    }
-
     SecurityHelper::disableUserEvents();
 });
 

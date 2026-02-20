@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Testing\TestResponse;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
@@ -33,10 +32,7 @@ const SALES_ORDER_REQUIRED_FIELDS = [
 ];
 
 beforeEach(function () {
-    if (! Schema::hasTable('sales_orders')) {
-        $this->artisan('sales:install', ['--no-interaction' => true])->assertSuccessful();
-    }
-
+    TestBootstrapHelper::ensurePluginInstalled('sales');
     TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });
