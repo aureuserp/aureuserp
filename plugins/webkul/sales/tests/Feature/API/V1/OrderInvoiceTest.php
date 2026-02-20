@@ -17,7 +17,6 @@ const SALES_ORDER_INVOICE_JSON_STRUCTURE = [
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('sales');
-    TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });
 

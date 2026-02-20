@@ -19,7 +19,6 @@ const SALES_ORDER_LINE_JSON_STRUCTURE = [
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('sales');
-    TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });
 

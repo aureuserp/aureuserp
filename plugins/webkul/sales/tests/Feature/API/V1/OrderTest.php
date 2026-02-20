@@ -11,7 +11,7 @@ use Webkul\Support\Models\Company;
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
 require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
-uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
+// uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 const SALES_ORDER_JSON_STRUCTURE = [
     'id',
@@ -33,7 +33,6 @@ const SALES_ORDER_REQUIRED_FIELDS = [
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('sales');
-    TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });
 

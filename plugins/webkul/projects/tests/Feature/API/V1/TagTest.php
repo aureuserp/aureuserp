@@ -10,7 +10,6 @@ uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('projects');
-    TestBootstrapHelper::ensureBaseCurrencies();
 
     SecurityHelper::disableUserEvents();
 });

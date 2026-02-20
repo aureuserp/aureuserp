@@ -3,6 +3,7 @@
 use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../Helpers/SecurityHelper.php';
+require_once __DIR__.'/../../../Helpers/TestBootstrapHelper.php';
 
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
@@ -18,6 +19,7 @@ const CURRENCY_JSON_STRUCTURE = [
 ];
 
 beforeEach(function () {
+    TestBootstrapHelper::ensureSystemDataSeeded();
     SecurityHelper::disableUserEvents();
 });
 afterEach(fn () => SecurityHelper::restoreUserEvents());

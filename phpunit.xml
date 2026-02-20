@@ -14,6 +14,9 @@
         <testsuite name="PartnerFeature">
             <directory>plugins/webkul/partners/tests/Feature</directory>
         </testsuite>
+        <testsuite name="SaleFeature">
+            <directory>plugins/webkul/sales/tests/Feature</directory>
+        </testsuite>
         <testsuite name="ProjectFeature">
             <directory>plugins/webkul/projects/tests/Feature</directory>
         </testsuite>

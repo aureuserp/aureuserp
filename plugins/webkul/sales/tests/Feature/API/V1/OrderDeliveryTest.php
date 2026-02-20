@@ -15,7 +15,6 @@ const SALES_ORDER_DELIVERY_JSON_STRUCTURE = [
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('sales');
-    TestBootstrapHelper::ensureBaseCurrencies();
     SecurityHelper::disableUserEvents();
 });
 
