@@ -131,6 +131,11 @@ return [
                 'notification' => [
                     'title' => 'Company deleted',
                     'body'  => 'The company has been deleted successfully.',
+
+                    'default-company' => [
+                        'title' => 'Company cannot be deleted',
+                        'body'  => 'This company is set as the default company in Manage Users settings. Please change the default company before deleting.',
+                    ],
                 ],
             ],
 
