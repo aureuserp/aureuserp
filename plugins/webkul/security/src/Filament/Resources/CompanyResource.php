@@ -47,7 +47,7 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\EditCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
-use Webkul\Security\Models\User;
+use Webkul\Security\Settings\UserSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -394,7 +394,7 @@ class CompanyResource extends Resource
                         ),
                     DeleteAction::make()
                         ->visible(fn ($record, $livewire = null) => ! $record->trashed() && ! static::isArchivedTab($livewire))
-                        ->hidden(fn ($record) => User::where('default_company_id', $record->id)->exists())
+                        ->before(fn ($record, $action) => static::cancelIfDefaultCompany($record->id, $action))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -403,7 +403,7 @@ class CompanyResource extends Resource
                         ),
                     ForceDeleteAction::make()
                         ->visible(fn ($record, $livewire = null) => $record->trashed() && static::isArchivedTab($livewire))
-                        ->hidden(fn ($record) => User::where('default_company_id', $record->id)->exists())
+                        ->before(fn ($record, $action) => static::cancelIfDefaultCompany($record->id, $action))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -424,6 +424,7 @@ class CompanyResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->visible(fn ($livewire = null) => ! static::isArchivedTab($livewire))
+                        ->before(fn ($records, $action) => static::cancelIfDefaultCompany($records->pluck('id')->all(), $action))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -431,6 +432,7 @@ class CompanyResource extends Resource
                                 ->body(__('security::filament/resources/company.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
+                        ->before(fn ($records, $action) => static::cancelIfDefaultCompany($records->pluck('id')->all(), $action))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -452,7 +454,7 @@ class CompanyResource extends Resource
                     ->whereNull('parent_id');
             })
             ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => ! User::where('default_company_id', $record->id)->exists()
+                fn (Model $record): bool => true
             )
             ->reorderable('sort');
     }
@@ -596,5 +598,22 @@ class CompanyResource extends Resource
         }
 
         return $livewire->activeTab === 'archived';
+    }
+
+    protected static function cancelIfDefaultCompany(int|array $ids, $action): void
+    {
+        $ids = (array) $ids;
+
+        if (! in_array(app(UserSettings::class)->default_company_id, $ids)) {
+            return;
+        }
+
+        Notification::make()
+            ->warning()
+            ->title(__('security::filament/resources/company.table.actions.delete.notification.default-company.title'))
+            ->body(__('security::filament/resources/company.table.actions.delete.notification.default-company.body'))
+            ->send();
+
+        $action->cancel();
     }
 }
