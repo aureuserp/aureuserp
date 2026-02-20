@@ -184,8 +184,7 @@ class PartnerResource extends Resource
                                 TextInput::make('email')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.email'))
                                     ->email()
-                                    ->maxLength(255)
-                                    ->unique(ignoreRecord: true),
+                                    ->maxLength(255),
                                 TextInput::make('website')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.website'))
                                     ->maxLength(255)
