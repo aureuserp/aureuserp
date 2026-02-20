@@ -45,7 +45,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -68,6 +67,7 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
+use Webkul\Accounting\Filament\Concerns\HasCompanyScope;
 use Webkul\Accounting\Filament\Exports\JournalEntryExporter;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
@@ -82,6 +82,8 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
+    use HasCompanyScope;
+
     protected static ?string $model = JournalEntry::class;
 
     protected static bool $shouldRegisterNavigation = true;
@@ -173,9 +175,11 @@ class JournalEntryResource extends Resource
 
                                         Select::make('journal_id')
                                             ->relationship(
-                                                'journal',
-                                                'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::GENERAL),
+                                                name: 'journal',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query
+                                                    ->where('type', JournalType::GENERAL)
+                                                    ->whereIn('company_id', static::getAccessibleCompanyIds()),
                                             )
                                             ->searchable()
                                             ->preload()
@@ -200,7 +204,13 @@ class JournalEntryResource extends Resource
                             ->schema([
                                 Select::make('company_id')
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.company'))
-                                    ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                    ->relationship(
+                                        name: 'company',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query
+                                            ->withTrashed()
+                                            ->whereIn('companies.id', static::getAccessibleCompanyIds())
+                                    )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                     })
@@ -1051,5 +1061,20 @@ class JournalEntryResource extends Resource
             'view'     => ViewJournalEntry::route('/{record}'),
             'edit'     => EditJournalEntry::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $companyIds = static::getAccessibleCompanyIds();
+
+        if (empty($companyIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query
+            ->whereIn('company_id', $companyIds)
+            ->orderByDesc('date');
     }
 }
