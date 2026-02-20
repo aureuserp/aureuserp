@@ -22,8 +22,8 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
@@ -211,9 +211,8 @@ class CurrencyResource extends Resource
                     ->label(__('support::filament/resources/currency.table.columns.rounding'))
                     ->money('USD', divideBy: 1)
                     ->sortable(),
-                IconColumn::make('active')
+                ToggleColumn::make('active')
                     ->label(__('support::filament/resources/currency.table.columns.status'))
-                    ->boolean()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('support::filament/resources/currency.table.columns.created-at'))

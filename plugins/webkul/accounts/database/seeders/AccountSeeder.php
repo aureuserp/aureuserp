@@ -23,7 +23,7 @@ class AccountSeeder extends Seeder
 
         $user = User::first();
 
-        $currency = Currency::first();
+        $currency = Currency::active()->first() ?? Currency::first();
 
         $company = Company::first();
 

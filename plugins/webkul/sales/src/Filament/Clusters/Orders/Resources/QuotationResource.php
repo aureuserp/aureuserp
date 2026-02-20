@@ -307,9 +307,9 @@ class QuotationResource extends Resource
                                         Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
                                             ->relationship(
-                                                'currency',
-                                                'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                name: 'currency',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
                                             )
                                             ->required()
                                             ->searchable()

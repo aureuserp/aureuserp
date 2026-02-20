@@ -677,9 +677,9 @@ class JournalEntryResource extends Resource
                 Select::make('currency_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.currency'))
                     ->relationship(
-                        'currency',
-                        'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                        name: 'currency',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                     )
                     ->default(Auth::user()->defaultCompany?->currency_id)
                     ->required()

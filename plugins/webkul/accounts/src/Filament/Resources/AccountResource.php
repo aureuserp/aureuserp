@@ -104,9 +104,9 @@ class AccountResource extends Resource
                                     ->searchable(),
                                 Select::make('currency_id')
                                     ->relationship(
-                                        'currency',
-                                        'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                        name: 'currency',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                     )
                                     ->preload()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.currency'))
@@ -170,7 +170,7 @@ class AccountResource extends Resource
                     ->preload()
                     ->label(__('accounts::filament/resources/account.table.filters.account-journals')),
                 SelectFilter::make('currency')
-                    ->relationship('currency', 'name')
+                    ->relationship(name: 'currency', titleAttribute: 'name', modifyQueryUsing: fn (Builder $query) => $query->active())
                     ->searchable()
                     ->preload()
                     ->label(__('accounts::filament/resources/account.table.filters.currency')),
