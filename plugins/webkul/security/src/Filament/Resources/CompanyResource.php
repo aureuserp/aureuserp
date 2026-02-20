@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
@@ -384,6 +385,7 @@ class CompanyResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make()
+                        ->visible(fn ($record, $livewire = null) => ! $record->trashed() && ! static::isArchivedTab($livewire))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -391,6 +393,7 @@ class CompanyResource extends Resource
                                 ->body(__('security::filament/resources/company.table.actions.edit.notification.body')),
                         ),
                     DeleteAction::make()
+                        ->visible(fn ($record, $livewire = null) => ! $record->trashed() && ! static::isArchivedTab($livewire))
                         ->hidden(fn ($record) => User::where('default_company_id', $record->id)->exists())
                         ->successNotification(
                             Notification::make()
@@ -398,7 +401,17 @@ class CompanyResource extends Resource
                                 ->title((__('security::filament/resources/company.table.actions.delete.notification.title')))
                                 ->body(__('security::filament/resources/company.table.actions.delete.notification.body')),
                         ),
+                    ForceDeleteAction::make()
+                        ->visible(fn ($record, $livewire = null) => $record->trashed() && static::isArchivedTab($livewire))
+                        ->hidden(fn ($record) => User::where('default_company_id', $record->id)->exists())
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title((__('security::filament/resources/company.table.actions.force-delete.notification.title')))
+                                ->body(__('security::filament/resources/company.table.actions.force-delete.notification.body')),
+                        ),
                     RestoreAction::make()
+                        ->visible(fn ($record, $livewire = null) => $record->trashed() && static::isArchivedTab($livewire))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -410,6 +423,7 @@ class CompanyResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
+                        ->visible(fn ($livewire = null) => ! static::isArchivedTab($livewire))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -424,6 +438,7 @@ class CompanyResource extends Resource
                                 ->body(__('security::filament/resources/company.table.bulk-actions.force-delete.notification.body')),
                         ),
                     RestoreBulkAction::make()
+                        ->visible(fn ($livewire = null) => static::isArchivedTab($livewire))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -572,5 +587,14 @@ class CompanyResource extends Resource
             'view'   => ViewCompany::route('/{record}'),
             'edit'   => EditCompany::route('/{record}/edit'),
         ];
+    }
+
+    protected static function isArchivedTab($livewire = null): bool
+    {
+        if (! is_object($livewire) || ! property_exists($livewire, 'activeTab')) {
+            return false;
+        }
+
+        return $livewire->activeTab === 'archived';
     }
 }
