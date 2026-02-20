@@ -11,7 +11,10 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
-        <testsuite name="SupportPlugin">
+        <testsuite name="ProjectFeature">
+            <directory>plugins/webkul/projects/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="SupportFeature">
             <directory>plugins/webkul/support/tests/Feature</directory>
         </testsuite>
     </testsuites>
