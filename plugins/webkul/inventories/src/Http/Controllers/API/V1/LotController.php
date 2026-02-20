@@ -17,7 +17,7 @@ use Webkul\Inventory\Http\Requests\LotRequest;
 use Webkul\Inventory\Http\Resources\V1\LotResource;
 use Webkul\Inventory\Models\Lot;
 
-#[Group('Inventories API Management')]
+#[Group('InventoryAPI Management')]
 #[Subgroup('Lots', 'Manage lot/serial records')]
 #[Authenticated]
 class LotController extends Controller

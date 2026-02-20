@@ -17,7 +17,7 @@ use Webkul\Inventory\Http\Requests\ProductRequest;
 use Webkul\Inventory\Http\Resources\V1\ProductResource;
 use Webkul\Inventory\Models\Product;
 
-#[Group('Inventories API Management')]
+#[Group('InventoryAPI Management')]
 #[Subgroup('Products', 'Manage inventory products')]
 #[Authenticated]
 class ProductController extends Controller
