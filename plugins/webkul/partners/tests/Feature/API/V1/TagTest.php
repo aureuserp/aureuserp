@@ -17,12 +17,7 @@ beforeEach(function () {
 
 afterEach(fn () => SecurityHelper::restoreUserEvents());
 
-function actingAsTagApiUser(array $permissions = []): void
-{
-    SecurityHelper::authenticateWithPermissions($permissions);
-}
-
-function tagRoute(string $action, mixed $tag = null): string
+function partnersTagRoute(string $action, mixed $tag = null): string
 {
     $name = "admin.api.v1.partners.tags.{$action}";
 
@@ -30,74 +25,74 @@ function tagRoute(string $action, mixed $tag = null): string
 }
 
 it('requires authentication to list tags', function () {
-    $this->getJson(tagRoute('index'))->assertUnauthorized();
+    $this->getJson(partnersTagRoute('index'))->assertUnauthorized();
 });
 
 it('forbids listing tags without permission', function () {
-    actingAsTagApiUser();
+    SecurityHelper::actingAsTagApiUser();
 
-    $this->getJson(tagRoute('index'))->assertForbidden();
+    $this->getJson(partnersTagRoute('index'))->assertForbidden();
 });
 
 it('lists tags for authorized users', function () {
-    actingAsTagApiUser(['view_any_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['view_any_partner_tag']);
 
     Tag::factory()->count(2)->create();
 
-    $this->getJson(tagRoute('index'))
+    $this->getJson(partnersTagRoute('index'))
         ->assertOk()
         ->assertJsonCount(2, 'data');
 });
 
 it('creates a tag with valid payload', function () {
-    actingAsTagApiUser(['create_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['create_partner_tag']);
 
     $payload = Tag::factory()->make()->toArray();
 
-    $this->postJson(tagRoute('store'), $payload)
+    $this->postJson(partnersTagRoute('store'), $payload)
         ->assertCreated()
         ->assertJsonPath('message', 'Tag created successfully.')
         ->assertJsonPath('data.name', $payload['name']);
 });
 
 it('validates required fields when creating a tag', function () {
-    actingAsTagApiUser(['create_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['create_partner_tag']);
 
     $payload = Tag::factory()->make()->toArray();
     unset($payload['name']);
 
-    $this->postJson(tagRoute('store'), $payload)
+    $this->postJson(partnersTagRoute('store'), $payload)
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['name']);
 });
 
 it('shows a tag for authorized users', function () {
-    actingAsTagApiUser(['view_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['view_partner_tag']);
 
     $tag = Tag::factory()->create();
 
-    $this->getJson(tagRoute('show', $tag))
+    $this->getJson(partnersTagRoute('show', $tag))
         ->assertOk()
         ->assertJsonPath('data.id', $tag->id);
 });
 
 it('updates a tag for authorized users', function () {
-    actingAsTagApiUser(['update_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['update_partner_tag']);
 
     $tag = Tag::factory()->create();
 
-    $this->patchJson(tagRoute('update', $tag), ['name' => 'Updated Tag'])
+    $this->patchJson(partnersTagRoute('update', $tag), ['name' => 'Updated Tag'])
         ->assertOk()
         ->assertJsonPath('message', 'Tag updated successfully.')
         ->assertJsonPath('data.name', 'Updated Tag');
 });
 
 it('deletes a tag for authorized users', function () {
-    actingAsTagApiUser(['delete_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['delete_partner_tag']);
 
     $tag = Tag::factory()->create();
 
-    $this->deleteJson(tagRoute('destroy', $tag))
+    $this->deleteJson(partnersTagRoute('destroy', $tag))
         ->assertOk()
         ->assertJsonPath('message', 'Tag deleted successfully.');
 
@@ -105,23 +100,23 @@ it('deletes a tag for authorized users', function () {
 });
 
 it('restores a tag for authorized users', function () {
-    actingAsTagApiUser(['restore_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['restore_partner_tag']);
 
     $tag = Tag::factory()->create();
     $tag->delete();
 
-    $this->postJson(tagRoute('restore', $tag->id))
+    $this->postJson(partnersTagRoute('restore', $tag->id))
         ->assertOk()
         ->assertJsonPath('message', 'Tag restored successfully.');
 });
 
 it('force deletes a tag for authorized users', function () {
-    actingAsTagApiUser(['force_delete_partner_tag']);
+    SecurityHelper::actingAsTagApiUser(['force_delete_partner_tag']);
 
     $tag = Tag::factory()->create();
     $tag->delete();
 
-    $this->deleteJson(tagRoute('force-destroy', $tag->id))
+    $this->deleteJson(partnersTagRoute('force-destroy', $tag->id))
         ->assertOk()
         ->assertJsonPath('message', 'Tag permanently deleted.');
 

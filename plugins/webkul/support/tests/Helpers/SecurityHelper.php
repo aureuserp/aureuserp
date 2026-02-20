@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\PermissionRegistrar;
+use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\Permission;
 use Webkul\Security\Models\User;
 
@@ -36,6 +37,21 @@ class SecurityHelper
         Auth::guard('sanctum')->setUser($user);
         Auth::shouldUse('sanctum');
         Sanctum::actingAs($user, ['*']);
+
+        return $user;
+    }
+
+    public static function actingAsTagApiUser(
+        array $permissionNames = [],
+        bool $useGlobalResourcePermission = false
+    ): User {
+        $user = static::authenticateWithPermissions($permissionNames);
+
+        if ($useGlobalResourcePermission) {
+            $user->forceFill([
+                'resource_permission' => PermissionType::GLOBAL,
+            ])->saveQuietly();
+        }
 
         return $user;
     }
