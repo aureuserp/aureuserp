@@ -3,7 +3,7 @@
 return [
     'navigation' => [
         'title' => 'جهات الاتصال',
-        'group' => 'جهة الاتصال',
+        'group' => 'جهات الاتصال',
     ],
 
     'global-search' => [

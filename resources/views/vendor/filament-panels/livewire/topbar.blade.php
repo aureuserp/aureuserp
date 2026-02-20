@@ -44,8 +44,7 @@
                 <x-filament::icon-button icon="icon-menu" />
             </x-slot>
 
-            <!-- <div class="grid grid-cols-3 gap-1 overflow-y-auto p-4" style="max-height: 80vh; grid-template-columns: repeat(3, minmax(0, 1fr));"> -->
-            <div class="grid grid-cols-3 gap-1 p-4" style="grid-template-columns: repeat(3, minmax(0, 1fr));">    
+            <div class="grid grid-cols-2 gap-2 overflow-y-auto p-4 md:grid-cols-3" style="max-height: 80vh; grid-template-columns: repeat(3, minmax(0, 1fr));">
             @foreach ($navigation as $group)
                 @php
                 $groupLabel = $group->getLabel();
@@ -63,7 +62,7 @@
                     >
                     <a
                         href="{{ $itemUrl }}"
-                        class="fi-topbar-item-btn flex flex-col items-center justify-center gap-2 rounded-lg p-4">
+                        class="fi-topbar-item-btn flex flex-col items-center justify-center gap-2 whitespace-nowrap rounded-lg p-4 text-center text-sm font-medium">
                         <x-filament::icon
                             :icon="$groupIcon"
                             style="height: 64px; width: 64px" />
@@ -155,7 +154,7 @@
             @if ($isAdminPanel)
             {{-- Admin panel: show active group name as a plain bold heading --}}
             <li class="fi-topbar-item">
-                <span class="fi-topbar-item-btn font-bold text-xl px-3 py-2 cursor-default">
+                <span class="fi-topbar-item-btn cursor-default px-3 py-2 text-xl font-bold">
                     {{ $groupLabel }}
                 </span>
             </li>
