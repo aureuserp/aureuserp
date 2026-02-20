@@ -154,7 +154,7 @@ class EmployeeResource extends Resource
                                         FileUpload::make('avatar')
                                             ->image()
                                             ->hiddenLabel()
-                                            ->imageResizeMode('cover')
+                                            ->automaticallyResizeImagesMode('cover')
                                             ->imageEditor()
                                             ->avatar()
                                             ->directory('employees/avatar')
