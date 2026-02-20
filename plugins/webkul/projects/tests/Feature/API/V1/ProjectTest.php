@@ -12,7 +12,7 @@ uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     if (! Schema::hasTable('projects_projects')) {
-        $this->artisan('projects:install')->assertSuccessful();
+        $this->artisan('projects:install', ['--no-interaction' => true])->assertSuccessful();
     }
 
     TestBootstrapHelper::ensureBaseCurrencies();

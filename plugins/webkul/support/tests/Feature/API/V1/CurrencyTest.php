@@ -21,7 +21,7 @@ const CURRENCY_JSON_STRUCTURE = [
 beforeEach(function () {
     if (! Schema::hasTable('currencies')) {
         test()->markTestSkipped(
-            'Support plugin tables are missing. Install/migrate the support plugin before running this suite.'
+            'Required plugin tables are missing. Install/migrate the plugin before running this suite.'
         );
     }
 

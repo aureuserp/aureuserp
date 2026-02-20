@@ -12,7 +12,9 @@ uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     if (! Schema::hasTable('partners_bank_accounts')) {
-        $this->artisan('migrate')->assertSuccessful();
+        test()->markTestSkipped(
+            'Partners plugin tables are missing. Run `php artisan partners:install` before this suite.'
+        );
     }
 
     SecurityHelper::disableUserEvents();

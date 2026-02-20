@@ -17,7 +17,7 @@ const UOM_CATEGORY_JSON_STRUCTURE = [
 beforeEach(function () {
     if (! Schema::hasTable('unit_of_measure_categories')) {
         test()->markTestSkipped(
-            'Support plugin tables are missing. Install/migrate the support plugin before running this suite.'
+            'Required plugin tables are missing. Install/migrate the plugin before running this suite.'
         );
     }
 
