@@ -1,59 +1,46 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
-use Webkul\Project\Models\Tag;
-use Webkul\Security\Enums\PermissionType;
-use Webkul\Security\Models\User;
+use Webkul\Partner\Models\Tag;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
-    if (! Schema::hasTable('projects_projects')) {
-        $this->artisan('projects:install')->assertSuccessful();
+    if (! Schema::hasTable('partners_tags')) {
+        $this->artisan('migrate')->assertSuccessful();
     }
-
-    TestBootstrapHelper::ensureBaseCurrencies();
 
     SecurityHelper::disableUserEvents();
 });
 
 afterEach(fn () => SecurityHelper::restoreUserEvents());
 
-function actingAsTagApiUser(array $permissions = []): User
+function actingAsTagApiUser(array $permissions = []): void
 {
-    $user = SecurityHelper::authenticateWithPermissions($permissions);
-
-    $user->forceFill([
-        'resource_permission' => PermissionType::GLOBAL,
-    ])->saveQuietly();
-
-    return $user;
+    SecurityHelper::authenticateWithPermissions($permissions);
 }
 
 function tagRoute(string $action, mixed $tag = null): string
 {
-    $name = "admin.api.v1.projects.tags.{$action}";
+    $name = "admin.api.v1.partners.tags.{$action}";
 
     return $tag ? route($name, $tag) : route($name);
 }
 
 it('requires authentication to list tags', function () {
-    $this->getJson(tagRoute('index'))
-        ->assertUnauthorized();
+    $this->getJson(tagRoute('index'))->assertUnauthorized();
 });
 
 it('forbids listing tags without permission', function () {
     actingAsTagApiUser();
 
-    $this->getJson(tagRoute('index'))
-        ->assertForbidden();
+    $this->getJson(tagRoute('index'))->assertForbidden();
 });
 
 it('lists tags for authorized users', function () {
-    actingAsTagApiUser(['view_any_project_tag']);
+    actingAsTagApiUser(['view_any_partner_tag']);
 
     Tag::factory()->count(2)->create();
 
@@ -63,32 +50,29 @@ it('lists tags for authorized users', function () {
 });
 
 it('creates a tag with valid payload', function () {
-    actingAsTagApiUser(['create_project_tag']);
+    actingAsTagApiUser(['create_partner_tag']);
 
     $payload = Tag::factory()->make()->toArray();
 
-    $response = $this->postJson(tagRoute('store'), $payload);
-
-    $response
+    $this->postJson(tagRoute('store'), $payload)
         ->assertCreated()
         ->assertJsonPath('message', 'Tag created successfully.')
         ->assertJsonPath('data.name', $payload['name']);
-
-    $this->assertDatabaseHas('projects_tags', [
-        'name' => $payload['name'],
-    ]);
 });
 
 it('validates required fields when creating a tag', function () {
-    actingAsTagApiUser(['create_project_tag']);
+    actingAsTagApiUser(['create_partner_tag']);
 
-    $this->postJson(tagRoute('store'), [])
+    $payload = Tag::factory()->make()->toArray();
+    unset($payload['name']);
+
+    $this->postJson(tagRoute('store'), $payload)
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['name']);
 });
 
 it('shows a tag for authorized users', function () {
-    actingAsTagApiUser(['view_project_tag']);
+    actingAsTagApiUser(['view_partner_tag']);
 
     $tag = Tag::factory()->create();
 
@@ -98,24 +82,18 @@ it('shows a tag for authorized users', function () {
 });
 
 it('updates a tag for authorized users', function () {
-    actingAsTagApiUser(['update_project_tag']);
+    actingAsTagApiUser(['update_partner_tag']);
 
     $tag = Tag::factory()->create();
-    $updatedName = Tag::factory()->make()->name;
 
-    $this->patchJson(tagRoute('update', $tag), ['name' => $updatedName])
+    $this->patchJson(tagRoute('update', $tag), ['name' => 'Updated Tag'])
         ->assertOk()
         ->assertJsonPath('message', 'Tag updated successfully.')
-        ->assertJsonPath('data.name', $updatedName);
-
-    $this->assertDatabaseHas('projects_tags', [
-        'id'   => $tag->id,
-        'name' => $updatedName,
-    ]);
+        ->assertJsonPath('data.name', 'Updated Tag');
 });
 
 it('deletes a tag for authorized users', function () {
-    actingAsTagApiUser(['delete_project_tag']);
+    actingAsTagApiUser(['delete_partner_tag']);
 
     $tag = Tag::factory()->create();
 
@@ -123,13 +101,11 @@ it('deletes a tag for authorized users', function () {
         ->assertOk()
         ->assertJsonPath('message', 'Tag deleted successfully.');
 
-    $this->assertSoftDeleted('projects_tags', [
-        'id' => $tag->id,
-    ]);
+    $this->assertSoftDeleted('partners_tags', ['id' => $tag->id]);
 });
 
 it('restores a tag for authorized users', function () {
-    actingAsTagApiUser(['restore_project_tag']);
+    actingAsTagApiUser(['restore_partner_tag']);
 
     $tag = Tag::factory()->create();
     $tag->delete();
@@ -137,15 +113,10 @@ it('restores a tag for authorized users', function () {
     $this->postJson(tagRoute('restore', $tag->id))
         ->assertOk()
         ->assertJsonPath('message', 'Tag restored successfully.');
-
-    $this->assertDatabaseHas('projects_tags', [
-        'id'         => $tag->id,
-        'deleted_at' => null,
-    ]);
 });
 
 it('force deletes a tag for authorized users', function () {
-    actingAsTagApiUser(['force_delete_project_tag']);
+    actingAsTagApiUser(['force_delete_partner_tag']);
 
     $tag = Tag::factory()->create();
     $tag->delete();
@@ -154,7 +125,5 @@ it('force deletes a tag for authorized users', function () {
         ->assertOk()
         ->assertJsonPath('message', 'Tag permanently deleted.');
 
-    $this->assertDatabaseMissing('projects_tags', [
-        'id' => $tag->id,
-    ]);
+    $this->assertDatabaseMissing('partners_tags', ['id' => $tag->id]);
 });

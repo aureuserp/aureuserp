@@ -4,39 +4,18 @@ use Illuminate\Support\Facades\Schema;
 use Webkul\Project\Models\ProjectStage;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 uses(Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
-
-function ensureBaseCurrencies(): void
-{
-    $requiredIds = [1, 2, 3];
-    $existingIds = Currency::query()->whereIn('id', $requiredIds)->pluck('id')->all();
-    $missingIds = array_values(array_diff($requiredIds, $existingIds));
-
-    if ($missingIds === []) {
-        return;
-    }
-
-    $sequenceStates = array_map(
-        fn (int $id): array => ['id' => $id],
-        $missingIds
-    );
-
-    Currency::factory()
-        ->count(count($missingIds))
-        ->sequence(...$sequenceStates)
-        ->create();
-}
 
 beforeEach(function () {
     if (! Schema::hasTable('projects_projects')) {
         $this->artisan('projects:install')->assertSuccessful();
     }
 
-    ensureBaseCurrencies();
+    TestBootstrapHelper::ensureBaseCurrencies();
 
     SecurityHelper::disableUserEvents();
 });
