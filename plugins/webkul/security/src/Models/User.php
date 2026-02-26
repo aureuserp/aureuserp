@@ -49,6 +49,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
         $this->mergeCasts([
             'default_company_id'  => 'integer',
             'resource_permission' => PermissionType::class,
+            'is_active'           => 'boolean',
         ]);
 
         parent::__construct($attributes);
@@ -63,7 +64,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $this->is_active;
     }
 
     public function creator(): BelongsTo
