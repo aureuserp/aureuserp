@@ -61,6 +61,7 @@ use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
+use Webkul\Purchase\Models\RequisitionLine;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
@@ -206,7 +207,7 @@ class OrderResource extends Resource
                                             $products[] = [
                                                 'product_id'  => $product?->id,
                                                 'uom_id'      => $uom?->id,
-                                                'product_qty' => $line->qty,
+                                                'product_qty' => static::getAgreementDefaultQuantity($line),
                                                 'price_unit'  => $line->price_unit,
                                                 'planned_at'  => now(),
                                                 'taxes'       => $product->productTaxes->pluck('id')->toArray(),
@@ -1407,6 +1408,11 @@ class OrderResource extends Resource
         $set($prefix . 'price_tax', $taxAmount);
 
         $set($prefix . 'price_total', $subTotal + $taxAmount);
+    }
+
+    protected static function getAgreementDefaultQuantity(RequisitionLine $line): float|int
+    {
+        return $line->qty;
     }
 
     private static function calculateOrderTotals(Get $get, $livewire): array
