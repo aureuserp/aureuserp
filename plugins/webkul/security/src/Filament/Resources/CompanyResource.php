@@ -479,11 +479,7 @@ class CompanyResource extends Resource
                                 ->body(__('security::filament/resources/company.table.bulk-actions.restore.notification.body')),
                         ),
                 ]),
-            ])->modifyQueryUsing(function (Builder $query) {
-                $query
-                    ->where('creator_id', Auth::user()->id)
-                    ->whereNull('parent_id');
-            })
+            ])
             ->checkIfRecordIsSelectableUsing(
                 fn (Model $record): bool => true
             )

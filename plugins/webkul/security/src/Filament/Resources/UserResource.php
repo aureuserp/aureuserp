@@ -32,18 +32,22 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
+use Webkul\Security\Models\User;
+use Illuminate\Support\Str;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource\Pages\CreateUser;
 use Webkul\Security\Filament\Resources\UserResource\Pages\EditUser;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
-use Webkul\Security\Models\User;
+use Webkul\Security\Settings\UserSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 
@@ -111,7 +115,7 @@ class UserResource extends Resource
                                             ->label(__('security::filament/resources/user.form.sections.general-information.fields.password-confirmation'))
                                             ->password()
                                             ->hiddenOn('edit')
-                                            ->rule('required', fn ($get) => (bool) $get('password'))
+                                            ->rule('required', fn($get) => (bool) $get('password'))
                                             ->same('password'),
                                     ])
                                     ->columns(2),
@@ -124,6 +128,19 @@ class UserResource extends Resource
                                             ->multiple()
                                             ->required()
                                             ->preload()
+                                            ->rule(function (?User $record) {
+                                                return function (string $attribute, $value, Closure $fail) use ($record): void {
+                                                    try {
+                                                        self::ensureAdminRoleConstraints($record, (array) $value);
+                                                    } catch (ValidationException $exception) {
+                                                        $messages = $exception->errors()['roles'] ?? [];
+
+                                                        foreach ($messages as $message) {
+                                                            $fail($message);
+                                                        }
+                                                    }
+                                                };
+                                            })
                                             ->searchable(),
                                         Select::make('resource_permission')
                                             ->label(__('security::filament/resources/user.form.sections.permissions.fields.resource-permission'))
@@ -153,8 +170,8 @@ class UserResource extends Resource
                                             ->multiple()
                                             ->preload()
                                             ->searchable()
-                                            ->required(fn (Get $get) => $get('resource_permission') == PermissionType::GROUP)
-                                            ->createOptionForm(fn (Schema $schema) => TeamResource::form($schema)),
+                                            ->required(fn(Get $get) => $get('resource_permission') == PermissionType::GROUP)
+                                            ->createOptionForm(fn(Schema $schema) => TeamResource::form($schema)),
                                     ])
                                     ->columns(2),
                             ])
@@ -199,15 +216,15 @@ class UserResource extends Resource
                                             ->relationship(
                                                 'defaultCompany',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn(Builder $query) => $query->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                            ->disableOptionWhen(fn($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
                                             ->searchable()
-                                            ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
+                                            ->createOptionForm(fn(Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
                                                 $action
                                                     ->fillForm(function (array $arguments): array {
@@ -251,7 +268,7 @@ class UserResource extends Resource
             ->columnManagerColumns(2)
             ->columns([
                 ImageColumn::make('partner.avatar')
-                    ->defaultImageUrl(fn ($record) => $record->avatar_url)
+                    ->defaultImageUrl(fn($record) => $record->avatar_url)
                     ->imageSize(50)
                     ->label(__('security::filament/resources/user.table.columns.avatar')),
                 TextColumn::make('name')
@@ -272,7 +289,7 @@ class UserResource extends Resource
                     ->label(__('security::filament/resources/user.table.columns.role')),
                 TextColumn::make('resource_permission')
                     ->label(__('security::filament/resources/user.table.columns.resource-permission'))
-                    ->formatStateUsing(fn (PermissionType $state) => $state->getLabel())
+                    ->formatStateUsing(fn(PermissionType $state) => $state->getLabel())
                     ->sortable(),
                 TextColumn::make('defaultCompany.name')
                     ->label(__('security::filament/resources/user.table.columns.default-company'))
@@ -312,14 +329,14 @@ class UserResource extends Resource
                 SelectFilter::make('teams')
                     ->relationship('teams', 'name')
                     ->label(__('security::filament/resources/user.table.filters.teams'))
-                    ->options(fn (): array => Role::query()->pluck('name', 'id')->all())
+                    ->options(fn(): array => Role::query()->pluck('name', 'id')->all())
                     ->multiple()
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('roles')
                     ->label(__('security::filament/resources/user.table.filters.roles'))
                     ->relationship('roles', 'name')
-                    ->options(fn (): array => Role::query()->pluck('name', 'id')->all())
+                    ->options(fn(): array => Role::query()->pluck('name', 'id')->all())
                     ->multiple()
                     ->searchable()
                     ->preload(),
@@ -328,9 +345,9 @@ class UserResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
-                        ->hidden(fn ($record) => $record->trashed()),
+                        ->hidden(fn($record) => $record->trashed()),
                     EditAction::make()
-                        ->hidden(fn ($record) => $record->trashed())
+                        ->hidden(fn($record) => $record->trashed())
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -338,7 +355,7 @@ class UserResource extends Resource
                                 ->body(__('security::filament/resources/user.table.actions.edit.notification.body')),
                         ),
                     DeleteAction::make()
-                        ->hidden(fn ($record) => $record->trashed() || ! self::canDeleteUser($record))
+                        ->hidden(fn($record) => $record->trashed() || ! self::canDeleteUser($record))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -357,7 +374,7 @@ class UserResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn (?User $record) => $record && self::canDeleteUser($record))
+                        ->visible(fn(?User $record) => $record && self::canDeleteUser($record))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -367,7 +384,7 @@ class UserResource extends Resource
                     ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
-                                $records->each(fn (Model $record) => $record->forceDelete());
+                                $records->each(fn(Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
                                 Notification::make()
                                     ->danger()
@@ -395,7 +412,7 @@ class UserResource extends Resource
             ->modifyQueryUsing(function ($query) {
                 $query->with('roles', 'teams', 'defaultCompany', 'allowedCompanies');
             })
-            ->checkIfRecordIsSelectableUsing(fn (User $record) => self::canDeleteUser($record))
+            ->checkIfRecordIsSelectableUsing(fn(User $record) => self::canDeleteUser($record))
             ->emptyStateActions([
                 CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
@@ -443,7 +460,7 @@ class UserResource extends Resource
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.roles'))
                                             ->listWithLineBreaks()
-                                            ->formatStateUsing(fn ($state) => ucfirst($state))
+                                            ->formatStateUsing(fn($state) => ucfirst($state))
                                             ->bulleted(),
                                         TextEntry::make('teams.name')
                                             ->badge()
@@ -495,6 +512,81 @@ class UserResource extends Resource
     public static function canDeleteUser(User $record): bool
     {
         return ! $record->is_default && $record->id !== Auth::id();
+    }
+
+    public static function ensureAdminRoleConstraints(?User $record, array $roleIds): void
+    {
+        $adminRoleIds = self::getProtectedAdminRoleIds();
+
+        if ($adminRoleIds === []) {
+            return;
+        }
+
+        $normalizedRoleIds = array_map('intval', $roleIds);
+        $isAdminCurrently = $record?->roles()->whereKey($adminRoleIds)->exists() ?? false;
+        $willBeAdmin = count(array_intersect($adminRoleIds, $normalizedRoleIds)) > 0;
+        $adminUsersCount = User::query()
+            ->whereHas('roles', fn(Builder $query) => $query->whereKey($adminRoleIds))
+            ->count();
+
+        $firstUserId = User::min('id');
+        $isFirstUser = $record && $record->id === $firstUserId;
+
+        if (
+            $isFirstUser 
+            && ! $willBeAdmin
+        ) {
+            throw ValidationException::withMessages([
+                'roles' => __('security::filament/resources/user.form.validation.first-user-must-be-admin'),
+            ]);
+        }
+
+        if (
+            $adminUsersCount === 1 
+            && $isAdminCurrently 
+            && ! $willBeAdmin
+        ) {
+            throw ValidationException::withMessages([
+                'roles' => __('security::filament/resources/user.form.validation.cannot-remove-last-admin'),
+            ]);
+        }
+    }
+
+    protected static function getProtectedAdminRoleIds(): array
+    {
+        $defaultRoleId = app(UserSettings::class)->default_role_id;
+
+        $candidateNames = array_values(array_filter([
+            config('filament-shield.panel_user.name'),
+            config('filament-shield.super_admin.name'),
+            'admin',
+            'Admin',
+            'panel_user',
+            'super_admin',
+        ]));
+
+        $normalizedCandidateNames = array_unique(
+            array_map(static fn(string $name): string => Str::lower(trim($name)), $candidateNames)
+        );
+
+        $roleIdsFromNames = Role::query()
+            ->get(['id', 'name'])
+            ->filter(function (Role $role) use ($normalizedCandidateNames) {
+                $normalizedRoleName = Str::lower($role->name);
+
+                return in_array($normalizedRoleName, $normalizedCandidateNames, true)
+                    || str_contains($normalizedRoleName, 'admin');
+            })
+            ->pluck('id')
+            ->map(static fn($id) => (int) $id)
+            ->values()
+            ->all();
+
+        return collect($roleIdsFromNames)
+            ->when($defaultRoleId, fn($collection) => $collection->push((int) $defaultRoleId))
+            ->unique()
+            ->values()
+            ->all();
     }
 
     public static function getPages(): array

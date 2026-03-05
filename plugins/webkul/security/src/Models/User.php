@@ -44,11 +44,13 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
             'is_active',
             'default_company_id',
             'resource_permission',
+            'is_default',
         ]);
 
         $this->mergeCasts([
             'default_company_id'  => 'integer',
             'resource_permission' => PermissionType::class,
+            'is_default'          => 'boolean',
             'is_active'           => 'boolean',
         ]);
 

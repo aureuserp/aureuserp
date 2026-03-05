@@ -14,7 +14,7 @@ class ViewRole extends ViewRecord
     {
         return [
             EditAction::make()
-                ->hidden(fn ($record) => $record->name == config('filament-shield.panel_user.name')),
+                ->hidden(fn ($record): bool => RoleResource::isProtectedRoleRecord($record)),
         ];
     }
 }

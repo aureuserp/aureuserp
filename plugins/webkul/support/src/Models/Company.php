@@ -102,11 +102,6 @@ class Company extends Model implements Sortable
         return $this->belongsTo(Partner::class, 'partner_id');
     }
 
-    protected function getOwnerColumn(): string
-    {
-        return 'creator_id';
-    }
-
     public function parents()
     {
         $parents = collect();

@@ -2,6 +2,7 @@
 
 namespace Webkul\Security\Models;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -11,9 +12,70 @@ use Spatie\Permission\PermissionRegistrar;
 
 class Role extends BaseRole
 {
+    protected const SYSTEM_ROLE_FALLBACKS = [
+        'admin',
+        'super_admin',
+    ];
+
     public function getNameAttribute($value)
     {
         return Str::ucfirst($value);
+    }
+
+    protected static function booted(): void
+    {
+        static::updating(function (self $role): void {
+            if (! $role->isSystemRole()) {
+                return;
+            }
+
+            if ($role->isDirty(['name', 'guard_name'])) {
+                throw new AuthorizationException(__('You are not allowed to modify this system role.'));
+            }
+        });
+
+        static::deleting(function (self $role): void {
+            if ($role->isSystemRole()) {
+                throw new AuthorizationException(__('You are not allowed to delete this system role.'));
+            }
+        });
+    }
+
+    public function isSystemRole(): bool
+    {
+        $name = $this->getRawOriginal('name') ?: $this->attributes['name'] ?? null;
+
+        if ((! is_string($name) || $name === '') && $this->exists) {
+            $name = static::query()
+                ->whereKey($this->getKey())
+                ->value('name');
+        }
+
+        if (! is_string($name) || $name === '') {
+            return false;
+        }
+
+        return in_array(static::normalizeRoleName($name), static::getSystemRoleNames(), true);
+    }
+
+    public static function getSystemRoleNames(): array
+    {
+        $configuredNames = [
+            config('filament-shield.panel_user.name'),
+            config('filament-shield.super_admin.name'),
+        ];
+
+        return collect(array_merge(static::SYSTEM_ROLE_FALLBACKS, $configuredNames))
+            ->filter(fn($name) => is_string($name) && $name !== '')
+            ->map(fn(string $name) => static::normalizeRoleName($name))
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    protected static function normalizeRoleName(string $name): string
+    {
+        return Str::of($name)->trim()->lower()->toString();
     }
 
     /**
@@ -22,6 +84,10 @@ class Role extends BaseRole
      */
     public function syncPermissionsByNames(Collection|array $permissionNames): void
     {
+        if ($this->isSystemRole()) {
+            throw new AuthorizationException(__('You are not allowed to modify permissions for this system role.'));
+        }
+
         $permissionNames = collect($permissionNames)->unique()->values();
 
         if ($permissionNames->isEmpty()) {
@@ -76,7 +142,7 @@ class Role extends BaseRole
      */
     private function createMissingPermissions(string $permissionModel, Collection $permissionNames, string $guard): void
     {
-        $insertData = $permissionNames->map(fn ($name) => [
+        $insertData = $permissionNames->map(fn($name) => [
             'name'       => $name,
             'guard_name' => $guard,
             'created_at' => now(),
@@ -105,7 +171,7 @@ class Role extends BaseRole
             $chunkSize = 1000;
 
             $permissionIds->chunk($chunkSize)->each(function ($chunk) use ($tableName, $roleColumn, $permissionColumn) {
-                $insertData = $chunk->map(fn ($permissionId) => [
+                $insertData = $chunk->map(fn($permissionId) => [
                     $roleColumn       => $this->id,
                     $permissionColumn => $permissionId,
                 ])->toArray();
@@ -115,7 +181,7 @@ class Role extends BaseRole
         }
 
         $this->forgetCachedPermissions();
-        
+
         $this->refresh();
     }
 }

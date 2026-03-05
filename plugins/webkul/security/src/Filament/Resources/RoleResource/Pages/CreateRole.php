@@ -3,9 +3,9 @@
 namespace Webkul\Security\Filament\Resources\RoleResource\Pages;
 
 use BezhanSalleh\FilamentShield\Support\Utils;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Webkul\Security\Filament\Resources\RoleResource;
 
 class CreateRole extends CreateRecord
@@ -31,5 +31,13 @@ class CreateRole extends CreateRecord
     protected function afterCreate(): void
     {
         $this->record->syncPermissionsByNames($this->permissions);
+    }
+
+    protected function getCreatedNotification(): Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title(__('security::filament/resources/role/pages/create-role.notification.title'))
+            ->body(__('security::filament/resources/role/pages/create-role.notification.body'));
     }
 }
