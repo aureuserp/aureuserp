@@ -15,6 +15,11 @@ class Reporting extends Cluster
         return __('accounting::filament/clusters/reporting.navigation.title');
     }
 
+    public static function getClusterBreadcrumb(): ?string
+    {
+        return __('accounting::filament/clusters/reporting.navigation.title');
+    }
+
     public static function getNavigationGroup(): string
     {
         return __('accounting::filament/clusters/reporting.navigation.group');

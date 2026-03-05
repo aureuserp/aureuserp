@@ -20,7 +20,7 @@ class Homepage extends Page
 
     public static function getNavigationLabel(): string
     {
-        return 'Home';
+        return __('website::filament/app.homepage.navigation_label');
     }
 
     public static function getRoutePath(Panel $panel): string
@@ -30,7 +30,7 @@ class Homepage extends Page
 
     public function getTitle(): string|Htmlable
     {
-        return 'Homepage';
+        return __('website::filament/app.homepage.title');
     }
 
     public function getContent(): string|Htmlable
