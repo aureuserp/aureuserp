@@ -3,6 +3,9 @@ import { ErpLocators } from '../locator/erp_locator';
 
 export class PluginManagementPage {
 
+    /**
+     * Page and Locators
+     */
     readonly page: Page;
     readonly erpLocators: ErpLocators;
 
@@ -12,13 +15,19 @@ export class PluginManagementPage {
         this.erpLocators = new ErpLocators(page);
     }
 
+    /**
+     * Navigate to Plugin Management Page
+     */
     async gotoPluginManagementPage() {
         await this.page.goto('/admin/plugins');
         await expect(this.page).toHaveURL(/.*admin/);
         await expect(this.erpLocators.pluginSyncButton).toBeVisible();
     }
 
-    async installPlugin() {
+    /**
+     * Install all plugins
+     */
+    async installAllPlugins() {
         const pluginCount = await this.erpLocators.pluginName.count();
         for (let i = 0; i < pluginCount; i++) {
 
@@ -37,7 +46,10 @@ export class PluginManagementPage {
         }
     }
 
-    async uninstallPlugin() {
+    /**
+     * Uninstall all plugins
+     */
+    async uninstallAllPlugins() {
         const pluginCount = await this.erpLocators.pluginName.count();
         for (let i = 0; i < pluginCount; i++) {
 
@@ -56,4 +68,24 @@ export class PluginManagementPage {
             }
         }
     }
+
+    // /**
+    //  * Install Accounting Plugin
+    //  */
+    // async AccountingInstall() {
+    //     await this.erpLocators.pluginSearchInput.fill('Accounting');
+    //     await this.page.waitForTimeout(2000);
+    //     await this.erpLocators.pluginthreeDot.click();
+    //     if (await this.erpLocators.pluginUninstallButton.isVisible()) {
+    //         console.log('Accounting Plugin is already installed.');
+    //         return;
+    //     }else {
+    //     await this.erpLocators.pluginInstallButton.click();
+    //     await this.page.waitForTimeout(3000); // Wait for 3 seconds to allow installation to complete
+    //     await this.erpLocators.pluginConfirmButton.click();
+    //     console.log(`Installing Plugin: Accounting`);
+    //     await expect(this.erpLocators.pluginSuccessMessage).toBeVisible();
+    //     }
+    // }
+
 }

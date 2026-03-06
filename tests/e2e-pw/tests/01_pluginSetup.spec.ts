@@ -1,5 +1,5 @@
 import { test, expect } from '../setup';
-import { PluginManagementPage } from '../pages/pluginmanagement';
+import { PluginManagementPage } from '../pages/01_pluginManagement';
 
 test.describe('Plugin Installation', () => {
 
@@ -14,7 +14,7 @@ test.describe('Plugin Installation', () => {
     test('All Plugins Installation Test', async ({ adminPage }) => {
         test.setTimeout(400000);
         const pluginManagementPage = new PluginManagementPage(adminPage);
-        await pluginManagementPage.installPlugin();
+        await pluginManagementPage.installAllPlugins();
     });
 
     /**
@@ -22,6 +22,14 @@ test.describe('Plugin Installation', () => {
      */
     test('All Plugins Uninstallation Test', async ({  adminPage }) => {
         const pluginManagementPage = new PluginManagementPage(adminPage);
-        await pluginManagementPage.uninstallPlugin();
+        await pluginManagementPage.uninstallAllPlugins();
     });
+
+    /**
+     * Accounting plugin installation test
+     */
+    // test('Accounting Plugin Installation Test', async ({ adminPage }) => {
+    //     const pluginManagementPage = new PluginManagementPage(adminPage);
+    //     await pluginManagementPage.AccountingInstall();
+    // });
 });
