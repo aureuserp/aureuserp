@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Filament\Resources\JournalResource as BaseJournalResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\CreateJournal;
@@ -10,10 +11,13 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ManageJournalEntries;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ViewJournal;
+use Webkul\Accounting\Filament\Concerns\HasCompanyScope;
 use Webkul\Accounting\Models\Journal;
 
 class JournalResource extends BaseJournalResource
 {
+    use HasCompanyScope;
+
     protected static ?string $model = Journal::class;
 
     protected static bool $shouldRegisterNavigation = true;
@@ -55,5 +59,18 @@ class JournalResource extends BaseJournalResource
             'view'            => ViewJournal::route('/{record}'),
             'journal-entries' => ManageJournalEntries::route('/{record}/journal-entries'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $companyIds = static::getAccessibleCompanyIds();
+
+        if (empty($companyIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn('company_id', $companyIds);
     }
 }
