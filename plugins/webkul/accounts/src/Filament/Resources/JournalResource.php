@@ -172,7 +172,19 @@ class JournalResource extends Resource
                                                                 Select::make('bank_account_id')
                                                                     ->searchable()
                                                                     ->preload()
-                                                                    ->relationship('bankAccount', 'account_number')
+                                                                    ->relationship(
+                                                                        name: 'bankAccount',
+                                                                        titleAttribute: 'account_number',
+                                                                        modifyQueryUsing: function ($query, Get $get) {
+                                                                            $company = Company::find(
+                                                                                $get('company_id') ?? Auth::user()->default_company_id
+                                                                            );
+
+                                                                            if ($company?->partner_id) {
+                                                                                $query->where('partner_id', $company->partner_id);
+                                                                            }
+                                                                        }
+                                                                    )
                                                                     ->hiddenLabel(),
                                                             ]),
                                                     ]),
