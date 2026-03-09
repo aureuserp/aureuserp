@@ -43,9 +43,7 @@ return [
             AccountPurchaseOrderResource::class => $permissions['BASIC'],
             AccountQuotationResource::class => $permissions['BASIC'],
         ],
-        'exclude' => [
-            OrderResource::class,
-        ],
+        'exclude' => [],
     ],
 
     'pages' => [

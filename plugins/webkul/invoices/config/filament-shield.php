@@ -9,7 +9,7 @@ use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductAttributeRes
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxGroupResource;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource;
-use Webkul\Invoice\Filament\Clusters\Customer;
+use Webkul\Invoice\Filament\Clusters\Customers;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\CreditNoteResource;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource;
@@ -49,17 +49,16 @@ return [
             CurrencyResource::class => $permissions['BASIC'],
             IncotermResource::class => $permissions['SOFT_DELETE'],
             ProductResource::class => $permissions['FULL'],
+            InvoiceProductResource::class => $permissions['FULL'],
+            InvoicePaymentResource::class => $permissions['BASIC'],
         ],
-        'exclude' => [
-            InvoiceProductResource::class,
-            InvoicePaymentResource::class,
-        ],
+        'exclude' => [],
     ],
 
     'pages' => [
         'exclude' => [
             Vendors::class,
-            Customer::class,
+            Customers::class,
             Configuration::class,
         ],
     ],
