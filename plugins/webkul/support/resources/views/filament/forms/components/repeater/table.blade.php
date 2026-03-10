@@ -206,11 +206,6 @@
                                     @if ($schemaComponent instanceof \Filament\Forms\Components\Hidden)
                                         {{ $schemaComponent }}
                                     @else
-                                        @php
-                                            $column = $visibleColumns->get($schemaComponent->getName());
-                                            $columnWidth = $column?->getWidth();
-                                        @endphp
-
                                         <td
                                             @if (! (
                                                 $schemaComponent instanceof Action 
@@ -227,10 +222,6 @@
                                                     $wire,
                                                 })"
                                             @endif
-                                            @style([
-                                                ('width: ' . $columnWidth) => filled($columnWidth),
-                                                ('min-width: ' . $columnWidth) => filled($columnWidth),
-                                            ])
                                         >
                                             {{ $schemaComponent }}
                                         </td>
