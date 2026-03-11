@@ -1285,7 +1285,7 @@ class QuotationResource extends Resource
                 $action->requiresConfirmation();
 
                 $action->before(function (Action $action, $livewire) {
-                    if ($livewire->getRecord()->state === OrderState::SALE) {
+                    if ($livewire->getRecord()?->state === OrderState::SALE) {
                         Notification::make()
                             ->danger()
                             ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.delete-action.error.title'))
