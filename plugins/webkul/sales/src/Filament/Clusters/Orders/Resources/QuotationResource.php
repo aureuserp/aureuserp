@@ -1281,9 +1281,22 @@ class QuotationResource extends Resource
             ->collapsible()
             ->defaultItems(0)
             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]) && $record?->state !== OrderState::SALE)
             ->deleteAction(function (Action $action) {
                 $action->requiresConfirmation();
+
+                $action->before(function (Action $action, $livewire) {
+                    if ($livewire->getRecord()->state === OrderState::SALE) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.delete-action.error.title'))
+                            ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.delete-action.error.body'))
+                            ->send();
+
+                        $action->cancel();
+
+                        return;
+                    }
+                });
 
                 $action->after(function (Get $get, $livewire) {
                     $totals = self::calculateQuotationTotals($get, $livewire);
@@ -1418,7 +1431,23 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get))
+                    ->afterStateUpdated(function (Set $set, Get $get, $state, $record) {
+                        $qtyDelivered = $record?->qty_delivered ?? 0;
+
+                        if ($qtyDelivered > 0 && floatval($state) < $qtyDelivered) {
+                            $set('product_qty', $qtyDelivered);
+
+                            Notification::make()
+                                ->danger()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.notifications.quantity-below-delivered.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.notifications.quantity-below-delivered.body', ['qty' => $qtyDelivered]))
+                                ->send();
+
+                            return;
+                        }
+
+                        static::afterProductQtyUpdated($set, $get);
+                    })
                     ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('qty_delivered')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.qty-delivered'))
