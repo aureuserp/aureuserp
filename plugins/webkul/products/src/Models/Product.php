@@ -291,6 +291,14 @@ class Product extends Model implements Sortable
         static::saved(function ($product) {
             $product->variants->each(fn ($variant) => $variant->update(['is_storable' => $product->is_storable]));
         });
+
+        static::deleting(function (self $product) {
+            if ($product->isForceDeleting()) {
+                $product->variants()->forceDelete();
+            } else {
+                $product->variants()->delete();
+            }
+        });
     }
 
     protected static function newFactory(): ProductFactory
