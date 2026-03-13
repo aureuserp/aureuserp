@@ -60,11 +60,10 @@ return [
             BillResource::class => $permissions['REORDER'],
             RefundResource::class => $permissions['REORDER'],
             VendorResource::class => $permissions['SOFT_DELETE'],
+            AccountingProductResource::class => $permissions['FULL'],
+            AccountingPaymentResource::class => $permissions['BASIC']
         ],
-        'exclude' => [
-            AccountingProductResource::class,
-            AccountingPaymentResource::class,
-        ],
+        'exclude' => [],
     ],
 
     'pages' => [

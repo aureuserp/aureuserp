@@ -55,17 +55,15 @@ return [
             RouteResource::class => $permissions['FULL'],
             ReplenishmentResource::class => $permissions['SOFT_DELETE'],
             ProductResource::class => $permissions['FULL'],
+            OperationResource::class => $permissions['BASIC'],
         ],
-        'exclude' => [
-            OperationResource::class,
-        ],
+        'exclude' => [],
     ],
 
     'pages' => [
         'exclude' => [
             Configurations::class,
             Operations::class,
-            OperationResource::class,
             Products::class,
         ],
     ],
