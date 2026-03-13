@@ -1,5 +1,5 @@
-import { test, expect } from '../setup';
-import { PluginManagementPage } from '../pages/01_pluginManagement';
+import { test, expect } from "../../setup";
+import { PluginManagementPage } from "../../pages/01_pluginManagement";
 
 test.describe('Plugin Installation', () => {
 

@@ -1,6 +1,6 @@
-import { test , expect } from "../setup";
-import { CompanyManagementPage } from "../pages/03_companyManagement";
-import { UserManagementPage, type UserData } from "../pages/04_userManagement";
+import { test, expect } from "../../setup";
+import { CompanyManagementPage } from "../../pages/03_companyManagement";
+import { UserManagementPage, type UserData } from "../../pages/04_userManagement";
 
 test.describe("Users Module E2E", () => {
     const defaultRole = "Admin";

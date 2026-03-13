@@ -1,5 +1,5 @@
-import { test , expect } from "../setup";
-import { CompanyManagementPage, type CompanyData } from "../pages/03_companyManagement";
+import { test, expect } from "../../setup";
+import { CompanyManagementPage, type CompanyData } from "../../pages/03_companyManagement";
 
 test.describe("Companies Module E2E", () => {
     test.beforeEach(async ({ adminPage }) => {

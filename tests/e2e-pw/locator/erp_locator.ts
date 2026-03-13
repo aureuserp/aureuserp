@@ -90,6 +90,48 @@ export class ErpLocators {
     readonly manageUsersEnableInvitationToggle: Locator;
     readonly settingsSaveButton: Locator;
 
+    /**
+     * Sales - Customers, Products, Quotations
+     */
+
+    readonly salesCustomersTable: Locator;
+    readonly salesCustomerCreateButton: Locator;
+    readonly salesCustomerNameInput: Locator;
+    readonly salesCustomerEmailInput: Locator;
+    readonly salesCustomerSaveButton: Locator;
+    readonly salesCustomerSearchInput: Locator;
+
+    readonly salesProductsTable: Locator;
+    readonly salesProductCreateButton: Locator;
+    readonly salesProductNameInput: Locator;
+    readonly salesProductCategorySelect: Locator;
+    readonly salesProductPriceInput: Locator;
+    readonly salesProductUomSelect: Locator;
+    readonly salesProductSaveButton: Locator;
+
+    readonly salesQuotationCreateButton: Locator;
+    readonly salesQuotationCustomerSelect: Locator;
+    readonly salesQuotationPaymentTermSelect: Locator;
+    readonly salesQuotationAddProductButton: Locator;
+    readonly salesQuotationProductSelectInput: Locator;
+    readonly salesQuotationQuantityInput: Locator;
+    readonly salesQuotationSaveButton: Locator;
+    readonly salesQuotationConfirmButton: Locator;
+    readonly salesQuotationCreateInvoiceButton: Locator;
+    readonly salesQuotationInvoiceSubmitButton: Locator;
+    readonly salesInvoicesTable: Locator;
+
+    readonly salesSearchInput: Locator;
+    readonly salesRowActionsButton: Locator;
+    readonly salesEditAction: Locator;
+    readonly salesDeleteAction: Locator;
+    readonly salesConfirmDeleteButton: Locator;
+
+    readonly salesSelectSearchInput: Locator;
+    readonly salesSelectOption: Locator;
+    readonly salesSuccessToast: Locator;
+    readonly salesValidationMessage: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -181,5 +223,47 @@ export class ErpLocators {
         this.manageUsersEnableResetToggle = page.getByRole("switch", { name: /Enable Reset Password/i });
         this.manageUsersEnableInvitationToggle = page.getByRole("switch", { name: /Enable User Invitation/i });
         this.settingsSaveButton = page.getByRole("button", { name: /Save changes|save|update|submit/i }).first();
+
+        /**
+         * Sales - Customers, Products, Quotations
+         */
+
+        this.salesCustomersTable = page.locator("table");
+        this.salesCustomerCreateButton = page.locator("a,button").filter({ hasText: /new customer|create customer|add customer|create/i }).first();
+        this.salesCustomerNameInput = page.locator('input[id="form.name"]').first();
+        this.salesCustomerEmailInput = page.locator('input[id="form.email"]').first();
+        this.salesCustomerSaveButton = page.locator('button[type="submit"]').first();
+        this.salesCustomerSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+
+        this.salesProductsTable = page.locator("table");
+        this.salesProductCreateButton = page.locator("a,button").filter({ hasText: /new product|create product|add product|create/i }).first();
+        this.salesProductNameInput = page.locator('input[id="form.name"]').first();
+        this.salesProductCategorySelect = page.locator('input[id="form.category_id"], [role="combobox"][aria-label*="Category"], [role="combobox"][aria-labelledby*="Category"]').first();
+        this.salesProductPriceInput = page.locator('input[id="form.price"]').first();
+        this.salesProductUomSelect = page.locator('input[id="form.uom_id"], [role="combobox"][aria-label*="UOM"], [role="combobox"][aria-labelledby*="UOM"]').first();
+        this.salesProductSaveButton = page.locator('button[type="submit"]').first();
+
+        this.salesQuotationCreateButton = page.locator("a,button").filter({ hasText: /new quotation|create quotation|add quotation|create/i }).first();
+        this.salesQuotationCustomerSelect = page.locator('input[id="form.partner_id"], [role="combobox"][aria-label*="Customer"], [role="combobox"][aria-labelledby*="Customer"]').first();
+        this.salesQuotationPaymentTermSelect = page.locator('input[id="form.payment_term_id"], [role="combobox"][aria-label*="Payment Term"], [role="combobox"][aria-labelledby*="Payment Term"]').first();
+        this.salesQuotationAddProductButton = page.getByRole("button", { name: /Add Product/i }).first();
+        this.salesQuotationProductSelectInput = page.locator('input[id^="form.products."][id$=".product_id"]');
+        this.salesQuotationQuantityInput = page.locator('input[id^="form.products."][id$=".product_qty"]');
+        this.salesQuotationSaveButton = page.locator('button[type="submit"]').first();
+        this.salesQuotationConfirmButton = page.getByRole("button", { name: /Confirm/i }).first();
+        this.salesQuotationCreateInvoiceButton = page.getByRole("button", { name: /Create Invoice/i }).first();
+        this.salesQuotationInvoiceSubmitButton = page.getByRole("button", { name: /Create Invoice/i }).last();
+        this.salesInvoicesTable = page.locator("table");
+
+        this.salesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.salesRowActionsButton = page.locator('button[title="Actions"], [data-action="actions"]').first();
+        this.salesEditAction = page.getByRole("menuitem", { name: /Edit/i }).first();
+        this.salesDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
+        this.salesConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
+
+        this.salesSelectSearchInput = page.locator('input[type="search"], input[placeholder*="Search"], input[placeholder*="search"]').first();
+        this.salesSelectOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
+        this.salesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
     }
 }

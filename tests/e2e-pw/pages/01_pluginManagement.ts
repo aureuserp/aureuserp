@@ -69,6 +69,25 @@ export class PluginManagementPage {
         }
     }
 
+    /**
+     * Install plugin by name if not installed
+     */
+    async installPluginByName(pluginName: string) {
+        await this.erpLocators.pluginSearchInput.fill(pluginName);
+        await this.page.waitForTimeout(1000);
+        await this.erpLocators.pluginthreeDot.first().click();
+
+        if (await this.erpLocators.pluginUninstallButton.first().isVisible()) {
+            return;
+        }
+
+        await this.page.waitForLoadState('networkidle');
+        await this.erpLocators.pluginInstallButton.first().click();
+        await this.page.waitForTimeout(3000);
+        await this.erpLocators.pluginConfirmButton.click();
+        await expect(this.erpLocators.pluginSuccessMessage).toBeVisible();
+    }
+
     // /**
     //  * Install Accounting Plugin
     //  */
