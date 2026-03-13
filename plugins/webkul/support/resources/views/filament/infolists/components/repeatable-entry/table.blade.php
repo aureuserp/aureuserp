@@ -6,7 +6,7 @@
     $hasColumnManager = $hasColumnManager();
 
     $attributes = $getExtraAttributeBag()
-        ->class(['fi-fo-table-repeater', 'fi-compact']);
+        ->class(['fi-fo-table-repeater', 'fi-compact', 'overflow-x-scroll']);
 
     $hasSummary = $hasAnySummarizers();
 @endphp

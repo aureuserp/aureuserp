@@ -44,6 +44,8 @@
                 ->merge($getExtraAttributes(), escape: false)
                 ->class([
                     'fi-fo-table-repeater',
+                    '[overflow-inline:auto]',
+                    '[&_.ts-dropdown]:z-[9999]',
                     'fi-compact' => $isCompact,
                 ]) 
         }}

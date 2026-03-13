@@ -617,7 +617,7 @@ class OrderResource extends Resource
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.product')),
                                         InfolistTableColumn::make('planned_at')
                                             ->alignStart()
-                                            ->width(100)
+                                            ->width(150)
                                             ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.expected-arrival')),
                                         InfolistTableColumn::make('product_qty')
@@ -677,7 +677,6 @@ class OrderResource extends Resource
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.amount')),
                                     ])
                                     ->schema([
-
                                         TextEntry::make('name'),
                                         TextEntry::make('planned_at')
                                             ->date(),
