@@ -1,7 +1,6 @@
 {
     "name": "aureuserp/aureuserp",
     "type": "project",
-
     "description": "Open Source ERP Solution built on Laravel for Small and Medium Enterprises (SMEs) and large-scale enterprises.",
     "keywords": [
         "erp",
@@ -14,14 +13,15 @@
         "barryvdh/laravel-debugbar": "^3.15",
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-shield": "^4.0",
-        "filament/filament": "^4.0",
-        "filament/spatie-laravel-settings-plugin": "^4.0",
+        "filament/filament": "^5.0",
+        "filament/spatie-laravel-settings-plugin": "^5.0",
         "flowframe/laravel-trend": "^0.3.0",
-        "guava/filament-icon-picker": "^3.0",
+        "guava/filament-icon-picker": "^4.0",
         "knuckleswtf/scribe": "^5.6",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "livewire/livewire": "^4.0",
         "maatwebsite/excel": "^3.1",
         "malzariey/filament-daterangepicker-filter": "^4.0",
         "milon/barcode": "^11.0",
@@ -31,6 +31,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "filament/upgrade": "^5.0",
         "laravel/boost": "^2.1",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
