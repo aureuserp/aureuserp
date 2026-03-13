@@ -315,7 +315,16 @@ class InvoiceResource extends Resource
                                             ->relationship(
                                                 'partnerBank',
                                                 'account_number',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('partner_id', $get('partner_id'))->withTrashed(),
+                                                modifyQueryUsing: function (Builder $query, Get $get) {
+                                                    $companyId = $get('company_id') ?? filament()->auth()->user()->default_company_id;
+
+                                                    $bankAccountIds = \Webkul\Account\Models\Journal::where('type', \Webkul\Account\Enums\JournalType::BANK)
+                                                        ->where('company_id', $companyId)
+                                                        ->pluck('bank_account_id')
+                                                        ->filter();
+
+                                                    $query->whereIn('id', $bankAccountIds);
+                                                }
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');

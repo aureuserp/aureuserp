@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -52,7 +53,7 @@ class JournalResource extends Resource
 {
     protected static ?string $model = Journal::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -172,7 +173,19 @@ class JournalResource extends Resource
                                                                 Select::make('bank_account_id')
                                                                     ->searchable()
                                                                     ->preload()
-                                                                    ->relationship('bankAccount', 'account_number')
+                                                                    ->relationship(
+                                                                        name: 'bankAccount',
+                                                                        titleAttribute: 'account_number',
+                                                                        modifyQueryUsing: function ($query, Get $get) {
+                                                                            $company = Company::find(
+                                                                                $get('company_id') ?? Auth::user()->default_company_id
+                                                                            );
+
+                                                                            if ($company?->partner_id) {
+                                                                                $query->where('partner_id', $company->partner_id);
+                                                                            }
+                                                                        }
+                                                                    )
                                                                     ->hiddenLabel(),
                                                             ]),
                                                     ]),
