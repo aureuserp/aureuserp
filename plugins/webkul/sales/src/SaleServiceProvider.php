@@ -45,6 +45,8 @@ class SaleServiceProvider extends PackageServiceProvider
                 '2025_04_09_080746_add_delivery_status_column_in_sales_orders_table',
                 '2025_04_09_101755_add_inventories_columns_to_sales_orders_table_from_sales',
                 '2025_04_09_101814_add_inventories_columns_to_sales_order_lines_table_from_sales',
+                '2026_03_11_095519_alter_sales_order_lines_table',
+                '2026_03_11_103613_alter_sales_order_template_products_table'
             ])
             ->runsMigrations()
             ->hasSettings([

@@ -765,7 +765,7 @@ class QuotationResource extends Resource
                                     ->schema([
                                         TextEntry::make('name')
                                             ->placeholder('-')
-                                            ->tooltip(fn ($record) => $record->product->name)
+                                            ->tooltip(fn ($record) => $record->product?->name)
                                             ->iconColor('primary'),
 
                                         TextEntry::make('product_uom_qty')
