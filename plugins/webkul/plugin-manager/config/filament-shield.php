@@ -1,14 +1,15 @@
 <?php
 
-use Webkul\Timesheet\Filament\Resources\TimesheetResource;
+use Webkul\PluginManager\Filament\Resources\PluginResource;
 
 $basic = ['view_any', 'view', 'create', 'update'];
 $delete = ['delete', 'delete_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            TimesheetResource::class => [...array_diff($basic, ['view']), ...$delete],
+            PluginResource::class => [...$basic, ...$delete, ...$reorder],
         ],
         'exclude' => [],
     ],

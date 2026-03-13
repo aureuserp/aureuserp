@@ -9,23 +9,22 @@ use Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource;
 use Webkul\Project\Filament\Resources\ProjectResource;
 use Webkul\Project\Filament\Resources\TaskResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            MilestoneResource::class => $permissions['BASIC'],
-            TagResource::class => $permissions['SOFT_DELETE'],
-            ActivityPlanResource::class => $permissions['SOFT_DELETE'],
-            ProjectStageResource::class => $permissions['FULL'],
-            TaskStageResource::class => $permissions['FULL'],
-            ProjectResource::class => $permissions['FULL'],
-            TaskResource::class => $permissions['FULL'],
+            MilestoneResource::class => [...$basic, ...$delete],
+            TagResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityPlanResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ProjectStageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TaskStageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProjectResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TaskResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [],
     ],
@@ -35,5 +34,4 @@ return [
             Configurations::class,
         ],
     ],
-
 ];

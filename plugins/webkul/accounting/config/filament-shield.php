@@ -29,37 +29,36 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource;
 use Webkul\Accounting\Filament\Widgets\JournalChartsWidget;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            JournalEntryResource::class => $permissions['REORDER'],
-            JournalItemResource::class => $permissions['REORDER'],
-            AccountResource::class => $permissions['BASIC'],
-            CashRoundingResource::class => $permissions['BASIC'],
-            CurrencyResource::class => $permissions['BASIC'],
-            FiscalPositionResource::class => $permissions['REORDER'],
-            IncotermResource::class => $permissions['SOFT_DELETE'],
-            JournalResource::class => $permissions['REORDER'],
-            PaymentTermResource::class => $permissions['FULL'],
-            ProductAttributeResource::class => $permissions['FULL'],
-            ProductCategoryResource::class => $permissions['BASIC'],
-            TaxGroupResource::class => $permissions['REORDER'],
-            TaxResource::class => $permissions['REORDER'],
-            CreditNoteResource::class => $permissions['REORDER'],
-            CustomerResource::class => $permissions['SOFT_DELETE'],
-            InvoiceResource::class => $permissions['REORDER'],
-            PaymentResource::class => $permissions['BASIC'],
-            ProductResource::class => $permissions['FULL'],
-            BillResource::class => $permissions['REORDER'],
-            RefundResource::class => $permissions['REORDER'],
-            VendorResource::class => $permissions['SOFT_DELETE'],
+            JournalEntryResource::class => [...$basic, ...$delete, ...$reorder],
+            JournalItemResource::class => [...$basic, ...$delete, ...$reorder],
+            AccountResource::class => [...$basic, ...$delete],
+            CashRoundingResource::class => [...$basic, ...$delete],
+            CurrencyResource::class => [...$basic, ...$delete],
+            FiscalPositionResource::class => [...$basic, ...$delete, ...$reorder],
+            IncotermResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            JournalResource::class => [...$basic, ...$delete, ...$reorder],
+            PaymentTermResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProductCategoryResource::class => [...$basic, ...$delete],
+            TaxGroupResource::class => [...$basic, ...$delete, ...$reorder],
+            TaxResource::class => [...$basic, ...$delete, ...$reorder],
+            CreditNoteResource::class => [...$basic, ...$delete, ...$reorder],
+            CustomerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            InvoiceResource::class => [...$basic, ...$delete, ...$reorder],
+            PaymentResource::class => [...$basic, ...$delete],
+            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            BillResource::class => [...$basic, ...$delete, ...$reorder],
+            RefundResource::class => [...$basic, ...$delete, ...$reorder],
+            VendorResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
         ],
         'exclude' => [
             AccountingProductResource::class,
@@ -81,5 +80,4 @@ return [
             JournalChartsWidget::class,
         ],
     ],
-
 ];

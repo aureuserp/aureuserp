@@ -2,16 +2,17 @@
 
 use Webkul\Field\Filament\Resources\FieldResource;
 
-$permissions = [
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            FieldResource::class => $permissions['FULL'],
+            FieldResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [],
     ],
-
 ];

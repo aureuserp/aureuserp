@@ -14,27 +14,26 @@ use Webkul\Employee\Filament\Clusters\Reportings\Resources\EmployeeSkillResource
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            EmployeeResource::class => $permissions['SOFT_DELETE'],
-            DepartmentResource::class => $permissions['SOFT_DELETE'],
-            EmployeeSkillResource::class => $permissions['SOFT_DELETE'],
-            ActivityPlanResource::class => $permissions['SOFT_DELETE'],
-            CalendarResource::class => $permissions['SOFT_DELETE'],
-            DepartureReasonResource::class => $permissions['REORDER'],
-            EmployeeCategoryResource::class => $permissions['BASIC'],
-            WorkLocationResource::class => $permissions['SOFT_DELETE'],
-            SkillTypeResource::class => $permissions['SOFT_DELETE'],
-            EmploymentTypeResource::class => $permissions['REORDER'],
-            JobPositionResource::class => $permissions['FULL'],
+            EmployeeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            DepartmentResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            EmployeeSkillResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityPlanResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            CalendarResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            DepartureReasonResource::class => [...$basic, ...$delete, ...$reorder],
+            EmployeeCategoryResource::class => [...$basic, ...$delete],
+            WorkLocationResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            SkillTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            EmploymentTypeResource::class => [...$basic, ...$delete, ...$reorder],
+            JobPositionResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [],
     ],
@@ -45,5 +44,4 @@ return [
             Reportings::class,
         ],
     ],
-
 ];

@@ -25,36 +25,35 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            PackagingResource::class => $permissions['REORDER'],
-            ReceiptResource::class => $permissions['BASIC'],
-            DeliveryResource::class => $permissions['BASIC'],
-            InternalResource::class => $permissions['BASIC'],
-            DropshipResource::class => $permissions['BASIC'],
-            QuantityResource::class => $permissions['BASIC'],
-            ScrapResource::class => $permissions['BASIC'],
-            PackageResource::class => $permissions['BASIC'],
-            LotResource::class => $permissions['BASIC'],
-            WarehouseResource::class => $permissions['FULL'],
-            LocationResource::class => $permissions['SOFT_DELETE'],
-            OperationTypeResource::class => $permissions['FULL'],
-            RuleResource::class => $permissions['FULL'],
-            StorageCategoryResource::class => $permissions['REORDER'],
-            ProductCategoryResource::class => $permissions['BASIC'],
-            ProductAttributeResource::class => $permissions['FULL'],
-            PackageTypeResource::class => $permissions['REORDER'],
-            RouteResource::class => $permissions['FULL'],
-            ReplenishmentResource::class => $permissions['SOFT_DELETE'],
-            ProductResource::class => $permissions['FULL'],
+            PackagingResource::class => [...$basic, ...$delete, ...$reorder],
+            ReceiptResource::class => [...$basic, ...$delete],
+            DeliveryResource::class => [...$basic, ...$delete],
+            InternalResource::class => [...$basic, ...$delete],
+            DropshipResource::class => [...$basic, ...$delete],
+            QuantityResource::class => [...$basic, ...$delete],
+            ScrapResource::class => [...$basic, ...$delete],
+            PackageResource::class => [...$basic, ...$delete],
+            LotResource::class => [...$basic, ...$delete],
+            WarehouseResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            LocationResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OperationTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            RuleResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            StorageCategoryResource::class => [...$basic, ...$delete, ...$reorder],
+            ProductCategoryResource::class => [...$basic, ...$delete],
+            ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            PackageTypeResource::class => [...$basic, ...$delete, ...$reorder],
+            RouteResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ReplenishmentResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [
             OperationResource::class,
@@ -65,9 +64,7 @@ return [
         'exclude' => [
             Configurations::class,
             Operations::class,
-            OperationResource::class,
             Products::class,
         ],
     ],
-
 ];

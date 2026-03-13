@@ -18,30 +18,28 @@ use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\OrderResource a
 use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\PurchaseOrderResource as AccountPurchaseOrderResource;
 use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\QuotationResource as AccountQuotationResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            QuotationResource::class => $permissions['BASIC'],
-            OrderResource::class => $permissions['BASIC'],
-            PurchaseOrderResource::class => $permissions['BASIC'],
-            PurchaseAgreementResource::class => $permissions['SOFT_DELETE'],
-            VendorResource::class => $permissions['SOFT_DELETE'],
-            VendorPriceResource::class => $permissions['REORDER'],
-            ProductCategoryResource::class => $permissions['BASIC'],
-            ProductAttributeResource::class => $permissions['FULL'],
-            PackagingResource::class => $permissions['REORDER'],
-            CurrencyResource::class => $permissions['BASIC'],
-            ProductResource::class => $permissions['FULL'],
-            AccountOrderResource::class => $permissions['BASIC'],
-            AccountPurchaseOrderResource::class => $permissions['BASIC'],
-            AccountQuotationResource::class => $permissions['BASIC'],
+            QuotationResource::class => [...$basic, ...$delete],
+            PurchaseOrderResource::class => [...$basic, ...$delete],
+            PurchaseAgreementResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            VendorResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            VendorPriceResource::class => [...$basic, ...$delete, ...$reorder],
+            ProductCategoryResource::class => [...$basic, ...$delete],
+            ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            PackagingResource::class => [...$basic, ...$delete, ...$reorder],
+            CurrencyResource::class => [...$basic, ...$delete],
+            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            AccountOrderResource::class => [...$basic, ...$delete],
+            AccountPurchaseOrderResource::class => [...$basic, ...$delete],
+            AccountQuotationResource::class => [...$basic, ...$delete],
         ],
         'exclude' => [
             OrderResource::class,
@@ -55,5 +53,4 @@ return [
             Products::class,
         ],
     ],
-
 ];

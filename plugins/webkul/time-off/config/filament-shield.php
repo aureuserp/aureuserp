@@ -16,24 +16,25 @@ use Webkul\TimeOff\Filament\Clusters\Overview;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            MyTimeOffResource::class => $permissions['BASIC'],
-            MyAllocationResource::class => $permissions['BASIC'],
-            AllocationResource::class => $permissions['BASIC'],
-            TimeOffResource::class => $permissions['BASIC'],
-            ByEmployeeResource::class => $permissions['BASIC'],
-            AccrualPlanResource::class => $permissions['BASIC'],
-            PublicHolidayResource::class => $permissions['BASIC'],
-            MandatoryDayResource::class => $permissions['BASIC'],
-            LeaveTypeResource::class => $permissions['FULL'],
-            ActivityTypeResource::class => $permissions['FULL'],
+            MyTimeOffResource::class => [...$basic, ...$delete],
+            MyAllocationResource::class => [...$basic, ...$delete],
+            AllocationResource::class => [...$basic, ...$delete],
+            TimeOffResource::class => [...$basic, ...$delete],
+            ByEmployeeResource::class => [...$basic, ...$delete],
+            AccrualPlanResource::class => [...$basic, ...$delete],
+            PublicHolidayResource::class => [...$basic, ...$delete],
+            MandatoryDayResource::class => [...$basic, ...$delete],
+            LeaveTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ActivityTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [],
     ],
@@ -47,5 +48,4 @@ return [
             Reporting::class,
         ],
     ],
-
 ];

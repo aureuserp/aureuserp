@@ -5,16 +5,18 @@ use Webkul\Website\Filament\Admin\Resources\PageResource;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource;
 use Webkul\Website\Filament\Customer\Resources\PageResource as WebsitePageResource;
 
-$permissions = [
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            PageResource::class => $permissions['SOFT_DELETE'],
-            PartnerResource::class => $permissions['SOFT_DELETE'],
-            WebsitePageResource::class => $permissions['SOFT_DELETE'],
+            PageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PartnerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            WebsitePageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
         ],
         'exclude' => [],
     ],
@@ -24,5 +26,4 @@ return [
             Configurations::class,
         ],
     ],
-
 ];

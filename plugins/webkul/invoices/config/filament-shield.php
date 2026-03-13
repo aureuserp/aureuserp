@@ -9,7 +9,7 @@ use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductAttributeRes
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxGroupResource;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource;
-use Webkul\Invoice\Filament\Clusters\Customer;
+use Webkul\Invoice\Filament\Clusters\Customers;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\CreditNoteResource;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource;
@@ -22,33 +22,31 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource as Invoic
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            CustomerResource::class => $permissions['SOFT_DELETE'],
-            PaymentResource::class => $permissions['BASIC'],
-            CreditNoteResource::class => $permissions['REORDER'],
-            InvoiceResource::class => $permissions['REORDER'],
-            InvoicePaymentResource::class => $permissions['BASIC'],
-            BillResource::class => $permissions['REORDER'],
-            VendorResource::class => $permissions['SOFT_DELETE'],
-            RefundResource::class => $permissions['REORDER'],
-            BankAccountResource::class => $permissions['SOFT_DELETE'],
-            PaymentTermResource::class => $permissions['FULL'],
-            ProductCategoryResource::class => $permissions['BASIC'],
-            ProductAttributeResource::class => $permissions['FULL'],
-            TaxGroupResource::class => $permissions['REORDER'],
-            TaxResource::class => $permissions['REORDER'],
-            CurrencyResource::class => $permissions['BASIC'],
-            IncotermResource::class => $permissions['SOFT_DELETE'],
-            ProductResource::class => $permissions['FULL'],
+            CustomerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PaymentResource::class => [...$basic, ...$delete],
+            CreditNoteResource::class => [...$basic, ...$delete, ...$reorder],
+            InvoiceResource::class => [...$basic, ...$delete, ...$reorder],
+            BillResource::class => [...$basic, ...$delete, ...$reorder],
+            VendorResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            RefundResource::class => [...$basic, ...$delete, ...$reorder],
+            BankAccountResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PaymentTermResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProductCategoryResource::class => [...$basic, ...$delete],
+            ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TaxGroupResource::class => [...$basic, ...$delete, ...$reorder],
+            TaxResource::class => [...$basic, ...$delete, ...$reorder],
+            CurrencyResource::class => [...$basic, ...$delete],
+            IncotermResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [
             InvoiceProductResource::class,
@@ -59,9 +57,8 @@ return [
     'pages' => [
         'exclude' => [
             Vendors::class,
-            Customer::class,
+            Customers::class,
             Configuration::class,
         ],
     ],
-
 ];
