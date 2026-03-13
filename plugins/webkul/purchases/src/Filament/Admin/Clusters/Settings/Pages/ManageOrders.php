@@ -65,11 +65,14 @@ class ManageOrders extends SettingsPage
                             ->inlineLabel()
                             ->numeric()
                             ->default(0)
+                            ->required()
                             ->visible(fn (Get $get): bool => $get('enable_order_approval')),
                     ]),
+
                 Toggle::make('enable_lock_confirmed_orders')
                     ->label(__('purchases::filament/admin/clusters/settings/pages/manage-orders.form.enable-lock-confirmed-orders'))
                     ->helperText(__('purchases::filament/admin/clusters/settings/pages/manage-orders.form.enable-lock-confirmed-orders-helper-text')),
+
                 Toggle::make('enable_purchase_agreements')
                     ->label(__('purchases::filament/admin/clusters/settings/pages/manage-orders.form.enable-purchase-agreements'))
                     ->helperText(__('purchases::filament/admin/clusters/settings/pages/manage-orders.form.enable-purchase-agreements-helper-text')),
