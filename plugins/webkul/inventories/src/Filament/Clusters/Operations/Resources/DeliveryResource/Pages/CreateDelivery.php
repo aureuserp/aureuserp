@@ -8,9 +8,12 @@ use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateDelivery extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = DeliveryResource::class;
 
     public function getSubNavigation(): array

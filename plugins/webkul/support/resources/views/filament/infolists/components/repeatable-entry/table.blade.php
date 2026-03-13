@@ -61,7 +61,7 @@
 
                     @if ($hasColumnManager)
                         <th
-                            class="text-center align-middle fi-fo-table-repeater-empty-header-cell"
+                            class="fi-fo-table-repeater-empty-header-cell text-center align-middle"
                             style="width: 75px; white-space: nowrap;"
                         >
                             <x-filament::dropdown
@@ -70,7 +70,7 @@
                                 :max-height="$getColumnManagerMaxHeight()"
                                 :width="$getColumnManagerWidth()"
                                 :wire:key="$getId() . '.table.column-manager.' . $getStatePath()"
-                                class="inline-block fi-ta-col-manager-dropdown"
+                                class="fi-ta-col-manager-dropdown inline-block"
                                 x-data="{ open: false }"
                                 x-on:click="$dispatch('toggle-dropdown')"
                                 x-on:toggle-dropdown="open = !open"
