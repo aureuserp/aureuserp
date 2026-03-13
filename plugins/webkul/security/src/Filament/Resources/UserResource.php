@@ -183,7 +183,7 @@ class UserResource extends Resource
                                     ->schema([
                                         FileUpload::make('avatar')
                                             ->hiddenLabel()
-                                            ->imageResizeMode('cover')
+                                            ->automaticallyResizeImagesMode('cover')
                                             ->image()
                                             ->imageEditor()
                                             ->directory('users/avatars')
