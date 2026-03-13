@@ -57,9 +57,11 @@ use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
 use Webkul\Purchase\Enums\RequisitionState;
+use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
 use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\OrderLine;
 use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
@@ -165,6 +167,10 @@ class OrderResource extends Resource
                                                     ->orWhere('starts_at', '<=', now());
                                             })
                                     )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
                                     ->preload()
                                     ->visible(static::getOrderSettings()->enable_purchase_agreements)
@@ -1197,6 +1203,8 @@ class OrderResource extends Resource
         $set('price_unit', round($priceUnit, 2));
 
         self::calculateLineTotals($set, $get);
+
+        self::checkBlanketOrderQtyLimit($get);
     }
 
     private static function afterUOMUpdated(Set $set, Get $get): void
@@ -1529,7 +1537,9 @@ class OrderResource extends Resource
             $products[] = [
                 'product_id'  => $product?->id,
                 'uom_id'      => $uom?->id,
-                'product_qty' => $line->qty,
+                'product_qty' => $requisition->type === RequisitionType::BLANKET_ORDER
+                    ? 0
+                    : $line->qty,
                 'price_unit'  => $line->price_unit,
                 'planned_at'  => now(),
                 'taxes'       => $product?->productTaxes->pluck('id')->toArray() ?? [],
@@ -1574,6 +1584,58 @@ class OrderResource extends Resource
             $set("products.$key.price_unit", round($vendorPrice, 2));
 
             self::calculateLineTotals($set, $get, "products.$key.");
+        }
+    }
+
+    /**
+     * Check if the product quantity exceeds the blanket order limit and show warning if needed.
+     */
+    private static function checkBlanketOrderQtyLimit(Get $get, ?string $prefix = ''): void
+    {
+        $requisitionId = $get('../../requisition_id');
+
+        if (! $requisitionId) {
+            return;
+        }
+
+        $requisition = Requisition::find($requisitionId);
+
+        if (! $requisition || $requisition->type !== RequisitionType::BLANKET_ORDER) {
+            return;
+        }
+
+        $productId = $get($prefix.'product_id');
+        $productQty = floatval($get($prefix.'product_qty') ?? 0);
+
+        if (! $productId || $productQty <= 0) {
+            return;
+        }
+
+        $requisitionLine = $requisition->lines->where('product_id', $productId)->first();
+
+        if (! $requisitionLine) {
+            return;
+        }
+
+        $orderedQty = (float) OrderLine::query()
+            ->where('product_id', $productId)
+            ->whereHas('order', fn ($query) => $query
+                ->where('requisition_id', $requisitionId)
+                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value])
+            )
+            ->sum('product_qty');
+
+        $availableQty = $requisitionLine->qty - $orderedQty;
+
+        if ($productQty > $availableQty) {
+            Notification::make()
+                ->warning()
+                ->title(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.blanket-order-qty-limit.title'))
+                ->body(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.blanket-order-qty-limit.body', [
+                    'product_qty'     => $productQty,
+                    'available_qty'   => $availableQty,
+                ]))
+                ->send();
         }
     }
 }

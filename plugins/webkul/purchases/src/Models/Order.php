@@ -113,7 +113,7 @@ class Order extends Model
 
     public function requisition(): BelongsTo
     {
-        return $this->belongsTo(Requisition::class);
+        return $this->belongsTo(Requisition::class)->withTrashed();
     }
 
     public function group(): BelongsTo

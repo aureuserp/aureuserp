@@ -92,6 +92,11 @@ class Requisition extends Model
         return $this->hasMany(RequisitionLine::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function updateName()
     {
         if ($this->type == RequisitionType::BLANKET_ORDER) {
