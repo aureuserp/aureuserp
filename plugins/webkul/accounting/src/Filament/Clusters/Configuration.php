@@ -15,6 +15,16 @@ class Configuration extends Cluster
         return __('accounting::filament/clusters/configurations.navigation.title');
     }
 
+    public static function getClusterBreadcrumb(): ?string
+    {
+        return __('accounting::filament/clusters/configurations.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/configurations.navigation.title');
+    }
+
     public static function getNavigationGroup(): string
     {
         return __('accounting::filament/clusters/configurations.navigation.group');

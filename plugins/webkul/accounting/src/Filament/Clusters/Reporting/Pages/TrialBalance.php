@@ -33,8 +33,6 @@ class TrialBalance extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-scale';
 
-    protected static ?string $navigationLabel = 'Trial Balance';
-
     protected static ?int $navigationSort = 4;
 
     public ?array $data = [];
@@ -46,7 +44,17 @@ class TrialBalance extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Audit Reports';
+        return __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title');
     }
 
     public function mount(): void
@@ -58,7 +66,7 @@ class TrialBalance extends Page implements HasForms
     {
         return [
             Action::make('excel')
-                ->label('Export to Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.trial-balance.actions.export-excel'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->action(function () {
@@ -75,7 +83,7 @@ class TrialBalance extends Page implements HasForms
                     );
                 }),
             Action::make('pdf')
-                ->label('Export to PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.trial-balance.actions.export-pdf'))
                 ->icon('heroicon-o-document-text')
                 ->color('danger')
                 ->action(function () {
@@ -102,7 +110,7 @@ class TrialBalance extends Page implements HasForms
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
-                        ->label('Date Range')
+                        ->label(__('accounting::filament/clusters/reporting.pages.trial-balance.filters.date-range'))
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
@@ -119,7 +127,7 @@ class TrialBalance extends Page implements HasForms
                         ->live()
                         ->afterStateUpdated(fn () => null),
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.trial-balance.filters.journals'))
                         ->multiple()
                         ->options(fn () => Journal::pluck('name', 'id'))
                         ->searchable()

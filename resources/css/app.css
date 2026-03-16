@@ -1,1 +1,305 @@
 @import "tailwindcss";
+
+/* ==========================================================================
+   RTL/LTR Support - Global Styles
+   ========================================================================== */
+
+/* Base RTL Settings */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Arabic Font Support */
+[dir="rtl"],
+[lang="ar"] {
+    font-family: 'Cairo', 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Flexbox Direction Utilities for RTL */
+[dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .flex-row-reverse {
+    flex-direction: row;
+}
+
+/* Space Utilities - Flip margins and paddings */
+[dir="rtl"] .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+[dir="rtl"] .text-left {
+    text-align: right;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left;
+}
+
+/* Navigation RTL Support */
+[dir="rtl"] nav {
+    direction: rtl;
+}
+
+[dir="rtl"] .nav-link {
+    text-align: right;
+}
+
+/* Form Elements RTL */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="url"],
+[dir="rtl"] input[type="tel"] {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Table RTL Support */
+[dir="rtl"] table {
+    direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+    text-align: right;
+}
+
+/* Icons and Arrows - Flip for RTL */
+[dir="rtl"] .icon-arrow-right {
+    transform: scaleX(-1);
+}
+
+[dir="rtl"] .icon-arrow-left {
+    transform: scaleX(-1);
+}
+
+[dir="rtl"] svg[class*="stroke-"] path[stroke-linecap="round"] {
+    transform-origin: center;
+}
+
+/* Flip chevrons and arrows in RTL */
+[dir="rtl"] .fi-icon-btn svg,
+[dir="rtl"] [class*="chevron"] svg {
+    transform: scaleX(-1);
+}
+
+/* Sidebar RTL */
+[dir="rtl"] .fi-sidebar {
+    right: 0;
+    left: auto;
+}
+
+[dir="rtl"] .fi-sidebar-nav {
+    direction: rtl;
+}
+
+/* Dropdown RTL */
+[dir="rtl"] .fi-dropdown-list {
+    text-align: right;
+}
+
+/* Modal RTL */
+[dir="rtl"] .fi-modal {
+    direction: rtl;
+}
+
+/* Notification RTL */
+[dir="rtl"] .fi-notification {
+    direction: rtl;
+}
+
+/* Badge positioning RTL */
+[dir="rtl"] .absolute.right-0 {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .absolute.left-0 {
+    left: auto;
+    right: 0;
+}
+
+/* Border radius flip for RTL */
+[dir="rtl"] .rounded-l {
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+[dir="rtl"] .rounded-r {
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+[dir="rtl"] .rounded-l-lg {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+[dir="rtl"] .rounded-r-lg {
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+/* Border flip for RTL */
+[dir="rtl"] .border-l {
+    border-left: 0;
+    border-right-width: 1px;
+}
+
+[dir="rtl"] .border-r {
+    border-right: 0;
+    border-left-width: 1px;
+}
+
+/* Padding/Margin logical properties override */
+[dir="rtl"] .ps-4, [dir="rtl"] .pl-4 {
+    padding-left: 0;
+    padding-right: 1rem;
+}
+
+[dir="rtl"] .pe-4, [dir="rtl"] .pr-4 {
+    padding-right: 0;
+    padding-left: 1rem;
+}
+
+[dir="rtl"] .ms-4, [dir="rtl"] .ml-4 {
+    margin-left: 0;
+    margin-right: 1rem;
+}
+
+[dir="rtl"] .me-4, [dir="rtl"] .mr-4 {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+/* Grid RTL */
+[dir="rtl"] .grid {
+    direction: rtl;
+}
+
+/* Filament Specific RTL Overrides */
+[dir="rtl"] .fi-header-heading {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-ta-header-cell-label {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-fo-field-wrp {
+    text-align: right;
+}
+
+[dir="rtl"] .fi-btn {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .fi-btn > span + svg,
+[dir="rtl"] .fi-btn > svg + span {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* Breadcrumb RTL */
+[dir="rtl"] .fi-breadcrumbs {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-breadcrumbs-item-separator svg {
+    transform: scaleX(-1);
+}
+
+/* Stats RTL */
+[dir="rtl"] .fi-stats {
+    direction: rtl;
+}
+
+/* Widget RTL */
+[dir="rtl"] .fi-wi {
+    direction: rtl;
+}
+
+/* Tab RTL */
+[dir="rtl"] .fi-tabs {
+    direction: rtl;
+}
+
+/* Action buttons group RTL */
+[dir="rtl"] .fi-ac-btn-group {
+    flex-direction: row-reverse;
+}
+
+/* Top Navigation RTL */
+[dir="rtl"] .fi-topbar {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-topbar-nav {
+    direction: rtl;
+}
+
+/* Card RTL */
+[dir="rtl"] .fi-section {
+    direction: rtl;
+}
+
+/* Infolist RTL */
+[dir="rtl"] .fi-in {
+    direction: rtl;
+}
+
+[dir="rtl"] .fi-in-entry-wrp {
+    text-align: right;
+}
+
+/* Welcome Page Specific RTL */
+[dir="rtl"] .welcome-nav {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .welcome-card {
+    text-align: right;
+}
+
+[dir="rtl"] .welcome-hero {
+    direction: rtl;
+}
+
+/* Transition for smooth direction changes */
+* {
+    transition: margin 0.2s ease, padding 0.2s ease, transform 0.2s ease;
+}
+
+/* Ensure numbers stay LTR */
+[dir="rtl"] .number,
+[dir="rtl"] .price,
+[dir="rtl"] .currency,
+[dir="rtl"] [data-type="number"],
+[dir="rtl"] [data-type="price"] {
+    direction: ltr;
+    display: inline-block;
+}
+
+/* Phone and email inputs always LTR */
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="url"],
+[dir="rtl"] input[type="number"] {
+    direction: ltr;
+    text-align: left;
+}
