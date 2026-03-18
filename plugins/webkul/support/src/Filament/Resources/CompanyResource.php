@@ -40,8 +40,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Traits\HasCustomFields;
-use Webkul\Support\Models\Company;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
@@ -90,6 +90,10 @@ class CompanyResource extends Resource
                                             ->label(__('support::filament/resources/company.form.sections.company-information.fields.name'))
                                             ->required()
                                             ->maxLength(255)
+                                            ->unique(table: 'companies', ignoreRecord: true)
+                                            ->validationMessages([
+                                                'unique' => 'Company name already exists. Please use a unique name.',
+                                            ])
                                             ->live(onBlur: true),
                                         TextInput::make('registration_number')
                                             ->label(__('support::filament/resources/company.form.sections.company-information.fields.registration-number'))
@@ -172,16 +176,16 @@ class CompanyResource extends Resource
                                     ->schema([
                                         Select::make('currency_id')
                                             ->relationship(
-                                                'currency',
-                                                'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                name: 'currency',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
                                             )
                                             ->label(__('support::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::first()?->id)
+                                            ->default(Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([

@@ -25,10 +25,10 @@ class UOMFactory extends Factory
     {
         return [
             'type'        => 'smaller',
-            'name'        => $this->faker->word(),
-            'factor'      => $this->faker->randomFloat(2, 0.1, 10),
+            'name'        => fake()->words(2, true),
+            'factor'      => fake()->randomFloat(2, 0.1, 10),
             'category_id' => UOMCategory::factory(),
-            'creator_id'  => User::factory(),
+            'creator_id'  => User::query()->value('id') ?? User::factory(),
         ];
     }
 
@@ -36,7 +36,7 @@ class UOMFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type'   => 'bigger',
-            'factor' => $this->faker->randomFloat(2, 1, 100),
+            'factor' => fake()->randomFloat(2, 1, 100),
         ]);
     }
 

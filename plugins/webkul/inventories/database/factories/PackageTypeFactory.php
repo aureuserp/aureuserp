@@ -21,7 +21,7 @@ class PackageTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'                 => fake()->word(),
+            'name'                 => fake()->words(2, true),
             'sort'                 => 0,
             'barcode'              => null,
             'height'               => null,
@@ -34,7 +34,7 @@ class PackageTypeFactory extends Factory
 
             // Relationships
             'company_id' => \Webkul\Support\Models\Company::factory(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 

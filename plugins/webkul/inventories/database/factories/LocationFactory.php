@@ -21,7 +21,7 @@ class LocationFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'                       => fake()->word(),
+            'name'                       => fake()->words(2, true),
             'full_name'                  => fake()->words(2, true),
             'type'                       => LocationType::INTERNAL,
             'description'                => null,
@@ -37,14 +37,61 @@ class LocationFactory extends Factory
             'position_x'                 => null,
             'position_y'                 => null,
             'position_z'                 => null,
-
-            // Relationships
-            'parent_id'           => null,
-            'storage_category_id' => null,
-            'warehouse_id'        => null,
-            'company_id'          => Company::factory(),
-            'creator_id'          => User::factory(),
+            'parent_id'                  => null,
+            'storage_category_id'        => null,
+            'warehouse_id'               => null,
+            'company_id'                 => Company::factory(),
+            'creator_id'                 => User::query()->value('id') ?? User::factory(),
         ];
+    }
+
+    public function supplier(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::SUPPLIER,
+        ]);
+    }
+
+    public function view(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::VIEW,
+        ]);
+    }
+
+    public function internal(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::INTERNAL,
+        ]);
+    }
+
+    public function customer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::CUSTOMER,
+        ]);
+    }
+
+    public function inventory(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::INVENTORY,
+        ]);
+    }
+
+    public function production(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::PRODUCTION,
+        ]);
+    }
+
+    public function transit(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => LocationType::TRANSIT,
+        ]);
     }
 
     public function scrap(): static

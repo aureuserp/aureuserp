@@ -21,7 +21,7 @@ class JournalSeeder extends Seeder
 
         $company = Company::first();
 
-        $currency = Currency::first();
+        $currency = Currency::active()->first() ?? Currency::first();
 
         $journals = [
             [

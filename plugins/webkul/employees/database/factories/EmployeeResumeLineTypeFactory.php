@@ -16,9 +16,9 @@ class EmployeeResumeLineTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'sort'       => $this->faker->numberBetween(1, 100),
-            'name'       => $this->faker->words(2, true),
-            'creator_id' => User::factory(),
+            'sort'       => fake()->numberBetween(1, 100),
+            'name'       => fake()->words(2, true),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

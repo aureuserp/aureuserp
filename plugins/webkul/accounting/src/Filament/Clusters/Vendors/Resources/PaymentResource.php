@@ -13,9 +13,12 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ManageBills;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment;
 use Webkul\Accounting\Models\Payment;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class PaymentResource extends BasePaymentResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Payment::class;
 
     protected static bool $shouldRegisterNavigation = true;

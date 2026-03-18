@@ -28,7 +28,7 @@ class PackageFactory extends Factory
             'package_type_id' => PackageType::factory(),
             'location_id'     => Location::factory(),
             'company_id'      => Company::factory(),
-            'creator_id'      => User::factory(),
+            'creator_id'      => User::query()->value('id') ?? User::factory(),
         ];
     }
 

@@ -28,7 +28,7 @@ class WorkLocationResource extends JsonResource
             'updated_at'      => $this->updated_at,
             'deleted_at'      => $this->deleted_at,
             'company'         => new CompanyResource($this->whenLoaded('company')),
-            'creator'         => new UserResource($this->whenLoaded('createdBy')),
+            'creator'         => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

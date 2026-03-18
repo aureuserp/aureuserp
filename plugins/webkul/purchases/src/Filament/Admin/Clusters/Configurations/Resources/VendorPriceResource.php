@@ -117,9 +117,9 @@ class VendorPriceResource extends Resource
                                         Select::make('currency_id')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.currency'))
                                             ->relationship(
-                                                'currency',
-                                                'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                name: 'currency',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
                                             )
                                             ->required()
                                             ->searchable()
@@ -240,7 +240,7 @@ class VendorPriceResource extends Resource
 
                 SelectFilter::make('currency_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.currency'))
-                    ->relationship('currency', 'name')
+                    ->relationship(name: 'currency', titleAttribute: 'name', modifyQueryUsing: fn (Builder $query) => $query->active())
                     ->searchable()
                     ->preload()
                     ->multiple(),

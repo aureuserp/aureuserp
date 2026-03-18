@@ -30,14 +30,14 @@ class OrderTemplateProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'              => $this->faker->sentence(3),
-            'quantity'          => $this->faker->randomFloat(2, 1, 10),
+            'name'              => fake()->sentence(3),
+            'quantity'          => fake()->randomFloat(2, 1, 10),
             'display_type'      => null,
             'order_template_id' => OrderTemplate::factory(),
             'company_id'        => Company::factory(),
             'product_id'        => Product::factory(),
             'product_uom_id'    => UOM::factory(),
-            'creator_id'        => User::factory(),
+            'creator_id'        => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

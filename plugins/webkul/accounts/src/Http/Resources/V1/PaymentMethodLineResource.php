@@ -25,7 +25,7 @@ class PaymentMethodLineResource extends JsonResource
             'creator_id'           => $this->creator_id,
             'created_at'           => $this->created_at,
             'updated_at'           => $this->updated_at,
-            'createdBy'            => new UserResource($this->whenLoaded('createdBy')),
+            'creator'              => new UserResource($this->whenLoaded('creator')),
             'paymentMethod'        => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
             'paymentAccount'       => new AccountResource($this->whenLoaded('paymentAccount')),
             'journal'              => new JournalResource($this->whenLoaded('journal')),

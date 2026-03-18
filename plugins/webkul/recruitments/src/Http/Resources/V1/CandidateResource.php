@@ -38,7 +38,7 @@ class CandidateResource extends JsonResource
             'degree'               => new DegreeResource($this->whenLoaded('degree')),
             'manager'              => new UserResource($this->whenLoaded('manager')),
             'employee'             => new EmployeeResource($this->whenLoaded('employee')),
-            'createdBy'            => new UserResource($this->whenLoaded('createdBy')),
+            'creator'              => new UserResource($this->whenLoaded('creator')),
             'categories'           => ApplicantCategoryResource::collection($this->whenLoaded('categories')),
             'applications'         => ApplicantResource::collection($this->whenLoaded('applications')),
         ];

@@ -20,7 +20,7 @@ class BankStatementResource extends JsonResource
             'id'                => $this->id,
             'company_id'        => $this->company_id,
             'journal_id'        => $this->journal_id,
-            'created_by'        => $this->created_by,
+            'creator_id'        => $this->creator_id,
             'name'              => $this->name,
             'reference'         => $this->reference,
             'first_line_index'  => $this->first_line_index,
@@ -33,7 +33,7 @@ class BankStatementResource extends JsonResource
             'updated_at'        => $this->updated_at,
             'company'           => new CompanyResource($this->whenLoaded('company')),
             'journal'           => new JournalResource($this->whenLoaded('journal')),
-            'createdBy'         => new UserResource($this->whenLoaded('createdBy')),
+            'creator'           => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

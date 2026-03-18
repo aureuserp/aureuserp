@@ -3,9 +3,11 @@
 namespace Webkul\Sale\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Models\Product;
 use Webkul\Sale\Enums\OrderState;
@@ -36,8 +38,8 @@ class OrderLineFactory extends Factory
      */
     public function definition(): array
     {
-        $quantity = $this->faker->randomFloat(2, 1, 100);
-        $priceUnit = $this->faker->randomFloat(4, 10, 1000);
+        $quantity = fake()->randomFloat(2, 1, 100);
+        $priceUnit = fake()->randomFloat(4, 10, 1000);
         $discount = 0;
 
         $priceSubtotal = $quantity * $priceUnit * (1 - $discount / 100);
@@ -49,15 +51,15 @@ class OrderLineFactory extends Factory
         $marginPercent = $priceSubtotal > 0 ? ($margin / $priceSubtotal) * 100 : 0;
 
         return [
-            'sort'                         => $this->faker->numberBetween(1, 100),
+            'sort'                         => fake()->numberBetween(1, 100),
             'state'                        => OrderState::DRAFT,
             'display_type'                 => null,
             'virtual_id'                   => null,
             'linked_virtual_id'            => null,
-            'qty_delivered_method'         => QtyDeliveredMethod::STOCK_MOVE,
+            'qty_delivered_method'         => Package::isPluginInstalled('inventories') ? QtyDeliveredMethod::STOCK_MOVE : QtyDeliveredMethod::MANUAL,
             'invoice_status'               => null,
             'analytic_distribution'        => null,
-            'name'                         => $this->faker->sentence(3),
+            'name'                         => fake()->sentence(3),
             'product_uom_qty'              => $quantity,
             'price_unit'                   => $priceUnit,
             'discount'                     => $discount,
@@ -76,24 +78,24 @@ class OrderLineFactory extends Factory
             'price_tax'                    => $priceTax,
             'product_qty'                  => $quantity,
             'product_packaging_qty'        => null,
-            'customer_lead'                => $this->faker->numberBetween(1, 30),
+            'customer_lead'                => fake()->numberBetween(1, 30),
             'purchase_price'               => $purchasePrice,
             'margin'                       => $margin,
             'margin_percent'               => $marginPercent,
-            'create_date'                  => $this->faker->dateTimeBetween('-30 days', 'now'),
-            'write_date'                   => $this->faker->dateTimeBetween('-30 days', 'now'),
+            'create_date'                  => fake()->dateTimeBetween('-30 days', 'now'),
+            'write_date'                   => fake()->dateTimeBetween('-30 days', 'now'),
             'order_id'                     => Order::factory(),
             'company_id'                   => Company::factory(),
             'currency_id'                  => Currency::factory(),
-            'order_partner_id'             => Partner::factory(),
-            'salesman_id'                  => User::factory(),
+            'order_partner_id'             => Partner::query()->value('id') ?? Partner::factory(),
+            'salesman_id'                  => User::query()->value('id') ?? User::factory(),
             'product_id'                   => Product::factory(),
             'product_uom_id'               => UOM::factory(),
             'linked_sale_order_sale_id'    => null,
-            'creator_id'                   => User::factory(),
-            'warehouse_id'                 => null,
+            'creator_id'                   => User::query()->value('id') ?? User::factory(),
             'product_packaging_id'         => null,
-            'route_id'                     => null,
+            ...(Schema::hasColumn('sales_order_lines', 'warehouse_id') ? ['warehouse_id' => null] : []),
+            ...(Schema::hasColumn('sales_order_lines', 'route_id') ? ['route_id' => null] : []),
         ];
     }
 
@@ -142,7 +144,7 @@ class OrderLineFactory extends Factory
      */
     public function withDiscount(?float $discount = null): static
     {
-        $discount = $discount ?? $this->faker->randomFloat(2, 5, 20);
+        $discount = $discount ?? fake()->randomFloat(2, 5, 20);
 
         return $this->state(function (array $attributes) use ($discount) {
             $quantity = $attributes['product_uom_qty'];
@@ -202,7 +204,7 @@ class OrderLineFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'product_packaging_id'  => Packaging::factory(),
-            'product_packaging_qty' => $this->faker->randomFloat(2, 1, 10),
+            'product_packaging_qty' => fake()->randomFloat(2, 1, 10),
         ]);
     }
 

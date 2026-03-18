@@ -22,17 +22,17 @@ class BankStatementFactory extends Factory
      */
     public function definition(): array
     {
-        $balanceStart = $this->faker->randomFloat(2, 0, 10000);
-        $balanceEnd = $balanceStart + $this->faker->randomFloat(2, -1000, 1000);
+        $balanceStart = fake()->randomFloat(2, 0, 10000);
+        $balanceEnd = $balanceStart + fake()->randomFloat(2, -1000, 1000);
 
         return [
             'company_id'       => Company::factory(),
             'journal_id'       => Journal::factory(),
-            'created_by'       => User::factory(),
-            'name'             => $this->faker->words(2, true),
-            'reference'        => $this->faker->optional()->bothify('STMT-####'),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
+            'name'             => fake()->words(2, true),
+            'reference'        => fake()->optional()->bothify('STMT-####'),
             'first_line_index' => 0,
-            'date'             => $this->faker->date(),
+            'date'             => fake()->date(),
             'balance_start'    => $balanceStart,
             'balance_end'      => $balanceEnd,
             'balance_end_real' => $balanceEnd,

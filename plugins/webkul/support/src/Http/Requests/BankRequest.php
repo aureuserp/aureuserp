@@ -21,29 +21,21 @@ class BankRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         $rules = [
-            'name'       => 'required|string|max:255',
-            'code'       => 'nullable|string|max:50',
-            'email'      => 'nullable|email|max:255',
-            'phone'      => 'nullable|string|max:50',
-            'street1'    => 'nullable|string|max:255',
-            'street2'    => 'nullable|string|max:255',
-            'city'       => 'nullable|string|max:100',
-            'zip'        => 'nullable|string|max:20',
-            'state_id'   => 'nullable|exists:states,id',
-            'country_id' => 'nullable|exists:countries,id',
+            'name'       => [...$requiredRule, 'string', 'max:255'],
+            'code'       => ['nullable', 'string', 'max:50'],
+            'email'      => ['nullable', 'email', 'max:255'],
+            'phone'      => ['nullable', 'string', 'max:50'],
+            'street1'    => ['nullable', 'string', 'max:255'],
+            'street2'    => ['nullable', 'string', 'max:255'],
+            'city'       => ['nullable', 'string', 'max:100'],
+            'zip'        => ['nullable', 'string', 'max:20'],
+            'state_id'   => ['nullable', 'exists:states,id'],
+            'country_id' => ['nullable', 'exists:countries,id'],
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }
@@ -56,43 +48,43 @@ class BankRequest extends FormRequest
         return [
             'name'       => [
                 'description' => 'Bank name',
-                'example' => 'Chase Bank'
+                'example'     => 'Chase Bank',
             ],
             'code'       => [
                 'description' => 'Bank code',
-                'example' => 'CHASE'
+                'example'     => 'CHASE',
             ],
             'email'      => [
                 'description' => 'Bank email address',
-                'example' => 'info@chase.com'
+                'example'     => 'info@chase.com',
             ],
             'phone'      => [
                 'description' => 'Bank phone number',
-                'example' => '+1234567890'
+                'example'     => '+1234567890',
             ],
             'street1'    => [
                 'description' => 'Street address line 1',
-                'example' => '123 Main St'
+                'example'     => '123 Main St',
             ],
             'street2'    => [
                 'description' => 'Street address line 2',
-                'example' => 'Suite 100'
+                'example'     => 'Suite 100',
             ],
             'city'       => [
                 'description' => 'City',
-                'example' => 'New York'
+                'example'     => 'New York',
             ],
             'zip'        => [
                 'description' => 'ZIP/Postal code',
-                'example' => '10001'
+                'example'     => '10001',
             ],
             'state_id'   => [
                 'description' => 'State ID',
-                'example' => 9
+                'example'     => 9,
             ],
             'country_id' => [
                 'description' => 'Country ID',
-                'example' => 233
+                'example'     => 233,
             ],
         ];
     }

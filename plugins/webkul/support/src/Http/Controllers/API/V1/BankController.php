@@ -103,7 +103,7 @@ class BankController extends Controller
     #[UrlParam('id', 'integer', 'The bank ID', required: true, example: 1)]
     #[ResponseFromApiResource(BankResource::class, Bank::class, additional: ['message' => 'Bank updated successfully.'])]
     #[Response(status: 404, description: 'Bank not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(BankRequest $request, string $id)
     {

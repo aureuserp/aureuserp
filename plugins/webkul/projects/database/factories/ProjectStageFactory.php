@@ -32,7 +32,7 @@ class ProjectStageFactory extends Factory
             'is_active'    => true,
             'is_collapsed' => false,
             'company_id'   => Company::factory(),
-            'creator_id'   => User::factory(),
+            'creator_id'   => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

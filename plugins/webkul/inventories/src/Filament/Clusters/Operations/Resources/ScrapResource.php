@@ -138,11 +138,17 @@ class ScrapResource extends Resource
                                             ->relationship(
                                                 'uom',
                                                 'name',
-                                                fn ($query) => $query->where('category_id', 1),
+                                                function (Builder $query, Get $get) {
+                                                    $product = Product::find($get('product_id'));
+                                                    $categoryId = $product?->uom?->category_id;
+
+                                                    return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                                                },
                                             )
                                             ->searchable()
                                             ->preload()
                                             ->required()
+                                            ->native(false)
                                             ->visible(static::getProductSettings()->enable_uom)
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                         Select::make('lot_id')

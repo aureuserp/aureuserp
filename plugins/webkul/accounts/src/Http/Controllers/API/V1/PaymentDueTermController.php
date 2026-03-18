@@ -107,7 +107,7 @@ class PaymentDueTermController extends Controller
     #[UrlParam('id', 'integer', 'The payment due term ID', required: true, example: 1)]
     #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, additional: ['message' => 'Payment due term updated successfully.'])]
     #[Response(status: 404, description: 'Payment due term not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"value": ["The value field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(PaymentDueTermRequest $request, string $paymentTerm, string $paymentDueTerm)
     {

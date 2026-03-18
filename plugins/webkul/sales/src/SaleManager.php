@@ -481,13 +481,18 @@ class SaleManager
                     ]
                 );
 
-                $record->addMessage([
+                $message = $record->addMessage([
                     'from' => [
                         'company' => Auth::user()->defaultCompany->toArray(),
                     ],
                     'body' => view($viewName, compact('payload'))->render(),
                     'type' => 'comment',
                 ]);
+
+                $record->addAttachments(
+                    [$data['file']],
+                    ['message_id' => $message->id],
+                );
 
                 $sent[] = $partner->name;
 

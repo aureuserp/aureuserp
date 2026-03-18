@@ -29,7 +29,7 @@ class IndustryFactory extends Factory
             'name'        => fake()->name(),
             'description' => fake()->sentence(),
             'is_active'   => true,
-            'creator_id'  => User::factory(),
+            'creator_id'  => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

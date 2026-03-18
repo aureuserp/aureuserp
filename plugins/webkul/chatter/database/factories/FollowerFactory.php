@@ -18,7 +18,7 @@ class FollowerFactory extends Factory
         return [
             'followable_id'   => null,
             'followable_type' => null,
-            'partner_id'      => Partner::factory(),
+            'partner_id'      => Partner::query()->value('id') ?? Partner::factory(),
             'followed_at'     => now(),
         ];
     }

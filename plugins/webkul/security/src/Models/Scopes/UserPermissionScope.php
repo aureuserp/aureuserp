@@ -27,6 +27,10 @@ class UserPermissionScope implements Scope
     {
         $user = Auth::user();
 
+        if (! $user?->resource_permission) {
+            return;
+        }
+
         if ($user->resource_permission === PermissionType::GLOBAL) {
             return;
         }

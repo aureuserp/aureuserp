@@ -27,12 +27,12 @@ class LeaveFactory extends Factory
      */
     public function definition(): array
     {
-        $requestDateFrom = $this->faker->dateTimeBetween('now', '+30 days');
-        $requestDateTo = $this->faker->dateTimeBetween($requestDateFrom, '+7 days');
+        $requestDateFrom = fake()->dateTimeBetween('now', '+30 days');
+        $requestDateTo = fake()->dateTimeBetween($requestDateFrom, '+7 days');
         $numberOfDays = $requestDateFrom->diff($requestDateTo)->days + 1;
 
         return [
-            'user_id'                  => User::factory(),
+            'user_id'                  => User::query()->value('id') ?? User::factory(),
             'manager_id'               => null,
             'holiday_status_id'        => LeaveType::factory(),
             'employee_id'              => Employee::factory(),
@@ -43,8 +43,8 @@ class LeaveFactory extends Factory
             'meeting_id'               => null,
             'first_approver_id'        => null,
             'second_approver_id'       => null,
-            'creator_id'               => User::factory(),
-            'private_name'             => $this->faker->sentence(3),
+            'creator_id'               => User::query()->value('id') ?? User::factory(),
+            'private_name'             => fake()->sentence(3),
             'attachment'               => null,
             'state'                    => State::CONFIRM,
             'duration_display'         => $numberOfDays.' '.($numberOfDays > 1 ? 'days' : 'day'),
@@ -67,7 +67,7 @@ class LeaveFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'state'             => State::VALIDATE_ONE,
-            'first_approver_id' => User::factory(),
+            'first_approver_id' => User::query()->value('id') ?? User::factory(),
         ]);
     }
 

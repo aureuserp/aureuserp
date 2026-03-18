@@ -23,7 +23,7 @@ class DepartureReasonResource extends JsonResource
             'creator_id'  => $this->creator_id,
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
-            'creator'     => new UserResource($this->whenLoaded('createdBy')),
+            'creator'     => new UserResource($this->whenLoaded('creator')),
             'employees'   => EmployeeResource::collection($this->whenLoaded('employees')),
         ];
     }

@@ -29,6 +29,7 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
@@ -308,6 +309,11 @@ class ManageQuantities extends ManageRelatedRecords
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.columns.reserved-quantity'))
                     ->sortable()
                     ->summarize(Sum::make()),
+                TextColumn::make('product.uom.name')
+                    ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.columns.unit'))
+                    ->sortable()
+                    ->placeholder('—')
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
             ])
             ->headerActions([
                 CreateAction::make()

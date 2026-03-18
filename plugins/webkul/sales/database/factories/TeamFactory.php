@@ -25,14 +25,14 @@ class TeamFactory extends Factory
     public function definition(): array
     {
         return [
-            'sort'            => $this->faker->randomNumber(),
+            'sort'            => fake()->randomNumber(),
             'company_id'      => null,
             'user_id'         => null,
-            'color'           => $this->faker->hexColor,
+            'color'           => fake()->hexColor,
             'creator_id'      => null,
-            'name'            => $this->faker->name,
-            'is_active'       => $this->faker->boolean,
-            'invoiced_target' => $this->faker->randomNumber(),
+            'name'            => fake()->name,
+            'is_active'       => fake()->boolean,
+            'invoiced_target' => fake()->randomNumber(),
         ];
     }
 }

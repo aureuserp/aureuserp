@@ -18,10 +18,10 @@ class CurrencyRateFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'        => $this->faker->date(),
-            'rate'        => $this->faker->randomFloat(6, 0.5, 2),
+            'name'        => fake()->date(),
+            'rate'        => fake()->randomFloat(6, 0.5, 2),
             'currency_id' => Currency::factory(),
-            'creator_id'  => User::factory(),
+            'creator_id'  => User::query()->value('id') ?? User::factory(),
             'company_id'  => Company::factory(),
         ];
     }

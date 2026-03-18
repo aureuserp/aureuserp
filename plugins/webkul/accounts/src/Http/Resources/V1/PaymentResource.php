@@ -32,7 +32,7 @@ class PaymentResource extends JsonResource
             'partner_id'                             => $this->partner_id,
             'outstanding_account_id'                 => $this->outstanding_account_id,
             'destination_account_id'                 => $this->destination_account_id,
-            'created_by'                             => $this->created_by,
+            'creator_id'                             => $this->creator_id,
             'name'                                   => $this->name,
             'state'                                  => $this->state,
             'payment_type'                           => $this->payment_type,
@@ -61,7 +61,7 @@ class PaymentResource extends JsonResource
             'partner'                                => new PartnerResource($this->whenLoaded('partner')),
             'outstandingAccount'                     => new AccountResource($this->whenLoaded('outstandingAccount')),
             'destinationAccount'                     => new AccountResource($this->whenLoaded('destinationAccount')),
-            'createdBy'                              => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                                => new UserResource($this->whenLoaded('creator')),
             'invoices'                               => MoveResource::collection($this->whenLoaded('invoices')),
         ];
     }

@@ -27,24 +27,24 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
-        $title = $this->faker->sentence(6);
+        $title = fake()->sentence(6);
 
         return [
             'title'            => $title,
-            'sub_title'        => $this->faker->sentence(10),
-            'content'          => $this->faker->paragraphs(5, true),
+            'sub_title'        => fake()->sentence(10),
+            'content'          => fake()->paragraphs(5, true),
             'slug'             => Str::slug($title),
             'image'            => null,
-            'author_name'      => $this->faker->name(),
+            'author_name'      => fake()->name(),
             'is_published'     => false,
             'published_at'     => null,
             'visits'           => 0,
             'meta_title'       => $title,
-            'meta_keywords'    => implode(', ', $this->faker->words(5)),
-            'meta_description' => $this->faker->sentence(15),
+            'meta_keywords'    => implode(', ', fake()->words(5)),
+            'meta_description' => fake()->sentence(15),
             'category_id'      => Category::factory(),
-            'author_id'        => User::factory(),
-            'creator_id'       => User::factory(),
+            'author_id'        => User::query()->value('id') ?? User::factory(),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
             'last_editor_id'   => null,
         ];
     }
@@ -53,7 +53,7 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_published' => true,
-            'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'published_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ]);
     }
 }

@@ -17,7 +17,7 @@ class UserLeaveTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'        => User::factory(),
+            'user_id'        => User::query()->value('id') ?? User::factory(),
             'leave_type_id'  => LeaveType::factory(),
         ];
     }

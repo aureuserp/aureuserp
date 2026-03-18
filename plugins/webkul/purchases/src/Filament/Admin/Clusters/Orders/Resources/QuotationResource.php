@@ -2,7 +2,9 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
+use BackedEnum;
 use Filament\Resources\Pages\Page;
+use Filament\Support\Icons\Heroicon;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\CreateQuotation;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
@@ -16,7 +18,7 @@ class QuotationResource extends OrderResource
 {
     protected static ?string $model = Quotation::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentText;
 
     protected static bool $shouldRegisterNavigation = true;
 

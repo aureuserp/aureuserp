@@ -38,7 +38,7 @@ class OrderPointFactory extends Factory
             'location_id'         => Location::factory(),
             'route_id'            => null,
             'company_id'          => Company::factory(),
-            'creator_id'          => User::factory(),
+            'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Account\Database\Factories\ProductFactory;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Traits\HasChatter;
@@ -122,5 +123,10 @@ class Product extends BaseProduct
     public function supplierTaxes()
     {
         return $this->belongsToMany(Tax::class, 'accounts_product_supplier_taxes', 'product_id', 'tax_id');
+    }
+
+    protected static function newFactory(): ProductFactory
+    {
+        return ProductFactory::new();
     }
 }

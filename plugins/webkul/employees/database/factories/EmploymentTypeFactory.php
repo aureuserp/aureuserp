@@ -24,12 +24,12 @@ class EmploymentTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => $this->faker->name,
+            'name'       => fake()->name,
             'country_id' => Country::factory(),
-            'creator_id' => User::factory(),
-            'code'       => $this->faker->word,
-            'sequence'   => $this->faker->numberBetween(1, 100),
-            'sort'       => $this->faker->numberBetween(1, 100),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
+            'code'       => fake()->word,
+            'sequence'   => fake()->numberBetween(1, 100),
+            'sort'       => fake()->numberBetween(1, 100),
         ];
     }
 }

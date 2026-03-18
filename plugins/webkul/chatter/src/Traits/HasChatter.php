@@ -150,8 +150,9 @@ trait HasChatter
         $user = Filament::auth()->user() ?? Auth::user();
 
         $message->fill(array_merge([
-            'creator_id'    => $user->id,
             'date_deadline' => $data['date_deadline'] ?? now(),
+            'causer_type'   => $user?->getMorphClass(),
+            'causer_id'     => $user?->id,
             'company_id'    => $data['company_id'] ?? ($user->defaultCompany?->id ?? null),
         ], $data));
 

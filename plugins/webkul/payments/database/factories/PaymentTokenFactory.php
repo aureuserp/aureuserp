@@ -26,14 +26,14 @@ class PaymentTokenFactory extends Factory
         return [
             'company_id'        => Company::factory(),
             'payment_method_id' => PaymentMethod::factory(),
-            'partner_id'        => Partner::factory(),
-            'created_by'        => User::factory(),
+            'partner_id'        => Partner::query()->value('id') ?? Partner::factory(),
+            'creator_id'        => User::query()->value('id') ?? User::factory(),
             'payment_details'   => [
-                'token' => $this->faker->uuid(),
+                'token' => fake()->uuid(),
                 'type'  => 'card',
-                'last4' => $this->faker->numerify('####'),
+                'last4' => fake()->numerify('####'),
             ],
-            'provider_reference_id' => $this->faker->uuid(),
+            'provider_reference_id' => fake()->uuid(),
             'is_active'             => true,
         ];
     }

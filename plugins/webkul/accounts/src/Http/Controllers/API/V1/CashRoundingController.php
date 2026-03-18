@@ -99,7 +99,7 @@ class CashRoundingController extends Controller
     #[UrlParam('id', 'integer', 'The cash rounding ID', required: true, example: 1)]
     #[ResponseFromApiResource(CashRoundingResource::class, CashRounding::class, additional: ['message' => 'Cash rounding updated successfully.'])]
     #[Response(status: 404, description: 'Cash rounding not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(CashRoundingRequest $request, string $id)
     {

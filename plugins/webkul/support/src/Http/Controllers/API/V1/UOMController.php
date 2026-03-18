@@ -107,7 +107,7 @@ class UOMController extends Controller
     #[UrlParam('id', 'integer', 'The UOM ID', required: true, example: 1)]
     #[ResponseFromApiResource(UOMResource::class, UOM::class, with: ['category'], additional: ['message' => 'UOM updated successfully.'])]
     #[Response(status: 404, description: 'UOM not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"type": ["The type field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(UOMRequest $request, string $uomCategory, string $uom)
     {

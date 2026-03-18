@@ -16,6 +16,7 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
@@ -112,6 +113,11 @@ class ManageMoves extends ManageRelatedRecords
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.quantity'))
                     ->sortable()
                     ->color(fn ($record) => $record->destinationLocation->type == LocationType::INTERNAL ? 'success' : 'danger'),
+                TextColumn::make('uom.name')
+                    ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.unit'))
+                    ->sortable()
+                    ->placeholder('—')
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                 TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.state'))
                     ->sortable()

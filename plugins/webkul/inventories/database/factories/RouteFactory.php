@@ -29,7 +29,7 @@ class RouteFactory extends Factory
             'supplied_warehouse_id' => null,
             'supplier_warehouse_id' => null,
             'company_id'            => Company::factory(),
-            'creator_id'            => User::factory(),
+            'creator_id'            => User::query()->value('id') ?? User::factory(),
         ];
     }
 

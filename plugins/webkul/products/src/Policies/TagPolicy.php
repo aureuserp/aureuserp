@@ -57,4 +57,36 @@ class TagPolicy
     {
         return $user->can('delete_any_product_tag');
     }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Tag $tag): bool
+    {
+        return $user->can('restore_product_tag');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_product_tag');
+    }
+
+    /**
+     * Determine whether the user can permanently delete.
+     */
+    public function forceDelete(User $user, Tag $tag): bool
+    {
+        return $user->can('force_delete_product_tag');
+    }
+
+    /**
+     * Determine whether the user can permanently bulk delete.
+     */
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->can('force_delete_any_product_tag');
+    }
 }

@@ -25,18 +25,18 @@ class EmployeeJobPositionFactory extends Factory
     public function definition(): array
     {
         return [
-            'sort'               => $this->faker->randomNumber(),
-            'name'               => $this->faker->word,
-            'description'        => $this->faker->text,
-            'requirements'       => $this->faker->text,
-            'expected_employees' => $this->faker->randomNumber(),
-            'no_of_employee'     => $this->faker->randomNumber(),
+            'sort'               => fake()->randomNumber(),
+            'name'               => fake()->word,
+            'description'        => fake()->text,
+            'requirements'       => fake()->text,
+            'expected_employees' => fake()->randomNumber(),
+            'no_of_employee'     => fake()->randomNumber(),
             'status'             => true,
-            'no_of_recruitment'  => $this->faker->randomNumber(),
+            'no_of_recruitment'  => fake()->randomNumber(),
             'department_id'      => Department::factory(),
             'company_id'         => Company::factory(),
-            'open_date'          => $this->faker->date(),
-            'creator_id'         => User::factory(),
+            'open_date'          => fake()->date(),
+            'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

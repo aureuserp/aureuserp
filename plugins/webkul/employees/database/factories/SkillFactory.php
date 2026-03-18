@@ -22,7 +22,7 @@ class SkillFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'          => $this->faker->word,
+            'name'          => fake()->word,
             'skill_type_id' => SkillTypeFactory::factory(),
         ];
     }

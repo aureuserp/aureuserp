@@ -25,7 +25,7 @@ class PartialReconcileResource extends JsonResource
             'debit_currency_id'        => $this->debit_currency_id,
             'credit_currency_id'       => $this->credit_currency_id,
             'company_id'               => $this->company_id,
-            'created_by'               => $this->created_by,
+            'creator_id'               => $this->creator_id,
             'max_date'                 => $this->max_date,
             'amount'                   => $this->amount,
             'debit_amount_currency'    => $this->debit_amount_currency,
@@ -37,7 +37,7 @@ class PartialReconcileResource extends JsonResource
             'fullReconcile'            => new FullReconcileResource($this->whenLoaded('fullReconcile')),
             'exchangeMove'             => new MoveResource($this->whenLoaded('exchangeMove')),
             'debitCurrency'            => new CurrencyResource($this->whenLoaded('debitCurrency')),
-            'createdBy'                => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                  => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

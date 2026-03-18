@@ -23,7 +23,7 @@ class FullReconcileFactory extends Factory
     {
         return [
             'exchange_move_id' => null,
-            'created_id'       => User::factory(),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
         ];
     }
 

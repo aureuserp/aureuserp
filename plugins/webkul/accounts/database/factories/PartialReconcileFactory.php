@@ -24,7 +24,7 @@ class PartialReconcileFactory extends Factory
      */
     public function definition(): array
     {
-        $amount = $this->faker->randomFloat(2, 10, 1000);
+        $amount = fake()->randomFloat(2, 10, 1000);
 
         return [
             'debit_move_id'          => MoveLine::factory(),
@@ -34,8 +34,8 @@ class PartialReconcileFactory extends Factory
             'debit_currency_id'      => Currency::factory(),
             'credit_currency_id'     => Currency::factory(),
             'company_id'             => Company::factory(),
-            'created_by'             => User::factory(),
-            'max_date'               => $this->faker->date(),
+            'creator_id'             => User::query()->value('id') ?? User::factory(),
+            'max_date'               => fake()->date(),
             'amount'                 => $amount,
             'debit_amount_currency'  => $amount,
             'credit_amount_currency' => $amount,

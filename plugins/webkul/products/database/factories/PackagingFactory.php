@@ -32,7 +32,7 @@ class PackagingFactory extends Factory
             'qty'        => 1,
             'sort'       => 1,
             'product_id' => Product::factory(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
             'company_id' => Company::factory(),
         ];
     }

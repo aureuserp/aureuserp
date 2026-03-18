@@ -17,7 +17,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
+use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -66,7 +66,7 @@ class ProductResource extends BaseProductResource
 
         $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
 
-        $firstGroupChildComponents[3] = Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.title'))
+        $firstGroupChildComponents[2] = Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.title'))
             ->schema([
                 Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.tracking.title'))
                     ->schema([

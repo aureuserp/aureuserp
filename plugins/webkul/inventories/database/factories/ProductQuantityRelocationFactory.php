@@ -21,7 +21,7 @@ class ProductQuantityRelocationFactory extends Factory
             'description'             => null,
             'destination_location_id' => Location::factory(),
             'destination_package_id'  => null,
-            'creator_id'              => User::factory(),
+            'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }
 

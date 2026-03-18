@@ -28,7 +28,7 @@ class OrderGroupFactory extends Factory
         return [
             'name'       => fake()->name(),
             'sort'       => fake()->randomNumber(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

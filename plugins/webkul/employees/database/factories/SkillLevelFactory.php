@@ -23,9 +23,9 @@ class SkillLevelFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'          => $this->faker->name,
+            'name'          => fake()->name,
             'skill_type_id' => SkillType::factory(),
-            'level'         => $this->faker->numberBetween(5, 100),
+            'level'         => fake()->numberBetween(5, 100),
             'default_level' => 0,
         ];
     }

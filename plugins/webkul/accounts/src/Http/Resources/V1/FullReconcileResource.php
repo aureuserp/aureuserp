@@ -18,11 +18,11 @@ class FullReconcileResource extends JsonResource
         return [
             'id'                => $this->id,
             'exchange_move_id'  => $this->exchange_move_id,
-            'created_id'        => $this->created_id,
+            'creator_id'        => $this->creator_id,
             'created_at'        => $this->created_at,
             'updated_at'        => $this->updated_at,
             'exchangeMove'      => new MoveResource($this->whenLoaded('exchangeMove')),
-            'createdBy'         => new UserResource($this->whenLoaded('createdBy')),
+            'creator'           => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

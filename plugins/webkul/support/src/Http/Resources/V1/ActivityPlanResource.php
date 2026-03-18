@@ -24,7 +24,7 @@ class ActivityPlanResource extends JsonResource
             'updated_at'              => $this->updated_at,
             'deleted_at'              => $this->deleted_at,
             'company'                 => CompanyResource::make($this->whenLoaded('company')),
-            'creator'                 => UserResource::make($this->whenLoaded('createdBy')),
+            'creator'                 => UserResource::make($this->whenLoaded('creator')),
             'activity_types'          => ActivityTypeResource::collection($this->whenLoaded('activityTypes')),
             'activity_plan_templates' => ActivityPlanTemplateResource::collection($this->whenLoaded('activityPlanTemplates')),
         ];

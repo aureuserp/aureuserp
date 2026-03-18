@@ -32,8 +32,8 @@ class BankAccountFactory extends Factory
             'account_holder_name' => fake()->name(),
             'is_active'           => true,
             'can_send_money'      => true,
-            'creator_id'          => User::factory(),
-            'partner_id'          => Partner::factory(),
+            'creator_id'          => User::query()->value('id') ?? User::factory(),
+            'partner_id'          => Partner::query()->value('id') ?? Partner::factory(),
             'bank_id'             => Bank::factory(),
         ];
     }

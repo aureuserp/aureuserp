@@ -15,13 +15,13 @@ class EmailTemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'        => $this->faker->unique()->slug(),
-            'name'        => $this->faker->words(3, true),
-            'subject'     => $this->faker->sentence(),
-            'content'     => $this->faker->paragraphs(3, true),
-            'description' => $this->faker->optional()->sentence(),
+            'code'        => fake()->unique()->slug(),
+            'name'        => fake()->words(3, true),
+            'subject'     => fake()->sentence(),
+            'content'     => fake()->paragraphs(3, true),
+            'description' => fake()->optional()->sentence(),
             'is_active'   => true,
-            'sender_name' => $this->faker->optional()->name(),
+            'sender_name' => fake()->optional()->name(),
         ];
     }
 

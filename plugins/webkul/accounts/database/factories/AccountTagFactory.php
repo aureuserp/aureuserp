@@ -15,11 +15,11 @@ class AccountTagFactory extends Factory
     public function definition(): array
     {
         return [
-            'color'         => $this->faker->hexColor,
+            'color'         => fake()->hexColor,
             'country_id'    => null,
-            'creator_id'    => User::factory(),
+            'creator_id'    => User::query()->value('id') ?? User::factory(),
             'applicability' => Applicability::TAXES,
-            'name'          => $this->faker->word,
+            'name'          => fake()->word,
             'tax_negate'    => false,
         ];
     }

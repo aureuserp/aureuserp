@@ -7,11 +7,20 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Filament\Resources\CompanyResource;
 
 class ViewCompany extends ViewRecord
 {
     protected static string $resource = CompanyResource::class;
+
+    protected function resolveRecord(int|string $key): Model
+    {
+        return static::getResource()::getEloquentQuery()
+            ->withTrashed()
+            ->whereKey($key)
+            ->firstOrFail();
+    }
 
     protected function getHeaderActions(): array
     {

@@ -18,8 +18,8 @@ class TaxGroupFactory extends Factory
             'sort'               => 0,
             'company_id'         => Company::factory(),
             'country_id'         => Country::factory(),
-            'creator_id'         => User::factory(),
-            'name'               => $this->faker->words(2, true),
+            'creator_id'         => User::query()->value('id') ?? User::factory(),
+            'name'               => fake()->words(2, true),
             'preceding_subtotal' => 0,
         ];
     }

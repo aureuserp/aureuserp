@@ -20,7 +20,7 @@ class FiscalPositionTaxFactory extends Factory
             'company_id'         => Company::factory(),
             'tax_source_id'      => Tax::factory(),
             'tax_destination_id' => Tax::factory(),
-            'creator_id'         => User::factory(),
+            'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

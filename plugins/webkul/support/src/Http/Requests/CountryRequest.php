@@ -21,25 +21,17 @@ class CountryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         $rules = [
-            'name'           => 'required|string|max:255',
-            'code'           => 'required|string|max:2',
-            'phone_code'     => 'nullable|string|max:10',
-            'currency_id'    => 'nullable|exists:currencies,id',
-            'state_required' => 'required|boolean',
-            'zip_required'   => 'required|boolean',
+            'name'           => [...$requiredRule, 'string', 'max:255'],
+            'code'           => [...$requiredRule, 'string', 'max:2'],
+            'phone_code'     => ['nullable', 'string', 'max:10'],
+            'currency_id'    => ['nullable', 'exists:currencies,id'],
+            'state_required' => [...$requiredRule, 'boolean'],
+            'zip_required'   => [...$requiredRule, 'boolean'],
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }
@@ -52,27 +44,27 @@ class CountryRequest extends FormRequest
         return [
             'name'           => [
                 'description' => 'Country name',
-                'example' => 'United States'
+                'example'     => 'United States',
             ],
             'code'           => [
                 'description' => 'ISO 3166-1 alpha-2 country code',
-                'example' => 'US'
+                'example'     => 'US',
             ],
             'phone_code'     => [
                 'description' => 'Phone country code',
-                'example' => '+1'
+                'example'     => '+1',
             ],
             'currency_id'    => [
                 'description' => 'Default currency ID',
-                'example' => 1
+                'example'     => 1,
             ],
             'state_required' => [
                 'description' => 'Whether state is required',
-                'example' => true
+                'example'     => true,
             ],
             'zip_required'   => [
                 'description' => 'Whether ZIP code is required',
-                'example' => true
+                'example'     => true,
             ],
         ];
     }

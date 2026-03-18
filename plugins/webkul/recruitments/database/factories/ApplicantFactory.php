@@ -48,11 +48,11 @@ class ApplicantFactory extends Factory
             'stage_id'         => Stage::factory(),
             'last_stage_id'    => null,
             'company_id'       => Company::factory(),
-            'recruiter_id'     => User::factory(),
+            'recruiter_id'     => User::query()->value('id') ?? User::factory(),
             'job_id'           => JobPosition::factory(),
             'department_id'    => Department::factory(),
             'refuse_reason_id' => null,
-            'creator_id'       => User::factory(),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
             'source_id'        => null,
             'medium_id'        => null,
         ];

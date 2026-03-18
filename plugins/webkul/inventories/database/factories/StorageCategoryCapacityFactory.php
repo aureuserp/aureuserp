@@ -32,7 +32,7 @@ class StorageCategoryCapacityFactory extends Factory
             'product_id'          => null,
             'storage_category_id' => StorageCategory::factory(),
             'package_type_id'     => null,
-            'creator_id'          => User::factory(),
+            'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }
 

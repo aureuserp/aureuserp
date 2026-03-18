@@ -28,7 +28,7 @@ class TeamMemberFactory extends Factory
     {
         return [
             'team_id' => Team::factory(),
-            'user_id' => User::factory(),
+            'user_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

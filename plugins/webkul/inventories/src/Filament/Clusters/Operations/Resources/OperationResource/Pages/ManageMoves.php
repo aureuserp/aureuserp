@@ -61,6 +61,9 @@ class ManageMoves extends ManageRelatedRecords
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.quantity'))
                     ->sortable()
                     ->color(fn ($record) => $record->destinationLocation->type == LocationType::INTERNAL ? 'success' : 'danger'),
+                TextColumn::make('uom.name')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.unit'))
+                    ->visible(OperationResource::getProductSettings()->enable_uom),
                 TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.state'))
                     ->sortable()

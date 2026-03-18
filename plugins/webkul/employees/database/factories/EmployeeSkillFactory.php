@@ -28,8 +28,8 @@ class EmployeeSkillFactory extends Factory
             'employee_id'    => Employee::factory(),
             'skill_id'       => Skill::factory(),
             'skill_level_id' => SkillLevel::factory(),
-            'start_date'     => $this->faker->date(),
-            'notes'          => $this->faker->text(),
+            'start_date'     => fake()->date(),
+            'notes'          => fake()->text(),
         ];
     }
 }

@@ -33,14 +33,14 @@ class BankStatementLineFactory extends Factory
             'partner_id'          => null,
             'currency_id'         => Currency::factory(),
             'foreign_currency_id' => null,
-            'created_by'          => User::factory(),
-            'account_number'      => $this->faker->optional()->numerify('############'),
-            'partner_name'        => $this->faker->optional()->company(),
+            'creator_id'          => User::query()->value('id') ?? User::factory(),
+            'account_number'      => fake()->optional()->numerify('############'),
+            'partner_name'        => fake()->optional()->company(),
             'transaction_type'    => null,
-            'payment_reference'   => $this->faker->optional()->bothify('PAY-####'),
+            'payment_reference'   => fake()->optional()->bothify('PAY-####'),
             'internal_index'      => null,
             'transaction_details' => null,
-            'amount'              => $this->faker->randomFloat(2, -1000, 1000),
+            'amount'              => fake()->randomFloat(2, -1000, 1000),
             'amount_currency'     => null,
             'is_reconciled'       => false,
             'amount_residual'     => null,
@@ -50,7 +50,7 @@ class BankStatementLineFactory extends Factory
     public function withPartner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_id' => Partner::factory(),
+            'partner_id' => Partner::query()->value('id') ?? Partner::factory(),
         ]);
     }
 

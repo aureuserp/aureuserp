@@ -17,16 +17,16 @@ class ActivityPlanTemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'sort'             => $this->faker->numberBetween(1, 100),
-            'summary'          => $this->faker->sentence(),
-            'note'             => $this->faker->optional()->paragraph(),
-            'delay_count'      => $this->faker->numberBetween(0, 30),
-            'delay_unit'       => $this->faker->randomElement(['days', 'weeks', 'months']),
-            'delay_from'       => $this->faker->randomElement(['previous_activity', 'begin']),
+            'sort'             => fake()->numberBetween(1, 100),
+            'summary'          => fake()->sentence(),
+            'note'             => fake()->optional()->paragraph(),
+            'delay_count'      => fake()->numberBetween(0, 30),
+            'delay_unit'       => fake()->randomElement(['days', 'weeks', 'months']),
+            'delay_from'       => fake()->randomElement(['previous_activity', 'begin']),
             'plan_id'          => null,
             'activity_type_id' => ActivityType::factory(),
             'responsible_id'   => null,
-            'creator_id'       => User::factory(),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

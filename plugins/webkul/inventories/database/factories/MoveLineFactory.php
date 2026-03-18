@@ -48,7 +48,7 @@ class MoveLineFactory extends Factory
             'source_location_id'      => Location::factory(),
             'destination_location_id' => Location::factory(),
             'company_id'              => Company::factory(),
-            'creator_id'              => User::factory(),
+            'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }
 
@@ -64,7 +64,7 @@ class MoveLineFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'lot_id'   => Lot::factory(),
-            'lot_name' => fake()->word(),
+            'lot_name' => fake()->words(2, true),
         ]);
     }
 
@@ -78,7 +78,7 @@ class MoveLineFactory extends Factory
     public function withPartner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_id' => Partner::factory(),
+            'partner_id' => Partner::query()->value('id') ?? Partner::factory(),
         ]);
     }
 }

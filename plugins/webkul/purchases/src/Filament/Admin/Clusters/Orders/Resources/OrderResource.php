@@ -56,6 +56,7 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
+use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
 use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\Purchase\Models\Order;
@@ -139,40 +140,9 @@ class OrderResource extends Resource
                                     ->required()
                                     ->preload()
                                     ->createOptionForm(fn (Schema $schema) => VendorResource::form($schema))
-                                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
-                                        if ($state) {
-                                            $vendor = Partner::find($state);
-
-                                            $set('payment_term_id', $vendor->property_supplier_payment_term_id);
-
-                                            $products = $get('products');
-                                            if (is_array($products)) {
-                                                foreach ($products as $key => $product) {
-                                                    if (isset($product['product_id'])) {
-                                                        $productModel = Product::find($product['product_id']);
-                                                        if ($productModel) {
-                                                            $vendorPrices = $productModel->supplierInformation
-                                                                ->where('partner_id', $state)
-                                                                ->where('currency_id', $get('currency_id'))
-                                                                ->where('min_qty', '<=', $product['product_qty'] ?? 1)
-                                                                ->sortByDesc('sort');
-
-                                                            if ($vendorPrices->isNotEmpty()) {
-                                                                $vendorPrice = $vendorPrices->first()->price;
-                                                            } else {
-                                                                $vendorPrice = $productModel->cost ?? $productModel->price;
-                                                            }
-
-                                                            $set("products.$key.price_unit", round($vendorPrice, 2));
-
-                                                            self::calculateLineTotals($set, $get, "products.$key.");
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    })
+                                    ->afterStateUpdated(fn ($state, Set $set, Get $get) => static::handleVendorChange($state, $set, $get))
                                     ->live()
+                                    ->reactive()
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                                 TextInput::make('partner_reference')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.vendor-reference'))
@@ -180,52 +150,32 @@ class OrderResource extends Resource
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.vendor-reference-tooltip')),
                                 Select::make('requisition_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.agreement'))
-                                    ->relationship('requisition', 'name')
+                                    ->relationship(
+                                        name: 'requisition',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->where('state', RequisitionState::CONFIRMED)
+                                            ->where('partner_id', $get('partner_id'))
+                                            ->where(function ($query) {
+                                                $query->whereNull('ends_at')
+                                                    ->orWhere('ends_at', '>=', now());
+                                            })
+                                            ->where(function ($query) {
+                                                $query->whereNull('starts_at')
+                                                    ->orWhere('starts_at', '<=', now());
+                                            })
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->visible(static::getOrderSettings()->enable_purchase_agreements)
-                                    ->afterStateUpdated(function ($state, $set, $get) {
-                                        if (! $state) {
-                                            $set('products', []);
-
-                                            return;
-                                        }
-
-                                        $requisition = Requisition::find($state);
-                                        if (! $requisition) {
-                                            $set('products', []);
-
-                                            return;
-                                        }
-
-                                        $products = [];
-                                        foreach ($requisition->lines as $line) {
-                                            $product = $line->product;
-                                            $uom = $line->uom;
-
-                                            $products[] = [
-                                                'product_id'  => $product?->id,
-                                                'uom_id'      => $uom?->id,
-                                                'product_qty' => $line->qty,
-                                                'price_unit'  => $line->price_unit,
-                                                'planned_at'  => now(),
-                                                'taxes'       => $product->productTaxes->pluck('id')->toArray(),
-                                                'discount'    => 0,
-                                            ];
-                                        }
-                                        $set('products', $products);
-
-                                        foreach (array_keys($products) as $key) {
-                                            self::calculateLineTotals($set, $get, "products.$key.");
-                                        }
-                                    })
+                                    ->afterStateUpdated(fn ($state, Set $set, Get $get) => static::handleRequisitionChange($state, $set, $get))
                                     ->live(),
                                 Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.currency'))
                                     ->relationship(
-                                        'currency',
-                                        'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                        name: 'currency',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                     )
                                     ->required()
                                     ->searchable()
@@ -841,6 +791,20 @@ class OrderResource extends Resource
             ->deleteAction(function (Action $action) {
                 $action->requiresConfirmation();
 
+                $action->before(function (Action $action, $livewire) {
+                    if ($livewire->getRecord()?->state === OrderState::PURCHASE) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.delete-action.error.title'))
+                            ->body(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.delete-action.error.body'))
+                            ->send();
+
+                        $action->cancel();
+
+                        return;
+                    }
+                });
+
                 $action->after(function (Get $get, $livewire) {
                     $totals = self::calculateOrderTotals($get, $livewire);
 
@@ -855,60 +819,72 @@ class OrderResource extends Resource
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.product'))
                     ->width(250)
                     ->markAsRequired(),
+
                 TableColumn::make('planned_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.expected-arrival'))
                     ->width(150)
                     ->markAsRequired()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TableColumn::make('product_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.quantity'))
                     ->width(100)
                     ->markAsRequired(),
+
                 TableColumn::make('qty_received')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.received'))
                     ->width(100)
                     ->markAsRequired()
                     ->visible(fn (): bool => Package::isPluginInstalled('inventories') && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->toggleable(),
+
                 TableColumn::make('qty_received_manual')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.received'))
                     ->width(100)
                     ->markAsRequired()
                     ->visible(fn (): bool => ! Package::isPluginInstalled('inventories') && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->toggleable(),
+
                 TableColumn::make('qty_invoiced')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.billed'))
                     ->width(100)
                     ->visible(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->toggleable(),
+
                 TableColumn::make('uom_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.unit'))
                     ->width(100)
                     ->markAsRequired()
                     ->visible(static::getProductSettings()->enable_uom)
                     ->toggleable(),
+
                 TableColumn::make('product_packaging_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.packaging-qty'))
                     ->width(150)
                     ->visible(static::getProductSettings()->enable_packagings)
                     ->toggleable(),
+
                 TableColumn::make('product_packaging_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.packaging'))
                     ->width(150)
                     ->visible(static::getProductSettings()->enable_packagings)
                     ->toggleable(),
+
                 TableColumn::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.unit-price'))
                     ->width(100)
                     ->markAsRequired(),
+
                 TableColumn::make('taxes')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.taxes'))
                     ->width(150)
                     ->toggleable(),
+
                 TableColumn::make('discount')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.discount-percentage'))
                     ->width(100)
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TableColumn::make('price_subtotal')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.amount'))
                     ->width(100),
@@ -953,7 +929,8 @@ class OrderResource extends Resource
                         static::afterProductUpdated($set, $get);
                     })
                     ->required()
-                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::SENT, OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
+
                 DateTimePicker::make('planned_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.expected-arrival'))
                     ->native(false)
@@ -971,6 +948,7 @@ class OrderResource extends Resource
                         $set('../../planned_at', $state);
                     })
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 TextInput::make('product_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.quantity'))
                     ->required()
@@ -978,10 +956,25 @@ class OrderResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, Get $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get, $state, $record) {
+                        $qtyReceived = $record?->qty_received ?? 0;
+
+                        if ($qtyReceived > 0 && floatval($state) < $qtyReceived) {
+                            $set('product_qty', $qtyReceived);
+
+                            Notification::make()
+                                ->danger()
+                                ->title(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.title'))
+                                ->body(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.body', ['qty' => $qtyReceived]))
+                                ->send();
+
+                            return;
+                        }
+
                         static::afterProductQtyUpdated($set, $get);
                     })
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 TextInput::make('qty_received')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.received'))
                     ->required()
@@ -998,6 +991,7 @@ class OrderResource extends Resource
                     ->maxValue(99999999999)
                     ->visible(fn ($record): bool => ! Package::isPluginInstalled('inventories') && in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED]) || $record?->qty_received_method == QtyReceivedMethod::STOCK_MOVE),
+
                 TextInput::make('qty_invoiced')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.billed'))
                     ->default(0)
@@ -1005,21 +999,29 @@ class OrderResource extends Resource
                     ->maxValue(99999999999)
                     ->visible(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->disabled(),
+
                 Select::make('uom_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.unit'))
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                        function (Builder $query, Get $get) {
+                            $product = Product::withTrashed()->find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->required()
                     ->live()
+                    ->native(false)
                     ->selectablePlaceholder(false)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterUOMUpdated($set, $get);
                     })
                     ->visible(static::getProductSettings()->enable_uom)
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
+
                 TextInput::make('product_packaging_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging-qty'))
                     ->live(onBlur: true)
@@ -1030,6 +1032,7 @@ class OrderResource extends Resource
                     })
                     ->visible(static::getProductSettings()->enable_packagings)
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 Select::make('product_packaging_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging'))
                     ->relationship(
@@ -1045,6 +1048,7 @@ class OrderResource extends Resource
                     })
                     ->visible(static::getProductSettings()->enable_packagings)
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 TextInput::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.unit-price'))
                     ->numeric()
@@ -1057,6 +1061,7 @@ class OrderResource extends Resource
                         self::calculateLineTotals($set, $get);
                     })
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 Select::make('taxes')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.taxes'))
                     ->relationship(
@@ -1072,6 +1077,7 @@ class OrderResource extends Resource
                     })
                     ->live()
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 TextInput::make('discount')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.discount-percentage'))
                     ->numeric()
@@ -1083,15 +1089,19 @@ class OrderResource extends Resource
                         self::calculateLineTotals($set, $get);
                     })
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 TextInput::make('price_subtotal')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.amount'))
                     ->default(0)
                     ->readOnly()
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
+
                 Hidden::make('product_uom_qty')
                     ->default(0),
+
                 Hidden::make('price_tax')
                     ->default(0),
+
                 Hidden::make('price_total')
                     ->default(0),
             ])
@@ -1145,7 +1155,7 @@ class OrderResource extends Resource
 
         $set('uom_id', $product->uom_id);
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'));
+        $uomQuantity = static::calculateUnitQuantity($product->uom_id, $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1170,7 +1180,9 @@ class OrderResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'));
+        $product = Product::find($get('product_id'));
+
+        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1193,7 +1205,9 @@ class OrderResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'));
+        $product = Product::find($get('product_id'));
+
+        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1258,15 +1272,25 @@ class OrderResource extends Resource
         self::calculateLineTotals($set, $get);
     }
 
-    private static function calculateUnitQuantity($uomId, $quantity)
+    private static function calculateUnitQuantity($fromUomId, $quantity, $toUomId = null): float
     {
-        if (! $uomId) {
-            return $quantity;
+        if (! $fromUomId || ! filled($quantity)) {
+            return (float) ($quantity ?? 0);
         }
 
-        $uom = Uom::find($uomId);
+        $fromUom = UOM::find($fromUomId);
 
-        return (float) ($quantity ?? 0) / $uom->factor;
+        if (! $fromUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        $toUom = $toUomId ? UOM::find($toUomId) : $fromUom;
+
+        if (! $toUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        return $fromUom->computeQuantity((float) ($quantity ?? 0), $toUom, false);
     }
 
     private static function calculateUnitPrice($get)
@@ -1287,11 +1311,11 @@ class OrderResource extends Resource
             $vendorPrice = $product->cost ?: $product->price;
         }
 
-        if (! $get('uom_id')) {
+        if (! $get('uom_id') || ! $product->uom) {
             return $vendorPrice;
         }
 
-        $uomQty = Uom::find($get('uom_id'))->computeQuantity(1, $product->uom, true, 'HALF-UP');
+        $uomQty = UOM::find($get('uom_id'))->computeQuantity(1, $product->uom, false);
 
         return (float) ($vendorPrice * $uomQty);
     }
@@ -1410,5 +1434,140 @@ class OrderResource extends Resource
     {
         return parent::getEloquentQuery()
             ->orderByDesc('id');
+    }
+
+    private static function handleVendorChange($state, Set $set, Get $get): void
+    {
+        if (! $state) {
+            $set('requisition_id', null);
+
+            return;
+        }
+
+        $vendor = Partner::find($state);
+
+        $set('payment_term_id', $vendor->property_supplier_payment_term_id);
+
+        $set('requisition_id', null);
+
+        if (static::getOrderSettings()->enable_purchase_agreements) {
+            $activeAgreement = static::getActiveAgreementForVendor($state);
+
+            if ($activeAgreement) {
+                $set('requisition_id', $activeAgreement->id);
+
+                $products = static::mapRequisitionLinesToProducts($activeAgreement);
+
+                $set('products', $products);
+
+                $set('currency_id', $activeAgreement?->currency_id);
+
+                foreach (array_keys($products) as $key) {
+                    self::calculateLineTotals($set, $get, "products.$key.");
+                }
+
+                return;
+            }
+        }
+
+        static::updateProductPricesForVendor($state, $set, $get);
+    }
+
+    private static function handleRequisitionChange($state, Set $set, Get $get): void
+    {
+        if (! $state) {
+            return;
+        }
+
+        $requisition = Requisition::find($state);
+
+        if (! $requisition) {
+            return;
+        }
+
+        $products = static::mapRequisitionLinesToProducts($requisition);
+
+        $set('products', $products);
+
+        $set('currency_id', $requisition?->currency_id);
+
+        foreach (array_keys($products) as $key) {
+            self::calculateLineTotals($set, $get, "products.$key.");
+        }
+    }
+
+    private static function getActiveAgreementForVendor(int $partnerId): ?Requisition
+    {
+        return Requisition::where('partner_id', $partnerId)
+            ->where('state', RequisitionState::CONFIRMED)
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->latest()
+            ->first();
+    }
+
+    private static function mapRequisitionLinesToProducts(Requisition $requisition): array
+    {
+        $products = [];
+
+        foreach ($requisition->lines as $line) {
+            $product = $line->product;
+            $uom = $line->uom;
+
+            $products[] = [
+                'product_id'  => $product?->id,
+                'uom_id'      => $uom?->id,
+                'product_qty' => $line->qty,
+                'price_unit'  => $line->price_unit,
+                'planned_at'  => now(),
+                'taxes'       => $product?->productTaxes->pluck('id')->toArray() ?? [],
+                'discount'    => 0,
+            ];
+        }
+
+        return $products;
+    }
+
+    private static function updateProductPricesForVendor($partnerId, Set $set, Get $get): void
+    {
+        $products = $get('products');
+
+        if (! is_array($products)) {
+            return;
+        }
+
+        foreach ($products as $key => $product) {
+            if (! isset($product['product_id'])) {
+                continue;
+            }
+
+            $productModel = Product::find($product['product_id']);
+
+            if (! $productModel) {
+                continue;
+            }
+
+            $vendorPrices = $productModel->supplierInformation
+                ->where('partner_id', $partnerId)
+                ->where('currency_id', $get('currency_id'))
+                ->where('min_qty', '<=', $product['product_qty'] ?? 1)
+                ->sortByDesc('sort');
+
+            if ($vendorPrices->isNotEmpty()) {
+                $vendorPrice = $vendorPrices->first()->price;
+            } else {
+                $vendorPrice = $productModel->cost ?? $productModel->price;
+            }
+
+            $set("products.$key.price_unit", round($vendorPrice, 2));
+
+            self::calculateLineTotals($set, $get, "products.$key.");
+        }
     }
 }

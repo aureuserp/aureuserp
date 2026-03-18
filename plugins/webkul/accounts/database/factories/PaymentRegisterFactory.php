@@ -28,7 +28,7 @@ class PaymentRegisterFactory extends Factory
      */
     public function definition(): array
     {
-        $amount = $this->faker->randomFloat(2, 10, 1000);
+        $amount = fake()->randomFloat(2, 10, 1000);
 
         return [
             'currency_id'                 => Currency::factory(),
@@ -37,17 +37,17 @@ class PaymentRegisterFactory extends Factory
             'custom_user_currency_id'     => null,
             'source_currency_id'          => Currency::factory(),
             'company_id'                  => Company::factory(),
-            'partner_id'                  => Partner::factory(),
+            'partner_id'                  => Partner::query()->value('id') ?? Partner::factory(),
             'payment_method_line_id'      => PaymentMethodLine::factory(),
             'writeoff_account_id'         => null,
-            'creator_id'                  => User::factory(),
+            'creator_id'                  => User::query()->value('id') ?? User::factory(),
             'communication'               => null,
             'installments_mode'           => InstallmentMode::FULL,
             'payment_type'                => PaymentType::RECEIVE,
             'partner_type'                => 'customer',
             'payment_difference_handling' => 'open',
             'writeoff_label'              => null,
-            'payment_date'                => $this->faker->date(),
+            'payment_date'                => fake()->date(),
             'amount'                      => $amount,
             'custom_user_amount'          => $amount,
             'source_amount'               => $amount,

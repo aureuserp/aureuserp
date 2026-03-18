@@ -16,16 +16,16 @@ class CalendarLeavesFactory extends Factory
 
     public function definition(): array
     {
-        $dateFrom = $this->faker->dateTimeBetween('now', '+1 year');
-        $dateTo = $this->faker->dateTimeBetween($dateFrom, '+1 year');
+        $dateFrom = fake()->dateTimeBetween('now', '+1 year');
+        $dateTo = fake()->dateTimeBetween($dateFrom, '+1 year');
 
         return [
-            'name'        => $this->faker->words(3, true),
-            'time_type'   => $this->faker->randomElement(['morning', 'afternoon', 'full_day']),
+            'name'        => fake()->words(3, true),
+            'time_type'   => fake()->randomElement(['morning', 'afternoon', 'full_day']),
             'date_from'   => $dateFrom,
             'date_to'     => $dateTo,
             'calendar_id' => Calendar::factory(),
-            'creator_id'  => User::factory(),
+            'creator_id'  => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

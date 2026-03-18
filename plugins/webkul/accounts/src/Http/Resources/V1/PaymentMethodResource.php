@@ -20,10 +20,10 @@ class PaymentMethodResource extends JsonResource
             'code'               => $this->code,
             'payment_type'       => $this->payment_type,
             'name'               => $this->name,
-            'created_by'         => $this->created_by,
+            'creator_id'         => $this->creator_id,
             'created_at'         => $this->created_at,
             'updated_at'         => $this->updated_at,
-            'createdBy'          => new UserResource($this->whenLoaded('createdBy')),
+            'creator'            => new UserResource($this->whenLoaded('creator')),
             'accountMovePayment' => MoveResource::collection($this->whenLoaded('accountMovePayment')),
         ];
     }

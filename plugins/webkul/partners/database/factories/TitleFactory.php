@@ -29,7 +29,7 @@ class TitleFactory extends Factory
         return [
             'name'       => fake()->name(),
             'short_name' => fake()->name(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

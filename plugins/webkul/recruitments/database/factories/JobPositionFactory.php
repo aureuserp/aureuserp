@@ -19,20 +19,22 @@ class JobPositionFactory extends EmployeeJobPositionFactory
     public function definition(): array
     {
         return array_merge(parent::definition(), [
-            'address_id' => null,
-            'manager_id' => null,
-            'industry_id' => null,
-            'recruiter_id' => null,
+            'address_id'           => null,
+            'manager_id'           => null,
+            'industry_id'          => null,
+            'recruiter_id'         => null,
             'no_of_hired_employee' => 0,
-            'date_from' => null,
-            'date_to' => null,
+            'date_from'            => null,
+            'date_to'              => null,
         ]);
     }
 
     public function withAddress(): static
     {
         return $this->state(fn (array $attributes) => [
-            'address_id' => Partner::factory()->state(['sub_type' => 'company']),
+            'address_id' => Partner::query()
+                ->where('sub_type', 'company')
+                ->value('id') ?? Partner::factory()->state(['sub_type' => 'company']),
         ]);
     }
 
@@ -61,7 +63,7 @@ class JobPositionFactory extends EmployeeJobPositionFactory
     {
         return $this->state(fn (array $attributes) => [
             'date_from' => now(),
-            'date_to' => now()->addMonths(6),
+            'date_to'   => now()->addMonths(6),
         ]);
     }
 

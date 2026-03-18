@@ -27,7 +27,7 @@ class UtmCampaignResource extends JsonResource
             'user'              => UserResource::make($this->whenLoaded('user')),
             'stage'             => UtmStageResource::make($this->whenLoaded('stage')),
             'company'           => CompanyResource::make($this->whenLoaded('company')),
-            'creator'           => UserResource::make($this->whenLoaded('createdBy')),
+            'creator'           => UserResource::make($this->whenLoaded('creator')),
         ];
     }
 }

@@ -160,7 +160,7 @@ class TaxController extends Controller
     #[UrlParam('id', 'integer', 'The tax ID', required: true, example: 1)]
     #[ResponseFromApiResource(TaxResource::class, Tax::class, additional: ['message' => 'Tax updated successfully.'])]
     #[Response(status: 404, description: 'Tax not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(TaxRequest $request, string $id)
     {
@@ -170,28 +170,37 @@ class TaxController extends Controller
 
         $data = $request->validated();
 
+        $hasInvoiceLines = $request->has('invoice_repartition_lines');
+        $hasRefundLines = $request->has('refund_repartition_lines');
+
         $invoiceRepartitionLines = $data['invoice_repartition_lines'] ?? [];
         $refundRepartitionLines = $data['refund_repartition_lines'] ?? [];
         unset($data['invoice_repartition_lines'], $data['refund_repartition_lines']);
 
-        DB::transaction(function () use ($tax, $data, $invoiceRepartitionLines, $refundRepartitionLines) {
+        DB::transaction(function () use ($tax, $data, $invoiceRepartitionLines, $refundRepartitionLines, $hasInvoiceLines, $hasRefundLines) {
             $tax->update($data);
 
-            $this->syncRepartitionLines(
-                $tax->invoiceRepartitionLines()->orderBy('sort')->get(),
-                $invoiceRepartitionLines,
-                $tax,
-                DocumentType::INVOICE
-            );
+            if ($hasInvoiceLines) {
+                $this->syncRepartitionLines(
+                    $tax->invoiceRepartitionLines()->orderBy('sort')->get(),
+                    $invoiceRepartitionLines,
+                    $tax,
+                    DocumentType::INVOICE
+                );
+            }
 
-            $this->syncRepartitionLines(
-                $tax->refundRepartitionLines()->orderBy('sort')->get(),
-                $refundRepartitionLines,
-                $tax,
-                DocumentType::REFUND
-            );
+            if ($hasRefundLines) {
+                $this->syncRepartitionLines(
+                    $tax->refundRepartitionLines()->orderBy('sort')->get(),
+                    $refundRepartitionLines,
+                    $tax,
+                    DocumentType::REFUND
+                );
+            }
 
-            TaxPartition::validateRepartitionLines($tax->id);
+            if ($hasInvoiceLines || $hasRefundLines) {
+                TaxPartition::validateRepartitionLines($tax->id);
+            }
         });
 
         $tax->load(['invoiceRepartitionLines', 'refundRepartitionLines']);

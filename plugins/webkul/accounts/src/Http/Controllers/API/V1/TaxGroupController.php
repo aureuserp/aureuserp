@@ -97,7 +97,7 @@ class TaxGroupController extends Controller
     #[UrlParam('id', 'integer', 'The tax group ID', required: true, example: 1)]
     #[ResponseFromApiResource(TaxGroupResource::class, TaxGroup::class, additional: ['message' => 'Tax group updated successfully.'])]
     #[Response(status: 404, description: 'Tax group not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(TaxGroupRequest $request, string $id)
     {

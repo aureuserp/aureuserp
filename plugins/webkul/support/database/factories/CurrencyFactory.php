@@ -12,11 +12,11 @@ class CurrencyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'           => $this->faker->unique()->currencyCode(),
-            'symbol'         => $this->faker->randomElement(['$', '€', '£', '¥', '₹']),
-            'iso_numeric'    => $this->faker->unique()->numerify('###'),
+            'name'           => fake()->unique()->currencyCode(),
+            'symbol'         => fake()->randomElement(['$', '€', '£', '¥', '₹']),
+            'iso_numeric'    => fake()->unique()->numerify('###'),
             'decimal_places' => 2,
-            'full_name'      => $this->faker->unique()->words(2, true),
+            'full_name'      => fake()->unique()->words(2, true),
             'rounding'       => 0.01,
             'active'         => true,
         ];

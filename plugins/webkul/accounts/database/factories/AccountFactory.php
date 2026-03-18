@@ -16,10 +16,10 @@ class AccountFactory extends Factory
     {
         return [
             'currency_id'  => Currency::factory(),
-            'creator_id'   => User::factory(),
+            'creator_id'   => User::query()->value('id') ?? User::factory(),
             'account_type' => AccountType::ASSET_CURRENT,
-            'name'         => $this->faker->words(3, true),
-            'code'         => $this->faker->unique()->numerify('###'),
+            'name'         => fake()->words(3, true),
+            'code'         => fake()->unique()->numerify('###'),
             'note'         => null,
             'deprecated'   => false,
             'reconcile'    => false,
@@ -47,6 +47,13 @@ class AccountFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'account_type' => AccountType::EXPENSE,
+        ]);
+    }
+
+    public function income(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => AccountType::INCOME,
         ]);
     }
 }

@@ -307,9 +307,9 @@ class QuotationResource extends Resource
                                         Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
                                             ->relationship(
-                                                'currency',
-                                                'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                name: 'currency',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
                                             )
                                             ->required()
                                             ->searchable()
@@ -1119,11 +1119,12 @@ class QuotationResource extends Resource
                         if (! $get('product_id')) {
                             return;
                         }
+
                         $product = Product::withTrashed()->find($get('product_id'));
 
                         $set('name', $product->name);
-
                         $set('price_unit', $product->price);
+                        $set('product_uom_id', $product->uom_id);
                     })
                     ->required(),
                 TextInput::make('quantity')
@@ -1140,11 +1141,14 @@ class QuotationResource extends Resource
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                        function (Builder $query, Get $get) {
+                            $product = Product::withTrashed()->find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->required()
-                    ->live()
-                    ->default(UOM::first()?->id)
                     ->selectablePlaceholder(false)
                     ->dehydrated()
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
@@ -1314,7 +1318,7 @@ class QuotationResource extends Resource
                     ->visible(fn () => in_array($record?->state, [OrderState::SALE])),
                 TableColumn::make('product_uom_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.uom'))
-                    ->width(100)
+                    ->width(150)
                     ->toggleable()
                     ->markAsRequired()
                     ->visible(fn () => resolve(ProductSettings::class)->enable_uom),
@@ -1439,11 +1443,16 @@ class QuotationResource extends Resource
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                        function (Builder $query, Get $get) {
+                            $product = Product::withTrashed()->find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->required()
                     ->live()
-                    ->default(UOM::first()?->id)
+                    ->native(false)
                     ->selectablePlaceholder(false)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
@@ -1590,7 +1599,7 @@ class QuotationResource extends Resource
 
         $set('product_uom_id', $product->uom_id);
 
-        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
+        $uomQuantity = static::calculateUnitQuantity($product->uom_id, $get('product_qty'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1617,7 +1626,9 @@ class QuotationResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
+        $product = Product::withTrashed()->find($get('product_id'));
+
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1636,7 +1647,9 @@ class QuotationResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
+        $product = Product::withTrashed()->find($get('product_id'));
+
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'), $product->uom_id);
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1701,15 +1714,25 @@ class QuotationResource extends Resource
         self::calculateLineTotals($set, $get);
     }
 
-    private static function calculateUnitQuantity($uomId, $quantity)
+    private static function calculateUnitQuantity($fromUomId, $quantity, $toUomId = null): float
     {
-        if (! $uomId) {
-            return $quantity;
+        if (! $fromUomId || ! filled($quantity)) {
+            return (float) ($quantity ?? 0);
         }
 
-        $uom = Uom::find($uomId);
+        $fromUom = UOM::find($fromUomId);
 
-        return (float) ($quantity ?? 0) / $uom->factor;
+        if (! $fromUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        $toUom = $toUomId ? UOM::find($toUomId) : $fromUom;
+
+        if (! $toUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        return $fromUom->computeQuantity((float) ($quantity ?? 0), $toUom, false);
     }
 
     private static function calculateUnitPrice($get)
@@ -1730,11 +1753,11 @@ class QuotationResource extends Resource
             $vendorPrice = $product->price ?? $product->cost;
         }
 
-        if (! $get('product_uom_id')) {
+        if (! $get('product_uom_id') || ! $product->uom) {
             return $vendorPrice;
         }
 
-        $uomQty = Uom::find($get('product_uom_id'))->computeQuantity(1, $product->uom, true, 'HALF-UP');
+        $uomQty = UOM::find($get('product_uom_id'))->computeQuantity(1, $product->uom, false);
 
         return (float) ($vendorPrice * $uomQty);
     }
@@ -1871,7 +1894,7 @@ class QuotationResource extends Resource
 
         $totalMargin = $marginPerUnit * $quantity;
 
-        if ($marginPerUnit != 0) {
+        if ($marginPerUnit != 0 && $discountedPrice != 0) {
             $marginPercentage = ($marginPerUnit / $discountedPrice) * 100;
         } else {
             $marginPercentage = 0;

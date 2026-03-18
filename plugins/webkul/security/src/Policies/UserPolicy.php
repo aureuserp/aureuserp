@@ -59,6 +59,10 @@ class UserPolicy
             return false;
         }
 
+        if ($user->id === $record->id) {
+            return false;
+        }
+
         return $this->hasAccess($user, $record, 'creator');
     }
 
@@ -76,6 +80,10 @@ class UserPolicy
     public function forceDelete(User $user, User $record): bool
     {
         if (! $user->can('force_delete_security_user')) {
+            return false;
+        }
+
+        if ($user->id === $record->id) {
             return false;
         }
 

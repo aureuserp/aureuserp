@@ -107,7 +107,7 @@ class MoveResource extends JsonResource
             'invoiceUser'                            => new UserResource($this->whenLoaded('invoiceUser')),
             'invoiceIncoterm'                        => new IncotermResource($this->whenLoaded('invoiceIncoterm')),
             'invoiceCashRounding'                    => new CashRoundingResource($this->whenLoaded('invoiceCashRounding')),
-            'createdBy'                              => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                                => new UserResource($this->whenLoaded('creator')),
             'source'                                 => new UTMSourceResource($this->whenLoaded('source')),
             'medium'                                 => new UTMMediumResource($this->whenLoaded('medium')),
             'paymentMethodLine'                      => new PaymentMethodLineResource($this->whenLoaded('paymentMethodLine')),

@@ -42,7 +42,6 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2024_12_12_115256_create_activity_types_table',
                 '2024_12_12_115728_create_activity_plan_templates_table',
                 '2024_12_17_082318_create_activity_type_suggestions_table',
-                '2024_12_23_103137_create_activity_logs_table',
                 '2025_01_03_061444_create_email_templates_table',
                 '2025_01_03_061445_create_email_logs_table',
                 '2025_01_03_105625_create_unit_of_measure_categories_table',

@@ -16,16 +16,16 @@ class StageFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(2, true),
-            'sort' => 1,
-            'is_default' => false,
-            'hired_stage' => false,
-            'fold' => false,
+            'name'           => fake()->words(2, true),
+            'sort'           => 1,
+            'is_default'     => false,
+            'hired_stage'    => false,
+            'fold'           => false,
             'legend_blocked' => null,
-            'legend_done' => null,
-            'legend_normal' => null,
-            'requirements' => null,
-            'creator_id' => User::factory(),
+            'legend_done'    => null,
+            'legend_normal'  => null,
+            'requirements'   => null,
+            'creator_id'     => User::query()->value('id') ?? User::factory(),
         ];
     }
 
@@ -53,9 +53,9 @@ class StageFactory extends Factory
     public function withLegend(): static
     {
         return $this->state(fn (array $attributes) => [
-            'legend_blocked' => fake()->word(),
-            'legend_done' => fake()->word(),
-            'legend_normal' => fake()->word(),
+            'legend_blocked' => fake()->words(2, true),
+            'legend_done'    => fake()->words(2, true),
+            'legend_normal'  => fake()->words(2, true),
         ]);
     }
 

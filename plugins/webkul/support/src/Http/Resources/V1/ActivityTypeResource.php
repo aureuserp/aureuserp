@@ -42,7 +42,7 @@ class ActivityTypeResource extends JsonResource
             'triggered_next_type'      => new ActivityTypeResource($this->whenLoaded('triggeredNextType')),
             'activity_types'           => ActivityTypeResource::collection($this->whenLoaded('activityTypes')),
             'suggested_activity_types' => ActivityTypeResource::collection($this->whenLoaded('suggestedActivityTypes')),
-            'creator'                  => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                  => new UserResource($this->whenLoaded('creator')),
             'default_user'             => new UserResource($this->whenLoaded('defaultUser')),
         ];
     }

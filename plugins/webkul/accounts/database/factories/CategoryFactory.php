@@ -38,7 +38,7 @@ class CategoryFactory extends BaseCategoryFactory
     public function withIncomeAccount(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_income_id' => Account::factory(),
+            'property_account_income_id' => Account::factory()->income(),
         ]);
     }
 
@@ -48,7 +48,7 @@ class CategoryFactory extends BaseCategoryFactory
     public function withExpenseAccount(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_expense_id' => Account::factory(),
+            'property_account_expense_id' => Account::factory()->expense(),
         ]);
     }
 
@@ -58,7 +58,7 @@ class CategoryFactory extends BaseCategoryFactory
     public function withDownPaymentAccount(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_down_payment_id' => Account::factory(),
+            'property_account_down_payment_id' => Account::factory()->income(),
         ]);
     }
 
@@ -68,9 +68,9 @@ class CategoryFactory extends BaseCategoryFactory
     public function withAllAccounts(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_income_id'       => Account::factory(),
-            'property_account_expense_id'      => Account::factory(),
-            'property_account_down_payment_id' => Account::factory(),
+            'property_account_income_id'       => Account::factory()->income(),
+            'property_account_expense_id'      => Account::factory()->expense(),
+            'property_account_down_payment_id' => Account::factory()->income(),
         ]);
     }
 }

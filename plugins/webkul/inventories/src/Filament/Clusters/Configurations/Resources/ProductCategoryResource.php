@@ -10,7 +10,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Webkul\Account\Filament\Resources\ProductCategoryResource as CategoryResource;
+use Webkul\Product\Filament\Resources\CategoryResource as CategoryResource;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\CreateProductCategory;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\EditProductCategory;

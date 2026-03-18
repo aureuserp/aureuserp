@@ -15,12 +15,12 @@ class EmailLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'recipient_email' => $this->faker->safeEmail(),
-            'recipient_name'  => $this->faker->name(),
-            'subject'         => $this->faker->sentence(),
-            'status'          => $this->faker->randomElement(['sent', 'failed', 'pending']),
+            'recipient_email' => fake()->safeEmail(),
+            'recipient_name'  => fake()->name(),
+            'subject'         => fake()->sentence(),
+            'status'          => fake()->randomElement(['sent', 'failed', 'pending']),
             'error_message'   => null,
-            'sent_at'         => $this->faker->optional()->dateTimeBetween('-1 month', 'now'),
+            'sent_at'         => fake()->optional()->dateTimeBetween('-1 month', 'now'),
         ];
     }
 
@@ -28,7 +28,7 @@ class EmailLogFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status'        => 'failed',
-            'error_message' => $this->faker->sentence(),
+            'error_message' => fake()->sentence(),
         ]);
     }
 }

@@ -20,7 +20,7 @@ class PackageDestinationFactory extends Factory
         return [
             'operation_id'            => Operation::factory(),
             'destination_location_id' => Location::factory(),
-            'creator_id'              => User::factory(),
+            'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

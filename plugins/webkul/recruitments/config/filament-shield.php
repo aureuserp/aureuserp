@@ -6,32 +6,43 @@ use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResourc
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\JobByPositionResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ApplicantCategoryResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DegreeResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DepartmentResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\EmploymentTypeResource;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\JobPositionResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\RefuseReasonResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\SkillTypeResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMMediumResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMSourceResource;
 
+$permissions = [
+    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
+    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
+    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
+    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
+];
+
 return [
     'resources' => [
         'manage' => [
-            ActivityPlanResource::class        => ['view_any', 'view', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            ApplicantCategoryResource::class   => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-            DegreeResource::class              => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-            RefuseReasonResource::class        => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-            UTMMediumResource::class           => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-            UTMSourceResource::class           => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-            SkillTypeResource::class           => ['view_any', 'view', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            DepartmentResource::class          => ['view_any', 'view', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            StageResource::class               => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-            EmploymentTypeResource::class      => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-            JobByPositionResource::class       => ['view_any', 'update'],
-            CandidateResource::class           => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-            ApplicantResource::class           => ['view_any', 'view', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
+            ActivityPlanResource::class => $permissions['SOFT_DELETE'],
+            ApplicantCategoryResource::class => $permissions['BASIC'],
+            DegreeResource::class => $permissions['REORDER'],
+            RefuseReasonResource::class => $permissions['REORDER'],
+            UTMMediumResource::class => $permissions['BASIC'],
+            UTMSourceResource::class => $permissions['BASIC'],
+            SkillTypeResource::class => $permissions['SOFT_DELETE'],
+            DepartmentResource::class => $permissions['SOFT_DELETE'],
+            StageResource::class => $permissions['REORDER'],
+            EmploymentTypeResource::class => $permissions['REORDER'],
+            JobByPositionResource::class => $permissions['FULL'],
+            CandidateResource::class => $permissions['SOFT_DELETE'],
+            ApplicantResource::class => $permissions['SOFT_DELETE'],
+            ActivityTypeResource::class => $permissions['FULL'],
+            JobPositionResource::class => $permissions['FULL'],
         ],
         'exclude' => [],
     ],

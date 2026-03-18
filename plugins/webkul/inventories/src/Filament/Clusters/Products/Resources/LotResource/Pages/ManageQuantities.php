@@ -18,6 +18,7 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageQuantities extends ManageRelatedRecords
@@ -134,6 +135,10 @@ class ManageQuantities extends ManageRelatedRecords
                             ->success()
                             ->send();
                     }),
+                TextColumn::make('product.uom.name')
+                    ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.unit'))
+                    ->placeholder('—')
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
             ])
             ->recordActions([
                 DeleteAction::make()

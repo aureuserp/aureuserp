@@ -24,7 +24,7 @@ class TableViewFactory extends Factory
             'filterable_type' => null,
 
             // Relationships
-            'user_id' => User::factory(),
+            'user_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 
@@ -38,7 +38,7 @@ class TableViewFactory extends Factory
     public function withIcon(): static
     {
         return $this->state(fn (array $attributes) => [
-            'icon'  => fake()->word(),
+            'icon'  => fake()->words(2, true),
             'color' => fake()->hexColor(),
         ]);
     }

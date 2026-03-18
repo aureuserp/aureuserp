@@ -17,8 +17,8 @@ class ApplicantInterviewerFactory extends Factory
     public function definition(): array
     {
         return [
-            'applicant_id' => Applicant::factory(),
-            'interviewer_id' => User::factory(),
+            'applicant_id'   => Applicant::factory(),
+            'interviewer_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

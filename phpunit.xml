@@ -5,11 +5,26 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+        <testsuite name="AccountFeature">
+            <directory>plugins/webkul/accounts/tests/Feature</directory>
         </testsuite>
-        <testsuite name="Feature">
-            <directory>tests/Feature</directory>
+        <testsuite name="PartnerFeature">
+            <directory>plugins/webkul/partners/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="PurchaseFeature">
+            <directory>plugins/webkul/purchases/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="InventoryFeature">
+            <directory>plugins/webkul/inventories/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="SaleFeature">
+            <directory>plugins/webkul/sales/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="ProjectFeature">
+            <directory>plugins/webkul/projects/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="SupportFeature">
+            <directory>plugins/webkul/support/tests/Feature</directory>
         </testsuite>
     </testsuites>
     <source>

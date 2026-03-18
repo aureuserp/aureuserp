@@ -98,6 +98,11 @@ class Operation extends Model
         ];
     }
 
+    public function return(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'return_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

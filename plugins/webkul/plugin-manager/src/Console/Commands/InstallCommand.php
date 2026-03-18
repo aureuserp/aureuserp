@@ -436,7 +436,7 @@ class InstallCommand extends Command
 
             $artisan = escapeshellarg(base_path('artisan'));
 
-            $cmd = "timeout 60 $php $artisan shield:generate --all --option=permissions --panel=admin 2>&1";
+            $cmd = $this->buildTimeoutCommand(60, "$php $artisan shield:generate --all --option=permissions --panel=admin 2>&1");
 
             exec($cmd, $output, $exitCode);
 
@@ -503,5 +503,14 @@ class InstallCommand extends Command
         }
 
         return 'php';
+    }
+
+    protected function buildTimeoutCommand(int $seconds, string $command): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
+        }
+
+        return "timeout {$seconds} {$command}";
     }
 }

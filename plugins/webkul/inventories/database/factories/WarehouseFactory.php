@@ -29,7 +29,7 @@ class WarehouseFactory extends Factory
             // Relationships
             'partner_address_id'       => null,
             'company_id'               => Company::factory(),
-            'creator_id'               => User::factory(),
+            'creator_id'               => User::query()->value('id') ?? User::factory(),
             'view_location_id'         => null,
             'lot_stock_location_id'    => null,
             'input_stock_location_id'  => null,
@@ -55,7 +55,7 @@ class WarehouseFactory extends Factory
     public function withAddress(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_address_id' => Partner::factory(),
+            'partner_address_id' => Partner::query()->value('id') ?? Partner::factory(),
         ]);
     }
 

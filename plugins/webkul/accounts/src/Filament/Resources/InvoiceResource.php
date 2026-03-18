@@ -253,9 +253,9 @@ class InvoiceResource extends Resource
                                                 Select::make('currency_id')
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.currency'))
                                                     ->relationship(
-                                                        'currency',
-                                                        'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                        name: 'currency',
+                                                        titleAttribute: 'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                                     )
                                                     ->required()
                                                     ->searchable()
@@ -1175,10 +1175,16 @@ class InvoiceResource extends Resource
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                        function (Builder $query, Get $get) {
+                            $product = Product::find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->required()
                     ->live()
+                    ->native(false)
                     ->selectablePlaceholder(false)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
@@ -1263,7 +1269,7 @@ class InvoiceResource extends Resource
 
         $set('uom_id', $product->uom_id);
 
-        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product);
+        $priceUnit = static::calculateUnitPrice($product->uom_id, $product);
 
         if ($get('../../currency_id')) {
             $currency = Currency::find($get('../../currency_id'));
@@ -1320,24 +1326,34 @@ class InvoiceResource extends Resource
 
     private static function calculateUnitQuantity($uomId, $quantity)
     {
-        if (! $uomId) {
-            return $quantity;
+        if (! $uomId || ! filled($quantity)) {
+            return (float) ($quantity ?? 0);
         }
 
-        $uom = Uom::find($uomId);
+        $fromUom = UOM::find($uomId);
 
-        return (float) ($quantity ?? 0) / $uom->factor;
+        if (! $fromUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        $referenceUom = UOM::where('category_id', $fromUom->category_id)->orderBy('factor')->first();
+
+        if (! $referenceUom) {
+            return (float) ($quantity ?? 0);
+        }
+
+        return $fromUom->computeQuantity((float) ($quantity ?? 0), $referenceUom, false);
     }
 
     private static function calculateUnitPrice($uomId, $product)
     {
         $price = $product->price ?? $product->cost;
 
-        if (! $uomId) {
+        if (! $uomId || ! $product->uom) {
             return $price;
         }
 
-        $uomQty = Uom::find($uomId)->computeQuantity(1, $product->uom, true, 'HALF-UP');
+        $uomQty = UOM::find($uomId)->computeQuantity(1, $product->uom, false);
 
         return (float) ($price * $uomQty);
     }

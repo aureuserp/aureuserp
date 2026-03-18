@@ -55,7 +55,7 @@ class LeaveResource extends JsonResource
             'calendar'                 => new CalendarResource($this->whenLoaded('calendar')),
             'firstApprover'            => new EmployeeResource($this->whenLoaded('firstApprover')),
             'secondApprover'           => new EmployeeResource($this->whenLoaded('secondApprover')),
-            'createdBy'                => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                  => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

@@ -16,9 +16,9 @@ class DegreeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->randomElement(['Bachelor', 'Master', 'PhD', 'High School', 'Associate']),
-            'sort' => 1,
-            'creator_id' => User::factory(),
+            'name'       => fake()->randomElement(['Bachelor', 'Master', 'PhD', 'High School', 'Associate']),
+            'sort'       => 1,
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

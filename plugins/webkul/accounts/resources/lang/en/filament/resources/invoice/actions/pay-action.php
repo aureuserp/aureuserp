@@ -14,4 +14,10 @@ return [
             'communication'        => 'Memo',
         ],
     ],
+
+    'notifications' => [
+        'payment-failed' => [
+            'title' => 'Payment Failed',
+        ],
+    ],
 ];

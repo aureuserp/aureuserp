@@ -151,6 +151,8 @@ class PluginResource extends Resource
 
                                 $cmd = "timeout 300 $php $artisan $commandName 2>&1";
 
+                                $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName 2>&1");
+
                                 $output = [];
 
                                 $exitCode = 0;
@@ -447,5 +449,14 @@ class PluginResource extends Resource
         }
 
         return 'php';
+    }
+
+    protected static function buildTimeoutCommand(int $seconds, string $command): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
+        }
+
+        return "timeout {$seconds} {$command}";
     }
 }

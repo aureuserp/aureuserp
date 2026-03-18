@@ -18,24 +18,24 @@ class RecordFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => fake()->randomElement(['revenue', 'expense', 'hours']),
-            'name' => fake()->words(3, true),
-            'date' => now(),
-            'amount' => 0,
+            'type'        => fake()->randomElement(['revenue', 'expense', 'hours']),
+            'name'        => fake()->words(3, true),
+            'date'        => now(),
+            'amount'      => 0,
             'unit_amount' => 0,
 
             // Relationships
             'partner_id' => null,
             'company_id' => Company::factory(),
-            'user_id' => null,
-            'creator_id' => User::factory(),
+            'user_id'    => null,
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 
     public function revenue(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'revenue',
+            'type'   => 'revenue',
             'amount' => fake()->randomFloat(2, 100, 10000),
         ]);
     }
@@ -43,7 +43,7 @@ class RecordFactory extends Factory
     public function expense(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'expense',
+            'type'   => 'expense',
             'amount' => fake()->randomFloat(2, 50, 5000),
         ]);
     }
@@ -51,7 +51,7 @@ class RecordFactory extends Factory
     public function hours(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'hours',
+            'type'        => 'hours',
             'unit_amount' => fake()->randomFloat(2, 1, 10),
         ]);
     }
@@ -59,14 +59,14 @@ class RecordFactory extends Factory
     public function withPartner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_id' => Partner::factory(),
+            'partner_id' => Partner::query()->value('id') ?? Partner::factory(),
         ]);
     }
 
     public function withUser(): static
     {
         return $this->state(fn (array $attributes) => [
-            'user_id' => User::factory(),
+            'user_id' => User::query()->value('id') ?? User::factory(),
         ]);
     }
 }

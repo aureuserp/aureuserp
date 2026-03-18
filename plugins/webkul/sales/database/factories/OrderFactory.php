@@ -3,6 +3,7 @@
 namespace Webkul\Sale\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Schema;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Inventory\Models\Warehouse;
@@ -37,24 +38,24 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $amountUntaxed = $this->faker->randomFloat(4, 100, 10000);
+        $amountUntaxed = fake()->randomFloat(4, 100, 10000);
         $amountTax = $amountUntaxed * 0.15;
         $amountTotal = $amountUntaxed + $amountTax;
-        $partner = Partner::factory();
+        $partner = Partner::query()->value('id') ?? Partner::factory();
 
         return [
-            'access_token'            => $this->faker->uuid(),
+            'access_token'            => fake()->uuid(),
             'state'                   => OrderState::DRAFT,
-            'client_order_ref'        => $this->faker->optional()->numerify('PO-####'),
-            'origin'                  => $this->faker->optional()->numerify('SO-####'),
-            'reference'               => $this->faker->optional()->word(),
+            'client_order_ref'        => fake()->optional()->numerify('PO-####'),
+            'origin'                  => fake()->optional()->numerify('SO-####'),
+            'reference'               => fake()->optional()->word(),
             'signed_by'               => null,
             'invoice_status'          => InvoiceStatus::TO_INVOICE,
-            'validity_date'           => $this->faker->optional()->dateTimeBetween('now', '+30 days'),
-            'note'                    => $this->faker->optional()->paragraph(),
+            'validity_date'           => fake()->optional()->dateTimeBetween('now', '+30 days'),
+            'note'                    => fake()->optional()->paragraph(),
             'locked'                  => false,
             'commitment_date'         => null,
-            'date_order'              => $this->faker->dateTimeBetween('-30 days', 'now'),
+            'date_order'              => fake()->dateTimeBetween('-30 days', 'now'),
             'signed_on'               => null,
             'prepayment_percent'      => null,
             'require_signature'       => false,
@@ -74,11 +75,11 @@ class OrderFactory extends Factory
             'sale_order_template_id'  => null,
             'payment_term_id'         => null,
             'currency_id'             => Currency::factory(),
-            'user_id'                 => User::factory(),
+            'user_id'                 => User::query()->value('id') ?? User::factory(),
             'team_id'                 => null,
-            'creator_id'              => User::factory(),
+            'creator_id'              => User::query()->value('id') ?? User::factory(),
             'campaign_id'             => null,
-            'warehouse_id'            => null,
+            ...(Schema::hasColumn('sales_orders', 'warehouse_id') ? ['warehouse_id' => null] : []),
         ];
     }
 
@@ -138,7 +139,7 @@ class OrderFactory extends Factory
     public function withSeparateShipping(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_shipping_id' => Partner::factory(),
+            'partner_shipping_id' => Partner::query()->value('id') ?? Partner::factory(),
         ]);
     }
 

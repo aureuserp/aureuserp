@@ -18,27 +18,27 @@ class AttachmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word().'.pdf',
-            'original_file_name' => fake()->word().'.pdf',
-            'file_path' => 'attachments/'.fake()->uuid().'.pdf',
-            'file_size' => fake()->numberBetween(1000, 5000000),
-            'mime_type' => 'application/pdf',
-            'messageable' => null,
+            'name'               => fake()->words(2, true).'.pdf',
+            'original_file_name' => fake()->words(2, true).'.pdf',
+            'file_path'          => 'attachments/'.fake()->uuid().'.pdf',
+            'file_size'          => fake()->numberBetween(1000, 5000000),
+            'mime_type'          => 'application/pdf',
+            'messageable'        => null,
 
             // Relationships
             'message_id' => Message::factory(),
             'company_id' => Company::factory(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 
     public function image(): static
     {
         return $this->state(fn (array $attributes) => [
-            'name' => fake()->word().'.jpg',
-            'original_file_name' => fake()->word().'.jpg',
-            'file_path' => 'attachments/'.fake()->uuid().'.jpg',
-            'mime_type' => 'image/jpeg',
+            'name'               => fake()->words(2, true).'.jpg',
+            'original_file_name' => fake()->words(2, true).'.jpg',
+            'file_path'          => 'attachments/'.fake()->uuid().'.jpg',
+            'mime_type'          => 'image/jpeg',
         ]);
     }
 

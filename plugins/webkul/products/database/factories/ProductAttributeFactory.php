@@ -31,7 +31,7 @@ class ProductAttributeFactory extends Factory
             'sort'         => fake()->randomNumber(),
             'product_id'   => Product::factory(),
             'attribute_id' => Attribute::factory(),
-            'creator_id'   => User::factory(),
+            'creator_id'   => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

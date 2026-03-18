@@ -27,9 +27,9 @@ class ListCurrencies extends ListRecords
             'all' => Tab::make(__('support::filament/resources/currency/pages/list-currency.tabs.all'))
                 ->badge(Currency::count()),
             'active' => Tab::make(__('support::filament/resources/currency/pages/list-currency.tabs.active'))
-                ->badge(Currency::where('active', true)->count())
+                ->badge(Currency::active()->count())
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('active', true);
+                    return $query->active();
                 }),
             'inactive' => Tab::make(__('support::filament/resources/currency/pages/list-currency.tabs.inactive'))
                 ->badge(Currency::where('active', false)->count())

@@ -49,7 +49,7 @@ class LeaveAllocationResource extends JsonResource
             'secondApprover'                    => new UserResource($this->whenLoaded('secondApprover')),
             'department'                        => new DepartmentResource($this->whenLoaded('department')),
             'accrualPlan'                       => new LeaveAccrualPlanResource($this->whenLoaded('accrualPlan')),
-            'createdBy'                         => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                           => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

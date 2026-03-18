@@ -17,7 +17,6 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -27,10 +26,12 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\FusedGroup;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -184,26 +185,53 @@ class ProductResource extends Resource
 
                         Section::make(__('products::filament/resources/product.form.sections.pricing.title'))
                             ->schema([
-                                TextInput::make('price')
+                                FusedGroup::make([
+                                    TextInput::make('price')
+                                        ->numeric()
+                                        ->required()
+                                        ->default(0.00)
+                                        ->minValue(0)
+                                        ->columnSpan(2),
+                                    Select::make('uom_id')
+                                        ->placeholder('UOM')
+                                        ->native(false)
+                                        ->required()
+                                        ->options(UOM::pluck('name', 'id'))
+                                        ->default(UOM::first()?->id)
+                                        ->searchable()
+                                        ->live()
+                                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('uom_po_id', $state)),
+                                ])
                                     ->label(__('products::filament/resources/product.form.sections.pricing.fields.price'))
-                                    ->numeric()
-                                    ->required()
-                                    ->default(0.00)
-                                    ->minValue(0),
-                                TextInput::make('cost')
+                                    ->columns(3),
+                                FusedGroup::make([
+                                    TextInput::make('cost')
+                                        ->numeric()
+                                        ->default(0.00)
+                                        ->minValue(0)
+                                        ->columnSpan(2),
+                                    Select::make('uom_po_id')
+                                        ->placeholder('UOM')
+                                        ->native(false)
+                                        ->required()
+                                        ->options(UOM::pluck('name', 'id'))
+                                        ->default(UOM::first()?->id)
+                                        ->searchable()
+                                        ->live()
+                                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('uom_id', $state)),
+                                ])
                                     ->label(__('products::filament/resources/product.form.sections.pricing.fields.cost'))
-                                    ->numeric()
-                                    ->default(0.00)
-                                    ->minValue(0),
-                                Hidden::make('uom_id')
-                                    ->default(UOM::first()->id),
-                                Hidden::make('uom_po_id')
-                                    ->default(UOM::first()->id),
+                                    ->columns(3),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['uom', 'uomPO']);
     }
 
     public static function table(Table $table): Table
@@ -265,9 +293,13 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('price')
                     ->label(__('products::filament/resources/product.table.columns.price'))
+                    ->money()
+                    ->suffix(fn (Product $record): string => $record->uom ? ' / '.$record->uom->name : '')
                     ->sortable(),
                 TextColumn::make('cost')
                     ->label(__('products::filament/resources/product.table.columns.cost'))
+                    ->money()
+                    ->suffix(fn (Product $record): string => $record->uomPO ? ' / '.$record->uomPO->name : '')
                     ->sortable(),
                 TextColumn::make('category.name')
                     ->label(__('products::filament/resources/product.table.columns.category'))
@@ -615,12 +647,14 @@ class ProductResource extends Resource
                                 TextEntry::make('price')
                                     ->label(__('products::filament/resources/product.infolist.sections.pricing.entries.price'))
                                     ->placeholder('—')
-                                    ->icon('heroicon-o-banknotes'),
+                                    ->money()
+                                    ->suffix(fn (Product $record): string => $record->uom ? ' / '.$record->uom->name : ''),
 
                                 TextEntry::make('cost')
                                     ->label(__('products::filament/resources/product.infolist.sections.pricing.entries.cost'))
                                     ->placeholder('—')
-                                    ->icon('heroicon-o-banknotes'),
+                                    ->money()
+                                    ->suffix(fn (Product $record): string => $record->uomPO ? ' / '.$record->uomPO->name : ''),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

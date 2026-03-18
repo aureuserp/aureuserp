@@ -27,7 +27,7 @@ class TagResource extends JsonResource
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
             'country'        => new CountryResource($this->whenLoaded('country')),
-            'createdBy'      => new UserResource($this->whenLoaded('createdBy')),
+            'creator'        => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

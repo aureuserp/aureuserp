@@ -21,14 +21,14 @@ class LeaveMandatoryDayFactory extends Factory
      */
     public function definition(): array
     {
-        $startDate = $this->faker->dateTimeBetween('now', '+30 days');
-        $endDate = $this->faker->dateTimeBetween($startDate, '+7 days');
+        $startDate = fake()->dateTimeBetween('now', '+30 days');
+        $endDate = fake()->dateTimeBetween($startDate, '+7 days');
 
         return [
             'company_id' => Company::factory(),
-            'creator_id' => User::factory(),
-            'color'      => $this->faker->numberBetween(1, 10),
-            'name'       => $this->faker->words(3, true),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
+            'color'      => fake()->numberBetween(1, 10),
+            'name'       => fake()->words(3, true),
             'start_date' => $startDate->format('Y-m-d'),
             'end_date'   => $endDate->format('Y-m-d'),
         ];

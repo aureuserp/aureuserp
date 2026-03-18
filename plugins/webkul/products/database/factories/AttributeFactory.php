@@ -30,7 +30,7 @@ class AttributeFactory extends Factory
             'name'       => fake()->name(),
             'type'       => AttributeType::RADIO,
             'sort'       => fake()->randomNumber(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

@@ -199,8 +199,10 @@ abstract class PackageServiceProvider extends BasePackageServiceProvider
             ], "{$this->package->shortName()}-provider");
         }
 
-        foreach ($this->package->routeFileNames as $routeFileName) {
-            $this->loadRoutesFrom("{$this->package->basePath('/../routes/')}{$routeFileName}.php");
+        if ($this->package->isCore || $this->package->isInstalled()) {
+            foreach ($this->package->routeFileNames as $routeFileName) {
+                $this->loadRoutesFrom("{$this->package->basePath('/../routes/')}{$routeFileName}.php");
+            }
         }
 
         foreach ($this->package->sharedViewData as $name => $value) {

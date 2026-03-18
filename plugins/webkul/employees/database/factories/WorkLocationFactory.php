@@ -25,10 +25,10 @@ class WorkLocationFactory extends Factory
     {
         return [
             'company_id'      => Company::factory(),
-            'user_id'         => User::factory(),
-            'name'            => $this->faker->name,
-            'location_type'   => $this->faker->word,
-            'location_number' => $this->faker->numberBetween(1, 100),
+            'user_id'         => User::query()->value('id') ?? User::factory(),
+            'name'            => fake()->name,
+            'location_type'   => fake()->word,
+            'location_number' => fake()->numberBetween(1, 100),
             'active'          => 1,
         ];
     }

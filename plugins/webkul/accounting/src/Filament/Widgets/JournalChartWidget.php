@@ -25,7 +25,9 @@ class JournalChartWidget extends Component
     public function getDashboardData(): array
     {
         $type = $this->journal->type;
-        $baseQuery = Move::where('journal_id', $this->journal->id);
+        $baseQuery = Move::query()
+            ->where('journal_id', $this->journal->id)
+            ->applyPermissionScope();
 
         $data = [
             'stats'   => [],
@@ -196,6 +198,7 @@ class JournalChartWidget extends Component
         $moves = Move::query()
             ->where('journal_id', $this->journal->id)
             ->where('state', MoveState::POSTED)
+            ->applyPermissionScope()
             ->whereBetween('date', [$start, $end])
             ->orderBy('date')
             ->get();
@@ -262,6 +265,7 @@ class JournalChartWidget extends Component
             ->where('state', MoveState::POSTED)
             ->whereIn('payment_state', [PaymentState::NOT_PAID, PaymentState::PARTIAL])
             ->where('amount_residual', '>', 0)
+            ->applyPermissionScope()
             ->get();
 
         foreach ($moves as $move) {

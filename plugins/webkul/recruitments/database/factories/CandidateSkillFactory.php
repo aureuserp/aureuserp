@@ -20,19 +20,19 @@ class CandidateSkillFactory extends Factory
     public function definition(): array
     {
         return [
-            'skill_id' => Skill::factory(),
+            'skill_id'       => Skill::factory(),
             'skill_level_id' => SkillLevel::factory(),
-            'skill_type_id' => SkillType::factory(),
-            'user_id' => null,
-            'creator_id' => User::factory(),
-            'candidate_id' => Candidate::factory(),
+            'skill_type_id'  => SkillType::factory(),
+            'user_id'        => null,
+            'creator_id'     => User::query()->value('id') ?? User::factory(),
+            'candidate_id'   => Candidate::factory(),
         ];
     }
 
     public function withUser(): static
     {
         return $this->state(fn (array $attributes) => [
-            'user_id' => User::factory(),
+            'user_id' => User::query()->value('id') ?? User::factory(),
         ]);
     }
 }

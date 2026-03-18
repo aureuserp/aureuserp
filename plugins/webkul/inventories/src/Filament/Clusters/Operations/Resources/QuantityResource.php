@@ -190,6 +190,12 @@ class QuantityResource extends Resource
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.on-hand'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('product.uom.name')
+                    ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.uom'))
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                 TextInputColumn::make('counted_quantity')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.counted'))
                     ->sortable()

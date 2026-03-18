@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -632,7 +633,7 @@ class OperationResource extends Resource
             ->columns(1);
     }
 
-    public static function getUrl(?string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null, bool $shouldGuessMissingParameters = false): string
+    public static function getUrl(?string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null, bool $shouldGuessMissingParameters = false, ?string $configuration = null): string
     {
         return match ($parameters['record']?->operationType->type) {
             Enums\OperationType::INCOMING => ReceiptResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
@@ -813,12 +814,18 @@ class OperationResource extends Resource
                     ->relationship(
                         'uom',
                         'name',
-                        fn ($query) => $query->where('category_id', 1),
+                        function (Builder $query, Get $get) {
+                            $product = Product::find($get('product_id'));
+                            $categoryId = $product?->uom?->category_id;
+
+                            return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
+                        },
                     )
                     ->searchable()
                     ->preload()
                     ->required()
                     ->live()
+                    ->native(false)
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterUOMUpdated($set, $get);
                     })
@@ -1202,7 +1209,7 @@ class OperationResource extends Resource
 
         $set('uom_id', $product->uom_id);
 
-        $productQuantity = static::calculateProductQuantity($get('uom_id'), $get('product_uom_qty'));
+        $productQuantity = static::calculateProductQuantity($product->uom_id, $get('product_uom_qty'));
 
         $set('product_qty', round($productQuantity, 2));
 
@@ -1232,6 +1239,18 @@ class OperationResource extends Resource
             return;
         }
 
+        $product = Product::find($get('product_id'));
+
+        $selectedUom = UOM::find($get('uom_id'));
+
+        if ($product?->uom && $selectedUom && $selectedUom->factor > $product->uom->factor) {
+            Notification::make()
+                ->title(__('inventories::filament/clusters/operations/resources/operation.notifications.uom-precision-warning.title'))
+                ->body(__('inventories::filament/clusters/operations/resources/operation.notifications.uom-precision-warning.body'))
+                ->warning()
+                ->send();
+        }
+
         $productQuantity = static::calculateProductQuantity($get('uom_id'), $get('product_uom_qty'));
 
         $set('product_qty', round($productQuantity, 2));
@@ -1247,13 +1266,19 @@ class OperationResource extends Resource
             return self::normalizeZero((float) ($uomQuantity ?? 0));
         }
 
-        $uom = Uom::find($uomId);
+        $uom = UOM::find($uomId);
 
         if (! $uom || ! is_numeric($uom->factor) || $uom->factor == 0) {
             return 0;
         }
 
-        $quantity = (float) ($uomQuantity ?? 0) / $uom->factor;
+        $referenceUom = UOM::where('category_id', $uom->category_id)->where('factor', 1)->first();
+
+        if (! $referenceUom) {
+            return self::normalizeZero((float) ($uomQuantity ?? 0) / $uom->factor);
+        }
+
+        $quantity = $uom->computeQuantity((float) ($uomQuantity ?? 0), $referenceUom, false);
 
         return self::normalizeZero($quantity);
     }

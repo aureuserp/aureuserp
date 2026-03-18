@@ -29,13 +29,13 @@ class OrderOptionFactory extends Factory
      */
     public function definition(): array
     {
-        $quantity = $this->faker->randomFloat(2, 1, 10);
-        $priceUnit = $this->faker->randomFloat(4, 10, 500);
+        $quantity = fake()->randomFloat(2, 1, 10);
+        $priceUnit = fake()->randomFloat(4, 10, 500);
         $discount = 0;
 
         return [
-            'sort'       => $this->faker->numberBetween(1, 100),
-            'name'       => $this->faker->sentence(3),
+            'sort'       => fake()->numberBetween(1, 100),
+            'name'       => fake()->sentence(3),
             'quantity'   => $quantity,
             'price_unit' => $priceUnit,
             'discount'   => $discount,
@@ -43,7 +43,7 @@ class OrderOptionFactory extends Factory
             'product_id' => Product::factory(),
             'line_id'    => null,
             'uom_id'     => UOM::factory(),
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 
@@ -53,7 +53,7 @@ class OrderOptionFactory extends Factory
     public function withDiscount(?float $discount = null): static
     {
         return $this->state(fn (array $attributes) => [
-            'discount' => $discount ?? $this->faker->randomFloat(2, 5, 20),
+            'discount' => $discount ?? fake()->randomFloat(2, 5, 20),
         ]);
     }
 

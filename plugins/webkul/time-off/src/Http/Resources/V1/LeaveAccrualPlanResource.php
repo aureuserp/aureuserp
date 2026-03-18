@@ -28,7 +28,7 @@ class LeaveAccrualPlanResource extends JsonResource
             'updated_at'              => $this->updated_at,
             'timeOffType'             => new LeaveTypeResource($this->whenLoaded('timeOffType')),
             'company'                 => new CompanyResource($this->whenLoaded('company')),
-            'createdBy'               => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                 => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

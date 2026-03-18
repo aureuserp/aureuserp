@@ -24,7 +24,7 @@ use Webkul\Account\Models\FiscalPosition;
 class FiscalPositionController extends Controller
 {
     #[Endpoint('List fiscal positions', 'Retrieve a paginated list of fiscal positions with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, createdBy, taxes, accounts', required: false, example: 'company')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, creator, taxes, accounts', required: false, example: 'company')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by fiscal position name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[company_id]', 'int', 'Filter by company ID', required: false, example: 'No-example')]
@@ -51,7 +51,7 @@ class FiscalPositionController extends Controller
                 'company',
                 'country',
                 'countryGroup',
-                'createdBy',
+                'creator',
                 'taxes',
                 'accounts',
             ])
@@ -102,7 +102,7 @@ class FiscalPositionController extends Controller
 
     #[Endpoint('Show fiscal position', 'Retrieve a specific fiscal position by its ID')]
     #[UrlParam('id', 'integer', 'The fiscal position ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, createdBy, taxes, accounts', required: false, example: 'company,taxes')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, creator, taxes, accounts', required: false, example: 'company,taxes')]
     #[ResponseFromApiResource(FiscalPositionResource::class, FiscalPosition::class)]
     #[Response(status: 404, description: 'Fiscal position not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -113,7 +113,7 @@ class FiscalPositionController extends Controller
                 'company',
                 'country',
                 'countryGroup',
-                'createdBy',
+                'creator',
                 'taxes',
                 'accounts',
             ])
@@ -128,7 +128,7 @@ class FiscalPositionController extends Controller
     #[UrlParam('id', 'integer', 'The fiscal position ID', required: true, example: 1)]
     #[ResponseFromApiResource(FiscalPositionResource::class, FiscalPosition::class, additional: ['message' => 'Fiscal position updated successfully.'])]
     #[Response(status: 404, description: 'Fiscal position not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(FiscalPositionRequest $request, string $id)
     {

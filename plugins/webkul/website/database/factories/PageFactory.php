@@ -26,20 +26,20 @@ class PageFactory extends Factory
      */
     public function definition(): array
     {
-        $title = $this->faker->sentence(4);
+        $title = fake()->sentence(4);
 
         return [
             'title'             => $title,
-            'content'           => $this->faker->paragraphs(5, true),
+            'content'           => fake()->paragraphs(5, true),
             'slug'              => Str::slug($title),
             'is_published'      => false,
             'published_at'      => null,
             'is_header_visible' => true,
             'is_footer_visible' => true,
             'meta_title'        => $title,
-            'meta_keywords'     => implode(', ', $this->faker->words(5)),
-            'meta_description'  => $this->faker->sentence(15),
-            'creator_id'        => User::factory(),
+            'meta_keywords'     => implode(', ', fake()->words(5)),
+            'meta_description'  => fake()->sentence(15),
+            'creator_id'        => User::query()->value('id') ?? User::factory(),
         ];
     }
 
@@ -47,7 +47,7 @@ class PageFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_published' => true,
-            'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'published_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ]);
     }
 

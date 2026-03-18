@@ -43,10 +43,10 @@ class ProjectFactory extends Factory
             'allow_task_dependencies' => false,
             'is_active'               => true,
             'stage_id'                => ProjectStage::factory(),
-            'partner_id'              => Partner::factory(),
+            'partner_id'              => Partner::query()->value('id') ?? Partner::factory(),
             'company_id'              => Company::factory(),
-            'user_id'                 => User::factory(),
-            'creator_id'              => User::factory(),
+            'user_id'                 => User::query()->value('id') ?? User::factory(),
+            'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

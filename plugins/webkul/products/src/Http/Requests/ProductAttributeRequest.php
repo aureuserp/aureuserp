@@ -21,23 +21,15 @@ class ProductAttributeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         $rules = [
-            'attribute_id' => 'required|integer|exists:products_attributes,id',
-            'sort'         => 'nullable|integer|min:0',
-            'options'      => 'nullable|array',
-            'options.*'    => 'integer|exists:products_attribute_options,id',
+            'attribute_id' => [...$requiredRule, 'integer', 'exists:products_attributes,id'],
+            'sort'         => ['nullable', 'integer', 'min:0'],
+            'options'      => ['nullable', 'array'],
+            'options.*'    => ['integer', 'exists:products_attribute_options,id'],
         ];
-
-        // On update, make fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

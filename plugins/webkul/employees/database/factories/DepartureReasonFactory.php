@@ -22,9 +22,9 @@ class DepartureReasonFactory extends Factory
     public function definition(): array
     {
         return [
-            'sequence'    => $this->faker->randomNumber(),
-            'reason_code' => $this->faker->word,
-            'name'        => $this->faker->word,
+            'sequence'    => fake()->randomNumber(),
+            'reason_code' => fake()->word,
+            'name'        => fake()->word,
         ];
     }
 }

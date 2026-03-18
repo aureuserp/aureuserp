@@ -16,11 +16,11 @@ class RefuseReasonFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(3, true),
-            'sort' => 1,
-            'template' => null,
-            'is_active' => true,
-            'creator_id' => User::factory(),
+            'name'       => fake()->words(3, true),
+            'sort'       => 1,
+            'template'   => null,
+            'is_active'  => true,
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 

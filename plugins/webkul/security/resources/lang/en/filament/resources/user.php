@@ -13,6 +13,11 @@ return [
     ],
 
     'form' => [
+        'validation' => [
+            'cannot-remove-last-admin'   => 'Cannot remove the admin role from the last admin user.',
+            'first-user-must-be-admin'   => 'The first user in the system must be assigned an admin role.',
+        ],
+
         'sections' => [
             'general-information' => [
                 'title'  => 'General Information',
@@ -27,10 +32,11 @@ return [
             'permissions' => [
                 'title'  => 'Permissions',
                 'fields' => [
-                    'roles'               => 'Roles',
-                    'permissions'         => 'Permissions',
-                    'resource-permission' => 'Resource Permission',
-                    'teams'               => 'Teams',
+                    'roles'                                    => 'Roles',
+                    'permissions'                              => 'Permissions',
+                    'resource-permission'                      => 'Resource Permission',
+                    'resource-permission-self-change-disabled' => 'You cannot change your own resource permission. Ask another administrator to update it.',
+                    'teams'                                    => 'Teams',
                 ],
             ],
 

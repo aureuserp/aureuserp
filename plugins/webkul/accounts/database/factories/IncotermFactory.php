@@ -13,9 +13,9 @@ class IncotermFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'       => strtoupper($this->faker->unique()->lexify('???')),
-            'name'       => $this->faker->words(3, true),
-            'creator_id' => User::factory(),
+            'code'       => strtoupper(fake()->unique()->lexify('???')),
+            'name'       => fake()->words(3, true),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

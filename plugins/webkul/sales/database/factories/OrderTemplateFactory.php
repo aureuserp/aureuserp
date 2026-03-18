@@ -25,21 +25,21 @@ class OrderTemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'sort'                       => $this->faker->randomNumber(),
+            'sort'                       => fake()->randomNumber(),
             'company_id'                 => null,
             'journal_id'                 => null,
             'creator_id'                 => null,
-            'name'                       => $this->faker->name,
-            'number_of_days'             => $this->faker->numberBetween(1, 90),
-            'require_signature'          => $this->faker->boolean(30),
-            'require_payment'            => $this->faker->boolean(30),
-            'recurrence'                 => $this->faker->boolean(20),
-            'recurrence_period'          => $this->faker->optional()->numberBetween(1, 12),
+            'name'                       => fake()->name,
+            'number_of_days'             => fake()->numberBetween(1, 90),
+            'require_signature'          => fake()->boolean(30),
+            'require_payment'            => fake()->boolean(30),
+            'recurrence'                 => fake()->boolean(20),
+            'recurrence_period'          => fake()->optional()->numberBetween(1, 12),
             'mail_template_id'           => null,
-            'auto_confirmation'          => $this->faker->boolean(50),
+            'auto_confirmation'          => fake()->boolean(50),
             'confirmation_mail_template' => null,
-            'is_active'                  => $this->faker->boolean(80),
-            'note'                       => $this->faker->optional()->paragraph(),
+            'is_active'                  => fake()->boolean(80),
+            'note'                       => fake()->optional()->paragraph(),
         ];
     }
 }

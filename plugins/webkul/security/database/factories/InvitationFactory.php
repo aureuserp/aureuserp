@@ -17,11 +17,11 @@ class InvitationFactory extends Factory
     public function definition(): array
     {
         return [
-            'email' => fake()->safeEmail(),
-            'role_id' => Role::factory(),
-            'token' => fake()->uuid(),
+            'email'      => fake()->safeEmail(),
+            'role_id'    => Role::factory(),
+            'token'      => fake()->uuid(),
             'expires_at' => now()->addDays(7),
-            'invited_by' => User::factory(),
+            'invited_by' => User::query()->value('id') ?? User::factory(),
         ];
     }
 

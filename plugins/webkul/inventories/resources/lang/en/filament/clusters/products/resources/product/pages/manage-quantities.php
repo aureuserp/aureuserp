@@ -31,6 +31,7 @@ return [
             'quantity'          => 'Quantity',
             'package'           => 'Package',
             'on-hand'           => 'On Hand Quantity',
+            'unit'              => 'Unit',
             'reserved-quantity' => 'Reserved Quantity',
 
             'on-hand-before-state-updated' => [

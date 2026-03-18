@@ -44,13 +44,17 @@ class EditScrap extends EditRecord
                 ->label(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.label'))
                 ->color('gray')
                 ->action(function (Scrap $record) {
+                    $baseQty = $record->uom && $record->product?->uom
+                        ? $record->uom->computeQuantity($record->qty, $record->product->uom, false)
+                        : $record->qty;
+
                     $locationQuantity = ProductQuantity::where('location_id', $record->source_location_id)
                         ->where('product_id', $record->product_id)
                         ->where('package_id', $record->package_id ?? null)
                         ->where('lot_id', $record->lot_id ?? null)
                         ->first();
 
-                    if (! $locationQuantity || $locationQuantity->quantity < $record->qty) {
+                    if (! $locationQuantity || $locationQuantity->quantity < $baseQty) {
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.notification.warning.title'))
@@ -62,7 +66,7 @@ class EditScrap extends EditRecord
                     }
 
                     $locationQuantity->update([
-                        'quantity' => $locationQuantity->quantity - $record->qty,
+                        'quantity' => $locationQuantity->quantity - $baseQty,
                     ]);
 
                     $destinationQuantity = ProductQuantity::where('product_id', $record->product_id)
@@ -71,17 +75,17 @@ class EditScrap extends EditRecord
 
                     if ($destinationQuantity) {
                         $destinationQuantity->update([
-                            'quantity'                => $destinationQuantity->quantity + $record->qty,
-                            'reserved_quantity'       => $destinationQuantity->reserved_quantity + $record->qty,
-                            'inventory_diff_quantity' => $destinationQuantity->inventory_diff_quantity - $record->qty,
+                            'quantity'                => $destinationQuantity->quantity + $baseQty,
+                            'reserved_quantity'       => $destinationQuantity->reserved_quantity + $baseQty,
+                            'inventory_diff_quantity' => $destinationQuantity->inventory_diff_quantity - $baseQty,
                         ]);
                     } else {
                         ProductQuantity::create([
                             'product_id'              => $record->product_id,
                             'location_id'             => $record->destination_location_id,
-                            'quantity'                => $record->qty,
-                            'reserved_quantity'       => $record->qty,
-                            'inventory_diff_quantity' => -$record->qty,
+                            'quantity'                => $baseQty,
+                            'reserved_quantity'       => $baseQty,
+                            'inventory_diff_quantity' => -$baseQty,
                             'incoming_at'             => now(),
                             'creator_id'              => Auth::id(),
                             'company_id'              => $record->destinationLocation->company_id,
@@ -93,7 +97,7 @@ class EditScrap extends EditRecord
                         'closed_at' => now(),
                     ]);
 
-                    $move = ProductResource::createMove($record, $record->qty, $record->source_location_id, $record->destination_location_id);
+                    $move = ProductResource::createMove($record, $baseQty, $record->source_location_id, $record->destination_location_id);
 
                     $move->update([
                         'scrap_id' => $record->id,

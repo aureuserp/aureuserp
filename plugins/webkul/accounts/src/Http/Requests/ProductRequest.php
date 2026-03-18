@@ -14,16 +14,16 @@ class ProductRequest extends BaseProductRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'property_account_income_id'  => 'nullable|integer|exists:accounts_accounts,id',
-            'property_account_expense_id' => 'nullable|integer|exists:accounts_accounts,id',
-            'image'                       => 'nullable|string',
-            'service_type'                => 'nullable|string',
-            'sale_line_warn'              => 'nullable|string',
-            'expense_policy'              => 'nullable|string',
-            'invoice_policy'              => 'nullable|string|in:order,delivery',
-            'sale_line_warn_msg'          => 'nullable|string',
-            'sales_ok'                    => 'nullable|boolean',
-            'purchase_ok'                 => 'nullable|boolean',
+            'property_account_income_id'  => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'property_account_expense_id' => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'image'                       => ['nullable', 'string'],
+            'service_type'                => ['nullable', 'string'],
+            'sale_line_warn'              => ['nullable', 'string'],
+            'expense_policy'              => ['nullable', 'string'],
+            'invoice_policy'              => ['nullable', 'string', 'in:order,delivery'],
+            'sale_line_warn_msg'          => ['nullable', 'string'],
+            'sales_ok'                    => ['nullable', 'boolean'],
+            'purchase_ok'                 => ['nullable', 'boolean'],
         ]);
     }
 

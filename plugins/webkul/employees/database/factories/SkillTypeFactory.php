@@ -22,8 +22,8 @@ class SkillTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'   => $this->faker->word,
-            'color'  => $this->faker->hexColor,
+            'name'   => fake()->word,
+            'color'  => fake()->hexColor,
             'status' => 1,
         ];
     }

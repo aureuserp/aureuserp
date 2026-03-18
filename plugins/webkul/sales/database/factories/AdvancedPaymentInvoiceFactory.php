@@ -27,7 +27,7 @@ class AdvancedPaymentInvoiceFactory extends Factory
      */
     public function definition(): array
     {
-        $amount = $this->faker->randomFloat(2, 100, 5000);
+        $amount = fake()->randomFloat(2, 100, 5000);
 
         return [
             'advance_payment_method' => null,
@@ -37,7 +37,7 @@ class AdvancedPaymentInvoiceFactory extends Factory
             'amount'                 => $amount,
             'currency_id'            => Currency::factory(),
             'company_id'             => Company::factory(),
-            'creator_id'             => User::factory(),
+            'creator_id'             => User::query()->value('id') ?? User::factory(),
         ];
     }
 

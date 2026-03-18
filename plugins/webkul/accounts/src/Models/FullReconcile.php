@@ -16,7 +16,7 @@ class FullReconcile extends Model
 
     protected $fillable = [
         'exchange_move_id',
-        'created_id',
+        'creator_id',
     ];
 
     public function exchangeMove()
@@ -26,7 +26,7 @@ class FullReconcile extends Model
 
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_id');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     protected static function boot()
@@ -34,7 +34,7 @@ class FullReconcile extends Model
         parent::boot();
 
         static::creating(function ($fullReconcile) {
-            $fullReconcile->created_id ??= Auth::id();
+            $fullReconcile->creator_id ??= Auth::id();
         });
     }
 }

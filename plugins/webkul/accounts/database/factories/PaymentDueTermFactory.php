@@ -17,7 +17,7 @@ class PaymentDueTermFactory extends Factory
     {
         return [
             'payment_id'      => PaymentTerm::factory(),
-            'creator_id'      => User::factory(),
+            'creator_id'      => User::query()->value('id') ?? User::factory(),
             'value'           => DueTermValue::PERCENT,
             'value_amount'    => 100.0,
             'delay_type'      => DelayType::DAYS_AFTER,
@@ -30,7 +30,7 @@ class PaymentDueTermFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'value'        => DueTermValue::FIXED,
-            'value_amount' => $this->faker->randomFloat(2, 100, 1000),
+            'value_amount' => fake()->randomFloat(2, 100, 1000),
         ]);
     }
 

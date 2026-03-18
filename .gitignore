@@ -8,6 +8,7 @@
 /storage/pail
 /vendor
 .env
+.env.testing
 .env.backup
 .env.production
 .phpactor.json
@@ -20,7 +21,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.agents
 /.zed
-
+boost.json
+opencode.json
 /playwright-report
 /test-results

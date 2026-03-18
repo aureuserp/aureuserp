@@ -18,11 +18,11 @@ class TableViewFavoriteFactory extends Factory
         return [
             'is_favorite'     => true,
             'view_type'       => 'table',
-            'view_key'        => fake()->word(),
+            'view_key'        => fake()->words(2, true),
             'filterable_type' => null,
 
             // Relationships
-            'user_id' => User::factory(),
+            'user_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 

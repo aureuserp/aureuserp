@@ -15,12 +15,12 @@ class UtmCampaignFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'          => User::factory(),
+            'user_id'          => User::query()->value('id') ?? User::factory(),
             'stage_id'         => UtmStage::factory(),
-            'color'            => $this->faker->numberBetween(1, 10),
-            'created_by'       => User::factory(),
-            'name'             => $this->faker->words(2, true),
-            'title'            => $this->faker->sentence(4),
+            'color'            => fake()->numberBetween(1, 10),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
+            'name'             => fake()->words(2, true),
+            'title'            => fake()->sentence(4),
             'is_active'        => true,
             'is_auto_campaign' => false,
             'company_id'       => Company::factory(),

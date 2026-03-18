@@ -266,7 +266,9 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->parent_state = $moveLine->move->state;
 
-            $moveLine->partner_id = $moveLine->move->commercial_partner_id;
+            if (is_null($moveLine->partner_id)) {
+                $moveLine->partner_id = $moveLine->move->commercial_partner_id;
+            }
 
             $moveLine->journal_id = $moveLine->move->journal_id;
 

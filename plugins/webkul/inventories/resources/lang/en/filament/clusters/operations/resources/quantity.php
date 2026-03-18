@@ -30,6 +30,7 @@ return [
             'package'            => 'Package',
             'last-counted-at'    => 'Last Counted At',
             'on-hand'            => 'On Hand Quantity',
+            'uom'                => 'UOM',
             'counted'            => 'Counted Quantity',
             'difference'         => 'Difference',
             'scheduled-at'       => 'Scheduled At',

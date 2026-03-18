@@ -16,32 +16,32 @@ class FieldFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word(),
-            'label' => fake()->words(2, true),
-            'type' => 'text',
-            'sort' => 1,
-            'is_multiselect' => false,
-            'is_required' => false,
-            'is_unique' => false,
-            'is_searchable' => false,
-            'is_filterable' => false,
-            'is_sortable' => false,
-            'is_visible' => true,
-            'model_type' => null,
-            'options' => null,
-            'form_settings' => null,
-            'table_settings' => null,
+            'name'              => fake()->word(),
+            'label'             => fake()->words(2, true),
+            'type'              => 'text',
+            'sort'              => 1,
+            'is_multiselect'    => false,
+            'is_required'       => false,
+            'is_unique'         => false,
+            'is_searchable'     => false,
+            'is_filterable'     => false,
+            'is_sortable'       => false,
+            'is_visible'        => true,
+            'model_type'        => null,
+            'options'           => null,
+            'form_settings'     => null,
+            'table_settings'    => null,
             'infolist_settings' => null,
 
             // Relationships
-            'creator_id' => User::factory(),
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 
     public function select(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'select',
+            'type'    => 'select',
             'options' => ['Option 1', 'Option 2', 'Option 3'],
         ]);
     }
@@ -49,9 +49,9 @@ class FieldFactory extends Factory
     public function multiselect(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'select',
+            'type'           => 'select',
             'is_multiselect' => true,
-            'options' => ['Option 1', 'Option 2', 'Option 3'],
+            'options'        => ['Option 1', 'Option 2', 'Option 3'],
         ]);
     }
 

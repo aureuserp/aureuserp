@@ -16,9 +16,9 @@ class CountryFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'           => $this->faker->unique()->countryCode(),
-            'name'           => $this->faker->country(),
-            'phone_code'     => $this->faker->numberBetween(1, 999),
+            'code'           => fake()->unique()->countryCode(),
+            'name'           => fake()->country(),
+            'phone_code'     => fake()->numberBetween(1, 999),
             'state_required' => false,
             'zip_required'   => false,
             'currency_id'    => null,

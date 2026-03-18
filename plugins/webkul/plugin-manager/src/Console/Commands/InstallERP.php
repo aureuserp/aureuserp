@@ -423,7 +423,7 @@ class InstallERP extends Command
             [
                 'group'   => 'currency',
                 'name'    => 'default_currency_id',
-                'payload' => Currency::first()?->id,
+                'payload' => Currency::active()->first()?->id,
             ],
         ];
 

@@ -15,6 +15,7 @@ class ProjectServiceProvider extends PackageServiceProvider
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
+            ->hasRoute('api')
             ->hasTranslations()
             ->hasMigrations([
                 '2024_12_12_074920_create_projects_project_stages_table',

@@ -93,7 +93,7 @@ class IncotermController extends Controller
     #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
     #[ResponseFromApiResource(IncotermResource::class, Incoterm::class, additional: ['message' => 'Incoterm updated successfully.'])]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"code": ["The code field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(IncotermRequest $request, string $id)
     {

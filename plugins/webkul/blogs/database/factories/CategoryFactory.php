@@ -26,17 +26,17 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->words(2, true);
+        $name = fake()->words(2, true);
 
         return [
             'name'             => $name,
-            'sub_title'        => $this->faker->sentence(8),
+            'sub_title'        => fake()->sentence(8),
             'slug'             => Str::slug($name),
             'image'            => null,
             'meta_title'       => $name,
-            'meta_keywords'    => implode(', ', $this->faker->words(5)),
-            'meta_description' => $this->faker->sentence(12),
-            'creator_id'       => User::factory(),
+            'meta_keywords'    => implode(', ', fake()->words(5)),
+            'meta_description' => fake()->sentence(12),
+            'creator_id'       => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

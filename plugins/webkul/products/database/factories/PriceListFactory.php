@@ -20,11 +20,11 @@ class PriceListFactory extends Factory
     public function definition(): array
     {
         return [
-            'sort'        => $this->faker->randomNumber(2),
+            'sort'        => fake()->randomNumber(2),
             'currency_id' => 1,
             'company_id'  => 1,
             'creator_id'  => 1,
-            'name'        => $this->faker->name,
+            'name'        => fake()->name,
             'is_active'   => true,
         ];
     }

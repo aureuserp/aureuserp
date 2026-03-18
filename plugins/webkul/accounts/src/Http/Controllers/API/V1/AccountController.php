@@ -112,7 +112,7 @@ class AccountController extends Controller
     #[UrlParam('id', 'integer', 'The account ID', required: true, example: 1)]
     #[ResponseFromApiResource(AccountResource::class, Account::class, additional: ['message' => 'Account updated successfully.'])]
     #[Response(status: 404, description: 'Account not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(AccountRequest $request, string $id)
     {

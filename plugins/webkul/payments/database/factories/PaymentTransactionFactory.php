@@ -26,7 +26,7 @@ class PaymentTransactionFactory extends Factory
      */
     public function definition(): array
     {
-        $amount = $this->faker->randomFloat(4, 10, 5000);
+        $amount = fake()->randomFloat(4, 10, 5000);
 
         return [
             'sort'                => 0,
@@ -37,12 +37,12 @@ class PaymentTransactionFactory extends Factory
             'partner_id'          => null,
             'currency_id'         => Currency::factory(),
             'foreign_currency_id' => null,
-            'created_id'          => User::factory(),
-            'account_number'      => $this->faker->numerify('############'),
+            'creator_id'          => User::query()->value('id') ?? User::factory(),
+            'account_number'      => fake()->numerify('############'),
             'partner_name'        => null,
-            'transaction_type'    => $this->faker->randomElement(['debit', 'credit']),
-            'payment_reference'   => $this->faker->numerify('PAY-#####'),
-            'internal_index'      => $this->faker->numerify('###'),
+            'transaction_type'    => fake()->randomElement(['debit', 'credit']),
+            'payment_reference'   => fake()->numerify('PAY-#####'),
+            'internal_index'      => fake()->numerify('###'),
             'transaction_details' => [
                 'method' => 'card',
                 'status' => 'completed',
@@ -64,8 +64,8 @@ class PaymentTransactionFactory extends Factory
     public function withPartner(): static
     {
         return $this->state(fn (array $attributes) => [
-            'partner_id'   => Partner::factory(),
-            'partner_name' => $this->faker->company(),
+            'partner_id'   => Partner::query()->value('id') ?? Partner::factory(),
+            'partner_name' => fake()->company(),
         ]);
     }
 

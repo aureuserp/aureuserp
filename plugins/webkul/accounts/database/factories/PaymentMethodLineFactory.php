@@ -28,8 +28,8 @@ class PaymentMethodLineFactory extends Factory
             'payment_method_id'  => PaymentMethod::factory(),
             'payment_account_id' => Account::factory(),
             'journal_id'         => Journal::factory(),
-            'name'               => $this->faker->words(2, true),
-            'creator_id'         => User::factory(),
+            'name'               => fake()->words(2, true),
+            'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

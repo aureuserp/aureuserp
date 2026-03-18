@@ -24,10 +24,10 @@ class DepartmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => $this->faker->name,
+            'name'       => fake()->name,
             'manager_id' => Employee::factory(),
             'company_id' => Company::factory(),
-            'color'      => $this->faker->hexColor,
+            'color'      => fake()->hexColor,
         ];
     }
 }

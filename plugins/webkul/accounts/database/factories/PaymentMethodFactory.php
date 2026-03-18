@@ -22,10 +22,10 @@ class PaymentMethodFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'         => strtoupper($this->faker->unique()->lexify('???')),
+            'code'         => strtoupper(fake()->unique()->lexify('???')),
             'payment_type' => PaymentType::RECEIVE,
-            'name'         => $this->faker->words(2, true),
-            'created_by'   => User::factory(),
+            'name'         => fake()->words(2, true),
+            'creator_id'   => User::query()->value('id') ?? User::factory(),
         ];
     }
 

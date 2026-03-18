@@ -50,15 +50,15 @@ trait HasLogActivity
             }
 
             return $this->addMessage([
-                'type'         => 'notification',
-                'log_name'     => 'default',
-                'body'         => $this->generateActivityDescription($event),
-                'subject_type' => $this->getMorphClass(),
-                'subject_id'   => $this->getKey(),
-                'causer_type'  => $user?->getMorphClass(),
-                'causer_id'    => $user?->id,
-                'event'        => $event,
-                'properties'   => $changes,
+                'type'             => 'notification',
+                'log_name'         => 'default',
+                'body'             => $this->generateActivityDescription($event),
+                'messageable_type' => $this->getMorphClass(),
+                'messageable_id'   => $this->getKey(),
+                'causer_type'      => $user?->getMorphClass(),
+                'causer_id'        => $user?->id,
+                'event'            => $event,
+                'properties'       => $changes,
             ]);
         } catch (Exception $e) {
             report($e);

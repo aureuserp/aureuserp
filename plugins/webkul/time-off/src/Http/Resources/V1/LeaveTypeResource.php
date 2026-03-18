@@ -35,7 +35,7 @@ class LeaveTypeResource extends JsonResource
             'updated_at'                          => $this->updated_at,
             'deleted_at'                          => $this->deleted_at,
             'company'                             => new CompanyResource($this->whenLoaded('company')),
-            'createdBy'                           => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                             => new UserResource($this->whenLoaded('creator')),
             'notifiedTimeOffOfficers'             => UserResource::collection($this->whenLoaded('notifiedTimeOffOfficers')),
         ];
     }

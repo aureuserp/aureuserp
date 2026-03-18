@@ -26,7 +26,7 @@ class TaxPartitionFactory extends Factory
             'document_type'      => DocumentType::INVOICE,
             'use_in_tax_closing' => true,
             'factor_percent'     => 100.0,
-            'creator_id'         => User::factory(),
+            'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }
 

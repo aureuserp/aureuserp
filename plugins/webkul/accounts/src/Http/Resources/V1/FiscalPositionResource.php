@@ -36,7 +36,7 @@ class FiscalPositionResource extends JsonResource
             'company'          => CompanyResource::make($this->whenLoaded('company')),
             'country'          => CountryResource::make($this->whenLoaded('country')),
             'countryGroup'     => CountryResource::make($this->whenLoaded('countryGroup')),
-            'createdBy'        => UserResource::make($this->whenLoaded('createdBy')),
+            'creator'          => UserResource::make($this->whenLoaded('creator')),
             'taxes'            => FiscalPositionTaxResource::collection($this->whenLoaded('taxes')),
             'accounts'         => FiscalPositionAccountResource::collection($this->whenLoaded('accounts')),
         ];

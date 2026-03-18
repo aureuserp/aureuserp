@@ -23,6 +23,7 @@ class InventoryServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasViews()
             ->hasTranslations()
+            ->hasRoute('api')
             ->hasMigrations([
                 '2025_01_06_072032_create_inventories_tags_table',
                 '2025_01_06_072130_create_inventories_warehouses_table',

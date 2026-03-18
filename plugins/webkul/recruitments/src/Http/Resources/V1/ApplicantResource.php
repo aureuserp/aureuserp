@@ -57,7 +57,7 @@ class ApplicantResource extends JsonResource
             'job'                     => new JobPositionResource($this->whenLoaded('job')),
             'department'              => new DepartmentResource($this->whenLoaded('department')),
             'refuseReason'            => new RefuseReasonResource($this->whenLoaded('refuseReason')),
-            'createdBy'               => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                 => new UserResource($this->whenLoaded('creator')),
             'interviewer'             => UserResource::collection($this->whenLoaded('interviewer')),
         ];
     }

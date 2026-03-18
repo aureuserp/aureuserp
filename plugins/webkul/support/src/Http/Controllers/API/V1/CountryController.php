@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -33,6 +34,8 @@ class CountryController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Country::class);
+        
         $countries = QueryBuilder::for(Country::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -65,6 +68,8 @@ class CountryController extends Controller
                 'states',
             ])
             ->firstOrFail();
+
+        Gate::authorize('view', $country);
 
         return new CountryResource($country);
     }

@@ -2,6 +2,7 @@
 
 namespace Webkul\Project\Http\Resources\V1;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
@@ -9,7 +10,7 @@ use Webkul\Support\Http\Resources\V1\CompanyResource;
 
 class ProjectResource extends JsonResource
 {
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             'id'                      => $this->id,
@@ -42,6 +43,8 @@ class ProjectResource extends JsonResource
             'tasks'                   => TaskResource::collection($this->whenLoaded('tasks')),
             'taskStages'              => TaskStageResource::collection($this->whenLoaded('taskStages')),
             'milestones'              => MilestoneResource::collection($this->whenLoaded('milestones')),
+            'tags'                    => TagResource::collection($this->whenLoaded('tags')),
+            'favoriteUsers'           => UserResource::collection($this->whenLoaded('favoriteUsers')),
         ];
     }
 }

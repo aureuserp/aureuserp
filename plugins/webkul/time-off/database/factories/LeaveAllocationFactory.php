@@ -26,8 +26,8 @@ class LeaveAllocationFactory extends Factory
      */
     public function definition(): array
     {
-        $dateFrom = $this->faker->dateTimeBetween('-1 year', 'now');
-        $dateTo = $this->faker->dateTimeBetween('now', '+1 year');
+        $dateFrom = fake()->dateTimeBetween('-1 year', 'now');
+        $dateTo = fake()->dateTimeBetween('now', '+1 year');
         $numberOfDays = 20;
 
         return [
@@ -39,8 +39,8 @@ class LeaveAllocationFactory extends Factory
             'second_approver_id'                => null,
             'department_id'                     => null,
             'accrual_plan_id'                   => null,
-            'creator_id'                        => User::factory(),
-            'name'                              => $this->faker->words(3, true),
+            'creator_id'                        => User::query()->value('id') ?? User::factory(),
+            'name'                              => fake()->words(3, true),
             'state'                             => State::CONFIRM,
             'allocation_type'                   => AllocationType::REGULAR,
             'date_from'                         => $dateFrom->format('Y-m-d'),
@@ -71,7 +71,7 @@ class LeaveAllocationFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'state'       => State::VALIDATE_ONE,
-            'approver_id' => User::factory(),
+            'approver_id' => User::query()->value('id') ?? User::factory(),
         ]);
     }
 

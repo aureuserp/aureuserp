@@ -48,7 +48,7 @@ class CompanyResource extends JsonResource
             'currency'            => new CurrencyResource($this->whenLoaded('currency')),
             'parent'              => new CompanyResource($this->whenLoaded('parent')),
             'partner'             => new PartnerResource($this->whenLoaded('partner')),
-            'creator'             => new UserResource($this->whenLoaded('createdBy')),
+            'creator'             => new UserResource($this->whenLoaded('creator')),
             'branches'            => CompanyResource::collection($this->whenLoaded('branches')),
         ];
     }

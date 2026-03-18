@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -33,6 +34,8 @@ class StateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', State::class);
+
         $states = QueryBuilder::for(State::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -55,6 +58,8 @@ class StateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(StateRequest $request)
     {
+        Gate::authorize('create', State::class);
+
         $state = State::create($request->validated());
 
         return (new StateResource($state))
@@ -77,6 +82,8 @@ class StateController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $state);
+
         return new StateResource($state);
     }
 
@@ -84,11 +91,14 @@ class StateController extends Controller
     #[UrlParam('id', 'integer', 'The state ID', required: true, example: 1)]
     #[ResponseFromApiResource(StateResource::class, State::class, additional: ['message' => 'State updated successfully.'])]
     #[Response(status: 404, description: 'State not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(StateRequest $request, string $id)
     {
         $state = State::findOrFail($id);
+
+        Gate::authorize('update', $state);
+
         $state->update($request->validated());
 
         return (new StateResource($state))
@@ -103,6 +113,9 @@ class StateController extends Controller
     public function destroy(string $id)
     {
         $state = State::findOrFail($id);
+
+        Gate::authorize('delete', $state);
+
         $state->delete();
 
         return response()->json([

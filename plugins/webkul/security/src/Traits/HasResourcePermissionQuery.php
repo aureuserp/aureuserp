@@ -10,6 +10,6 @@ trait HasResourcePermissionQuery
     {
         $query = parent::getEloquentQuery();
 
-        return static::getModel()::applyPermissionScope($query);
+        return $query->applyPermissionScope($query);
     }
 }

@@ -29,7 +29,7 @@ class ActivityPlanTemplateResource extends JsonResource
             'activity_plan'     => ActivityPlanResource::make($this->whenLoaded('activityPlan')),
             'activity_type'     => ActivityTypeResource::make($this->whenLoaded('activityType')),
             'responsible'       => UserResource::make($this->whenLoaded('responsible')),
-            'creator'           => UserResource::make($this->whenLoaded('createdBy')),
+            'creator'           => UserResource::make($this->whenLoaded('creator')),
             'assigned_user'     => UserResource::make($this->whenLoaded('assignedUser')),
         ];
     }

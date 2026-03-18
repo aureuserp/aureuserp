@@ -6,17 +6,24 @@ use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankResource;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\IndustryResource;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\TagResource;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\TitleResource;
+use Webkul\Contact\Filament\Resources\AddressResource;
 use Webkul\Contact\Filament\Resources\PartnerResource;
+
+$permissions = [
+    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
+    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
+];
 
 return [
     'resources' => [
         'manage' => [
-            PartnerResource::class                             => ['view_any', 'view', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            TagResource::class                                 => ['view_any', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            TitleResource::class                               => ['view_any', 'create', 'update', 'delete', 'delete_any'],
-            IndustryResource::class                            => ['view_any', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            BankAccountResource::class                         => ['view_any', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
-            BankResource::class                                => ['view_any', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
+            PartnerResource::class => $permissions['SOFT_DELETE'],
+            TagResource::class => $permissions['SOFT_DELETE'],
+            TitleResource::class => $permissions['BASIC'],
+            IndustryResource::class => $permissions['SOFT_DELETE'],
+            BankAccountResource::class => $permissions['SOFT_DELETE'],
+            BankResource::class => $permissions['SOFT_DELETE'],
+            AddressResource::class => $permissions['SOFT_DELETE'],
         ],
         'exclude' => [],
     ],

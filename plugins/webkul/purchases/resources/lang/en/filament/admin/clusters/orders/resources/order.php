@@ -50,6 +50,13 @@ return [
                             'amount'              => 'Amount',
                         ],
 
+                        'notifications' => [
+                            'quantity-below-received' => [
+                                'title' => 'Cannot Reduce Quantity',
+                                'body'  => 'You cannot reduce the quantity below the received quantity (:qty).',
+                            ],
+                        ],
+
                         'columns' => [
                             'product'             => 'Product',
                             'expected-arrival'    => 'Expected Arrival',
@@ -64,20 +71,25 @@ return [
                             'unit-price'          => 'Unit Price',
                             'amount'              => 'Amount',
                         ],
+
+                        'delete-action' => [
+                            'error' => [
+                                'title' => 'Cannot Delete Product',
+                                'body'  => 'Products cannot be deleted from a confirmed purchase order.',
+                            ],
+                        ],
                     ],
 
                     'section' => [
                         'title' => 'Add Section',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
 
                     'note' => [
                         'title' => 'Add Note',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
                 ],
             ],

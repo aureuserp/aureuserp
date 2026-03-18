@@ -45,7 +45,7 @@ class ProductFactory extends BaseProductFactory
     public function withIncomeAccount(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_income_id' => Account::factory(),
+            'property_account_income_id' => Account::factory()->income(),
         ]);
     }
 
@@ -55,7 +55,7 @@ class ProductFactory extends BaseProductFactory
     public function withExpenseAccount(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_expense_id' => Account::factory(),
+            'property_account_expense_id' => Account::factory()->expense(),
         ]);
     }
 
@@ -65,8 +65,8 @@ class ProductFactory extends BaseProductFactory
     public function withAccounts(): static
     {
         return $this->state(fn (array $attributes) => [
-            'property_account_income_id'  => Account::factory(),
-            'property_account_expense_id' => Account::factory(),
+            'property_account_income_id'  => Account::factory()->income(),
+            'property_account_expense_id' => Account::factory()->expense(),
         ]);
     }
 }

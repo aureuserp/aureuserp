@@ -64,6 +64,10 @@ class BranchesRelationManager extends RelationManager
                                             ->label(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branch-information.fields.company-name'))
                                             ->required()
                                             ->maxLength(255)
+                                            ->unique(table: 'companies', ignoreRecord: true)
+                                            ->validationMessages([
+                                                'unique' => 'Branch name already exists. Please use a unique name.',
+                                            ])
                                             ->live(onBlur: true),
                                         TextInput::make('registration_number')
                                             ->label(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branch-information.fields.registration-number')),
@@ -151,17 +155,16 @@ class BranchesRelationManager extends RelationManager
                                     ->schema([
                                         Select::make('currency_id')
                                             ->relationship(
-                                                'currency',
-                                                'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                name: 'currency',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
                                             )
                                             ->label(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.default-currency'))
-                                            ->relationship('currency', 'full_name')
                                             ->searchable()
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::first()?->id)
+                                            ->default(Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([

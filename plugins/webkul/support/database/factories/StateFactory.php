@@ -16,8 +16,8 @@ class StateFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'       => $this->faker->unique()->stateAbbr(),
-            'name'       => $this->faker->state(),
+            'code'       => fake()->unique()->stateAbbr(),
+            'name'       => fake()->state(),
             'country_id' => Country::factory(),
         ];
     }

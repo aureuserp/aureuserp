@@ -30,7 +30,7 @@ class CalendarResource extends JsonResource
             'created_at'               => $this->created_at,
             'updated_at'               => $this->updated_at,
             'deleted_at'               => $this->deleted_at,
-            'creator'                  => new UserResource($this->whenLoaded('createdBy')),
+            'creator'                  => new UserResource($this->whenLoaded('creator')),
             'company'                  => new CompanyResource($this->whenLoaded('company')),
             'attendance'               => CalendarAttendanceResource::collection($this->whenLoaded('attendance')),
         ];

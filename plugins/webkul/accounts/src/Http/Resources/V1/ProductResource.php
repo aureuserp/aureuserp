@@ -25,8 +25,8 @@ class ProductResource extends BaseProductResource
             'expense_policy'               => $this->expense_policy,
             'invoice_policy'               => $this->invoice_policy,
             'sale_line_warn_msg'           => $this->sale_line_warn_msg,
-            'sales_ok'                     => $this->sales_ok,
-            'purchase_ok'                  => $this->purchase_ok,
+            'sales_ok'                     => (bool) $this->sales_ok,
+            'purchase_ok'                  => (bool) $this->purchase_ok,
             'propertyAccountIncome'        => new AccountResource($this->whenLoaded('propertyAccountIncome')),
             'propertyAccountExpense'       => new AccountResource($this->whenLoaded('propertyAccountExpense')),
         ]);

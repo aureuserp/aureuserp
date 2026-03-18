@@ -9,7 +9,6 @@ use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
-use Webkul\Inventory\Models\Warehouse;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
@@ -22,6 +21,8 @@ class OperationTypeFactory extends Factory
 
     public function definition(): array
     {
+        $company = Company::factory();
+
         return [
             'name'                               => fake()->words(2, true),
             'type'                               => OperationTypeEnum::INTERNAL,
@@ -50,28 +51,64 @@ class OperationTypeFactory extends Factory
             'auto_print_reception_report_labels' => false,
             'auto_print_packages'                => false,
             'auto_print_package_label'           => false,
-
-            // Relationships
-            'return_operation_type_id' => null,
-            'source_location_id'       => Location::factory(),
-            'destination_location_id'  => Location::factory(),
-            'warehouse_id'             => Warehouse::factory(),
-            'company_id'               => Company::factory(),
-            'creator_id'               => User::factory(),
+            'return_operation_type_id'           => null,
+            'source_location_id'                 => Location::factory()->state(['company_id' => $company]),
+            'destination_location_id'            => Location::factory()->state(['company_id' => $company]),
+            'warehouse_id'                       => null,
+            'company_id'                         => $company,
+            'creator_id'                         => User::query()->value('id') ?? User::factory(),
         ];
     }
 
     public function receipt(): static
     {
+        $company = Company::factory();
+
         return $this->state(fn (array $attributes) => [
-            'type' => OperationTypeEnum::INCOMING,
+            'type'                    => OperationTypeEnum::INCOMING,
+            'source_location_id'      => Location::factory()->supplier()->state(['company_id' => $company]),
+            'destination_location_id' => Location::factory()->internal()->state(['company_id' => $company]),
+            'company_id'              => $company,
+            'warehouse_id'            => null,
+        ]);
+    }
+
+    public function internal(): static
+    {
+        $company = Company::factory();
+
+        return $this->state(fn (array $attributes) => [
+            'type'                    => OperationTypeEnum::INTERNAL,
+            'source_location_id'      => Location::factory()->internal()->state(['company_id' => $company]),
+            'destination_location_id' => Location::factory()->internal()->state(['company_id' => $company]),
+            'company_id'              => $company,
+            'warehouse_id'            => null,
         ]);
     }
 
     public function delivery(): static
     {
+        $company = Company::factory();
+
         return $this->state(fn (array $attributes) => [
-            'type' => OperationTypeEnum::OUTGOING,
+            'type'                    => OperationTypeEnum::OUTGOING,
+            'source_location_id'      => Location::factory()->internal()->state(['company_id' => $company]),
+            'destination_location_id' => Location::factory()->customer()->state(['company_id' => $company]),
+            'company_id'              => $company,
+            'warehouse_id'            => null,
+        ]);
+    }
+
+    public function dropship(): static
+    {
+        $company = Company::factory();
+
+        return $this->state(fn (array $attributes) => [
+            'type'                    => OperationTypeEnum::DROPSHIP,
+            'source_location_id'      => Location::factory()->supplier()->state(['company_id' => $company]),
+            'destination_location_id' => Location::factory()->customer()->state(['company_id' => $company]),
+            'company_id'              => $company,
+            'warehouse_id'            => null,
         ]);
     }
 

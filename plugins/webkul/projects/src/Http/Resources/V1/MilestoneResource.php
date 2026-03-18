@@ -2,12 +2,13 @@
 
 namespace Webkul\Project\Http\Resources\V1;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
 
 class MilestoneResource extends JsonResource
 {
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             'id'           => $this->id,

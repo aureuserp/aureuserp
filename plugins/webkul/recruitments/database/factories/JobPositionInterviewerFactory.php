@@ -18,7 +18,7 @@ class JobPositionInterviewerFactory extends Factory
     {
         return [
             'job_position_id' => JobPosition::factory(),
-            'user_id' => User::factory(),
+            'user_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

@@ -17,18 +17,18 @@ class EmployeeResumeFactory extends Factory
 
     public function definition(): array
     {
-        $startDate = $this->faker->dateTimeBetween('-5 years', '-1 year');
-        $endDate = $this->faker->optional()->dateTimeBetween($startDate, 'now');
+        $startDate = fake()->dateTimeBetween('-5 years', '-1 year');
+        $endDate = fake()->optional()->dateTimeBetween($startDate, 'now');
 
         return [
-            'name'                         => $this->faker->sentence(4),
+            'name'                         => fake()->sentence(4),
             'display_type'                 => null,
             'start_date'                   => $startDate,
             'end_date'                     => $endDate,
-            'description'                  => $this->faker->optional()->paragraph(),
+            'description'                  => fake()->optional()->paragraph(),
             'employee_id'                  => Employee::factory(),
             'employee_resume_line_type_id' => EmployeeResumeLineType::factory(),
-            'creator_id'                   => User::factory(),
+            'creator_id'                   => User::query()->value('id') ?? User::factory(),
             'user_id'                      => null,
         ];
     }

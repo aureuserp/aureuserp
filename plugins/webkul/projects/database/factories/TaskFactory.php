@@ -48,12 +48,12 @@ class TaskFactory extends Factory
             'total_hours_spent'   => 0,
             'overtime'            => 0,
             'progress'            => 0,
-            'parent_id'           => Task::factory(),
+            'parent_id'           => null,
             'project_id'          => Project::factory(),
             'stage_id'            => TaskStage::factory(),
-            'partner_id'          => Partner::factory(),
+            'partner_id'          => Partner::query()->value('id') ?? Partner::factory(),
             'company_id'          => Company::factory(),
-            'creator_id'          => User::factory(),
+            'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

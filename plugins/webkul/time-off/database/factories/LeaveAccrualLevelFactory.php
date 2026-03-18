@@ -32,7 +32,7 @@ class LeaveAccrualLevelFactory extends Factory
             'yearly_day'                  => 1,
             'postpone_max_days'           => 0,
             'accrual_validity_count'      => 0,
-            'creator_id'                  => User::factory(),
+            'creator_id'                  => User::query()->value('id') ?? User::factory(),
             'start_type'                  => 'day',
             'added_value_type'            => 'days',
             'frequency'                   => 'daily',
