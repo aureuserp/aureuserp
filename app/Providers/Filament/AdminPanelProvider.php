@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\SetLocale;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
@@ -50,8 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn () => Auth::user()?->name)
-                    ->url(fn (): string => Profile::getUrl()),
+                    ->label(fn() => Auth::user()?->name)
+                    ->url(fn(): string => Profile::getUrl()),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
@@ -128,6 +129,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetLocale::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

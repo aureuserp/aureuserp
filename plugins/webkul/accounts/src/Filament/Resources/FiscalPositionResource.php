@@ -104,15 +104,16 @@ class FiscalPositionResource extends Resource
                                     ->table([
                                         TableColumn::make('tax_source_id')
                                             ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-source'))
-                                            ->width(200),
+                                            ->resizable(),
 
                                         TableColumn::make('tax_destination_id')
                                             ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-destination'))
-                                            ->width(200),
+                                            ->resizable(),
                                     ])
                                     ->schema([
                                         Select::make('tax_source_id')
                                             ->relationship('taxSource', 'name')
+                                            ->wrapOptionLabels(false)
                                             ->label(__('accounts::traits/fiscal-position-tax.form.fields.tax-source'))
                                             ->preload()
                                             ->searchable()
@@ -120,6 +121,7 @@ class FiscalPositionResource extends Resource
 
                                         Select::make('tax_destination_id')
                                             ->relationship('taxDestination', 'name')
+                                            ->wrapOptionLabels(false)
                                             ->label(__('accounts::traits/fiscal-position-tax.form.fields.tax-destination'))
                                             ->preload()
                                             ->searchable(),
@@ -137,14 +139,17 @@ class FiscalPositionResource extends Resource
                                     ->table([
                                         TableColumn::make('account_source_id')
                                             ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.source-account'))
-                                            ->width(200),
+                                            ->resizable()
+                                            ->wrapHeader(false),
                                         TableColumn::make('account_destination_id')
                                             ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.destination-account'))
-                                            ->width(200),
+                                            ->resizable()
+                                            ->wrapHeader(false),
                                     ])
                                     ->schema([
                                         Select::make('account_source_id')
                                             ->label('Source Account')
+                                            ->wrapOptionLabels(false)
                                             ->searchable()
                                             ->preload()
                                             ->relationship('accountSource', 'name')
@@ -152,6 +157,7 @@ class FiscalPositionResource extends Resource
 
                                         Select::make('account_destination_id')
                                             ->label('Destination Account')
+                                            ->wrapOptionLabels(false)
                                             ->searchable()
                                             ->preload()
                                             ->relationship('accountDestination', 'name')

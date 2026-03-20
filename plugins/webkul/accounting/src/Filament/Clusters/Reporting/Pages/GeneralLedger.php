@@ -35,8 +35,6 @@ class GeneralLedger extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
-    protected static ?string $navigationLabel = 'General Ledger';
-
     protected static ?int $navigationSort = 3;
 
     public ?array $data = [];
@@ -54,7 +52,17 @@ class GeneralLedger extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Audit Reports';
+        return __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title');
     }
 
     public function mount(): void
@@ -66,7 +74,7 @@ class GeneralLedger extends Page implements HasForms
     {
         return [
             Action::make('excel')
-                ->label('Export to Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.general-ledger.actions.export-excel'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->action(function () {
@@ -84,7 +92,7 @@ class GeneralLedger extends Page implements HasForms
                     );
                 }),
             Action::make('pdf')
-                ->label('Export to PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.general-ledger.actions.export-pdf'))
                 ->icon('heroicon-o-document-text')
                 ->color('danger')
                 ->action(function () {
@@ -114,7 +122,7 @@ class GeneralLedger extends Page implements HasForms
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
-                        ->label('Date Range')
+                        ->label(__('accounting::filament/clusters/reporting.pages.general-ledger.filters.date-range'))
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
@@ -132,7 +140,7 @@ class GeneralLedger extends Page implements HasForms
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.general-ledger.filters.journals'))
                         ->multiple()
                         ->options(Journal::pluck('name', 'id'))
                         ->searchable()

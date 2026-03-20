@@ -134,15 +134,18 @@ class CurrencyResource extends Resource
                             ->cloneable()
                             ->table([
                                 TableColumn::make('name')
-                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.name')),
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.name'))
+                                    ->resizable(),
                                 TableColumn::make('rate')
                                     ->label(__('support::filament/resources/currency.form.sections.rates.fields.unit-per-currency', [
                                         'currency' => config('app.currency'),
-                                    ])),
+                                    ]))
+                                    ->resizable(),
                                 TableColumn::make('rate_temp')
                                     ->label(__('support::filament/resources/currency.form.sections.rates.fields.currency-per-unit', [
                                         'currency' => config('app.currency'),
-                                    ])),
+                                    ]))
+                                    ->resizable(),
                             ])
                             ->schema([
                                 DatePicker::make('name')

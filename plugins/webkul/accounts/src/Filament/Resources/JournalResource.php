@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -52,7 +53,7 @@ class JournalResource extends Resource
 {
     protected static ?string $model = Journal::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -172,7 +173,22 @@ class JournalResource extends Resource
                                                                 Select::make('bank_account_id')
                                                                     ->searchable()
                                                                     ->preload()
-                                                                    ->relationship('bankAccount', 'account_number')
+                                                                    ->relationship(
+                                                                        name: 'bankAccount',
+                                                                        titleAttribute: 'account_number',
+                                                                        modifyQueryUsing: function ($query, Get $get) {
+                                                                            $company = Company::find(
+                                                                                $get('company_id') ?? Auth::user()->default_company_id
+                                                                            );
+
+                                                                            if ($company?->partner_id) {
+                                                                                $query->where('partner_id', $company->partner_id);
+                                                                            }
+                                                                        }
+                                                                    )
+                                                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                                                        return $record->account_number.($record->trashed() ? ' (Deleted)' : '');
+                                                                    })
                                                                     ->hiddenLabel(),
                                                             ]),
                                                     ]),
@@ -194,15 +210,15 @@ class JournalResource extends Resource
                                                     ->table([
                                                         TableColumn::make('payment_method_id')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.payment-method'))
-                                                            ->width(200),
+                                                            ->resizable(),
 
                                                         TableColumn::make('name')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.display-name'))
-                                                            ->width(200),
+                                                            ->resizable(),
 
                                                         TableColumn::make('payment_account_id')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.account-number'))
-                                                            ->width(200),
+                                                            ->resizable(),
                                                     ])
                                                     ->schema([
                                                         Select::make('payment_method_id')
@@ -214,6 +230,7 @@ class JournalResource extends Resource
                                                             )
                                                             ->searchable()
                                                             ->preload()
+                                                            ->wrapOptionLabels(false)
                                                             ->required(),
 
                                                         TextInput::make('name')
@@ -225,7 +242,8 @@ class JournalResource extends Resource
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.account-number'))
                                                             ->relationship('paymentAccount', 'name')
                                                             ->searchable()
-                                                            ->preload(),
+                                                            ->preload()
+                                                            ->wrapOptionLabels(false),
                                                     ])
                                                     ->columns(2),
                                             ]),
@@ -246,14 +264,20 @@ class JournalResource extends Resource
                                                     ->table([
                                                         TableColumn::make('payment_method_id')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.payment-method'))
+                                                            ->resizable()
+                                                            ->wrapHeader(false)
                                                             ->width(200),
 
                                                         TableColumn::make('name')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.display-name'))
+                                                            ->resizable()
+                                                            ->wrapHeader(false)
                                                             ->width(200),
 
                                                         TableColumn::make('payment_account_id')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.account-number'))
+                                                            ->resizable()
+                                                            ->wrapHeader(false)
                                                             ->width(200),
                                                     ])
                                                     ->schema([
@@ -266,6 +290,7 @@ class JournalResource extends Resource
                                                             )
                                                             ->searchable()
                                                             ->preload()
+                                                            ->wrapOptionLabels(false)
                                                             ->required(),
 
                                                         TextInput::make('name')
@@ -277,7 +302,8 @@ class JournalResource extends Resource
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.account-number'))
                                                             ->relationship('paymentAccount', 'name')
                                                             ->searchable()
-                                                            ->preload(),
+                                                            ->preload()
+                                                            ->wrapOptionLabels(false),
                                                     ])
                                                     ->columns(2),
                                             ]),

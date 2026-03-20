@@ -68,7 +68,7 @@ class TopAssigneesWidget extends BaseWidget
                 COUNT(DISTINCT task_id) as total_tasks
             ')
             ->whereBetween('analytic_records.created_at', [$startDate, $endDate])
-            ->groupBy('user_id')
+            ->groupBy('user_id', 'users.name')
             ->orderByRaw('SUM(unit_amount) DESC')
             ->limit(10);
 

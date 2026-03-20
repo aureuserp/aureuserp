@@ -1,0 +1,97 @@
+<?php
+
+return [
+    'title' => 'البنود اليومية',
+
+    'navigation' => [
+        'title' => 'البنود اليومية',
+    ],
+
+    'table' => [
+        'total'   => 'الإجمالي',
+        'columns' => [
+            'number'          => 'الرقم',
+            'date'            => 'التاريخ',
+            'account'         => 'الحساب',
+            'partner'         => 'الشريك',
+            'label'           => 'التسمية',
+            'reference'       => 'المرجع',
+            'journal'         => 'اليومية',
+            'debit'           => 'مدين',
+            'credit'          => 'دائن',
+            'balance'         => 'الرصيد',
+            'currency'        => 'العملة',
+            'company'         => 'الشركة',
+            'status'          => 'الحالة',
+            'amount-currency' => 'مبلغ العملة',
+            'amount-residual' => 'المبلغ المتبقي',
+            'reconciled'      => 'تمت المطابقة',
+            'due-date'        => 'تاريخ الاستحقاق',
+        ],
+
+        'groups' => [
+            'journal-entry' => 'قيد يومي',
+            'account'       => 'الحساب',
+            'partner'       => 'الشريك',
+            'journal'       => 'اليومية',
+            'date'          => 'التاريخ',
+            'invoice-date'  => 'تاريخ الفاتورة',
+            'matching'      => 'المطابقة',
+            'status'        => 'الحالة',
+            'company'       => 'الشركة',
+        ],
+
+        'filters' => [
+            'number'          => 'الرقم',
+            'label'           => 'التسمية',
+            'reference'       => 'المرجع',
+            'matching-number' => 'رقم المطابقة',
+            'account'         => 'الحساب',
+            'partner'         => 'الشريك',
+            'journal'         => 'اليومية',
+            'currency'        => 'العملة',
+            'company'         => 'الشركة',
+            'date'            => 'التاريخ',
+            'invoice-date'    => 'تاريخ الفاتورة',
+            'due-date'        => 'تاريخ الاستحقاق',
+            'discount-date'   => 'تاريخ الخصم',
+            'debit'           => 'مدين',
+            'credit'          => 'دائن',
+            'balance'         => 'الرصيد',
+            'amount-currency' => 'مبلغ العملة',
+            'amount-residual' => 'المبلغ المتبقي',
+            'quantity'        => 'الكمية',
+            'price-unit'      => 'سعر الوحدة',
+            'discount'        => 'الخصم',
+            'reconciled'      => 'تمت المطابقة',
+            'imported'        => 'مستوردة',
+            'down-payment'    => 'دفعة مقدمة',
+            'created-at'      => 'تاريخ الإنشاء',
+            'updated-at'      => 'تاريخ التحديث',
+        ],
+
+        'saved-filters' => [
+            'label'         => 'الفلاتر المحفوظة',
+            'unposted'      => 'غير مرحّل',
+            'posted'        => 'مرحّل',
+            'to-check'      => 'للتدقيق',
+            'unreconciled'  => 'غير مطابق',
+            'with-residual' => 'مع متبقي',
+            'sales'         => 'المبيعات',
+            'purchases'     => 'المشتريات',
+            'bank'          => 'بنك',
+            'cash'          => 'نقدي',
+            'credit'        => 'دائن',
+            'miscellaneous' => 'متفرقات',
+            'payable'       => 'دائن مستحق',
+            'receivable'    => 'مدين مستحق',
+            'pl-accounts'   => 'حسابات الأرباح والخسائر',
+        ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'تصدير',
+            ],
+        ],
+    ],
+];

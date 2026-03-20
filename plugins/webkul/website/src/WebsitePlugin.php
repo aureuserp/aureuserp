@@ -142,7 +142,7 @@ class WebsitePlugin implements Plugin
         $pages->each(function ($page) use ($navigationItems) {
             $navigationItems->push(
                 NavigationItem::make($page->slug)
-                    ->label($page->title)
+                    ->label(fn () => $this->getTranslatedPageTitle($page))
                     ->url(fn (): string => PageResource::getUrl('view', ['record' => $page->slug]))
                     ->isActiveWhen(function () use ($page) {
                         if (! request()->routeIs(PageResource::getRouteBaseName().'.view')) {
@@ -173,7 +173,7 @@ class WebsitePlugin implements Plugin
         $pages->each(function ($page) use ($navigationItems) {
             $navigationItems->push(
                 NavigationItem::make($page->slug)
-                    ->label($page->title)
+                    ->label(fn () => $this->getTranslatedPageTitle($page))
                     ->url(fn (): string => PageResource::getUrl('view', ['record' => $page->slug]))
                     ->isActiveWhen(function () use ($page) {
                         if (! request()->routeIs(PageResource::getRouteBaseName().'.view')) {
@@ -186,6 +186,22 @@ class WebsitePlugin implements Plugin
         });
 
         return $navigationItems;
+    }
+
+    /**
+     * Get translated page title based on slug, fallback to database title.
+     */
+    protected function getTranslatedPageTitle(Page $page): string
+    {
+        $translationKey = 'website::filament/app.page_titles.' . $page->slug;
+        $translated = __($translationKey);
+        
+        // If translation key is returned (no translation found), use database title
+        if ($translated === $translationKey) {
+            return $page->title;
+        }
+        
+        return $translated;
     }
 
     protected function getContacts(): array

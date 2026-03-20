@@ -55,6 +55,11 @@ return [
                                 'title' => 'Cannot Reduce Quantity',
                                 'body'  => 'You cannot reduce the quantity below the received quantity (:qty).',
                             ],
+                            
+                            'blanket-order-qty-limit' => [
+                                'title' => 'Quantity Exceeds Blanket Order Limit',
+                                'body'  => 'The product quantity (:product_qty) exceeds the available quantity (:available_qty) from the blanket order.',
+                            ],
                         ],
 
                         'columns' => [

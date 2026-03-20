@@ -27,7 +27,17 @@ class EditRole extends EditRecord
     {
         return [
             DeleteAction::make()
-                ->hidden(fn (Model $record): bool => RoleResource::isProtectedRoleRecord($record)),
+                ->before(function (DeleteAction $action, Model $record): void {
+                    if (RoleResource::isProtectedRoleRecord($record)) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('security::filament/resources/role.notification.system-role-delete.title'))
+                            ->body(__('security::filament/resources/role.notification.system-role-delete.body'))
+                            ->send();
+
+                        $action->cancel();
+                    }
+                }),
         ];
     }
 

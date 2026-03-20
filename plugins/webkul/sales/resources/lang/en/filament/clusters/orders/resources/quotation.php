@@ -75,6 +75,20 @@ return [
                             'margin-percentage'   => 'Margin (%)',
                             'discount-percentage' => 'Discount (%)',
                         ],
+
+                        'notifications' => [
+                            'quantity-below-delivered' => [
+                                'title' => 'Cannot Reduce Quantity',
+                                'body'  => 'You cannot reduce the quantity below the delivered quantity (:qty).',
+                            ],
+                        ],
+
+                        'delete-action' => [
+                            'error' => [
+                                'title' => 'Cannot Delete Product',
+                                'body'  => 'Products cannot be deleted from a confirmed sales order.',
+                            ],
+                        ],
                     ],
 
                     'product-optional' => [

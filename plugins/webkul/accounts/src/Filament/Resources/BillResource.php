@@ -1040,35 +1040,36 @@ class BillResource extends Resource
             ->table([
                 TableColumn::make('product_id')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.product'))
-                    ->width(250)
+                    ->width(300)
+                    ->resizable()
                     ->markAsRequired()
                     ->toggleable(),
                 TableColumn::make('quantity')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.quantity'))
-                    ->width(150)
+                    ->resizable()
                     ->markAsRequired()
                     ->toggleable(),
                 TableColumn::make('uom_id')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.unit'))
-                    ->width(150)
+                    ->resizable()
                     ->markAsRequired()
                     ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
                     ->toggleable(),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
-                    ->width(150)
+                    ->resizable()
                     ->markAsRequired(),
                 TableColumn::make('discount')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
-                    ->width(150)
+                    ->resizable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('taxes')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.taxes'))
-                    ->width(250)
+                    ->resizable()
                     ->toggleable(),
                 TableColumn::make('price_subtotal')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.sub-total'))
-                    ->width(150)
+                    ->resizable()
                     ->toggleable(),
             ])
             ->schema([
@@ -1084,6 +1085,7 @@ class BillResource extends Resource
                     ->searchable()
                     ->preload()
                     ->live()
+                    ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
@@ -1134,6 +1136,7 @@ class BillResource extends Resource
                             return $query->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))->orderBy('id');
                         },
                     )
+                    ->wrapOptionLabels(false)
                     ->required()
                     ->live()
                     ->native(false)
@@ -1170,6 +1173,7 @@ class BillResource extends Resource
                         'name',
                         modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
                     )
+                    ->wrapOptionLabels(false)
                     ->searchable()
                     ->multiple()
                     ->preload()

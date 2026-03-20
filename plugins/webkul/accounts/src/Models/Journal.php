@@ -61,7 +61,7 @@ class Journal extends Model implements Sortable
 
     public function bankAccount()
     {
-        return $this->belongsTo(BankAccount::class);
+        return $this->belongsTo(BankAccount::class)->withTrashed();
     }
 
     public function company()

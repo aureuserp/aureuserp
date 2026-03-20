@@ -6,7 +6,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -22,12 +21,11 @@ class ViewPurchaseAgreement extends ViewRecord
             ChatterAction::make()
                 ->resource(static::$resource),
             DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == RequisitionState::CLOSED)
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('inventories::filament/clusters/orders/resources/purchase-agreement/pages/view-purchase-agreement.header-actions.delete.notification.title'))
-                        ->body(__('inventories::filament/clusters/orders/resources/purchase-agreement/pages/view-purchase-agreement.header-actions.delete.notification.body')),
+                        ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.delete.notification.title'))
+                        ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.delete.notification.body')),
                 ),
         ];
     }

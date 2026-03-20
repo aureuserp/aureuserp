@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -222,7 +223,9 @@ JS,
                                         modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
                                     )
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->disabled(fn (?Model $record): bool => $record instanceof Role && $record->isSystemRole())
+                                    ->dehydrated(),
 
                                 Select::make('guard_name')
                                     ->label(__('filament-shield::filament-shield.field.guard_name'))
@@ -232,7 +235,9 @@ JS,
                                         'web'     => __('security::filament/resources/role.form.fields.web'),
                                         'sanctum' => __('security::filament/resources/role.form.fields.sanctum'),
                                     ])
-                                    ->default(Utils::getFilamentAuthGuard()),
+                                    ->default(Utils::getFilamentAuthGuard())
+                                    ->disabled(fn (?Model $record): bool => $record instanceof Role && $record->isSystemRole())
+                                    ->dehydrated(),
 
                                 Select::make(config('permission.column_names.team_foreign_key'))
                                     ->label(__('filament-shield::filament-shield.field.team'))
@@ -279,10 +284,19 @@ JS,
                     ->dateTime(),
             ])
             ->recordActions([
-                EditAction::make()
-                    ->hidden(fn (Model $record): bool => static::isProtectedRoleRecord($record)),
+                EditAction::make(),
                 DeleteAction::make()
-                    ->hidden(fn (Model $record): bool => static::isProtectedRoleRecord($record)),
+                    ->before(function (DeleteAction $action, Model $record): void {
+                        if (static::isProtectedRoleRecord($record)) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('security::filament/resources/role.notification.system-role-delete.title'))
+                                ->body(__('security::filament/resources/role.notification.system-role-delete.body'))
+                                ->send();
+
+                            $action->cancel();
+                        }
+                    }),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make()
@@ -354,7 +368,7 @@ JS,
      * Returns the full set of permission names that the form checkboxes represent.
      * Uses the same data sources as the form so "Select All" saves exactly what is shown.
      */
-    public static function getAllFormPermissions(): \Illuminate\Support\Collection
+    public static function getAllFormPermissions(): Collection
     {
         if (static::$allFormPermissions instanceof Collection) {
             return static::$allFormPermissions;

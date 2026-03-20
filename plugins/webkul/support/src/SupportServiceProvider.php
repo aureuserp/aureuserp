@@ -57,6 +57,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_08_08_104814_alter_utm_campaigns_table',
                 '2025_10_10_080114_create_currency_rates_table',
                 '2025_11_14_102615_alter_currency_rates_table',
+                '2026_03_18_000001_alter_unit_of_measures_factor_precision',
             ])
             ->runsMigrations();
     }
@@ -93,7 +94,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
     protected function registerHooks(): void
     {
-        $version = '1.3.0-BETA3';
+        $version = '1.3.0';
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,

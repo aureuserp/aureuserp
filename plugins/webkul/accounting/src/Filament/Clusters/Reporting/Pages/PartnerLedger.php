@@ -34,8 +34,6 @@ class PartnerLedger extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'Partner Ledger';
-
     protected static ?int $navigationSort = 5;
 
     public ?array $data = [];
@@ -53,7 +51,17 @@ class PartnerLedger extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Partner Reports';
+        return __('accounting::filament/clusters/reporting.pages.partner-ledger.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.partner-ledger.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.partner-ledger.navigation.title');
     }
 
     public function mount(): void
@@ -65,7 +73,7 @@ class PartnerLedger extends Page implements HasForms
     {
         return [
             Action::make('excel')
-                ->label('Export Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.partner-ledger.actions.export-excel'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
                 ->action(function () {
@@ -85,7 +93,7 @@ class PartnerLedger extends Page implements HasForms
                 }),
 
             Action::make('pdf')
-                ->label('Export PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.partner-ledger.actions.export-pdf'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('danger')
                 ->action(function () {
@@ -115,7 +123,7 @@ class PartnerLedger extends Page implements HasForms
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
-                        ->label('Date Range')
+                        ->label(__('accounting::filament/clusters/reporting.pages.partner-ledger.filters.date-range'))
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
@@ -133,7 +141,7 @@ class PartnerLedger extends Page implements HasForms
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('partners')
-                        ->label('Partners')
+                        ->label(__('accounting::filament/clusters/reporting.pages.partner-ledger.filters.partners'))
                         ->multiple()
                         ->options(Partner::pluck('name', 'id'))
                         ->searchable()
@@ -141,7 +149,7 @@ class PartnerLedger extends Page implements HasForms
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.partner-ledger.filters.journals'))
                         ->multiple()
                         ->options(Journal::pluck('name', 'id'))
                         ->searchable()

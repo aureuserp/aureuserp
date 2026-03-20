@@ -206,7 +206,9 @@ class Product extends Model implements Sortable
 
             $price = $this->price + collect($combination)->sum('extra_price');
 
-            return compact('name', 'price');
+            $cost = $this->cost;
+
+            return compact('name', 'price', 'cost');
         };
 
         $findVariant = function ($combination) use ($existingVariants) {
@@ -290,6 +292,14 @@ class Product extends Model implements Sortable
 
         static::saved(function ($product) {
             $product->variants->each(fn ($variant) => $variant->update(['is_storable' => $product->is_storable]));
+        });
+
+        static::deleting(function (self $product) {
+            if ($product->isForceDeleting()) {
+                $product->variants()->forceDelete();
+            } else {
+                $product->variants()->delete();
+            }
         });
     }
 

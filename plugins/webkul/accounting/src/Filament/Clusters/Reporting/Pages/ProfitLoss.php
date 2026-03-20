@@ -35,8 +35,6 @@ class ProfitLoss extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected static ?string $navigationLabel = 'Profit & Loss';
-
     protected static ?int $navigationSort = 2;
 
     public ?array $data = [];
@@ -48,7 +46,17 @@ class ProfitLoss extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Statement Reports';
+        return __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title');
     }
 
     public function mount(): void
@@ -60,7 +68,7 @@ class ProfitLoss extends Page implements HasForms
     {
         return [
             Action::make('excel')
-                ->label('Export to Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.actions.export-excel'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->action(function () {
@@ -72,7 +80,7 @@ class ProfitLoss extends Page implements HasForms
                     return Excel::download(new ProfitAndLossExport($data, $dateFrom, $dateTo), $filename);
                 }),
             Action::make('pdf')
-                ->label('Export to PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.actions.export-pdf'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('danger')
                 ->action(function () {
@@ -100,7 +108,7 @@ class ProfitLoss extends Page implements HasForms
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
-                        ->label('Date Range')
+                        ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.filters.date-range'))
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
@@ -117,7 +125,7 @@ class ProfitLoss extends Page implements HasForms
                         ->live()
                         ->afterStateUpdated(fn () => null),
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.filters.journals'))
                         ->multiple()
                         ->options(fn () => Journal::pluck('name', 'id'))
                         ->searchable()
@@ -175,19 +183,19 @@ class ProfitLoss extends Page implements HasForms
         return [
             'sections' => [
                 [
-                    'title'         => 'REVENUE',
+                    'title'         => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.revenue.title'),
                     'accounts'      => $revenue['accounts'],
-                    'total_label'   => 'Total Revenue',
+                    'total_label'   => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.revenue.total-label'),
                     'total'         => $revenue['total'],
-                    'empty_message' => 'No revenue accounts with transactions in this period',
+                    'empty_message' => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.revenue.empty-message'),
                 ],
                 [
-                    'title'         => 'EXPENSES',
+                    'title'         => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.expenses.title'),
                     'accounts'      => $expenses['accounts'],
-                    'total_label'   => 'Total Expenses',
+                    'total_label'   => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.expenses.total-label'),
                     'total'         => $expenses['total'],
                     'is_expense'    => true,
-                    'empty_message' => 'No expense accounts with transactions in this period',
+                    'empty_message' => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.expenses.empty-message'),
                 ],
             ],
             'net_income' => $netIncome,

@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\LocationType;
@@ -13,6 +12,7 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\RuleAction;
 use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
@@ -342,16 +342,25 @@ class InventoryManager
         $productQuantities = collect();
 
         if (! $isSupplierSource) {
-            $productQuantities = ProductQuantity::with(['location', 'lot', 'package'])
+            $parentPath = $record->sourceLocation->parent_path;
+
+            if (
+                ! $parentPath
+                || trim($parentPath, '/') === ''
+            ) {
+                $sourceLocationIds = collect([$record->source_location_id]);
+            } else {
+                $sourceLocationIds = Location::where('parent_path', 'LIKE', $parentPath.'%')
+                    ->pluck('id');
+            }
+
+            $productQuantities = ProductQuantity::query()
+                ->with(['location', 'lot', 'package'])
                 ->where('product_id', $record->product_id)
-                // TODO: Fix this to handle nesting
-                ->whereHas('location', function (Builder $query) use ($record) {
-                    $query->where('id', $record->source_location_id)
-                        ->orWhere('parent_id', $record->source_location_id);
-                })
+                ->whereIn('location_id', $sourceLocationIds)
                 ->when(
-                    $record->sourceLocation->type != LocationType::SUPPLIER
-                    && $record->product->tracking == ProductTracking::LOT,
+                    $record->sourceLocation->type !== LocationType::SUPPLIER
+                        && $record->product->tracking === ProductTracking::LOT,
                     fn ($query) => $query->whereNotNull('lot_id')
                 )
                 ->get();
@@ -515,8 +524,9 @@ class InventoryManager
             $record->state = OperationState::DONE;
         } elseif ($record->moves->every(fn ($move) => $move->state === MoveState::CANCELED)) {
             $record->state = OperationState::CANCELED;
-        } elseif ($record->moves->contains(fn ($move) => $move->state === MoveState::ASSIGNED ||
-            $move->state === MoveState::PARTIALLY_ASSIGNED
+        } elseif ($record->moves->contains(
+            fn ($move) => $move->state === MoveState::ASSIGNED ||
+                $move->state === MoveState::PARTIALLY_ASSIGNED
         )) {
             $record->state = OperationState::ASSIGNED;
         }

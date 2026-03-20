@@ -4,6 +4,7 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
@@ -26,19 +27,31 @@ class ConfirmAction extends Action
             ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'gray' : 'primary')
             ->action(function (Order $record, Component $livewire): void {
                 $record = PurchaseOrder::confirmPurchaseOrder($record);
-
                 $livewire->updateForm();
-
                 Notification::make()
                     ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/confirm.action.notification.success.title'))
                     ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/confirm.action.notification.success.body'))
                     ->success()
                     ->send();
             })
-            ->visible(fn () => ! in_array($this->getRecord()->state, [
-                OrderState::PURCHASE,
-                OrderState::DONE,
-                OrderState::CANCELED,
-            ]));
+            ->visible(function () {
+                $record = $this->getRecord();
+
+                $user = Auth::user();
+
+                if (in_array($record->state, [
+                    OrderState::PURCHASE,
+                    OrderState::DONE,
+                    OrderState::CANCELED,
+                ])) {
+                    return false;
+                }
+
+                if (PurchaseOrder::canUserApprove($user)) {
+                    return true;
+                }
+
+                return $record->state === OrderState::DRAFT;
+            });
     }
 }

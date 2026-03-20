@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Database\Factories\RequisitionLineFactory;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
@@ -16,6 +17,10 @@ class RequisitionLine extends Model
     use HasFactory;
 
     protected $table = 'purchases_requisition_lines';
+
+    protected $appends = [
+        'ordered_qty',
+    ];
 
     protected $fillable = [
         'qty',
@@ -50,6 +55,21 @@ class RequisitionLine extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getOrderedQtyAttribute(): float
+    {
+        if (! $this->requisition_id || ! $this->product_id) {
+            return 0;
+        }
+
+        return (float) OrderLine::query()
+            ->where('product_id', $this->product_id)
+            ->whereHas('order', fn ($query) => $query
+                ->where('requisition_id', $this->requisition_id)
+                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value])
+            )
+            ->sum('product_qty');
     }
 
     protected static function newFactory(): RequisitionLineFactory

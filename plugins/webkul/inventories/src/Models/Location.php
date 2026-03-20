@@ -183,9 +183,12 @@ class Location extends Model
             } else {
                 $category->next_inventory_date = null;
             }
+        });
 
+        static::created(function ($category) {
             $category->updateParentPath();
             $category->updateFullName();
+            $category->saveQuietly();
         });
 
         static::saving(function ($category) {

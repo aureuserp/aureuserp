@@ -42,17 +42,25 @@
 
             @if ($isAdminPanel)
                 <x-filament::dropdown placement="bottom-start" teleport width="sm">
-                    <x-slot name="trigger">  
-                        <x-filament::icon-button
-                            icon="icon-menu"
-                        />
+                    <x-slot name="trigger">
+                        <x-filament::icon-button icon="icon-menu" />
                     </x-slot>
 
-                    <div class="grid grid-cols-3 gap-1 overflow-y-auto p-4" style="max-height: 80vh; grid-template-columns: repeat(3, minmax(0, 1fr));">
+                    <div
+                        class="grid grid-cols-2 gap-2 overflow-y-auto p-4 md:grid-cols-3"
+                        style="max-height: 80vh; grid-template-columns: repeat(3, minmax(0, 1fr));"
+                    >
                         @foreach ($navigation as $group)
                             @php
-                                $itemUrl = $group->getItems()->first()->getUrl();   
+                                $groupLabel = $group->getLabel();
+                                $groupIcon = $group->getIcon();
+                                $itemUrl = $group->getItems()->first()?->getUrl();
                             @endphp
+
+                            @if (! $groupLabel || ! $itemUrl || ! $groupIcon)
+                                @continue
+                            @endif
+
                             <div
                                 @class([
                                     'fi-topbar-item',
@@ -61,14 +69,14 @@
                             >
                                 <a
                                     href="{{ $itemUrl }}"
-                                    class="fi-topbar-item-btn flex flex-col items-center justify-center gap-2 rounded-lg p-4"
+                                    class="fi-topbar-item-btn flex flex-col items-center justify-center gap-2 whitespace-nowrap rounded-lg p-4 text-center text-sm font-medium"
                                 >
                                     <x-filament::icon
-                                        :icon="$group->getIcon()"
+                                        :icon="$groupIcon"
                                         style="height: 64px; width: 64px"
                                     />
 
-                                    {{ $group->getLabel() }}
+                                    {{ $groupLabel }}
                                 </a>
                             </div>
                         @endforeach
@@ -77,19 +85,18 @@
             @endif
         @endif
 
-        <div class="fi-topbar-start" style="margin-right:0">
+        <div class="fi-topbar-start" style="margin-right: 0">
             @if ($isSidebarCollapsibleOnDesktop)
                 <x-filament::icon-button
                     color="gray"
                     :icon="$isRtl ? \Filament\Support\Icons\Heroicon::OutlinedChevronLeft : \Filament\Support\Icons\Heroicon::OutlinedChevronRight"
-                    {{-- @deprecated Use `PanelsIconAlias::SIDEBAR_EXPAND_BUTTON_RTL` instead of `PanelsIconAlias::SIDEBAR_EXPAND_BUTTON` for RTL. --}}
                     :icon-alias="
                         $isRtl
-                        ? [
-                            \Filament\View\PanelsIconAlias::SIDEBAR_EXPAND_BUTTON_RTL,
-                            \Filament\View\PanelsIconAlias::SIDEBAR_EXPAND_BUTTON,
-                        ]
-                        : \Filament\View\PanelsIconAlias::SIDEBAR_EXPAND_BUTTON
+                            ? [
+                                \Filament\View\PanelsIconAlias::SIDEBAR_EXPAND_BUTTON_RTL,
+                                \Filament\View\PanelsIconAlias::SIDEBAR_EXPAND_BUTTON,
+                            ]
+                            : \Filament\View\PanelsIconAlias::SIDEBAR_EXPAND_BUTTON
                     "
                     icon-size="lg"
                     :label="__('filament-panels::layout.actions.sidebar.expand.label')"
@@ -105,14 +112,13 @@
                 <x-filament::icon-button
                     color="gray"
                     :icon="$isRtl ? \Filament\Support\Icons\Heroicon::OutlinedChevronRight : \Filament\Support\Icons\Heroicon::OutlinedChevronLeft"
-                    {{-- @deprecated Use `PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON_RTL` instead of `PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON` for RTL. --}}
                     :icon-alias="
                         $isRtl
-                        ? [
-                            \Filament\View\PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON_RTL,
-                            \Filament\View\PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON,
-                        ]
-                        : \Filament\View\PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON
+                            ? [
+                                \Filament\View\PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON_RTL,
+                                \Filament\View\PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON,
+                            ]
+                            : \Filament\View\PanelsIconAlias::SIDEBAR_COLLAPSE_BUTTON
                     "
                     icon-size="lg"
                     :label="__('filament-panels::layout.actions.sidebar.collapse.label')"
@@ -158,10 +164,13 @@
 
                         @if ($groupLabel)
                             @if ($isAdminPanel)
-                                <p class="text-lg font-bold">
-                                    {{ $groupLabel }}
-                                </p>
-                                
+                                {{-- Admin panel: show active group name as a plain bold heading --}}
+                                <li class="fi-topbar-item">
+                                    <span class="fi-topbar-item-btn cursor-default px-3 py-2 text-xl font-bold">
+                                        {{ $groupLabel }}
+                                    </span>
+                                </li>
+
                                 @foreach ($group->getItems() as $item)
                                     @php
                                         $isItemActive = $item->isActive();
@@ -207,10 +216,7 @@
 
                                         foreach ($group->getItems() as $item) {
                                             if ($childItems = $item->getChildItems()) {
-                                                $lists[] = [
-                                                    $item,
-                                                    ...$childItems,
-                                                ];
+                                                $lists[] = [$item, ...$childItems];
                                                 $lists[] = [];
 
                                                 continue;
@@ -225,7 +231,7 @@
                                             $lists[count($lists) - 1][] = $item;
                                         }
 
-                                        if (empty($lists[count($lists) - 1])) {
+                                        if (! empty($lists) && empty($lists[count($lists) - 1])) {
                                             array_pop($lists);
                                         }
                                     @endphp
@@ -239,7 +245,9 @@
                                                     $itemBadgeColor = $item->getBadgeColor();
                                                     $itemBadgeTooltip = $item->getBadgeTooltip();
                                                     $itemUrl = $item->getUrl();
-                                                    $itemIcon = $isItemActive ? ($item->getActiveIcon() ?? $item->getIcon()) : $item->getIcon();
+                                                    $itemIcon = $isItemActive
+                                                        ? ($item->getActiveIcon() ?? $item->getIcon())
+                                                        : $item->getIcon();
                                                     $shouldItemOpenUrlInNewTab = $item->shouldOpenUrlInNewTab();
                                                 @endphp
 

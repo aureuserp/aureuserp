@@ -2,8 +2,8 @@
 
 namespace Webkul\Security\Models;
 
-use Illuminate\Auth\Access\AuthorizationException;
 use BezhanSalleh\FilamentShield\Support\Utils;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -66,8 +66,8 @@ class Role extends BaseRole
         ];
 
         return collect(array_merge(static::SYSTEM_ROLE_FALLBACKS, $configuredNames))
-            ->filter(fn($name) => is_string($name) && $name !== '')
-            ->map(fn(string $name) => static::normalizeRoleName($name))
+            ->filter(fn ($name) => is_string($name) && $name !== '')
+            ->map(fn (string $name) => static::normalizeRoleName($name))
             ->unique()
             ->values()
             ->all();
@@ -84,10 +84,6 @@ class Role extends BaseRole
      */
     public function syncPermissionsByNames(Collection|array $permissionNames): void
     {
-        if ($this->isSystemRole()) {
-            throw new AuthorizationException(__('You are not allowed to modify permissions for this system role.'));
-        }
-
         $permissionNames = collect($permissionNames)->unique()->values();
 
         if ($permissionNames->isEmpty()) {
@@ -142,7 +138,7 @@ class Role extends BaseRole
      */
     private function createMissingPermissions(string $permissionModel, Collection $permissionNames, string $guard): void
     {
-        $insertData = $permissionNames->map(fn($name) => [
+        $insertData = $permissionNames->map(fn ($name) => [
             'name'       => $name,
             'guard_name' => $guard,
             'created_at' => now(),

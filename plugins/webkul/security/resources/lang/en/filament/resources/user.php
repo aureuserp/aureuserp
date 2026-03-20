@@ -95,6 +95,10 @@ return [
                 'notification' => [
                     'title' => 'User deleted',
                     'body'  => 'The user has been deleted successfully.',
+                    'error' => [
+                        'title' => 'User Cannot Be Deleted',
+                        'body'  => 'This is a default user or you cannot delete yourself.',
+                    ],
                 ],
             ],
 

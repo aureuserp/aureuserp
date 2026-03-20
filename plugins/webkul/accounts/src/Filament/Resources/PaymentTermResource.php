@@ -134,24 +134,25 @@ class PaymentTermResource extends Resource
                                             ->table([
                                                 TableColumn::make('value')
                                                     ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.value'))
-                                                    ->width(150),
+                                                    ->resizable(),
                                                 TableColumn::make('value_amount')
                                                     ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.due'))
-                                                    ->width(100),
+                                                    ->resizable(),
                                                 TableColumn::make('delay_type')
                                                     ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.delay-type'))
-                                                    ->width(150),
+                                                    ->resizable(),
                                                 TableColumn::make('days_next_month')
                                                     ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.days-on-the-next-month'))
-                                                    ->width(100)
-                                                    ->toggleable(isToggledHiddenByDefault: true),
+                                                    ->toggleable(isToggledHiddenByDefault: true)
+                                                    ->resizable(),
                                                 TableColumn::make('nb_days')
                                                     ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.days'))
-                                                    ->width(80),
+                                                    ->resizable(maxWidth: 80),
                                             ])
                                             ->schema([
                                                 Select::make('value')
                                                     ->options(DueTermValue::class)
+                                                    ->wrapOptionLabels(false)
                                                     ->native(false)
                                                     ->required(),
 
@@ -164,6 +165,7 @@ class PaymentTermResource extends Resource
 
                                                 Select::make('delay_type')
                                                     ->options(DelayType::class)
+                                                    ->wrapOptionLabels(false)
                                                     ->native(false)
                                                     ->required(),
 

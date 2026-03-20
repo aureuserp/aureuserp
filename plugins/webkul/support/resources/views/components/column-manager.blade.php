@@ -15,26 +15,34 @@
     use Illuminate\View\ComponentAttributeBag;
 @endphp
 
-<div class="p-4 fi-ta-col-manager">
+<div class="fi-ta-col-manager p-4">
     <div
         x-data="(() => {
             return {
                 error: undefined,
                 isLoading: false,
                 columns: @js($tableColumns),
+                deferredColumns: [],
                 isLive: {{ $applyAction->isVisible() ? 'false' : 'true' }},
                 repeaterKey: @js($repeaterKey),
 
                 init() {
                     if (!this.columns || this.columns.length === 0) {
                         this.columns = []
+                        this.deferredColumns = []
                         return
                     }
+
+                    this.deferredColumns = JSON.parse(JSON.stringify(this.columns))
+
+                    this.$watch('columns', () => {
+                        this.resetDeferredColumns()
+                    })
                 },
 
                 get groupedColumns() {
                     const groupedColumns = {}
-                    this.columns.filter(c => c.type === 'group').forEach(c => {
+                    this.deferredColumns.filter(c => c.type === 'group').forEach(c => {
                         groupedColumns[c.name] = this.calculateGroupedColumns(c)
                     })
                     return groupedColumns
@@ -71,14 +79,14 @@
 
                 getColumn(name, groupName = null) {
                     if (groupName) {
-                        const group = this.columns.find(g => g.type === 'group' && g.name === groupName)
+                        const group = this.deferredColumns.find(g => g.type === 'group' && g.name === groupName)
                         return group?.columns?.find(c => c.name === name)
                     }
-                    return this.columns.find(c => c.name === name)
+                    return this.deferredColumns.find(c => c.name === name)
                 },
 
                 toggleGroup(groupName) {
-                    const group = this.columns.find(g => g.type === 'group' && g.name === groupName)
+                    const group = this.deferredColumns.find(g => g.type === 'group' && g.name === groupName)
                     if (!group?.columns) return
 
                     const groupedColumns = this.calculateGroupedColumns(group)
@@ -89,7 +97,7 @@
                     const newValue = groupedColumns.indeterminate ? true : !anyChildOn
 
                     group.columns.filter(c => c.isToggleable !== false).forEach(c => c.isToggled = newValue)
-                    this.columns = [...this.columns]
+                    this.deferredColumns = [...this.deferredColumns]
 
                     if (this.isLive) this.applyTableColumnManager()
                 },
@@ -99,7 +107,7 @@
                     if (!column || column.isToggleable === false) return
 
                     column.isToggled = !column.isToggled
-                    this.columns = [...this.columns]
+                    this.deferredColumns = [...this.deferredColumns]
 
                     if (this.isLive) this.applyTableColumnManager()
                 },
@@ -111,7 +119,7 @@
                 },
 
                 reorderGroupColumns(sortedIds, groupName) {
-                    const group = this.columns.find(c => c.type === 'group' && c.name === groupName)
+                    const group = this.deferredColumns.find(c => c.type === 'group' && c.name === groupName)
                     if (!group) return
 
                     const newOrder = sortedIds.map(id => id.split('::'))
@@ -122,13 +130,13 @@
                     })
 
                     group.columns = reordered
-                    this.columns = [...this.columns]
+                    this.deferredColumns = [...this.deferredColumns]
 
                     if (this.isLive) this.applyTableColumnManager()
                 },
 
                 reorderTopLevel(newOrder) {
-                    const cloned = this.columns
+                    const cloned = this.deferredColumns
                     const reordered = []
                     newOrder.forEach(([type, name]) => {
                         const item = cloned.find(c => {
@@ -138,12 +146,13 @@
                         })
                         if (item) reordered.push(item)
                     })
-                    this.columns = reordered
+                    this.deferredColumns = reordered
                 },
 
                 async applyTableColumnManager() {
                     this.isLoading = true;
                     try {
+                        this.columns = JSON.parse(JSON.stringify(this.deferredColumns))
                         await this.$wire.call('applyRepeaterColumnManager', this.repeaterKey, this.columns);
                     } catch (error) {
                         this.error = error;
@@ -151,6 +160,24 @@
                     } finally {
                         this.isLoading = false;
                     }
+                },
+
+                resetDeferredColumns() {
+                    this.deferredColumns = JSON.parse(JSON.stringify(this.columns))
+                },
+
+                resetColumns() {
+                    const resetItem = (column) => {
+                        if (column.type === 'group' && column.columns) {
+                            column.columns.forEach(resetItem)
+                        } else if (column.isToggleable !== false) {
+                            column.isToggled = !column.isToggledHiddenByDefault
+                        }
+                    }
+                    const fresh = JSON.parse(JSON.stringify(this.deferredColumns))
+                    fresh.forEach(resetItem)
+                    this.deferredColumns = fresh
+                    this.columns = JSON.parse(JSON.stringify(fresh))
                 },
             }
         })()"
@@ -168,7 +195,7 @@
                             new ComponentAttributeBag([
                                 'color' => 'danger',
                                 'tag' => 'button',
-                                'wire:click' => 'resetRepeaterColumnManager(\'' . $repeaterKey . '\')',
+                                'x-on:click' => 'resetColumns(); $wire.call(\'resetRepeaterColumnManager\', repeaterKey)',
                                 'wire:loading.remove.delay.' . config('filament.livewire_loading_delay', 'default') => '',
                                 'wire:target' => 'resetRepeaterColumnManager',
                             ])
@@ -193,7 +220,7 @@
             }}
         >
             <template
-                x-for="(column, index) in columns.filter((column) => ! column.isHidden && column.label)"
+                x-for="(column, index) in deferredColumns.filter((column) => ! column.isHidden && column.label)"
                 x-bind:key="(column.type === 'group' ? 'group::' : 'column::') + column.name + '_' + index"
             >
                 <div
@@ -321,7 +348,7 @@
         </div>
 
         @if ($applyAction->isVisible())
-            <div class="fi-ta-col-manager-apply-action-ctn">
+            <div class="fi-ta-col-manager-apply-action-ctn flex justify-start">
                 {{ $applyAction }}
             </div>
         @endif

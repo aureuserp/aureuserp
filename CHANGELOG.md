@@ -1,3 +1,68 @@
+# 🚀 CHANGELOG — v1.3.0
+
+### 🧩 Features
+
+* Added REST API support  
+* Generated API documentation  
+
+### ✨ Improvements
+
+* Upgraded to Filament v5
+* Enhanced CompanyResource actions visibility and added archived tab handling in ListCompanies
+* Added Playwright tests for Companies and Users
+* Integrated Filament Shield configuration for plugins
+* Introduced User Active and Inactive status
+* Optimized roles management
+* Added full Arabic translation support
+
+### 🐛 Fixes
+
+* [fixed] - Resolved compatibility issues.
+* [fixed] - Fixed UI issues in the repeater select box.
+* [fixed] - Fixed top bar dropdown menu for small screen devices.
+* [fixed] - Resolved refund navigation issue.
+* [fixed] - Prevented logged-in users from deleting themselves and made roles a required field.
+* [fixed] - Improved role creation and update notifications and enhanced role management logic.
+* [fixed] - Fixed failing tests.
+* [fixed] - Resolved getUrl compatibility issue.
+* [fixed] - Fixed unique validation during updates for company and branch names.
+* [fixed] - Added support for multiple UOM (Units of Measure).
+* [fixed] - Added migration to update unit of measure factor precision and recalculate factors.
+* [fixed] - Added show/hide (eye icon) toggle for password field.
+* [fixed] - Fixed global search issue.
+* [fixed] - Resolved error in the project dashboard.
+
+* #1025 [fixed] - Purchase Agreement visible for all vendors in RFQ creation
+* #1037 [fixed] - Receipt Not Generated for Updated Quantity in Purchase Order
+* #1038 [fixed] - Edit Receipt Opens View Receipt Page
+* #1039 [fixed] - Unable to Add Product After Confirming Empty Purchase Order
+* #1040 [fixed] - Exception Error 500 When Deleting Product Line After RFQ Confirmation
+* #1043 [fixed] - Blanket Order Functionality Not Working as Expected
+* #1045 [fixed] - Purchase Order Approval Minimum Amount Not Triggering Approval Flow
+* #1051 [fixed] - Register Payment Wizard Error After Paying Invoice
+* #1053 [fixed] - 500 Server Error When Adding Bank Account to Journal 
+* #1055 [fixed] - Inactive Currencies Visible in Company/Branch Creation
+* #1057 [fixed] - Logged-in User Can Cause Deadlock When Changing Own Resource Permissions
+* #1058 [fixed] - Email Validation Conflict Between Contacts and Users
+* #1072 [fixed] - 500 Error When Force Deleting Used Company from Archived Tab
+* #1077 [fixed] - System Allows Creating Multiple Companies with Same Name (Name Should Be Unique)
+* #1079 [fixed] - Validation error when editing product attribute and adding new value
+* #1085 [fixed] - filament build artifacts neither gitignored nor committed 
+* #1086 [fixed] - Security: Missing Authorization on Multiple REST API Controllers 
+* #1094 [fixed] - Partner Not Saved in Journal Entry After Creation 
+* #1099 [fixed] - Bug: Invoice and Bill Datagrid Showing Incorrect Data 
+* #1101 [fixed] - Bug: Prevent Force Deleting a Product That Is Already in Use 
+* #1105 [fixed] - Bug: Quotation Attachment Not Visible in Email or Chatter 
+* #1110 [fixed] - Bug: Exception when removing product lines from RFQ with selected Purchase Agreement 
+* #1111 [fixed] - Bug: Deliveries not updating after quantity change in confirmed Sales Order 
+* #1114 [fixed] - Installation Failed Plugins 
+* #1116 [fixed] - Bug: Error when adding columns from Column Manager in Deliveries 
+* #1118 [fixed] - Bug: 500 Server Error When Sorting Roles Column in User List 
+* #1122 [fixed] - Bug: Product dropdown in repeaters shows variants of archived parent products  
+* #1123 [fixed] - Bug: Unit price updates incorrectly when changing quantity in RFQ created from Purchase Agreement  
+* #1130 [fixed] - Variant cost not updated when regenerating variants after product cost change 
+* #1131 [fixed] - Bug: Manage Stock Move Lines Vanish When Adding Multiple Entries 
+
 # 🚀 CHANGELOG — v1.3.0-BETA3
 
 ### 🧩 Features

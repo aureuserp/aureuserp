@@ -66,7 +66,17 @@ class EditUser extends EditRecord
                 ->icon('heroicon-o-key'),
             ViewAction::make(),
             DeleteAction::make()
-                ->visible(fn(User $record) => self::getResource()::canDeleteUser($record))
+                ->before(function (DeleteAction $action, User $record): void {
+                    if (! self::getResource()::canDeleteUser($record)) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('security::filament/resources/user/pages/edit-user.header-actions.delete.notification.error.title'))
+                            ->body(__('security::filament/resources/user/pages/edit-user.header-actions.delete.notification.error.body'))
+                            ->send();
+
+                        $action->cancel();
+                    }
+                })
                 ->successNotification(
                     Notification::make()
                         ->success()

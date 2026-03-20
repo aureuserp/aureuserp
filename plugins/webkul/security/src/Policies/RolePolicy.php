@@ -39,8 +39,7 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        return $user->can('update_role')
-            && ! $role->isSystemRole();
+        return $user->can('update_role');
     }
 
     /**
@@ -48,8 +47,7 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        return $user->can('delete_role')
-            && ! $role->isSystemRole();
+        return $user->can('delete_role');
     }
 
     /**

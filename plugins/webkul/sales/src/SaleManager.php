@@ -155,6 +155,8 @@ class SaleManager
 
         $record->save();
 
+        $this->syncInventoryDelivery($record);
+
         $record->refresh();
 
         return $record;
@@ -495,7 +497,6 @@ class SaleManager
                 );
 
                 $sent[] = $partner->name;
-
             } catch (Exception $e) {
                 $failed[$partner->name] = 'Email service error: '.$e->getMessage();
             }
@@ -651,9 +652,291 @@ class SaleManager
         $accountMoveLine->taxes()->sync($orderLine->taxes->pluck('id'));
     }
 
-    /**
-     * Apply push rules for the operation.
-     */
+    protected function syncInventoryDelivery(Order $record): void
+    {
+        if ($record->state !== OrderState::SALE) {
+            return;
+        }
+
+        if (! Package::isPluginInstalled('inventories')) {
+            return;
+        }
+
+        $operations = $record->operations()->get();
+
+        $draftOperations = $operations->filter(function ($operation) {
+            return in_array($operation->state, [
+                InventoryEnums\OperationState::DRAFT,
+                InventoryEnums\OperationState::CONFIRMED,
+                InventoryEnums\OperationState::ASSIGNED,
+            ]);
+        });
+
+        $validatedOperations = $operations->filter(function ($operation) {
+            return $operation->state === InventoryEnums\OperationState::DONE;
+        });
+
+        foreach ($record->lines as $line) {
+            $validatedQty = $this->getValidatedDeliveryQtyForLine($line, $validatedOperations);
+
+            $pendingQty = $this->getPendingDeliveryQtyForLine($line, $draftOperations);
+
+            $totalScheduledQty = $validatedQty + $pendingQty;
+
+            $requiredQty = $line->product_qty;
+
+            $diffQty = $requiredQty - $totalScheduledQty;
+
+            if ($diffQty > 0) {
+                if ($pendingQty > 0) {
+                    $this->updateDraftDeliveryMoves($line, $draftOperations, $pendingQty + $diffQty);
+                } else {
+                    $this->createNewDeliveryForLine($record, $line, $diffQty);
+                }
+            } elseif ($diffQty < 0) {
+                $qtyToReduce = min(abs($diffQty), $pendingQty);
+
+                if ($qtyToReduce > 0) {
+                    $newPendingQty = $pendingQty - $qtyToReduce;
+
+                    $this->updateOrCancelDeliveryMoves($line, $draftOperations, $newPendingQty);
+                }
+            } elseif ($pendingQty > 0 && $pendingQty != ($requiredQty - $validatedQty)) {
+                $expectedPendingQty = max(0, $requiredQty - $validatedQty);
+
+                $this->updateOrCancelDeliveryMoves($line, $draftOperations, $expectedPendingQty);
+            }
+        }
+
+        $this->cleanupEmptyDeliveryOperations($record);
+
+        foreach ($record->operations()->get() as $operation) {
+            if (! in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])) {
+                $operation->refresh();
+
+                InventoryFacade::computeTransfer($operation);
+            }
+        }
+    }
+
+    protected function getValidatedDeliveryQtyForLine(OrderLine $line, $validatedOperations): float
+    {
+        $quantity = 0.0;
+
+        foreach ($validatedOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if ($move->sale_order_line_id === $line->id && $move->state === InventoryEnums\MoveState::DONE) {
+                    $quantity += $move->quantity;
+                }
+            }
+        }
+
+        return $quantity;
+    }
+
+    protected function getPendingDeliveryQtyForLine(OrderLine $line, $draftOperations): float
+    {
+        $quantity = 0.0;
+
+        foreach ($draftOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if (
+                    $move->sale_order_line_id === $line->id
+                    && $move->state !== InventoryEnums\MoveState::CANCELED
+                ) {
+                    $quantity += $move->product_uom_qty;
+                }
+            }
+        }
+
+        return $quantity;
+    }
+
+    protected function updateDraftDeliveryMoves(OrderLine $line, $draftOperations, float $targetQty): void
+    {
+        $firstMove = null;
+
+        foreach ($draftOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if (
+                    $move->sale_order_line_id === $line->id
+                    && $move->state !== InventoryEnums\MoveState::CANCELED
+                ) {
+                    if (! $firstMove) {
+                        $firstMove = $move;
+                    }
+                }
+            }
+        }
+
+        if ($firstMove) {
+            $uomQty = $line->uom->computeQuantity($targetQty, $line->product->uom, true, 'HALF-UP');
+
+            $firstMove->update([
+                'product_qty'     => $targetQty,
+                'product_uom_qty' => $uomQty,
+                'quantity'        => $uomQty,
+            ]);
+
+            $firstMove->lines()->delete();
+
+            foreach ($draftOperations as $operation) {
+                foreach ($operation->moves as $move) {
+                    if (
+                        $move->id !== $firstMove->id
+                        && $move->sale_order_line_id === $line->id
+                        && $move->state !== InventoryEnums\MoveState::CANCELED
+                    ) {
+                        $move->update([
+                            'state'    => InventoryEnums\MoveState::CANCELED,
+                            'quantity' => 0,
+                        ]);
+
+                        $move->lines()->delete();
+                    }
+                }
+            }
+        }
+    }
+
+    protected function updateOrCancelDeliveryMoves(OrderLine $line, $draftOperations, float $targetQty): void
+    {
+        if ($targetQty <= 0) {
+            foreach ($draftOperations as $operation) {
+                foreach ($operation->moves as $move) {
+                    if (
+                        $move->sale_order_line_id === $line->id
+                        && $move->state !== InventoryEnums\MoveState::CANCELED
+                    ) {
+                        $move->update([
+                            'state'    => InventoryEnums\MoveState::CANCELED,
+                            'quantity' => 0,
+                        ]);
+
+                        $move->lines()->delete();
+                    }
+                }
+            }
+
+            return;
+        }
+
+        $firstMove = null;
+
+        foreach ($draftOperations as $operation) {
+            foreach ($operation->moves as $move) {
+                if (
+                    $move->sale_order_line_id === $line->id
+                    && $move->state !== InventoryEnums\MoveState::CANCELED
+                ) {
+                    if (! $firstMove) {
+                        $firstMove = $move;
+
+                        $uomQty = $line->uom->computeQuantity($targetQty, $line->product->uom, true, 'HALF-UP');
+
+                        $firstMove->update([
+                            'product_qty'     => $targetQty,
+                            'product_uom_qty' => $uomQty,
+                            'quantity'        => $uomQty,
+                        ]);
+
+                        $firstMove->lines()->delete();
+                    } else {
+                        $move->update([
+                            'state'    => InventoryEnums\MoveState::CANCELED,
+                            'quantity' => 0,
+                        ]);
+
+                        $move->lines()->delete();
+                    }
+                }
+            }
+        }
+    }
+
+    protected function createNewDeliveryForLine(Order $record, OrderLine $line, float $qty): void
+    {
+        $existingDraftOperation = $record->operations()
+            ->whereIn('state', [
+                InventoryEnums\OperationState::DRAFT,
+                InventoryEnums\OperationState::CONFIRMED,
+                InventoryEnums\OperationState::ASSIGNED,
+            ])
+            ->first();
+
+        $rule = $this->getPullRule($line);
+
+        if (! $rule) {
+            return;
+        }
+
+        $uomQty = $line->uom->computeQuantity($qty, $line->product->uom, true, 'HALF-UP');
+
+        if ($existingDraftOperation) {
+            $newMove = InventoryMove::create([
+                'operation_id'            => $existingDraftOperation->id,
+                'name'                    => $line->name,
+                'reference'               => $existingDraftOperation->name,
+                'state'                   => InventoryEnums\MoveState::DRAFT,
+                'product_id'              => $line->product_id,
+                'product_qty'             => $qty,
+                'product_uom_qty'         => $uomQty,
+                'quantity'                => $uomQty,
+                'uom_id'                  => $line->product_uom_id,
+                'origin'                  => $record->name,
+                'scheduled_at'            => now()->addDays($rule->delay),
+                'source_location_id'      => $rule->source_location_id,
+                'destination_location_id' => $rule->destination_location_id,
+                'final_location_id'       => $rule->destination_location_id,
+                'product_packaging_id'    => $line->product_packaging_id,
+                'rule_id'                 => $rule->id,
+                'company_id'              => $rule->company_id,
+                'operation_type_id'       => $rule->operation_type_id,
+                'propagate_cancel'        => $rule->propagate_cancel,
+                'warehouse_id'            => $rule->warehouse_id,
+                'procure_method'          => InventoryEnums\ProcureMethod::MAKE_TO_ORDER,
+                'sale_order_line_id'      => $line->id,
+            ]);
+
+            if ($newMove->shouldBypassReservation()) {
+                $newMove->update([
+                    'procure_method' => InventoryEnums\ProcureMethod::MAKE_TO_STOCK,
+                ]);
+            }
+        } else {
+            $newMove = $this->runPullRule($rule, $line);
+
+            if ($newMove) {
+                $newMove->update([
+                    'product_qty'     => $qty,
+                    'product_uom_qty' => $uomQty,
+                    'quantity'        => $uomQty,
+                ]);
+
+                $this->createPullOperation($record, $rule, [$newMove]);
+            }
+        }
+    }
+
+    protected function cleanupEmptyDeliveryOperations(Order $record): void
+    {
+        $operations = $record->operations()->get();
+
+        foreach ($operations as $operation) {
+            if (in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])) {
+                continue;
+            }
+
+            $activeMoves = $operation->moves()->where('state', '!=', InventoryEnums\MoveState::CANCELED)->count();
+
+            if ($activeMoves === 0) {
+                $operation->update([
+                    'state' => InventoryEnums\OperationState::CANCELED,
+                ]);
+            }
+        }
+    }
+
     public function applyPullRules(Order $record): void
     {
         if (! Package::isPluginInstalled('inventories')) {
@@ -724,6 +1007,7 @@ class SaleManager
         $newOperation = InventoryOperation::create([
             'state'                   => InventoryEnums\OperationState::DRAFT,
             'origin'                  => $record->name,
+            'partner_id'              => $record->partner_id,
             'operation_type_id'       => $rule->operation_type_id,
             'source_location_id'      => $rule->source_location_id,
             'destination_location_id' => $rule->destination_location_id,

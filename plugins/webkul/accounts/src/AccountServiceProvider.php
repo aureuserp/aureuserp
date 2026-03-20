@@ -88,6 +88,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_01_15_060822_backfill_customer_and_supplier_rank_in_partners_table',
                 '2026_02_16_063000_alter_partners_partners_table',
                 '2026_02_25_044931_alter_accounts_full_reconciles_table',
+                '2026_03_03_120000_alter_accounts_journals_bank_account_foreign_key',
             ])
             ->runsMigrations()
             ->hasSettings([

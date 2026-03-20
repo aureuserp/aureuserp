@@ -13,8 +13,7 @@ class ViewRole extends ViewRecord
     protected function getActions(): array
     {
         return [
-            EditAction::make()
-                ->hidden(fn ($record): bool => RoleResource::isProtectedRoleRecord($record)),
+            EditAction::make(),
         ];
     }
 }

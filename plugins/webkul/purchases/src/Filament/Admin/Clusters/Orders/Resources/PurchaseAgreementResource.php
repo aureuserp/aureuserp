@@ -51,12 +51,14 @@ use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgre
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Product;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\CreatePurchaseAgreement;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\EditPurchaseAgreement;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\ListPurchaseAgreements;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\ManageRfqs;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\ViewPurchaseAgreement;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
@@ -65,6 +67,7 @@ use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
+use Webkul\Support\Models\Company;
 
 class PurchaseAgreementResource extends Resource
 {
@@ -165,6 +168,7 @@ class PurchaseAgreementResource extends Resource
                                     )
                                     ->required()
                                     ->searchable()
+                                    ->default(Auth::user()->defaultCompany?->currency_id)
                                     ->preload(),
                             ]),
 
@@ -216,6 +220,9 @@ class PurchaseAgreementResource extends Resource
                                     ->required()
                                     ->preload()
                                     ->default(Auth::user()->default_company_id)
+                                    ->live()
+                                    ->afterStateHydrated(static::handleCompanyChange(...))
+                                    ->afterStateUpdated(static::handleCompanyChange(...))
                                     ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT),
                             ]),
                     ])
@@ -244,7 +251,7 @@ class PurchaseAgreementResource extends Resource
 
     public static function getProductsRepeater(): Repeater
     {
-        $columns = 3;
+        $columns = 4;
 
         if (static::getProductSettings()->enable_uom) {
             $columns++;
@@ -254,23 +261,29 @@ class PurchaseAgreementResource extends Resource
             ->hiddenLabel()
             ->relationship()
             ->compact()
-            ->table([
+            ->table(fn (Get $get) => [
                 TableColumn::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.product'))
-                    ->width(250)
+                    ->width(300)
+                    ->resizable()
                     ->markAsRequired(),
                 TableColumn::make('qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.quantity'))
-                    ->width(250)
+                    ->resizable()
                     ->markAsRequired(),
+                TableColumn::make('ordered_qty')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.ordered'))
+                    ->visible($get('type') === RequisitionType::BLANKET_ORDER)
+
+                    ->width(250),
                 TableColumn::make('uom_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.uom'))
-                    ->width(250)
+                    ->resizable()
                     ->visible(static::getProductSettings()->enable_uom)
                     ->markAsRequired(),
                 TableColumn::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.unit-price'))
-                    ->width(250)
+                    ->resizable()
                     ->markAsRequired(),
             ])
             ->schema([
@@ -286,6 +299,7 @@ class PurchaseAgreementResource extends Resource
                     ->searchable()
                     ->preload()
                     ->distinct()
+                    ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
@@ -325,6 +339,12 @@ class PurchaseAgreementResource extends Resource
                     ->default(0)
                     ->required()
                     ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                TextInput::make('ordered_qty')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.ordered'))
+                    ->numeric()
+                    ->default(0)
+                    ->dehydrated(false)
+                    ->disabled(),
                 Select::make('uom_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.unit'))
                     ->relationship(
@@ -335,6 +355,7 @@ class PurchaseAgreementResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->wrapOptionLabels(false)
                     ->visible(static::getProductSettings()->enable_uom)
                     ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
                 TextInput::make('price_unit')
@@ -347,6 +368,21 @@ class PurchaseAgreementResource extends Resource
                     ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
             ])
             ->columns($columns);
+    }
+
+    public static function canBeConfirmed(Requisition $record): bool
+    {
+        return $record->lines()->exists();
+    }
+
+    public static function canBeClosed(Requisition $record): bool
+    {
+        return ! $record->orders()
+            ->whereNotIn('state', [
+                OrderState::DONE->value,
+                OrderState::CANCELED->value,
+            ])
+            ->exists();
     }
 
     public static function table(Table $table): Table
@@ -487,7 +523,7 @@ class PurchaseAgreementResource extends Resource
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.restore.notification.body')),
                         ),
                     DeleteAction::make()
-                        ->hidden(fn (Model $record) => $record->state == RequisitionState::CLOSED)
+                        ->hidden(fn (Model $record) => in_array($record->state, [RequisitionState::CONFIRMED, RequisitionState::CLOSED]))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -495,15 +531,18 @@ class PurchaseAgreementResource extends Resource
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.delete.notification.body')),
                         ),
                     ForceDeleteAction::make()
-                        ->action(function (Requisition $record) {
+                        ->action(function (Requisition $record, ForceDeleteAction $action) {
+
                             try {
                                 $record->forceDelete();
                             } catch (QueryException $e) {
                                 Notification::make()
                                     ->danger()
-                                    ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.force-delete.notification.error.title'))
-                                    ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.force-delete.notification.error.body'))
+                                    ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.force-delete.notification.warning.title'))
+                                    ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.force-delete.notification.warning.body'))
                                     ->send();
+
+                                $action->cancel();
                             }
                         })
                         ->successNotification(
@@ -531,7 +570,7 @@ class PurchaseAgreementResource extends Resource
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records) {
+                        ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
@@ -540,6 +579,7 @@ class PurchaseAgreementResource extends Resource
                                     ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
                             }
                         })
                         ->successNotification(
@@ -549,10 +589,7 @@ class PurchaseAgreementResource extends Resource
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.force-delete.notification.success.body')),
                         ),
                 ]),
-            ])
-            ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => static::can('delete', $record) && $record->state !== RequisitionState::CLOSED,
-            );
+            ]);
     }
 
     public static function infolist(Schema $schema): Schema
@@ -621,11 +658,14 @@ class PurchaseAgreementResource extends Resource
                             ->icon('heroicon-o-cube')
                             ->schema([
                                 RepeatableEntry::make('lines')
-                                    ->table([
+                                    ->table(fn ($record) => [
                                         InfolistTableColumn::make('product.name')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.product')),
                                         InfolistTableColumn::make('qty')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.quantity')),
+                                        InfolistTableColumn::make('ordered_qty')
+                                            ->visible(fn (): bool => $record->type === RequisitionType::BLANKET_ORDER)
+                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.ordered')),
                                         InfolistTableColumn::make('uom.name')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.uom')),
                                         InfolistTableColumn::make('price_unit')
@@ -634,6 +674,7 @@ class PurchaseAgreementResource extends Resource
                                     ->schema([
                                         TextEntry::make('product.name'),
                                         TextEntry::make('qty'),
+                                        TextEntry::make('ordered_qty'),
                                         TextEntry::make('uom.name')
                                             ->visible(static::getProductSettings()->enable_uom),
                                         TextEntry::make('price_unit')
@@ -641,7 +682,7 @@ class PurchaseAgreementResource extends Resource
                                     ])
                                     ->columns([
                                         'sm' => 2,
-                                        'xl' => 4,
+                                        'xl' => 5,
                                     ]),
                             ]),
 
@@ -698,6 +739,7 @@ class PurchaseAgreementResource extends Resource
         return $page->generateNavigationItems([
             ViewPurchaseAgreement::class,
             EditPurchaseAgreement::class,
+            ManageRfqs::class,
         ]);
     }
 
@@ -708,6 +750,7 @@ class PurchaseAgreementResource extends Resource
             'create' => CreatePurchaseAgreement::route('/create'),
             'edit'   => EditPurchaseAgreement::route('/{record}/edit'),
             'view'   => ViewPurchaseAgreement::route('/{record}/view'),
+            'rfqs'   => ManageRfqs::route('/{record}/rfqs'),
         ];
     }
 
@@ -715,5 +758,14 @@ class PurchaseAgreementResource extends Resource
     {
         return parent::getEloquentQuery()
             ->orderByDesc('id');
+    }
+
+    public static function handleCompanyChange(Get $get, Set $set): void
+    {
+        $companyCurrencyId = Company::whereCurrencyId($get('company_id'))->value('currency_id');
+
+        if (filled($companyCurrencyId)) {
+            $set('currency_id', $companyCurrencyId);
+        }
     }
 }

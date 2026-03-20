@@ -33,8 +33,6 @@ class AgedPayable extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $navigationLabel = 'Aged Payable';
-
     protected static ?int $navigationSort = 7;
 
     public ?array $data = [];
@@ -52,7 +50,17 @@ class AgedPayable extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Partner Reports';
+        return __('accounting::filament/clusters/reporting.pages.aged-payable.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.aged-payable.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.aged-payable.navigation.title');
     }
 
     public function mount(): void
@@ -68,7 +76,7 @@ class AgedPayable extends Page implements HasForms
     {
         return [
             Action::make('excel')
-                ->label('Export Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.actions.export-excel'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
                 ->action(function () {
@@ -92,7 +100,7 @@ class AgedPayable extends Page implements HasForms
                 }),
 
             Action::make('pdf')
-                ->label('Export PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.actions.export-pdf'))
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('danger')
                 ->action(function () {
@@ -134,7 +142,7 @@ class AgedPayable extends Page implements HasForms
                 ])
                 ->schema([
                     DatePicker::make('as_of_date')
-                        ->label('As of')
+                        ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.filters.as-of'))
                         ->default(now())
                         ->native(false)
                         ->suffixIcon('heroicon-o-calendar')
@@ -142,28 +150,28 @@ class AgedPayable extends Page implements HasForms
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('basis')
-                        ->label('Based on')
+                        ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.filters.based-on'))
                         ->options([
-                            'due_date'     => 'Due Date',
-                            'invoice_date' => 'Invoice Date',
+                            'due_date'     => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.due-date'),
+                            'invoice_date' => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.invoice-date'),
                         ])
                         ->default('due_date')
                         ->live()
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('period')
-                        ->label('Period Length (days)')
+                        ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.filters.period-length'))
                         ->options([
-                            30 => '30 Days',
-                            60 => '60 Days',
-                            90 => '90 Days',
+                            30 => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.days-30'),
+                            60 => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.days-60'),
+                            90 => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.days-90'),
                         ])
                         ->default(30)
                         ->live()
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.filters.journals'))
                         ->multiple()
                         ->options(Journal::pluck('name', 'id'))
                         ->searchable()
@@ -171,7 +179,7 @@ class AgedPayable extends Page implements HasForms
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('partners')
-                        ->label('Partners')
+                        ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.filters.partners'))
                         ->multiple()
                         ->options(Partner::pluck('name', 'id'))
                         ->searchable()
@@ -179,10 +187,10 @@ class AgedPayable extends Page implements HasForms
                         ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('posted_entries')
-                        ->label('Entries')
+                        ->label(__('accounting::filament/clusters/reporting.pages.aged-payable.filters.entries'))
                         ->options([
-                            'posted' => 'Posted Entries',
-                            'all'    => 'All Entries',
+                            'posted' => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.posted-entries'),
+                            'all'    => __('accounting::filament/clusters/reporting.pages.aged-payable.filters.options.all-entries'),
                         ])
                         ->default('posted')
                         ->live()

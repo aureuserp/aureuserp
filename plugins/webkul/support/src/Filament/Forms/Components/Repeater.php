@@ -74,6 +74,9 @@ class Repeater extends BaseRepeater
                     'isToggled'                => $isToggled,
                     'isToggleable'             => $column->isToggleable(),
                     'isToggledHiddenByDefault' => $column->isToggledHiddenByDefault(),
+                    'isResizable'              => $column->isResizable(),
+                    'minWidth'                 => $column->getMinWidth(),
+                    'maxWidth'                 => $column->getMaxWidth(),
                 ];
             }
         )->toArray();
@@ -182,7 +185,7 @@ class Repeater extends BaseRepeater
 
     public function hasDeferredColumnManager(): bool
     {
-        return false;
+        return true;
     }
 
     public function getSummaryForColumn(string $columnName): ?string
