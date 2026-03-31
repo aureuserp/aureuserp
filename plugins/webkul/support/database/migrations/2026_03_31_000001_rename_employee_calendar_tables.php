@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Throwable;
 
 return new class extends Migration
 {
@@ -13,7 +12,7 @@ return new class extends Migration
         $this->renameTableIfExists('employees_calendar_attendances', 'calendar_attendances');
         $this->renameTableIfExists('employees_calendar_leaves', 'calendar_leaves');
 
-        if (!Schema::hasTable('calendars')) {
+        if (! Schema::hasTable('calendars')) {
             return;
         }
 
@@ -29,7 +28,7 @@ return new class extends Migration
         $this->renameTableIfExists('calendar_leaves', 'employees_calendar_leaves');
         $this->renameTableIfExists('calendars', 'employees_calendars');
 
-        if (!Schema::hasTable('employees_calendars')) {
+        if (! Schema::hasTable('employees_calendars')) {
             return;
         }
 
@@ -44,7 +43,7 @@ return new class extends Migration
      */
     private function renameTableIfExists(string $from, string $to): void
     {
-        if (Schema::hasTable($from) && !Schema::hasTable($to)) {
+        if (Schema::hasTable($from) && ! Schema::hasTable($to)) {
             Schema::rename($from, $to);
         }
     }
@@ -58,7 +57,7 @@ return new class extends Migration
         string $referenceTable,
         string $onDelete = 'cascade'
     ): void {
-        if (!Schema::hasTable($table) || !Schema::hasTable($referenceTable)) {
+        if (! Schema::hasTable($table) || ! Schema::hasTable($referenceTable)) {
             return;
         }
 

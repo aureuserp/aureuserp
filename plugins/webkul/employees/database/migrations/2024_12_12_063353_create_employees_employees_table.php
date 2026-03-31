@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees_employees', function (Blueprint $table) {
+        $calendarTable = Schema::hasTable('calendars') ? 'calendars' : 'employees_calendars';
+
+        Schema::create('employees_employees', function (Blueprint $table) use ($calendarTable) {
             $table->id();
 
             $table->string('time_zone')->nullable()->comment('Employee Timezone');
@@ -93,7 +95,7 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('set null');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('set null');
+            $table->foreign('calendar_id')->references('id')->on($calendarTable)->onDelete('set null');
             $table->foreign('department_id')->references('id')->on('employees_departments')->onDelete('set null');
             $table->foreign('job_id')->references('id')->on('employees_job_positions')->onDelete('set null');
             $table->foreign('partner_id')->references('id')->on('partners_partners')->onDelete('set null');
