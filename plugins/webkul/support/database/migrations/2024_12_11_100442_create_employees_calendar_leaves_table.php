@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees_calendar_leaves', function (Blueprint $table) {
+        $calendarTable = Schema::hasTable('calendars') ? 'calendars' : 'employees_calendars';
+
+        Schema::create('employees_calendar_leaves', function (Blueprint $table) use ($calendarTable) {
             $table->id();
 
             $table->string('name');
@@ -24,7 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('creator_id')->nullable();
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('set null');
-            $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('set null');
+            $table->foreign('calendar_id')->references('id')->on($calendarTable)->onDelete('set null');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('set null');
 
             $table->timestamps();

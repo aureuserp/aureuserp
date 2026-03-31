@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('time_off_leaves', function (Blueprint $table) {
+        $calendarTable = Schema::hasTable('calendars') ? 'calendars' : 'employees_calendars';
+
+        Schema::create('time_off_leaves', function (Blueprint $table) use ($calendarTable) {
             $table->id();
 
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
@@ -21,7 +23,7 @@ return new class extends Migration
             $table->foreignId('employee_company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->foreignId('department_id')->nullable()->constrained('employees_departments')->nullOnDelete();
-            $table->foreignId('calendar_id')->nullable()->constrained('employees_calendars')->nullOnDelete();
+            $table->foreignId('calendar_id')->nullable()->constrained($calendarTable)->nullOnDelete();
             $table->integer('meeting_id')->nullable();
             $table->foreignId('first_approver_id')->nullable()->constrained('employees_employees')->nullOnDelete();
             $table->foreignId('second_approver_id')->nullable()->constrained('employees_employees')->nullOnDelete();

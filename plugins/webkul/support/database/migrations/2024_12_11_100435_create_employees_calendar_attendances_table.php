@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees_calendar_attendances', function (Blueprint $table) {
+        $calendarTable = Schema::hasTable('calendars') ? 'calendars' : 'employees_calendars';
+
+        Schema::create('employees_calendar_attendances', function (Blueprint $table) use ($calendarTable) {
             $table->id();
 
             $table->integer('sort')->nullable()->comment('Sort Order');
@@ -29,7 +31,7 @@ return new class extends Migration
             $table->unsignedBigInteger('calendar_id')->comment('Calendar ID');
             $table->unsignedBigInteger('creator_id')->nullable()->comment('Created By');
 
-            $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('cascade');
+            $table->foreign('calendar_id')->references('id')->on($calendarTable)->onDelete('cascade');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('set null');
 
             $table->timestamps();
