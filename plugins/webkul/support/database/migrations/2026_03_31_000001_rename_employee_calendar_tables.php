@@ -3,192 +3,80 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        $hasLegacyCalendars = Schema::hasTable('employees_calendars');
-        $hasLegacyAttendances = Schema::hasTable('employees_calendar_attendances');
-        $hasLegacyLeaves = Schema::hasTable('employees_calendar_leaves');
+        $this->renameTableIfExists('employees_calendars', 'calendars');
+        $this->renameTableIfExists('employees_calendar_attendances', 'calendar_attendances');
+        $this->renameTableIfExists('employees_calendar_leaves', 'calendar_leaves');
 
-        if ($hasLegacyCalendars && ! Schema::hasTable('calendars')) {
-            Schema::rename('employees_calendars', 'calendars');
+        if (!Schema::hasTable('calendars')) {
+            return;
         }
 
-        if ($hasLegacyAttendances && ! Schema::hasTable('calendar_attendances')) {
-            Schema::rename('employees_calendar_attendances', 'calendar_attendances');
+        $this->updateForeignKey('calendar_attendances', 'calendar_id', 'calendars', 'cascade');
+        $this->updateForeignKey('calendar_leaves', 'calendar_id', 'calendars', 'set null');
+        $this->updateForeignKey('employees_employees', 'calendar_id', 'calendars', 'set null');
+        $this->updateForeignKey('time_off_leaves', 'calendar_id', 'calendars', 'set null');
+    }
+
+    public function down(): void
+    {
+        $this->renameTableIfExists('calendar_attendances', 'employees_calendar_attendances');
+        $this->renameTableIfExists('calendar_leaves', 'employees_calendar_leaves');
+        $this->renameTableIfExists('calendars', 'employees_calendars');
+
+        if (!Schema::hasTable('employees_calendars')) {
+            return;
         }
 
-        if ($hasLegacyLeaves && ! Schema::hasTable('calendar_leaves')) {
-            Schema::rename('employees_calendar_leaves', 'calendar_leaves');
-        }
+        $this->updateForeignKey('employees_calendar_attendances', 'calendar_id', 'employees_calendars', 'cascade');
+        $this->updateForeignKey('employees_calendar_leaves', 'calendar_id', 'employees_calendars', 'set null');
+        $this->updateForeignKey('employees_employees', 'calendar_id', 'employees_calendars', 'set null');
+        $this->updateForeignKey('time_off_leaves', 'calendar_id', 'employees_calendars', 'set null');
+    }
 
-        $hasCalendars = Schema::hasTable('calendars');
-
-        if ($hasCalendars && Schema::hasTable('calendar_attendances')) {
-            try {
-                Schema::table('calendar_attendances', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('calendar_attendances', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('calendars')->onDelete('cascade');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-        }
-
-        if ($hasCalendars && Schema::hasTable('calendar_leaves')) {
-            try {
-                Schema::table('calendar_leaves', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('calendar_leaves', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('calendars')->onDelete('set null');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-        }
-
-        if ($hasCalendars && Schema::hasTable('employees_employees')) {
-            try {
-                Schema::table('employees_employees', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('employees_employees', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('calendars')->onDelete('set null');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-        }
-
-        if ($hasCalendars && Schema::hasTable('time_off_leaves')) {
-            try {
-                Schema::table('time_off_leaves', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('time_off_leaves', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('calendars')->onDelete('set null');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
+    /**
+     * Rename table safely (idempotent)
+     */
+    private function renameTableIfExists(string $from, string $to): void
+    {
+        if (Schema::hasTable($from) && !Schema::hasTable($to)) {
+            Schema::rename($from, $to);
         }
     }
 
     /**
-     * Reverse the migrations.
+     * Drop & recreate foreign key safely
      */
-    public function down(): void
-    {
-        if (Schema::hasTable('calendar_attendances') && ! Schema::hasTable('employees_calendar_attendances')) {
-            Schema::rename('calendar_attendances', 'employees_calendar_attendances');
+    private function updateForeignKey(
+        string $table,
+        string $column,
+        string $referenceTable,
+        string $onDelete = 'cascade'
+    ): void {
+        if (!Schema::hasTable($table) || !Schema::hasTable($referenceTable)) {
+            return;
         }
 
-        if (Schema::hasTable('calendar_leaves') && ! Schema::hasTable('employees_calendar_leaves')) {
-            Schema::rename('calendar_leaves', 'employees_calendar_leaves');
+        try {
+            Schema::table($table, function (Blueprint $table) use ($column) {
+                $table->dropForeign([$column]);
+            });
+        } catch (Throwable $e) {
         }
 
-        if (Schema::hasTable('calendars') && ! Schema::hasTable('employees_calendars')) {
-            Schema::rename('calendars', 'employees_calendars');
-        }
-
-        if (Schema::hasTable('employees_calendar_attendances') && Schema::hasTable('employees_calendars')) {
-            try {
-                Schema::table('employees_calendar_attendances', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('employees_calendar_attendances', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('cascade');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-        }
-
-        if (Schema::hasTable('employees_calendar_leaves') && Schema::hasTable('employees_calendars')) {
-            try {
-                Schema::table('employees_calendar_leaves', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('employees_calendar_leaves', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('set null');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-        }
-
-        if (Schema::hasTable('employees_employees') && Schema::hasTable('employees_calendars')) {
-            try {
-                Schema::table('employees_employees', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('employees_employees', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('set null');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-        }
-
-        if (Schema::hasTable('time_off_leaves') && Schema::hasTable('employees_calendars')) {
-            try {
-                Schema::table('time_off_leaves', function (Blueprint $table) {
-                    $table->dropForeign(['calendar_id']);
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
-
-            try {
-                Schema::table('time_off_leaves', function (Blueprint $table) {
-                    $table->foreign('calendar_id')->references('id')->on('employees_calendars')->onDelete('set null');
-                });
-            } catch (Throwable $exception) {
-                // Intentionally ignored to keep migration idempotent.
-            }
+        try {
+            Schema::table($table, function (Blueprint $table) use ($column, $referenceTable, $onDelete) {
+                $table->foreign($column)
+                    ->references('id')
+                    ->on($referenceTable)
+                    ->onDelete($onDelete);
+            });
+        } catch (Throwable $e) {
         }
     }
 };

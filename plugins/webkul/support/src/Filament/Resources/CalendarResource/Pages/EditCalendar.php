@@ -1,12 +1,12 @@
 <?php
 
-namespace Webkul\Support\Filament\Clusters\Configurations\Resources\CalendarResource\Pages;
+namespace Webkul\Support\Filament\Resources\CalendarResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Webkul\Support\Filament\Clusters\Configurations\Resources\CalendarResource;
+use Webkul\Support\Filament\Resources\CalendarResource;
 
 class EditCalendar extends EditRecord
 {
@@ -30,8 +30,8 @@ class EditCalendar extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title(__('support::filament/clusters/configurations/resources/calendar/pages/edit-calendar.notification.title'))
-            ->body(__('support::filament/clusters/configurations/resources/calendar/pages/edit-calendar.notification.body'));
+            ->title(__('support::filament/resources/calendar/pages/edit-calendar.notification.title'))
+            ->body(__('support::filament/resources/calendar/pages/edit-calendar.notification.body'));
     }
 
     protected function getHeaderActions(): array
@@ -42,8 +42,8 @@ class EditCalendar extends EditRecord
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('support::filament/clusters/configurations/resources/calendar/pages/edit-calendar.header-actions.delete.notification.title'))
-                        ->body(__('support::filament/clusters/configurations/resources/calendar/pages/edit-calendar.header-actions.delete.notification.body')),
+                        ->title(__('support::filament/resources/calendar/pages/edit-calendar.header-actions.delete.notification.title'))
+                        ->body(__('support::filament/resources/calendar/pages/edit-calendar.header-actions.delete.notification.body')),
                 ),
         ];
     }

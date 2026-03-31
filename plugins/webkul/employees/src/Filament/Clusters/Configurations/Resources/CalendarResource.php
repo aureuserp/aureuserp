@@ -7,11 +7,13 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\EditCalendar;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\ListCalendars;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\ViewCalendar;
-use Webkul\Support\Filament\Clusters\Configurations\Resources\CalendarResource as BaseCalendarResource;
+use Webkul\Support\Filament\Resources\CalendarResource as BaseCalendarResource;
 
 class CalendarResource extends BaseCalendarResource
 {
     protected static ?string $cluster = Configurations::class;
+
+    protected static bool $shouldRegisterNavigation = true;
 
     public static function getPages(): array
     {

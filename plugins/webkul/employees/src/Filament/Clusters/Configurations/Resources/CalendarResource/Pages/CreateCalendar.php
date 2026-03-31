@@ -3,7 +3,7 @@
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages;
 
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource;
-use Webkul\Support\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\CreateCalendar as BaseCreateCalendar;
+use Webkul\Support\Filament\Resources\CalendarResource\Pages\CreateCalendar as BaseCreateCalendar;
 
 class CreateCalendar extends BaseCreateCalendar
 {
