@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Employee\Database\Seeders;
+namespace Webkul\Support\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,7 @@ class CalendarSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('employees_calendars')->delete();
+        DB::table('calendars')->delete();
 
         $user = User::first();
 
@@ -24,6 +24,6 @@ class CalendarSeeder extends Seeder
             ['creator_id' => $user?->id, 'name' => 'Standard 40 hours/week', 'full_time_required_hours' => 40, 'hours_per_day' => 8, 'flexible_hours' => true, 'timezone' => 'UTC', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
         ];
 
-        DB::table('employees_calendars')->insert($employeesCalendars);
+        DB::table('calendars')->insert($employeesCalendars);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Webkul\Employee\Database\Seeders;
+namespace Webkul\Support\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Webkul\Employee\Models\Calendar;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Calendar;
 
 class CalendarAttendanceSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class CalendarAttendanceSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('employees_calendar_attendances')->delete();
+        DB::table('calendar_attendances')->delete();
 
         $user = User::first();
 
@@ -38,6 +38,6 @@ class CalendarAttendanceSeeder extends Seeder
             ['creator_id' => $user?->id, 'calendar_id' => $calendar?->id, 'sort' => 10, 'name' => 'Friday Afternoon', 'day_of_week' => 'friday', 'day_period' => 'afternoon', 'week_type' => null, 'display_type' => null, 'date_from' => null, 'date_to' => null, 'hour_from' => 13, 'hour_to' => 16, 'duration_days' => 0.5],
         ];
 
-        DB::table('employees_calendar_attendances')->insert($calendarAttendanceSeeder);
+        DB::table('calendar_attendances')->insert($calendarAttendanceSeeder);
     }
 }

@@ -42,6 +42,9 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2024_12_10_092657_create_companies_table',
                 '2024_12_10_100944_create_user_allowed_companies_table',
                 '2024_12_10_101420_create_banks_table',
+                '2024_12_11_100426_create_employees_calendars_table',
+                '2024_12_11_100435_create_employees_calendar_attendances_table',
+                '2024_12_11_100442_create_employees_calendar_leaves_table',
                 '2024_12_12_114620_create_activity_plans_table',
                 '2024_12_12_115256_create_activity_types_table',
                 '2024_12_12_115728_create_activity_plan_templates_table',
@@ -62,6 +65,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_10_10_080114_create_currency_rates_table',
                 '2025_11_14_102615_alter_currency_rates_table',
                 '2026_03_18_000001_alter_unit_of_measures_factor_precision',
+                '2026_03_31_000001_rename_employee_calendar_tables',
             ])
             ->runsMigrations();
     }

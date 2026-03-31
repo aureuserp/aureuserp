@@ -1,11 +1,11 @@
 <?php
 
-namespace Webkul\Employee\Database\Factories;
+namespace Webkul\Support\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Webkul\Employee\Models\Calendar;
-use Webkul\Employee\Models\CalendarLeaves;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Calendar;
+use Webkul\Support\Models\CalendarLeaves;
 
 /**
  * @extends Factory<CalendarLeaves>

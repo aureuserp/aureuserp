@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
                 CountrySeeder::class,
                 StateSeeder::class,
                 CompanySeeder::class,
+                CalendarSeeder::class,
+                CalendarAttendanceSeeder::class,
                 ActivityTypeSeeder::class,
                 ActivityPlanSeeder::class,
                 UOMCategorySeeder::class,
