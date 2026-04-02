@@ -131,7 +131,7 @@ class QuotationResource extends Resource
 
                         if (
                             $record
-                            && $record->state != OrderState::CANCEL->value
+                            && $record->state !== OrderState::CANCEL
                         ) {
                             unset($options[OrderState::CANCEL->value]);
                         }
@@ -651,7 +651,7 @@ class QuotationResource extends Resource
                     ->options(function ($record) {
                         $options = OrderState::options();
 
-                        if ($record->state != OrderState::CANCEL->value) {
+                        if ($record->state !== OrderState::CANCEL) {
                             unset($options[OrderState::CANCEL->value]);
                         }
 

@@ -8,10 +8,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
+use Filament\Support\Facades\FilamentView;
 use Livewire\Component;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder as SaleManagerFacade;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Models\Order;
 
 class CancelQuotationAction extends Action
@@ -49,7 +51,8 @@ class CancelQuotationAction extends Action
                         ->body(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.send-and-cancel.notification.cancelled.body'))
                         ->send();
                 }
-                $livewire->refreshFormData(['state']);
+
+                $livewire->redirect(QuotationResource::getUrl('view', ['record' => $record]));
             })
             ->extraModalFooterActions(fn (Action $action): array => [
                 $action
