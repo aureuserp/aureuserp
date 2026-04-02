@@ -52,7 +52,7 @@ class CancelQuotationAction extends Action
                         ->send();
                 }
 
-                $livewire->redirect(QuotationResource::getUrl('view', ['record' => $record]));
+                $livewire->redirect(QuotationResource::getUrl('view', ['record' => $record]), navigate: FilamentView::hasSpaMode());
             })
             ->extraModalFooterActions(fn (Action $action): array => [
                 $action
