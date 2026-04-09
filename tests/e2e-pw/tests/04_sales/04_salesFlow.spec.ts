@@ -5,6 +5,7 @@ test.describe("Sales Order Flow E2E", () => {
     test.beforeEach(async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         await salesPage.ensureSalesPluginInstalled();
+        await salesPage.ensureInventoryPluginInstalled();
     });
 
     test("Sales Flow - Send Quotation By Email", async ({ adminPage }) => {

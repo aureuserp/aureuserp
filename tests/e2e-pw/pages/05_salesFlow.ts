@@ -33,6 +33,12 @@ export class SalesFlowPage {
         await pluginPage.installPluginByName("Sales");
     }
 
+    async ensureInventoryPluginInstalled() {
+        const pluginPage = new PluginManagementPage(this.page);
+        await pluginPage.gotoPluginManagementPage();
+        await pluginPage.installPluginByName("Inventories");
+    }
+
     async gotoCustomersPage() {
         await this.page.goto("/admin/sale/orders/customers");
         await expect(this.page).toHaveURL(/sale\/orders\/customers/);
