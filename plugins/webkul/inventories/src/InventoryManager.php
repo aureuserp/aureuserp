@@ -339,9 +339,11 @@ class InventoryManager
 
         $isSupplierSource = $record->sourceLocation->type === LocationType::SUPPLIER;
 
+        $shouldBypassReservation = $isSupplierSource || ! $record->product->is_storable;
+
         $productQuantities = collect();
 
-        if (! $isSupplierSource) {
+        if (! $shouldBypassReservation) {
             $parentPath = $record->sourceLocation->parent_path;
 
             if (
@@ -369,7 +371,7 @@ class InventoryManager
         foreach ($lines as $line) {
             $currentLocationQty = null;
 
-            if (! $isSupplierSource) {
+            if (! $shouldBypassReservation) {
                 $currentLocationQty = $productQuantities
                     ->where('location_id', $line->source_location_id)
                     ->where('lot_id', $line->lot_id)
@@ -384,7 +386,7 @@ class InventoryManager
             }
 
             if ($remainingQty > 0) {
-                $newQty = $isSupplierSource
+                $newQty = $shouldBypassReservation
                     ? min($line->uom_qty, $remainingQty)
                     : min($line->uom_qty, $currentLocationQty, $remainingQty);
 
@@ -407,7 +409,7 @@ class InventoryManager
         }
 
         if ($remainingQty > 0) {
-            if ($isSupplierSource) {
+            if ($shouldBypassReservation) {
                 while ($remainingQty > 0) {
                     $newQty = $remainingQty;
 
