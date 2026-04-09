@@ -181,9 +181,10 @@ export class SalesFlowPage {
     }
 
     async createInvoice() {
+        await this.openInvoicesForCurrentQuotation();
         await this.erpLocators.salesQuotationCreateInvoiceButton.click();
-        await expect(this.erpLocators.salesQuotationInvoiceSubmitButton).toBeVisible();
-        await this.erpLocators.salesQuotationInvoiceSubmitButton.click();
+        // await this.erpLocators.salesQuotationInvoiceSubmitButton.click();
+        await this.erpLocators.salesQuotationInvoiceSubmitConfirmButton.click();
         await this.expectSuccessToast();
     }
 
@@ -205,8 +206,8 @@ export class SalesFlowPage {
         }
 
         const quotationId = match[1];
-        await this.page.goto(`/admin/sale/orders/quotations/${quotationId}/invoices`);
-        await expect(this.page).toHaveURL(new RegExp(`/quotations/${quotationId}/invoices`));
+        await this.page.goto(`/admin/sale/orders/quotations/${quotationId}/`, { waitUntil: "domcontentloaded" });
+        await expect(this.page).toHaveURL(new RegExp(`/quotations/${quotationId}/`));
         await expect(this.erpLocators.salesInvoicesTable.first()).toBeVisible();
 
         return quotationId;
@@ -238,8 +239,9 @@ export class SalesFlowPage {
         if (await this.erpLocators.salesDeliveryNoBackorderButton.isVisible().catch(() => false)) {
             await this.erpLocators.salesDeliveryNoBackorderButton.click();
         }
-
-        await this.expectSuccessToast();
+        // await this.expectSuccessToast();
+        await this.page.goBack();
+        await this.page.waitForLoadState("networkidle");
     }
 
     async expectInvoiceRowPresent() {

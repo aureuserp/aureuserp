@@ -130,8 +130,9 @@ export class ErpLocators {
     readonly salesQuotationSendSubmitButton: Locator;
     readonly salesQuotationSentRadio: Locator;
     readonly salesQuotationCreateInvoiceButton: Locator;
+    readonly salesQuotationInvoiceSubmitConfirmButton: Locator;
     readonly salesQuotationInvoiceSubmitButton: Locator;
-    readonly salesQuotationDeliveriesTable: Locator;
+    readonly salesQuotationDeliveriesTable: Locator;  
     readonly salesQuotationDeliveryEditButton: Locator;
     readonly salesDeliveryValidateButton: Locator;
     readonly salesDeliveryNoBackorderButton: Locator;
@@ -280,6 +281,7 @@ export class ErpLocators {
         this.salesQuotationSentRadio = page.getByRole("radio", { name: /Quotation Sent/i });
         this.salesQuotationCreateInvoiceButton = page.getByRole("button", { name: /Create Invoice/i }).first();
         this.salesQuotationInvoiceSubmitButton = page.getByRole("dialog").getByRole("button", { name: /Create Invoice/i }).first();
+        this.salesQuotationInvoiceSubmitConfirmButton = page.getByRole('button', { name: 'Submit' });
         this.salesQuotationDeliveriesTable = page.locator("table, div.fi-ta-empty-state");
         this.salesQuotationDeliveryEditButton = page.getByRole('table').getByRole('link', { name: 'Edit' });
         this.salesDeliveryValidateButton = page.getByRole("button", { name: /Validate/i }).first();
