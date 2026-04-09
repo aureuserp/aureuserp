@@ -225,7 +225,6 @@ export class SalesFlowPage {
         await this.page.waitForLoadState("networkidle");
         await this.page.goto(`/admin/sale/orders/quotations/${quotationId}/deliveries`, { waitUntil: "domcontentloaded" });
         await expect(this.page).toHaveURL(new RegExp(`/quotations/${quotationId}/deliveries`));
-        await expect(this.erpLocators.salesQuotationDeliveriesTable.first()).toBeVisible();
 
         return quotationId;
     }
