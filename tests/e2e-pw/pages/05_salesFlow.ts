@@ -229,7 +229,7 @@ export class SalesFlowPage {
 
         const quotationId = match[1];
         await this.page.waitForLoadState("networkidle");
-        await this.page.goto(`/admin/sale/orders/quotations/${quotationId}/deliveries`, { waitUntil: "domcontentloaded" });
+        await this.page.goto(`/admin/sale/orders/quotations/${quotationId}/deliveries`, { waitUntil: "networkidle" });
         await expect(this.page).toHaveURL(new RegExp(`/quotations/${quotationId}/deliveries`));
 
         return quotationId;
