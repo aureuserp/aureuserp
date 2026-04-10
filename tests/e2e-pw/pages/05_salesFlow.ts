@@ -219,22 +219,6 @@ export class SalesFlowPage {
         return quotationId;
     }
 
-    // async openDeliveriesForCurrentQuotation(): Promise<string> {
-    //     const url = this.page.url();
-    //     const match = url.match(/quotations\/(\d+)/);
-
-    //     if (!match) {
-    //         throw new Error(`Unable to determine quotation id from URL: ${url}`);
-    //     }
-
-    //     const quotationId = match[1];
-    //     await this.page.waitForLoadState("networkidle");
-    //     await this.page.goto(`/admin/sale/orders/quotations/${quotationId}/deliveries`, { waitUntil: "networkidle" });
-    //     await expect(this.page).toHaveURL(new RegExp(`/quotations/${quotationId}/deliveries`));
-
-    //     return quotationId;
-    // }
-
     async openDeliveriesForCurrentQuotation(): Promise<string> {
         const url = this.page.url();
         const match = url.match(/quotations\/(\d+)/);
