@@ -983,20 +983,28 @@ class SaleManager
             return;
         }
 
-        if (! $record->operation) {
-            return;
+        foreach ($record->operations as $operation) {
+            if (in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])) {
+                continue;
+            }
+
+            foreach ($operation->moves as $move) {
+                if ($move->state === InventoryEnums\MoveState::DONE) {
+                    continue;
+                }
+
+                $move->update([
+                    'state'    => InventoryEnums\MoveState::CANCELED,
+                    'quantity' => 0,
+                ]);
+
+                $move->lines()->delete();
+            }
+
+            $operation = InventoryFacade::computeTransferState($operation);
+
+            $operation->save();
         }
-
-        foreach ($record->operation->moves as $move) {
-            $move->update([
-                'state'    => InventoryEnums\MoveState::CANCELED,
-                'quantity' => 0,
-            ]);
-
-            $move->lines()->delete();
-        }
-
-        InventoryFacade::computeTransferState($record->operation);
     }
 
     /**
