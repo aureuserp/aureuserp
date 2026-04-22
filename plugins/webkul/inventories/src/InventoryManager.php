@@ -38,7 +38,6 @@ class InventoryManager
     {
         $record = $this->computeTransfer($record);
 
-        // Update each move and its lines, adjusting quantities.
         foreach ($record->moves as $move) {
             $this->validateTransferMove($move);
         }
@@ -82,7 +81,6 @@ class InventoryManager
     {
         $moveLine->update(['state' => MoveState::DONE]);
 
-        // Process source quantity
         $sourceQuantity = ProductQuantity::where('product_id', $moveLine->product_id)
             ->where('location_id', $moveLine->source_location_id)
             ->where('lot_id', $moveLine->lot_id)
@@ -117,7 +115,6 @@ class InventoryManager
             ]);
         }
 
-        // Process destination quantity
         $destinationQuantity = ProductQuantity::where('product_id', $moveLine->product_id)
             ->where('location_id', $moveLine->destination_location_id)
             ->where('lot_id', $moveLine->lot_id)
@@ -147,7 +144,6 @@ class InventoryManager
             ]);
         }
 
-        // Update package and lot if applicable.
         if ($moveLine->result_package_id && $moveLine->resultPackage) {
             $moveLine->resultPackage->update([
                 'location_id' => $moveLine->destination_location_id,
@@ -241,9 +237,6 @@ class InventoryManager
         return $newOperation;
     }
 
-    /**
-     * Process back order for the operation.
-     */
     public function createBackOrder(Operation $record): void
     {
         if (! $this->canCreateBackOrder($record)) {
@@ -534,9 +527,6 @@ class InventoryManager
         return $record;
     }
 
-    /**
-     * Check if a back order can be processed.
-     */
     public function canCreateBackOrder(Operation $record): bool
     {
         if ($record->operationType->create_backorder === CreateBackorder::NEVER) {
@@ -546,9 +536,6 @@ class InventoryManager
         return $record->moves->sum('product_uom_qty') > $record->moves->sum('quantity');
     }
 
-    /**
-     * Calculate reserved quantity for a location.
-     */
     private function calculateReservedQty($location, $qty): int
     {
         if ($location->type === LocationType::INTERNAL && ! $location->is_stock_location) {
@@ -558,9 +545,6 @@ class InventoryManager
         return 0;
     }
 
-    /**
-     * Apply push rules for the operation.
-     */
     public function applyPushRules(Operation $record): void
     {
         $rules = [];
@@ -595,9 +579,6 @@ class InventoryManager
         }
     }
 
-    /**
-     * Create a new operation based on a push rule and assign moves to it.
-     */
     private function createPushOperation(Operation $record, Rule $rule, array $moves): void
     {
         $newOperation = Operation::create([
@@ -624,9 +605,6 @@ class InventoryManager
         $this->computeTransfer($newOperation);
     }
 
-    /**
-     * Run a push rule on a move.
-     */
     public function runPushRule(Rule $rule, Move $move)
     {
         if ($rule->auto !== RuleAuto::MANUAL) {
@@ -667,9 +645,6 @@ class InventoryManager
         return $newMove;
     }
 
-    /**
-     * Traverse up the location tree to find a matching push rule.
-     */
     public function getPushRule(Move $move, array $filters = [])
     {
         $foundRule = null;
@@ -694,9 +669,6 @@ class InventoryManager
         return $foundRule;
     }
 
-    /**
-     * Search for a push rule based on the provided filters.
-     */
     public function searchPushRule($productPackaging, $product, $warehouse, array $filters)
     {
         if ($warehouse) {
