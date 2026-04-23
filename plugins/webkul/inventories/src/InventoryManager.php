@@ -34,7 +34,7 @@ class InventoryManager
         return $this->computeTransfer($record);
     }
 
-    public function validateTransfer(Operation $record): Operation
+    public function validateTransfer(Operation $record, bool $skipReceiptCreation = false): Operation
     {
         $record = $this->computeTransfer($record);
 
@@ -48,7 +48,7 @@ class InventoryManager
 
         if (Package::isPluginInstalled('purchases')) {
             foreach ($record->purchaseOrders as $purchaseOrder) {
-                PurchaseOrderFacade::computePurchaseOrder($purchaseOrder);
+                PurchaseOrderFacade::computePurchaseOrder($purchaseOrder, $skipReceiptCreation);
             }
         }
 
@@ -65,10 +65,19 @@ class InventoryManager
 
     public function validateTransferMove(Move $move): Move
     {
-        $move->update([
+        $doneQty = $move->quantity ?? 0;
+
+        $update = [
             'state'     => MoveState::DONE,
             'is_picked' => true,
-        ]);
+        ];
+
+        if ($move->product_uom_qty > $doneQty) {
+            $update['product_qty'] = $doneQty;
+            $update['product_uom_qty'] = $doneQty;
+        }
+
+        $move->update($update);
 
         foreach ($move->lines()->get() as $moveLine) {
             $this->validateTransferMoveLine($moveLine);

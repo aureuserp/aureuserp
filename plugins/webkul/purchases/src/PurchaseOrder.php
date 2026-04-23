@@ -203,7 +203,7 @@ class PurchaseOrder
         return $record;
     }
 
-    public function computePurchaseOrder(Order $record): Order
+    public function computePurchaseOrder(Order $record, bool $skipReceiptCreation = false): Order
     {
         $record->untaxed_amount = 0;
         $record->tax_amount = 0;
@@ -228,7 +228,7 @@ class PurchaseOrder
 
         $record->save();
 
-        $this->syncInventoryReceipt($record);
+        $this->syncInventoryReceipt($record, $skipReceiptCreation);
 
         return $record;
     }
@@ -445,7 +445,7 @@ class PurchaseOrder
         return $pdfPath;
     }
 
-    protected function syncInventoryReceipt(Order $record): void
+    protected function syncInventoryReceipt(Order $record, bool $skipReceiptCreation = false): void
     {
         if (! in_array($record->state, [PurchaseEnums\OrderState::PURCHASE, PurchaseEnums\OrderState::DONE])) {
             return;
@@ -507,7 +507,7 @@ class PurchaseOrder
             if ($diffQty > 0) {
                 if ($pendingQty > 0) {
                     $this->updateDraftMovesAddQuantity($line, $draftOperations, $pendingQty + $diffQty);
-                } else {
+                } elseif (! $skipReceiptCreation) {
                     $this->createNewReceiptForLine($record, $line, $diffQty, $supplierLocation);
                 }
             } elseif ($diffQty < 0) {

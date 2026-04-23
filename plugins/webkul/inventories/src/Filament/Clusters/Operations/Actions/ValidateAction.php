@@ -91,7 +91,7 @@ class ValidateAction extends Action
                     return;
                 }
 
-                Inventory::validateTransfer($record);
+                Inventory::validateTransfer($record, skipReceiptCreation: true);
 
                 $livewire->updateForm();
             });
