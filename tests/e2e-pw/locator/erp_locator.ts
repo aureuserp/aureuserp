@@ -148,6 +148,60 @@ export class ErpLocators {
     readonly salesSuccessToast: Locator;
     readonly salesValidationMessage: Locator;
 
+    /**
+     * Invoices - Customers, Vendors, Configurations, Settings
+     */
+
+    readonly invoiceClusterCustomersLink: Locator;
+    readonly invoiceClusterVendorsLink: Locator;
+    readonly invoiceClusterConfigurationsLink: Locator;
+    readonly invoiceClusterSettingsLink: Locator;
+
+    readonly invoiceListTable: Locator;
+    readonly invoiceCreateButton: Locator;
+    readonly invoiceSaveButton: Locator;
+    readonly invoiceSearchInput: Locator;
+    readonly invoiceRowActionsButton: Locator;
+    readonly invoiceEditAction: Locator;
+    readonly invoiceDeleteAction: Locator;
+    readonly invoiceConfirmDeleteButton: Locator;
+    readonly invoiceSuccessToast: Locator;
+    readonly invoiceErrorToast: Locator;
+    readonly invoiceValidationMessage: Locator;
+
+    readonly invoicePartnerNameInput: Locator;
+    readonly invoicePartnerEmailInput: Locator;
+    readonly invoicePartnerPhoneInput: Locator;
+
+    readonly invoiceProductNameInput: Locator;
+    readonly invoiceProductPriceInput: Locator;
+
+    readonly invoiceDocumentPartnerSelect: Locator;
+    readonly invoiceDocumentPaymentTermSelect: Locator;
+    readonly invoiceDocumentJournalSelect: Locator;
+    readonly invoiceDocumentCurrencySelect: Locator;
+    readonly invoiceDocumentDateInput: Locator;
+    readonly invoiceDocumentDueDateInput: Locator;
+    readonly invoiceDocumentAddProductButton: Locator;
+    readonly invoiceDocumentProductSelect: Locator;
+    readonly invoiceDocumentQuantityInput: Locator;
+    readonly invoiceDocumentUnitPriceInput: Locator;
+
+    readonly invoicePaymentReceiveToggle: Locator;
+    readonly invoicePaymentSendToggle: Locator;
+    readonly invoicePaymentPartnerSelect: Locator;
+    readonly invoicePaymentAmountInput: Locator;
+    readonly invoicePaymentDateInput: Locator;
+    readonly invoicePaymentJournalSelect: Locator;
+    readonly invoicePaymentCurrencySelect: Locator;
+    readonly invoicePaymentMemoInput: Locator;
+
+    readonly invoiceSelectSearchInput: Locator;
+    readonly invoiceSelectOption: Locator;
+
+    readonly invoiceSettingsUomToggle: Locator;
+    readonly invoiceSettingsSaveButton: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -296,5 +350,59 @@ export class ErpLocators {
         this.salesSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
         this.salesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+
+        /**
+         * Invoices - Customers, Vendors, Configurations, Settings
+         */
+
+        this.invoiceClusterCustomersLink = page.getByRole("link", { name: /Customers/i }).first();
+        this.invoiceClusterVendorsLink = page.getByRole("link", { name: /Vendors/i }).first();
+        this.invoiceClusterConfigurationsLink = page.getByRole("link", { name: /Configurations/i }).first();
+        this.invoiceClusterSettingsLink = page.getByRole("link", { name: /Settings/i }).first();
+
+        this.invoiceListTable = page.locator("div.fi-ta-content-grid, div.fi-ta-empty-state, table");
+        this.invoiceCreateButton = page.locator("a,button").filter({ hasText: /^(New|Create|Add)\b/i }).first();
+        this.invoiceSaveButton = page.getByRole("button", { name: /^(Create|Save changes|Submit)$/i }).first();
+        this.invoiceSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.invoiceRowActionsButton = page.getByRole("button", { name: "Actions" });
+        this.invoiceEditAction = page.getByRole("menuitem", { name: /Edit/i }).first();
+        this.invoiceDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
+        this.invoiceConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
+        this.invoiceSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.invoiceErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
+        this.invoiceValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+
+        this.invoicePartnerNameInput = page.locator('input[id="form.name"]').first();
+        this.invoicePartnerEmailInput = page.locator('input[id="form.email"]').first();
+        this.invoicePartnerPhoneInput = page.locator('input[id="form.phone"]').first();
+
+        this.invoiceProductNameInput = page.locator('input[id="form.name"]').first();
+        this.invoiceProductPriceInput = page.locator('input[id="form.price"]').first();
+
+        this.invoiceDocumentPartnerSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
+        this.invoiceDocumentPaymentTermSelect = page.locator('[wire\\:key$="form.invoice_payment_term_id"] button.fi-select-input-btn').first();
+        this.invoiceDocumentJournalSelect = page.locator('[wire\\:key$="form.journal_id"] button.fi-select-input-btn').first();
+        this.invoiceDocumentCurrencySelect = page.locator('[wire\\:key$="form.currency_id"] button.fi-select-input-btn').first();
+        this.invoiceDocumentDateInput = page.locator('input[id="form.invoice_date"]').first();
+        this.invoiceDocumentDueDateInput = page.locator('input[id="form.invoice_date_due"]').first();
+        this.invoiceDocumentAddProductButton = page.getByRole("button", { name: /Add Product/i }).first();
+        this.invoiceDocumentProductSelect = page.locator('[wire\\:key*=".form.products."][wire\\:key*=".product_id."] button.fi-select-input-btn').first();
+        this.invoiceDocumentQuantityInput = page.locator('input[id^="form.products."][id$=".quantity"]').first();
+        this.invoiceDocumentUnitPriceInput = page.locator('input[id^="form.products."][id$=".price_unit"]').first();
+
+        this.invoicePaymentReceiveToggle = page.locator("label, button").filter({ hasText: /^Receive$/i }).first();
+        this.invoicePaymentSendToggle = page.locator("label, button").filter({ hasText: /^Send$/i }).first();
+        this.invoicePaymentPartnerSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
+        this.invoicePaymentAmountInput = page.locator('input[id="form.amount"]').first();
+        this.invoicePaymentDateInput = page.locator('input[id="form.date"]').first();
+        this.invoicePaymentJournalSelect = page.locator('[wire\\:key$="form.journal_id"] button.fi-select-input-btn').first();
+        this.invoicePaymentCurrencySelect = page.locator('[wire\\:key$="form.currency_id"] button.fi-select-input-btn').first();
+        this.invoicePaymentMemoInput = page.locator('input[id="form.memo"]').first();
+
+        this.invoiceSelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"], input[placeholder="Start typing to search..."]:visible').last();
+        this.invoiceSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+
+        this.invoiceSettingsUomToggle = page.locator('button[role="switch"], input[type="checkbox"]').first();
+        this.invoiceSettingsSaveButton = page.getByRole("button", { name: /Save changes|save|update|submit/i }).first();
     }
 }
