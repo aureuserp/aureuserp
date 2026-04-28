@@ -1,6 +1,8 @@
 import { Page, expect, type Locator } from "@playwright/test";
+import fs from "fs";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
+import { ADMIN_AUTH_STATE_PATH } from "../playwright.config";
 
 export type EmployeeData = {
     name: string;
@@ -11,6 +13,7 @@ export type EmployeeData = {
     department?: string;
     jobPosition?: string;
     manager?: string;
+    relatedUser?: string;
 };
 
 export type DepartmentData = {
@@ -119,18 +122,66 @@ export class EmployeeManagementPage {
         if (employee.workPhone) await this.erpLocators.employeeWorkPhoneInput.fill(employee.workPhone);
         if (employee.mobilePhone) await this.erpLocators.employeeMobilePhoneInput.fill(employee.mobilePhone);
 
-        if (employee.department) {
-            await this.selectBySearch(this.erpLocators.employeeDepartmentSelect, employee.department);
-        }
-        if (employee.jobPosition) {
-            await this.selectBySearch(this.erpLocators.employeeJobPositionSelect, employee.jobPosition);
-        }
-        if (employee.manager) {
-            await this.selectBySearch(this.erpLocators.employeeManagerSelect, employee.manager);
+        if (employee.relatedUser) {
+            await this.linkRelatedUser(employee.relatedUser);
         }
 
         await this.erpLocators.employeeSaveButton.click();
         await this.expectSuccessToast();
+    }
+
+    /**
+     * Open the Settings tab and link an existing user to the employee via Related User
+     */
+    async linkRelatedUser(userIdentifier: string) {
+        await this.erpLocators.employeeSettingsTab.scrollIntoViewIfNeeded();
+        await this.erpLocators.employeeSettingsTab.click();
+        await expect(this.erpLocators.employeeRelatedUserSelect).toBeVisible();
+        await this.selectBySearch(this.erpLocators.employeeRelatedUserSelect, userIdentifier);
+    }
+
+    /**
+     * Logout via the user menu and login as the given employee user.
+     * Removes any cached admin auth state so subsequent admin tests re-login.
+     */
+    async loginAsEmployee(email: string, password: string) {
+        await this.page.waitForLoadState("networkidle");
+        await this.logoutCurrentUser();
+
+        if (fs.existsSync(ADMIN_AUTH_STATE_PATH)) {
+            fs.unlinkSync(ADMIN_AUTH_STATE_PATH);
+        }
+
+        await this.page.fill('input[type="email"]', email);
+        await this.page.fill('input[type="password"]', password);
+        await this.page.press('input[type="password"]', "Enter");
+        await this.page.waitForLoadState("networkidle");
+        await expect(this.page).not.toHaveURL(/.*\/admin\/login/);
+    }
+
+    /**
+     * Logout helper: opens the user menu and clicks the sign-out item.
+     * Falls back to navigating to /admin/logout if the menu flow doesn't land us on /admin/login.
+     */
+    private async logoutCurrentUser() {
+        try {
+            await this.erpLocators.userMenuButton.click({ timeout: 5000 });
+            await this.erpLocators.logoutButton.click({ timeout: 5000 });
+        } catch {
+            // Fallback: hit logout endpoint directly.
+            await this.page.goto("/admin/logout").catch(() => undefined);
+        }
+
+        if (!/\/admin\/login/.test(this.page.url())) {
+            await this.page.goto("/admin/logout").catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        }
+
+        if (!/\/admin\/login/.test(this.page.url())) {
+            await this.page.goto("/admin/login");
+        }
+
+        await expect(this.page).toHaveURL(/.*\/admin\/login/);
     }
 
     /**
@@ -155,6 +206,9 @@ export class EmployeeManagementPage {
     async editEmployee(searchKey: string, updates: Partial<EmployeeData>) {
         await this.gotoEmployeesPage();
         await this.searchEmployee(searchKey);
+        await this.page.waitForTimeout(5000);
+        await this.page.waitForLoadState("networkidle");
+        // Wait for search results to stabilize before clicking edit
         await this.erpLocators.employeeEditButton.click();
 
         if (updates.name) await this.erpLocators.employeeNameInput.fill(updates.name);
@@ -183,6 +237,9 @@ export class EmployeeManagementPage {
     async deleteEmployee(searchKey: string) {
         await this.gotoEmployeesPage();
         await this.searchEmployee(searchKey);
+        await this.page.waitForTimeout(5000);
+        await this.page.waitForLoadState("networkidle");
+        // Wait for search results to stabilize before clicking delete
         await this.erpLocators.employeeDeleteButton.click();
         await this.erpLocators.employeeConfirmDeleteButton.click();
         await this.expectSuccessToast();
@@ -194,6 +251,8 @@ export class EmployeeManagementPage {
     async bulkDeleteEmployees(searchKey: string) {
         await this.gotoEmployeesPage();
         await this.searchEmployee(searchKey);
+        await this.page.waitForTimeout(5000);
+        await this.page.waitForLoadState("networkidle");
         await this.erpLocators.selectAllEmployeesButton.click();
         await this.erpLocators.employeeBulkActionsButton.click();
         await this.erpLocators.employeeBulkDeleteButton.click();

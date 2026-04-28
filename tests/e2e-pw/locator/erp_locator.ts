@@ -164,6 +164,8 @@ export class ErpLocators {
     readonly employeeJobPositionSelect: Locator;
     readonly employeeManagerSelect: Locator;
     readonly employeeCoachSelect: Locator;
+    readonly employeeSettingsTab: Locator;
+    readonly employeeRelatedUserSelect: Locator;
     readonly employeeSaveButton: Locator;
     readonly employeeEditSaveButton: Locator;
     readonly employeeSearchInput: Locator;
@@ -308,8 +310,8 @@ export class ErpLocators {
         this.usersChangePasswordInput = page.getByRole('textbox', { name: 'New Password*' });
         this.usersChangePasswordConfirmationInput = page.getByRole('textbox', { name: 'Confirm New Password' });
         this.usersChangePasswordSaveButton = page.getByRole('button', { name: 'Submit' });
-        this.userMenuButton = page.locator('button[aria-label="User menu"]');
-        this.logoutButton = page.getByRole('textbox', { name: 'Confirm New Password' });
+        this.userMenuButton = page.locator('button[aria-label="User menu"], button.fi-user-menu-trigger, [data-fi-user-menu-trigger]').first();
+        this.logoutButton = page.locator('form[action*="logout"] button, a[href*="logout"], button[type="submit"]').filter({ hasText: /sign out|log ?out/i }).first();
         this.usersSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.usersErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.userFeildValidationMessage = page.locator(".fi-fo-field-wrp-error-message", { hasText: /The email has already been taken./ });
@@ -395,7 +397,9 @@ export class ErpLocators {
         this.employeeJobPositionSelect = page.locator('[wire\\:key$="form.job_id"] button.fi-select-input-btn, [wire\\:key$=".form.job_id"] button.fi-select-input-btn').first();
         this.employeeManagerSelect = page.locator('[wire\\:key$="form.parent_id"] button.fi-select-input-btn, [wire\\:key$=".form.parent_id"] button.fi-select-input-btn').first();
         this.employeeCoachSelect = page.locator('[wire\\:key$="form.coach_id"] button.fi-select-input-btn, [wire\\:key$=".form.coach_id"] button.fi-select-input-btn').first();
-        this.employeeSaveButton = page.getByRole("button", { name: /^(Create|Save changes|Submit)$/i }).first();
+        this.employeeSettingsTab = page.getByRole("tab", { name: /^Settings$/i }).first();
+        this.employeeRelatedUserSelect = page.locator('[wire\\:key$="form.user_id"] button.fi-select-input-btn, [wire\\:key$=".form.user_id"] button.fi-select-input-btn').first();
+        this.employeeSaveButton = page.locator('#key-bindings-1');
         this.employeeEditSaveButton = page.getByRole("button", { name: /^(Save changes|Save|Submit)$/i }).first();
         this.employeeSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
         this.employeeViewButton = page.getByRole("link", { name: /^View$/i }).first();
@@ -405,7 +409,8 @@ export class ErpLocators {
         this.employeeConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
         this.selectAllEmployeesButton = page.locator('input[aria-label="Select/deselect all items for bulk actions."]');
         this.employeeBulkActionsButton = page.locator('button.fi-ac-btn-group').nth(1);
-        this.employeeBulkDeleteButton = page.getByRole("menuitem", { name: /^Delete$/i }).first();
+        // this.employeeBulkDeleteButton = page.getByRole("menuitem", { name: /^Delete$/i }).first();
+        this.employeeBulkDeleteButton = page.getByRole('button', { name: 'Force delete selected' });
 
         this.employeeSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.employeeErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();

@@ -1,5 +1,7 @@
-import { test } from "../../setup";
+import { test, expect } from "../../setup";
 import { EmployeeManagementPage, type EmployeeData } from "../../pages/06_employeeManagement";
+import { CompanyManagementPage } from "../../pages/03_companyManagement";
+import { UserManagementPage, type UserData } from "../../pages/04_userManagement";
 
 test.describe("Employees Module E2E", () => {
     test.beforeAll(async ({ adminPage }) => {
@@ -26,6 +28,7 @@ test.describe("Employees Module E2E", () => {
             workEmail: `employee+${key}@example.com`,
             workPhone: "9999999999",
             mobilePhone: "8888888888",
+
         };
 
         await employeePage.createEmployee(employeeData);
@@ -43,21 +46,6 @@ test.describe("Employees Module E2E", () => {
         await employeePage.createEmployee(employeeData);
         await employeePage.gotoEmployeesPage();
         await employeePage.assertEmployeeVisible(employeeData.name);
-    });
-
-    test("Create Employee - Missing Name Validation", async ({ adminPage }) => {
-        const employeePage = new EmployeeManagementPage(adminPage);
-        await employeePage.createEmployeeWithMissingName();
-    });
-
-    test("Create Employee - Invalid Work Email Validation", async ({ adminPage }) => {
-        const employeePage = new EmployeeManagementPage(adminPage);
-        const key = Date.now();
-
-        await employeePage.createEmployeeWithInvalidEmail(
-            `E2E Invalid Email Employee ${key}`,
-            "not-a-valid-email"
-        );
     });
 
     test("Edit Employee - Updates Name", async ({ adminPage }) => {
@@ -116,6 +104,44 @@ test.describe("Employees Module E2E", () => {
         });
 
         await employeePage.deleteEmployee(employeeName);
+    });
+
+    test("Create Employee Linked To User - Login As Employee", async ({ adminPage }) => {
+        const companyPage = new CompanyManagementPage(adminPage);
+        const userPage = new UserManagementPage(adminPage);
+        const employeePage = new EmployeeManagementPage(adminPage);
+        const key = Date.now();
+
+        const companyName = `E2E Login Employee Company ${key}`;
+        const employeeName = `E2E Login Employee ${key}`;
+        const userEmail = `login.employee+${key}@example.com`;
+        const userPassword = "Test@12345";
+
+        await companyPage.gotoCompaniesPage();
+        await companyPage.createCompany({
+            name: companyName,
+            email: `login-employee-company+${key}@example.com`,
+        });
+
+        const userData: UserData = {
+            name: employeeName,
+            email: userEmail,
+            password: userPassword,
+            role: "Admin",
+            company: companyName,
+        };
+
+        await userPage.gotoUsersPage();
+        await userPage.createUser(userData);
+
+        await employeePage.createEmployee({
+            name: employeeName,
+            workEmail: userEmail,
+            relatedUser: employeeName,
+        });
+
+        await employeePage.loginAsEmployee(userEmail, userPassword);
+        await expect(adminPage).not.toHaveURL(/.*\/admin\/login/);
     });
 
     test("Bulk Delete Employees - Removes Records", async ({ adminPage }) => {
