@@ -148,6 +148,90 @@ export class ErpLocators {
     readonly salesSuccessToast: Locator;
     readonly salesValidationMessage: Locator;
 
+    /**
+     * Employees - Employees, Departments
+     */
+
+    readonly employeesMenuLink: Locator;
+    readonly employeesTable: Locator;
+    readonly employeeCreateButton: Locator;
+    readonly employeeNameInput: Locator;
+    readonly employeeJobTitleInput: Locator;
+    readonly employeeWorkEmailInput: Locator;
+    readonly employeeWorkPhoneInput: Locator;
+    readonly employeeMobilePhoneInput: Locator;
+    readonly employeeDepartmentSelect: Locator;
+    readonly employeeJobPositionSelect: Locator;
+    readonly employeeManagerSelect: Locator;
+    readonly employeeCoachSelect: Locator;
+    readonly employeeSettingsTab: Locator;
+    readonly employeeRelatedUserSelect: Locator;
+    readonly employeeSaveButton: Locator;
+    readonly employeeEditSaveButton: Locator;
+    readonly employeeSearchInput: Locator;
+    readonly employeeViewButton: Locator;
+    readonly employeeEditButton: Locator;
+    readonly employeeDeleteButton: Locator;
+    readonly employeeRowActionsButton: Locator;
+    readonly employeeConfirmDeleteButton: Locator;
+    readonly selectAllEmployeesButton: Locator;
+    readonly employeeBulkActionsButton: Locator;
+    readonly employeeBulkDeleteButton: Locator;
+    readonly employeeSuccessToast: Locator;
+    readonly employeeErrorToast: Locator;
+    readonly employeeValidationMessage: Locator;
+
+    readonly departmentsTable: Locator;
+    readonly departmentCreateButton: Locator;
+    readonly departmentNameInput: Locator;
+    readonly departmentManagerSelect: Locator;
+    readonly departmentParentSelect: Locator;
+    readonly departmentCompanySelect: Locator;
+    readonly departmentSaveButton: Locator;
+    readonly departmentEditSaveButton: Locator;
+    readonly departmentSearchInput: Locator;
+    readonly departmentRowActionsButton: Locator;
+    readonly departmentViewButton: Locator;
+    readonly departmentEditButton: Locator;
+    readonly departmentDeleteButton: Locator;
+    readonly departmentConfirmDeleteButton: Locator;
+    readonly selectAllDepartmentsButton: Locator;
+    readonly departmentBulkActionsButton: Locator;
+    readonly departmentBulkDeleteButton: Locator;
+
+    readonly employeeSelectSearchInput: Locator;
+    readonly employeeSelectOption: Locator;
+
+    /**
+     * Employees - Configurations (Employment Types, Employee Categories,
+     * Work Locations, Departure Reasons, Skill Types, Job Positions, Activity Plans)
+     */
+
+    readonly configurationTable: Locator;
+    readonly configurationCreateButton: Locator;
+    readonly configurationNameInput: Locator;
+    readonly configurationCodeInput: Locator;
+    readonly configurationLocationNumberInput: Locator;
+    readonly configurationCountrySelect: Locator;
+    readonly configurationCompanySelect: Locator;
+    readonly configurationDepartmentSelect: Locator;
+    readonly configurationEmploymentTypeSelect: Locator;
+    readonly configurationColorSelect: Locator;
+    readonly configurationLocationTypeOption: Locator;
+    readonly configurationModalCreateButton: Locator;
+    readonly configurationModalSaveButton: Locator;
+    readonly configurationCreatePageSaveButton: Locator;
+    readonly configurationEditPageSaveButton: Locator;
+    readonly configurationSearchInput: Locator;
+    readonly configurationViewButton: Locator;
+    readonly configurationEditButton: Locator;
+    readonly configurationDeleteButton: Locator;
+    readonly configurationRowActionsButton: Locator;
+    readonly configurationConfirmDeleteButton: Locator;
+    readonly configurationSuccessToast: Locator;
+    readonly configurationErrorToast: Locator;
+    readonly configurationValidationMessage: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -226,8 +310,8 @@ export class ErpLocators {
         this.usersChangePasswordInput = page.getByRole('textbox', { name: 'New Password*' });
         this.usersChangePasswordConfirmationInput = page.getByRole('textbox', { name: 'Confirm New Password' });
         this.usersChangePasswordSaveButton = page.getByRole('button', { name: 'Submit' });
-        this.userMenuButton = page.locator('button[aria-label="User menu"]');
-        this.logoutButton = page.getByRole('textbox', { name: 'Confirm New Password' });
+        this.userMenuButton = page.locator('button[aria-label="User menu"], button.fi-user-menu-trigger, [data-fi-user-menu-trigger]').first();
+        this.logoutButton = page.locator('form[action*="logout"] button, a[href*="logout"], button[type="submit"]').filter({ hasText: /sign out|log ?out/i }).first();
         this.usersSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.usersErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.userFeildValidationMessage = page.locator(".fi-fo-field-wrp-error-message", { hasText: /The email has already been taken./ });
@@ -296,5 +380,90 @@ export class ErpLocators {
         this.salesSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
         this.salesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+
+        /**
+         * Employees - Employees, Departments
+         */
+
+        this.employeesMenuLink = page.getByRole("link", { name: /employees/i });
+        this.employeesTable = page.locator("div.fi-ta-content-grid, div.fi-ta-empty-state, table");
+        this.employeeCreateButton = page.locator("a,button").filter({ hasText: /new employee|create employee|add employee|create/i }).first();
+        this.employeeNameInput = page.locator('input[id="form.name"]').first();
+        this.employeeJobTitleInput = page.locator('input[id="form.job_title"]').first();
+        this.employeeWorkEmailInput = page.locator('input[id="form.work_email"]').first();
+        this.employeeWorkPhoneInput = page.locator('input[id="form.work_phone"]').first();
+        this.employeeMobilePhoneInput = page.locator('input[id="form.mobile_phone"]').first();
+        this.employeeDepartmentSelect = page.locator('[wire\\:key$="form.department_id"] button.fi-select-input-btn, [wire\\:key$=".form.department_id"] button.fi-select-input-btn').first();
+        this.employeeJobPositionSelect = page.locator('[wire\\:key$="form.job_id"] button.fi-select-input-btn, [wire\\:key$=".form.job_id"] button.fi-select-input-btn').first();
+        this.employeeManagerSelect = page.locator('[wire\\:key$="form.parent_id"] button.fi-select-input-btn, [wire\\:key$=".form.parent_id"] button.fi-select-input-btn').first();
+        this.employeeCoachSelect = page.locator('[wire\\:key$="form.coach_id"] button.fi-select-input-btn, [wire\\:key$=".form.coach_id"] button.fi-select-input-btn').first();
+        this.employeeSettingsTab = page.getByRole("tab", { name: /^Settings$/i }).first();
+        this.employeeRelatedUserSelect = page.locator('[wire\\:key$="form.user_id"] button.fi-select-input-btn, [wire\\:key$=".form.user_id"] button.fi-select-input-btn').first();
+        this.employeeSaveButton = page.locator('#key-bindings-1');
+        this.employeeEditSaveButton = page.getByRole("button", { name: /^(Save changes|Save|Submit)$/i }).first();
+        this.employeeSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+        this.employeeViewButton = page.getByRole("link", { name: /^View$/i }).first();
+        this.employeeEditButton = page.getByRole("link", { name: /^Edit$/i }).first();
+        this.employeeDeleteButton = page.getByRole("button", { name: /^Delete$/i }).first();
+        this.employeeRowActionsButton = page.getByRole("button", { name: /Actions/i }).first();
+        this.employeeConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
+        this.selectAllEmployeesButton = page.locator('input[aria-label="Select/deselect all items for bulk actions."]');
+        this.employeeBulkActionsButton = page.locator('button.fi-ac-btn-group').nth(1);
+        // this.employeeBulkDeleteButton = page.getByRole("menuitem", { name: /^Delete$/i }).first();
+        this.employeeBulkDeleteButton = page.getByRole('button', { name: 'Force delete selected' });
+
+        this.employeeSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.employeeErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
+        this.employeeValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+
+        this.departmentsTable = page.locator("div.fi-ta-content-grid, div.fi-ta-empty-state, table");
+        this.departmentCreateButton = page.locator("a,button").filter({ hasText: /new department|create department|add department|create/i }).first();
+        this.departmentNameInput = page.locator('input[id="form.name"]').first();
+        this.departmentManagerSelect = page.locator('[wire\\:key$="form.manager_id"] button.fi-select-input-btn, [wire\\:key$=".form.manager_id"] button.fi-select-input-btn').first();
+        this.departmentParentSelect = page.locator('[wire\\:key$="form.parent_id"] button.fi-select-input-btn, [wire\\:key$=".form.parent_id"] button.fi-select-input-btn').first();
+        this.departmentCompanySelect = page.locator('[wire\\:key$="form.company_id"] button.fi-select-input-btn, [wire\\:key$=".form.company_id"] button.fi-select-input-btn').first();
+        this.departmentSaveButton = page.getByRole("button", { name: /^(Create|Save changes|Submit)$/i }).first();
+        this.departmentEditSaveButton = page.getByRole("button", { name: /^(Save changes|Save|Submit)$/i }).first();
+        this.departmentSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+        this.departmentRowActionsButton = page.getByRole("button", { name: /Actions/i }).first();
+        this.departmentViewButton = page.getByRole("link", { name: /^View$/i }).first();
+        this.departmentEditButton = page.getByRole("link", { name: /^Edit$/i }).first();
+        this.departmentDeleteButton = page.getByRole("button", { name: /^Delete$/i }).first();
+        this.departmentConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
+        this.selectAllDepartmentsButton = page.locator('input[aria-label="Select/deselect all items for bulk actions."]');
+        this.departmentBulkActionsButton = page.locator('button.fi-ac-btn-group').nth(1);
+        this.departmentBulkDeleteButton = page.getByRole("menuitem", { name: /^Delete$/i }).first();
+
+        this.employeeSelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"]').last();
+        this.employeeSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+
+        /**
+         * Employees - Configurations
+         */
+
+        this.configurationTable = page.locator("table, div.fi-ta-empty-state, div.fi-ta-content-grid");
+        this.configurationCreateButton = page.locator("a,button").filter({ hasText: /new|create|add/i }).first();
+        this.configurationNameInput = page.locator('input[id$="form.name"], input[id$=".name"]').first();
+        this.configurationCodeInput = page.locator('input[id$="form.code"], input[id$=".code"]').first();
+        this.configurationLocationNumberInput = page.locator('input[id$="form.location_number"], input[id$=".location_number"]').first();
+        this.configurationCountrySelect = page.locator('[wire\\:key$="form.country_id"] button.fi-select-input-btn, [wire\\:key$=".form.country_id"] button.fi-select-input-btn').first();
+        this.configurationCompanySelect = page.locator('[wire\\:key$="form.company_id"] button.fi-select-input-btn, [wire\\:key$=".form.company_id"] button.fi-select-input-btn').first();
+        this.configurationDepartmentSelect = page.locator('[wire\\:key$="form.department_id"] button.fi-select-input-btn, [wire\\:key$=".form.department_id"] button.fi-select-input-btn').first();
+        this.configurationEmploymentTypeSelect = page.locator('[wire\\:key$="form.employment_type_id"] button.fi-select-input-btn, [wire\\:key$=".form.employment_type_id"] button.fi-select-input-btn').first();
+        this.configurationColorSelect = page.locator('[wire\\:key$="form.color"] button.fi-select-input-btn, [wire\\:key$=".form.color"] button.fi-select-input-btn').first();
+        this.configurationLocationTypeOption = page.locator('label.fi-fo-toggle-buttons-option, button[role="radio"]').first();
+        this.configurationModalCreateButton = page.getByRole("dialog").getByRole("button", { name: /^Create$/i }).first();
+        this.configurationModalSaveButton = page.getByRole("dialog").getByRole("button", { name: /^(Save|Save changes|Submit)$/i }).first();
+        this.configurationCreatePageSaveButton = page.getByRole("button", { name: /^(Create|Submit)$/i }).first();
+        this.configurationEditPageSaveButton = page.getByRole("button", { name: /^(Save changes|Save|Submit)$/i }).first();
+        this.configurationSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+        this.configurationViewButton = page.getByRole("link", { name: /^View$/i }).first();
+        this.configurationEditButton = page.getByRole("link", { name: /^Edit$/i }).first().or(page.getByRole("button", { name: /^Edit$/i }).first());
+        this.configurationDeleteButton = page.getByRole("button", { name: /^Delete$/i }).first();
+        this.configurationRowActionsButton = page.getByRole("button", { name: /Actions/i }).first();
+        this.configurationConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
+        this.configurationSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.configurationErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
+        this.configurationValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
     }
 }
