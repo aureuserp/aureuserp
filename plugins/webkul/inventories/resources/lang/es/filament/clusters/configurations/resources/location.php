@@ -3,7 +3,7 @@
 return [
     'navigation' => [
         'title' => 'Ubicaciones',
-        'group' => 'Gestión de Almacenes',
+        'group' => 'Gestión de almacenes',
     ],
 
     'form' => [
@@ -14,9 +14,9 @@ return [
                 'fields' => [
                     'location'                     => 'Ubicación',
                     'location-placeholder'         => 'ej. Existencias de Reserva',
-                    'parent-location'              => 'Ubicación Superior',
+                    'parent-location'              => 'Ubicación superior',
                     'parent-location-hint-tooltip' => 'La ubicación principal que engloba esta ubicación. Por ejemplo, la \'Zona de Despacho\' forma parte de la ubicación superior \'Puerta 1\'.',
-                    'external-notes'               => 'Notas Externas',
+                    'external-notes'               => 'Notas externas',
                 ],
             ],
 
@@ -24,9 +24,9 @@ return [
                 'title'  => 'Configuración',
 
                 'fields' => [
-                    'location-type'                 => 'Tipo de Ubicación',
+                    'location-type'                 => 'Tipo de ubicación',
                     'company'                       => 'Empresa',
-                    'storage-category'              => 'Categoría de Almacenamiento',
+                    'storage-category'              => 'Categoría de almacenamiento',
                     'is-scrap'                      => '¿Es una Ubicación de Merma?',
                     'is-scrap-hint-tooltip'         => 'Selecciona esta casilla para designar esta ubicación para almacenar bienes dañados o de merma.',
                     'is-dock'                       => '¿Es una Ubicación de Muelle?',
@@ -34,10 +34,10 @@ return [
                     'is-replenish'                  => '¿Es una Ubicación de Reabastecimiento?',
                     'is-replenish-hint-tooltip'     => 'Activa esta función para recuperar todas las cantidades necesarias para el reabastecimiento en esta ubicación.',
                     'logistics'                     => 'Logística',
-                    'removal-strategy'              => 'Estrategia de Extracción',
+                    'removal-strategy'              => 'Estrategia de extracción',
                     'removal-strategy-hint-tooltip' => 'Especifica el método predeterminado para determinar el anaquel, lote y ubicación exactos de donde se tomarán los productos. Este método puede aplicarse a nivel de categoría de producto, con una alternativa de ubicaciones superiores si no se define aquí.',
-                    'cyclic-counting'               => 'Conteo Cíclico',
-                    'inventory-frequency'           => 'Frecuencia de Inventario',
+                    'cyclic-counting'               => 'Conteo cíclico',
+                    'inventory-frequency'           => 'Frecuencia de inventario',
                     'last-inventory'                => 'Último Inventario',
                     'last-inventory-hint-tooltip'   => 'Fecha del último inventario en esta ubicación.',
                     'next-expected'                 => 'Próximo esperado',
@@ -46,7 +46,7 @@ return [
             ],
 
             'additional' => [
-                'title'  => 'Información Adicional',
+                'title'  => 'Información adicional',
             ],
         ],
     ],
@@ -55,7 +55,7 @@ return [
         'columns' => [
             'location'         => 'Ubicación',
             'type'             => 'Tipo',
-            'storage-category' => 'Categoría de Almacenamiento',
+            'storage-category' => 'Categoría de almacenamiento',
             'company'          => 'Empresa',
             'deleted-at'       => 'Eliminado el',
             'created-at'       => 'Creado el',
@@ -155,9 +155,9 @@ return [
                 'entries' => [
                     'location'                     => 'Ubicación',
                     'location-placeholder'         => 'ej. Existencias de Reserva',
-                    'parent-location'              => 'Ubicación Superior',
+                    'parent-location'              => 'Ubicación superior',
                     'parent-location-hint-tooltip' => 'La ubicación principal que engloba esta ubicación. Por ejemplo, la \'Zona de Despacho\' forma parte de la ubicación superior \'Puerta 1\'.',
-                    'external-notes'               => 'Notas Externas',
+                    'external-notes'               => 'Notas externas',
                 ],
             ],
 
@@ -165,9 +165,9 @@ return [
                 'title'  => 'Configuración',
 
                 'entries' => [
-                    'location-type'                 => 'Tipo de Ubicación',
+                    'location-type'                 => 'Tipo de ubicación',
                     'company'                       => 'Empresa',
-                    'storage-category'              => 'Categoría de Almacenamiento',
+                    'storage-category'              => 'Categoría de almacenamiento',
                     'is-scrap'                      => '¿Es una Ubicación de Merma?',
                     'is-scrap-hint-tooltip'         => 'Selecciona esta casilla para designar esta ubicación para almacenar bienes dañados o de merma.',
                     'is-dock'                       => '¿Es una Ubicación de Muelle?',
@@ -175,10 +175,10 @@ return [
                     'is-replenish'                  => '¿Es una Ubicación de Reabastecimiento?',
                     'is-replenish-hint-tooltip'     => 'Activa esta función para recuperar todas las cantidades necesarias para el reabastecimiento en esta ubicación.',
                     'logistics'                     => 'Logística',
-                    'removal-strategy'              => 'Estrategia de Extracción',
+                    'removal-strategy'              => 'Estrategia de extracción',
                     'removal-strategy-hint-tooltip' => 'Especifica el método predeterminado para determinar el anaquel, lote y ubicación exactos de donde se tomarán los productos. Este método puede aplicarse a nivel de categoría de producto, con una alternativa de ubicaciones superiores si no se define aquí.',
-                    'cyclic-counting'               => 'Conteo Cíclico',
-                    'inventory-frequency'           => 'Frecuencia de Inventario',
+                    'cyclic-counting'               => 'Conteo cíclico',
+                    'inventory-frequency'           => 'Frecuencia de inventario',
                     'last-inventory'                => 'Último Inventario',
                     'last-inventory-hint-tooltip'   => 'Fecha del último inventario en esta ubicación.',
                     'next-expected'                 => 'Próximo esperado',
@@ -187,11 +187,11 @@ return [
             ],
 
             'additional' => [
-                'title'  => 'Información Adicional',
+                'title'  => 'Información adicional',
             ],
 
             'record-information' => [
-                'title' => 'Información del Registro',
+                'title' => 'Información del registro',
 
                 'entries' => [
                     'created-by'   => 'Creado por',

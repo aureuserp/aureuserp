@@ -3,7 +3,7 @@
 return [
     'navigation' => [
         'title' => 'Almacenes',
-        'group' => 'Gestión de Almacenes',
+        'group' => 'Gestión de almacenes',
     ],
 
     'form' => [
@@ -13,7 +13,7 @@ return [
                 'fields' => [
                     'name'               => 'Nombre',
                     'name-placeholder'   => 'ej. Almacén Central',
-                    'code'               => 'Nombre Corto',
+                    'code'               => 'Nombre corto',
                     'code-placeholder'   => 'ej. AC',
                     'code-hint-tooltip'  => 'El nombre corto sirve como identificador del almacén.',
                     'company'            => 'Empresa',
@@ -25,21 +25,21 @@ return [
                 'title'  => 'Configuración',
 
                 'fields' => [
-                    'shipment-management'              => 'Gestión de Envíos',
-                    'incoming-shipments'               => 'Envíos de Entrada',
+                    'shipment-management'              => 'Gestión de envíos',
+                    'incoming-shipments'               => 'Envíos de entrada',
                     'incoming-shipments-hint-tooltip'  => 'Ruta de entrada predeterminada a seguir',
-                    'outgoing-shipments'               => 'Envíos de Salida',
+                    'outgoing-shipments'               => 'Envíos de salida',
                     'outgoing-shipments-hint-tooltip'  => 'Ruta de salida predeterminada a seguir',
                     'manufacture'                      => 'Fabricación',
                     'manufacture-hint-tooltip'         => 'Ruta de fabricación predeterminada a seguir',
-                    'resupply-management'              => 'Gestión de Reabastecimiento',
+                    'resupply-management'              => 'Gestión de reabastecimiento',
                     'resupply-management-hint-tooltip' => 'Las rutas se generarán automáticamente para reabastecer este almacén desde los almacenes seleccionados.',
-                    'resupply-from'                    => 'Reabastecer Desde',
+                    'resupply-from'                    => 'Reabastecer desde',
                 ],
             ],
 
             'additional' => [
-                'title'  => 'Información Adicional',
+                'title'  => 'Información adicional',
             ],
         ],
     ],
@@ -47,7 +47,7 @@ return [
     'table' => [
         'columns' => [
             'name'       => 'Nombre',
-            'code'       => 'Nombre Corto',
+            'code'       => 'Nombre corto',
             'company'    => 'Empresa',
             'address'    => 'Dirección',
             'deleted-at' => 'Eliminado el',
@@ -130,11 +130,11 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Información General',
+                'title' => 'Información general',
 
                 'entries' => [
-                    'name'    => 'Nombre del Almacén',
-                    'code'    => 'Código del Almacén',
+                    'name'    => 'Nombre del almacén',
+                    'code'    => 'Código del almacén',
                     'company' => 'Empresa',
                     'address' => 'Dirección',
                 ],
@@ -144,16 +144,16 @@ return [
                 'title' => 'Configuración',
 
                 'entries' => [
-                    'shipment-management' => 'Gestión de Envíos',
-                    'incoming-shipments'  => 'Envíos de Entrada',
-                    'outgoing-shipments'  => 'Envíos de Salida',
-                    'resupply-management' => 'Gestión de Reabastecimiento',
-                    'resupply-from'       => 'Reabastecer Desde',
+                    'shipment-management' => 'Gestión de envíos',
+                    'incoming-shipments'  => 'Envíos de entrada',
+                    'outgoing-shipments'  => 'Envíos de salida',
+                    'resupply-management' => 'Gestión de reabastecimiento',
+                    'resupply-from'       => 'Reabastecer desde',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Información del Registro',
+                'title' => 'Información del registro',
 
                 'entries' => [
                     'created-by'   => 'Creado por',

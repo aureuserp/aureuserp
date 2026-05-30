@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Gestionar Logística',
+    'title' => 'Gestionar logística',
 
     'form' => [
         'enable-dropshipping'             => 'Envío directo',

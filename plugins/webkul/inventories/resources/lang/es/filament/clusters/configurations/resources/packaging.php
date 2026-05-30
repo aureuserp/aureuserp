@@ -7,21 +7,21 @@ return [
     ],
 
     'form' => [
-        'package-type' => 'Tipo de Paquete',
+        'package-type' => 'Tipo de paquete',
         'routes'       => 'Rutas',
     ],
 
     'table' => [
         'columns' => [
-            'package-type' => 'Tipo de Paquete',
+            'package-type' => 'Tipo de paquete',
         ],
 
         'groups' => [
-            'package-type' => 'Tipo de Paquete',
+            'package-type' => 'Tipo de paquete',
         ],
 
         'filters' => [
-            'package-type' => 'Tipo de Paquete',
+            'package-type' => 'Tipo de paquete',
         ],
     ],
 
@@ -29,15 +29,15 @@ return [
         'sections' => [
             'general' => [
                 'entries' => [
-                    'package_type' => 'Tipo de Paquete',
+                    'package_type' => 'Tipo de paquete',
                 ],
             ],
 
             'routing' => [
-                'title' => 'Información de Ruteo',
+                'title' => 'Información de ruteo',
 
                 'entries' => [
-                    'routes'     => 'Rutas del Almacén',
+                    'routes'     => 'Rutas del almacén',
                     'route_name' => 'Nombre de la Ruta',
                 ],
             ],

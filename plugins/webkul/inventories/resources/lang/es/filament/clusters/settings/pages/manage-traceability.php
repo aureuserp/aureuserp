@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'title' => 'Gestionar Trazabilidad',
+    'title' => 'Gestionar trazabilidad',
 
     'form' => [
         'enable-lots-serial-numbers'                             => 'Lotes y Números de Serie',
         'enable-lots-serial-numbers-helper-text'                 => 'Obtén trazabilidad completa desde proveedores hasta clientes',
-        'configure-lots'                                         => 'Configurar Lotes',
-        'enable-expiration-dates'                                => 'Fechas de Caducidad',
+        'configure-lots'                                         => 'Configurar lotes',
+        'enable-expiration-dates'                                => 'Fechas de caducidad',
         'enable-expiration-dates-helper-text'                    => 'Establece fechas de caducidad en lotes y números de serie',
         'display-on-delivery-slips'                              => 'Mostrar en Albaranes de Entrega',
         'display-on-delivery-slips-helper-text'                  => 'Los lotes y números de serie aparecerán en los albaranes de entrega',

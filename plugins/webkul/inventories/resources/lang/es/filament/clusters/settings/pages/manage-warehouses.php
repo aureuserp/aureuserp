@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'title' => 'Gestionar Almacenes',
+    'title' => 'Gestionar almacenes',
 
     'form' => [
         'enable-locations'                      => 'Ubicaciones',
         'enable-locations-helper-text'          => 'Rastrea la ubicación de productos en tu almacén',
-        'configure-locations'                   => 'Configurar Ubicaciones',
+        'configure-locations'                   => 'Configurar ubicaciones',
         'enable-multi-steps-routes'             => 'Rutas de Múltiples Pasos',
         'enable-multi-steps-routes-helper-text' => 'Usa tus propias rutas para gestionar la transferencia de productos entre almacenes',
         'configure-routes'                      => 'Configurar Rutas de Almacén',

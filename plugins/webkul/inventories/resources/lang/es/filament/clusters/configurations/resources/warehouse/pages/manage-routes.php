@@ -6,7 +6,7 @@ return [
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Agregar Ruta',
+                'label' => 'Agregar ruta',
 
                 'notification' => [
                     'title' => 'Ruta creada',

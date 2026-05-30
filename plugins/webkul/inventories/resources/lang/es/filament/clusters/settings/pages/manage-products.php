@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Gestionar Productos',
+    'title' => 'Gestionar productos',
 
     'form' => [
         'enable-variants'               => 'Variantes',
@@ -10,6 +10,6 @@ return [
         'enable-uom-helper-text'        => 'Vende y compra productos en distintas unidades de medida',
         'enable-packagings'             => 'Empaques',
         'enable-packagings-helper-text' => 'Gestiona los empaques de productos (p. ej. pack de 6 botellas, caja de 10 piezas)',
-        'configure-packagings'          => 'Configurar Empaques',
+        'configure-packagings'          => 'Configurar empaques',
     ],
 ];

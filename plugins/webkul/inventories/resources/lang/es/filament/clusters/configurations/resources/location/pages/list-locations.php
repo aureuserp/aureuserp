@@ -12,7 +12,7 @@ return [
 
     'header-actions' => [
         'create' => [
-            'label' => 'Nueva Ubicación',
+            'label' => 'Nueva ubicación',
 
             'notification' => [
                 'title' => 'Ubicación creada',

@@ -30,7 +30,7 @@ return [
             'package'            => 'Paquete',
             'last-counted-at'    => 'Último conteo el',
             'on-hand'            => 'Cantidad disponible',
-            'uom'                => 'UdM',
+            'uom'                => 'UOM',
             'counted'            => 'Cantidad contada',
             'difference'         => 'Diferencia',
             'scheduled-at'       => 'Programado el',

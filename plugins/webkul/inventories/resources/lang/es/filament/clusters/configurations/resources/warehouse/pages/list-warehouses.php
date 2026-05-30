@@ -8,7 +8,7 @@ return [
 
     'header-actions' => [
         'create' => [
-            'label' => 'Nuevo Almacén',
+            'label' => 'Nuevo almacén',
 
             'notification' => [
                 'title' => 'Almacén creado',

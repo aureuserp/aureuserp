@@ -23,7 +23,7 @@ return [
             'max'               => 'Máx',
             'multiple-quantity' => 'Cantidad múltiple',
             'to-order'          => 'Por pedir',
-            'uom'               => 'UdM',
+            'uom'               => 'UOM',
             'company'           => 'Empresa',
         ],
 
