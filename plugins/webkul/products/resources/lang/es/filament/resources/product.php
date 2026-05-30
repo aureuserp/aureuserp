@@ -132,7 +132,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Producto eliminado definitivamente',
-                        'body'  => 'El producto ha sido eliminado definitivamente de forma correcta.',
+                        'body'  => 'El producto ha sido eliminado permanentemente.',
                     ],
 
                     'error' => [

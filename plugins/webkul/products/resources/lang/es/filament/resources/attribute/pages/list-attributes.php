@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Atributo creado',
-                'body'  => 'El atributo ha sido creado exitosamente.',
+                'body'  => 'El atributo ha sido creado correctamente.',
             ],
         ],
     ],

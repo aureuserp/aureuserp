@@ -93,7 +93,7 @@ return [
                 'title' => 'Información general',
 
                 'entries' => [
-                    'name'    => 'Nombre del paquete',
+                    'name'    => 'Nombre del empaque',
                     'barcode' => 'Código de barras',
                     'product' => 'Producto',
                     'qty'     => 'Cantidad',

@@ -8,7 +8,7 @@ return [
         'employee'               => 'Empleado',
         'description'            => 'Descripción',
         'time-spent'             => 'Tiempo empleado',
-        'time-spent-helper-text' => 'Tiempo empleado en horas (Ej. 1.5 horas significa 1 hora 30 minutos)',
+        'time-spent-helper-text' => 'Tiempo empleado en horas (p. ej. 1,5 horas significa 1 hora 30 minutos)',
     ],
 
     'table' => [

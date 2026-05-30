@@ -62,7 +62,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Atributo eliminado definitivamente',
-                        'body'  => 'El atributo ha sido eliminado definitivamente de forma correcta.',
+                        'body'  => 'El atributo ha sido eliminado permanentemente.',
                     ],
 
                     'error' => [

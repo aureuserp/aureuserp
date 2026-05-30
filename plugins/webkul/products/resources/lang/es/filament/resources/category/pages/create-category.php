@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Categoría creada',
-        'body'  => 'La categoría ha sido creada exitosamente.',
+        'body'  => 'La categoría ha sido creada correctamente.',
     ],
 
     'create' => [

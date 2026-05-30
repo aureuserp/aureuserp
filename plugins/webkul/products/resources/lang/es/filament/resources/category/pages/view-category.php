@@ -6,12 +6,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Categoría eliminada',
-                    'body'  => 'La categoría ha sido eliminada exitosamente.',
+                    'body'  => 'La categoría ha sido eliminada correctamente.',
                 ],
 
                 'error' => [
                     'title' => 'No se pudo eliminar la categoría',
-                    'body'  => 'La categoría no se puede eliminar porque está en uso actualmente.',
+                    'body'  => 'La categoría no se puede eliminar porque está en uso.',
                 ],
             ],
         ],

@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Empaque creado',
-                'body'  => 'El empaque ha sido creado exitosamente.',
+                'body'  => 'El empaque ha sido creado correctamente.',
             ],
         ],
     ],

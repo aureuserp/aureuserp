@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Atributo eliminado',
-                'body'  => 'El atributo ha sido eliminado exitosamente.',
+                'body'  => 'El atributo ha sido eliminado correctamente.',
             ],
         ],
     ],

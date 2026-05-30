@@ -7,7 +7,7 @@ return [
         'name'                 => 'Nombre',
         'full_name'            => 'Nombre completo',
         'parent_path'          => 'Ruta superior',
-        'parent'               => 'Categoría padre',
+        'parent'               => 'Categoría superior',
         'creator'              => 'Creador',
     ],
 ];
