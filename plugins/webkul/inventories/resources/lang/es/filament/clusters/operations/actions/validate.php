@@ -29,7 +29,7 @@ return [
 
             'lot-missing' => [
                 'title' => 'Proporcione lote/número de serie',
-                'body'  => 'Debe proporcionar un lote/número de serie para los productos :products.',
+                'body'  => 'Es necesario proporcionar un lote/número de serie para los productos :products.',
             ],
 
             'serial-qty' => [
@@ -39,7 +39,7 @@ return [
 
             'partial-package' => [
                 'title' => 'No se puede mover el mismo contenido de paquete',
-                'body'  => 'No puede mover el mismo contenido de paquete más de una vez dentro de una sola transferencia ni dividir el paquete entre dos ubicaciones.',
+                'body'  => 'No es posible mover el mismo contenido de paquete más de una vez dentro de una sola transferencia ni dividir el paquete entre dos ubicaciones.',
             ],
         ],
     ],

@@ -17,7 +17,7 @@ return [
 
             'applicable-on' => [
                 'title'       => 'Aplicable a',
-                'description' => 'Seleccione los lugares donde se puede elegir esta ruta.',
+                'description' => 'Seleccionar las ubicaciones donde esta ruta puede aplicarse.',
 
                 'fields' => [
                 ],

@@ -20,7 +20,7 @@ return [
 
             'applicable-on' => [
                 'title'       => 'Aplicable a',
-                'description' => 'Elige las ubicaciones donde se puede aplicar esta ruta.',
+                'description' => 'Elegir las ubicaciones donde esta ruta puede aplicarse.',
 
                 'fields' => [
                     'products'                        => 'Productos',
@@ -136,7 +136,7 @@ return [
 
             'applicable-on' => [
                 'title'       => 'Aplicable a',
-                'description' => 'Selecciona los lugares donde se puede seleccionar esta ruta.',
+                'description' => 'Seleccionar las ubicaciones donde esta ruta puede aplicarse.',
 
                 'entries' => [
                     'products'                        => 'Productos',
