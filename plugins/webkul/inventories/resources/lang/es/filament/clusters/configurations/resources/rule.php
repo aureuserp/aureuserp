@@ -18,7 +18,7 @@ return [
                     'source-location'             => 'Ubicación de origen',
                     'destination-location'        => 'Ubicación de destino',
                     'supply-method'               => 'Método de suministro',
-                    'supply-method-hint-tooltip'  => 'Tomar de existencias: Los productos se obtienen directamente del stock disponible en la ubicación de origen.<br/>Activar otra regla: El sistema ignora el stock disponible y busca una regla de existencias para reabastecer la ubicación de origen.<br/>Tomar de existencias; si no está disponible, activar otra regla: Primero se toman los productos del stock disponible. Si no hay ninguno disponible, el sistema aplica una regla de existencias para traer productos a la ubicación de origen.',
+                    'supply-method-hint-tooltip'  => 'Tomar de existencias: Los productos se obtienen directamente de las existencias disponibles en la ubicación de origen.<br/>Activar otra regla: El sistema ignora el stock disponible y busca una regla de existencias para reabastecer la ubicación de origen.<br/>Tomar de existencias; si no está disponible, activar otra regla: Primero se toman los productos de las existencias disponibles. Si no hay ninguno disponible, el sistema aplica una regla de existencias para traer productos a la ubicación de origen.',
                     'automatic-move'              => 'Movimiento automático',
                     'automatic-move-hint-tooltip' => 'Operación manual: Crea un movimiento de existencias separado después del actual.<br/>Automático sin paso adicional: Reemplaza directamente la ubicación en el movimiento original sin agregar un paso extra.',
 
@@ -123,7 +123,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Regla eliminada de forma permanente',
-                        'body'  => 'La regla ha sido eliminada de forma permanente correctamente.',
+                        'body'  => 'La regla ha sido eliminada permanentemente.',
                     ],
 
                     'error' => [
@@ -153,7 +153,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Reglas eliminadas de forma permanente',
-                        'body'  => 'Las reglas han sido eliminadas de forma permanente correctamente.',
+                        'body'  => 'Las reglas han sido eliminadas permanentemente.',
                     ],
 
                     'error' => [

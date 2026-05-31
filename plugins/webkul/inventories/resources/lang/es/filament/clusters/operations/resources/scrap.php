@@ -16,7 +16,7 @@ return [
                     'package'              => 'Paquete',
                     'quantity'             => 'Cantidad',
                     'unit'                 => 'Unidad de medida',
-                    'lot'                  => 'Lote/NS',
+                    'lot'                  => 'Lote / Números de serie',
                     'tags'                 => 'Etiquetas',
                     'name'                 => 'Nombre',
                     'color'                => 'Color',
@@ -41,7 +41,7 @@ return [
             'source-location' => 'Ubicación de origen',
             'scrap-location'  => 'Ubicación de merma',
             'unit'            => 'Unidad de medida',
-            'lot'             => 'Lote/NS',
+            'lot'             => 'Lote / Números de serie',
             'tags'            => 'Etiquetas',
             'state'           => 'Estado',
         ],
@@ -59,7 +59,7 @@ return [
             'state'                => 'Estado',
             'product-category'     => 'Categoría de producto',
             'uom'                  => 'Unidad de medida',
-            'lot'                  => 'Lote/NS',
+            'lot'                  => 'Lote / Números de serie',
             'package'              => 'Paquete',
             'tags'                 => 'Etiquetas',
             'company'              => 'Empresa',
@@ -75,7 +75,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Merma eliminada',
-                        'body'  => 'La merma ha sido eliminada exitosamente.',
+                        'body'  => 'La merma ha sido eliminada correctamente.',
                     ],
 
                     'error' => [
@@ -91,7 +91,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Mermas eliminadas',
-                        'body'  => 'Las mermas seleccionadas han sido eliminadas exitosamente.',
+                        'body'  => 'Las mermas seleccionadas han sido eliminadas correctamente.',
                     ],
 
                     'error' => [

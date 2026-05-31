@@ -3,7 +3,7 @@
 return [
     'navigation' => [
         'title' => 'Tipos de operación',
-        'group' => 'Gestión de almacén',
+        'group' => 'Gestión de almacenes',
     ],
 
     'form' => [
@@ -11,12 +11,12 @@ return [
             'general' => [
                 'fields' => [
                     'operator-type'             => 'Tipo de operador',
-                    'operator-type-placeholder' => 'ej. Recepciones',
+                    'operator-type-placeholder' => 'p. ej. Recepciones',
                 ],
             ],
 
             'applicable-on' => [
-                'title'       => 'Aplicable en',
+                'title'       => 'Aplicable a',
                 'description' => 'Seleccione los lugares donde se puede elegir esta ruta.',
 
                 'fields' => [
@@ -147,14 +147,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Tipo de operación restaurado',
-                    'body'  => 'El tipo de operación ha sido restaurado exitosamente.',
+                    'body'  => 'El tipo de operación ha sido restaurado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de operación eliminado',
-                    'body'  => 'El tipo de operación ha sido eliminado exitosamente.',
+                    'body'  => 'El tipo de operación ha sido eliminado correctamente.',
                 ],
             ],
 
@@ -162,7 +162,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Tipo de operación eliminado permanentemente',
-                        'body'  => 'El tipo de operación ha sido eliminado permanentemente exitosamente.',
+                        'body'  => 'El tipo de operación ha sido eliminado permanentemente.',
                     ],
 
                     'error' => [
@@ -177,14 +177,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Tipos de operación restaurados',
-                    'body'  => 'Los tipos de operación han sido restaurados exitosamente.',
+                    'body'  => 'Los tipos de operación han sido restaurados correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tipos de operación eliminados',
-                    'body'  => 'Los tipos de operación han sido eliminados exitosamente.',
+                    'body'  => 'Los tipos de operación han sido eliminados correctamente.',
                 ],
             ],
 
@@ -192,7 +192,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Tipos de operación eliminados permanentemente',
-                        'body'  => 'Los tipos de operación han sido eliminados permanentemente exitosamente.',
+                        'body'  => 'Los tipos de operación han sido eliminados permanentemente.',
                     ],
 
                     'error' => [

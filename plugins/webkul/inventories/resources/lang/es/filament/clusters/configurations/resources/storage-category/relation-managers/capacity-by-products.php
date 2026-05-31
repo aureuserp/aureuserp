@@ -15,7 +15,7 @@ return [
 
                 'notification' => [
                     'title' => 'Capacidad por producto creada',
-                    'body'  => 'La capacidad por producto ha sido agregada exitosamente.',
+                    'body'  => 'La capacidad por producto ha sido agregada correctamente.',
                 ],
             ],
         ],
@@ -29,14 +29,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Capacidad por producto actualizada',
-                    'body'  => 'La capacidad por producto ha sido actualizada exitosamente.',
+                    'body'  => 'La capacidad por producto ha sido actualizada correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Capacidad por producto eliminada',
-                    'body'  => 'La capacidad por producto ha sido eliminada exitosamente.',
+                    'body'  => 'La capacidad por producto ha sido eliminada correctamente.',
                 ],
             ],
         ],

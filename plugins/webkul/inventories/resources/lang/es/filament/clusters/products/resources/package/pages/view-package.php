@@ -20,7 +20,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Paquete eliminado',
-                    'body'  => 'El paquete ha sido eliminado exitosamente.',
+                    'body'  => 'El paquete ha sido eliminado correctamente.',
                 ],
 
                 'error' => [

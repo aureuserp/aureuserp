@@ -18,7 +18,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Cantidad eliminada',
-                    'body'  => 'La cantidad ha sido eliminada exitosamente.',
+                    'body'  => 'La cantidad ha sido eliminada correctamente.',
                 ],
             ],
         ],

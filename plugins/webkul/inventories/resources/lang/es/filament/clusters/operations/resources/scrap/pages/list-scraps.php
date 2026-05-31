@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Merma creada',
-                'body'  => 'La merma ha sido creada exitosamente.',
+                'body'  => 'La merma ha sido creada correctamente.',
             ],
         ],
     ],

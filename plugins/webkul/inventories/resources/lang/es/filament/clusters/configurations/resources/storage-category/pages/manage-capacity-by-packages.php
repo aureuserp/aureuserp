@@ -15,7 +15,7 @@ return [
 
                 'notification' => [
                     'title' => 'Capacidad por tipo de paquete creada',
-                    'body'  => 'La capacidad por tipo de paquete ha sido agregada exitosamente.',
+                    'body'  => 'La capacidad por tipo de paquete ha sido agregada correctamente.',
                 ],
             ],
         ],
@@ -29,14 +29,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Capacidad por tipo de paquete actualizada',
-                    'body'  => 'La capacidad por tipo de paquete ha sido actualizada exitosamente.',
+                    'body'  => 'La capacidad por tipo de paquete ha sido actualizada correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Capacidad por tipo de paquete eliminada',
-                    'body'  => 'La capacidad por tipo de paquete ha sido eliminada exitosamente.',
+                    'body'  => 'La capacidad por tipo de paquete ha sido eliminada correctamente.',
                 ],
             ],
         ],

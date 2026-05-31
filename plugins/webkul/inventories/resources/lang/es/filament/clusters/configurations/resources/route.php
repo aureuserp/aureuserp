@@ -13,7 +13,7 @@ return [
 
                 'fields' => [
                     'route'             => 'Ruta',
-                    'route-placeholder' => 'ej. Recepción en dos pasos',
+                    'route-placeholder' => 'p. ej. Recepción en dos pasos',
                     'company'           => 'Empresa',
                 ],
             ],
@@ -80,7 +80,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Ruta eliminada de forma permanente',
-                        'body'  => 'La ruta ha sido eliminada de forma permanente correctamente.',
+                        'body'  => 'La ruta ha sido eliminada permanentemente.',
                     ],
 
                     'error' => [
@@ -110,7 +110,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Rutas eliminadas de forma permanente',
-                        'body'  => 'Las rutas han sido eliminadas de forma permanente correctamente.',
+                        'body'  => 'Las rutas han sido eliminadas permanentemente.',
                     ],
 
                     'error' => [
@@ -129,7 +129,7 @@ return [
 
                 'entries' => [
                     'route'             => 'Ruta',
-                    'route-placeholder' => 'ej. Recepción en dos pasos',
+                    'route-placeholder' => 'p. ej. Recepción en dos pasos',
                     'company'           => 'Empresa',
                 ],
             ],

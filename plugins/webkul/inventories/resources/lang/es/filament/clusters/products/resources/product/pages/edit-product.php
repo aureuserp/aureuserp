@@ -11,7 +11,7 @@ return [
 
                 'track-by-update' => [
                     'title' => 'Error al actualizar el seguimiento',
-                    'body'  => 'Tiene productos en stock que no tienen lote/número de serie. Puede asignarles lotes/números de serie realizando un ajuste de inventario.',
+                    'body'  => 'Tiene productos en existencias que no tienen lote/número de serie. Puede asignarles lotes/números de serie realizando un ajuste de inventario.',
                 ],
             ],
         ],

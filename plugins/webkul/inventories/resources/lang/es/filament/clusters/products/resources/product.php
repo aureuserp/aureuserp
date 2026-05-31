@@ -17,7 +17,7 @@ return [
 
                         'fields' => [
                             'track-inventory'              => 'Rastrear inventario',
-                            'track-inventory-hint-tooltip' => 'Un producto almacenable es aquel que requiere gestión de inventario..',
+                            'track-inventory-hint-tooltip' => 'Un producto almacenable es aquel que requiere gestión de inventario.',
                             'track-by'                     => 'Rastrear por',
                             'expiration-date'              => 'Fecha de vencimiento',
                             'expiration-date-hint-tooltip' => 'Si se selecciona, puede especificar fechas de vencimiento para el producto y sus lotes/números de serie asociados.',

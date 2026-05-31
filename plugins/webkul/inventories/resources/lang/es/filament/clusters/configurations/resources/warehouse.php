@@ -12,9 +12,9 @@ return [
                 'title'  => 'General',
                 'fields' => [
                     'name'               => 'Nombre',
-                    'name-placeholder'   => 'ej. Almacén Central',
+                    'name-placeholder'   => 'p. ej. Almacén Central',
                     'code'               => 'Nombre corto',
-                    'code-placeholder'   => 'ej. AC',
+                    'code-placeholder'   => 'p. ej. AC',
                     'code-hint-tooltip'  => 'El nombre corto sirve como identificador del almacén.',
                     'company'            => 'Empresa',
                     'address'            => 'Dirección',
@@ -85,7 +85,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Almacén eliminado permanentemente',
-                        'body'  => 'El almacén ha sido eliminado permanentemente de forma correcta.',
+                        'body'  => 'El almacén ha sido eliminado permanentemente.',
                     ],
 
                     'error' => [
@@ -115,7 +115,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Almacenes eliminados permanentemente',
-                        'body'  => 'Los almacenes han sido eliminados permanentemente de forma correcta.',
+                        'body'  => 'Los almacenes han sido eliminados permanentemente.',
                     ],
 
                     'error' => [

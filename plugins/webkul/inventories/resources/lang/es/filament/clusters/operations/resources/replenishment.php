@@ -42,7 +42,7 @@ return [
 
                 'notification' => [
                     'title' => 'Reabastecimiento agregado',
-                    'body'  => 'El reabastecimiento ha sido agregado exitosamente.',
+                    'body'  => 'El reabastecimiento ha sido agregado correctamente.',
                 ],
 
                 'before' => [

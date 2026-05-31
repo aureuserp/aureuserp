@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Merma actualizada',
-        'body'  => 'La merma ha sido actualizada exitosamente.',
+        'body'  => 'La merma ha sido actualizada correctamente.',
     ],
 
     'header-actions' => [
@@ -18,7 +18,7 @@ return [
 
                 'success' => [
                     'title' => 'Merma marcada como realizada',
-                    'body'  => 'La merma ha sido marcada como realizada exitosamente.',
+                    'body'  => 'La merma ha sido marcada como realizada correctamente.',
                 ],
             ],
         ],
@@ -27,7 +27,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Merma eliminada',
-                    'body'  => 'La merma ha sido eliminada exitosamente.',
+                    'body'  => 'La merma ha sido eliminada correctamente.',
                 ],
 
                 'error' => [

@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Lote actualizado',
-        'body'  => 'El lote ha sido actualizado exitosamente.',
+        'body'  => 'El lote ha sido actualizado correctamente.',
     ],
 
     'header-actions' => [
@@ -15,7 +15,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Lote eliminado',
-                    'body'  => 'El lote ha sido eliminado exitosamente.',
+                    'body'  => 'El lote ha sido eliminado correctamente.',
                 ],
 
                 'error' => [

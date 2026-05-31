@@ -57,7 +57,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Lote eliminado',
-                        'body'  => 'El lote ha sido eliminado exitosamente.',
+                        'body'  => 'El lote ha sido eliminado correctamente.',
                     ],
 
                     'error' => [
@@ -77,7 +77,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Lotes eliminados',
-                        'body'  => 'Los lotes han sido eliminados exitosamente.',
+                        'body'  => 'Los lotes han sido eliminados correctamente.',
                     ],
 
                     'error' => [

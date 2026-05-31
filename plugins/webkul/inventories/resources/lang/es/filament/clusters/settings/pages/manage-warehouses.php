@@ -15,7 +15,7 @@ return [
     'before-save' => [
         'notification' => [
             'warning' => [
-                'title' => 'Tiene múltiples almacenes',
+                'title' => 'Hay múltiples almacenes',
                 'body'  => 'No es posible desactivar la multi-ubicación si hay más de un almacén.',
             ],
         ],

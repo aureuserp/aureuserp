@@ -3,7 +3,7 @@
 return [
     'navigation' => [
         'title' => 'Categorías de almacenamiento',
-        'group' => 'Gestión de almacén',
+        'group' => 'Gestión de almacenes',
     ],
 
     'form' => [
@@ -42,7 +42,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Categoría de almacenamiento eliminada',
-                    'body'  => 'La categoría de almacenamiento ha sido eliminada exitosamente.',
+                    'body'  => 'La categoría de almacenamiento ha sido eliminada correctamente.',
                 ],
             ],
         ],
@@ -51,7 +51,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Categorías de almacenamiento eliminadas',
-                    'body'  => 'Las categorías de almacenamiento han sido eliminadas exitosamente.',
+                    'body'  => 'Las categorías de almacenamiento han sido eliminadas correctamente.',
                 ],
             ],
         ],

@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'label' => 'Operaciones de picking',
+    'label' => 'Operaciones de recolección',
 ];

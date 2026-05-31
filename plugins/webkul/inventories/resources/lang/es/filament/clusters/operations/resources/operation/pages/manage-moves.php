@@ -22,7 +22,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Movimiento eliminado',
-                    'body'  => 'El movimiento ha sido eliminado exitosamente.',
+                    'body'  => 'El movimiento ha sido eliminado correctamente.',
                 ],
             ],
         ],

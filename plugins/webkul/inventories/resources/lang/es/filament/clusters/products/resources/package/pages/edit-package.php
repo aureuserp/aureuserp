@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Paquete actualizado',
-        'body'  => 'El paquete ha sido actualizado exitosamente.',
+        'body'  => 'El paquete ha sido actualizado correctamente.',
     ],
 
     'header-actions' => [
@@ -25,7 +25,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Paquete eliminado',
-                    'body'  => 'El paquete ha sido eliminado exitosamente.',
+                    'body'  => 'El paquete ha sido eliminado correctamente.',
                 ],
 
                 'error' => [

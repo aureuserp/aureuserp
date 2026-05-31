@@ -35,7 +35,7 @@ return [
 
                         'entries' => [
                             'routes'     => 'Rutas del almacén',
-                            'route_name' => 'Nombre de la Ruta',
+                            'route_name' => 'Nombre de la ruta',
                         ],
                     ],
                 ],

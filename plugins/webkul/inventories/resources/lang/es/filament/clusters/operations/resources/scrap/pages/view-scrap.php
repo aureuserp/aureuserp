@@ -6,7 +6,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Merma eliminada',
-                    'body'  => 'La merma ha sido eliminada exitosamente.',
+                    'body'  => 'La merma ha sido eliminada correctamente.',
                 ],
 
                 'error' => [

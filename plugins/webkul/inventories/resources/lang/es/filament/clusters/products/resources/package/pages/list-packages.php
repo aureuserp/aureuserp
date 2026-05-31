@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Paquete creado',
-                'body'  => 'El paquete ha sido creado exitosamente.',
+                'body'  => 'El paquete ha sido creado correctamente.',
             ],
         ],
     ],

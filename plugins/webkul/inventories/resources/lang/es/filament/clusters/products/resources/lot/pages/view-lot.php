@@ -10,7 +10,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Lote eliminado',
-                    'body'  => 'El lote ha sido eliminado exitosamente.',
+                    'body'  => 'El lote ha sido eliminado correctamente.',
                 ],
 
                 'error' => [

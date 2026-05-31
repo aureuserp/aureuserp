@@ -56,7 +56,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de paquete eliminado',
-                    'body'  => 'El tipo de paquete ha sido eliminado exitosamente.',
+                    'body'  => 'El tipo de paquete ha sido eliminado correctamente.',
                 ],
             ],
         ],
@@ -65,7 +65,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de paquete eliminado',
-                    'body'  => 'El tipo de paquete ha sido eliminado exitosamente.',
+                    'body'  => 'El tipo de paquete ha sido eliminado correctamente.',
                 ],
             ],
         ],

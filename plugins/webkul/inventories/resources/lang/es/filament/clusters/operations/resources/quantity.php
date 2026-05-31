@@ -40,7 +40,7 @@ return [
             'on-hand-before-state-updated' => [
                 'notification' => [
                     'title' => 'Cantidad actualizada',
-                    'body'  => 'La cantidad ha sido actualizada exitosamente.',
+                    'body'  => 'La cantidad ha sido actualizada correctamente.',
                 ],
             ],
         ],
@@ -81,7 +81,7 @@ return [
 
                 'notification' => [
                     'title' => 'Cantidad agregada',
-                    'body'  => 'La cantidad ha sido agregada exitosamente.',
+                    'body'  => 'La cantidad ha sido agregada correctamente.',
                 ],
 
                 'before' => [
@@ -99,7 +99,7 @@ return [
 
                 'notification' => [
                     'title' => 'Cambios de cantidad aplicados',
-                    'body'  => 'Los cambios de cantidad han sido aplicados exitosamente.',
+                    'body'  => 'Los cambios de cantidad han sido aplicados correctamente.',
                 ],
             ],
 
@@ -108,7 +108,7 @@ return [
 
                 'notification' => [
                     'title' => 'Cambios de cantidad eliminados',
-                    'body'  => 'Los cambios de cantidad han sido eliminados exitosamente.',
+                    'body'  => 'Los cambios de cantidad han sido eliminados correctamente.',
                 ],
             ],
         ],

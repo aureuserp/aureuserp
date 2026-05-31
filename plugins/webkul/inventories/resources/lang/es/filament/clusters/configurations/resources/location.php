@@ -13,7 +13,7 @@ return [
 
                 'fields' => [
                     'location'                     => 'Ubicación',
-                    'location-placeholder'         => 'ej. Existencias de Reserva',
+                    'location-placeholder'         => 'p. ej. Existencias de Reserva',
                     'parent-location'              => 'Ubicación superior',
                     'parent-location-hint-tooltip' => 'La ubicación principal que engloba esta ubicación. Por ejemplo, la \'Zona de Despacho\' forma parte de la ubicación superior \'Puerta 1\'.',
                     'external-notes'               => 'Notas externas',
@@ -38,7 +38,7 @@ return [
                     'removal-strategy-hint-tooltip' => 'Especifica el método predeterminado para determinar el anaquel, lote y ubicación exactos de donde se tomarán los productos. Este método puede aplicarse a nivel de categoría de producto, con una alternativa de ubicaciones superiores si no se define aquí.',
                     'cyclic-counting'               => 'Conteo cíclico',
                     'inventory-frequency'           => 'Frecuencia de inventario',
-                    'last-inventory'                => 'Último Inventario',
+                    'last-inventory'                => 'Último inventario',
                     'last-inventory-hint-tooltip'   => 'Fecha del último inventario en esta ubicación.',
                     'next-expected'                 => 'Próximo esperado',
                     'next-expected-hint-tooltip'    => 'Fecha del próximo inventario planificado según el calendario cíclico.',
@@ -101,7 +101,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Ubicación eliminada permanentemente',
-                        'body'  => 'La ubicación ha sido eliminada permanentemente de forma correcta.',
+                        'body'  => 'La ubicación ha sido eliminada permanentemente.',
                     ],
 
                     'error' => [
@@ -135,7 +135,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Ubicaciones eliminadas permanentemente',
-                        'body'  => 'Las ubicaciones han sido eliminadas permanentemente de forma correcta.',
+                        'body'  => 'Las ubicaciones han sido eliminadas permanentemente.',
                     ],
 
                     'error' => [
@@ -154,7 +154,7 @@ return [
 
                 'entries' => [
                     'location'                     => 'Ubicación',
-                    'location-placeholder'         => 'ej. Existencias de Reserva',
+                    'location-placeholder'         => 'p. ej. Existencias de Reserva',
                     'parent-location'              => 'Ubicación superior',
                     'parent-location-hint-tooltip' => 'La ubicación principal que engloba esta ubicación. Por ejemplo, la \'Zona de Despacho\' forma parte de la ubicación superior \'Puerta 1\'.',
                     'external-notes'               => 'Notas externas',
@@ -179,7 +179,7 @@ return [
                     'removal-strategy-hint-tooltip' => 'Especifica el método predeterminado para determinar el anaquel, lote y ubicación exactos de donde se tomarán los productos. Este método puede aplicarse a nivel de categoría de producto, con una alternativa de ubicaciones superiores si no se define aquí.',
                     'cyclic-counting'               => 'Conteo cíclico',
                     'inventory-frequency'           => 'Frecuencia de inventario',
-                    'last-inventory'                => 'Último Inventario',
+                    'last-inventory'                => 'Último inventario',
                     'last-inventory-hint-tooltip'   => 'Fecha del último inventario en esta ubicación.',
                     'next-expected'                 => 'Próximo esperado',
                     'next-expected-hint-tooltip'    => 'Fecha del próximo inventario planificado según el calendario cíclico.',
