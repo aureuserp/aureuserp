@@ -25,7 +25,9 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
+use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
@@ -143,31 +145,24 @@ class PluginResource extends Resource
                             try {
                                 $phpPath = self::getPhpExecutablePath();
 
-                                $php = escapeshellarg($phpPath);
-
-                                $artisan = escapeshellarg(base_path('artisan'));
-
-                                $commandName = escapeshellarg("{$record->name}:install");
-
-                                $cmd = "timeout 300 $php $artisan $commandName 2>&1";
-
-                                $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName 2>&1");
-
-                                $output = [];
-
-                                $exitCode = 0;
-
-                                exec($cmd, $output, $exitCode);
-
-                                if ($exitCode === 124) {
-                                    throw new RuntimeException('Installation timed out after 5 minutes.');
+                                try {
+                                    $result = Process::timeout(300)
+                                        ->path(base_path())
+                                        ->run([$phpPath, base_path('artisan'), "{$record->name}:install"]);
+                                } catch (ProcessTimedOutException $e) {
+                                    throw new RuntimeException('Installation timed out after 5 minutes.', 0, $e);
                                 }
 
-                                if ($exitCode !== 0) {
-                                    $errorOutput = implode(PHP_EOL, array_slice($output, -10));
+                                if (! $result->successful()) {
+                                    $rawOutput = trim($result->errorOutput() ?: $result->output());
+
+                                    $errorOutput = implode(
+                                        PHP_EOL,
+                                        array_slice(preg_split('/\r\n|\r|\n/', $rawOutput) ?: [], -10)
+                                    );
 
                                     throw new RuntimeException(
-                                        "Installation failed with exit code {$exitCode}.".
+                                        "Installation failed with exit code {$result->exitCode()}.".
                                             ($errorOutput ? " Last output: {$errorOutput}" : '')
                                     );
                                 }
@@ -449,14 +444,5 @@ class PluginResource extends Resource
         }
 
         return 'php';
-    }
-
-    protected static function buildTimeoutCommand(int $seconds, string $command): string
-    {
-        if (PHP_OS_FAMILY === 'Windows') {
-            return $command;
-        }
-
-        return "timeout {$seconds} {$command}";
     }
 }
