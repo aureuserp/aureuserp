@@ -13,7 +13,9 @@ use Webkul\Product\Models\Product as BaseProduct;
 
 class Product extends BaseProduct
 {
-    use HasChatter, HasCustomFields, HasLogActivity;
+    use HasChatter;
+    use HasCustomFields;
+    use HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
 
@@ -96,7 +98,7 @@ class Product extends BaseProduct
     {
         $accounts = $this->getAccounts();
 
-        $fiscalPosition = $fiscalPosition ?? new FiscalPosition;
+        $fiscalPosition = $fiscalPosition ?? new FiscalPosition();
 
         $result = [];
 

@@ -2,8 +2,8 @@
 
 use Webkul\Support\Models\UOMCategory;
 
-require_once __DIR__.'/../../../Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../Helpers/TestBootstrapHelper.php';
 
 const UOM_CATEGORY_JSON_STRUCTURE = [
     'id',
@@ -104,7 +104,7 @@ it('updates a uom category for authorized users', function () {
     actingAsUomCategoryApiUser(['update_support_u::o::m::category']);
 
     $category = UOMCategory::factory()->create();
-    $updatedName = 'CATEGORY-'.fake()->unique()->numerify('####');
+    $updatedName = 'CATEGORY-' . fake()->unique()->numerify('####');
 
     $this->patchJson(uomCategoryRoute('update', $category), ['name' => $updatedName])
         ->assertOk()

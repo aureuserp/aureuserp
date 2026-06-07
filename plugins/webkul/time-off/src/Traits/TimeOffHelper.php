@@ -161,10 +161,10 @@ trait TimeOffHelper
                             $totalDays = $this->calculateTotalDays($start, $end);
                             $weekendDays = $totalDays - $businessDays;
 
-                            $duration = $businessDays.' working day'.($businessDays !== 1 ? 's' : '');
+                            $duration = $businessDays . ' working day' . ($businessDays !== 1 ? 's' : '');
 
                             if ($weekendDays > 0) {
-                                $duration .= ' (+ '.$weekendDays.' weekend day'.($weekendDays !== 1 ? 's' : '').')';
+                                $duration .= ' (+ ' . $weekendDays . ' weekend day' . ($weekendDays !== 1 ? 's' : '') . ')';
                             }
 
                             return $duration;
@@ -202,10 +202,10 @@ trait TimeOffHelper
         $totalDays = $this->calculateTotalDays($startDate, $endDate);
         $weekendDays = $totalDays - $businessDays;
 
-        $durationDisplay = $businessDays.' working day'.($businessDays !== 1 ? 's' : '');
+        $durationDisplay = $businessDays . ' working day' . ($businessDays !== 1 ? 's' : '');
 
         if ($weekendDays > 0) {
-            $durationDisplay .= ' (+ '.$weekendDays.' weekend day'.($weekendDays !== 1 ? 's' : '').')';
+            $durationDisplay .= ' (+ ' . $weekendDays . ' weekend day' . ($weekendDays !== 1 ? 's' : '') . ')';
         }
 
         return [
@@ -394,10 +394,10 @@ trait TimeOffHelper
         $totalDays = $this->calculateTotalDays($start, $end);
         $weekendDays = $totalDays - $businessDays;
 
-        $duration = $businessDays.' working day'.($businessDays !== 1 ? 's' : '');
+        $duration = $businessDays . ' working day' . ($businessDays !== 1 ? 's' : '');
 
         if ($weekendDays > 0) {
-            $duration .= ' (+ '.$weekendDays.' weekend day'.($weekendDays !== 1 ? 's' : '').')';
+            $duration .= ' (+ ' . $weekendDays . ' weekend day' . ($weekendDays !== 1 ? 's' : '') . ')';
         }
 
         $set('duration_info', $duration);

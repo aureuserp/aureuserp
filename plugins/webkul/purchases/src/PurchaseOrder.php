@@ -287,13 +287,17 @@ class PurchaseOrder
 
         $precision = 4;
 
-        if ($order->lines->contains(function ($line) use ($floatIsZero, $precision) {
-            return ! $floatIsZero($line->qty_to_invoice, $precision);
-        })) {
+        if (
+            $order->lines->contains(function ($line) use ($floatIsZero, $precision) {
+                return ! $floatIsZero($line->qty_to_invoice, $precision);
+            })
+        ) {
             $order->invoice_status = PurchaseEnums\OrderInvoiceStatus::TO_INVOICED;
-        } elseif ($order->lines->every(function ($line) use ($floatIsZero, $precision) {
-            return $floatIsZero($line->qty_to_invoice, $precision);
-        }) && $order->accountMoves->isNotEmpty()) {
+        } elseif (
+            $order->lines->every(function ($line) use ($floatIsZero, $precision) {
+                return $floatIsZero($line->qty_to_invoice, $precision);
+            }) && $order->accountMoves->isNotEmpty()
+        ) {
             $order->invoice_status = PurchaseEnums\OrderInvoiceStatus::INVOICED;
         } else {
             $order->invoice_status = PurchaseEnums\OrderInvoiceStatus::NO;
@@ -310,17 +314,23 @@ class PurchaseOrder
             return $order;
         }
 
-        if ($order->operations->isEmpty() || $order->operations->every(function ($receipt) {
-            return $receipt->state == InventoryEnums\OperationState::CANCELED;
-        })) {
+        if (
+            $order->operations->isEmpty() || $order->operations->every(function ($receipt) {
+                return $receipt->state == InventoryEnums\OperationState::CANCELED;
+            })
+        ) {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::NO;
-        } elseif ($order->operations->every(function ($receipt) {
-            return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
-        })) {
+        } elseif (
+            $order->operations->every(function ($receipt) {
+                return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
+            })
+        ) {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::FULL;
-        } elseif ($order->operations->contains(function ($receipt) {
-            return $receipt->state == InventoryEnums\OperationState::DONE;
-        })) {
+        } elseif (
+            $order->operations->contains(function ($receipt) {
+                return $receipt->state == InventoryEnums\OperationState::DONE;
+            })
+        ) {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::PARTIAL;
         } else {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::PENDING;
@@ -420,7 +430,7 @@ class PurchaseOrder
 
     public function generateRFQPdf($record)
     {
-        $pdfPath = 'Request for Quotation-'.str_replace('/', '_', $record->name).'.pdf';
+        $pdfPath = 'Request for Quotation-' . str_replace('/', '_', $record->name) . '.pdf';
 
         if (! Storage::exists($pdfPath)) {
             $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
@@ -435,7 +445,7 @@ class PurchaseOrder
 
     public function generatePurchaseOrderPdf($record)
     {
-        $pdfPath = 'Purchase Order-'.str_replace('/', '_', $record->name).'.pdf';
+        $pdfPath = 'Purchase Order-' . str_replace('/', '_', $record->name) . '.pdf';
 
         if (! Storage::exists($pdfPath)) {
             $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
@@ -472,16 +482,14 @@ class PurchaseOrder
                 ->filter()
                 ->unique('id')
                 ->filter(fn ($operation) => ! in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])
-                    && in_array($operation->destinationLocation->type, [InventoryEnums\LocationType::INTERNAL, InventoryEnums\LocationType::TRANSIT, InventoryEnums\LocationType::CUSTOMER])
-                );
+                    && in_array($operation->destinationLocation->type, [InventoryEnums\LocationType::INTERNAL, InventoryEnums\LocationType::TRANSIT, InventoryEnums\LocationType::CUSTOMER]));
 
             if ($lineOperations->isNotEmpty()) {
                 $operation = $lineOperations->first();
             } else {
                 $operation = $order->operations
                     ->filter(fn ($operation) => ! in_array($operation->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED])
-                        && in_array($operation->destinationLocation->type, [InventoryEnums\LocationType::INTERNAL, InventoryEnums\LocationType::TRANSIT, InventoryEnums\LocationType::CUSTOMER])
-                    )
+                        && in_array($operation->destinationLocation->type, [InventoryEnums\LocationType::INTERNAL, InventoryEnums\LocationType::TRANSIT, InventoryEnums\LocationType::CUSTOMER]))
                     ->first();
             }
 
@@ -833,8 +841,7 @@ class PurchaseOrder
     {
         $totalQty = $moveDestinations
             ->filter(fn ($move) => $move->state !== InventoryEnums\MoveState::CANCELED
-                && $move->destinationLocation->type !== InventoryEnums\LocationType::SUPPLIER
-            )
+                && $move->destinationLocation->type !== InventoryEnums\LocationType::SUPPLIER)
             ->sum('product_qty');
 
         return $line->product->uom->computeQuantity($totalQty, $line->uom, roundingMethod: 'HALF-UP');

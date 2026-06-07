@@ -4,8 +4,8 @@ use Webkul\Product\Models\Category;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_CATEGORY_JSON_STRUCTURE = [
     'id',
@@ -142,7 +142,7 @@ it('filters categories by name', function () {
     $category = Category::factory()->create(['name' => 'Unique Electronics Name']);
     Category::factory()->count(2)->create();
 
-    $response = $this->getJson(productsCategoryRoute('index').'?filter[name]=Unique Electronics')
+    $response = $this->getJson(productsCategoryRoute('index') . '?filter[name]=Unique Electronics')
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {
@@ -159,7 +159,7 @@ it('filters categories by parent_id', function () {
     $child = Category::factory()->create(['parent_id' => $parent->id]);
     Category::factory()->create();
 
-    $response = $this->getJson(productsCategoryRoute('index')."?filter[parent_id]={$parent->id}")
+    $response = $this->getJson(productsCategoryRoute('index') . "?filter[parent_id]={$parent->id}")
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

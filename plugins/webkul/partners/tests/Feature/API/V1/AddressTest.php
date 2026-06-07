@@ -4,8 +4,8 @@ use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Models\Partner;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensureERPInstalled();

@@ -77,7 +77,8 @@ use Webkul\Support\Models\UOM;
 
 class OrderResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
+    use HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 
@@ -138,7 +139,7 @@ class OrderResource extends Resource
                                         modifyQueryUsing: fn (Builder $query) => $query->orderBy('id')->withTrashed()
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(function ($label) {
                                         return str_contains($label, ' (Deleted)');
@@ -177,9 +178,10 @@ class OrderResource extends Resource
                                                     $query->whereNull('starts_at')
                                                         ->orWhere('starts_at', '<=', now());
                                                 });
-                                        })
+                                        }
+                                    )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
@@ -267,7 +269,7 @@ class OrderResource extends Resource
                                                 modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->searchable()
@@ -935,7 +937,7 @@ class OrderResource extends Resource
                     ->live()
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
                         if (str_contains($label, ' (Deleted)')) {
@@ -1384,27 +1386,27 @@ class OrderResource extends Resource
 
     private static function calculateLineTotals(Set $set, Get $get, ?string $prefix = ''): void
     {
-        if (! $get($prefix.'product_id')) {
-            $set($prefix.'price_unit', 0);
+        if (! $get($prefix . 'product_id')) {
+            $set($prefix . 'price_unit', 0);
 
-            $set($prefix.'discount', 0);
+            $set($prefix . 'discount', 0);
 
-            $set($prefix.'price_tax', 0);
+            $set($prefix . 'price_tax', 0);
 
-            $set($prefix.'price_subtotal', 0);
+            $set($prefix . 'price_subtotal', 0);
 
-            $set($prefix.'price_total', 0);
+            $set($prefix . 'price_total', 0);
 
             return;
         }
 
-        $priceUnit = floatval($get($prefix.'price_unit'));
+        $priceUnit = floatval($get($prefix . 'price_unit'));
 
-        $quantity = floatval($get($prefix.'product_qty') ?? 1);
+        $quantity = floatval($get($prefix . 'product_qty') ?? 1);
 
         $subTotal = $priceUnit * $quantity;
 
-        $discountValue = floatval($get($prefix.'discount') ?? 0);
+        $discountValue = floatval($get($prefix . 'discount') ?? 0);
 
         if ($discountValue > 0) {
             $discountAmount = $subTotal * ($discountValue / 100);
@@ -1412,15 +1414,15 @@ class OrderResource extends Resource
             $subTotal = $subTotal - $discountAmount;
         }
 
-        $taxIds = $get($prefix.'taxes') ?? [];
+        $taxIds = $get($prefix . 'taxes') ?? [];
 
         [$subTotal, $taxAmount] = TaxFacade::collect($taxIds, $subTotal, $quantity);
 
-        $set($prefix.'price_subtotal', round($subTotal, 4));
+        $set($prefix . 'price_subtotal', round($subTotal, 4));
 
-        $set($prefix.'price_tax', $taxAmount);
+        $set($prefix . 'price_tax', $taxAmount);
 
-        $set($prefix.'price_total', $subTotal + $taxAmount);
+        $set($prefix . 'price_total', $subTotal + $taxAmount);
     }
 
     private static function calculateOrderTotals(Get $get, $livewire): array
@@ -1633,8 +1635,8 @@ class OrderResource extends Resource
             return;
         }
 
-        $productId = $get($prefix.'product_id');
-        $productQty = floatval($get($prefix.'product_qty') ?? 0);
+        $productId = $get($prefix . 'product_id');
+        $productQty = floatval($get($prefix . 'product_qty') ?? 0);
 
         if (! $productId || $productQty <= 0) {
             return;
@@ -1650,8 +1652,7 @@ class OrderResource extends Resource
             ->where('product_id', $productId)
             ->whereHas('order', fn ($query) => $query
                 ->where('requisition_id', $requisitionId)
-                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value])
-            )
+                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value]))
             ->sum('product_qty');
 
         $availableQty = $requisitionLine->qty - $orderedQty;

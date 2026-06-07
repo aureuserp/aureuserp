@@ -21,7 +21,8 @@ use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
 
 class WebsiteDashboard extends BaseDashboard
 {
-    use HasFiltersForm, HasPageShield;
+    use HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'website';
 

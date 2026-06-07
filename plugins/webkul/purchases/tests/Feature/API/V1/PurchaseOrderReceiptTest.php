@@ -6,8 +6,8 @@ use Webkul\Purchase\Models\Order;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('purchases');
@@ -113,7 +113,7 @@ it('filters purchase order receipts by state when inventories plugin is installe
 
     $order->operations()->attach([$confirmedOperation->id, $doneOperation->id]);
 
-    $response = $this->getJson(purchaseOrderReceiptRoute($order->id).'?filter[state]=confirmed')
+    $response = $this->getJson(purchaseOrderReceiptRoute($order->id) . '?filter[state]=confirmed')
         ->assertOk();
 
     $states = collect($response->json('data'))->pluck('state')->unique()->values()->all();
@@ -127,7 +127,7 @@ it('includes operation type relationship for purchase order receipts', function 
     $order = Order::factory()->create();
 
     if (! Package::isPluginInstalled('inventories')) {
-        $this->getJson(purchaseOrderReceiptRoute($order->id).'?include=operationType')
+        $this->getJson(purchaseOrderReceiptRoute($order->id) . '?include=operationType')
             ->assertOk()
             ->assertJsonCount(0, 'data');
 
@@ -137,7 +137,7 @@ it('includes operation type relationship for purchase order receipts', function 
     $operation = Operation::factory()->create(['company_id' => $order->company_id]);
     $order->operations()->attach($operation->id);
 
-    $this->getJson(purchaseOrderReceiptRoute($order->id).'?include=operationType')
+    $this->getJson(purchaseOrderReceiptRoute($order->id) . '?include=operationType')
         ->assertOk()
         ->assertJsonPath('data.0.operation_type.id', fn ($id) => is_int($id));
 });

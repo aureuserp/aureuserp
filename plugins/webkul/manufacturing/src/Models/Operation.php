@@ -19,7 +19,9 @@ use Webkul\Security\Models\User;
 
 class Operation extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'manufacturing_operations';
 

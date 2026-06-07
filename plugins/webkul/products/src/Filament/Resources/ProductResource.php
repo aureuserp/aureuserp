@@ -185,7 +185,7 @@ class ProductResource extends Resource
                                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
@@ -331,12 +331,12 @@ class ProductResource extends Resource
                 TextColumn::make('price')
                     ->label(__('products::filament/resources/product.table.columns.price'))
                     ->money()
-                    ->suffix(fn (Product $record): string => $record->uom ? ' / '.$record->uom->name : '')
+                    ->suffix(fn (Product $record): string => $record->uom ? ' / ' . $record->uom->name : '')
                     ->sortable(),
                 TextColumn::make('cost')
                     ->label(__('products::filament/resources/product.table.columns.cost'))
                     ->money()
-                    ->suffix(fn (Product $record): string => $record->uomPO ? ' / '.$record->uomPO->name : '')
+                    ->suffix(fn (Product $record): string => $record->uomPO ? ' / ' . $record->uomPO->name : '')
                     ->sortable(),
                 TextColumn::make('category.name')
                     ->label(__('products::filament/resources/product.table.columns.category'))
@@ -685,13 +685,13 @@ class ProductResource extends Resource
                                     ->label(__('products::filament/resources/product.infolist.sections.pricing.entries.price'))
                                     ->placeholder('—')
                                     ->money()
-                                    ->suffix(fn (Product $record): string => $record->uom ? ' / '.$record->uom->name : ''),
+                                    ->suffix(fn (Product $record): string => $record->uom ? ' / ' . $record->uom->name : ''),
 
                                 TextEntry::make('cost')
                                     ->label(__('products::filament/resources/product.infolist.sections.pricing.entries.cost'))
                                     ->placeholder('—')
                                     ->money()
-                                    ->suffix(fn (Product $record): string => $record->uomPO ? ' / '.$record->uomPO->name : ''),
+                                    ->suffix(fn (Product $record): string => $record->uomPO ? ' / ' . $record->uomPO->name : ''),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

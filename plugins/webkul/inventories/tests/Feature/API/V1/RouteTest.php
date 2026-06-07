@@ -4,8 +4,8 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_ROUTE_JSON_STRUCTURE = [
     'id',
@@ -179,7 +179,7 @@ it('filters routes by name', function () {
     $route = Route::factory()->create(['name' => 'UniqueRouteXYZ']);
     Route::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryRouteRoute('index').'?filter[name]=UniqueRouteXYZ')
+    $response = $this->getJson(inventoryRouteRoute('index') . '?filter[name]=UniqueRouteXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -193,7 +193,7 @@ it('filters routes by product_selectable', function () {
     $selectable = Route::factory()->create(['product_selectable' => true]);
     Route::factory()->create(['product_selectable' => false]);
 
-    $response = $this->getJson(inventoryRouteRoute('index').'?filter[product_selectable]=1')
+    $response = $this->getJson(inventoryRouteRoute('index') . '?filter[product_selectable]=1')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

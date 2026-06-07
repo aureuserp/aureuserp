@@ -24,10 +24,10 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
         $this->date = $date;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $rows = collect([
-            [null, 'As of '.$this->date->format('M d, Y')],
+            [null, 'As of ' . $this->date->format('M d, Y')],
             [null, null],
             [null, 'Balance'],
             [null, null],
@@ -44,21 +44,21 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
                 $showSubsection = $hasAccounts || ! isset($subsection['show_if_empty']) || $subsection['show_if_empty'];
 
                 if ($showSubsection) {
-                    $rows->push(['            '.$subsection['title'], '']);
+                    $rows->push(['            ' . $subsection['title'], '']);
                     $this->rowMetadata[$rowIndex++] = 'subsection_header';
 
                     if ($hasAccounts) {
                         collect($subsection['accounts'])->each(function ($account) use (&$rows, &$rowIndex) {
-                            $accountName = ($account['code'] ? $account['code'].' - ' : '').$account['name'];
+                            $accountName = ($account['code'] ? $account['code'] . ' - ' : '') . $account['name'];
                             $rows->push([
-                                '                        '.$accountName,
+                                '                        ' . $accountName,
                                 number_format($account['balance'], 2),
                             ]);
                             $this->rowMetadata[$rowIndex++] = 'account_line';
                         });
 
                         $rows->push([
-                            '            '.$subsection['total_label'],
+                            '            ' . $subsection['total_label'],
                             number_format($subsection['total'], 2),
                         ]);
                         $this->rowMetadata[$rowIndex++] = 'subsection_total';

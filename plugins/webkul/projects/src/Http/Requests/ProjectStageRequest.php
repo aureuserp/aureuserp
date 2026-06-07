@@ -19,7 +19,7 @@ class ProjectStageRequest extends FormRequest
         $stageId = is_object($stage) ? $stage->id : $stage;
 
         return [
-            'name' => [...$requiredRule, 'string', 'max:255', 'unique:projects_project_stages,name,'.($stageId ?: 'NULL').',id,deleted_at,NULL'],
+            'name' => [...$requiredRule, 'string', 'max:255', 'unique:projects_project_stages,name,' . ($stageId ?: 'NULL') . ',id,deleted_at,NULL'],
         ];
     }
 

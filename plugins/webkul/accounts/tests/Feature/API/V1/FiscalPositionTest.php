@@ -7,8 +7,8 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const FISCAL_POSITION_JSON_STRUCTURE = [
     'id',
@@ -120,7 +120,7 @@ it('filters fiscal positions by name', function () {
     $fiscalPosition = FiscalPosition::factory()->create(['name' => 'EU Import Position']);
     FiscalPosition::factory()->count(2)->create();
 
-    $response = $this->getJson(fiscalPositionRoute('index').'?filter[name]=EU')
+    $response = $this->getJson(fiscalPositionRoute('index') . '?filter[name]=EU')
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {

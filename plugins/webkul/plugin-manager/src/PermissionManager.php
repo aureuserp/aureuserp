@@ -16,13 +16,15 @@ class PermissionManager
         FilamentShield::buildPermissionKeyUsing(function (string $entity, string $affix, string $subject, string $case, string $separator) {
             $pluginKey = null;
 
-            if (! in_array(
-                needle: $entity,
-                haystack: [
+            if (
+                ! in_array(
+                    needle: $entity,
+                    haystack: [
                     RoleResource::class,
-                ],
-                strict: true
-            )) {
+                    ],
+                    strict: true
+                )
+            ) {
                 $pluginKey = Str::of($entity)
                     ->after('\\')
                     ->before('\\')

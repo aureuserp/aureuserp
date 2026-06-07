@@ -4,8 +4,8 @@ use Webkul\Inventory\Models\Tag;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_TAG_JSON_STRUCTURE = [
     'id',
@@ -40,7 +40,7 @@ function inventoryTagRoute(string $action, mixed $tag = null): string
 function inventoryTagPayload(array $overrides = []): array
 {
     return array_replace_recursive([
-        'name' => 'Fragile-'.uniqid(),
+        'name' => 'Fragile-' . uniqid(),
     ], $overrides);
 }
 
@@ -174,7 +174,7 @@ it('filters tags by name', function () {
     $tag = Tag::factory()->create(['name' => 'UniqueTagXYZ']);
     Tag::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryTagRoute('index').'?filter[name]=UniqueTagXYZ')
+    $response = $this->getJson(inventoryTagRoute('index') . '?filter[name]=UniqueTagXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -253,7 +253,7 @@ it('updates a tag', function () {
     actingAsInventoryTagApiUser(['update_inventory_tag']);
 
     $tag = Tag::factory()->create();
-    $newName = 'Updated-Tag-'.uniqid();
+    $newName = 'Updated-Tag-' . uniqid();
 
     $this->patchJson(inventoryTagRoute('update', $tag), ['name' => $newName])
         ->assertOk()

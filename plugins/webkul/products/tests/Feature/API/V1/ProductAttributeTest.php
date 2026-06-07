@@ -7,8 +7,8 @@ use Webkul\Product\Models\ProductAttribute;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_PRODUCT_ATTRIBUTE_JSON_STRUCTURE = [
     'id',

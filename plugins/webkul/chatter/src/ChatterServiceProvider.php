@@ -48,7 +48,7 @@ class ChatterServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('chatter', __DIR__.'/../resources/dist/chatter.css'),
+            Css::make('chatter', __DIR__ . '/../resources/dist/chatter.css'),
         ], 'chatter');
     }
 }

@@ -1022,8 +1022,7 @@ class Move extends Model
         $reservedMoveLines = $siblingsOutMoves
             ->filter(fn (Move $m) => in_array($m->state, [MoveState::ASSIGNED, MoveState::PARTIALLY_ASSIGNED])
                 || $assignedMovesIds->contains($m->id)
-                || $partiallyAssignedMovesIds->contains($m->id)
-            )
+                || $partiallyAssignedMovesIds->contains($m->id))
             ->flatMap->lines;
 
         foreach ($reservedMoveLines->groupBy($keyFn) as $key => $lines) {
@@ -1170,7 +1169,7 @@ class Move extends Model
         $viewLocationParentPath = $warehouse->viewLocation->parent_path;
 
         $warehouseLocationIds = Location::query()
-            ->where('parent_path', 'like', $viewLocationParentPath.'%')
+            ->where('parent_path', 'like', $viewLocationParentPath . '%')
             ->pluck('id');
 
         $productId = $this->product_id;

@@ -31,7 +31,7 @@ class RequisitionFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'        => 'PA-'.fake()->unique()->numberBetween(1000, 9999),
+            'name'        => 'PA-' . fake()->unique()->numberBetween(1000, 9999),
             'type'        => RequisitionType::BLANKET_ORDER,
             'state'       => RequisitionState::DRAFT,
             'currency_id' => Currency::factory(),

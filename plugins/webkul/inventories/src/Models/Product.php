@@ -366,7 +366,7 @@ class Product extends BaseProduct
 
                 $query->where(function (Builder $query) use ($names) {
                     foreach ($names as $name) {
-                        $query->orWhere('name', 'like', '%'.$name.'%');
+                        $query->orWhere('name', 'like', '%' . $name . '%');
                     }
                 });
 
@@ -484,7 +484,7 @@ class Product extends BaseProduct
             $matchingLocationIds = Location::query()
                 ->where(function (Builder $query) use ($parentPaths) {
                     foreach ($parentPaths as $path) {
-                        $query->orWhere('parent_path', 'like', $path.'%');
+                        $query->orWhere('parent_path', 'like', $path . '%');
                     }
                 })
                 ->pluck('id')

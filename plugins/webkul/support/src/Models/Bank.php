@@ -12,7 +12,8 @@ use Webkul\Support\Database\Factories\BankFactory;
 
 class Bank extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',

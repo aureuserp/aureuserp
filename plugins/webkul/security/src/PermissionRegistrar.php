@@ -197,7 +197,9 @@ class PermissionRegistrar
         }
 
         $this->permissions = $this->cache->remember(
-            $this->cacheKey, $this->cacheExpirationTime, fn () => $this->getSerializedPermissionsForCache()
+            $this->cacheKey,
+            $this->cacheExpirationTime,
+            fn () => $this->getSerializedPermissionsForCache()
         );
 
         $this->alias = $this->permissions['alias'];

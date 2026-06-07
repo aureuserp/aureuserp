@@ -8,8 +8,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const SALES_ORDER_JSON_STRUCTURE = [
     'id',
@@ -154,7 +154,7 @@ it('shows an order for authorized users', function () {
 
     $order = Order::factory()->create();
 
-    $this->getJson(salesOrderRoute('show', $order).'?include=lines')
+    $this->getJson(salesOrderRoute('show', $order) . '?include=lines')
         ->assertOk()
         ->assertJsonPath('data.id', $order->id)
         ->assertJsonStructure(['data' => SALES_ORDER_JSON_STRUCTURE]);

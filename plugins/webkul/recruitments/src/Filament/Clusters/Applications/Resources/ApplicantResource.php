@@ -197,7 +197,7 @@ class ApplicantResource extends Resource
                                             ->hiddenLabel()
                                             ->hidden(fn ($record) => $record->application_status->value === ApplicationStatus::ONGOING->value)
                                             ->state(function ($record) {
-                                                $html = '<span style="display: inline-flex; align-items: center; background-color: '.$record->application_status->getColor().'; color: white; padding: 4px 8px; border-radius: 12px; font-size: 18px; font-weight: 500;">';
+                                                $html = '<span style="display: inline-flex; align-items: center; background-color: ' . $record->application_status->getColor() . '; color: white; padding: 4px 8px; border-radius: 12px; font-size: 18px; font-weight: 500;">';
 
                                                 $html .= view('filament::components.icon', [
                                                     'icon'  => $record->application_status->getIcon(),
@@ -307,7 +307,8 @@ class ApplicantResource extends Resource
                                             ->multiple()
                                             ->searchable()
                                             ->dehydrated(true)
-                                            ->saveRelationshipsUsing(function () {})
+                                            ->saveRelationshipsUsing(function () {
+                                            })
                                             ->createOptionForm(fn (Schema $schema) => UserResource::form($schema)),
                                         Select::make('recruitments_applicant_applicant_categories')
                                             ->multiple()
@@ -450,7 +451,7 @@ class ApplicantResource extends Resource
                     })
                     ->tooltip(fn ($record) => $record->refuseReason?->name)
                     ->formatStateUsing(function ($record) {
-                        $html = '<span style="display: inline-flex; align-items: center; background-color: '.$record->application_status->getColor().'; color: white; padding: 4px 8px; border-radius: 12px; font-size: 18px; font-weight: 500;">';
+                        $html = '<span style="display: inline-flex; align-items: center; background-color: ' . $record->application_status->getColor() . '; color: white; padding: 4px 8px; border-radius: 12px; font-size: 18px; font-weight: 500;">';
 
                         $html .= view('filament::components.icon', [
                             'icon'  => $record->application_status->getIcon(),
@@ -763,7 +764,7 @@ class ApplicantResource extends Resource
                                                     })
                                                     ->hidden(fn ($record) => $record->application_status->value === ApplicationStatus::ONGOING->value)
                                                     ->formatStateUsing(function ($record, $state) {
-                                                        $html = '<span style="display: inline-flex; align-items: center; background-color: '.$record->application_status->getColor().'; color: white; padding: 4px 8px; border-radius: 12px; font-size: 18px; font-weight: 500;">';
+                                                        $html = '<span style="display: inline-flex; align-items: center; background-color: ' . $record->application_status->getColor() . '; color: white; padding: 4px 8px; border-radius: 12px; font-size: 18px; font-weight: 500;">';
 
                                                         $html .= view('filament::components.icon', [
                                                             'icon'  => $record->application_status->getIcon(),

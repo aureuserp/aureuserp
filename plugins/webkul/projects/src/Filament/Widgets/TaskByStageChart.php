@@ -12,7 +12,8 @@ use Webkul\Project\Models\TaskStage;
 
 class TaskByStageChart extends ChartWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use HasWidgetShield;
+    use InteractsWithPageFilters;
 
     protected ?string $heading = 'Tasks By Stage';
 
@@ -39,7 +40,7 @@ class TaskByStageChart extends ChartWidget
 
         foreach (TaskStage::all() as $stage) {
             if (in_array($stage->name, $datasets['labels'])) {
-                $datasets['labels'][] = $stage->name.' '.$stage->id;
+                $datasets['labels'][] = $stage->name . ' ' . $stage->id;
             } else {
                 $datasets['labels'][] = $stage->name;
             }

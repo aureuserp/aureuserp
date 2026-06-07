@@ -35,16 +35,16 @@ class SendByEmailAction extends Action
                     ->setPaper('A4', 'portrait')
                     ->setOption('defaultFont', 'Arial');
 
-                $fileName = "$record->name-".time().'.pdf';
-                $filePath = 'sales-orders/'.$fileName;
+                $fileName = "$record->name-" . time() . '.pdf';
+                $filePath = 'sales-orders/' . $fileName;
 
                 Storage::disk('public')->put($filePath, $pdf->output());
 
                 $action->fillForm([
                     'file'        => $filePath,
                     'partners'    => [$record->partner_id],
-                    'subject'     => $record->partner->name.' Quotation (Ref '.$record->name.')',
-                    'description' => 'Dear '.$record->partner->name.', <br/><br/>Your quotation <strong>'.$record->name.'</strong> amounting in <strong>'.$record->currency->symbol.' '.$record->amount_total.'</strong> is ready for review.<br/><br/>Should you have any questions or require further assistance, please feel free to reach out to us.',
+                    'subject'     => $record->partner->name . ' Quotation (Ref ' . $record->name . ')',
+                    'description' => 'Dear ' . $record->partner->name . ', <br/><br/>Your quotation <strong>' . $record->name . '</strong> amounting in <strong>' . $record->currency->symbol . ' ' . $record->amount_total . '</strong> is ready for review.<br/><br/>Should you have any questions or require further assistance, please feel free to reach out to us.',
                 ]);
             })
             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/send-by-email.title'))
@@ -184,6 +184,6 @@ class SendByEmailAction extends Action
             'failures' => implode('; ', $failedMessages),
         ]);
 
-        return $successPart."\n\n".$failurePart;
+        return $successPart . "\n\n" . $failurePart;
     }
 }

@@ -49,7 +49,10 @@ use Webkul\Support\Models\ActivityType;
 
 class ChatterPanel extends Component implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, WithFileUploads;
+    use InteractsWithActions;
+    use InteractsWithForms;
+    use InteractsWithInfolists;
+    use WithFileUploads;
 
     public Model $record;
 
@@ -246,14 +249,14 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
         if ($this->filterType !== 'all') {
             $filters[] = [
                 'key'   => 'filterType',
-                'label' => 'Type: '.ucfirst($this->filterType),
+                'label' => 'Type: ' . ucfirst($this->filterType),
             ];
         }
 
         if (filled($this->dateRange)) {
             $filters[] = [
                 'key'   => 'dateRange',
-                'label' => 'Date: '.$this->getDateRangeLabel(),
+                'label' => 'Date: ' . $this->getDateRangeLabel(),
             ];
         }
 
@@ -508,7 +511,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
         $this->record->addMessage([
             'type' => 'comment',
             'body' => collect([
-                $message->activityType?->name ? $message->activityType?->name.' done' : null,
+                $message->activityType?->name ? $message->activityType?->name . ' done' : null,
                 $message->summary ? $message->summary : null,
                 $message->body ? __('chatter::livewire/chatter-panel.process-message.original-note', ['body' => $message->body]) : null,
                 $feedback ? __('chatter::livewire/chatter-panel.process-message.feedback', ['feedback' => $feedback]) : null,
@@ -577,7 +580,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                                                 $planDate = $get('date_deadline') ? Carbon::parse($get('date_deadline'))->format('m/d/Y') : '';
                                                 $html .= '<div class="flex items-center space-x-2" style="margin-left: 20px;">
                                                             <span>•</span>
-                                                            <span style="margin-left:2px;">'.$activityPlanTemplate->summary.($planDate ? ' ('.$planDate.')' : '').'</span>
+                                                            <span style="margin-left:2px;">' . $activityPlanTemplate->summary . ($planDate ? ' (' . $planDate . ')' : '') . '</span>
                                                           </div>';
                                             }
                                             $html .= '</div>';

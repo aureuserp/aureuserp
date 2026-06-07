@@ -14,7 +14,8 @@ use Webkul\Support\Models\Company;
 
 class OrderPoint extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'inventories_order_points';
 

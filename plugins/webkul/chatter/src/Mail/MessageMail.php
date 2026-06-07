@@ -12,7 +12,8 @@ use Illuminate\Queue\SerializesModels;
 
 class MessageMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Array to store attachments
@@ -25,7 +26,8 @@ class MessageMail extends Mailable
     public function __construct(
         public string $viewTemplate,
         public array $payload
-    ) {}
+    ) {
+    }
 
     /**
      * Get the message envelope.
@@ -34,7 +36,7 @@ class MessageMail extends Mailable
     {
         return new Envelope(
             subject: $this->payload['subject'],
-            from: new Address($this->payload['from']['address'], '"'.addslashes($this->payload['from']['name']).'"'),
+            from: new Address($this->payload['from']['address'], '"' . addslashes($this->payload['from']['name']) . '"'),
         );
     }
 

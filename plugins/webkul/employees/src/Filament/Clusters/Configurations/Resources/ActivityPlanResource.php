@@ -79,7 +79,7 @@ class ActivityPlanResource extends Resource
                             ->preload()
                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                             ->getOptionLabelFromRecordUsing(
-                                fn (Model $record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''),
+                                fn (Model $record): string => $record->name . ($record->trashed() ? ' (Deleted)' : ''),
                             )
                             ->disableOptionWhen(
                                 fn (string $label): bool => str_contains($label, ' (Deleted)'),

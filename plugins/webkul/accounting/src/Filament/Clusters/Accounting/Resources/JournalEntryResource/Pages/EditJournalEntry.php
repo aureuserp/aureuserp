@@ -17,7 +17,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditJournalEntry extends EditRecord
 {
-    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeaterColumnManager;
 
     protected static string $resource = JournalEntryResource::class;
 

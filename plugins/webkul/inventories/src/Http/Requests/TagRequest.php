@@ -18,7 +18,7 @@ class TagRequest extends FormRequest
         $tagId = $this->route('tag') ?? $this->route('id');
 
         return [
-            'name'  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_tags,name'.($tagId ? ','.$tagId : '')],
+            'name'  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_tags,name' . ($tagId ? ',' . $tagId : '')],
             'color' => ['nullable', 'string', 'max:255'],
         ];
     }

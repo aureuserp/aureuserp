@@ -521,7 +521,6 @@ class TaxResource extends Resource
         }
 
         foreach ($invoice as $index => $invLine) {
-
             $refLine = $refund[$index] ?? null;
 
             $invPercent = (float) ($invLine['factor_percent'] ?? 0);
@@ -531,9 +530,8 @@ class TaxResource extends Resource
                 ! $refLine ||
                 $invLine['repartition_type'] !== $refLine['repartition_type'] ||
                 $invPercent !== $refPercent
-
             ) {
-                throw new Exception('Line #'.($index + 1).' does not match between Invoice and Refund.');
+                throw new Exception('Line #' . ($index + 1) . ' does not match between Invoice and Refund.');
             }
         }
 

@@ -8,8 +8,8 @@ use Webkul\Product\Models\Product;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const MOVE_LINE_JSON_STRUCTURE = [
     'id',
@@ -95,7 +95,7 @@ it('filters move lines by product id', function () {
     $matching = createMoveLineRecord();
     createMoveLineRecord();
 
-    $response = $this->getJson(inventoryMoveRoute().'?filter[product_id]='.$matching->product_id)
+    $response = $this->getJson(inventoryMoveRoute() . '?filter[product_id]=' . $matching->product_id)
         ->assertOk();
 
     $productIds = collect($response->json('data'))
@@ -113,7 +113,7 @@ it('filters move lines by location id across source and destination', function (
     $matching = createMoveLineRecord();
     createMoveLineRecord();
 
-    $response = $this->getJson(inventoryMoveRoute().'?filter[location_id]='.$matching->source_location_id)
+    $response = $this->getJson(inventoryMoveRoute() . '?filter[location_id]=' . $matching->source_location_id)
         ->assertOk();
 
     $returnedIds = collect($response->json('data'))->pluck('id');
@@ -128,7 +128,7 @@ it('filters move lines by scrap id through move relation', function () {
     $matching = createMoveLineRecord(['scrap_id' => $scrap->id]);
     createMoveLineRecord();
 
-    $response = $this->getJson(inventoryMoveRoute().'?filter[scrap_id]='.$scrap->id)
+    $response = $this->getJson(inventoryMoveRoute() . '?filter[scrap_id]=' . $scrap->id)
         ->assertOk();
 
     $returnedIds = collect($response->json('data'))->pluck('id');
@@ -143,7 +143,7 @@ it('filters move lines by warehouse id through move relation', function () {
     $matching = createMoveLineRecord(['warehouse_id' => $warehouse->id]);
     createMoveLineRecord();
 
-    $response = $this->getJson(inventoryMoveRoute().'?filter[warehouse_id]='.$warehouse->id)
+    $response = $this->getJson(inventoryMoveRoute() . '?filter[warehouse_id]=' . $warehouse->id)
         ->assertOk();
 
     $returnedIds = collect($response->json('data'))->pluck('id');
@@ -156,7 +156,7 @@ it('supports includes on move listing', function () {
 
     createMoveLineRecord();
 
-    $this->getJson(inventoryMoveRoute().'?include=move,operation,product')
+    $this->getJson(inventoryMoveRoute() . '?include=move,operation,product')
         ->assertOk()
         ->assertJsonPath('data.0.move.id', fn ($id) => is_int($id))
         ->assertJsonPath('data.0.operation.id', fn ($id) => is_int($id))

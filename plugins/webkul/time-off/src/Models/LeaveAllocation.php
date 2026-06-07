@@ -16,7 +16,9 @@ use Webkul\TimeOff\Enums\AllocationType;
 
 class LeaveAllocation extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'time-off';
 

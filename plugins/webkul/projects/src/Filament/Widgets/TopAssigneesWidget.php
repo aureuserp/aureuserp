@@ -14,7 +14,8 @@ use Webkul\Project\Models\Timesheet;
 
 class TopAssigneesWidget extends BaseWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use HasWidgetShield;
+    use InteractsWithPageFilters;
 
     protected static ?string $pollingInterval = '15s';
 

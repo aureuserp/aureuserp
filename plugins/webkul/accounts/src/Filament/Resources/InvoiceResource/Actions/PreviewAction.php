@@ -59,7 +59,7 @@ class PreviewAction extends Action
                             $pdfPath = $this->prepareInvoice($record);
 
                             if ($pdfPath) {
-                                return response()->download(storage_path('app/public/'.$pdfPath));
+                                return response()->download(storage_path('app/public/' . $pdfPath));
                             }
                         }),
                 ];
@@ -70,7 +70,7 @@ class PreviewAction extends Action
     {
         return $this->savePDF(
             view($this->getTemplate(), ['record' => $record])->render(),
-            'invoice-'.$record->created_at->format('d-m-Y')
+            'invoice-' . $record->created_at->format('d-m-Y')
         );
     }
 }

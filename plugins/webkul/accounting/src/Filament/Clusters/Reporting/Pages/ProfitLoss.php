@@ -27,7 +27,9 @@ use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\ProfitAndLossExp
 
 class ProfitLoss extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use HasPageShield;
+    use InteractsWithForms;
+    use NormalizeDateFilter;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.profit-loss';
 
@@ -75,7 +77,7 @@ class ProfitLoss extends Page implements HasForms
                     $data = $this->profitLossData;
                     $dateFrom = Carbon::parse($data['date_from']);
                     $dateTo = Carbon::parse($data['date_to']);
-                    $filename = 'profit-loss-'.$dateFrom->format('Y-m-d').'-to-'.$dateTo->format('Y-m-d').'.xlsx';
+                    $filename = 'profit-loss-' . $dateFrom->format('Y-m-d') . '-to-' . $dateTo->format('Y-m-d') . '.xlsx';
 
                     return Excel::download(new ProfitAndLossExport($data, $dateFrom, $dateTo), $filename);
                 }),
@@ -87,7 +89,7 @@ class ProfitLoss extends Page implements HasForms
                     $data = $this->profitLossData;
                     $dateFrom = Carbon::parse($data['date_from']);
                     $dateTo = Carbon::parse($data['date_to']);
-                    $filename = 'profit-loss-'.$dateFrom->format('Y-m-d').'-to-'.$dateTo->format('Y-m-d').'.pdf';
+                    $filename = 'profit-loss-' . $dateFrom->format('Y-m-d') . '-to-' . $dateTo->format('Y-m-d') . '.pdf';
 
                     $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.profit-loss', ['data' => $data]);
 

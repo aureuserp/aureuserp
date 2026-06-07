@@ -44,5 +44,7 @@ class ViewManufacturingOrder extends ViewRecord
         ];
     }
 
-    public function updateForm(): void {}
+    public function updateForm(): void
+    {
+    }
 }

@@ -21,7 +21,11 @@ use Webkul\Support\Models\State;
 
 class Employee extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'employees';
 

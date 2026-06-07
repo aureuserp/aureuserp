@@ -23,7 +23,7 @@ class ProductQuantityRequest extends FormRequest
         return [
             'location_id'        => [...$requiredRule, 'integer', 'exists:inventories_locations,id'],
             'product_id'         => [...$requiredRule, 'integer', 'exists:products_products,id'],
-            'storage_category_id'=> ['nullable', 'integer', 'exists:inventories_storage_categories,id'],
+            'storage_category_id' => ['nullable', 'integer', 'exists:inventories_storage_categories,id'],
             'lot_id'             => ['nullable', 'integer', 'exists:inventories_lots,id'],
             'package_id'         => ['nullable', 'integer', 'exists:inventories_packages,id'],
             'partner_id'         => ['nullable', 'integer', 'exists:partners_partners,id'],

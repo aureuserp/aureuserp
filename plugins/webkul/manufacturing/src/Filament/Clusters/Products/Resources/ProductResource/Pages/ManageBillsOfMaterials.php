@@ -18,7 +18,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageBillsOfMaterials extends ManageRelatedRecords
 {
-    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeaterColumnManager;
 
     protected static string $resource = ProductResource::class;
 

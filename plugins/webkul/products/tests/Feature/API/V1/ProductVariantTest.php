@@ -4,8 +4,8 @@ use Webkul\Product\Models\Product;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_PRODUCT_VARIANT_JSON_STRUCTURE = [
     'id',
@@ -245,7 +245,7 @@ it('includes soft-deleted variants with filter[trashed]=with', function () {
     $deletedVariant = createProductVariant($parent);
     $deletedVariant->delete();
 
-    $response = $this->getJson(productsVariantRoute('index', $parent).'?filter[trashed]=with')
+    $response = $this->getJson(productsVariantRoute('index', $parent) . '?filter[trashed]=with')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

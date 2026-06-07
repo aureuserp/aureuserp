@@ -110,19 +110,19 @@ class FullCalendarPlugin implements Plugin
     {
         $panel
             ->discoverResources(
-                in: __DIR__.'/Filament/Resources',
+                in: __DIR__ . '/Filament/Resources',
                 for: 'Webkul\\FullCalendar\\Filament\\Resources'
             )
             ->discoverPages(
-                in: __DIR__.'/Filament/Pages',
+                in: __DIR__ . '/Filament/Pages',
                 for: 'Webkul\\FullCalendar\\Filament\\Pages'
             )
             ->discoverClusters(
-                in: __DIR__.'/Filament/Clusters',
+                in: __DIR__ . '/Filament/Clusters',
                 for: 'Webkul\\FullCalendar\\Filament\\Clusters'
             )
             ->discoverWidgets(
-                in: __DIR__.'/Filament/Widgets',
+                in: __DIR__ . '/Filament/Widgets',
                 for: 'Webkul\\FullCalendar\\Filament\\Widgets'
             );
     }

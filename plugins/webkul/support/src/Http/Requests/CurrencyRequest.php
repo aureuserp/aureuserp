@@ -31,7 +31,7 @@ class CurrencyRequest extends FormRequest
             : ['required'];
 
         $rules = [
-            'name'           => [...$requiredRule, 'string', 'max:255', 'unique:currencies,name'.($currencyId ? ','.$currencyId : '')],
+            'name'           => [...$requiredRule, 'string', 'max:255', 'unique:currencies,name' . ($currencyId ? ',' . $currencyId : '')],
             'symbol'         => [...$requiredRule, 'string', 'max:10'],
             'iso_numeric'    => ['nullable', 'string', 'max:3'],
             'decimal_places' => [...$requiredRule, 'integer', 'min:0', 'max:10'],

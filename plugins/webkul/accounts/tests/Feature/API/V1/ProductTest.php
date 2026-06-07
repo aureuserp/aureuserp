@@ -7,8 +7,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\UOM;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCT_JSON_STRUCTURE = [
     'id',
@@ -106,7 +106,7 @@ it('filters products by type', function () {
     $product = Product::factory()->create(['type' => 'goods']);
     Product::factory()->count(2)->create(['type' => 'service']);
 
-    $response = $this->getJson(productRoute('index').'?filter[type]=goods')
+    $response = $this->getJson(productRoute('index') . '?filter[type]=goods')
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {

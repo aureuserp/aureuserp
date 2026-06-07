@@ -12,12 +12,14 @@ use Webkul\Inventory\Models\Receipt;
 
 class OperationConfirmed
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
      */
     public function __construct(
         public Operation|Receipt|InternalTransfer|Delivery|Dropship $operation
-    ) {}
+    ) {
+    }
 }

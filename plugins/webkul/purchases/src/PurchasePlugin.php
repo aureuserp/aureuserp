@@ -30,38 +30,38 @@ class PurchasePlugin implements Plugin
             ->when($panel->getId() == 'customer', function (Panel $panel) {
                 $panel
                     ->discoverResources(
-                        in: __DIR__.'/Filament/Customer/Resources',
+                        in: __DIR__ . '/Filament/Customer/Resources',
                         for: 'Webkul\\Purchase\\Filament\\Customer\\Resources'
                     )
                     ->discoverPages(
-                        in: __DIR__.'/Filament/Customer/Pages',
+                        in: __DIR__ . '/Filament/Customer/Pages',
                         for: 'Webkul\\Purchase\\Filament\\Customer\\Pages'
                     )
                     ->discoverClusters(
-                        in: __DIR__.'/Filament/Customer/Clusters',
+                        in: __DIR__ . '/Filament/Customer/Clusters',
                         for: 'Webkul\\Purchase\\Filament\\Customer\\Clusters'
                     )
                     ->discoverWidgets(
-                        in: __DIR__.'/Filament/Customer/Widgets',
+                        in: __DIR__ . '/Filament/Customer/Widgets',
                         for: 'Webkul\\Purchase\\Filament\\Customer\\Widgets'
                     );
             })
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel
                     ->discoverResources(
-                        in: __DIR__.'/Filament/Admin/Resources',
+                        in: __DIR__ . '/Filament/Admin/Resources',
                         for: 'Webkul\\Purchase\\Filament\\Admin\\Resources'
                     )
                     ->discoverPages(
-                        in: __DIR__.'/Filament/Admin/Pages',
+                        in: __DIR__ . '/Filament/Admin/Pages',
                         for: 'Webkul\\Purchase\\Filament\\Admin\\Pages'
                     )
                     ->discoverClusters(
-                        in: __DIR__.'/Filament/Admin/Clusters',
+                        in: __DIR__ . '/Filament/Admin/Clusters',
                         for: 'Webkul\\Purchase\\Filament\\Admin\\Clusters'
                     )
                     ->discoverWidgets(
-                        in: __DIR__.'/Filament/Admin/Widgets',
+                        in: __DIR__ . '/Filament/Admin/Widgets',
                         for: 'Webkul\\Purchase\\Filament\\Admin\\Widgets'
                     )
                     ->navigationItems([

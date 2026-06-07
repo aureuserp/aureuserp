@@ -34,7 +34,11 @@ class MoveObserver
         });
     }
 
-    public function deleted(InventoryMove $move): void {}
+    public function deleted(InventoryMove $move): void
+    {
+    }
 
-    public function restored(InventoryMove $move): void {}
+    public function restored(InventoryMove $move): void
+    {
+    }
 }

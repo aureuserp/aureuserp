@@ -19,7 +19,7 @@ trait HasRouterMacros
                         return $segment;
                     }
 
-                    $parentParam = str_replace('-', '_', str($segments[$index - 1])->singular()->toString()).'_id';
+                    $parentParam = str_replace('-', '_', str($segments[$index - 1])->singular()->toString()) . '_id';
 
                     return "{{$parentParam}}/{$segment}";
                 })

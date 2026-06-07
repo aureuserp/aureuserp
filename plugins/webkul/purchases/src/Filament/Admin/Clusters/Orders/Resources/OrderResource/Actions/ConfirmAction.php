@@ -54,11 +54,13 @@ class ConfirmAction extends Action
 
                 $user = Auth::user();
 
-                if (in_array($record->state, [
+                if (
+                    in_array($record->state, [
                     OrderState::PURCHASE,
                     OrderState::DONE,
                     OrderState::CANCELED,
-                ])) {
+                    ])
+                ) {
                     return false;
                 }
 

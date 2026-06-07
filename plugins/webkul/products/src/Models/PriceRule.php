@@ -17,7 +17,9 @@ use Webkul\Support\Models\Currency;
 
 class PriceRule extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'products_price_rules';
 

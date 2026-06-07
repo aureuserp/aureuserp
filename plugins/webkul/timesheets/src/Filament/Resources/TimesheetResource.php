@@ -141,7 +141,7 @@ class TimesheetResource extends Resource
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours.':'.$minutes;
+                        return $hours . ':' . $minutes;
                     })
                     ->sortable()
                     ->summarize([
@@ -151,7 +151,7 @@ class TimesheetResource extends Resource
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             }),
                     ]),
                 TextColumn::make('created_at')
@@ -184,7 +184,7 @@ class TimesheetResource extends Resource
                         DatePicker::make('date_from')
                             ->label(__('timesheets::filament/resources/timesheet.table.filters.date-from'))
                             ->native(false)
-                            ->placeholder(fn ($state): string => 'Dec 18, '.now()->subYear()->format('Y')),
+                            ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
                         DatePicker::make('date_until')
                             ->label(__('timesheets::filament/resources/timesheet.table.filters.date-until'))
                             ->native(false)
@@ -204,10 +204,10 @@ class TimesheetResource extends Resource
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
                         if ($data['date_from'] ?? null) {
-                            $indicators['date_from'] = 'Order from '.Carbon::parse($data['date_from'])->toFormattedDateString();
+                            $indicators['date_from'] = 'Order from ' . Carbon::parse($data['date_from'])->toFormattedDateString();
                         }
                         if ($data['date_until'] ?? null) {
-                            $indicators['date_until'] = 'Order until '.Carbon::parse($data['date_until'])->toFormattedDateString();
+                            $indicators['date_until'] = 'Order until ' . Carbon::parse($data['date_until'])->toFormattedDateString();
                         }
 
                         return $indicators;

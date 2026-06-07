@@ -82,7 +82,7 @@ class TimesheetsRelationManager extends RelationManager
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours.':'.$minutes;
+                        return $hours . ':' . $minutes;
                     })
                     ->summarize([
                         Sum::make()
@@ -91,7 +91,7 @@ class TimesheetsRelationManager extends RelationManager
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             }),
                         Sum::make()
                             ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.time-spent-on-subtasks'))
@@ -100,7 +100,7 @@ class TimesheetsRelationManager extends RelationManager
                                 $hours = floor($subtaskHours);
                                 $minutes = ($subtaskHours - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             }),
                         Sum::make()
                             ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.total-time-spent'))
@@ -109,7 +109,7 @@ class TimesheetsRelationManager extends RelationManager
                                 $hours = floor($subtaskHours);
                                 $minutes = ($subtaskHours - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             }),
                         Sum::make()
                             ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.remaining-time'))
@@ -119,7 +119,7 @@ class TimesheetsRelationManager extends RelationManager
                                 $hours = floor($remainingHours);
                                 $minutes = ($remainingHours - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             })
                             ->visible((bool) $this->getOwnerRecord()->allocated_hours),
                     ]),

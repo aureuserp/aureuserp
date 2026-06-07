@@ -12,7 +12,8 @@ use Webkul\Security\Models\User;
 
 class UtmStage extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'utm_stages';
 

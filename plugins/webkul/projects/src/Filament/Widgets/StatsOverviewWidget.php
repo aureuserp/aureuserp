@@ -13,7 +13,8 @@ use Webkul\Project\Models\Task;
 
 class StatsOverviewWidget extends BaseWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use HasWidgetShield;
+    use InteractsWithPageFilters;
 
     protected ?string $pollingInterval = '15s';
 
@@ -162,24 +163,24 @@ class StatsOverviewWidget extends BaseWidget
             $hours = floor($state);
             $minutes = ($state - $hours) * 60;
 
-            return $hours.':'.$minutes;
+            return $hours . ':' . $minutes;
         };
 
         return [
             Stat::make(__('projects::filament/widgets/stats-overview.total-tasks'), $current['total_tasks'])
-                ->description($tasksChange['percentage'].'% '.($tasksChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
+                ->description($tasksChange['percentage'] . '% ' . ($tasksChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
                 ->descriptionIcon($tasksChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($tasksChange['trend'])
                 ->chart($data['charts']['tasks']),
 
             Stat::make(__('projects::filament/widgets/stats-overview.total-hours-spent'), $formatHours($current['total_hours_spent']))
-                ->description($hoursSpentChange['percentage'].'% '.($hoursSpentChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
+                ->description($hoursSpentChange['percentage'] . '% ' . ($hoursSpentChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
                 ->descriptionIcon($hoursSpentChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($hoursSpentChange['trend'])
                 ->chart($data['charts']['hoursSpent']),
 
             Stat::make(__('projects::filament/widgets/stats-overview.total-time-remaining'), $formatHours($current['total_remaining_hours']))
-                ->description($remainingHoursChange['percentage'].'% '.($remainingHoursChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
+                ->description($remainingHoursChange['percentage'] . '% ' . ($remainingHoursChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
                 ->descriptionIcon($remainingHoursChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($remainingHoursChange['trend'])
                 ->chart($data['charts']['remainingHours']),

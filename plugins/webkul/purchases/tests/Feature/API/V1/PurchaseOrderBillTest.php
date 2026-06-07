@@ -6,8 +6,8 @@ use Webkul\Purchase\Models\Order;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('purchases');
@@ -107,7 +107,7 @@ it('filters purchase order bills by state', function () {
 
     $order->accountMoves()->attach([$draftBill->id, $postedBill->id]);
 
-    $response = $this->getJson(purchaseOrderBillRoute($order->id).'?filter[state]=draft')
+    $response = $this->getJson(purchaseOrderBillRoute($order->id) . '?filter[state]=draft')
         ->assertOk();
 
     $states = collect($response->json('data'))->pluck('state')->unique()->values()->all();
@@ -122,7 +122,7 @@ it('includes company relationship for purchase order bills', function () {
     $bill = Move::factory()->vendorBill()->create(['company_id' => $order->company_id]);
     $order->accountMoves()->attach($bill->id);
 
-    $this->getJson(purchaseOrderBillRoute($order->id).'?include=company')
+    $this->getJson(purchaseOrderBillRoute($order->id) . '?include=company')
         ->assertOk()
         ->assertJsonPath('data.0.company.id', fn ($id) => is_int($id));
 });

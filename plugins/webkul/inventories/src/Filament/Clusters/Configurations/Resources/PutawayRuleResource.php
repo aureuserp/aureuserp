@@ -90,7 +90,7 @@ class PutawayRuleResource extends Resource
                             ->orderBy('full_name')
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->full_name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($label) {
                         return str_contains($label, ' (Deleted)');
@@ -116,14 +116,14 @@ class PutawayRuleResource extends Resource
                         }
 
                         return Location::query()
-                            ->whereRaw('parent_path LIKE ?', [$inLocation->parent_path.'%'])
+                            ->whereRaw('parent_path LIKE ?', [$inLocation->parent_path . '%'])
                             ->where('id', '!=', $inLocationId)
                             ->orderBy('full_name')
                             ->pluck('full_name', 'id')
                             ->all();
                     })
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->full_name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($label) {
                         return str_contains($label, ' (Deleted)');
@@ -139,7 +139,7 @@ class PutawayRuleResource extends Resource
                         modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($label) {
                         return str_contains($label, ' (Deleted)');

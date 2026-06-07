@@ -35,7 +35,7 @@ class ViewPackage extends ViewRecord
 
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
-                        }, 'Package-'.$record->name.'.pdf');
+                        }, 'Package-' . $record->name . '.pdf');
                     }),
                 Action::make('print-with-content')
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/view-package.header-actions.print.actions.with-content.label'))
@@ -49,7 +49,7 @@ class ViewPackage extends ViewRecord
 
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
-                        }, 'Package-'.$record->name.'.pdf');
+                        }, 'Package-' . $record->name . '.pdf');
                     }),
             ])
                 ->label(__('inventories::filament/clusters/products/resources/package/pages/view-package.header-actions.print.label'))

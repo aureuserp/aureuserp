@@ -14,7 +14,9 @@ use Webkul\Support\Database\Factories\CalendarFactory;
 
 class Calendar extends Model
 {
-    use HasCustomFields, HasFactory, SoftDeletes;
+    use HasCustomFields;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'calendars';
 
@@ -427,7 +429,7 @@ class Calendar extends Model
                     ?? $this->timezone;
                 $resourceId = $resource?->id;
 
-                $tzKey = $resourceTz.'_start';
+                $tzKey = $resourceTz . '_start';
 
                 if (! isset($tzDates[$tzKey])) {
                     $tzDates[$tzKey] = $startDt->clone()->setTimezone($resourceTz);
@@ -435,7 +437,7 @@ class Calendar extends Model
 
                 $start = $tzDates[$tzKey];
 
-                $tzKey = $resourceTz.'_end';
+                $tzKey = $resourceTz . '_end';
 
                 if (! isset($tzDates[$tzKey])) {
                     $tzDates[$tzKey] = $endDt->clone()->setTimezone($resourceTz);

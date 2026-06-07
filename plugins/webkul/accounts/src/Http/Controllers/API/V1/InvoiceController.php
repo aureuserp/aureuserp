@@ -499,7 +499,7 @@ class InvoiceController extends Controller
 
     protected function preparePaymentData(Invoice $invoice, array $data): array
     {
-        $paymentRegister = new PaymentRegister;
+        $paymentRegister = new PaymentRegister();
         $paymentRegister->lines = $invoice->lines;
         $paymentRegister->company = $invoice->company;
         $paymentRegister->currency = $invoice->currency;

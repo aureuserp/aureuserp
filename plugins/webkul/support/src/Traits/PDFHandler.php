@@ -35,7 +35,7 @@ trait PDFHandler
      */
     protected function savePDF(string $html, ?string $fileName = null): string
     {
-        $fileName = $fileName ? Str::slug($fileName).'.pdf' : Str::uuid().'.pdf';
+        $fileName = $fileName ? Str::slug($fileName) . '.pdf' : Str::uuid() . '.pdf';
         $filePath = "pdfs/{$fileName}";
 
         $pdf = $this->generatePDF($html);
@@ -53,7 +53,7 @@ trait PDFHandler
      */
     protected function downloadPDF(string $html, ?string $fileName = null): Response
     {
-        $fileName = $fileName ? Str::slug($fileName).'.pdf' : 'document-'.date('Y-m-d').'.pdf';
+        $fileName = $fileName ? Str::slug($fileName) . '.pdf' : 'document-' . date('Y-m-d') . '.pdf';
 
         return $this->generatePDF($html)->download($fileName);
     }

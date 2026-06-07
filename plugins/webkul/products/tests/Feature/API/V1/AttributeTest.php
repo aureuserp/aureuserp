@@ -5,8 +5,8 @@ use Webkul\Product\Models\Attribute;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_ATTRIBUTE_JSON_STRUCTURE = [
     'id',
@@ -182,7 +182,7 @@ it('filters attributes by name', function () {
     $attribute = Attribute::factory()->create(['name' => 'UniqueAttributeXYZ']);
     Attribute::factory()->count(2)->create();
 
-    $response = $this->getJson(productsAttributeRoute('index').'?filter[name]=UniqueAttributeXYZ')
+    $response = $this->getJson(productsAttributeRoute('index') . '?filter[name]=UniqueAttributeXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -196,7 +196,7 @@ it('filters attributes by type', function () {
     $radioAttr = Attribute::factory()->create(['type' => AttributeType::RADIO->value]);
     $selectAttr = Attribute::factory()->create(['type' => AttributeType::SELECT->value]);
 
-    $response = $this->getJson(productsAttributeRoute('index').'?filter[type]='.AttributeType::RADIO->value)
+    $response = $this->getJson(productsAttributeRoute('index') . '?filter[type]=' . AttributeType::RADIO->value)
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -227,7 +227,7 @@ it('includes soft-deleted attributes when filter[trashed]=with', function () {
     $deleted = Attribute::factory()->create();
     $deleted->delete();
 
-    $response = $this->getJson(productsAttributeRoute('index').'?filter[trashed]=with')
+    $response = $this->getJson(productsAttributeRoute('index') . '?filter[trashed]=with')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

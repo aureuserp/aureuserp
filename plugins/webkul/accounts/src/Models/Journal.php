@@ -20,7 +20,8 @@ use Webkul\Support\Models\Currency;
 
 class Journal extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'accounts_journals';
 
@@ -161,7 +162,7 @@ class Journal extends Model implements Sortable
             $this->suspense_account_id = null;
         } elseif ($this->suspense_account_id) {
             $this->suspense_account_id = $this->suspense_account_id;
-        } elseif ($accountId = (new DefaultAccountSettings)->account_journal_suspense_account_id) {
+        } elseif ($accountId = (new DefaultAccountSettings())->account_journal_suspense_account_id) {
             $this->suspense_account_id = $accountId;
         } else {
             $this->suspense_account_id = null;

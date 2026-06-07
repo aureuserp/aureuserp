@@ -22,7 +22,8 @@ use Webkul\Support\Models\UOM;
 
 class MoveLine extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'accounts_account_move_lines';
 
@@ -417,7 +418,7 @@ class MoveLine extends Model implements Sortable
 
                     $accountId = $account?->id;
                 } elseif ($this->partner) {
-                    $accountId = $this->account_id ?? (new Account)->getMostFrequentAccountsForPartner(
+                    $accountId = $this->account_id ?? (new Account())->getMostFrequentAccountsForPartner(
                         companyId: $this->move->company_id,
                         partnerId: $this->partner_id,
                         moveType: $this->move->type,

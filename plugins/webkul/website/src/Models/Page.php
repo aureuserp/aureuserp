@@ -12,7 +12,8 @@ use Webkul\Website\Database\Factories\PageFactory;
 
 class Page extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'website_pages';
 

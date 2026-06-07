@@ -9,7 +9,8 @@ use Spatie\EloquentSortable\SortableTrait;
 
 class Field extends Model implements Sortable
 {
-    use SoftDeletes, SortableTrait;
+    use SoftDeletes;
+    use SortableTrait;
 
     /**
      * Table name.

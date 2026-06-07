@@ -24,7 +24,7 @@ class WorkOrderFactory extends Factory
         return [
             'name'                   => fake()->words(2, true),
             'barcode'                => strtoupper(fake()->bothify('WO-######')),
-            'production_availability'=> null,
+            'production_availability' => null,
             'state'                  => WorkOrderState::PENDING,
             'quantity_produced'      => 0,
             'expected_duration'      => fake()->randomFloat(4, 1, 120),

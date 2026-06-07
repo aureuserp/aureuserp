@@ -6,8 +6,8 @@ use Webkul\Inventory\Models\PackageType;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_PACKAGE_JSON_STRUCTURE = [
     'id',
@@ -42,7 +42,7 @@ function inventoryPackageRoute(string $action, mixed $package = null): string
 function inventoryPackagePayload(array $overrides = []): array
 {
     return array_replace_recursive([
-        'name' => 'PKG-'.uniqid(),
+        'name' => 'PKG-' . uniqid(),
     ], $overrides);
 }
 
@@ -140,7 +140,7 @@ it('filters packages by name', function () {
     $package = Package::factory()->create(['name' => 'UNIQUE-PKG-XYZ']);
     Package::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryPackageRoute('index').'?filter[name]=UNIQUE-PKG-XYZ')
+    $response = $this->getJson(inventoryPackageRoute('index') . '?filter[name]=UNIQUE-PKG-XYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

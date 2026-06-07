@@ -24,7 +24,7 @@ class ProductQuantityResource extends JsonResource
             'reserved_quantity'      => (float) $this->reserved_quantity,
             'counted_quantity'       => $this->counted_quantity !== null ? (float) $this->counted_quantity : null,
             'difference_quantity'    => $this->difference_quantity !== null ? (float) $this->difference_quantity : null,
-            'inventory_diff_quantity'=> $this->inventory_diff_quantity !== null ? (float) $this->inventory_diff_quantity : null,
+            'inventory_diff_quantity' => $this->inventory_diff_quantity !== null ? (float) $this->inventory_diff_quantity : null,
             'available_quantity'     => (float) $this->available_quantity,
             'inventory_quantity_set' => (bool) $this->inventory_quantity_set,
             'scheduled_at'           => $this->scheduled_at,

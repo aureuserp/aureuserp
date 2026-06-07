@@ -37,16 +37,16 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
     public function headings(): array
     {
         return [
-            ['Aged Payable - As of '.$this->asOfDate->format('m/d/Y')],
+            ['Aged Payable - As of ' . $this->asOfDate->format('m/d/Y')],
             [],
             [
                 'Partner',
                 'Invoice Date',
                 'At Date',
-                '1-'.$this->period,
-                ($this->period + 1).'-'.($this->period * 2),
-                (($this->period * 2) + 1).'-'.($this->period * 3),
-                (($this->period * 3) + 1).'-'.($this->period * 4),
+                '1-' . $this->period,
+                ($this->period + 1) . '-' . ($this->period * 2),
+                (($this->period * 2) + 1) . '-' . ($this->period * 3),
+                (($this->period * 3) + 1) . '-' . ($this->period * 4),
                 'Older',
                 'Total',
             ],
@@ -76,7 +76,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
             if (in_array($partnerId, $this->expandedPartners) && ! empty($partner['lines'])) {
                 foreach ($partner['lines'] as $line) {
                     $rows[] = [
-                        '        '.$line['move_name'],
+                        '        ' . $line['move_name'],
                         Carbon::parse($line['invoice_date'])->format('m/d/Y'),
                         ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                             ->map(fn ($key) => $line[$key] != 0 ? $line[$key] : '')

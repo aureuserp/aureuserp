@@ -25,7 +25,12 @@ use Webkul\Support\Models\State;
 
 class Partner extends Authenticatable implements FilamentUser
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope, Notifiable, SoftDeletes;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
+    use HasPermissionScope;
+    use Notifiable;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'partners';
 

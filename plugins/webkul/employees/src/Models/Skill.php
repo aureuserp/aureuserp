@@ -16,7 +16,10 @@ use Webkul\Security\Models\User;
 
 class Skill extends Model implements Sortable
 {
-    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'employees_skills';
 

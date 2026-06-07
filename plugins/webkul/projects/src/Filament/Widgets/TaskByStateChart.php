@@ -13,7 +13,8 @@ use Webkul\Project\Models\Task;
 
 class TaskByStateChart extends ChartWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use HasWidgetShield;
+    use InteractsWithPageFilters;
 
     protected ?string $heading = 'Tasks By State';
 

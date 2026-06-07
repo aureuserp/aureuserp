@@ -31,7 +31,7 @@ class ViewPage extends ViewRecord
     public function getTitle(): string|Htmlable
     {
         $record = $this->getRecord();
-        $translationKey = 'website::filament/app.page_titles.'.$record->slug;
+        $translationKey = 'website::filament/app.page_titles.' . $record->slug;
         $translated = __($translationKey);
 
         if ($translated === $translationKey) {

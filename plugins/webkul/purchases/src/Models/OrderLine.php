@@ -30,7 +30,8 @@ use Webkul\Support\Models\UOM;
 
 class OrderLine extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'purchases_order_lines';
 
@@ -197,8 +198,7 @@ class OrderLine extends Model implements Sortable
             if ($orderLine->wasChanged('price_unit')) {
                 $orderLine->inventoryMoves
                     ->filter(fn ($move) => ! in_array($move->state, [MoveState::CANCELED, MoveState::DONE])
-                        && $move->product_id === $orderLine->product_id
-                    )
+                        && $move->product_id === $orderLine->product_id)
                     ->each->update(['price_unit' => $orderLine->getInventoryMovePriceUnit()]);
             }
 

@@ -10,7 +10,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditBillOfMaterial extends EditRecord
 {
-    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeaterColumnManager;
 
     protected static string $resource = BillsOfMaterialResource::class;
 

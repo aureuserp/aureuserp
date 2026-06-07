@@ -45,7 +45,7 @@ class PayAction extends Action
             ->color('success')
             ->schema(function (Schema $schema) {
                 try {
-                    $paymentRegister = (new PaymentRegister);
+                    $paymentRegister = (new PaymentRegister());
 
                     $paymentRegister->lines = $this->getRecord()->lines;
                     $paymentRegister->company = $this->getRecord()->company;
@@ -144,7 +144,7 @@ class PayAction extends Action
                                     }
                                 )
                                 ->getOptionLabelFromRecordUsing(function ($record): string {
-                                    return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                    return $record->account_number . ' - ' . $record->bank->name . ($record->trashed() ? ' (Deleted)' : '');
                                 })
                                 ->disableOptionWhen(function ($label) {
                                     return str_contains($label, ' (Deleted)');

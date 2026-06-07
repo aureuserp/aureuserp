@@ -23,7 +23,8 @@ use Webkul\Support\Models\UOM;
 
 class WorkOrder extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'manufacturing_work_orders';
 
@@ -300,7 +301,7 @@ class WorkOrder extends Model implements Sortable
         static::created(function ($workOrder) {
             $workOrder->updateQuietly([
                 'name'    => $workOrder->name,
-                'barcode' => 'MO/'.$workOrder->manufacturingOrder->id.'/'.$workOrder->id,
+                'barcode' => 'MO/' . $workOrder->manufacturingOrder->id . '/' . $workOrder->id,
             ]);
         });
 

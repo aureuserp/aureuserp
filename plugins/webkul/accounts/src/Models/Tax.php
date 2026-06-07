@@ -21,7 +21,8 @@ use Webkul\Support\Models\Country;
 
 class Tax extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'accounts_taxes';
 
@@ -104,7 +105,7 @@ class Tax extends Model implements Sortable
     public function getPriceIncludeAttribute()
     {
         return $this->price_include_override == TaxIncludeOverride::TAX_INCLUDED
-            || (new TaxesSettings)->account_price_include == TaxIncludeOverride::TAX_INCLUDED && ! $this->price_include_override;
+            || (new TaxesSettings())->account_price_include == TaxIncludeOverride::TAX_INCLUDED && ! $this->price_include_override;
     }
 
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)

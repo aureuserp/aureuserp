@@ -66,7 +66,7 @@ class JournalItemExporter extends Exporter
         ]);
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.__('accounting::filament/exports/journal-item.notification.failed', [
+            $body .= ' ' . __('accounting::filament/exports/journal-item.notification.failed', [
                 'count' => number_format($failedRowsCount),
             ]);
         }

@@ -3,8 +3,8 @@
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const SALES_ORDER_LINE_JSON_STRUCTURE = [
     'id',
@@ -121,7 +121,7 @@ it('filters order lines by product id', function () {
     actingAsSalesOrderLineApiUser(['view_sale_order']);
 
     $response = $this->getJson(
-        salesOrderLineRoute('index', $order->id).'?filter[product_id]='.$matchingLine->product_id
+        salesOrderLineRoute('index', $order->id) . '?filter[product_id]=' . $matchingLine->product_id
     )->assertOk();
 
     $productIds = collect($response->json('data'))->pluck('product_id')->unique()->values()->all();
@@ -134,7 +134,7 @@ it('sorts order lines by id descending', function () {
 
     actingAsSalesOrderLineApiUser(['view_sale_order']);
 
-    $response = $this->getJson(salesOrderLineRoute('index', $order->id).'?sort=-id')
+    $response = $this->getJson(salesOrderLineRoute('index', $order->id) . '?sort=-id')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id')->values()->all();
@@ -148,7 +148,7 @@ it('includes related product for order lines', function () {
 
     actingAsSalesOrderLineApiUser(['view_sale_order']);
 
-    $this->getJson(salesOrderLineRoute('index', $order->id).'?include=product')
+    $this->getJson(salesOrderLineRoute('index', $order->id) . '?include=product')
         ->assertOk()
         ->assertJsonPath('data.0.product.id', fn ($id) => is_int($id));
 });

@@ -5,8 +5,8 @@ use Webkul\Product\Models\Product;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_PACKAGING_JSON_STRUCTURE = [
     'id',
@@ -151,7 +151,7 @@ it('filters packagings by name', function () {
     $packaging = Packaging::factory()->create(['name' => 'UniquePackagingXYZ']);
     Packaging::factory()->count(2)->create();
 
-    $response = $this->getJson(productsPackagingRoute('index').'?filter[name]=UniquePackagingXYZ')
+    $response = $this->getJson(productsPackagingRoute('index') . '?filter[name]=UniquePackagingXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -166,7 +166,7 @@ it('filters packagings by product_id', function () {
     $packaging = Packaging::factory()->create(['product_id' => $product->id]);
     Packaging::factory()->create();
 
-    $response = $this->getJson(productsPackagingRoute('index')."?filter[product_id]={$product->id}")
+    $response = $this->getJson(productsPackagingRoute('index') . "?filter[product_id]={$product->id}")
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

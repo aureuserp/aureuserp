@@ -35,7 +35,8 @@ class PaymentServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+            });
     }
 
     public function packageRegistered(): void

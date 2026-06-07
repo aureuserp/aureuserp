@@ -15,7 +15,8 @@ use Webkul\Support\Database\Factories\CalendarAttendanceFactory;
 
 class CalendarAttendance extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'calendar_attendances';
 

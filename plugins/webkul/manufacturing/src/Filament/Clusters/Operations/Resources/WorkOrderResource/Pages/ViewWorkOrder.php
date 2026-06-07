@@ -9,7 +9,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewWorkOrder extends ViewRecord
 {
-    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeatableEntryColumnManager;
 
     protected static string $resource = WorkOrderResource::class;
 

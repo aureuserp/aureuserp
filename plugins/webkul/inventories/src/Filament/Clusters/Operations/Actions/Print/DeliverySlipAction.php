@@ -27,7 +27,7 @@ class DeliverySlipAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Delivery Slip-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Delivery Slip-' . str_replace('/', '_', $record->name) . '.pdf');
             });
     }
 }

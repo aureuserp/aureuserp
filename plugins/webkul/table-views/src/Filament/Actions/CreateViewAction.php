@@ -47,7 +47,7 @@ class CreateViewAction extends Action
                 $model = $this->getModel();
 
                 $record = $this->process(function (array $data) use ($model): TableView {
-                    $record = new $model;
+                    $record = new $model();
                     $record->fill($data);
 
                     $record->save();

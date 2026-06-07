@@ -37,7 +37,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function headings(): array
     {
         return [
-            ['General Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
+            ['General Ledger - From ' . $this->dateFrom->format('M d, Y') . ' to ' . $this->dateTo->format('M d, Y')],
             [],
             ['Account', 'Date', 'Communication', 'Partner', 'Debit', 'Credit', 'Balance'],
         ];
@@ -57,7 +57,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             $totals['credit'] += $account->period_credit;
 
             $rows[] = [
-                $account->code.' '.$account->name,
+                $account->code . ' ' . $account->name,
                 '',
                 '',
                 '',
@@ -87,7 +87,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                 collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
                     $runningBalance += $move['debit'] - $move['credit'];
                     $rows[] = [
-                        '        '.$move['move_name'],
+                        '        ' . $move['move_name'],
                         Carbon::parse($move['date'])->format('M d, Y'),
                         ($move['move_type'] ?? null) == 'entry' ? ($move['name'] ?? '') : '',
                         $move['partner_name'] ?? '',

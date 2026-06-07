@@ -120,7 +120,7 @@ class MaintenanceRequestResource extends Resource
                                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                     )
                                     ->getOptionLabelFromRecordUsing(function (Model $record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->native(false)
@@ -262,7 +262,7 @@ class MaintenanceRequestResource extends Resource
                                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                     )
                                     ->getOptionLabelFromRecordUsing(function (Model $record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->native(false)
@@ -513,7 +513,7 @@ class MaintenanceRequestResource extends Resource
                                 TextEntry::make('duration')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.settings.entries.duration'))
                                     ->formatStateUsing(fn (mixed $state): string => format_float_time((float) ($state ?: 0), 'hours'))
-                                    ->suffix(' '.__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.settings.entries.duration-suffix'))
+                                    ->suffix(' ' . __('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.settings.entries.duration-suffix'))
                                     ->placeholder('0'),
 
                                 TextEntry::make('priority')

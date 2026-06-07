@@ -27,7 +27,10 @@ use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\GeneralLedgerExp
 
 class GeneralLedger extends Page implements HasForms
 {
-    use HasFiltersForm, HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use HasFiltersForm;
+    use HasPageShield;
+    use InteractsWithForms;
+    use NormalizeDateFilter;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.general-ledger';
 
@@ -88,7 +91,7 @@ class GeneralLedger extends Page implements HasForms
                             fn ($accountId) => $this->getAccountMoves($accountId),
                             $this->expandedAccounts
                         ),
-                        'general-ledger-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.xlsx'
+                        'general-ledger-' . $data['date_from']->format('Y-m-d') . '-' . $data['date_to']->format('Y-m-d') . '.xlsx'
                     );
                 }),
             Action::make('pdf')
@@ -107,7 +110,7 @@ class GeneralLedger extends Page implements HasForms
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'general-ledger-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.pdf');
+                    }, 'general-ledger-' . $data['date_from']->format('Y-m-d') . '-' . $data['date_to']->format('Y-m-d') . '.pdf');
                 }),
         ];
     }

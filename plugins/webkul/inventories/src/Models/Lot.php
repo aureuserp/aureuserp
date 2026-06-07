@@ -92,14 +92,14 @@ class Lot extends Model
         $caughtInitialNumber = $matches[0];
 
         if (empty($caughtInitialNumber)) {
-            return $this->generateLotNames($firstLot.'0', $count);
+            return $this->generateLotNames($firstLot . '0', $count);
         }
 
         $initialNumber = last($caughtInitialNumber);
 
         $padding = strlen($initialNumber);
 
-        $splitted = preg_split('/'.preg_quote($initialNumber, '/').'/', $firstLot);
+        $splitted = preg_split('/' . preg_quote($initialNumber, '/') . '/', $firstLot);
 
         $prefix = implode($initialNumber, array_slice($splitted, 0, -1));
 
@@ -123,7 +123,7 @@ class Lot extends Model
             ->first();
 
         if ($lastSerial) {
-            return (new static)->generateLotNames($lastSerial->name, 2)[1]['lot_name'];
+            return (new static())->generateLotNames($lastSerial->name, 2)[1]['lot_name'];
         }
 
         return '0001';

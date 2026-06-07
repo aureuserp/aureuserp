@@ -20,7 +20,8 @@ use Webkul\Support\Models\Company;
 
 class Location extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'inventories_locations';
 
@@ -132,15 +133,14 @@ class Location extends Model
 
         while ($current) {
             $categoryIds->push($current->id);
-            
+
             $current = $current->parent_id ? $current->parent : null;
         }
 
         $putawayRules = $this->putawayRules
             ->filter(fn ($rule) => (! $rule->product_id || $rule->product_id === $product->id)
                 && (! $rule->category_id || $categoryIds->contains($rule->category_id))
-                && (! $rule->packageTypes->isNotEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id)))
-            )
+                && (! $rule->packageTypes->isNotEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id))))
             ->sortByDesc(fn ($rule) => [
                 $rule->packageTypes->isNotEmpty() ? 1 : 0,
                 $rule->product_id ? 1 : 0,
@@ -227,15 +227,14 @@ class Location extends Model
                 $lastUsedLocation = MoveLine::where('state', MoveState::DONE)
                     ->where('product_id', $product->id)
                     ->whereHas('destinationLocation', fn ($q) => $q->where('id', $this->locationOut->id)
-                        ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%'])
-                    )
+                        ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%']))
                     ->when($putawayRule->packageTypes->isNotEmpty(), function ($query) use ($putawayRule) {
                         $query->whereHas('resultPackage', fn ($q) => $q->whereIn('package_type_id', $putawayRule->packageTypes->pluck('id')->all()));
                     })
                     ->orderBy('scheduled_at', 'desc')
                     ->first()
                     ?->destinationLocation;
-                
+
                 $outLocation = $lastUsedLocation ?? $outLocation;
             }
 
@@ -305,8 +304,7 @@ class Location extends Model
         ?Package $package = null,
         float $locationQty = 0,
         array $excludeMoveLineIds = []
-    ): bool
-    {
+    ): bool {
         if (! $this->storage_category_id) {
             return true;
         }
@@ -408,7 +406,7 @@ class Location extends Model
             $this->full_name = $this->name;
         } else {
             $this->full_name = $this->parent
-                ? $this->parent->full_name.'/'.$this->name
+                ? $this->parent->full_name . '/' . $this->name
                 : $this->name;
         }
     }
@@ -416,11 +414,11 @@ class Location extends Model
     public function updateParentPath()
     {
         if ($this->type === LocationType::VIEW) {
-            $this->parent_path = $this->id.'/';
+            $this->parent_path = $this->id . '/';
         } else {
             $this->parent_path = $this->parent
-                ? $this->parent->parent_path.$this->id.'/'
-                : $this->id.'/';
+                ? $this->parent->parent_path . $this->id . '/'
+                : $this->id . '/';
         }
     }
 

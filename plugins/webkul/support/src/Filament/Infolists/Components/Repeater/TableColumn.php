@@ -101,7 +101,7 @@ class TableColumn extends Component
         }
 
         if (is_int($minWidth)) {
-            return $minWidth.'px';
+            return $minWidth . 'px';
         }
 
         return $minWidth !== null ? (string) $minWidth : null;
@@ -116,7 +116,7 @@ class TableColumn extends Component
         }
 
         if (is_int($maxWidth)) {
-            return $maxWidth.'px';
+            return $maxWidth . 'px';
         }
 
         return $maxWidth !== null ? (string) $maxWidth : null;

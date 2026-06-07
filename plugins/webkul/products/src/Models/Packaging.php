@@ -14,7 +14,8 @@ use Webkul\Support\Models\Company;
 
 class Packaging extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'products_packagings';
 

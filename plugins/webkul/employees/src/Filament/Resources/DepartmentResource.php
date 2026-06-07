@@ -105,7 +105,7 @@ class DepartmentResource extends Resource
                                                 modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(
-                                                fn (Model $record): string => $record->complete_name.($record->trashed() ? ' (Deleted)' : ''),
+                                                fn (Model $record): string => $record->complete_name . ($record->trashed() ? ' (Deleted)' : ''),
                                             )
                                             ->disableOptionWhen(
                                                 fn (string $label): bool => str_contains($label, ' (Deleted)'),
@@ -124,7 +124,7 @@ class DepartmentResource extends Resource
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.company'))
                                             ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
                                             ->getOptionLabelFromRecordUsing(function (Model $record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
@@ -413,7 +413,7 @@ class DepartmentResource extends Resource
         $managerName = $department->manager?->name ? " · {$department->manager->name}" : '';
 
         $style = $isActive
-            ? 'color: '.($department->color ?? '#1D4ED8').'; font-weight: bold;'
+            ? 'color: ' . ($department->color ?? '#1D4ED8') . '; font-weight: bold;'
             : '';
 
         return sprintf(

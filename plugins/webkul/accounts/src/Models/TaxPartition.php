@@ -15,7 +15,8 @@ use Webkul\Support\Models\Company;
 
 class TaxPartition extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'accounts_tax_partition_lines';
 

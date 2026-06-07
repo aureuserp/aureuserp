@@ -48,13 +48,13 @@ class PluginManagerServiceProvider extends PackageServiceProvider
             $panel->plugin(PluginManagerPlugin::make());
         });
 
-        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);
+        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager());
     }
 
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('plugins', __DIR__.'/../resources/dist/plugin.css'),
+            Css::make('plugins', __DIR__ . '/../resources/dist/plugin.css'),
         ], 'plugins');
     }
 }

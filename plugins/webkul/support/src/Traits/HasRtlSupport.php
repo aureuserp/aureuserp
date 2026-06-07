@@ -37,7 +37,7 @@ trait HasRtlSupport
                 ->flags(
                     collect(array_keys($locales))
                         ->mapWithKeys(fn ($code) => [
-                            $code => asset('flags/'.$code.'.svg'),
+                            $code => asset('flags/' . $code . '.svg'),
                         ])
                         ->all()
                 )

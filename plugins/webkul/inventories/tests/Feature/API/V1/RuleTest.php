@@ -9,8 +9,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_RULE_JSON_STRUCTURE = [
     'id',
@@ -201,7 +201,7 @@ it('filters rules by name', function () {
     $rule = Rule::factory()->create(['name' => 'UniqueRuleXYZ']);
     Rule::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryRuleRoute('index').'?filter[name]=UniqueRuleXYZ')
+    $response = $this->getJson(inventoryRuleRoute('index') . '?filter[name]=UniqueRuleXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -215,7 +215,7 @@ it('filters rules by action', function () {
     $pullRule = Rule::factory()->create(['action' => RuleAction::PULL]);
     Rule::factory()->push()->create();
 
-    $response = $this->getJson(inventoryRuleRoute('index').'?filter[action]=pull')
+    $response = $this->getJson(inventoryRuleRoute('index') . '?filter[action]=pull')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

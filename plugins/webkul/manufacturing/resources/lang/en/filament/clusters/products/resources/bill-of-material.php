@@ -71,7 +71,7 @@ return [
                     'time-mode'        => 'Duration Computation',
                     'time-mode-batch'  => 'Computed on last',
                     'company'          => 'Company',
-                    'apply-on-variants'=> 'Apply on Variants',
+                    'apply-on-variants' => 'Apply on Variants',
                     'duration'         => 'Duration (minutes)',
                 ],
             ],
@@ -174,7 +174,7 @@ return [
                 'entries' => [
                     'reference'      => 'Reference',
                     'product'        => 'Product',
-                    'product-variant'=> 'Product Variant',
+                    'product-variant' => 'Product Variant',
                     'quantity'       => 'Quantity',
                     'uom'            => 'UOM',
                     'operation-type' => 'Operation Type',

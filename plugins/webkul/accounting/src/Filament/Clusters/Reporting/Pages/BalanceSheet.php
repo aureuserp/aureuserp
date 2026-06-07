@@ -27,7 +27,9 @@ use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\BalanceSheetExpo
 
 class BalanceSheet extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use HasPageShield;
+    use InteractsWithForms;
+    use NormalizeDateFilter;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.balance-sheet';
 
@@ -77,7 +79,7 @@ class BalanceSheet extends Page implements HasForms
 
                     return Excel::download(
                         new BalanceSheetExport($data, $date),
-                        'balance-sheet-'.$date->format('Y-m-d').'.xlsx'
+                        'balance-sheet-' . $date->format('Y-m-d') . '.xlsx'
                     );
                 }),
             Action::make('pdf')
@@ -92,7 +94,7 @@ class BalanceSheet extends Page implements HasForms
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'balance-sheet-'.now()->format('Y-m-d').'.pdf');
+                    }, 'balance-sheet-' . now()->format('Y-m-d') . '.pdf');
                 }),
         ];
     }

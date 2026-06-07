@@ -15,7 +15,9 @@ use Webkul\Support\Models\Country;
 
 class EmploymentType extends Model implements Sortable
 {
-    use HasCustomFields, HasFactory, SortableTrait;
+    use HasCustomFields;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'employees_employment_types';
 

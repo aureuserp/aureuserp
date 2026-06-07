@@ -13,7 +13,8 @@ use Webkul\Security\Models\User;
 
 class AttributeOption extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'products_attribute_options';
 

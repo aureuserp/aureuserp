@@ -186,7 +186,7 @@ class EmployeeResource extends Resource
                                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()

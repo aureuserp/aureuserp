@@ -49,7 +49,7 @@ class ManageAttributes extends ManageRelatedRecords
                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($value, $state) {
                         return $this->getOwnerRecord()->attributes->contains('attribute_id', $value)

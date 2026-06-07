@@ -24,7 +24,7 @@ class Installer
     {
         $user = User::first();
 
-        $httpClient = new Client;
+        $httpClient = new Client();
 
         try {
             $httpClient->request('POST', self::API_ENDPOINT, [

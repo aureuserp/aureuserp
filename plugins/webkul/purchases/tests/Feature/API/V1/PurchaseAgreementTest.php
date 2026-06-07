@@ -11,8 +11,8 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PURCHASE_AGREEMENT_JSON_STRUCTURE = [
     'id',
@@ -185,7 +185,7 @@ it('shows a purchase agreement for authorized users', function () {
 
     $agreement = Requisition::factory()->create();
 
-    $this->getJson(purchaseAgreementRoute('show', $agreement).'?include=lines')
+    $this->getJson(purchaseAgreementRoute('show', $agreement) . '?include=lines')
         ->assertOk()
         ->assertJsonPath('data.id', $agreement->id)
         ->assertJsonStructure(['data' => PURCHASE_AGREEMENT_JSON_STRUCTURE]);

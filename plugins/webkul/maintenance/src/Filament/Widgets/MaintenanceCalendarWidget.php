@@ -161,7 +161,7 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
                                         return $startsAt->format('H:i');
                                     }
 
-                                    return $startsAt->format('H:i').' - '.$endsAt->format('H:i').' ('.$duration.')';
+                                    return $startsAt->format('H:i') . ' - ' . $endsAt->format('H:i') . ' (' . $duration . ')';
                                 })
                                 ->icon('heroicon-o-clock')
                                 ->placeholder('—'),

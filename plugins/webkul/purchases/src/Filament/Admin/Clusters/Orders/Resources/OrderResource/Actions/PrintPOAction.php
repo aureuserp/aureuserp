@@ -29,7 +29,7 @@ class PrintPOAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Purchase Order-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Purchase Order-' . str_replace('/', '_', $record->name) . '.pdf');
             })
             ->color('primary')
             ->visible(fn (Order $record) => $record->state == OrderState::PURCHASE);

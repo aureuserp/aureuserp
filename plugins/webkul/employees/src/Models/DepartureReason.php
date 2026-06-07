@@ -14,7 +14,9 @@ use Webkul\Security\Models\User;
 
 class DepartureReason extends Model implements Sortable
 {
-    use HasCustomFields, HasFactory, SortableTrait;
+    use HasCustomFields;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'employees_departure_reasons';
 

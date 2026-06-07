@@ -40,10 +40,10 @@ class PurchaseAgreementRequest extends FormRequest
             'description'       => ['nullable', 'string'],
             'lines'             => [...$requiredRule, 'array', 'min:1'],
             'lines.*.id'        => ['nullable', 'integer', 'exists:purchases_requisition_lines,id'],
-            'lines.*.product_id'=> ['required', 'integer', 'exists:products_products,id'],
+            'lines.*.product_id' => ['required', 'integer', 'exists:products_products,id'],
             'lines.*.qty'       => ['required', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.uom_id'    => ['nullable', 'integer', 'exists:unit_of_measures,id'],
-            'lines.*.price_unit'=> ['required', 'numeric', 'min:0', 'max:99999999999'],
+            'lines.*.price_unit' => ['required', 'numeric', 'min:0', 'max:99999999999'],
         ];
 
         return $rules;

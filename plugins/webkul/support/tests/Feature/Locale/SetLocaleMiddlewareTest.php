@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../Helpers/TestBootstrapHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensureERPInstalled();
@@ -36,7 +36,7 @@ function runSetLocale(array $query = [], array $sessionData = []): string
     $request->setLaravelSession(app('session.store'));
     $request->setUserResolver(fn () => Auth::user());
 
-    (new SetLocale)->handle($request, fn () => response('ok'));
+    (new SetLocale())->handle($request, fn () => response('ok'));
 
     return App::getLocale();
 }

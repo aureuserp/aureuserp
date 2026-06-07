@@ -154,7 +154,7 @@ class Warehouse extends BaseWarehouse
         $this->pbm_loc_id = Location::create([
             'type'       => LocationType::INTERNAL,
             'name'       => 'Pre-Production',
-            'barcode'    => $this->code.'PREPRODUCTION',
+            'barcode'    => $this->code . 'PREPRODUCTION',
             'is_scrap'   => false,
             'parent_id'  => $this->view_location_id,
             'creator_id' => $this->creator_id,
@@ -165,7 +165,7 @@ class Warehouse extends BaseWarehouse
         $this->sam_loc_id = Location::create([
             'type'       => LocationType::INTERNAL,
             'name'       => 'Post-Production',
-            'barcode'    => $this->code.'POSTPRODUCTION',
+            'barcode'    => $this->code . 'POSTPRODUCTION',
             'is_scrap'   => false,
             'parent_id'  => $this->view_location_id,
             'creator_id' => $this->creator_id,
@@ -185,7 +185,7 @@ class Warehouse extends BaseWarehouse
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'PC',
+            'barcode'                 => $this->code . 'PC',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => true,
@@ -216,7 +216,7 @@ class Warehouse extends BaseWarehouse
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'SFP',
+            'barcode'                 => $this->code . 'SFP',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => true,
@@ -247,7 +247,7 @@ class Warehouse extends BaseWarehouse
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'MANUF',
+            'barcode'                 => $this->code . 'MANUF',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => true,
@@ -273,9 +273,9 @@ class Warehouse extends BaseWarehouse
     {
         $this->pbm_route_id = Route::create([
             'name' => match ($this->manufacture_steps) {
-                ManufactureStep::ONE_STEP    => $this->name.': Manufacture (1 step)',
-                ManufactureStep::TWO_STEPS   => $this->name.': Pick components and then manufacture (2 steps)',
-                ManufactureStep::THREE_STEPS => $this->name.': Pick components, manufacture and then store products (3 steps)',
+                ManufactureStep::ONE_STEP    => $this->name . ': Manufacture (1 step)',
+                ManufactureStep::TWO_STEPS   => $this->name . ': Pick components and then manufacture (2 steps)',
+                ManufactureStep::THREE_STEPS => $this->name . ': Pick components, manufacture and then store products (3 steps)',
             },
             'product_selectable'          => false,
             'product_category_selectable' => true,
@@ -292,7 +292,7 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 15,
-            'name'                     => $this->code.': Stock → Pre-Production',
+            'name'                     => $this->code . ': Stock → Pre-Production',
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -311,7 +311,7 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 16,
-            'name'                     => $this->code.': Pre-Production → Production',
+            'name'                     => $this->code . ': Pre-Production → Production',
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -330,7 +330,7 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 17,
-            'name'                     => $this->code.': Post-Production → Stock',
+            'name'                     => $this->code . ': Post-Production → Stock',
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -418,9 +418,9 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRoute?->update([
             'name' => match ($this->manufacture_steps) {
-                ManufactureStep::ONE_STEP    => $this->name.': Manufacture (1 step)',
-                ManufactureStep::TWO_STEPS   => $this->name.': Pick components and then manufacture (2 steps)',
-                ManufactureStep::THREE_STEPS => $this->name.': Pick components, manufacture and then store products (3 steps)',
+                ManufactureStep::ONE_STEP    => $this->name . ': Manufacture (1 step)',
+                ManufactureStep::TWO_STEPS   => $this->name . ': Pick components and then manufacture (2 steps)',
+                ManufactureStep::THREE_STEPS => $this->name . ': Pick components, manufacture and then store products (3 steps)',
             },
             'deleted_at' => $this->manufacture_steps === ManufactureStep::ONE_STEP ? now() : null,
         ]);

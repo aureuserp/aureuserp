@@ -67,8 +67,7 @@ class RequisitionLine extends Model
             ->where('product_id', $this->product_id)
             ->whereHas('order', fn ($query) => $query
                 ->where('requisition_id', $this->requisition_id)
-                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value])
-            )
+                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value]))
             ->sum('product_qty');
     }
 

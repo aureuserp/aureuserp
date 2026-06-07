@@ -28,12 +28,12 @@ use Webkul\Support\Models\Company;
 
 class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasEmailAuthentication
 {
-    use HasPermissionScope,
-        HasRoles,
-        InteractsWithAppAuthentication,
-        InteractsWithAppAuthenticationRecovery,
-        InteractsWithEmailAuthentication,
-        SoftDeletes;
+    use HasPermissionScope;
+    use HasRoles;
+    use InteractsWithAppAuthentication;
+    use InteractsWithAppAuthenticationRecovery;
+    use InteractsWithEmailAuthentication;
+    use SoftDeletes;
 
     public function __construct(array $attributes = [])
     {

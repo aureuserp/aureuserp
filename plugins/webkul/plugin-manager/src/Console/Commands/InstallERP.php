@@ -50,29 +50,45 @@ class InstallERP extends Command
         ) {
             if (! $this->handleReinstallation()) {
                 $this->info('Installation cancelled.');
-
                 return;
             }
         }
 
         $this->info('🚀 Starting ERP System Installation...');
 
+        // Ensure .env exists
+        if (!file_exists(base_path('.env'))) {
+            copy(base_path('.env.example'), base_path('.env'));
+            $this->info('.env file created from .env.example');
+        }
+
+        // Generate app key
+        Artisan::call('key:generate', ['--force' => true]);
+        $this->info('Application key generated');
+
+        // Clear caches
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+
+        $this->info('Config and cache cleared');
+
+        // Show environment
+        Artisan::call('env');
+
+        // Continue with ERP setup
         $this->runMigrations();
-
         $this->generateRolesAndPermissions();
-
         $this->storageLink();
-
         $this->runSeeder();
-
         $this->createAdminUser();
-
         $this->markAsInstalled();
 
         Event::dispatch('aureus.installed');
 
         $this->info('🎉 ERP System installation completed successfully!');
+        $this->info('😄 Now run "php artisan serve" to see your app');
     }
+
 
     /**
      * Check if the system is already installed.
@@ -137,7 +153,7 @@ class InstallERP extends Command
             Artisan::call('migrate:fresh', [], $this->getOutput());
             $this->info('✅ Database wiped successfully.');
         } catch (Exception $e) {
-            $this->error('❌ Failed to wipe database: '.$e->getMessage());
+            $this->error('❌ Failed to wipe database: ' . $e->getMessage());
 
             $this->error('Please manually drop your database and create a new one before proceeding.');
 
@@ -278,7 +294,7 @@ class InstallERP extends Command
                 'Email address',
                 default: 'admin@example.com',
                 required: true,
-                validate: fn ($email) => $this->validateAdminEmail($email, $userModel)
+                validate: fn($email) => $this->validateAdminEmail($email, $userModel)
             );
         } else {
             $emailValidation = $this->validateAdminEmail($email, $userModel);
@@ -296,7 +312,7 @@ class InstallERP extends Command
             $passwordInput = password(
                 'Password',
                 required: true,
-                validate: fn ($value) => $this->validateAdminPassword($value)
+                validate: fn($value) => $this->validateAdminPassword($value)
             );
         } else {
             $passwordValidation = $this->validateAdminPassword($passwordInput);
@@ -400,8 +416,8 @@ class InstallERP extends Command
         ];
 
         collect($mappings)
-            ->filter(fn ($column) => ! is_null($column))
-            ->each(fn ($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
+            ->filter(fn($column) => ! is_null($column))
+            ->each(fn($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
     }
 
     /**

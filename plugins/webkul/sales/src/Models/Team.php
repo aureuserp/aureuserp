@@ -17,7 +17,11 @@ use Webkul\Support\Models\Company;
 
 class Team extends Model implements Sortable
 {
-    use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
+    use SoftDeletes;
+    use SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'sales';
 

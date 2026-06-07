@@ -111,7 +111,7 @@ class BillsOfMaterialResource extends Resource
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.sections.general.fields.product'))
                                     ->relationship('product', 'name', fn (Builder $query) => $query->withTrashed()->whereNull('parent_id'))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->wrapOptionLabels(false)
                                     ->disableOptionWhen(function ($label, $value, $state, $component) {
@@ -282,7 +282,7 @@ class BillsOfMaterialResource extends Resource
                                     ->preload()
                                     ->native(false)
                                     ->wrapOptionLabels(false)
-                                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->warehouse->name.': '.$record->name)
+                                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->warehouse->name . ': ' . $record->name)
                                     ->visible(fn (Get $get): bool => ! static::matchesEnumState($get('type'), BillOfMaterialType::PHANTOM))
                                     ->columnSpanFull(),
                                 Select::make('consumption')
@@ -656,11 +656,11 @@ class BillsOfMaterialResource extends Resource
                                     ->columnSpanFull(),
                                 TextEntry::make('produce_delay')
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.manufacturing-lead-time'))
-                                    ->suffix(' '.__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-suffix'))
+                                    ->suffix(' ' . __('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-suffix'))
                                     ->columnSpanFull(),
                                 TextEntry::make('days_to_prepare_mo')
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-to-prepare-manufacturing-order'))
-                                    ->suffix(' '.__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-suffix'))
+                                    ->suffix(' ' . __('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-suffix'))
                                     ->columnSpanFull(),
                             ])
                             ->columns(1),
@@ -775,7 +775,7 @@ class BillsOfMaterialResource extends Resource
                     ->createOptionAction(fn (Action $action) => $action->modalWidth(Width::SevenExtraLarge))
                     ->live()
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
                     ->disableOptionWhen(function ($label, $value, $state, $component) {
@@ -1127,7 +1127,7 @@ class BillsOfMaterialResource extends Resource
                     ->required()
                     ->live()
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
                     ->disableOptionWhen(function ($label, $value, $state, $component) {

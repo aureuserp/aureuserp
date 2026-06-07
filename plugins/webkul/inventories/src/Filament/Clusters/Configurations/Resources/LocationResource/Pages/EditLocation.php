@@ -41,7 +41,7 @@ class EditLocation extends EditRecord
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'Location-'.$record->name.'.pdf');
+                    }, 'Location-' . $record->name . '.pdf');
                 }),
             DeleteAction::make()
                 ->successNotification(

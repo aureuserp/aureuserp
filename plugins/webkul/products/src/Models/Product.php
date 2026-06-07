@@ -21,7 +21,11 @@ use Webkul\Support\Models\UOM;
 
 class Product extends Model implements Sortable
 {
-    use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
+    use SoftDeletes;
+    use SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 
@@ -202,7 +206,7 @@ class Product extends Model implements Sortable
         };
 
         $getVariantDetails = function ($combination) {
-            $name = $this->name.' - '.collect($combination)
+            $name = $this->name . ' - ' . collect($combination)
                 ->map(fn ($value) => $value->attributeOption->name)
                 ->implode(' / ');
 
@@ -263,7 +267,7 @@ class Product extends Model implements Sortable
                         'description_purchase' => $this->description_purchase,
                         'description_sale'     => $this->description_sale,
                         'barcode'              => null,
-                        'reference'            => $this->reference.'-'.strtolower(str_replace(' ', '-', $details['name'])),
+                        'reference'            => $this->reference . '-' . strtolower(str_replace(' ', '-', $details['name'])),
                         'images'               => $this->images,
                     ]);
                 }

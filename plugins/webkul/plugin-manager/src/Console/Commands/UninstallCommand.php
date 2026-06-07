@@ -22,9 +22,9 @@ class UninstallCommand extends Command
 
     public function __construct(Package $package)
     {
-        $this->signature = $package->shortName().':uninstall {--force : Force the operation to run without confirmation}';
+        $this->signature = $package->shortName() . ':uninstall {--force : Force the operation to run without confirmation}';
 
-        $this->description = 'Uninstall '.$package->name;
+        $this->description = 'Uninstall ' . $package->name;
 
         $this->package = $package;
 
@@ -42,7 +42,7 @@ class UninstallCommand extends Command
         $installedDependents = $this->package->getPlugin()->dependents->filter(fn ($plugin) => $plugin->is_installed);
 
         if ($installedDependents->isNotEmpty()) {
-            $this->error("Package {$this->package->shortName()} has installed dependents: <comment>".$installedDependents->pluck('name')->implode(', ').'</comment>. Please uninstall these dependents first!');
+            $this->error("Package {$this->package->shortName()} has installed dependents: <comment>" . $installedDependents->pluck('name')->implode(', ') . '</comment>. Please uninstall these dependents first!');
 
             return;
         }
@@ -81,7 +81,7 @@ class UninstallCommand extends Command
         foreach ($migrations as $migration) {
             $fullPath = $this->package->basePath("../database/migrations/{$migration}.php");
 
-            $migrationPath = Str::after($fullPath, base_path().DIRECTORY_SEPARATOR);
+            $migrationPath = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
 
             if (file_exists($migrationPath)) {
                 require_once $migrationPath;
@@ -101,7 +101,7 @@ class UninstallCommand extends Command
         foreach ($this->package->settingFileNames as $setting) {
             $fullPath = $this->package->basePath("../database/settings/{$setting}.php");
 
-            $migrationPath = Str::after($fullPath, base_path().DIRECTORY_SEPARATOR);
+            $migrationPath = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
 
             if (file_exists($migrationPath)) {
                 require_once $migrationPath;

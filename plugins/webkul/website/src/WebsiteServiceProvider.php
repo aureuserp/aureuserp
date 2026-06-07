@@ -39,7 +39,8 @@ class WebsiteServiceProvider extends PackageServiceProvider
                 '2025_03_10_094021_create_website_contact_settings',
             ])
             ->runsSettings()
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+            })
             ->icon('website');
     }
 
@@ -66,7 +67,7 @@ class WebsiteServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('website', __DIR__.'/../resources/dist/website.css'),
+            Css::make('website', __DIR__ . '/../resources/dist/website.css'),
         ], 'website');
     }
 }

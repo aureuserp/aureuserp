@@ -19,7 +19,12 @@ use Webkul\Support\Database\Factories\CompanyFactory;
 
 class Company extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasPermissionScope, SoftDeletes, SortableTrait;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasPermissionScope;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $fillable = [
         'sort',

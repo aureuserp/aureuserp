@@ -5,8 +5,8 @@ use Webkul\Purchase\Models\RequisitionLine;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PURCHASE_AGREEMENT_LINE_JSON_STRUCTURE = [
     'id',
@@ -122,7 +122,7 @@ it('filters purchase agreement lines by product id', function () {
     $matchingLine = $agreement->lines()->firstOrFail();
 
     $response = $this->getJson(
-        purchaseAgreementLineRoute('index', $agreement->id).'?filter[product_id]='.$matchingLine->product_id
+        purchaseAgreementLineRoute('index', $agreement->id) . '?filter[product_id]=' . $matchingLine->product_id
     )->assertOk();
 
     $productIds = collect($response->json('data'))->pluck('product_id')->unique()->values()->all();
@@ -135,7 +135,7 @@ it('sorts purchase agreement lines by id descending', function () {
 
     $agreement = createAgreementWithLines(2);
 
-    $response = $this->getJson(purchaseAgreementLineRoute('index', $agreement->id).'?sort=-id')
+    $response = $this->getJson(purchaseAgreementLineRoute('index', $agreement->id) . '?sort=-id')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id')->values()->all();
@@ -149,7 +149,7 @@ it('includes related product for purchase agreement lines', function () {
 
     $agreement = createAgreementWithLines(1);
 
-    $this->getJson(purchaseAgreementLineRoute('index', $agreement->id).'?include=product')
+    $this->getJson(purchaseAgreementLineRoute('index', $agreement->id) . '?include=product')
         ->assertOk()
         ->assertJsonPath('data.0.product.id', fn ($id) => is_int($id));
 });

@@ -16,7 +16,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewBill extends ViewRecord
 {
-    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeatableEntryColumnManager;
 
     protected static string $resource = BillResource::class;
 

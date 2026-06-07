@@ -79,7 +79,7 @@ class Plugin extends Model implements Sortable
 
                 $serviceProvider = new $serviceProviderClass(app());
 
-                $package = new Package;
+                $package = new Package();
 
                 $serviceProvider->configureCustomPackage($package);
 

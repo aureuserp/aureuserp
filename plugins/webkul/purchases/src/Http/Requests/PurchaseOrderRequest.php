@@ -45,7 +45,7 @@ class PurchaseOrderRequest extends FormRequest
             'lines.*.planned_at'           => ['required', 'date'],
             'lines.*.product_qty'          => ['required', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.uom_id'               => ['nullable', 'integer', 'exists:unit_of_measures,id'],
-            'lines.*.product_packaging_qty'=> ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'lines.*.product_packaging_qty' => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.product_packaging_id' => ['nullable', 'integer', 'exists:products_packagings,id'],
             'lines.*.price_unit'           => ['required', 'numeric', 'min:0', 'max:99999999999'],
             'lines.*.taxes'                => ['nullable', 'array'],

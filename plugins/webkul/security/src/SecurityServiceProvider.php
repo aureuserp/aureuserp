@@ -44,7 +44,7 @@ class SecurityServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        require_once __DIR__.'/Helpers/helpers.php';
+        require_once __DIR__ . '/Helpers/helpers.php';
     }
 
     public function packageRegistered(): void

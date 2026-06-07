@@ -28,19 +28,19 @@ class EmployeePlugin implements Plugin
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel
                     ->discoverResources(
-                        in: __DIR__.'/Filament/Resources',
+                        in: __DIR__ . '/Filament/Resources',
                         for: 'Webkul\\Employee\\Filament\\Resources'
                     )
                     ->discoverPages(
-                        in: __DIR__.'/Filament/Pages',
+                        in: __DIR__ . '/Filament/Pages',
                         for: 'Webkul\\Employee\\Filament\\Pages'
                     )
                     ->discoverClusters(
-                        in: __DIR__.'/Filament/Clusters',
+                        in: __DIR__ . '/Filament/Clusters',
                         for: 'Webkul\\Employee\\Filament\\Clusters'
                     )
                     ->discoverClusters(
-                        in: __DIR__.'/Filament/Widgets',
+                        in: __DIR__ . '/Filament/Widgets',
                         for: 'Webkul\\Employee\\Filament\\Widgets'
                     );
             });

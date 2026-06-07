@@ -49,8 +49,7 @@ class JobByPositionResource extends Resource
                 ->withCount([
                     'applications as new_applicants_count' => fn ($query) => $query->where('stage_id', 1),
                     'applications as total_applicants_count',
-                ])
-            )
+                ]))
             ->columns([
                 Stack::make([
                     Stack::make([

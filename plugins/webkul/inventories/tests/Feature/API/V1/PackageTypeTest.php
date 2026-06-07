@@ -4,8 +4,8 @@ use Webkul\Inventory\Models\PackageType;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_PACKAGE_TYPE_JSON_STRUCTURE = [
     'id',
@@ -152,7 +152,7 @@ it('filters package types by name', function () {
     $packageType = PackageType::factory()->withDimensions()->create(['name' => 'UniqueBoxXYZ']);
     PackageType::factory()->withDimensions()->count(2)->create();
 
-    $response = $this->getJson(inventoryPackageTypeRoute('index').'?filter[name]=UniqueBoxXYZ')
+    $response = $this->getJson(inventoryPackageTypeRoute('index') . '?filter[name]=UniqueBoxXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

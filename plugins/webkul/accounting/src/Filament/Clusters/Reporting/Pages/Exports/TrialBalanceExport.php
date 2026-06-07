@@ -34,13 +34,13 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
     public function headings(): array
     {
         return [
-            ['Trial Balance - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
+            ['Trial Balance - From ' . $this->dateFrom->format('M d, Y') . ' to ' . $this->dateTo->format('M d, Y')],
             [],
             [
                 '',
                 'Initial Balance',
                 '',
-                $this->dateFrom->format('d M Y').' - '.$this->dateTo->format('d M Y'),
+                $this->dateFrom->format('d M Y') . ' - ' . $this->dateTo->format('d M Y'),
                 '',
                 'End Balance',
                 '',
@@ -64,7 +64,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
 
         collect($this->accounts)->each(function ($account) use (&$rows, &$rowIndex) {
             $rows[] = [
-                '        '.($account['code'] ?? '').' '.($account['name'] ?? ''),
+                '        ' . ($account['code'] ?? '') . ' ' . ($account['name'] ?? ''),
                 $account['initial_debit'] > 0 ? $account['initial_debit'] : '0.00',
                 $account['initial_credit'] > 0 ? $account['initial_credit'] : '0.00',
                 $account['period_debit'] > 0 ? $account['period_debit'] : '0.00',

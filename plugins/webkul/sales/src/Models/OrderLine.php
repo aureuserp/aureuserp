@@ -33,7 +33,8 @@ use Webkul\Support\Models\UOM;
 
 class OrderLine extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'sales_order_lines';
 

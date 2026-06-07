@@ -14,7 +14,7 @@ return [
         'volume'              => 'الحجم',
         'weight'              => 'الوزن',
         'description'         => 'الوصف',
-        'description_purchase'=> 'الوصف (الشراء)',
+        'description_purchase' => 'الوصف (الشراء)',
         'description_sale'    => 'الوصف (البيع)',
         'enable_sales'        => 'تفعيل المبيعات',
         'enable_purchase'     => 'تفعيل الشراء',

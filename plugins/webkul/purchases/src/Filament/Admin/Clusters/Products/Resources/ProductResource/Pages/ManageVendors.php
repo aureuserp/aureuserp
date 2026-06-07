@@ -50,8 +50,7 @@ class ManageVendors extends ManageRelatedRecords
                 )
                 ->required()
                 ->searchable()
-                ->preload(),
-            );
+                ->preload(),);
 
             $secondGroupChildComponents[0]->childComponents($secondGroupFirstSectionChildComponents);
 

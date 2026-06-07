@@ -18,7 +18,11 @@ use Webkul\Support\Models\Company;
 
 class Department extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'employees';
 
@@ -139,7 +143,7 @@ class Department extends Model
     {
         if ($department->parent_id) {
             $parent = static::find($department->parent_id);
-            $department->parent_path = $parent?->parent_path.$parent?->id.'/';
+            $department->parent_path = $parent?->parent_path . $parent?->id . '/';
 
             $department->master_department_id = static::findTopLevelParentId($parent);
         } else {

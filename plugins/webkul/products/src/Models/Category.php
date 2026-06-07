@@ -15,7 +15,9 @@ use Webkul\Security\Models\User;
 
 class Category extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 
@@ -135,7 +137,7 @@ class Category extends Model
             $parent = static::find($category->parent_id);
 
             if ($parent) {
-                $category->parent_path = $parent->parent_path.$parent->id.'/';
+                $category->parent_path = $parent->parent_path . $parent->id . '/';
             } else {
                 $category->parent_path = '/';
                 $category->parent_id = null;

@@ -53,12 +53,10 @@ class CreatePurchaseAgreement extends CreateRecord
             ->requiresConfirmation(fn () => $this->hasAnotherConfirmedAgreementForSelectedVendor())
             ->modalHeading(fn () => $this->hasAnotherConfirmedAgreementForSelectedVendor()
                 ? __('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/create-purchase-agreement.confirmation.heading')
-                : null
-            )
+                : null)
             ->modalDescription(fn () => $this->hasAnotherConfirmedAgreementForSelectedVendor()
                 ? __('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/create-purchase-agreement.confirmation.description')
-                : null
-            );
+                : null);
     }
 
     protected function hasAnotherConfirmedAgreementForSelectedVendor(): bool

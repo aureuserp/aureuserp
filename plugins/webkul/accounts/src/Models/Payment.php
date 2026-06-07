@@ -26,7 +26,9 @@ use Webkul\Support\Models\Currency;
 
 class Payment extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
 
@@ -202,7 +204,7 @@ class Payment extends Model
 
     public function getOutstandingAccount($paymentType)
     {
-        $defaultAccountSettings = new DefaultAccountSettings;
+        $defaultAccountSettings = new DefaultAccountSettings();
 
         if ($this->payment_type == PaymentType::RECEIVE) {
             $accountId = $defaultAccountSettings->account_journal_payment_debit_account_id;
@@ -277,7 +279,7 @@ class Payment extends Model
                 $prefix,
                 $this->journal->code,
                 $this->date->format('Y'),
-            ).'/'.$this->id;
+            ) . '/' . $this->id;
         }
     }
 
@@ -476,9 +478,9 @@ class Payment extends Model
     {
         $this->show_partner_bank_account = $this->journal->type == JournalType::CASH
             ? false
-            : in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesUsingBankAccount());
+            : in_array($this->paymentMethodLine->code, (new Payment())->getMethodCodesUsingBankAccount());
 
-        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesNeedingBankAccount());
+        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment())->getMethodCodesNeedingBankAccount());
     }
 
     public function generateJournalEntry($writeOffLineVals = null, $forceBalance = null, $lines = null)
@@ -515,8 +517,8 @@ class Payment extends Model
     {
         if (! $this->outstanding_account_id) {
             throw new Exception(
-                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the ".
-                    $this->paymentMethodLine->name.' payment method in the '.$this->journal->display_name.' journal.'
+                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the " .
+                    $this->paymentMethodLine->name . ' payment method in the ' . $this->journal->display_name . ' journal.'
             );
         }
 
@@ -634,7 +636,7 @@ class Payment extends Model
                 $lines[0]->push($line);
             } elseif (
                 in_array($line->account->account_type, $validAccountTypes)
-                || $line->account_id == (new DefaultAccountSettings)->transfer_account_id
+                || $line->account_id == (new DefaultAccountSettings())->transfer_account_id
             ) {
                 $lines[1]->push($line);
             } else {

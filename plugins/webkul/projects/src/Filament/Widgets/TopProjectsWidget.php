@@ -14,7 +14,8 @@ use Webkul\Project\Models\Timesheet;
 
 class TopProjectsWidget extends BaseWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use HasWidgetShield;
+    use InteractsWithPageFilters;
 
     protected static bool $isLazy = false;
 

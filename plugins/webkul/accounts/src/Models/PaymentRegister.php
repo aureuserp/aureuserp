@@ -178,8 +178,8 @@ class PaymentRegister extends Model
             && $this->currency_id != $this->source_currency_id
             && $this->writeoff_account_id
             && in_array($this->writeoff_account_id, [
-                (new DefaultAccountSettings)->expense_currency_exchange_account_id,
-                (new DefaultAccountSettings)->income_currency_exchange_account_id,
+                (new DefaultAccountSettings())->expense_currency_exchange_account_id,
+                (new DefaultAccountSettings())->income_currency_exchange_account_id,
             ]);
     }
 
@@ -294,9 +294,9 @@ class PaymentRegister extends Model
     {
         $this->show_partner_bank_account = $this->journal->type == JournalType::CASH
             ? false
-            : in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesUsingBankAccount());
+            : in_array($this->paymentMethodLine->code, (new Payment())->getMethodCodesUsingBankAccount());
 
-        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesNeedingBankAccount());
+        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment())->getMethodCodesNeedingBankAccount());
     }
 
     public function computePaymentDifferenceHandling()

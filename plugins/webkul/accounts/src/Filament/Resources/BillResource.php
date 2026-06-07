@@ -201,7 +201,7 @@ class BillResource extends Resource
                                                 modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('partner_id', $get('partner_id'))->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->account_number . ' - ' . $record->bank->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
@@ -1089,7 +1089,7 @@ class BillResource extends Resource
                     ->live()
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
                         if (str_contains($label, ' (Deleted)')) {

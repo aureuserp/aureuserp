@@ -4,8 +4,8 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Models\Move;
 use Webkul\Sale\Models\Order;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const SALES_ORDER_INVOICE_JSON_STRUCTURE = [
     'id',
@@ -118,7 +118,7 @@ it('filters order invoices by state', function () {
 
     $order->accountMoves()->attach([$draftInvoice->id, $postedInvoice->id]);
 
-    $response = $this->getJson(salesOrderInvoiceRoute('index', $order->id).'?filter[state]=draft')
+    $response = $this->getJson(salesOrderInvoiceRoute('index', $order->id) . '?filter[state]=draft')
         ->assertOk();
 
     $states = collect($response->json('data'))->pluck('state')->unique()->values()->all();
@@ -131,7 +131,7 @@ it('sorts order invoices by id descending', function () {
 
     [$order] = createOrderWithInvoices();
 
-    $response = $this->getJson(salesOrderInvoiceRoute('index', $order->id).'?sort=-id')
+    $response = $this->getJson(salesOrderInvoiceRoute('index', $order->id) . '?sort=-id')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id')->values()->all();
@@ -145,7 +145,7 @@ it('includes company relationship for order invoices', function () {
 
     [$order] = createOrderWithInvoices();
 
-    $this->getJson(salesOrderInvoiceRoute('index', $order->id).'?include=company')
+    $this->getJson(salesOrderInvoiceRoute('index', $order->id) . '?include=company')
         ->assertOk()
         ->assertJsonPath('data.0.company.id', fn ($id) => is_int($id));
 });

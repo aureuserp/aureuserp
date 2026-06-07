@@ -151,7 +151,7 @@ class EquipmentResource extends Resource
                                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->native(false)
@@ -449,7 +449,7 @@ class EquipmentResource extends Resource
                             ->schema([
                                 TextEntry::make('expected_mtbf')
                                     ->label(__('maintenance::filament/resources/equipment.infolist.sections.maintenance.entries.expected-mtbf'))
-                                    ->suffix(' '.__('maintenance::filament/resources/equipment.infolist.sections.maintenance.suffixes.days'))
+                                    ->suffix(' ' . __('maintenance::filament/resources/equipment.infolist.sections.maintenance.suffixes.days'))
                                     ->placeholder('0'),
 
                                 TextEntry::make('maintenance_count')

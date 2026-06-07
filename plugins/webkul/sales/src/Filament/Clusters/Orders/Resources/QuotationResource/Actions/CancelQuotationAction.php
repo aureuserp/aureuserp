@@ -45,7 +45,6 @@ class CancelQuotationAction extends Action
                         ->body(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.cancel.notification.cancelled.body'))
                         ->send();
                 } else {
-
                     try {
                         SaleManagerFacade::cancelSaleOrder($record, $data ?? []);
                     } catch (Exception $e) {

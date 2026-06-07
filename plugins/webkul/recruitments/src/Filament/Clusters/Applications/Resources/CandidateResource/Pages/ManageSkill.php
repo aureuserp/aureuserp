@@ -9,7 +9,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageSkill extends ManageRelatedRecords
 {
-    use CandidateSkillRelation, HasRecordNavigationTabs;
+    use CandidateSkillRelation;
+    use HasRecordNavigationTabs;
 
     protected static string $resource = CandidateResource::class;
 

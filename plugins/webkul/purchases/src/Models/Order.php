@@ -30,7 +30,11 @@ use Webkul\Support\Models\Currency;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use HasPermissionScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
@@ -208,7 +212,7 @@ class Order extends Model
 
     public function addMessage(array $data): Message
     {
-        $message = new Message;
+        $message = new Message();
 
         $user = Auth::user();
 
@@ -248,7 +252,7 @@ class Order extends Model
 
     public function updateName()
     {
-        $this->name = 'PO/'.$this->id;
+        $this->name = 'PO/' . $this->id;
     }
 
     protected static function newFactory(): OrderFactory

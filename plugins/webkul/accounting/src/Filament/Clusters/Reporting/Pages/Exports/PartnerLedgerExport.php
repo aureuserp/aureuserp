@@ -37,7 +37,7 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function headings(): array
     {
         return [
-            ['Partner Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
+            ['Partner Ledger - From ' . $this->dateFrom->format('M d, Y') . ' to ' . $this->dateTo->format('M d, Y')],
             [],
             ['Partner', 'Journal', 'Account', 'Invoice Date', 'Due Date', 'Debit', 'Credit', 'Balance'],
         ];
@@ -89,9 +89,9 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                 collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
                     $runningBalance += $move['debit'] - $move['credit'];
                     $rows[] = [
-                        '        '.$move['move_name'].($move['ref'] ? ' ('.$move['ref'].')' : ''),
+                        '        ' . $move['move_name'] . ($move['ref'] ? ' (' . $move['ref'] . ')' : ''),
                         $move['journal_name'] ?? '',
-                        ($move['account_code'] ? $move['account_code'].' ' : '').$move['account_name'],
+                        ($move['account_code'] ? $move['account_code'] . ' ' : '') . $move['account_name'],
                         Carbon::parse($move['invoice_date'])->format('M d, Y'),
                         Carbon::parse($move['invoice_date_due'])->format('M d, Y'),
                         $move['debit'] > 0 ? $move['debit'] : '',

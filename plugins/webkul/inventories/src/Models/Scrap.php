@@ -21,7 +21,9 @@ use Webkul\Support\Models\UOM;
 
 class Scrap extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
@@ -147,7 +149,7 @@ class Scrap extends Model
 
     public function updateName()
     {
-        $this->name = 'SP/'.$this->id;
+        $this->name = 'SP/' . $this->id;
     }
 
     protected static function newFactory(): ScrapFactory

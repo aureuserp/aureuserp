@@ -8,8 +8,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\UOM;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_PRODUCT_JSON_STRUCTURE = [
     'id',
@@ -198,7 +198,7 @@ it('filters products by type', function () {
     $goodsProduct = Product::factory()->create(['type' => ProductType::GOODS->value]);
     $serviceProduct = Product::factory()->create(['type' => ProductType::SERVICE->value]);
 
-    $response = $this->getJson(productsProductRoute('index').'?filter[type]='.ProductType::GOODS->value)
+    $response = $this->getJson(productsProductRoute('index') . '?filter[type]=' . ProductType::GOODS->value)
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -213,7 +213,7 @@ it('filters products by enable_sales', function () {
     $enabled = Product::factory()->create(['enable_sales' => true]);
     $disabled = Product::factory()->create(['enable_sales' => false]);
 
-    $response = $this->getJson(productsProductRoute('index').'?filter[enable_sales]=true')
+    $response = $this->getJson(productsProductRoute('index') . '?filter[enable_sales]=true')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -244,7 +244,7 @@ it('includes soft-deleted products when filter[trashed]=with', function () {
     $deleted = Product::factory()->create();
     $deleted->delete();
 
-    $response = $this->getJson(productsProductRoute('index').'?filter[trashed]=with')
+    $response = $this->getJson(productsProductRoute('index') . '?filter[trashed]=with')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

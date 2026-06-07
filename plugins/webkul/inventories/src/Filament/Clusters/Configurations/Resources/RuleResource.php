@@ -119,7 +119,7 @@ class RuleResource extends Resource
                                                             return $record->name;
                                                         }
 
-                                                        return $record->warehouse->name.': '.$record->name;
+                                                        return $record->warehouse->name . ': ' . $record->name;
                                                     })
                                                     ->afterStateUpdated(function (Set $set, Get $get) {
                                                         $operationType = OperationType::find($get('operation_type_id'));
@@ -191,7 +191,7 @@ class RuleResource extends Resource
                                                         return match ($action) {
                                                             RuleAction::PULL        => new HtmlString($pullMessage),
                                                             RuleAction::PUSH        => new HtmlString($pushMessage),
-                                                            RuleAction::PULL_PUSH   => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                                            RuleAction::PULL_PUSH   => new HtmlString($pullMessage . '</br></br>' . $pushMessage),
                                                             RuleAction::BUY         => new HtmlString($buyMessage),
                                                             RuleAction::MANUFACTURE => new HtmlString($manufactureMessage),
                                                         };
@@ -231,7 +231,7 @@ class RuleResource extends Resource
                                                 modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
@@ -440,7 +440,7 @@ class RuleResource extends Resource
                                 return match ($record->action) {
                                     RuleAction::PULL      => new HtmlString($pullMessage),
                                     RuleAction::PUSH      => new HtmlString($pushMessage),
-                                    RuleAction::PULL_PUSH => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                    RuleAction::PULL_PUSH => new HtmlString($pullMessage . '</br></br>' . $pushMessage),
                                 };
                             })
                             ->schema([
