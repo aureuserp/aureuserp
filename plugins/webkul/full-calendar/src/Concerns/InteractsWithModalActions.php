@@ -40,7 +40,7 @@ trait InteractsWithModalActions
             }
 
             if (! $action instanceof Action) {
-                throw new InvalidArgumentException('Header actions must be an instance of '.Action::class.', or '.ActionGroup::class.'.');
+                throw new InvalidArgumentException('Header actions must be an instance of ' . Action::class . ', or ' . ActionGroup::class . '.');
             }
 
             $this->cacheAction($action);

@@ -55,7 +55,8 @@ use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
+    use HasResourcePermissionQuery;
 
     protected static ?string $model = Company::class;
 

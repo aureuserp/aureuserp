@@ -26,7 +26,9 @@ use Webkul\Partner\Models\Partner;
 
 class PartnerLedger extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use HasPageShield;
+    use InteractsWithForms;
+    use NormalizeDateFilter;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.partner-ledger';
 
@@ -88,7 +90,7 @@ class PartnerLedger extends Page implements HasForms
 
                     return Excel::download(
                         new PartnerLedgerExport($partners, $dateFrom, $dateTo, fn ($id) => $this->getPartnerMoves($id), $this->expandedPartners),
-                        'partner-ledger-'.$dateFrom.'-to-'.$dateTo.'.xlsx'
+                        'partner-ledger-' . $dateFrom . '-to-' . $dateTo . '.xlsx'
                     );
                 }),
 
@@ -108,7 +110,7 @@ class PartnerLedger extends Page implements HasForms
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'partner-ledger-'.$data['date_from'].'-to-'.$data['date_to'].'.pdf');
+                    }, 'partner-ledger-' . $data['date_from'] . '-to-' . $data['date_to'] . '.pdf');
                 }),
         ];
     }

@@ -41,7 +41,7 @@ trait NormalizeDateFilter
         foreach ($dates as $date) {
             if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
                 $dateParts = explode('/', $date);
-                $convertedDates[] = $dateParts[2].'-'.$dateParts[1].'-'.$dateParts[0];
+                $convertedDates[] = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0];
             } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
                 $convertedDates[] = $date;
             } else {

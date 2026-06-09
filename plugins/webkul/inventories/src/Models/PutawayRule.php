@@ -19,7 +19,9 @@ use Webkul\Support\Models\Company;
 
 class PutawayRule extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'inventories_putaway_rules';
 

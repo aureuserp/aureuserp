@@ -18,7 +18,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditManufacturingOrder extends EditRecord
 {
-    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeaterColumnManager;
 
     protected ?bool $hasDatabaseTransactions = true;
 

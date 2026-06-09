@@ -64,8 +64,7 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
             ->action(function (array $arguments) {
                 $lines = MoveLine::where('id', $arguments['lineId'])->get();
 
-                $lines = $lines->merge($this->record->lines->filter(fn ($line) => $line->account_id == $lines->first()->account_id && ! $line->reconciled
-                ));
+                $lines = $lines->merge($this->record->lines->filter(fn ($line) => $line->account_id == $lines->first()->account_id && ! $line->reconciled));
 
                 AccountFacade::reconcile($lines);
             })

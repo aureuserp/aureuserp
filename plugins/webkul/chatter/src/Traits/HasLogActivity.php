@@ -121,7 +121,7 @@ trait HasLogActivity
 
             return $instance ? $instance->$attribute : null;
         } catch (Exception $e) {
-            Log::error("Error getting related value for {$relation}.{$attribute}: ".$e->getMessage());
+            Log::error("Error getting related value for {$relation}.{$attribute}: " . $e->getMessage());
 
             return null;
         }
@@ -176,7 +176,7 @@ trait HasLogActivity
                 }
             }
         } catch (Exception $e) {
-            Log::error("Error tracking relationship changes for {$relation}.{$attribute}: ".$e->getMessage());
+            Log::error("Error tracking relationship changes for {$relation}.{$attribute}: " . $e->getMessage());
         }
 
         return null;

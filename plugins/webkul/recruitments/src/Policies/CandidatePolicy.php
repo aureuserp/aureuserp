@@ -9,7 +9,8 @@ use Webkul\Security\Traits\HasScopedPermissions;
 
 class CandidatePolicy
 {
-    use HandlesAuthorization, HasScopedPermissions;
+    use HandlesAuthorization;
+    use HasScopedPermissions;
 
     /**
      * Determine whether the user can view any models.

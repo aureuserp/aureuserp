@@ -9,7 +9,9 @@ use Webkul\Sale\Services\Msg91Service;
 
 class SendSMSNotificationListener
 {
-    public function __construct(private Msg91Service $sms) {}
+    public function __construct(private Msg91Service $sms)
+    {
+    }
 
     public function handle(MovePaid $event): void
     {
@@ -35,14 +37,14 @@ class SendSMSNotificationListener
         $customerName = $order->partner?->name ?? 'Customer';
 
         $customerMessage = "Dear {$customerName}, we have received your payment for order {$order->name}. "
-            .'Amount paid: '.money($totalPaid, $currency).'. '
-            .($totalRemaining > 0
-                ? 'Outstanding balance: '.money($totalRemaining, $currency).'. Please clear the remaining amount at your earliest convenience.'
+            . 'Amount paid: ' . money($totalPaid, $currency) . '. '
+            . ($totalRemaining > 0
+                ? 'Outstanding balance: ' . money($totalRemaining, $currency) . '. Please clear the remaining amount at your earliest convenience.'
                 : 'Your account is fully settled. Thank you!')
-            .' - '.config('app.name');
+            . ' - ' . config('app.name');
 
         $adminMessage = "Payment received | Order: {$order->name} | Customer: {$customerName} | "
-            .'Invoiced: '.money($totalInvoiced, $currency).' | Paid: '.money($totalPaid, $currency).' | Remaining: '.money($totalRemaining, $currency);
+            . 'Invoiced: ' . money($totalInvoiced, $currency) . ' | Paid: ' . money($totalPaid, $currency) . ' | Remaining: ' . money($totalRemaining, $currency);
 
         $customerMobile = $order->partner?->mobile ?? $order->partner?->phone;
 

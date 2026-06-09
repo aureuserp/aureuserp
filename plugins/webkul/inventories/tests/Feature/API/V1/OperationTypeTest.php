@@ -8,8 +8,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_OPERATION_TYPE_JSON_STRUCTURE = [
     'id',
@@ -60,7 +60,7 @@ function inventoryOperationTypePayload(array $overrides = []): array
     return array_replace_recursive([
         'name'                    => 'Test Operation',
         'type'                    => OperationTypeEnum::INTERNAL->value,
-        'sequence_code'           => 'INT-'.uniqid(),
+        'sequence_code'           => 'INT-' . uniqid(),
         'create_backorder'        => CreateBackorder::ASK->value,
         'source_location_id'      => $source->id,
         'destination_location_id' => $destination->id,
@@ -198,7 +198,7 @@ it('filters operation types by name', function () {
     $operationType = OperationType::factory()->create(['name' => 'UniqueOperationXYZ']);
     OperationType::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryOperationTypeRoute('index').'?filter[name]=UniqueOperationXYZ')
+    $response = $this->getJson(inventoryOperationTypeRoute('index') . '?filter[name]=UniqueOperationXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -211,7 +211,7 @@ it('filters operation types by type', function () {
 
     $receipt = OperationType::factory()->receipt()->create();
 
-    $response = $this->getJson(inventoryOperationTypeRoute('index').'?filter[type]=incoming')
+    $response = $this->getJson(inventoryOperationTypeRoute('index') . '?filter[type]=incoming')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

@@ -117,9 +117,9 @@ class Account extends Model
 
         $group = null;
 
-        if (in_array($moveType, (new Move)->getInboundTypes(true))) {
+        if (in_array($moveType, (new Move())->getInboundTypes(true))) {
             $group = 'income';
-        } elseif (in_array($moveType, (new Move)->getOutboundTypes(true))) {
+        } elseif (in_array($moveType, (new Move())->getOutboundTypes(true))) {
             $group = 'expense';
         }
 

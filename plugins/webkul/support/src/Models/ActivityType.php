@@ -15,7 +15,9 @@ use Webkul\Security\Models\User;
 
 class ActivityType extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'activity_types';
 

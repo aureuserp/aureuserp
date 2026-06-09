@@ -17,7 +17,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewReceipt extends ViewRecord
 {
-    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeatableEntryColumnManager;
 
     protected static string $resource = ReceiptResource::class;
 

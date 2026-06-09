@@ -131,7 +131,7 @@ class LabelsAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Labels-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Labels-' . str_replace('/', '_', $record->name) . '.pdf');
             });
     }
 }

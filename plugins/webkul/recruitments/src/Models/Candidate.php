@@ -16,7 +16,9 @@ use Webkul\Support\Models\Company;
 
 class Candidate extends Model
 {
-    use HasChatter, HasLogActivity, SoftDeletes;
+    use HasChatter;
+    use HasLogActivity;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 

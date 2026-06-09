@@ -34,7 +34,8 @@ use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasFactory, HasPermissionScope;
+    use HasFactory;
+    use HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -371,7 +372,7 @@ class Order extends Model
         });
 
         static::created(function ($order) {
-            $name = 'MO/'.$order->id;
+            $name = 'MO/' . $order->id;
 
             if (! $order->procurement_group_id) {
                 $order->procurement_group_id = $order->procurementGroup()->create([
@@ -419,7 +420,7 @@ class Order extends Model
 
     public function computeName()
     {
-        $this->name = 'MO/'.$this->id;
+        $this->name = 'MO/' . $this->id;
     }
 
     public function computeProductUOMQty()
@@ -449,8 +450,7 @@ class Order extends Model
             $this->state === ManufacturingOrderState::CANCEL
             || (
                 $this->finishedMoves->isNotEmpty()
-                && $this->finishedMoves->every(fn ($move) => $move->state === MoveState::CANCELED
-                )
+                && $this->finishedMoves->every(fn ($move) => $move->state === MoveState::CANCELED)
             )
         ) {
             $this->state = ManufacturingOrderState::CANCEL;

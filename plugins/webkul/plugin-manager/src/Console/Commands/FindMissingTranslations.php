@@ -80,7 +80,7 @@ class FindMissingTranslations extends Command
 
         $this->info('Translations Checker');
 
-        $this->line('   Canonical Locale: <fg=cyan>'.Str::upper(self::BASE_LOCALE).'</>');
+        $this->line('   Canonical Locale: <fg=cyan>' . Str::upper(self::BASE_LOCALE) . '</>');
 
         if ($targetLocale) {
             $this->line("   Filter Locale: <fg=yellow>{$targetLocale}</>");
@@ -106,7 +106,7 @@ class FindMissingTranslations extends Command
                 $pluginName = basename($pluginDir);
 
                 $langPath = collect(self::PLUGIN_LANG_PATHS)
-                    ->map(fn ($path) => $pluginDir.$path)
+                    ->map(fn ($path) => $pluginDir . $path)
                     ->first(fn ($path) => File::isDirectory($path));
 
                 if ($langPath) {
@@ -117,7 +117,7 @@ class FindMissingTranslations extends Command
 
     protected function processLangFolder(string $name, string $langRoot, ?string $targetLocale): void
     {
-        $enPath = $langRoot.'/'.self::BASE_LOCALE;
+        $enPath = $langRoot . '/' . self::BASE_LOCALE;
 
         if (! File::isDirectory($enPath)) {
             return;
@@ -129,7 +129,7 @@ class FindMissingTranslations extends Command
             return;
         }
 
-        $enFilesRel = $enFiles->map(fn ($f) => Str::after($f, $enPath.'/'));
+        $enFilesRel = $enFiles->map(fn ($f) => Str::after($f, $enPath . '/'));
 
         $locales = collect(self::supportedLocales())
             ->reject(fn ($d) => $d === self::BASE_LOCALE)
@@ -204,7 +204,7 @@ class FindMissingTranslations extends Command
 
         $localeFiles = $this->getPhpFiles($localePath);
 
-        $localeFilesRel = $localeFiles->map(fn ($f) => Str::after($f, $localePath.'/'));
+        $localeFilesRel = $localeFiles->map(fn ($f) => Str::after($f, $localePath . '/'));
 
         $extraFiles = $localeFilesRel->diff($enFilesRel)->values();
 
@@ -364,11 +364,11 @@ class FindMissingTranslations extends Command
         $summary = collect();
 
         if (! empty($issues['missing_files'])) {
-            $summary->push(count($issues['missing_files']).' missing file(s)');
+            $summary->push(count($issues['missing_files']) . ' missing file(s)');
         }
 
         if (! empty($issues['extra_files'])) {
-            $summary->push(count($issues['extra_files']).' extra file(s)');
+            $summary->push(count($issues['extra_files']) . ' extra file(s)');
         }
 
         if (! empty($issues['missing_keys'])) {
@@ -396,7 +396,7 @@ class FindMissingTranslations extends Command
         }
 
         if (! empty($issues['parse_errors'])) {
-            $summary->push(count($issues['parse_errors']).' parse error(s)');
+            $summary->push(count($issues['parse_errors']) . ' parse error(s)');
         }
 
         return $summary->implode(', ') ?: '-';
@@ -750,7 +750,7 @@ class FindMissingTranslations extends Command
         $line = trim($line);
 
         return Str::length($line) > $maxLen
-            ? Str::substr($line, 0, $maxLen - 3).'...'
+            ? Str::substr($line, 0, $maxLen - 3) . '...'
             : $line;
     }
 
@@ -763,7 +763,7 @@ class FindMissingTranslations extends Command
         }
 
         if (preg_match('/^(\s*)([\'"][^\'"]*[\'"])\s*=>\s*/', $line, $matches)) {
-            return $matches[1].$matches[2].' =>';
+            return $matches[1] . $matches[2] . ' =>';
         }
 
         if (preg_match('/^(\s*)([\[\],\];]+)/', $line, $matches)) {
@@ -836,7 +836,7 @@ class FindMissingTranslations extends Command
         } catch (Throwable $e) {
             ob_end_clean();
 
-            throw new RuntimeException("Failed to include file: {$file} - ".$e->getMessage());
+            throw new RuntimeException("Failed to include file: {$file} - " . $e->getMessage());
         }
 
         ob_end_clean();

@@ -127,7 +127,7 @@ class OperationResource extends Resource
                                 modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                             })
                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                             ->searchable()
@@ -167,7 +167,7 @@ class OperationResource extends Resource
                                     return $record->name;
                                 }
 
-                                return $record->warehouse->name.': '.$record->name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->warehouse->name . ': ' . $record->name . ($record->trashed() ? ' (Deleted)' : '');
                             })
                             ->disableOptionWhen(function ($label) {
                                 return str_contains($label, ' (Deleted)');
@@ -187,7 +187,7 @@ class OperationResource extends Resource
                                 modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->full_name . ($record->trashed() ? ' (Deleted)' : '');
                             })
                             ->disableOptionWhen(function ($label) {
                                 return str_contains($label, ' (Deleted)');
@@ -205,7 +205,7 @@ class OperationResource extends Resource
                                 modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->full_name . ($record->trashed() ? ' (Deleted)' : '');
                             })
                             ->disableOptionWhen(function ($label) {
                                 return str_contains($label, ' (Deleted)');
@@ -749,7 +749,7 @@ class OperationResource extends Resource
                     ->preload()
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
                         if (str_contains($label, ' (Deleted)')) {
@@ -785,7 +785,7 @@ class OperationResource extends Resource
                         modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->full_name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($label) {
                         return str_contains($label, ' (Deleted)');
@@ -845,7 +845,7 @@ class OperationResource extends Resource
                         return \Filament\Support\generate_icon_html(
                             'heroicon-o-exclamation-triangle',
                             null,
-                            (new ComponentAttributeBag)
+                            (new ComponentAttributeBag())
                                 ->color(IconComponent::class, 'danger')
                                 ->class(['fi-text-color-600'])
                                 ->merge([
@@ -1068,7 +1068,7 @@ class OperationResource extends Resource
                                     })
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->full_name . ($record->trashed() ? ' (Deleted)' : '');
                             })
                             ->disableOptionWhen(function ($label) {
                                 return str_contains($label, ' (Deleted)');

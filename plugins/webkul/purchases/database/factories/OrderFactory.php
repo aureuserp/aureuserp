@@ -30,7 +30,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'            => 'PO-'.fake()->unique()->numberBetween(1000, 9999),
+            'name'            => 'PO-' . fake()->unique()->numberBetween(1000, 9999),
             'state'           => OrderState::DRAFT,
             'ordered_at'      => now(),
             'untaxed_amount'  => 0,

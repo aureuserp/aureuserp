@@ -53,7 +53,7 @@ class LeaveAllocationFactory extends Factory
             'notes'                             => null,
             'already_accrued'                   => 0.0,
             'number_of_days'                    => $numberOfDays,
-            'number_of_hours_display'           => ($numberOfDays * 8).' hours',
+            'number_of_hours_display'           => ($numberOfDays * 8) . ' hours',
             'yearly_accrued_amount'             => 0.0,
             'expiring_carryover_days'           => 0.0,
         ];

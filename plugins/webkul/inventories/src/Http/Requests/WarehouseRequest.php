@@ -18,8 +18,8 @@ class WarehouseRequest extends FormRequest
         $warehouseId = $this->route('warehouse') ?? $this->route('id');
 
         return [
-            'name'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,name'.($warehouseId ? ','.$warehouseId : '')],
-            'code'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,code'.($warehouseId ? ','.$warehouseId : '')],
+            'name'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,name' . ($warehouseId ? ',' . $warehouseId : '')],
+            'code'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,code' . ($warehouseId ? ',' . $warehouseId : '')],
             'company_id'            => [...$requiredRule, 'integer', 'exists:companies,id'],
             'partner_address_id'    => ['nullable', 'integer', 'exists:partners_partners,id'],
             'reception_steps'       => ['nullable', 'string'],

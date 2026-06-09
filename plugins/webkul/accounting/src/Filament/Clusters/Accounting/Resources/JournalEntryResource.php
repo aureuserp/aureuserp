@@ -205,7 +205,7 @@ class JournalEntryResource extends Resource
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.company'))
                                     ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(function ($label) {
                                         return str_contains($label, ' (Deleted)');
@@ -698,7 +698,7 @@ class JournalEntryResource extends Resource
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.taxes'))
                     ->relationship('taxes', 'name')
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.' ('.$record->type_tax_use->getLabel().')';
+                        return $record->name . ' (' . $record->type_tax_use->getLabel() . ')';
                     })
                     ->searchable()
                     ->multiple()
@@ -743,7 +743,9 @@ class JournalEntryResource extends Resource
             ]);
     }
 
-    private static function currencyUpdated(Set $set, Get $get): void {}
+    private static function currencyUpdated(Set $set, Get $get): void
+    {
+    }
 
     private static function taxesUpdated(Set $set, Get $get): void
     {
@@ -781,7 +783,9 @@ class JournalEntryResource extends Resource
         self::recalculateJournalTaxLines($get, $set);
     }
 
-    private static function discountAmountCurrencyUpdated(Set $set, Get $get): void {}
+    private static function discountAmountCurrencyUpdated(Set $set, Get $get): void
+    {
+    }
 
     private static function recalculateJournalTaxLines(Get $get, Set $set): void
     {
@@ -807,7 +811,7 @@ class JournalEntryResource extends Resource
         }
 
         $journal = $journalId ? Journal::find($journalId) : null;
-        $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
+        $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings())->account_journal_suspense_account_id;
 
         $lines = collect($lines)
             ->reject(function ($line) {
@@ -873,7 +877,7 @@ class JournalEntryResource extends Resource
 
                     $partnerId = $baseLine['partner']->id ?? null;
 
-                    $key = $accountId.'_'.($partnerId ?? 'null');
+                    $key = $accountId . '_' . ($partnerId ?? 'null');
 
                     if (! isset($taxLinesMap[$key])) {
                         $taxName = $taxData['tax']->name ?? 'Tax';
@@ -882,7 +886,7 @@ class JournalEntryResource extends Resource
                             'display_type'             => 'tax',
                             'account_id'               => $accountId,
                             'partner_id'               => $partnerId,
-                            'name'                     => 'Tax: '.$taxName,
+                            'name'                     => 'Tax: ' . $taxName,
                             'amount_currency'          => 0,
                             'currency_id'              => $currency->id,
                             'taxes'                    => [],
@@ -982,7 +986,7 @@ class JournalEntryResource extends Resource
 
         $journal = $journalId ? Journal::find($journalId) : null;
 
-        $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
+        $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings())->account_journal_suspense_account_id;
 
         $linesWithoutBalancing = collect($lines)
             ->reject(fn ($line) => ($line['is_auto_generated'] ?? false) && ($line['auto_type'] ?? null) === 'balancing')

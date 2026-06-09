@@ -434,7 +434,7 @@ class CreditNoteController extends Controller
 
     protected function preparePaymentData(Refund $refund, array $data): array
     {
-        $paymentRegister = new PaymentRegister;
+        $paymentRegister = new PaymentRegister();
         $paymentRegister->lines = $refund->lines;
         $paymentRegister->company = $refund->company;
         $paymentRegister->currency = $refund->currency;

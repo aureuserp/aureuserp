@@ -27,11 +27,11 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
         $this->dateTo = $dateTo;
     }
 
-    public function collection()
+    public function collection(): \Illuminate\Support\Enumerable
     {
         $rows = collect();
 
-        $rows->push([null, 'From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')]);
+        $rows->push([null, 'From ' . $this->dateFrom->format('M d, Y') . ' to ' . $this->dateTo->format('M d, Y')]);
         $rows->push([null, null]);
         $rows->push([null, 'Balance']);
         $rows->push([null, null]);
@@ -48,9 +48,9 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
 
             if (! empty($section['accounts'])) {
                 foreach ($section['accounts'] as $account) {
-                    $accountName = ($account['code'] ? $account['code'].' - ' : '').$account['name'];
+                    $accountName = ($account['code'] ? $account['code'] . ' - ' : '') . $account['name'];
                     $rows->push([
-                        '            '.$accountName,
+                        '            ' . $accountName,
                         number_format($account['balance'], 2),
                     ]);
                     $this->rowMetadata[$rowIndex] = 'account_line';
@@ -65,7 +65,7 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
                 $rowIndex++;
             } else {
                 $rows->push([
-                    '            '.$section['empty_message'],
+                    '            ' . $section['empty_message'],
                     '',
                 ]);
                 $this->rowMetadata[$rowIndex] = 'empty_message';

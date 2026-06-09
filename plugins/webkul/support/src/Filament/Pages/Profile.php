@@ -88,7 +88,7 @@ class Profile extends Page implements HasForms
                                 '1:1',
                             ])
                             ->columnSpanFull()
-                            ->helperText(__('support::filament/pages/profile.fields.avatar').': '.__('support::filament/pages/profile.information_description'))
+                            ->helperText(__('support::filament/pages/profile.fields.avatar') . ': ' . __('support::filament/pages/profile.information_description'))
                             ->deletable(true)
                             ->downloadable(false),
 
@@ -124,7 +124,7 @@ class Profile extends Page implements HasForms
                                     ->label(__('support::filament/pages/profile.fields.language'))
                                     ->options(collect(config('app.supported_locales', []))
                                         ->mapWithKeys(fn ($meta, $code) => [
-                                            $code => ($meta['native'] ?? $code).' ('.($meta['label'] ?? $code).')',
+                                            $code => ($meta['native'] ?? $code) . ' (' . ($meta['label'] ?? $code) . ')',
                                         ])
                                         ->all())
                                     ->default(config('app.locale'))
@@ -232,7 +232,7 @@ class Profile extends Page implements HasForms
 
             if ($languageChanged) {
                 app()->setLocale($fill['language']);
-                
+
                 session()->put('locale', $fill['language']);
             }
 

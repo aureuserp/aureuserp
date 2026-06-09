@@ -5,8 +5,8 @@ use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_STORAGE_CATEGORY_JSON_STRUCTURE = [
     'id',
@@ -145,7 +145,7 @@ it('filters storage categories by name', function () {
     $category = StorageCategory::factory()->create(['name' => 'UniqueCategoryXYZ']);
     StorageCategory::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryStorageCategoryRoute('index').'?filter[name]=UniqueCategoryXYZ')
+    $response = $this->getJson(inventoryStorageCategoryRoute('index') . '?filter[name]=UniqueCategoryXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -159,7 +159,7 @@ it('filters storage categories by allow_new_products', function () {
     $emptyOnly = StorageCategory::factory()->emptyOnly()->create();
     StorageCategory::factory()->sameProduct()->create();
 
-    $response = $this->getJson(inventoryStorageCategoryRoute('index').'?filter[allow_new_products]=empty')
+    $response = $this->getJson(inventoryStorageCategoryRoute('index') . '?filter[allow_new_products]=empty')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

@@ -507,7 +507,7 @@ JS,
 
                                 return [
                                     static::getCheckboxListFormComponent(
-                                        name: $key.'_pages_tab',
+                                        name: $key . '_pages_tab',
                                         options: $options,
                                     ),
                                 ];
@@ -536,7 +536,7 @@ JS,
 
                                 return [
                                     static::getCheckboxListFormComponent(
-                                        name: $key.'_widgets_tab',
+                                        name: $key . '_widgets_tab',
                                         options: $options,
                                     ),
                                 ];

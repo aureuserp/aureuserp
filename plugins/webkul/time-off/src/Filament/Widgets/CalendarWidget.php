@@ -304,10 +304,10 @@ class CalendarWidget extends FullCalendarWidget
                             $totalDays = $this->calculateTotalDays($startDate, $endDate);
                             $weekendDays = $totalDays - $businessDays;
 
-                            $duration = $businessDays.' working day'.($businessDays !== 1 ? 's' : '');
+                            $duration = $businessDays . ' working day' . ($businessDays !== 1 ? 's' : '');
 
                             if ($weekendDays > 0) {
-                                $duration .= ' (+ '.$weekendDays.' weekend day'.($weekendDays !== 1 ? 's' : '').')';
+                                $duration .= ' (+ ' . $weekendDays . ' weekend day' . ($weekendDays !== 1 ? 's' : '') . ')';
                             }
 
                             return $duration;
@@ -352,9 +352,9 @@ class CalendarWidget extends FullCalendarWidget
                 if ($leave->request_unit_half) {
                     $title .= ' (0.5 day)';
                 } else {
-                    $title .= ' ('.$businessDays.'d)';
+                    $title .= ' (' . $businessDays . 'd)';
                     if ($weekendDays > 0) {
-                        $title .= ' +'.$weekendDays;
+                        $title .= ' +' . $weekendDays;
                     }
                 }
 

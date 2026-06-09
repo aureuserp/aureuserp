@@ -95,14 +95,14 @@ trait HasPermissionScope
 
             $pivotTable = $this->getPivotTable();
             if ($pivotTable) {
-                $pivotForeignKey = $this->getPivotForeignKey() ?? $this->getTable().'_id';
+                $pivotForeignKey = $this->getPivotForeignKey() ?? $this->getTable() . '_id';
                 $pivotRelatedKey = $this->getPivotRelatedKey();
 
                 $subQuery->orWhereExists(function ($existsQuery) use ($pivotTable, $pivotForeignKey, $pivotRelatedKey, $userIds) {
                     $existsQuery->select(DB::raw(1))
                         ->from($pivotTable)
-                        ->whereColumn($this->getTable().'.id', $pivotTable.'.'.$pivotForeignKey)
-                        ->whereIn($pivotTable.'.'.$pivotRelatedKey, $userIds);
+                        ->whereColumn($this->getTable() . '.id', $pivotTable . '.' . $pivotForeignKey)
+                        ->whereIn($pivotTable . '.' . $pivotRelatedKey, $userIds);
                 });
             }
         });

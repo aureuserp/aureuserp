@@ -4,8 +4,8 @@ use Webkul\Product\Models\Tag;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_TAG_JSON_STRUCTURE = [
     'id',
@@ -179,7 +179,7 @@ it('filters tags by name', function () {
     $tag = Tag::factory()->create(['name' => 'UniqueTagXYZ']);
     Tag::factory()->count(2)->create();
 
-    $response = $this->getJson(productsTagRoute('index').'?filter[name]=UniqueTagXYZ')
+    $response = $this->getJson(productsTagRoute('index') . '?filter[name]=UniqueTagXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -209,7 +209,7 @@ it('includes soft-deleted tags when filter[trashed]=with', function () {
     $deleted = Tag::factory()->create();
     $deleted->delete();
 
-    $response = $this->getJson(productsTagRoute('index').'?filter[trashed]=with')
+    $response = $this->getJson(productsTagRoute('index') . '?filter[trashed]=with')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

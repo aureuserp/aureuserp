@@ -64,7 +64,8 @@ class PurchaseServiceProvider extends PackageServiceProvider
                     ->installDependencies()
                     ->runsMigrations();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+            })
             ->icon('purchases');
     }
 

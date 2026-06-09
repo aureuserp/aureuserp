@@ -111,7 +111,7 @@ class ActivityAction extends Action
                                                 $planDate = $get('date_deadline') ? Carbon::parse($get('date_deadline'))->format('m/d/Y') : '';
                                                 $html .= '<div class="flex items-center space-x-2" style="margin-left: 20px;">
                                                             <span>•</span>
-                                                            <span style="margin-left:2px;">'.$activityPlanTemplate->summary.($planDate ? ' ('.$planDate.')' : '').'</span>
+                                                            <span style="margin-left:2px;">' . $activityPlanTemplate->summary . ($planDate ? ' (' . $planDate . ')' : '') . '</span>
                                                           </div>';
                                             }
                                             $html .= '</div>';
@@ -177,9 +177,9 @@ class ActivityAction extends Action
                             $body .= '<div class="space-y-2" style="margin-left: 20px;">
                                 <div class="flex items-center space-x-2">
                                     <span>•</span>
-                                    <span style="margin-left:2px;">'.
-                                $activityPlanTemplate->summary.
-                                ' ('.(isset($data['date_deadline']) ? $data['date_deadline'] : now()->format('m/d/Y')).')'.
+                                    <span style="margin-left:2px;">' .
+                                $activityPlanTemplate->summary .
+                                ' (' . (isset($data['date_deadline']) ? $data['date_deadline'] : now()->format('m/d/Y')) . ')' .
                                 '</span>
                                 </div>
                             </div>';

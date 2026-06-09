@@ -10,8 +10,8 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('inventories');
@@ -109,7 +109,7 @@ it('filters quantities by product_id', function () {
     ProductQuantity::factory()->create(['product_id' => $product->id]);
     ProductQuantity::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryQuantityRoute('index')."?filter[product_id]={$product->id}&include=product")
+    $response = $this->getJson(inventoryQuantityRoute('index') . "?filter[product_id]={$product->id}&include=product")
         ->assertOk();
 
     $productIds = collect($response->json('data'))

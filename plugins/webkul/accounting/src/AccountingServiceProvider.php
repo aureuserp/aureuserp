@@ -31,7 +31,8 @@ class AccountingServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command->installDependencies();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+            });
     }
 
     public function packageBooted(): void
@@ -58,7 +59,7 @@ class AccountingServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('accounting', __DIR__.'/../resources/dist/accounting.css'),
+            Css::make('accounting', __DIR__ . '/../resources/dist/accounting.css'),
         ], 'accounting');
     }
 }

@@ -13,7 +13,8 @@ use Webkul\Security\Models\Invitation;
 
 class UserInvitationMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     private Invitation $invitation;
 

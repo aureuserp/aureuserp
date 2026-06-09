@@ -1,4 +1,6 @@
-<?php $record = $this->getRecord() ?>
+<?php
+
+$record = $this->getRecord() ?>
 
 <div class="flex items-center justify-between gap-x-3">
     <dt class="fi-in-entry-wrp-label inline-flex items-center gap-x-3">

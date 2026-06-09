@@ -111,9 +111,9 @@ class CustomColumns extends Component
         if (method_exists($column, $name)) {
             if ($value !== null) {
                 if ($name == 'weight') {
-                    $column->{$name}(constant(FontWeight::class."::$value"));
+                    $column->{$name}(constant(FontWeight::class . "::$value"));
                 } elseif ($name == 'size') {
-                    $column->{$name}(constant(TextSize::class."::$value"));
+                    $column->{$name}(constant(TextSize::class . "::$value"));
                 } else {
                     $column->{$name}($value);
                 }

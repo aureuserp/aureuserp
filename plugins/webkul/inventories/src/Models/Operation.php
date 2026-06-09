@@ -27,7 +27,11 @@ use Webkul\Support\Models\Company;
 
 class Operation extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use HasPermissionScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
@@ -302,9 +306,9 @@ class Operation extends Model
     public function updateName()
     {
         if (! $this->operationType->warehouse) {
-            $this->name = $this->operationType->sequence_code.'/'.$this->id;
+            $this->name = $this->operationType->sequence_code . '/' . $this->id;
         } else {
-            $this->name = $this->operationType->warehouse->code.'/'.$this->operationType->sequence_code.'/'.$this->id;
+            $this->name = $this->operationType->warehouse->code . '/' . $this->operationType->sequence_code . '/' . $this->id;
         }
     }
 

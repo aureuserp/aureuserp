@@ -48,7 +48,7 @@ class ProductCategoryResource extends BaseProductCategoryResource
             $route = session('current_route');
         }
 
-        if ($route === self::getRouteBaseName().'.index') {
+        if ($route === self::getRouteBaseName() . '.index') {
             return SubNavigationPosition::Start;
         }
 

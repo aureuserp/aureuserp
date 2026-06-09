@@ -5,8 +5,8 @@ use Webkul\Inventory\Models\Location;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_LOCATION_JSON_STRUCTURE = [
     'id',
@@ -182,7 +182,7 @@ it('filters locations by name', function () {
     $location = Location::factory()->create(['name' => 'UniqueLocationXYZ']);
     Location::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryLocationRoute('index').'?filter[name]=UniqueLocationXYZ')
+    $response = $this->getJson(inventoryLocationRoute('index') . '?filter[name]=UniqueLocationXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -196,7 +196,7 @@ it('filters locations by type', function () {
     $internal = Location::factory()->create(['type' => LocationType::INTERNAL]);
     Location::factory()->create(['type' => LocationType::SUPPLIER]);
 
-    $response = $this->getJson(inventoryLocationRoute('index').'?filter[type]=internal')
+    $response = $this->getJson(inventoryLocationRoute('index') . '?filter[type]=internal')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

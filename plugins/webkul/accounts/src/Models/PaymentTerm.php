@@ -17,7 +17,9 @@ use Webkul\Support\Models\Company;
 
 class PaymentTerm extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'accounts_payment_terms';
 

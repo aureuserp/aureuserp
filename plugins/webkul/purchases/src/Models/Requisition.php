@@ -21,7 +21,11 @@ use Webkul\Support\Models\Currency;
 
 class Requisition extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
@@ -102,9 +106,9 @@ class Requisition extends Model
     public function updateName()
     {
         if ($this->type == RequisitionType::BLANKET_ORDER) {
-            $this->name = 'BO/'.$this->id;
+            $this->name = 'BO/' . $this->id;
         } else {
-            $this->name = 'PT/'.$this->id;
+            $this->name = 'PT/' . $this->id;
         }
     }
 

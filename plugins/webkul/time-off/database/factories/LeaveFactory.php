@@ -47,7 +47,7 @@ class LeaveFactory extends Factory
             'private_name'             => fake()->sentence(3),
             'attachment'               => null,
             'state'                    => State::CONFIRM,
-            'duration_display'         => $numberOfDays.' '.($numberOfDays > 1 ? 'days' : 'day'),
+            'duration_display'         => $numberOfDays . ' ' . ($numberOfDays > 1 ? 'days' : 'day'),
             'request_date_from_period' => RequestDateFromPeriod::MORNING,
             'request_date_from'        => $requestDateFrom->format('Y-m-d'),
             'request_date_to'          => $requestDateTo->format('Y-m-d'),

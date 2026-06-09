@@ -12,7 +12,8 @@ use Webkul\Security\Models\User;
 
 class ActivityPlanTemplate extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'activity_plan_templates';
 

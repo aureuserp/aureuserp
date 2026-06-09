@@ -14,7 +14,9 @@ use Webkul\Security\Models\User;
 
 class Tag extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'inventories_tags';
 

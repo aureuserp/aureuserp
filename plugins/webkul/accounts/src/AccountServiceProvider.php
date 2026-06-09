@@ -110,7 +110,8 @@ class AccountServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+            });
     }
 
     public function packageBooted(): void
@@ -123,7 +124,7 @@ class AccountServiceProvider extends PackageServiceProvider
     public function registerCustomCss(): void
     {
         FilamentAsset::register([
-            Css::make('accounts', __DIR__.'/../resources/dist/accounts.css'),
+            Css::make('accounts', __DIR__ . '/../resources/dist/accounts.css'),
         ], 'accounts');
     }
 

@@ -3,8 +3,8 @@
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Models\UOMCategory;
 
-require_once __DIR__.'/../../../Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../Helpers/TestBootstrapHelper.php';
 
 const UOM_JSON_STRUCTURE = [
     'id',

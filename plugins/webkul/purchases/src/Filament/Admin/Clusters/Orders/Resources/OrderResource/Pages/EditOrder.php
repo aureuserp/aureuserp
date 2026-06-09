@@ -18,7 +18,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditOrder extends EditRecord
 {
-    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeaterColumnManager;
 
     protected static string $resource = OrderResource::class;
 

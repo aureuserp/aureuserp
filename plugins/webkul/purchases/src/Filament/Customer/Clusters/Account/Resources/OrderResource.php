@@ -138,7 +138,7 @@ class OrderResource extends Resource
 
                                                 return response()->streamDownload(function () use ($pdf) {
                                                     echo $pdf->output();
-                                                }, 'Quotation-'.str_replace('/', '_', $record->name).'.pdf');
+                                                }, 'Quotation-' . str_replace('/', '_', $record->name) . '.pdf');
                                             }
 
                                             $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
@@ -149,7 +149,7 @@ class OrderResource extends Resource
 
                                             return response()->streamDownload(function () use ($pdf) {
                                                 echo $pdf->output();
-                                            }, 'Purchase Order-'.str_replace('/', '_', $record->name).'.pdf');
+                                            }, 'Purchase Order-' . str_replace('/', '_', $record->name) . '.pdf');
                                         }),
                                 ])
                                     ->fullWidth(),

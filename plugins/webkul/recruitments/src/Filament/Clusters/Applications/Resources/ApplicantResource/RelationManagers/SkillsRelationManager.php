@@ -4,4 +4,6 @@ namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantR
 
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\RelationManagers\SkillsRelationManager as BaseSkillsRelationManager;
 
-class SkillsRelationManager extends BaseSkillsRelationManager {}
+class SkillsRelationManager extends BaseSkillsRelationManager
+{
+}

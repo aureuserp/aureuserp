@@ -486,7 +486,7 @@ class OperationResource extends Resource
                                     ->visible(fn (Operation $record): bool => $record->time_mode === OperationTimeMode::AUTO),
                                 TextEntry::make('manual_cycle_time')
                                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.infolist.sections.settings.entries.manual-cycle-time'))
-                                    ->formatStateUsing(fn (mixed $state): string => format_float_time($state ?? 60, 'minutes').' '.__('manufacturing::filament/clusters/configurations/resources/operation.infolist.sections.settings.entries.manual-cycle-time-suffix'))
+                                    ->formatStateUsing(fn (mixed $state): string => format_float_time($state ?? 60, 'minutes') . ' ' . __('manufacturing::filament/clusters/configurations/resources/operation.infolist.sections.settings.entries.manual-cycle-time-suffix'))
                                     ->placeholder('—'),
                             ]),
 

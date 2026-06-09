@@ -75,7 +75,7 @@ trait HasChatter
         }
 
         if (! empty($filters['search'])) {
-            $searchTerm = '%'.$filters['search'].'%';
+            $searchTerm = '%' . $filters['search'] . '%';
 
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('subject', 'like', $searchTerm)
@@ -118,7 +118,7 @@ trait HasChatter
 
     public function activityPlanPlugin(): ?string
     {
-        $constantName = static::class.'::ACTIVITY_PLAN_PLUGIN';
+        $constantName = static::class . '::ACTIVITY_PLAN_PLUGIN';
 
         return defined($constantName) ? (string) constant($constantName) : null;
     }
@@ -130,7 +130,7 @@ trait HasChatter
 
     public function addMessage(array $data): Message
     {
-        $message = new Message;
+        $message = new Message();
 
         $user = Filament::auth()->user() ?? Auth::user();
 
@@ -189,7 +189,7 @@ trait HasChatter
 
         if ($parentWebkulClass && $parentWebkulClass !== get_class($this)) {
             try {
-                $parentModel = new $parentWebkulClass;
+                $parentModel = new $parentWebkulClass();
 
                 $parentInstance = $parentModel->newQuery()->find($this->getKey());
 
@@ -307,7 +307,7 @@ trait HasChatter
                     ->map(fn ($filePath) => [
                         'file_path'          => $filePath,
                         'original_file_name' => basename($filePath),
-                        'mime_type'          => mime_content_type($storagePath = storage_path('app/public/'.$filePath)) ?: 'application/octet-stream',
+                        'mime_type'          => mime_content_type($storagePath = storage_path('app/public/' . $filePath)) ?: 'application/octet-stream',
                         'file_size'          => filesize($storagePath) ?: 0,
                         'creator_id'         => Filament::auth()->id() ?? Auth::id(),
                         ...$additionalData,
@@ -329,8 +329,8 @@ trait HasChatter
             return false;
         }
 
-        if (Storage::exists('public/'.$attachment->file_path)) {
-            Storage::delete('public/'.$attachment->file_path);
+        if (Storage::exists('public/' . $attachment->file_path)) {
+            Storage::delete('public/' . $attachment->file_path);
         }
 
         return $attachment->delete();
@@ -339,7 +339,7 @@ trait HasChatter
     public function getAttachmentsByType(string $mimeType): Collection
     {
         return $this->attachments()
-            ->where('mime_type', 'LIKE', $mimeType.'%')
+            ->where('mime_type', 'LIKE', $mimeType . '%')
             ->get();
     }
 
@@ -366,7 +366,7 @@ trait HasChatter
     {
         $attachment = $this->attachments()->find($attachmentId);
 
-        return $attachment && Storage::exists('public/'.$attachment->file_path);
+        return $attachment && Storage::exists('public/' . $attachment->file_path);
     }
 
     public function followers(): MorphMany

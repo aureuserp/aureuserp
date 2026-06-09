@@ -95,7 +95,7 @@ final class ScalarOpenApiGenerator extends SecurityGenerator
             // Only add default tag if there are actually endpoints without a subgroup
             if ($hasEndpointsWithoutSubgroup) {
                 $currentGroupTags['tags'] = array_merge(
-                    [$currentGroupTags['name'].config('scribe.groups.default')],
+                    [$currentGroupTags['name'] . config('scribe.groups.default')],
                     $grouped
                 );
             } else {

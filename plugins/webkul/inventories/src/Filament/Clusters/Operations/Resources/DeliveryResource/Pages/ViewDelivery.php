@@ -17,7 +17,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewDelivery extends ViewRecord
 {
-    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeatableEntryColumnManager;
 
     protected static string $resource = DeliveryResource::class;
 

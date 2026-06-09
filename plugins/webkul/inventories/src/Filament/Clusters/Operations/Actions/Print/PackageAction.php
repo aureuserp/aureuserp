@@ -29,7 +29,7 @@ class PackageAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Package-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Package-' . str_replace('/', '_', $record->name) . '.pdf');
             });
     }
 }

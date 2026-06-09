@@ -71,7 +71,8 @@ use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class ProjectResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
+    use HasResourcePermissionQuery;
 
     protected static ?string $model = Project::class;
 
@@ -259,7 +260,7 @@ class ProjectResource extends Resource
                         TextColumn::make('planned_date')
                             ->icon('heroicon-o-calendar')
                             ->tooltip(__('projects::filament/resources/project.table.columns.planned-date'))
-                            ->state(fn (Project $record): string => $record->start_date->format('d M Y').' - '.$record->end_date->format('d M Y')),
+                            ->state(fn (Project $record): string => $record->start_date->format('d M Y') . ' - ' . $record->end_date->format('d M Y')),
                     ])
                         ->visible(fn (Project $record) => filled($record->start_date) && filled($record->end_date)),
                     Stack::make([
@@ -268,7 +269,7 @@ class ProjectResource extends Resource
                             ->badge()
                             ->color('success')
                             ->color(fn (Project $record): string => $record->remaining_hours < 0 ? 'danger' : 'success')
-                            ->state(fn (Project $record): string => $record->remaining_hours.' Hours')
+                            ->state(fn (Project $record): string => $record->remaining_hours . ' Hours')
                             ->tooltip(__('projects::filament/resources/project.table.columns.remaining-hours')),
                     ])
                         ->visible(fn (Project $record) => static::getTimeSettings()->enable_timesheets && $record->allow_milestones && $record->remaining_hours),
@@ -436,7 +437,7 @@ class ProjectResource extends Resource
                     ->url(fn (Project $record): string => ManageTasks::getUrl(['record' => $record])),
 
                 Action::make('milestones')
-                    ->label(fn (Project $record): string => $record->milestones->where('is_completed', true)->count().'/'.$record->milestones->count())
+                    ->label(fn (Project $record): string => $record->milestones->where('is_completed', true)->count() . '/' . $record->milestones->count())
                     ->icon('heroicon-m-flag')
                     ->color('gray')
                     ->tooltip(fn (Project $record): string => __('projects::filament/resources/project.table.actions.milestones', ['completed' => $record->milestones->where('is_completed', true)->count(), 'all' => $record->milestones->count()]))
@@ -547,7 +548,7 @@ class ProjectResource extends Resource
                                                     return '—';
                                                 }
 
-                                                return $record->start_date->format('d M Y').' - '.$record->end_date->format('d M Y');
+                                                return $record->start_date->format('d M Y') . ' - ' . $record->end_date->format('d M Y');
                                             }),
 
                                         TextEntry::make('allocated_hours')

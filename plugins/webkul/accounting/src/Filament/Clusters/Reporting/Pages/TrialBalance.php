@@ -25,7 +25,9 @@ use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\TrialBalanceExpo
 
 class TrialBalance extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use HasPageShield;
+    use InteractsWithForms;
+    use NormalizeDateFilter;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.trial-balance';
 
@@ -79,7 +81,7 @@ class TrialBalance extends Page implements HasForms
                             $data['date_to'],
                             $data['totals']
                         ),
-                        'trial-balance-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.xlsx'
+                        'trial-balance-' . $data['date_from']->format('Y-m-d') . '-' . $data['date_to']->format('Y-m-d') . '.xlsx'
                     );
                 }),
             Action::make('pdf')
@@ -95,7 +97,7 @@ class TrialBalance extends Page implements HasForms
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->stream();
-                    }, 'trial-balance-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.pdf');
+                    }, 'trial-balance-' . $data['date_from']->format('Y-m-d') . '-' . $data['date_to']->format('Y-m-d') . '.pdf');
                 }),
         ];
     }

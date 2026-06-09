@@ -17,7 +17,7 @@ class TeamFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => fake()->company().' Maintenance',
+            'name'       => fake()->company() . ' Maintenance',
             'creator_id' => User::query()->value('id') ?? User::factory(),
             'company_id' => Company::query()->value('id') ?? Company::factory(),
         ];

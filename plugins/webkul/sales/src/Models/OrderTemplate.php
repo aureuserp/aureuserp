@@ -15,7 +15,8 @@ use Webkul\Support\Models\Company;
 
 class OrderTemplate extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'sales_order_templates';
 

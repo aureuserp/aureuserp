@@ -12,7 +12,8 @@ use Webkul\Security\Models\User;
 
 class Incoterm extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'accounts_incoterms';
 

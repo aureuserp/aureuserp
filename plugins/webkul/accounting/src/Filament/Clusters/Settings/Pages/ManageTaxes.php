@@ -62,7 +62,7 @@ class ManageTaxes extends SettingsPage
             ->components([
                 Group::make()
                     ->schema([
-                        Text::make(new HtmlString('<strong>'.__('accounting::filament/clusters/settings/pages/manage-taxes.form.default-taxes.label').'</strong><br/>'.__('accounting::filament/clusters/settings/pages/manage-taxes.form.default-taxes.helper-text'))),
+                        Text::make(new HtmlString('<strong>' . __('accounting::filament/clusters/settings/pages/manage-taxes.form.default-taxes.label') . '</strong><br/>' . __('accounting::filament/clusters/settings/pages/manage-taxes.form.default-taxes.helper-text'))),
                         Select::make('account_sale_tax_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-taxes.form.sales-tax.label'))
                             ->options(Tax::where('type_tax_use', TypeTaxUse::SALE)->get()->pluck('name', 'id'))

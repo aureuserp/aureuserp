@@ -156,11 +156,10 @@ class FollowerAction extends Action
                         Notification::make()
                             ->warning()
                             ->title(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.partial_message.title'))
-                            ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.partial_message.'.$key, [
+                            ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.partial_message.' . $key, [
                                 'count' => $count,
                                 'names' => implode(', ', $missingEmailPartners),
-                            ])
-                            )
+                            ]))
                             ->send();
                     } else {
                         Notification::make()

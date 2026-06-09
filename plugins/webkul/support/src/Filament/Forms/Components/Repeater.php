@@ -100,7 +100,7 @@ class Repeater extends BaseRepeater
 
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeater_'.$this->getStatePath().'_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeater_' . $this->getStatePath() . '_column_manager';
     }
 
     public function getMappedColumns(): array

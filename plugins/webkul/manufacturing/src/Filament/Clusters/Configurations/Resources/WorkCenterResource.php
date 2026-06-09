@@ -208,7 +208,7 @@ class WorkCenterResource extends Resource
                                             ->preload()
                                             ->wrapOptionLabels(false)
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->wrapOptionLabels(false)
                                             ->disableOptionWhen(function ($label, $value, $state, $component) {
@@ -596,7 +596,7 @@ class WorkCenterResource extends Resource
                                     ->schema([
                                         TextEntry::make('time_efficiency')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.time-efficiency'))
-                                            ->formatStateUsing(fn (mixed $state): string => number_format((float) ($state ?? 100), 2).' %')
+                                            ->formatStateUsing(fn (mixed $state): string => number_format((float) ($state ?? 100), 2) . ' %')
                                             ->placeholder('—'),
                                         TextEntry::make('default_capacity')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.default-capacity'))
@@ -604,15 +604,15 @@ class WorkCenterResource extends Resource
                                             ->placeholder('—'),
                                         TextEntry::make('oee_target')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.oee-target'))
-                                            ->formatStateUsing(fn (mixed $state): string => number_format((float) ($state ?? 90), 2).' %')
+                                            ->formatStateUsing(fn (mixed $state): string => number_format((float) ($state ?? 90), 2) . ' %')
                                             ->placeholder('—'),
                                         TextEntry::make('setup_time')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.setup-time'))
-                                            ->formatStateUsing(fn (mixed $state): string => format_float_time($state ?? 0, 'minutes').' '.__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.time-suffix'))
+                                            ->formatStateUsing(fn (mixed $state): string => format_float_time($state ?? 0, 'minutes') . ' ' . __('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.time-suffix'))
                                             ->placeholder('—'),
                                         TextEntry::make('cleanup_time')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.cleanup-time'))
-                                            ->formatStateUsing(fn (mixed $state): string => format_float_time($state ?? 0, 'minutes').' '.__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.time-suffix'))
+                                            ->formatStateUsing(fn (mixed $state): string => format_float_time($state ?? 0, 'minutes') . ' ' . __('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.time-suffix'))
                                             ->placeholder('—'),
                                     ])
                                     ->columns(1),
@@ -621,7 +621,7 @@ class WorkCenterResource extends Resource
                                     ->schema([
                                         TextEntry::make('costs_per_hour')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.costs-per-hour'))
-                                            ->formatStateUsing(fn (mixed $state): string => number_format((float) ($state ?? 0), 2).' '.__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.cost-suffix'))
+                                            ->formatStateUsing(fn (mixed $state): string => number_format((float) ($state ?? 0), 2) . ' ' . __('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.information.entries.cost-suffix'))
                                             ->placeholder('—'),
                                     ])
                                     ->columns(1),

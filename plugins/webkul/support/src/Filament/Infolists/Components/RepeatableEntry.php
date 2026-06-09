@@ -35,7 +35,7 @@ class RepeatableEntry extends BaseRepeatableEntry
 
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeatable_entry_'.$this->getStatePath().'_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeatable_entry_' . $this->getStatePath() . '_column_manager';
     }
 
     public function getMappedColumns(): array

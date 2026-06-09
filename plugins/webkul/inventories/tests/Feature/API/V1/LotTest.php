@@ -5,8 +5,8 @@ use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_LOT_JSON_STRUCTURE = [
     'id',
@@ -43,7 +43,7 @@ function inventoryLotPayload(array $overrides = []): array
     $product = BaseProduct::factory()->create();
 
     return array_replace_recursive([
-        'name'       => 'LOT-'.uniqid(),
+        'name'       => 'LOT-' . uniqid(),
         'product_id' => $product->id,
     ], $overrides);
 }
@@ -142,7 +142,7 @@ it('filters lots by name', function () {
     $lot = Lot::factory()->create(['name' => 'UNIQUE-LOT-XYZ']);
     Lot::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryLotRoute('index').'?filter[name]=UNIQUE-LOT-XYZ')
+    $response = $this->getJson(inventoryLotRoute('index') . '?filter[name]=UNIQUE-LOT-XYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -181,7 +181,7 @@ it('rejects a non-existent product_id', function () {
     actingAsInventoryLotApiUser(['create_inventory_lot']);
 
     $this->postJson(inventoryLotRoute('store'), [
-        'name'       => 'LOT-'.uniqid(),
+        'name'       => 'LOT-' . uniqid(),
         'product_id' => 999999,
     ])->assertUnprocessable()
         ->assertJsonValidationErrors(['product_id']);

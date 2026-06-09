@@ -23,8 +23,10 @@ class FullCalendarServiceProvider extends PackageServiceProvider
             ->isCore()
             ->hasViews()
             ->hasTranslations()
-            ->hasInstallCommand(function (InstallCommand $command) {})
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasInstallCommand(function (InstallCommand $command) {
+            })
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+            });
     }
 
     public function packageBooted(): void
@@ -39,7 +41,7 @@ class FullCalendarServiceProvider extends PackageServiceProvider
             // registered its own (e.g. TimeOffPlugin customises plugins/editable/
             // selectable). Registering unconditionally would clobber that instance
             // because plugins are keyed by id and the last write wins.
-            if (! $panel->hasPlugin((new FullCalendarPlugin)->getId())) {
+            if (! $panel->hasPlugin((new FullCalendarPlugin())->getId())) {
                 $panel->plugin(FullCalendarPlugin::make());
             }
         });
@@ -48,8 +50,8 @@ class FullCalendarServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register(assets: [
-            Css::make('full-calendar', __DIR__.'/../resources/dist/app.css'),
-            AlpineComponent::make('full-calendar', __DIR__.'/../resources/dist/app.js'),
+            Css::make('full-calendar', __DIR__ . '/../resources/dist/app.css'),
+            AlpineComponent::make('full-calendar', __DIR__ . '/../resources/dist/app.js'),
         ], package: 'full-calendar');
     }
 }

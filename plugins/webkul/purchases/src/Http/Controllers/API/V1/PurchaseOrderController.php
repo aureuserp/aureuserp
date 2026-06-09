@@ -420,7 +420,7 @@ class PurchaseOrderController extends Controller
             'untaxed_amount' => $untaxed,
             'tax_amount'     => $tax,
             'total_amount'   => $total,
-            'total_cc_amount'=> $total,
+            'total_cc_amount' => $total,
             'planned_at'     => $order->planned_at ?? $order->lines->max('planned_at'),
         ]);
     }

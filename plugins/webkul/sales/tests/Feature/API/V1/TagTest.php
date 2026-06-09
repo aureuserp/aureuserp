@@ -2,8 +2,8 @@
 
 use Webkul\Sale\Models\Tag;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const SALES_TAG_JSON_STRUCTURE = [
     'id',
@@ -111,7 +111,7 @@ it('updates a sales tag for authorized users', function () {
     actingAsSalesTagApiUser(['update_sale_tag']);
 
     $tag = Tag::factory()->create();
-    $updatedName = 'Updated Sales Tag '.fake()->unique()->numerify('####');
+    $updatedName = 'Updated Sales Tag ' . fake()->unique()->numerify('####');
 
     $this->patchJson(salesTagRoute('update', $tag), ['name' => $updatedName])
         ->assertOk()

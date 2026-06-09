@@ -15,7 +15,8 @@ use Webkul\Security\Models\User;
 
 class ProductAttribute extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'products_product_attributes';
 

@@ -78,7 +78,8 @@ use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 
 class TaskResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
+    use HasResourcePermissionQuery;
 
     protected static ?string $model = Task::class;
 
@@ -178,7 +179,7 @@ class TaskResource extends Resource
                                     ->label(__('projects::filament/resources/task.form.sections.settings.fields.project'))
                                     ->relationship('project', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
                                     ->getOptionLabelFromRecordUsing(function (Model $record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(function ($label) {
                                         return str_contains($label, ' (Deleted)');
@@ -346,7 +347,7 @@ class TaskResource extends Resource
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours.':'.$minutes;
+                        return $hours . ':' . $minutes;
                     })
                     ->summarize(
                         Sum::make()
@@ -356,7 +357,7 @@ class TaskResource extends Resource
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             })
                     )
                     ->visible(static::getTimeSettings()->enable_timesheets),
@@ -369,7 +370,7 @@ class TaskResource extends Resource
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours.':'.$minutes;
+                        return $hours . ':' . $minutes;
                     })
                     ->summarize(
                         Sum::make()
@@ -379,7 +380,7 @@ class TaskResource extends Resource
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             })
                     )
                     ->visible(static::getTimeSettings()->enable_timesheets),
@@ -391,7 +392,7 @@ class TaskResource extends Resource
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours.':'.$minutes;
+                        return $hours . ':' . $minutes;
                     })
                     ->summarize(
                         Sum::make()
@@ -402,7 +403,7 @@ class TaskResource extends Resource
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours.':'.$minutes;
+                                return $hours . ':' . $minutes;
                             })
                     )
                     ->visible(static::getTimeSettings()->enable_timesheets),
@@ -767,7 +768,7 @@ class TaskResource extends Resource
                                                 $hours = floor($state);
                                                 $minutes = ($state - $hours) * 60;
 
-                                                return $hours.':'.$minutes;
+                                                return $hours . ':' . $minutes;
                                             })
                                             ->visible(static::getTimeSettings()->enable_timesheets),
 
@@ -779,7 +780,7 @@ class TaskResource extends Resource
                                                 $hours = floor($state);
                                                 $minutes = ($state - $hours) * 60;
 
-                                                return $hours.':'.$minutes;
+                                                return $hours . ':' . $minutes;
                                             })
                                             ->visible(static::getTimeSettings()->enable_timesheets),
 
@@ -791,7 +792,7 @@ class TaskResource extends Resource
                                                 $hours = floor($state);
                                                 $minutes = ($state - $hours) * 60;
 
-                                                return $hours.':'.$minutes;
+                                                return $hours . ':' . $minutes;
                                             })
                                             ->color(fn ($state): string => $state < 0 ? 'danger' : 'success')
                                             ->visible(static::getTimeSettings()->enable_timesheets),

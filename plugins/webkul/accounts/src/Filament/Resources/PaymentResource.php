@@ -202,7 +202,7 @@ class PaymentResource extends Resource
                                                 return $journal?->id;
                                             })
                                             ->afterStateUpdated(function (Set $set, Get $get) {
-                                                $payment = new Payment;
+                                                $payment = new Payment();
                                                 $payment->payment_type = $get('payment_type');
                                                 $payment->journal_id = $get('journal_id');
                                                 $payment->journal = Journal::find($get('journal_id'));
@@ -248,7 +248,7 @@ class PaymentResource extends Resource
                                                 modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where('partner_id', $get('partner_id')),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->account_number . ' - ' . $record->bank->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
@@ -582,7 +582,7 @@ class PaymentResource extends Resource
     {
         $journal = Journal::find($get('journal_id'));
 
-        $payment = new Payment;
+        $payment = new Payment();
 
         if (! $journal) {
             return $payment;

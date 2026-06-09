@@ -27,7 +27,7 @@ class PickingOperationAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Picking Operations-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Picking Operations-' . str_replace('/', '_', $record->name) . '.pdf');
             });
     }
 }

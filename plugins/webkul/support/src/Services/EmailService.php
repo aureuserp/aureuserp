@@ -21,7 +21,7 @@ class EmailService
                 $payload['from']['company'] = Auth::user()->defaultCompany->toArray();
             }
 
-            Mail::to($payload['to']['address'], '"'.addslashes($payload['to']['name']).'"')
+            Mail::to($payload['to']['address'], '"' . addslashes($payload['to']['name']) . '"')
                 ->send((new $mailClass($view, $payload))->withAttachments($attachments));
 
             $this->logEmail($payload['to']['address'], $payload['to']['name'], $payload['subject'], 'sent');

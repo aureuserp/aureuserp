@@ -73,7 +73,7 @@ class AccountManager
                 $grouped = MoveLine::with(['move', 'account'])
                     ->whereIn('matching_number', $tempNumbers)
                     ->get()
-                    ->groupBy(fn ($line) => $line->matching_number.':'.$line->account_id);
+                    ->groupBy(fn ($line) => $line->matching_number . ':' . $line->account_id);
 
                 foreach ($grouped as $groupLines) {
                     if (! $groupLines->every(fn ($line) => $line->move->state === MoveState::POSTED)) {
@@ -292,10 +292,12 @@ class AccountManager
                     $total += $line->balance;
 
                     $totalCurrency += $line->amount_currency;
-                } elseif (in_array($line->display_type, [
+                } elseif (
+                    in_array($line->display_type, [
                     DisplayType::PRODUCT,
                     DisplayType::ROUNDING,
-                ])) {
+                    ])
+                ) {
                     $totalUntaxed += $line->balance;
 
                     $totalUntaxedCurrency += $line->amount_currency;
@@ -822,7 +824,7 @@ class AccountManager
 
         if (empty($batches)) {
             throw new Exception(
-                'To record payments with '.$paymentRegister->paymentMethodLine->name.', the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it.'
+                'To record payments with ' . $paymentRegister->paymentMethodLine->name . ', the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it.'
             );
         }
 
@@ -971,7 +973,7 @@ class AccountManager
 
     public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
     {
-        $accountingInstalled = (new AccountMove)->getInvoiceInPaymentState() == PaymentState::IN_PAYMENT;
+        $accountingInstalled = (new AccountMove())->getInvoiceInPaymentState() == PaymentState::IN_PAYMENT;
 
         foreach ($paymentsToProcess as $index => $processItem) {
             $vals = $processItem['create_vals'];
@@ -1073,7 +1075,7 @@ class AccountManager
     {
         if ($payment->require_partner_bank_account && ! $payment->partnerBank->can_send_money) {
             throw new Exception(__(
-                'To record payments with :method_name, the recipient bank account must be manually validated. '.
+                'To record payments with :method_name, the recipient bank account must be manually validated. ' .
                     'You should go on the partner bank account of :partner in order to validate it.',
                 [
                     'method_name' => $payment->paymentMethodLine->name,
@@ -1155,7 +1157,7 @@ class AccountManager
         foreach ($moves->zip($reverseMoves) as [$move, $reverseMove]) {
             $groupedLines = $move->lines->merge($reverseMove->lines)
                 ->reject(fn ($line) => $line->reconciled)
-                ->groupBy(fn ($line) => $line->account_id.'|'.($line->currency_id ?? 'null'));
+                ->groupBy(fn ($line) => $line->account_id . '|' . ($line->currency_id ?? 'null'));
 
             foreach ($groupedLines as $key => $lines) {
                 [$accountId] = explode('|', $key);
@@ -1668,7 +1670,7 @@ class AccountManager
             return null;
         }
 
-        $defaultAccountsSettings = new DefaultAccountSettings;
+        $defaultAccountsSettings = new DefaultAccountSettings();
 
         if (
             ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
@@ -1747,7 +1749,7 @@ class AccountManager
             'currency',
         ]);
 
-        $groups = $lines->groupBy(fn ($line) => $line->matching_number ?? 'auto_'.$line->id);
+        $groups = $lines->groupBy(fn ($line) => $line->matching_number ?? 'auto_' . $line->id);
 
         foreach ($groups as $groupKey => $groupLines) {
             $groupFullyReconciled = $groupLines->every(
@@ -1927,7 +1929,7 @@ class AccountManager
                 if ($line->full_reconcile_id) {
                     $line->matching_number = (string) $line->full_reconcile_id;
                 } else {
-                    $line->matching_number = 'P'.$matchingNumber;
+                    $line->matching_number = 'P' . $matchingNumber;
                 }
             } else {
                 $line->matching_number = null;

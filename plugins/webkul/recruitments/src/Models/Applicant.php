@@ -20,7 +20,10 @@ use Webkul\Support\Models\UTMSource;
 
 class Applicant extends Model
 {
-    use HasApplicationStatus, HasChatter, HasLogActivity, SoftDeletes;
+    use HasApplicationStatus;
+    use HasChatter;
+    use HasLogActivity;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 

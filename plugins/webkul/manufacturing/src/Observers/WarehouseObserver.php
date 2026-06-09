@@ -29,7 +29,11 @@ class WarehouseObserver implements ShouldHandleEventsAfterCommit
         $warehouse->syncManufacturingWarehouseConfiguration();
     }
 
-    public function deleted(InventoryWarehouse $warehouse): void {}
+    public function deleted(InventoryWarehouse $warehouse): void
+    {
+    }
 
-    public function restored(InventoryWarehouse $warehouse): void {}
+    public function restored(InventoryWarehouse $warehouse): void
+    {
+    }
 }

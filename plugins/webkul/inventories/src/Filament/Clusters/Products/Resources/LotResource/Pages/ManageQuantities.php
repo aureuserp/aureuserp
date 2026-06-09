@@ -75,7 +75,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->rules([
                         'numeric',
                         'min:1',
-                        'max:'.($this->getOwnerRecord()->product->tracking == ProductTracking::SERIAL ? '1' : '999999999'),
+                        'max:' . ($this->getOwnerRecord()->product->tracking == ProductTracking::SERIAL ? '1' : '999999999'),
                     ])
                     ->beforeStateUpdated(function ($record, $state) {
                         $previousQuantity = $record->quantity;

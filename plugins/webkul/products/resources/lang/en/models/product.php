@@ -14,7 +14,7 @@ return [
         'volume'              => 'Volume',
         'weight'              => 'Weight',
         'description'         => 'Description',
-        'description_purchase'=> 'Description (Purchase)',
+        'description_purchase' => 'Description (Purchase)',
         'description_sale'    => 'Description (Sale)',
         'enable_sales'        => 'Enable Sales',
         'enable_purchase'     => 'Enable Purchase',

@@ -48,7 +48,7 @@ class EditPackage extends EditRecord
 
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
-                        }, 'Package-'.$record->name.'.pdf');
+                        }, 'Package-' . $record->name . '.pdf');
                     }),
                 Action::make('print-with-content')
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/edit-package.header-actions.print.actions.with-content.label'))
@@ -62,7 +62,7 @@ class EditPackage extends EditRecord
 
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
-                        }, 'Package-'.$record->name.'.pdf');
+                        }, 'Package-' . $record->name . '.pdf');
                     }),
             ])
                 ->label(__('inventories::filament/clusters/products/resources/package/pages/edit-package.header-actions.print.label'))

@@ -14,7 +14,8 @@ use Webkul\Security\Models\User;
 
 class Stage extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'maintenance_stages';
 

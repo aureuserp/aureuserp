@@ -18,7 +18,9 @@ use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'time-off';
 

@@ -16,7 +16,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewInvoice extends ViewRecord
 {
-    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs;
+    use HasRepeatableEntryColumnManager;
 
     protected static string $resource = InvoiceResource::class;
 

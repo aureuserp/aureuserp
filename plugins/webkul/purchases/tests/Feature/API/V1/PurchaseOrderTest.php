@@ -10,8 +10,8 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PURCHASE_ORDER_JSON_STRUCTURE = [
     'id',
@@ -188,7 +188,7 @@ it('shows a purchase order for authorized users', function () {
 
     $order = Order::factory()->create();
 
-    $this->getJson(purchaseOrderRoute('show', $order).'?include=lines')
+    $this->getJson(purchaseOrderRoute('show', $order) . '?include=lines')
         ->assertOk()
         ->assertJsonPath('data.id', $order->id)
         ->assertJsonStructure(['data' => PURCHASE_ORDER_JSON_STRUCTURE]);

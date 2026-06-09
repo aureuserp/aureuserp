@@ -42,7 +42,7 @@ class EditLot extends EditRecord
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'Lot-'.str_replace('/', '_', $record->name).'.pdf');
+                    }, 'Lot-' . str_replace('/', '_', $record->name) . '.pdf');
                 }),
             DeleteAction::make()
                 ->action(function (DeleteAction $action, Lot $record) {

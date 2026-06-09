@@ -21,7 +21,11 @@ use Webkul\Support\Models\Company;
 
 class MaintenanceRequest extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+    use HasChatter;
+    use HasFactory;
+    use HasLogActivity;
+    use HasPermissionScope;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'maintenance';
 
@@ -140,7 +144,7 @@ class MaintenanceRequest extends Model
 
                 $scheduledAt = Carbon::parse($request->scheduled_at ?? now());
 
-                $scheduledAt->add($request->repeat_interval, $request->repeat_unit->value.'s');
+                $scheduledAt->add($request->repeat_interval, $request->repeat_unit->value . 's');
 
                 if (
                     $request->repeat_type === MaintenanceRepeatType::FOREVER

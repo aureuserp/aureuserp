@@ -7,8 +7,8 @@ use Webkul\Account\Models\CashRounding;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const CASH_ROUNDING_JSON_STRUCTURE = [
     'id',
@@ -129,7 +129,7 @@ it('filters cash roundings by strategy', function () {
     $cashRounding = CashRounding::factory()->create(['strategy' => RoundingStrategy::ADD_INVOICE_LINE]);
     CashRounding::factory()->create(['strategy' => RoundingStrategy::BIGGEST_TAX]);
 
-    $response = $this->getJson(cashRoundingRoute('index').'?filter[strategy]='.RoundingStrategy::ADD_INVOICE_LINE->value)
+    $response = $this->getJson(cashRoundingRoute('index') . '?filter[strategy]=' . RoundingStrategy::ADD_INVOICE_LINE->value)
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {

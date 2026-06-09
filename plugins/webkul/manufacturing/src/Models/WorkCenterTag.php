@@ -12,7 +12,8 @@ use Webkul\Security\Models\User;
 
 class WorkCenterTag extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'manufacturing_work_center_tags';
 

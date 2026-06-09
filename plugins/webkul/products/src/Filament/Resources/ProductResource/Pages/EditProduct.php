@@ -77,7 +77,7 @@ class EditProduct extends EditRecord
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'Product-'.$record->name.'.pdf');
+                    }, 'Product-' . $record->name . '.pdf');
                 }),
             DeleteAction::make()
                 ->successNotification(

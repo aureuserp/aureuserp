@@ -16,7 +16,8 @@ use Webkul\Support\Models\Company;
 
 class StorageCategory extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'inventories_storage_categories';
 

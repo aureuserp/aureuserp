@@ -3,8 +3,8 @@
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 
-require_once __DIR__.'/../../../Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../Helpers/TestBootstrapHelper.php';
 
 const CURRENCY_RATE_JSON_STRUCTURE = [
     'id',

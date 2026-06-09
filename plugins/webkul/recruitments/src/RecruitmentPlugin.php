@@ -28,19 +28,19 @@ class RecruitmentPlugin implements Plugin
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel
                     ->discoverResources(
-                        in: __DIR__.'/Filament/Resources',
+                        in: __DIR__ . '/Filament/Resources',
                         for: 'Webkul\\Recruitment\\Filament\\Resources'
                     )
                     ->discoverPages(
-                        in: __DIR__.'/Filament/Pages',
+                        in: __DIR__ . '/Filament/Pages',
                         for: 'Webkul\\Recruitment\\Filament\\Pages'
                     )
                     ->discoverClusters(
-                        in: __DIR__.'/Filament/Clusters',
+                        in: __DIR__ . '/Filament/Clusters',
                         for: 'Webkul\\Recruitment\\Filament\\Clusters'
                     )
                     ->discoverWidgets(
-                        in: __DIR__.'/Filament/Widgets',
+                        in: __DIR__ . '/Filament/Widgets',
                         for: 'Webkul\\Recruitment\\Filament\\Widgets'
                     );
             });

@@ -197,7 +197,8 @@ class ProductQuantity extends Model
                 'location_id' => $adjustmentLocation->id,
                 'product_id'  => $this->product_id,
                 'lot_id'      => $this->lot_id,
-            ], [
+            ],
+            [
                 'quantity'    => -$this->product->available_qty,
                 'company_id'  => $this->company_id,
                 'creator_id'  => Auth::id(),
@@ -457,7 +458,7 @@ class ProductQuantity extends Model
                     $query->where('partner_id', $partner->id);
                 }
 
-                $childIds = Location::where('parent_path', 'LIKE', $location->parent_path.'%')->pluck('id');
+                $childIds = Location::where('parent_path', 'LIKE', $location->parent_path . '%')->pluck('id');
 
                 $query->whereIn('location_id', $childIds);
             } else {
@@ -672,7 +673,7 @@ class ProductQuantity extends Model
                             : Location::query()
                                 ->where(function ($locationQuery) use ($locationParentPaths) {
                                     foreach ($locationParentPaths as $parentPath) {
-                                        $locationQuery->orWhere('parent_path', 'like', $parentPath.'%');
+                                        $locationQuery->orWhere('parent_path', 'like', $parentPath . '%');
                                     }
                                 })
                                 ->pluck('id');

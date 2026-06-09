@@ -14,7 +14,8 @@ use Webkul\Support\Models\Currency;
 
 class PriceList extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'products_product_price_lists';
 

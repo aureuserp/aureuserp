@@ -14,7 +14,8 @@ use Webkul\Security\Models\User;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'blogs_posts';
 
@@ -57,7 +58,7 @@ class Post extends Model
 
         $minutes = ceil($wordCount / 200);
 
-        return $minutes.' min read';
+        return $minutes . ' min read';
     }
 
     public function tags(): BelongsToMany

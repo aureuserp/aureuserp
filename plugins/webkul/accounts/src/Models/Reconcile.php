@@ -13,7 +13,8 @@ use Webkul\Support\Models\Company;
 
 class Reconcile extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'accounts_reconciles';
 

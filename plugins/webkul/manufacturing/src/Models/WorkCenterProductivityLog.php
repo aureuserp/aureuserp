@@ -119,7 +119,6 @@ class WorkCenterProductivityLog extends Model
                 $productivityLog->workOrder->computeDuration();
 
                 $productivityLog->workOrder->save();
-
             }
         });
 

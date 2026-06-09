@@ -33,7 +33,12 @@ use Webkul\Support\Models\UTMSource;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use HasPermissionScope;
+    use SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'sales';
 
@@ -233,7 +238,7 @@ class Order extends Model
 
     public function updateName()
     {
-        $this->name = 'SO/'.$this->id;
+        $this->name = 'SO/' . $this->id;
     }
 
     public function handleOrderCreation()

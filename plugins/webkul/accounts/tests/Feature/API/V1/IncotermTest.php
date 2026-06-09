@@ -4,8 +4,8 @@ use Webkul\Account\Models\Incoterm;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INCOTERM_JSON_STRUCTURE = [
     'id',
@@ -115,7 +115,7 @@ it('filters incoterms by code', function () {
     $incoterm = Incoterm::factory()->create(['code' => 'FOB']);
     Incoterm::factory()->count(2)->create();
 
-    $response = $this->getJson(incotermRoute('index').'?filter[code]=FOB')
+    $response = $this->getJson(incotermRoute('index') . '?filter[code]=FOB')
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {

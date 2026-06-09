@@ -34,7 +34,8 @@ use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ManageQuantities extends ManageRelatedRecords
 {
-    use HasRecordNavigationTabs, HasTableViews;
+    use HasRecordNavigationTabs;
+    use HasTableViews;
 
     protected static string $resource = ProductResource::class;
 
@@ -246,7 +247,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->rules([
                         'numeric',
                         'min:1',
-                        'max:'.($this->getOwnerRecord()->tracking == ProductTracking::SERIAL ? '1' : '999999999'),
+                        'max:' . ($this->getOwnerRecord()->tracking == ProductTracking::SERIAL ? '1' : '999999999'),
                     ])
                     ->beforeStateUpdated(function ($record, $state) {
                         $previousQuantity = $record->quantity;

@@ -5,8 +5,8 @@ use Webkul\Purchase\Models\OrderLine;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PURCHASE_ORDER_LINE_JSON_STRUCTURE = [
     'id',
@@ -125,7 +125,7 @@ it('filters purchase order lines by product id', function () {
     $matchingLine = $order->lines()->firstOrFail();
 
     $response = $this->getJson(
-        purchaseOrderLineRoute('index', $order->id).'?filter[product_id]='.$matchingLine->product_id
+        purchaseOrderLineRoute('index', $order->id) . '?filter[product_id]=' . $matchingLine->product_id
     )->assertOk();
 
     $productIds = collect($response->json('data'))->pluck('product_id')->unique()->values()->all();
@@ -138,7 +138,7 @@ it('sorts purchase order lines by id descending', function () {
 
     $order = createPurchaseOrderWithLines(2);
 
-    $response = $this->getJson(purchaseOrderLineRoute('index', $order->id).'?sort=-id')
+    $response = $this->getJson(purchaseOrderLineRoute('index', $order->id) . '?sort=-id')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id')->values()->all();
@@ -152,7 +152,7 @@ it('includes related product for purchase order lines', function () {
 
     $order = createPurchaseOrderWithLines(1);
 
-    $this->getJson(purchaseOrderLineRoute('index', $order->id).'?include=product')
+    $this->getJson(purchaseOrderLineRoute('index', $order->id) . '?include=product')
         ->assertOk()
         ->assertJsonPath('data.0.product.id', fn ($id) => is_int($id));
 });

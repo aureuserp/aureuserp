@@ -39,7 +39,7 @@ class SchemaRegistry
 
         // Handle invokable class string
         if (is_string($modifier) && class_exists($modifier)) {
-            return new $modifier;
+            return new $modifier();
         }
 
         // Handle array callable [Class::class, 'method'] or already callable

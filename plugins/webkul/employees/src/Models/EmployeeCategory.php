@@ -12,7 +12,8 @@ use Webkul\Security\Models\User;
 
 class EmployeeCategory extends Model
 {
-    use HasCustomFields, HasFactory;
+    use HasCustomFields;
+    use HasFactory;
 
     protected $table = 'employees_categories';
 

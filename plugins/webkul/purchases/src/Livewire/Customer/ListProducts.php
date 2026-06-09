@@ -37,7 +37,7 @@ class ListProducts extends Component implements HasActions, HasForms, HasTable
                     ->label('Product'),
                 TextColumn::make('product_qty')
                     ->label('Quantity')
-                    ->formatStateUsing(fn (string $state): string => $state.' Units'),
+                    ->formatStateUsing(fn (string $state): string => $state . ' Units'),
                 TextColumn::make('price_unit')
                     ->label('Unit Price')
                     ->money(fn (OrderLine $record) => $record->currency->code),

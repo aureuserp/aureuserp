@@ -19,7 +19,7 @@ return [
                     'lot-serial'          => 'Lot/Serial Number',
                     'start-date'          => 'Start Date',
                     'end-date'            => 'End Date',
-                    'date-range-separator'=> 'to',
+                    'date-range-separator' => 'to',
                     'expected-duration'   => 'Expected Duration',
                     'duration-suffix'     => 'minutes',
                     'real-duration'       => 'Real Duration',

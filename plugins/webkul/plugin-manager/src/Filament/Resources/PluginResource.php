@@ -167,7 +167,7 @@ class PluginResource extends Resource
                                     $errorOutput = implode(PHP_EOL, array_slice($output, -10));
 
                                     throw new RuntimeException(
-                                        "Installation failed with exit code {$exitCode}.".
+                                        "Installation failed with exit code {$exitCode}." .
                                             ($errorOutput ? " Last output: {$errorOutput}" : '')
                                     );
                                 }
@@ -308,22 +308,22 @@ class PluginResource extends Resource
     protected static function repeatableEntry(string $type, string $color, string $key): RepeatableEntry
     {
         return RepeatableEntry::make($type)
-            ->label(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.title'))
+            ->label(__('plugin-manager::filament/resources/plugin.infolist.' . $key . '.title'))
             ->state(function ($record) use ($type) {
-                return collect($record->{'get'.ucfirst($type).'FromConfig'}())->map(fn ($dep) => [
+                return collect($record->{'get' . ucfirst($type) . 'FromConfig'}())->map(fn ($dep) => [
                     'name'         => $dep,
                     'is_installed' => Package::isPluginInstalled($dep),
                 ]);
             })
             ->schema([
                 TextEntry::make('name')
-                    ->label(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.name'))
+                    ->label(__('plugin-manager::filament/resources/plugin.infolist.' . $key . '.name'))
                     ->formatStateUsing(fn ($state) => ucfirst($state))
                     ->badge()
                     ->color($color),
 
                 IconEntry::make('is_installed')
-                    ->label(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.is_installed'))
+                    ->label(__('plugin-manager::filament/resources/plugin.infolist.' . $key . '.is_installed'))
                     ->boolean()
                     ->trueIcon('heroicon-s-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
@@ -331,7 +331,7 @@ class PluginResource extends Resource
                     ->falseColor('gray'),
             ])
             ->columns(2)
-            ->placeholder(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.placeholder'));
+            ->placeholder(__('plugin-manager::filament/resources/plugin.infolist.' . $key . '.placeholder'));
     }
 
     protected static function uninstallPlugin($record)
@@ -370,7 +370,7 @@ class PluginResource extends Resource
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
                 } catch (Throwable $e) {
-                    $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
+                    $errors[] = "Failed to uninstall '{$pluginName}': " . $e->getMessage();
                 }
             });
 
@@ -439,7 +439,7 @@ class PluginResource extends Resource
             '/usr/local/bin/php',
             '/usr/bin/php',
             '/opt/homebrew/bin/php',
-            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
+            '/Users/' . get_current_user() . '/Library/Application Support/Herd/bin/php',
         ];
 
         foreach ($commonPaths as $path) {

@@ -103,7 +103,7 @@ class ProductResource extends BaseProductResource
                         );
                     }
 
-                    return ! empty($parts) ? '(= '.implode(', ', $parts).')' : ' ';
+                    return ! empty($parts) ? '(= ' . implode(', ', $parts) . ')' : ' ';
                 }),
 
             Select::make('accounts_product_supplier_taxes')

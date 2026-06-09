@@ -44,7 +44,7 @@ class PaymentExporter extends Exporter
         ]);
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.__('accounts::filament/exports/payment.notification.failed', [
+            $body .= ' ' . __('accounts::filament/exports/payment.notification.failed', [
                 'count' => number_format($failedRowsCount),
             ]);
         }

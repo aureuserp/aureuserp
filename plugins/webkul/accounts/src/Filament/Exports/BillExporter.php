@@ -65,7 +65,7 @@ class BillExporter extends Exporter
         ]);
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' '.__('accounts::filament/exports/bill.notification.failed', [
+            $body .= ' ' . __('accounts::filament/exports/bill.notification.failed', [
                 'count' => number_format($failedRowsCount),
             ]);
         }

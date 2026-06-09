@@ -99,14 +99,14 @@ class TaxManager
         $currency = $getValue('currency', null)
             ?: $getValue('companyCurrency', null)
             ?: $getValue('company', Company::first())?->currency
-            ?: new Currency;
+            ?: new Currency();
 
         return array_merge($args, [
             'record' => $record,
             'id'     => $getValue('id', 0),
 
-            'product'    => $getValue('product', new Product),
-            'taxes'      => $getValue('taxes', new Tax),
+            'product'    => $getValue('product', new Product()),
+            'taxes'      => $getValue('taxes', new Tax()),
             'price_unit' => $getValue('price_unit', 0.0),
             'quantity'   => $getValue('quantity', 0.0),
             'discount'   => $getValue('discount', 0.0),
@@ -123,8 +123,8 @@ class TaxManager
             'is_refund'      => $getValue('is_refund', false),
             'tax_tag_invert' => $getValue('tax_tag_invert', false),
 
-            'partner'               => $getValue('partner', new Partner),
-            'account'               => $getValue('account', new Account),
+            'partner'               => $getValue('partner', new Partner()),
+            'account'               => $getValue('account', new Account()),
             'analytic_distribution' => $getValue('analytic_distribution', null),
         ]);
     }
@@ -138,19 +138,19 @@ class TaxManager
         $currency = $getValue('currency', null)
             ?: $getValue('companyCurrency', null)
             ?: $getValue('company', Company::first())?->currency
-            ?: new Currency;
+            ?: new Currency();
 
         return array_merge($args, [
             'record' => $record,
             'id'     => $getValue('id', 0),
 
-            'taxRepartitionLine'    => $getValue('taxRepartitionLine', new TaxPartition),
-            'groupTax'              => $getValue('groupTax', new Tax),
-            'taxes'                 => $getValue('taxes', new Tax),
+            'taxRepartitionLine'    => $getValue('taxRepartitionLine', new TaxPartition()),
+            'groupTax'              => $getValue('groupTax', new Tax()),
+            'taxes'                 => $getValue('taxes', new Tax()),
             'tax_tags'              => $getValue('tax_tags', []),
             'currency'              => $currency,
-            'partner'               => $getValue('partner', new Partner),
-            'account'               => $getValue('account', new Account),
+            'partner'               => $getValue('partner', new Partner()),
+            'account'               => $getValue('account', new Account()),
             'analytic_distribution' => $getValue('analytic_distribution', null),
             'sign'                  => $getValue('sign', 1.0),
             'amount_currency'       => $getValue('amount_currency', 0),
@@ -529,7 +529,7 @@ class TaxManager
     {
         $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
 
-        $defaultRoundingMethod = (new TaxesSettings)->tax_calculation_rounding_method;
+        $defaultRoundingMethod = (new TaxesSettings())->tax_calculation_rounding_method;
 
         $taxesComputation = $this->getTaxDetails(
             taxes : $baseLine['taxes'],
@@ -569,7 +569,7 @@ class TaxManager
             $taxDetails['taxes_data'][] = array_merge($taxData, [
                 'raw_tax_amount_currency' => $taxData['tax_amount'],
                 'raw_tax_amount'          => $taxAmount,
-                'raw_base_amount_currency'=> $taxData['base_amount'],
+                'raw_base_amount_currency' => $taxData['base_amount'],
                 'raw_base_amount'         => $baseAmount,
             ]);
         }
@@ -644,10 +644,12 @@ class TaxManager
                 return abs($b['tax_amount']) <=> abs($a['tax_amount']);
             });
 
-            foreach ([
+            foreach (
+                [
                 ['tax_amount_currency', $currency],
                 ['tax_amount', $companyCurrency],
-            ] as [$field, $fieldCurrency]) {
+                ] as [$field, $fieldCurrency]
+            ) {
                 $taxAmount = $computeAllUseRawBaseLines
                     ? ($taxData["raw_{$field}"] ?? 0.0)
                     : ($taxData[$field] ?? 0.0);
@@ -1001,7 +1003,7 @@ class TaxManager
         foreach ($taxesDataList as $taxData) {
             $taxesDataResult[] = [
                 'tax'               => $taxData['tax'],
-                'group'             => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? new Tax,
+                'group'             => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? new Tax(),
                 'batch'             => $batchingResults['batch_per_tax'][$taxData['tax']->id],
                 'tax_amount'        => $taxData['tax_amount'],
                 'base_amount'       => $taxData['base'],

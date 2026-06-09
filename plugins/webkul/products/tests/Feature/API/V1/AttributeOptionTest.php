@@ -5,8 +5,8 @@ use Webkul\Product\Models\AttributeOption;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const PRODUCTS_ATTRIBUTE_OPTION_JSON_STRUCTURE = [
     'id',
@@ -188,7 +188,7 @@ it('filters attribute options by name', function () {
     ]);
     AttributeOption::factory()->count(2)->create(['attribute_id' => $attribute->id]);
 
-    $response = $this->getJson(productsAttributeOptionRoute('index', $attribute).'?filter[name]=UniqueOptionXYZ')
+    $response = $this->getJson(productsAttributeOptionRoute('index', $attribute) . '?filter[name]=UniqueOptionXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

@@ -16,7 +16,9 @@ use Webkul\Support\Models\Company;
 
 class ProjectStage extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'projects_project_stages';
 

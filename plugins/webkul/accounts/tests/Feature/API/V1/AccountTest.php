@@ -5,8 +5,8 @@ use Webkul\Account\Models\Account;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const ACCOUNT_JSON_STRUCTURE = [
     'id',
@@ -50,7 +50,7 @@ function accountPayload(array $overrides = []): array
 {
     return array_replace_recursive([
         'name'         => 'Cash and Bank',
-        'code'         => '100'.rand(10, 99),
+        'code'         => '100' . rand(10, 99),
         'account_type' => AccountType::ASSET_CURRENT->value,
     ], $overrides);
 }
@@ -119,7 +119,7 @@ it('filters accounts by account type', function () {
     $account = Account::factory()->receivable()->create();
     Account::factory()->expense()->count(2)->create();
 
-    $response = $this->getJson(accountRoute('index').'?filter[account_type]='.AccountType::ASSET_RECEIVABLE->value)
+    $response = $this->getJson(accountRoute('index') . '?filter[account_type]=' . AccountType::ASSET_RECEIVABLE->value)
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {

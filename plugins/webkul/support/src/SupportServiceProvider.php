@@ -72,7 +72,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        include __DIR__.'/helpers.php';
+        include __DIR__ . '/helpers.php';
 
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
@@ -84,7 +84,7 @@ class SupportServiceProvider extends PackageServiceProvider
         ])->where(['filename' => '[ \w\\.\\/\\-\\@\(\)\=]+']);
 
         FilamentAsset::register([
-            Css::make('support', __DIR__.'/../resources/dist/support.css'),
+            Css::make('support', __DIR__ . '/../resources/dist/support.css'),
         ], 'support');
 
         $this->registerFilamentDefaults();

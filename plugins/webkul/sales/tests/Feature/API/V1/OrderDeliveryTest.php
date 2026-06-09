@@ -4,8 +4,8 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Models\Order;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const SALES_ORDER_DELIVERY_JSON_STRUCTURE = [
     'id',
@@ -125,7 +125,7 @@ it('filters deliveries by state when inventories plugin is installed', function 
         'company_id'    => $order->company_id,
     ]);
 
-    $response = $this->getJson(salesOrderDeliveryRoute('index', $order->id).'?filter[state]=confirmed')
+    $response = $this->getJson(salesOrderDeliveryRoute('index', $order->id) . '?filter[state]=confirmed')
         ->assertOk();
 
     $states = collect($response->json('data'))->pluck('state')->unique()->values()->all();
@@ -138,7 +138,7 @@ it('includes operation type for deliveries when requested', function () {
 
     $order = createOrderWithDeliveries(1);
 
-    $response = $this->getJson(salesOrderDeliveryRoute('index', $order->id).'?include=operationType')
+    $response = $this->getJson(salesOrderDeliveryRoute('index', $order->id) . '?include=operationType')
         ->assertOk();
 
     if (! Package::isPluginInstalled('inventories')) {

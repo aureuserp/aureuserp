@@ -6,13 +6,13 @@ use Knuckles\Scribe\Extracting\Strategies;
 use Webkul\Support\ScalarOpenApiGenerator;
 
 use function Knuckles\Scribe\Config\configureStrategy;
-use function Knuckles\Scribe\Config\removeStrategies;
+// use function Knuckles\Scribe\Config\removeStrategies;
 
 // Only the most common configs are shown. See the https://scribe.knuckles.wtf/laravel/reference/config for all.
 
 return [
     // The HTML <title> for the generated documentation.
-    'title' => config('app.name').' API Documentation',
+    'title' => config('app.name') . ' API Documentation',
 
     // A short description of your API. Will be included in the docs webpage, Postman collection and OpenAPI spec.
     'description' => '',

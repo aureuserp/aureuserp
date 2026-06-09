@@ -24,7 +24,13 @@ use Webkul\Support\Models\Company;
 
 class Task extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
+    use HasChatter;
+    use HasCustomFields;
+    use HasFactory;
+    use HasLogActivity;
+    use HasPermissionScope;
+    use SoftDeletes;
+    use SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'projects';
 

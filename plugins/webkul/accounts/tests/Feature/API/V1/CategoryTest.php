@@ -4,8 +4,8 @@ use Webkul\Account\Models\Category;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const CATEGORY_JSON_STRUCTURE = [
     'id',
@@ -112,7 +112,7 @@ it('filters categories by name', function () {
     $category = Category::factory()->create(['name' => 'Unique Category Name']);
     Category::factory()->count(2)->create();
 
-    $response = $this->getJson(categoryRoute('index').'?filter[name]=Unique')
+    $response = $this->getJson(categoryRoute('index') . '?filter[name]=Unique')
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {

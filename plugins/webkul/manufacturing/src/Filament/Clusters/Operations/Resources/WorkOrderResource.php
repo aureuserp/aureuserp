@@ -238,7 +238,7 @@ class WorkOrderResource extends Resource
                                 static::getTimeTrackingRepeater(),
                                 TextEntry::make('display_total_real_duration')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.form.tabs.time-tracking.footer.real-duration'))
-                                    ->state(fn (?WorkOrder $record): string => format_float_time((float) ($record?->duration ?: 0), 'minutes').' (minutes)'),
+                                    ->state(fn (?WorkOrder $record): string => format_float_time((float) ($record?->duration ?: 0), 'minutes') . ' (minutes)'),
                             ]),
                         Tab::make(__('manufacturing::filament/clusters/operations/resources/work-order.form.tabs.components.title'))
                             ->schema([
@@ -525,7 +525,7 @@ class WorkOrderResource extends Resource
                                     ->placeholder('—'),
                                 TextEntry::make('quantity_remaining')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.infolist.sections.general.entries.quantity'))
-                                    ->formatStateUsing(fn (mixed $state, WorkOrder $record): string => number_format((float) ($state ?: 0), 4).' '.($record->uom?->name ?? '—')),
+                                    ->formatStateUsing(fn (mixed $state, WorkOrder $record): string => number_format((float) ($state ?: 0), 4) . ' ' . ($record->uom?->name ?? '—')),
                                 TextEntry::make('manufacturingOrder.reference')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.infolist.sections.general.entries.manufacturing-order'))
                                     ->formatStateUsing(fn (mixed $state, WorkOrder $record): string => static::getManufacturingOrderLabel($record->manufacturingOrder)),
@@ -581,7 +581,7 @@ class WorkOrderResource extends Resource
                                     ]),
                                 TextEntry::make('duration')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.infolist.tabs.time-tracking.footer.real-duration'))
-                                    ->formatStateUsing(fn (mixed $state): string => format_float_time((float) ($state ?: 0), 'minutes').' (minutes)'),
+                                    ->formatStateUsing(fn (mixed $state): string => format_float_time((float) ($state ?: 0), 'minutes') . ' (minutes)'),
                             ]),
                         Tab::make(__('manufacturing::filament/clusters/operations/resources/work-order.infolist.tabs.components.title'))
                             ->schema([
@@ -872,6 +872,6 @@ class WorkOrderResource extends Resource
             return '—';
         }
 
-        return $order->reference ?: $order->name ?: 'MO/'.$order->getKey();
+        return $order->reference ?: $order->name ?: 'MO/' . $order->getKey();
     }
 }

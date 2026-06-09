@@ -39,7 +39,7 @@ class PrintMOAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Manufacturing-Order-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Manufacturing-Order-' . str_replace('/', '_', $record->name) . '.pdf');
             });
     }
 }

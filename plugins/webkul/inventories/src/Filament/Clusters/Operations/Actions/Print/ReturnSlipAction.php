@@ -19,6 +19,7 @@ class ReturnSlipAction extends Action
 
         $this
             ->label(__('inventories::filament/clusters/operations/actions/todo.label'))
-            ->action(function (Operation $record, Component $livewire): void {});
+            ->action(function (Operation $record, Component $livewire): void {
+            });
     }
 }

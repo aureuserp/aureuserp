@@ -5,8 +5,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_WAREHOUSE_JSON_STRUCTURE = [
     'id',
@@ -51,7 +51,7 @@ function inventoryWarehousePayload(array $overrides = []): array
 
     return array_replace_recursive([
         'name'       => 'Test Warehouse',
-        'code'       => 'TWH-'.uniqid(),
+        'code'       => 'TWH-' . uniqid(),
         'company_id' => $company->id,
     ], $overrides);
 }
@@ -186,7 +186,7 @@ it('filters warehouses by name', function () {
     $warehouse = Warehouse::factory()->create(['name' => 'UniqueWarehouseXYZ']);
     Warehouse::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryWarehouseRoute('index').'?filter[name]=UniqueWarehouseXYZ')
+    $response = $this->getJson(inventoryWarehouseRoute('index') . '?filter[name]=UniqueWarehouseXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');
@@ -247,7 +247,7 @@ it('rejects duplicate warehouse names', function () {
 
     $this->postJson(inventoryWarehouseRoute('store'), [
         'name'       => $existing->name,
-        'code'       => 'UNIQ-'.uniqid(),
+        'code'       => 'UNIQ-' . uniqid(),
         'company_id' => $company->id,
     ])
         ->assertUnprocessable()

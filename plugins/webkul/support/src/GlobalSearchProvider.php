@@ -36,7 +36,7 @@ class GlobalSearchProvider extends DefaultGlobalSearchProvider
                 ->before('\\')
                 ->toString();
 
-            $builder->category($pluginKey.'→'.$resource::getPluralModelLabel(), $resourceResults);
+            $builder->category($pluginKey . '→' . $resource::getPluralModelLabel(), $resourceResults);
         }
 
         return $builder;

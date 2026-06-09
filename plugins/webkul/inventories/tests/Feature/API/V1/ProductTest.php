@@ -7,8 +7,8 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\UOM;
 
-require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
-require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/SecurityHelper.php';
+require_once __DIR__ . '/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 const INVENTORY_PRODUCT_JSON_STRUCTURE = [
     'id',
@@ -48,7 +48,7 @@ function inventoryProductPayload(array $overrides = []): array
 
     return array_replace_recursive([
         'type'        => ProductType::GOODS->value,
-        'name'        => 'Test Inventory Product '.uniqid(),
+        'name'        => 'Test Inventory Product ' . uniqid(),
         'price'       => 100.00,
         'category_id' => $category->id,
         'uom_id'      => $uom->id,
@@ -186,7 +186,7 @@ it('filters inventory products by name', function () {
     $product = Product::factory()->create(['name' => 'UniqueInventoryProductXYZ']);
     Product::factory()->count(2)->create();
 
-    $response = $this->getJson(inventoryProductRoute('index').'?filter[name]=UniqueInventoryProductXYZ')
+    $response = $this->getJson(inventoryProductRoute('index') . '?filter[name]=UniqueInventoryProductXYZ')
         ->assertOk();
 
     $ids = collect($response->json('data'))->pluck('id');

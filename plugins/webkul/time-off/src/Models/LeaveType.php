@@ -15,7 +15,9 @@ use Webkul\TimeOff\Enums\LeaveValidationType;
 
 class LeaveType extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     protected $table = 'time_off_leave_types';
 

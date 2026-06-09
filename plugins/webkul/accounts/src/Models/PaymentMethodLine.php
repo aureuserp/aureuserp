@@ -13,7 +13,8 @@ use Webkul\Security\Models\User;
 
 class PaymentMethodLine extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'accounts_payment_method_lines';
 

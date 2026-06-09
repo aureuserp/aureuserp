@@ -250,10 +250,10 @@ class JournalChartWidget extends Component
 
         $labels = [
             'Overdue',
-            $prevWeekStart->format('d M').' - '.$prevWeekEnd->format('d M'),
+            $prevWeekStart->format('d M') . ' - ' . $prevWeekEnd->format('d M'),
             'This Week',
-            $nextWeekStart->format('d M').' - '.$nextWeekEnd->format('d M'),
-            $futureWeekStart->format('d M').' - '.$futureWeekEnd->format('d M'),
+            $nextWeekStart->format('d M') . ' - ' . $nextWeekEnd->format('d M'),
+            $futureWeekStart->format('d M') . ' - ' . $futureWeekEnd->format('d M'),
             'Not Due',
         ];
 

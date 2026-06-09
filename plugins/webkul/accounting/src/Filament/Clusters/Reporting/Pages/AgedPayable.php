@@ -25,7 +25,8 @@ use Webkul\Partner\Models\Partner;
 
 class AgedPayable extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms;
+    use HasPageShield;
+    use InteractsWithForms;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.aged-payable';
 
@@ -95,7 +96,7 @@ class AgedPayable extends Page implements HasForms
 
                     return Excel::download(
                         new AgedPayableExport($partners, $asOfDate, $period, $basis, $this->expandedPartners),
-                        'aged-payable-'.$asOfDate.'.xlsx'
+                        'aged-payable-' . $asOfDate . '.xlsx'
                     );
                 }),
 
@@ -127,7 +128,7 @@ class AgedPayable extends Page implements HasForms
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'aged-payable-'.$asOfDate.'.pdf');
+                    }, 'aged-payable-' . $asOfDate . '.pdf');
                 }),
         ];
     }

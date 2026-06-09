@@ -12,7 +12,8 @@ use Webkul\Security\Models\User;
 
 class LeaveAccrualLevel extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasFactory;
+    use SortableTrait;
 
     protected $table = 'time_off_leave_accrual_levels';
 

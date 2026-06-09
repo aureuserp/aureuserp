@@ -132,7 +132,7 @@ class OverviewCalendarWidget extends FullCalendarWidget
                 ->icon('heroicon-o-calendar-days'),
             TextEntry::make('number_of_days')
                 ->label(__('time-off::filament/widgets/overview-calendar-widget.infolist.entries.duration'))
-                ->formatStateUsing(fn ($state) => round($state, 1).' day(s)')
+                ->formatStateUsing(fn ($state) => round($state, 1) . ' day(s)')
                 ->icon('heroicon-o-clock'),
             TextEntry::make('private_name')
                 ->label(__('time-off::filament/widgets/overview-calendar-widget.infolist.entries.description'))

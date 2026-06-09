@@ -178,7 +178,7 @@ class QuotationResource extends Resource
                                             })
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                                             ->columnSpan(1)
-                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name . ($record->trashed() ? ' (Deleted)' : ''))
                                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)')),
                                     ]),
                                 DatePicker::make('validity_date')
@@ -310,7 +310,7 @@ class QuotationResource extends Resource
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.company'))
                                             ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
@@ -1200,7 +1200,7 @@ class QuotationResource extends Resource
                             ->whereNull('is_configurable'),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
                     ->disableOptionWhen(function ($label, $value, $state, $component) {
@@ -1294,7 +1294,7 @@ class QuotationResource extends Resource
                         return \Filament\Support\generate_icon_html(
                             'heroicon-o-exclamation-triangle',
                             null,
-                            (new ComponentAttributeBag)
+                            (new ComponentAttributeBag())
                                 ->color(IconComponent::class, 'danger')
                                 ->class(['fi-text-color-600'])
                                 ->merge([
@@ -1534,7 +1534,7 @@ class QuotationResource extends Resource
                     ->dehydrated(true)
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
                         if (str_contains($label, ' (Deleted)')) {
@@ -1944,33 +1944,33 @@ class QuotationResource extends Resource
 
     private static function calculateLineTotals($set, $get, ?string $prefix = ''): void
     {
-        if (! $get($prefix.'product_id')) {
-            $set($prefix.'price_unit', 0);
+        if (! $get($prefix . 'product_id')) {
+            $set($prefix . 'price_unit', 0);
 
-            $set($prefix.'discount', 0);
+            $set($prefix . 'discount', 0);
 
-            $set($prefix.'price_tax', 0);
+            $set($prefix . 'price_tax', 0);
 
-            $set($prefix.'price_subtotal', 0);
+            $set($prefix . 'price_subtotal', 0);
 
-            $set($prefix.'price_total', 0);
+            $set($prefix . 'price_total', 0);
 
-            $set($prefix.'purchase_price', 0);
+            $set($prefix . 'purchase_price', 0);
 
-            $set($prefix.'margin', 0);
+            $set($prefix . 'margin', 0);
 
-            $set($prefix.'margin_percent', 0);
+            $set($prefix . 'margin_percent', 0);
 
             return;
         }
 
-        $priceUnit = floatval($get($prefix.'price_unit') ?? 0);
+        $priceUnit = floatval($get($prefix . 'price_unit') ?? 0);
 
-        $quantity = floatval($get($prefix.'product_qty') ?? 1);
+        $quantity = floatval($get($prefix . 'product_qty') ?? 1);
 
-        $purchasePrice = floatval($get($prefix.'purchase_price') ?? 0);
+        $purchasePrice = floatval($get($prefix . 'purchase_price') ?? 0);
 
-        $discountValue = floatval($get($prefix.'discount') ?? 0);
+        $discountValue = floatval($get($prefix . 'discount') ?? 0);
 
         $subTotal = $priceUnit * $quantity;
 
@@ -1980,23 +1980,23 @@ class QuotationResource extends Resource
             $subTotal -= $discountAmount;
         }
 
-        $taxIds = $get($prefix.'taxes') ?? [];
+        $taxIds = $get($prefix . 'taxes') ?? [];
 
         [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $quantity);
 
         $total = $subTotal + $taxAmount;
 
-        $set($prefix.'price_subtotal', round($subTotal, 4));
+        $set($prefix . 'price_subtotal', round($subTotal, 4));
 
-        $set($prefix.'price_tax', round($taxAmount, 4));
+        $set($prefix . 'price_tax', round($taxAmount, 4));
 
-        $set($prefix.'price_total', round($total, 4));
+        $set($prefix . 'price_total', round($total, 4));
 
         [$margin, $marginPercentage] = static::calculateMargin($priceUnit, $purchasePrice, $quantity, $discountValue);
 
-        $set($prefix.'margin', round($margin, 4));
+        $set($prefix . 'margin', round($margin, 4));
 
-        $set($prefix.'margin_percent', round($marginPercentage, 4));
+        $set($prefix . 'margin_percent', round($marginPercentage, 4));
     }
 
     private static function calculateQuotationTotals(Get $get, $livewire): array

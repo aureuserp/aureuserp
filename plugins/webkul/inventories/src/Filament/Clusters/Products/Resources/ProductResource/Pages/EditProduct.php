@@ -28,7 +28,7 @@ class EditProduct extends BaseEditProduct
                     ->persistent()
                     ->send();
 
-                throw new Halt;
+                throw new Halt();
             }
         }
 
@@ -44,7 +44,6 @@ class EditProduct extends BaseEditProduct
                         || $newTracking == ProductTracking::SERIAL
                     )
                 ) {
-
                     $hasStockWithoutLot = $record->quantities()
                         ->whereHas('location', function ($query) {
                             $query->where('type', LocationType::INTERNAL);
@@ -61,7 +60,7 @@ class EditProduct extends BaseEditProduct
                             ->persistent()
                             ->send();
 
-                        throw new Halt;
+                        throw new Halt();
                     }
                 }
 
@@ -72,7 +71,7 @@ class EditProduct extends BaseEditProduct
                     ->persistent()
                     ->send();
 
-                throw new Halt;
+                throw new Halt();
             }
         }
     }

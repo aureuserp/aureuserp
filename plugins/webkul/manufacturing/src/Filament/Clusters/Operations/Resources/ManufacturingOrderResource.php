@@ -72,7 +72,7 @@ use Webkul\Support\Models\UOM;
 class ManufacturingOrderResource extends Resource
 {
     use HasResourcePermissionQuery;
-    
+
     protected static ?string $model = Order::class;
 
     protected static ?string $cluster = Operations::class;
@@ -169,7 +169,7 @@ class ManufacturingOrderResource extends Resource
                                     ->live()
                                     ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->wrapOptionLabels(false)
                                     ->disableOptionWhen(function ($label, $value, $state, $component) {
@@ -473,7 +473,7 @@ class ManufacturingOrderResource extends Resource
                     ->placeholder('—'),
                 TextColumn::make('consumption_efficiency')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.columns.consumption-efficiency'))
-                    ->state(fn (Order $record): string => $record->consumption_efficiency !== null ? $record->consumption_efficiency.'%' : '—')
+                    ->state(fn (Order $record): string => $record->consumption_efficiency !== null ? $record->consumption_efficiency . '%' : '—')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('work_orders_expected_duration')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.columns.expected-duration'))
@@ -555,19 +555,19 @@ class ManufacturingOrderResource extends Resource
                                         $expectedQuantity = number_format((float) $record->quantity, 4, '.', '');
 
                                         if ($record->state === ManufacturingOrderState::DRAFT) {
-                                            return $expectedQuantity.' '.($record->uom?->name ?? '—');
+                                            return $expectedQuantity . ' ' . ($record->uom?->name ?? '—');
                                         }
 
                                         $producingQuantity = number_format((float) ($record->quantity_producing ?: 0), 4, '.', '');
 
-                                        return $producingQuantity.' / '.$expectedQuantity.' '.($record->uom?->name ?? '—');
+                                        return $producingQuantity . ' / ' . $expectedQuantity . ' ' . ($record->uom?->name ?? '—');
                                     }),
                                 TextEntry::make('bill_of_material_id')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.infolist.sections.general.entries.bill-of-material'))
                                     ->state(fn (Order $record): string => static::getBillOfMaterialLabel($record->billOfMaterial)),
                                 TextEntry::make('consumption_efficiency')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.infolist.sections.general.entries.consumption-efficiency'))
-                                    ->state(fn (Order $record): string => $record->consumption_efficiency !== null ? $record->consumption_efficiency.'%' : '—'),
+                                    ->state(fn (Order $record): string => $record->consumption_efficiency !== null ? $record->consumption_efficiency . '%' : '—'),
                             ]),
                         Group::make()
                             ->columns(1)
@@ -831,7 +831,7 @@ class ManufacturingOrderResource extends Resource
             return $reference;
         }
 
-        return $reference.': '.$productName;
+        return $reference . ': ' . $productName;
     }
 
     protected static function getOperationTypeLabel(?OperationType $operationType): string
@@ -844,7 +844,7 @@ class ManufacturingOrderResource extends Resource
             return $operationType->name;
         }
 
-        return $operationType->warehouse->name.': '.$operationType->name;
+        return $operationType->warehouse->name . ': ' . $operationType->name;
     }
 
     protected static function getQuantityUomField(): FusedGroup
@@ -1043,7 +1043,7 @@ class ManufacturingOrderResource extends Resource
                     ->wrapOptionLabels(false)
                     ->live()
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
                     ->disableOptionWhen(function ($label, $value, $state, $component) {
@@ -1108,7 +1108,7 @@ class ManufacturingOrderResource extends Resource
                         return \Filament\Support\generate_icon_html(
                             'heroicon-o-exclamation-triangle',
                             null,
-                            (new ComponentAttributeBag)
+                            (new ComponentAttributeBag())
                                 ->color(IconComponent::class, 'danger')
                                 ->class(['fi-text-color-600'])
                                 ->merge([

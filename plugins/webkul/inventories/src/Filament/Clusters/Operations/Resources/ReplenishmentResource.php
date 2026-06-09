@@ -81,7 +81,8 @@ class ReplenishmentResource extends Resource
 
                         return $data;
                     })
-                    ->before(function (array $data) {})
+                    ->before(function (array $data) {
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()

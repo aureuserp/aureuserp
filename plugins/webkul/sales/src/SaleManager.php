@@ -38,7 +38,8 @@ class SaleManager
     public function __construct(
         protected QuotationAndOrderSettings $quotationAndOrderSettings,
         protected InvoiceSettings $invoiceSettings,
-    ) {}
+    ) {
+    }
 
     public function sendQuotationOrOrderByEmail(Order $record, array $data = []): array
     {
@@ -288,17 +289,23 @@ class SaleManager
             return $order;
         }
 
-        if ($order->operations->isEmpty() || $order->operations->every(function ($receipt) {
-            return $receipt->state == InventoryEnums\OperationState::CANCELED;
-        })) {
+        if (
+            $order->operations->isEmpty() || $order->operations->every(function ($receipt) {
+                return $receipt->state == InventoryEnums\OperationState::CANCELED;
+            })
+        ) {
             $order->delivery_status = OrderDeliveryStatus::NO;
-        } elseif ($order->operations->every(function ($receipt) {
-            return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
-        })) {
+        } elseif (
+            $order->operations->every(function ($receipt) {
+                return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
+            })
+        ) {
             $order->delivery_status = OrderDeliveryStatus::FULL;
-        } elseif ($order->operations->contains(function ($receipt) {
-            return $receipt->state == InventoryEnums\OperationState::DONE;
-        })) {
+        } elseif (
+            $order->operations->contains(function ($receipt) {
+                return $receipt->state == InventoryEnums\OperationState::DONE;
+            })
+        ) {
             $order->delivery_status = OrderDeliveryStatus::PARTIAL;
         } else {
             $order->delivery_status = OrderDeliveryStatus::PENDING;
@@ -315,17 +322,23 @@ class SaleManager
             return $order;
         }
 
-        if ($order->lines->contains(function ($line) {
-            return $line->invoice_status == InvoiceStatus::TO_INVOICE;
-        })) {
+        if (
+            $order->lines->contains(function ($line) {
+                return $line->invoice_status == InvoiceStatus::TO_INVOICE;
+            })
+        ) {
             $order->invoice_status = InvoiceStatus::TO_INVOICE;
-        } elseif ($order->lines->contains(function ($line) {
-            return $line->invoice_status == InvoiceStatus::INVOICED;
-        })) {
+        } elseif (
+            $order->lines->contains(function ($line) {
+                return $line->invoice_status == InvoiceStatus::INVOICED;
+            })
+        ) {
             $order->invoice_status = InvoiceStatus::INVOICED;
-        } elseif ($order->lines->contains(function ($line) {
-            return in_array($line->invoice_status, [InvoiceStatus::INVOICED, InvoiceStatus::UP_SELLING]);
-        })) {
+        } elseif (
+            $order->lines->contains(function ($line) {
+                return in_array($line->invoice_status, [InvoiceStatus::INVOICED, InvoiceStatus::UP_SELLING]);
+            })
+        ) {
             $order->invoice_status = InvoiceStatus::UP_SELLING;
         } else {
             $order->invoice_status = InvoiceStatus::NO;
@@ -487,7 +500,7 @@ class SaleManager
 
                 $sent[] = $partner->name;
             } catch (Exception $e) {
-                $failed[$partner->name] = 'Email service error: '.$e->getMessage();
+                $failed[$partner->name] = 'Email service error: ' . $e->getMessage();
             }
         }
 
