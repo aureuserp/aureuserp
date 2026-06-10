@@ -245,22 +245,15 @@ class WarehouseResource extends Resource
                     ),
                 ForceDeleteAction::make()
                     ->action(function (Warehouse $record, $action) {
-                        try {
-                            $record->forceDelete();
-                        } catch (QueryException $e) {
+                        $action->failureNotification(
                             Notification::make()
                                 ->danger()
                                 ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.body'))
-                                ->send();
-                        }
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.success.title'))
-                            ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.success.body')),
-                    ),
+                        );
+
+                        $action->failure();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -280,24 +273,15 @@ class WarehouseResource extends Resource
                         ),
                     ForceDeleteBulkAction::make()
                         ->action(function (Collection $records, ForceDeleteBulkAction $action) {
-                            try {
-                                $records->each(fn (Model $record) => $record->forceDelete());
-                            } catch (QueryException $e) {
+                            $action->failureNotification(
                                 Notification::make()
                                     ->danger()
                                     ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.body'))
-                                    ->send();
+                            );
 
-                                $action->cancel();
-                            }
-                        })
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.success.title'))
-                                ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.success.body')),
-                        ),
+                            $action->failure();
+                        }),
                 ]),
             ])
             ->emptyStateActions([
