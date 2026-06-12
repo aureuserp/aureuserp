@@ -154,7 +154,7 @@ jobs:
           path: |
             tests/e2e-pw/test-results
             storage/logs/laravel.log
-          retention-days: 1
+          retention-days: 7
 
   merge_playwright_reports:
     if: ${{ always() && !cancelled() }}
@@ -170,7 +170,7 @@ jobs:
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "22.13.1"
           cache: npm
           cache-dependency-path: tests/e2e-pw/package-lock.json
 
@@ -194,5 +194,5 @@ jobs:
         with:
           name: playwright-report-${{ github.run_id }}-${{ github.run_number }}
           path: tests/e2e-pw/playwright-report
-          retention-days: 1
+          retention-days: 7
 

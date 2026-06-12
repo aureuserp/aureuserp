@@ -1,0 +1,131 @@
+name: Playwright Report
+
+# Runs after "Playwright Tests" finishes. When the run failed, it publishes the
+# merged Playwright HTML report (failure screenshots, videos and traces) to the
+# `gh-pages` branch and writes a browsable link to the run summary — so anyone
+# working on the PR can open the failure in the browser without downloading any
+# artifact zip.
+#
+# It uses the workflow_run trigger because that is what gives the job the write
+# permission needed to push to gh-pages, even when the failing run came from a
+# contributor's fork (the test run itself only has a read-only token).
+#
+# One-time setup to make the link browsable:
+#   Settings -> Pages -> Deploy from a branch -> branch `gh-pages` / root
+# Until that is enabled the report is still pushed to the branch; the summary
+# just links to the branch path instead of a rendered page.
+
+on:
+  workflow_run:
+    workflows: ["Playwright Tests"]
+    types: [completed]
+
+permissions:
+  contents: write # push the report to the gh-pages branch
+  actions: read # download artifacts from the test run
+
+jobs:
+  publish_report:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    name: Publish HTML report
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_URL: ${{ github.event.workflow_run.html_url }}
+
+    steps:
+      - name: Download merged HTML report
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-report-*
+          path: html-report
+          merge-multiple: true
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Publish report to gh-pages
+        run: |
+          set -euo pipefail
+
+          if [ ! -f html-report/index.html ]; then
+            echo "No HTML report found in the run artifacts; nothing to publish."
+            echo "PUBLISHED=0" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # Folder name carries the date so old reports can be pruned by name.
+          DEST="reports/$(date -u +%Y%m%d)-${RUN_ID}"
+          echo "DEST=${DEST}" >> "$GITHUB_ENV"
+
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          CUTOFF="$(date -u -d '14 days ago' +%Y%m%d)"
+
+          # The branch is kept as a single commit (recreated and force-pushed on
+          # every publish) so its history never grows. The retry loop handles two
+          # PRs publishing at the same time.
+          for attempt in 1 2 3; do
+            PUB="$RUNNER_TEMP/pages-$attempt"
+            rm -rf "$PUB"
+            EXPECTED=""
+            if git clone --quiet --depth 1 --branch gh-pages "$REMOTE" "$PUB" 2>/dev/null; then
+              EXPECTED="$(git -C "$PUB" rev-parse HEAD)"
+              rm -rf "$PUB/.git"
+            else
+              mkdir -p "$PUB"
+            fi
+
+            # Drop reports older than 14 days.
+            for d in "$PUB"/reports/*/; do
+              [ -d "$d" ] || continue
+              day="$(basename "$d" | cut -d- -f1)"
+              if [[ "$day" =~ ^[0-9]{8}$ ]] && [ "$day" -lt "$CUTOFF" ]; then
+                rm -rf "$d"
+              fi
+            done
+
+            mkdir -p "$PUB/$DEST"
+            cp -r html-report/. "$PUB/$DEST/"
+            touch "$PUB/.nojekyll"
+
+            git -C "$PUB" init --quiet --initial-branch=gh-pages
+            git -C "$PUB" config user.name "github-actions[bot]"
+            git -C "$PUB" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C "$PUB" add -A
+            git -C "$PUB" commit --quiet -m "Playwright report for run ${RUN_ID}"
+            if git -C "$PUB" push --quiet --force-with-lease="refs/heads/gh-pages:${EXPECTED}" "$REMOTE" gh-pages; then
+              echo "PUBLISHED=1" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "gh-pages push was raced by another run, retrying (${attempt}/3)..."
+            sleep $((attempt * 5))
+          done
+
+          echo "Failed to push gh-pages after 3 attempts." >&2
+          exit 1
+
+      - name: Link the report in the run summary
+        run: |
+          set -euo pipefail
+
+          {
+            echo "## ❌ Playwright run failed"
+            echo
+            echo "[View the failing run](${RUN_URL})"
+            echo
+            if [ "${PUBLISHED:-0}" = "1" ]; then
+              PAGES_URL="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.html_url' 2>/dev/null || true)"
+              if [ -n "$PAGES_URL" ]; then
+                echo "### 📊 [Open the HTML report](${PAGES_URL%/}/${DEST}/index.html)"
+                echo
+                echo "Failure screenshots, videos and traces — viewable in the browser, no download needed."
+              else
+                echo "The HTML report was pushed to the \`gh-pages\` branch under \`${DEST}/\`."
+                echo "A repo admin can enable GitHub Pages (Settings → Pages → deploy from \`gh-pages\`) to make it browsable online."
+              fi
+            else
+              echo "_No HTML report was produced for this run. Check the [run logs](${RUN_URL})._"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
