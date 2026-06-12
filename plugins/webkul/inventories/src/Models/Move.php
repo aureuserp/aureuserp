@@ -135,7 +135,7 @@ class Move extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -1280,7 +1280,7 @@ class Move extends Model
             } elseif ($this->state === MoveState::DRAFT) {
                 $key = $keyVirtualAvailable();
 
-                $product = Product::find($this->product_id);
+                $product = Product::withTrashed()->find($this->product_id);
 
                 $product->setContext(['to_date' => Carbon::parse($key[1])]);
 
@@ -1303,7 +1303,7 @@ class Move extends Model
         } elseif ($this->operationType?->type === OperationTypeEnum::INCOMING) {
             $key = $keyVirtualAvailable(incoming: true);
 
-            $product = Product::find($this->product_id);
+            $product = Product::withTrashed()->find($this->product_id);
 
             $product->setContext(['to_date' => Carbon::parse($key[1])]);
 
