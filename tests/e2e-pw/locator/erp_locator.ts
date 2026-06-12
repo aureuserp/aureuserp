@@ -5,18 +5,21 @@ export class ErpLocators {
     readonly page: Page;
 
     /**
-     *  Plugin Install/Uninstall  
+     *  Plugin Install/Uninstall
      */
 
     readonly pluginSyncButton: Locator;
-    readonly pluginthreeDot: Locator;
-    readonly pluginName : Locator;
-    readonly pluginInstallButton: Locator;
-    readonly pluginUninstallButton: Locator
-    readonly pluginConfirmButton : Locator;
-    readonly pluginSearchInput : Locator;
-    readonly pluginSuccessMessage : Locator;
-    readonly pluginErrorMessage : Locator;
+    readonly pluginActionsButton: Locator;
+    readonly pluginName: Locator;
+    readonly pluginDropdownPanel: Locator;
+    readonly pluginInstallOption: Locator;
+    readonly pluginUninstallOption: Locator;
+    readonly pluginInstallConfirmButton: Locator;
+    readonly pluginUninstallConfirmButton: Locator;
+    readonly pluginSearchInput: Locator;
+    readonly pluginInstallSuccessNotification: Locator;
+    readonly pluginUninstallSuccessNotification: Locator;
+    readonly pluginActionFailedNotification: Locator;
 
     /**
      * Companies
@@ -294,15 +297,20 @@ export class ErpLocators {
          *  Plugin Install/Uninstall  
          */
 
-        this.pluginSyncButton = page.locator('text=Sync Available Plugins');
-        this.pluginthreeDot = page.locator('button[title="Actions"]');
+        this.pluginSyncButton = page.getByRole('button', { name: 'Sync Available Plugins' });
+        this.pluginActionsButton = page.locator('button[title="Actions"]');
         this.pluginName = page.locator('.fi-size-lg.fi-font-semibold.fi-ta-text-item.fi-ta-text.fi-inline');
-        this.pluginInstallButton = page.locator('button.fi-color.fi-color-success.fi-text-color-700');
-        this.pluginUninstallButton = page.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item');
-        this.pluginConfirmButton = page.locator('span[x-show="! isProcessing"]');
+        // Only the open dropdown panel is visible, so the install/uninstall
+        // options below always belong to the plugin whose menu was opened.
+        this.pluginDropdownPanel = page.locator('.fi-dropdown-panel:visible');
+        this.pluginInstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Install', exact: true });
+        this.pluginUninstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Uninstall', exact: true });
+        this.pluginInstallConfirmButton = page.getByRole('dialog').getByRole('button', { name: 'Install Plugin' });
+        this.pluginUninstallConfirmButton = page.getByRole('dialog').getByRole('button', { name: 'Uninstall Plugin' });
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
-        this.pluginSuccessMessage = page.locator('h3.fi-no-notification-title');
-        this.pluginErrorMessage = page.locator('.fi-toast-message-error');
+        this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Installed Successfully' }).first();
+        this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Uninstalled Successfully' }).first();
+        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed/ }).first();
 
         /**
          * Companies
