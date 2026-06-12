@@ -133,8 +133,15 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Locations deleted',
-                    'body'  => 'The locations has been deleted successfully.',
+                    'success'=> [
+                        'title' => 'Location deleted',
+                        'body'  => 'The location has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Location could not be deleted',
+                        'body'  => 'The location cannot be deleted because it is currently in use and contains stock.',
+                    ],
                 ],
             ],
 

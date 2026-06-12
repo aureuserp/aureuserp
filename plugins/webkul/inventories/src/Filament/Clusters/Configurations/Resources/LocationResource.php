@@ -354,11 +354,30 @@ class LocationResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.restore.notification.body')),
                         ),
                     DeleteBulkAction::make()
+                        ->action(function (DeleteBulkAction $action, Collection $records): void {
+                            $hasStock = $records->contains(
+                                fn (Location $location) => (float) $location->quantities()->sum('quantity') > 0
+                            );
+
+                            if ($hasStock) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.error.body'))
+                                    ->send();
+
+                                $action->cancel();
+
+                                return;
+                            }
+
+                            $records->each->delete();
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.title'))
-                                ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.body')),
+                                ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.success.body')),
                         ),
                     ForceDeleteBulkAction::make()
                         ->action(function (ForceDeleteBulkAction $action, Collection $records) {
