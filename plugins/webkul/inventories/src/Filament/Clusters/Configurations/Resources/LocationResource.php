@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\CreateLocation;
@@ -277,11 +278,37 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.restore.notification.body')),
                     ),
                 DeleteAction::make()
+                    ->action(function (DeleteAction $action, Location $record) {
+                        $stockQty = (float) $record->quantities()->sum('quantity');
+                        if ($stockQty > 0) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.error.title'))
+                                ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.error.body'))
+                                ->send();
+
+                            $action->cancel();
+
+                            return;
+                        }
+
+                        try {
+                            $record->delete();
+                        } catch (ValidationException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.error.title'))
+                                ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.error.body'))
+                                ->send();
+
+                            $action->cancel();
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.title'))
-                            ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.body')),
+                            ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.success.title'))
+                            ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.success.body')),
                     ),
                 ForceDeleteAction::make()
                     ->action(function (ForceDeleteAction $action, Location $record) {
