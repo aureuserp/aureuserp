@@ -278,6 +278,11 @@ class OperationResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.additional-fields.title'))
+                    ->visible(! empty($customFormFields = static::getCustomFormFields()))
+                    ->schema($customFormFields)
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -288,7 +293,7 @@ class OperationResource extends Resource
             ->reorderableColumns()
             ->columnManagerColumns(2)
             ->defaultSort('id', 'desc')
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 IconColumn::make('is_favorite')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.favorite'))
                     ->icon(fn (Operation $record): string => $record->is_favorite ? 'heroicon-s-star' : 'heroicon-o-star')
@@ -356,7 +361,7 @@ class OperationResource extends Resource
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.state'))
                     ->sortable()
                     ->badge(),
-            ])
+            ]))
             ->groups([
                 Group::make('state')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.state')),
@@ -534,6 +539,7 @@ class OperationResource extends Resource
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.entries.destination-location'))
                                     ->icon('heroicon-o-arrow-down-tray')
                                     ->visible(static::getWarehouseSettings()->enable_locations),
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ]),
 

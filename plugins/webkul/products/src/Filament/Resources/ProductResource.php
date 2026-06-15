@@ -4,10 +4,12 @@ namespace Webkul\Product\Filament\Resources;
 
 use BackedEnum;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\ProductResource\Schemas\ProductForm;
 use Webkul\Product\Filament\Resources\ProductResource\Schemas\ProductInfolist;
@@ -18,6 +20,8 @@ use Webkul\Support\Models\UOM;
 
 class ProductResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Product::class;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -43,17 +47,54 @@ class ProductResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return ProductForm::configure($schema);
+        $schema = ProductForm::configure($schema);
+
+        $components = $schema->getComponents();
+
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
+
+        $firstGroupChildComponents[] = Section::make()
+            ->visible(! empty($customFormFields = static::getCustomFormFields()))
+            ->schema($customFormFields)
+            ->columns(2);
+
+        $components[0]->childComponents($firstGroupChildComponents);
+
+        $schema->components($components);
+
+        return $schema;
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return ProductInfolist::configure($schema);
+        $schema = ProductInfolist::configure($schema);
+
+        $components = $schema->getComponents();
+
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
+
+        $customInfolistEntries = static::getCustomInfolistEntries();
+
+        if (! empty($customInfolistEntries)) {
+            $firstGroupChildComponents[] = Section::make()
+                ->schema($customInfolistEntries)
+                ->columns(2);
+        }
+
+        $components[0]->childComponents($firstGroupChildComponents);
+
+        $schema->components($components);
+
+        return $schema;
     }
 
     public static function table(Table $table): Table
     {
-        return ProductsTable::configure($table);
+        $table = ProductsTable::configure($table);
+
+        return $table
+            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
+            ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
     }
 
     public static function getEloquentQuery(): Builder

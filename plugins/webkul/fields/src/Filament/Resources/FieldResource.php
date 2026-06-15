@@ -183,9 +183,7 @@ class FieldResource extends Resource
                                     ->searchable()
                                     ->native(false)
                                     ->disabledOn('edit')
-                                    ->options(fn () => collect(Filament::getResources())->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))->mapWithKeys(fn ($resource) => [
-                                        $resource::getModel() => str($resource)->afterLast('\\')->toString(),
-                                    ])),
+                                    ->options(fn () => static::getCustomizableResourceOptions()),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -234,9 +232,7 @@ class FieldResource extends Resource
                     ]),
                 SelectFilter::make('customizable_type')
                     ->label(__('fields::filament/resources/field.table.filters.resource'))
-                    ->options(fn () => collect(Filament::getResources())->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))->mapWithKeys(fn ($resource) => [
-                        $resource::getModel() => str($resource)->afterLast('\\')->toString(),
-                    ])),
+                    ->options(fn () => static::getCustomizableResourceOptions()),
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -299,6 +295,24 @@ class FieldResource extends Resource
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    /**
+     * Options of resources supporting custom fields, mapped by model.
+     */
+    protected static function getCustomizableResourceOptions(): array
+    {
+        return collect(Filament::getResources())
+            ->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))
+            ->unique(fn ($resource) => $resource::getModel())
+            ->mapWithKeys(function ($resource) {
+                $resourceName = str($resource)->afterLast('\\')->beforeLast('Resource')->headline()->toString();
+                $pluginName = str($resource)->after('Webkul\\')->before('\\')->headline()->toString();
+
+                return [$resource::getModel() => "{$pluginName} - {$resourceName}"];
+            })
+            ->sort()
+            ->toArray();
     }
 
     public static function getPages(): array

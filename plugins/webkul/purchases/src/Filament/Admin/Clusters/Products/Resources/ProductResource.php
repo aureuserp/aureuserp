@@ -3,7 +3,6 @@
 namespace Webkul\Purchase\Filament\Admin\Clusters\Products\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Schema;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
@@ -44,17 +43,6 @@ class ProductResource extends BaseProductResource
         return __('purchases::filament/admin/clusters/products/resources/product.navigation.title');
     }
 
-    public static function form(Schema $schema): Schema
-    {
-        $schema = BaseProductResource::form($schema);
-
-        $components = $schema->getComponents();
-
-        $schema->components($components);
-
-        return $schema;
-    }
-
     public static function table(Table $table): Table
     {
         $table = parent::table($table);
@@ -69,17 +57,6 @@ class ProductResource extends BaseProductResource
         ]);
 
         return $table;
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        $schema = BaseProductResource::infolist($schema);
-
-        $components = $schema->getComponents();
-
-        $schema->components($components);
-
-        return $schema;
     }
 
     public static function getRecordSubNavigation(Page $page): array

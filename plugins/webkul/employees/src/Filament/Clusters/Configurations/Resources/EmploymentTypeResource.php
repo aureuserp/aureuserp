@@ -25,9 +25,12 @@ use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource\Pages\ListEmploymentTypes;
 use Webkul\Employee\Models\EmploymentType;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class EmploymentTypeResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = EmploymentType::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube-transparent';
@@ -65,6 +68,7 @@ class EmploymentTypeResource extends Resource
                     ->preload()
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.country'))
                     ->relationship('country', 'name'),
+                ...static::getCustomFormFields(),
             ])
             ->columns(2);
     }
@@ -72,7 +76,7 @@ class EmploymentTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.columns.id'))
                     ->searchable()
@@ -104,8 +108,8 @@ class EmploymentTypeResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -139,7 +143,7 @@ class EmploymentTypeResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->groups([
                 Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.groups.name'))
@@ -224,6 +228,7 @@ class EmploymentTypeResource extends Resource
                     ->placeholder('—')
                     ->icon('heroicon-o-map')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.infolist.entries.country')),
+                ...static::getCustomInfolistEntries(),
             ]);
     }
 
