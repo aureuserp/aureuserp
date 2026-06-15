@@ -1,19 +1,25 @@
 name: Playwright Report
 
-# Runs after "Playwright Tests" finishes. When the run failed, it publishes the
-# merged Playwright HTML report (failure screenshots, videos and traces) to the
-# `gh-pages` branch and writes a browsable link to the run summary — so anyone
-# working on the PR can open the failure in the browser without downloading any
-# artifact zip.
+# Runs after "Playwright Tests" finishes. On a failed run it:
+#   1. publishes the failure screenshots and the merged HTML report to the
+#      `gh-pages` branch, and
+#   2. posts (and keeps updating) a single PR comment that shows each failed
+#      test's screenshot inline, plus a link to the full browsable report.
 #
-# It uses the workflow_run trigger because that is what gives the job the write
-# permission needed to push to gh-pages, even when the failing run came from a
-# contributor's fork (the test run itself only has a read-only token).
+# So anyone working on the PR sees what broke directly on the PR — no artifact
+# zip to download.
 #
-# One-time setup to make the link browsable:
-#   Settings -> Pages -> Deploy from a branch -> branch `gh-pages` / root
-# Until that is enabled the report is still pushed to the branch; the summary
-# just links to the branch path instead of a rendered page.
+# Why workflow_run instead of doing this inside playwright_tests.yml:
+#   A workflow triggered by `pull_request` from a fork gets a READ-ONLY token,
+#   so it cannot push to gh-pages or comment. `workflow_run` runs in the base
+#   repo's context with a write token, so it works for fork PRs too. The catch
+#   GitHub enforces: a workflow_run workflow only runs from the copy of this
+#   file that lives on the base repo's DEFAULT branch. It will therefore not run
+#   for the PR that introduces it — it starts working once merged to master.
+#
+# The inline screenshots render with no extra setup (raw.githubusercontent.com).
+# The "full report" link only renders once an admin enables GitHub Pages:
+#   Settings -> Pages -> Deploy from a branch -> `gh-pages` / root
 
 on:
   workflow_run:
@@ -21,21 +27,35 @@ on:
     types: [completed]
 
 permissions:
-  contents: write # push the report to the gh-pages branch
+  contents: write # push screenshots/report to the gh-pages branch
+  pull-requests: write # post/update the PR comment
   actions: read # download artifacts from the test run
 
 jobs:
   publish_report:
     if: github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
-    name: Publish HTML report
+    name: Publish failure report
 
     env:
       GH_TOKEN: ${{ github.token }}
       RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
       RUN_URL: ${{ github.event.workflow_run.html_url }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
 
     steps:
+      - name: Download failure screenshots
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-failures-*
+          path: failures
+          merge-multiple: true
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
       - name: Download merged HTML report
         continue-on-error: true
         uses: actions/download-artifact@v4
@@ -46,26 +66,56 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
 
-      - name: Publish report to gh-pages
+      - name: Publish screenshots & report to gh-pages
         run: |
           set -euo pipefail
 
-          if [ ! -f html-report/index.html ]; then
-            echo "No HTML report found in the run artifacts; nothing to publish."
+          DEST="$(date -u +%Y%m%d)-${RUN_ID}-${RUN_ATTEMPT}"
+          echo "DEST=${DEST}" >> "$GITHUB_ENV"
+
+          STAGE="$RUNNER_TEMP/stage"
+          mkdir -p "$STAGE"
+
+          # Collect failure screenshots (PNGs only — safe to host as raw bytes).
+          # Filenames come from the artifact, so allow only safe characters and
+          # reject any path traversal before copying.
+          COUNT=0
+          while IFS= read -r -d '' png; do
+            rel="${png#failures/tests/e2e-pw/test-results/}"
+            [ "$rel" = "$png" ] && continue
+            case "$rel" in (*[!A-Za-z0-9._/-]*) continue ;; esac
+            case "/$rel/" in (*/../*) continue ;; esac
+            mkdir -p "$STAGE/screens/$(dirname "$rel")"
+            cp "$png" "$STAGE/screens/$rel"
+            COUNT=$((COUNT + 1))
+          done < <(find failures/tests/e2e-pw/test-results -type f -name '*.png' -print0 2>/dev/null)
+          echo "SCREEN_COUNT=${COUNT}" >> "$GITHUB_ENV"
+
+          # Publish the full HTML report (screenshots + videos + traces).
+          # NOTE: this hosts report HTML on the repo's Pages domain. For a public
+          # repo taking PRs from untrusted forks you may want to gate this to
+          # same-repo runs only by wrapping the block below in:
+          #   if [ "${{ github.event.workflow_run.head_repository.full_name }}" = "$GITHUB_REPOSITORY" ]; then ... fi
+          HAS_REPORT=0
+          if [ -f html-report/index.html ]; then
+            mkdir -p "$STAGE/report"
+            cp -r html-report/. "$STAGE/report/"
+            HAS_REPORT=1
+          fi
+          echo "HAS_REPORT=${HAS_REPORT}" >> "$GITHUB_ENV"
+
+          if [ "$COUNT" -eq 0 ] && [ "$HAS_REPORT" -eq 0 ]; then
+            echo "Nothing to publish."
             echo "PUBLISHED=0" >> "$GITHUB_ENV"
             exit 0
           fi
 
-          # Folder name carries the date so old reports can be pruned by name.
-          DEST="reports/$(date -u +%Y%m%d)-${RUN_ID}"
-          echo "DEST=${DEST}" >> "$GITHUB_ENV"
-
           REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           CUTOFF="$(date -u -d '14 days ago' +%Y%m%d)"
 
-          # The branch is kept as a single commit (recreated and force-pushed on
-          # every publish) so its history never grows. The retry loop handles two
-          # PRs publishing at the same time.
+          # gh-pages is kept as a single commit (recreated + force-pushed each
+          # time) so its history never grows; reports older than 14 days are
+          # pruned. The retry loop handles two PRs publishing at once.
           for attempt in 1 2 3; do
             PUB="$RUNNER_TEMP/pages-$attempt"
             rm -rf "$PUB"
@@ -77,7 +127,6 @@ jobs:
               mkdir -p "$PUB"
             fi
 
-            # Drop reports older than 14 days.
             for d in "$PUB"/reports/*/; do
               [ -d "$d" ] || continue
               day="$(basename "$d" | cut -d- -f1)"
@@ -86,15 +135,15 @@ jobs:
               fi
             done
 
-            mkdir -p "$PUB/$DEST"
-            cp -r html-report/. "$PUB/$DEST/"
+            mkdir -p "$PUB/reports/$DEST"
+            cp -r "$STAGE/." "$PUB/reports/$DEST/"
             touch "$PUB/.nojekyll"
 
             git -C "$PUB" init --quiet --initial-branch=gh-pages
             git -C "$PUB" config user.name "github-actions[bot]"
             git -C "$PUB" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git -C "$PUB" add -A
-            git -C "$PUB" commit --quiet -m "Playwright report for run ${RUN_ID}"
+            git -C "$PUB" commit --quiet -m "Playwright report for run ${RUN_ID} (attempt ${RUN_ATTEMPT})"
             if git -C "$PUB" push --quiet --force-with-lease="refs/heads/gh-pages:${EXPECTED}" "$REMOTE" gh-pages; then
               echo "PUBLISHED=1" >> "$GITHUB_ENV"
               exit 0
@@ -106,26 +155,94 @@ jobs:
           echo "Failed to push gh-pages after 3 attempts." >&2
           exit 1
 
-      - name: Link the report in the run summary
+      - name: Build comment body
         run: |
           set -euo pipefail
 
+          BODY="$RUNNER_TEMP/comment.md"
+          RAW_BASE="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/gh-pages/reports/${DEST:-}"
+          PAGES_URL="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.html_url' 2>/dev/null || true)"
+
           {
-            echo "## ❌ Playwright run failed"
+            echo '<!-- aureus-playwright-report -->'
+            echo "## ❌ Playwright tests failed — [run #${RUN_NUMBER}](${RUN_URL})"
             echo
-            echo "[View the failing run](${RUN_URL})"
+            echo "Failure at \`${HEAD_SHA:0:7}\`."
             echo
-            if [ "${PUBLISHED:-0}" = "1" ]; then
-              PAGES_URL="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq '.html_url' 2>/dev/null || true)"
+
+            if [ "${HAS_REPORT:-0}" = "1" ] && [ "${PUBLISHED:-0}" = "1" ]; then
               if [ -n "$PAGES_URL" ]; then
-                echo "### 📊 [Open the HTML report](${PAGES_URL%/}/${DEST}/index.html)"
+                echo "### 📊 [Open the full HTML report](${PAGES_URL%/}/reports/${DEST}/report/index.html)"
                 echo
-                echo "Failure screenshots, videos and traces — viewable in the browser, no download needed."
+                echo "Screenshots, videos and traces of every failure — viewable in the browser, no download needed."
               else
-                echo "The HTML report was pushed to the \`gh-pages\` branch under \`${DEST}/\`."
-                echo "A repo admin can enable GitHub Pages (Settings → Pages → deploy from \`gh-pages\`) to make it browsable online."
+                echo "_The full HTML report was published to the \`gh-pages\` branch. A repo admin can enable GitHub Pages (Settings → Pages → deploy from \`gh-pages\`) to make it browsable online._"
               fi
-            else
-              echo "_No HTML report was produced for this run. Check the [run logs](${RUN_URL})._"
+              echo
             fi
-          } >> "$GITHUB_STEP_SUMMARY"
+
+            if [ "${SCREEN_COUNT:-0}" -gt 0 ] && [ "${PUBLISHED:-0}" = "1" ]; then
+              echo "### 🖼️ Failure screenshots (${SCREEN_COUNT})"
+              echo
+              shown=0
+              while IFS= read -r -d '' png; do
+                [ "$shown" -ge 20 ] && break
+                rel="${png#failures/tests/e2e-pw/test-results/}"
+                [ "$rel" = "$png" ] && continue
+                case "$rel" in (*[!A-Za-z0-9._/-]*) continue ;; esac
+                case "/$rel/" in (*/../*) continue ;; esac
+                test_name="$(dirname "$rel")"
+                [ "$test_name" = "." ] && test_name="$(basename "$rel" .png)"
+                open_attr=""
+                [ "$shown" -lt 2 ] && open_attr=" open"
+                echo "<details${open_attr}>"
+                echo "<summary>🔴 <code>${test_name}</code></summary>"
+                echo
+                echo "<img src=\"${RAW_BASE}/screens/${rel}\" alt=\"${test_name}\" width=\"650\" />"
+                echo
+                echo "</details>"
+                shown=$((shown + 1))
+              done < <(find failures/tests/e2e-pw/test-results -type f -name '*.png' -print0 2>/dev/null | sort -z)
+              if [ "${SCREEN_COUNT}" -gt 20 ]; then
+                echo
+                echo "_…and $((SCREEN_COUNT - 20)) more — see the full report or the [run artifacts](${RUN_URL})._"
+              fi
+              echo
+              echo "<sub>Screenshots are kept for 14 days. Videos and traces are in the report above and in the [run artifacts](${RUN_URL}).</sub>"
+            else
+              echo "_No failure screenshots were captured — the run may have failed before the tests started. Check the [run logs](${RUN_URL})._"
+            fi
+          } > "$BODY"
+
+      - name: Write run summary
+        run: cat "$RUNNER_TEMP/comment.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on the pull request
+        run: |
+          set -euo pipefail
+
+          BODY="$RUNNER_TEMP/comment.md"
+
+          PR_NUMBER="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
+            --jq '[.[] | select(.state == "open")][0].number' 2>/dev/null || true)"
+
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "No open pull request found for ${HEAD_SHA}; the report is in the run summary instead."
+            exit 0
+          fi
+
+          # Find an existing report comment so we update it in place (one sticky
+          # comment per PR) instead of posting a new one every run.
+          COMMENT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '.[] | select(.body | startswith("<!-- aureus-playwright-report -->")) | .id' \
+            2>/dev/null | head -n1 || true)"
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --silent -X PATCH \
+              "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" -F "body=@${BODY}"
+            echo "Updated comment ${COMMENT_ID} on PR #${PR_NUMBER}."
+          else
+            gh api --silent -X POST \
+              "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" -F "body=@${BODY}"
+            echo "Created comment on PR #${PR_NUMBER}."
+          fi
