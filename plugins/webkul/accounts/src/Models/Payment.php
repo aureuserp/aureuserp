@@ -16,6 +16,7 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentToken;
@@ -26,7 +27,7 @@ use Webkul\Support\Models\Currency;
 
 class Payment extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
 

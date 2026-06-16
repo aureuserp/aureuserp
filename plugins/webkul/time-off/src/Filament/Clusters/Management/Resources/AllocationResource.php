@@ -29,6 +29,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
@@ -41,6 +42,8 @@ use Webkul\TimeOff\Models\LeaveAllocation;
 
 class AllocationResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = LeaveAllocation::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
@@ -153,6 +156,7 @@ class AllocationResource extends Resource
                                     ->suffix(__('time-off::filament/clusters/management/resources/allocation.form.fields.allocation-suffix')),
                                 RichEditor::make('notes')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.reason')),
+                                ...static::getCustomFormFields(),
                             ]),
                     ])->columns(1),
             ])
@@ -162,7 +166,7 @@ class AllocationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('employee.name')
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.employee-name'))
                     ->sortable()
@@ -186,7 +190,8 @@ class AllocationResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable(),
-            ])
+            ]))
+            ->filters(static::mergeCustomTableFilters([]))
             ->groups([
                 Tables\Grouping\Group::make('employee.name')
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.groups.employee-name'))
@@ -323,6 +328,7 @@ class AllocationResource extends Resource
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.entries.reason'))
                                             ->placeholder('—')
                                             ->columnSpanFull(),
+                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ])->columnSpan(2),
                         Group::make([

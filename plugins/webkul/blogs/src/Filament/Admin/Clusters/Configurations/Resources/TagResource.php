@@ -14,16 +14,20 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\TagResource\Pages\ManageTags;
 use Webkul\Blog\Models\Tag;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Website\Filament\Admin\Clusters\Configurations;
 
 class TagResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Tag::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
@@ -54,20 +58,24 @@ class TagResource extends Resource
                 ColorPicker::make('color')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/tag.form.color'))
                     ->hexColor(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2)
+                    ->visible(fn () => filled(static::getCustomFormFields())),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/tag.table.columns.name'))
                     ->searchable()
                     ->sortable(),
                 ColorColumn::make('color')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/tag.table.columns.color')),
-            ])
+            ]))
             ->recordActions([
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())

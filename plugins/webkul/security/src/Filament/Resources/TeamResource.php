@@ -13,13 +13,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\TeamResource\Pages\ManageTeams;
 use Webkul\Security\Models\Team;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class TeamResource extends Resource
 {
-    use HasResourcePermissionQuery;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Team::class;
 
@@ -43,13 +44,14 @@ class TeamResource extends Resource
                     ->label(__('security::filament/resources/team.form.fields.name'))
                     ->required()
                     ->maxLength(255),
+                ...static::getCustomFormFields(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('security::filament/resources/team.table.columns.name'))
                     ->searchable()
@@ -60,7 +62,8 @@ class TeamResource extends Resource
                     ->searchable()
                     ->limit(50)
                     ->sortable(),
-            ])
+            ]))
+            ->filters(static::mergeCustomTableFilters([]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -99,6 +102,7 @@ class TeamResource extends Resource
                     ->icon('heroicon-o-user')
                     ->placeholder('—')
                     ->label(__('security::filament/resources/team.infolist.entries.name')),
+                ...static::getCustomInfolistEntries(),
             ]);
     }
 

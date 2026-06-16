@@ -21,6 +21,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackageTypeResource\Pages\CreatePackageType;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackageTypeResource\Pages\EditPackageType;
@@ -31,6 +32,8 @@ use Webkul\Inventory\Settings\OperationSettings;
 
 class PackageTypeResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = PackageType::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
@@ -160,6 +163,8 @@ class PackageTypeResource extends Resource
                                     ->minValue(0)
                                     ->maxValue(99999999999),
                             ]),
+
+                        ...static::getCustomFormFields(),
                     ])
                     ->collapsible()
                     ->columnSpanFull(),
@@ -169,7 +174,7 @@ class PackageTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/package-type.table.columns.name'))
                     ->searchable(),
@@ -200,7 +205,7 @@ class PackageTypeResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -291,6 +296,8 @@ class PackageTypeResource extends Resource
                                 TextEntry::make('company.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/package-type.infolist.sections.general.entries.company'))
                                     ->icon('heroicon-o-building-office'),
+
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),

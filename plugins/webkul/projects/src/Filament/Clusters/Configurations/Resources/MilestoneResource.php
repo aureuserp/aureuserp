@@ -19,6 +19,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource\Pages;
 use Webkul\Project\Filament\Resources\ProjectResource\Pages\ManageMilestones;
@@ -28,6 +29,8 @@ use Webkul\Project\Settings\TaskSettings;
 
 class MilestoneResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Milestone::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-flag';
@@ -74,6 +77,7 @@ class MilestoneResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
+                ...static::getCustomFormFields(),
             ])
             ->columns(1);
     }
@@ -83,7 +87,7 @@ class MilestoneResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.name'))
                     ->searchable()
@@ -122,7 +126,7 @@ class MilestoneResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Group::make('project.name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.groups.project')),
@@ -132,7 +136,7 @@ class MilestoneResource extends Resource
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.groups.created-at'))
                     ->date(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 TernaryFilter::make('is_completed')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.filters.is-completed')),
                 SelectFilter::make('project_id')
@@ -149,7 +153,7 @@ class MilestoneResource extends Resource
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 EditAction::make()
                     ->successNotification(

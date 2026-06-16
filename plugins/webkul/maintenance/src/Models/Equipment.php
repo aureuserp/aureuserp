@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Maintenance\Database\Factories\EquipmentFactory;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
@@ -15,7 +16,7 @@ use Webkul\Support\Models\Company;
 
 class Equipment extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'maintenance_equipments';
 

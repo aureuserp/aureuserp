@@ -26,6 +26,7 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderPriority;
 use Webkul\Manufacturing\Enums\ManufacturingOrderReservationState;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
@@ -34,7 +35,7 @@ use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasFactory, HasPermissionScope;
+    use HasCustomFields, HasFactory, HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 

@@ -20,12 +20,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Maintenance\Filament\Clusters\Configurations;
 use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeams;
 use Webkul\Maintenance\Models\Team;
 
 class TeamResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Team::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
@@ -70,6 +73,8 @@ class TeamResource extends Resource
                     ->searchable()
                     ->preload()
                     ->default(auth()->user()?->default_company_id),
+
+                ...static::getCustomFormFields(),
             ])
             ->columns(1);
     }
@@ -77,7 +82,7 @@ class TeamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('maintenance::filament/clusters/configurations/resources/team.table.columns.name'))
                     ->searchable()
@@ -96,7 +101,7 @@ class TeamResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->recordActions([
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())

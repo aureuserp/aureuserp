@@ -35,6 +35,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource\Pages\CreateTeam;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource\Pages\EditTeam;
@@ -44,6 +45,8 @@ use Webkul\Sale\Models\Team;
 
 class TeamResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Team::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
@@ -112,6 +115,7 @@ class TeamResource extends Resource
                         Toggle::make('is_active')
                             ->inline(false)
                             ->label(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.status')),
+                        ...static::getCustomFormFields(),
                     ]),
             ]);
     }
@@ -119,7 +123,7 @@ class TeamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->dateTime()
                     ->sortable()
@@ -157,8 +161,8 @@ class TeamResource extends Resource
                     ->sortable()
                     ->label(__('sales::filament/clusters/configurations/resources/team.table.columns.updated-at'))
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -196,7 +200,7 @@ class TeamResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('sales::filament/clusters/configurations/resources/team.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->groups([
                 Group::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/team.table.groups.name'))
@@ -302,6 +306,7 @@ class TeamResource extends Resource
                                 IconEntry::make('is_active')
                                     ->label(__('sales::filament/clusters/configurations/resources/team.infolist.sections.entries.status'))
                                     ->boolean(),
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan('full'),

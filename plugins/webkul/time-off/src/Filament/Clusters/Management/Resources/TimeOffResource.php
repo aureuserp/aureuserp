@@ -23,6 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\CreateTimeOff;
@@ -34,7 +35,7 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class TimeOffResource extends Resource
 {
-    use TimeOffHelper;
+    use HasCustomFields, TimeOffHelper;
 
     protected static ?string $model = Leave::class;
 
@@ -71,13 +72,28 @@ class TimeOffResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components((new self)->getFormSchema(true));
+        $schema = $schema->components((new self)->getFormSchema(true));
+
+        $components = $schema->getComponents();
+
+        $firstSectionChildComponents = $components[0]->getDefaultChildComponents();
+
+        $firstSectionChildComponents[] = Section::make()
+            ->visible(! empty($customFormFields = static::getCustomFormFields()))
+            ->schema($customFormFields)
+            ->columns(2);
+
+        $components[0]->childComponents($firstSectionChildComponents);
+
+        $schema->components($components);
+
+        return $schema;
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('employee.name')
                     ->label(__('time-off::filament/clusters/management/resources/time-off.table.columns.employee-name'))
                     ->sortable()
@@ -109,7 +125,7 @@ class TimeOffResource extends Resource
                     ->sortable()
                     ->badge()
                     ->searchable(),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('employee.name')
                     ->label(__('time-off::filament/clusters/management/resources/time-off.table.groups.employee-name'))
@@ -246,6 +262,8 @@ class TimeOffResource extends Resource
                                 ImageEntry::make('attachment')
                                     ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.attachment'))
                                     ->visible(fn ($record) => $record->holidayStatus?->support_document),
+
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ]),
             ])

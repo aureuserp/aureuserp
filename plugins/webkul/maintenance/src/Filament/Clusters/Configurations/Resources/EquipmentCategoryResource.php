@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Maintenance\Filament\Clusters\Configurations;
 use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\EquipmentCategoryResource\Pages\CreateEquipmentCategory;
 use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\EquipmentCategoryResource\Pages\EditEquipmentCategory;
@@ -28,6 +29,8 @@ use Webkul\Maintenance\Models\EquipmentCategory;
 
 class EquipmentCategoryResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = EquipmentCategory::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
@@ -79,6 +82,8 @@ class EquipmentCategoryResource extends Resource
                             ->label(__('maintenance::filament/clusters/configurations/resources/equipment-category.form.sections.general.fields.note'))
                             ->rows(4)
                             ->columnSpanFull(),
+
+                        ...static::getCustomFormFields(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
@@ -88,7 +93,7 @@ class EquipmentCategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('maintenance::filament/clusters/configurations/resources/equipment-category.table.columns.name'))
                     ->searchable()
@@ -107,7 +112,7 @@ class EquipmentCategoryResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Group::make('technician.name')
                     ->label(__('maintenance::filament/clusters/configurations/resources/equipment-category.table.groups.technician')),
@@ -172,6 +177,8 @@ class EquipmentCategoryResource extends Resource
                             ->label(__('maintenance::filament/clusters/configurations/resources/equipment-category.infolist.sections.general.entries.note'))
                             ->placeholder('—')
                             ->columnSpanFull(),
+
+                        ...static::getCustomInfolistEntries(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),

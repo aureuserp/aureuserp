@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\HtmlString;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\RuleAction;
 use Webkul\Inventory\Enums\RuleAuto;
@@ -52,6 +53,8 @@ use Webkul\Partner\Filament\Resources\PartnerResource;
 
 class RuleResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Rule::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
@@ -247,6 +250,7 @@ class RuleResource extends Resource
                                             ->preload(),
                                     ])
                                     ->columns(1),
+                                ...static::getCustomFormFields(),
                             ]),
                     ]),
             ])
@@ -256,7 +260,7 @@ class RuleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('action')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.action'))
                     ->searchable(),
@@ -287,7 +291,7 @@ class RuleResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('action')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.groups.action'))
@@ -309,7 +313,7 @@ class RuleResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('action')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.filters.action'))
                     ->options(RuleAction::class),
@@ -328,7 +332,7 @@ class RuleResource extends Resource
                     ->relationship('route', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
@@ -496,6 +500,7 @@ class RuleResource extends Resource
                                             ]),
                                     ])
                                     ->columns(2),
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),

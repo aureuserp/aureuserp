@@ -18,12 +18,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\TagResource\Pages\ManageTags;
 use Webkul\Project\Models\Tag;
 
 class TagResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Tag::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
@@ -50,20 +53,21 @@ class TagResource extends Resource
                     ->default('#808080')
                     ->hexColor()
                     ->label(__('projects::filament/clusters/configurations/resources/tag.form.color')),
+                ...static::getCustomFormFields(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/tag.table.columns.name'))
                     ->searchable()
                     ->sortable(),
                 ColorColumn::make('color')
                     ->label(__('projects::filament/clusters/configurations/resources/tag.table.columns.color')),
-            ])
+            ]))
             ->recordActions([
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())

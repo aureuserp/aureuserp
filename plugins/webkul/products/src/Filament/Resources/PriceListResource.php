@@ -7,8 +7,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Filament\Resources\PriceListResource\Pages\CreatePriceList;
 use Webkul\Product\Filament\Resources\PriceListResource\Pages\EditPriceList;
 use Webkul\Product\Filament\Resources\PriceListResource\Pages\ListPriceLists;
@@ -17,6 +19,8 @@ use Webkul\Product\Models\PriceList;
 
 class PriceListResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = PriceList::class;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -32,19 +36,22 @@ class PriceListResource extends Resource
     {
         return $schema
             ->components([
-                //
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2)
+                    ->visible(fn () => filled(static::getCustomFormFields())),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 //
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 //
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

@@ -13,6 +13,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
@@ -20,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ProjectStageResource\Pages\ManageProjectStages;
 use Webkul\Project\Models\ProjectStage;
@@ -27,6 +29,8 @@ use Webkul\Project\Settings\TaskSettings;
 
 class ProjectStageResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = ProjectStage::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
@@ -58,6 +62,10 @@ class ProjectStageResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2)
+                    ->visible(fn () => filled(static::getCustomFormFields())),
             ])
             ->columns(1);
     }
@@ -65,12 +73,12 @@ class ProjectStageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/project-stage.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-            ])
+            ]))
             ->groups([
                 Group::make('created_at')
                     ->label(__('projects::filament/clusters/configurations/resources/project-stage.table.columns.created-at'))

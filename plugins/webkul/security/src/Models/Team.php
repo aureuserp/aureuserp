@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Traits\HasPermissionScope;
 
 class Team extends Model
 {
-    use HasPermissionScope;
+    use HasCustomFields, HasPermissionScope;
 
     protected $fillable = [
         'name',

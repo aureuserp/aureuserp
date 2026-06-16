@@ -38,6 +38,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\TimeOff\Enums\AllocationValidationType;
 use Webkul\TimeOff\Enums\EmployeeRequest;
 use Webkul\TimeOff\Enums\LeaveValidationType;
@@ -53,6 +54,8 @@ use Webkul\TimeOff\Models\LeaveType;
 
 class LeaveTypeResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = LeaveType::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
@@ -166,6 +169,7 @@ class LeaveTypeResource extends Resource
                                             ->step(1)
                                             ->live()
                                             ->required(),
+                                        ...static::getCustomFormFields(),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 1]),
@@ -180,7 +184,7 @@ class LeaveTypeResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.name'))
                     ->searchable()
@@ -221,8 +225,8 @@ class LeaveTypeResource extends Resource
                 TextColumn::make('company.name')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -271,7 +275,7 @@ class LeaveTypeResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->filtersFormColumns(2)
             ->recordActions([
                 ViewAction::make(),
@@ -428,6 +432,7 @@ class LeaveTypeResource extends Resource
                                         ->placeholder('—')
                                         ->visible(fn ($record) => $record->requires_allocation === RequiresAllocation::YES->value && $record->allows_negative === true)
                                         ->numeric(),
+                                    ...static::getCustomInfolistEntries(),
                                 ]),
                         ])->columnSpan(1),
                     ])->columnSpanFull(),

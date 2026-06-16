@@ -44,11 +44,14 @@ use Webkul\Account\Filament\Resources\TaxResource\Pages\EditTax;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ListTaxes;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ViewTax;
 use Webkul\Account\Models\Tax;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
 class TaxResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Tax::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
@@ -125,6 +128,7 @@ class TaxResource extends Resource
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.is-base-affected'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('If set, taxes with a lower sequence might affect this one, provided they try to do it.')),
                             ]),
+                        ...static::getCustomFormFields(),
                     ]),
 
                 Tabs::make('Tax Configuration')
@@ -278,7 +282,7 @@ class TaxResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('accounts::filament/resources/tax.table.columns.name'))
                     ->searchable()
@@ -336,7 +340,7 @@ class TaxResource extends Resource
                     ->label(__('accounts::filament/resources/tax.table.columns.is-base-affected'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/tax.table.groups.name'))
@@ -446,6 +450,7 @@ class TaxResource extends Resource
                                         IconEntry::make('is_active')
                                             ->boolean()
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.status')),
+                                        ...static::getCustomInfolistEntries(),
                                     ])->columns(2),
                                 Section::make()
                                     ->schema([
