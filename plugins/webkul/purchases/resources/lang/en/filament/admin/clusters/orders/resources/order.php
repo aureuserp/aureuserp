@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'Order Deadline',
                     'expected-arrival'         => 'Expected Arrival',
                     'confirmed-by-vendor'      => 'Confirmed by Vendor',
+                    'deliver-to'               => 'Deliver To',
                 ],
             ],
         ],
