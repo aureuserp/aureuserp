@@ -13,6 +13,21 @@ return [
             'forecast'        => 'المتوقع',
             'unit-of-measure' => 'وحدة القياس',
         ],
+
+        'groups' => [
+            'product-type'  => 'نوع المنتج',
+            'category'      => 'الفئة',
+            'uncategorized' => 'غير مصنف',
+        ],
+
+        'filters' => [
+            'type'           => 'نوع المنتج',
+            'favorite'       => 'المفضلة',
+            'favorite-true'  => 'المفضلة',
+            'favorite-false' => 'غير مفضلة',
+            'favorite-all'   => 'الكل',
+            'archived'       => 'المؤرشفة',
+        ],
     ],
 
     'tabs' => [
