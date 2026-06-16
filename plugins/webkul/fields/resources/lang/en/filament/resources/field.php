@@ -667,6 +667,7 @@ return [
                 'title' => 'Resource',
 
                 'fields' => [
+                    'plugin'   => 'Plugin',
                     'resource' => 'Resource',
                 ],
             ],

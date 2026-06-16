@@ -667,6 +667,7 @@ return [
                 'title' => 'المورد',
 
                 'fields' => [
+                    'plugin'   => 'الإضافة',
                     'resource' => 'المورد',
                 ],
             ],

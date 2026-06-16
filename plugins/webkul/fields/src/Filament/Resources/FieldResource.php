@@ -17,11 +17,15 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\ManageRecords;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\IconPosition;
@@ -177,13 +181,27 @@ class FieldResource extends Resource
 
                         Section::make(__('fields::filament/resources/field.form.sections.resource.title'))
                             ->schema([
+                                Select::make('plugin')
+                                    ->label(__('fields::filament/resources/field.form.sections.resource.fields.plugin'))
+                                    ->required()
+                                    ->searchable()
+                                    ->native(false)
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->disabledOn('edit')
+                                    ->options(fn () => static::getPluginOptions())
+                                    ->afterStateHydrated(fn (Set $set, $record) => $record?->customizable_type
+                                        ? $set('plugin', static::resolvePluginFromType(static::resolveBaseModel($record->customizable_type)))
+                                        : null)
+                                    ->afterStateUpdated(fn (Set $set) => $set('customizable_type', null)),
                                 Select::make('customizable_type')
                                     ->label(__('fields::filament/resources/field.form.sections.resource.fields.resource'))
                                     ->required()
                                     ->searchable()
                                     ->native(false)
                                     ->disabledOn('edit')
-                                    ->options(fn () => static::getCustomizableResourceOptions()),
+                                    ->visible(fn (Get $get): bool => filled($get('plugin')))
+                                    ->options(fn (Get $get): array => static::getCustomizableResourceOptions($get('plugin'))),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -298,21 +316,86 @@ class FieldResource extends Resource
     }
 
     /**
-     * Options of resources supporting custom fields, mapped by model.
+     * Installed plugins exposing resources that support custom fields.
      */
-    protected static function getCustomizableResourceOptions(): array
+    protected static function getPluginOptions(): array
     {
         return collect(Filament::getResources())
-            ->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))
-            ->unique(fn ($resource) => $resource::getModel())
-            ->mapWithKeys(function ($resource) {
-                $resourceName = str($resource)->afterLast('\\')->beforeLast('Resource')->headline()->toString();
-                $pluginName = str($resource)->after('Webkul\\')->before('\\')->headline()->toString();
+            ->filter(fn ($resource) => static::isCustomizableResource($resource))
+            ->map(fn ($resource) => static::resolvePluginFromType(static::resolveBaseModel($resource::getModel())))
+            ->unique()
+            ->sort()
+            ->mapWithKeys(fn ($plugin) => [$plugin => str($plugin)->headline()->toString()])
+            ->toArray();
+    }
 
-                return [$resource::getModel() => "{$pluginName} - {$resourceName}"];
-            })
+    /**
+     * Customizable base models for the given plugin, mapped by class.
+     */
+    protected static function getCustomizableResourceOptions(?string $plugin = null): array
+    {
+        if (blank($plugin)) {
+            return [];
+        }
+
+        return collect(Filament::getResources())
+            ->filter(fn ($resource) => static::isCustomizableResource($resource))
+            ->map(fn ($resource) => static::resolveBaseModel($resource::getModel()))
+            ->unique()
+            ->filter(fn ($model) => static::resolvePluginFromType($model) === $plugin)
+            ->mapWithKeys(fn ($model) => [$model => str($model)->afterLast('\\')->headline()->toString()])
             ->sort()
             ->toArray();
+    }
+
+    /**
+     * Resource supports custom fields and can create records via a form.
+     */
+    protected static function isCustomizableResource(string $resource): bool
+    {
+        if (! in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource))) {
+            return false;
+        }
+
+        foreach ($resource::getPages() as $registration) {
+            $page = $registration->getPage();
+
+            if (
+                is_subclass_of($page, CreateRecord::class)
+                || is_subclass_of($page, ManageRecords::class)
+                || is_subclass_of($page, ManageRelatedRecords::class)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Resolve the owning plugin key from a resource or model class.
+     */
+    protected static function resolvePluginFromType(string $type): string
+    {
+        return str($type)->after('Webkul\\')->before('\\')->toString();
+    }
+
+    /**
+     * Resolve the base Webkul model shared by plugin-specific subclasses.
+     */
+    protected static function resolveBaseModel(string $model): string
+    {
+        $base = $model;
+
+        foreach (class_parents($model) as $parent) {
+            if (! str_starts_with($parent, 'Webkul\\')) {
+                break;
+            }
+
+            $base = $parent;
+        }
+
+        return $base;
     }
 
     public static function getPages(): array
