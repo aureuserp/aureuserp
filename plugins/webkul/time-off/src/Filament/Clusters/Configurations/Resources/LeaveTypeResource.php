@@ -169,12 +169,14 @@ class LeaveTypeResource extends Resource
                                             ->step(1)
                                             ->live()
                                             ->required(),
-                                        ...static::getCustomFormFields(),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

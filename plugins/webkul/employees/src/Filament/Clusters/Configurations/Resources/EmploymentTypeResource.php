@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -68,7 +69,9 @@ class EmploymentTypeResource extends Resource
                     ->preload()
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.country'))
                     ->relationship('country', 'name'),
-                ...static::getCustomFormFields(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(2);
     }

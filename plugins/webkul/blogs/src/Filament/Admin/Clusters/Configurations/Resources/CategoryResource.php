@@ -13,6 +13,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -69,7 +70,9 @@ class CategoryResource extends Resource
                 TextInput::make('sub_title')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.form.fields.sub-title'))
                     ->maxLength(255),
-                ...static::getCustomFormFields(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

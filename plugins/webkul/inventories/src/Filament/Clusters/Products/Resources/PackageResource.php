@@ -118,8 +118,10 @@ class PackageResource extends Resource
                                     ->preload(),
                             ])
                             ->columns(2),
-                        ...static::getCustomFormFields(),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

@@ -132,10 +132,12 @@ class LotResource extends Resource
                                 RichEditor::make('description')
                                     ->label(__('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.description'))
                                     ->columnSpan(2),
-                                ...static::getCustomFormFields(),
                             ])
                             ->columns(2),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

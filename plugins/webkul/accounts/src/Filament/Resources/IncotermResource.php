@@ -16,15 +16,19 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\IncotermResource\Pages\ManageIncoterms;
 use Webkul\Account\Models\Incoterm;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class IncotermResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Incoterm::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
@@ -45,13 +49,16 @@ class IncotermResource extends Resource
                 TextInput::make('name')
                     ->label(__('accounts::filament/resources/incoterm.form.fields.name'))
                     ->required(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('code')
                     ->label(__('accounts::filament/resources/incoterm.table.columns.code'))
                     ->searchable()
@@ -64,7 +71,7 @@ class IncotermResource extends Resource
                     ->label(__('accounts::filament/resources/incoterm.table.columns.created-by'))
                     ->searchable()
                     ->sortable(),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -119,6 +126,9 @@ class IncotermResource extends Resource
                     ->placeholder(__('accounts::filament/resources/incoterm.infolist.entries.code')),
                 TextEntry::make('name')
                     ->placeholder(__('accounts::filament/resources/incoterm.infolist.entries.name')),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

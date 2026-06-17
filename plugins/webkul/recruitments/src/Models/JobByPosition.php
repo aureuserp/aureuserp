@@ -2,4 +2,9 @@
 
 namespace Webkul\Recruitment\Models;
 
-class JobByPosition extends JobPosition {}
+use Webkul\Field\Traits\HasCustomFields;
+
+class JobByPosition extends JobPosition
+{
+    use HasCustomFields;
+}

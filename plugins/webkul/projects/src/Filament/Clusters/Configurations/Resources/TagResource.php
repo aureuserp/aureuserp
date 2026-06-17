@@ -14,6 +14,7 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -53,7 +54,9 @@ class TagResource extends Resource
                     ->default('#808080')
                     ->hexColor()
                     ->label(__('projects::filament/clusters/configurations/resources/tag.form.color')),
-                ...static::getCustomFormFields(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

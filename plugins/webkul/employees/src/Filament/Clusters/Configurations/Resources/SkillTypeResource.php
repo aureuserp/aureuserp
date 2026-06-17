@@ -95,8 +95,10 @@ class SkillTypeResource extends Resource
                     Toggle::make('is_active')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.status'))
                         ->default(true),
-                    ...static::getCustomFormFields(),
                 ])->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

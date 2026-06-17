@@ -348,12 +348,14 @@ class WorkCenterResource extends Resource
                                             ->suffix(__('manufacturing::filament/clusters/configurations/resources/work-center.form.sections.information.fields.cost-suffix')),
                                     ])
                                     ->columns(1),
-
-                                ...static::getCustomFormFields(),
                             ])
                             ->columns(1),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }

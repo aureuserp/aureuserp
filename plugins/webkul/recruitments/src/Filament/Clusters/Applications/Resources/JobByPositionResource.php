@@ -13,12 +13,15 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Recruitment\Filament\Clusters\Applications;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\JobByPositionResource\Pages\ListJobByPositions;
 use Webkul\Recruitment\Models\JobByPosition;
 
 class JobByPositionResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = JobByPosition::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
@@ -51,7 +54,7 @@ class JobByPositionResource extends Resource
                     'applications as total_applicants_count',
                 ])
             )
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 Stack::make([
                     Stack::make([
                         TextColumn::make('name')
@@ -78,7 +81,7 @@ class JobByPositionResource extends Resource
                             ->visible(fn ($record) => filled($record?->company?->name)),
                     ])->space(1),
                 ])->space(4),
-            ])
+            ]))
             ->contentGrid([
                 'md' => 2,
                 'xl' => 2,

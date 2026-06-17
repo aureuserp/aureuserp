@@ -14,6 +14,7 @@ use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -66,7 +67,9 @@ class EmployeeCategoryResource extends Resource
                 ColorPicker::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color'))
                     ->hexColor(),
-                ...static::getCustomFormFields(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

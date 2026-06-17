@@ -163,11 +163,13 @@ class PackageTypeResource extends Resource
                                     ->minValue(0)
                                     ->maxValue(99999999999),
                             ]),
-
-                        ...static::getCustomFormFields(),
                     ])
                     ->collapsible()
                     ->columnSpanFull(),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

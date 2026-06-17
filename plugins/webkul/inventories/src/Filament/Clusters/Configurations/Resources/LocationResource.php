@@ -186,11 +186,13 @@ class LocationResource extends Resource
                                     ])
                                     ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL, LocationType::TRANSIT]))
                                     ->columns(1),
-
-                                ...static::getCustomFormFields(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }

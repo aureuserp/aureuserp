@@ -326,7 +326,6 @@ class ApplicantResource extends Resource
                                             ->relationship('categories', 'name')
                                             ->searchable()
                                             ->preload(),
-                                        ...static::getCustomFormFields(),
                                     ])
                                     ->columns(2),
                             ])->columnSpanFull(),
@@ -404,6 +403,10 @@ class ApplicantResource extends Resource
                             ])->columnSpanFull(),
                     ])
                     ->columnSpan(['lg' => 1]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columnSpanFull()
+                    ->columns(2),
             ])
             ->columns(3);
     }

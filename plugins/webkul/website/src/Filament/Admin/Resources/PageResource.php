@@ -98,7 +98,6 @@ class PageResource extends Resource
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-keywords')),
                                 Textarea::make('meta_description')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-description')),
-                                ...static::getCustomFormFields(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
@@ -114,6 +113,10 @@ class PageResource extends Resource
                                     ->inline(false),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columnSpanFull()
+                    ->columns(2),
             ])
             ->columns(3);
     }

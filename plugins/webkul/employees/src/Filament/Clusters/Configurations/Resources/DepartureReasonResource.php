@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -57,7 +58,9 @@ class DepartureReasonResource extends Resource
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.form.fields.name'))
                     ->required(),
-                ...static::getCustomFormFields(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])->columns(1);
     }
 

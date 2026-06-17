@@ -5,10 +5,13 @@ namespace Webkul\Recruitment\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 
 class ApplicantCategory extends Model
 {
+    use HasCustomFields;
+
     protected $table = 'recruitments_applicant_categories';
 
     protected $fillable = ['name', 'color', 'creator_id'];

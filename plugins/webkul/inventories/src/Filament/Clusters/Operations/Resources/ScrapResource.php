@@ -272,8 +272,10 @@ class ScrapResource extends Resource
                                     ]),
                             ])
                             ->columns(2),
-                        ...static::getCustomFormFields(),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

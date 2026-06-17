@@ -120,7 +120,6 @@ class CalendarResource extends Resource
                                             ->maxValue(168)
                                             ->default(40)
                                             ->suffix(__('support::filament/resources/calendar.form.sections.configuration.fields.full-time-required-hours-suffix')),
-                                        ...static::getCustomFormFields(),
                                     ])->columns(2),
                             ])
                             ->columnSpan(['lg' => 2]),
@@ -146,6 +145,9 @@ class CalendarResource extends Resource
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

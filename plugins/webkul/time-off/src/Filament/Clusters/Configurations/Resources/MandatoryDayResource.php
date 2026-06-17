@@ -15,6 +15,7 @@ use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -23,12 +24,15 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\MandatoryDayResource\Pages\ListMandatoryDays;
 use Webkul\TimeOff\Models\LeaveMandatoryDay;
 
 class MandatoryDayResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = LeaveMandatoryDay::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
@@ -69,13 +73,16 @@ class MandatoryDayResource extends Resource
                     ->default(now()->format('Y-m-d'))
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.form.fields.end-date'))
                     ->required(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->searchable()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.name'))
@@ -98,8 +105,8 @@ class MandatoryDayResource extends Resource
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.end-date'))
                     ->searchable()
                     ->sortable(),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('company_id')
                     ->relationship('company', 'name')
                     ->searchable()
@@ -127,7 +134,7 @@ class MandatoryDayResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->groups([
                 Group::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.name'))
@@ -195,6 +202,9 @@ class MandatoryDayResource extends Resource
                     ->placeholder('-')
                     ->icon('heroicon-o-calendar')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.infolist.entries.end-date')),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

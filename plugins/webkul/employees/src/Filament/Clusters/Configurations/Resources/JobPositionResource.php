@@ -158,12 +158,14 @@ class JobPositionResource extends Resource
                                             ->preload(),
                                         Toggle::make('is_active')
                                             ->label(__('employees::filament/clusters/configurations/resources/job-position.form.sections.workforce-planning.fields.status')),
-                                        ...static::getCustomFormFields(),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

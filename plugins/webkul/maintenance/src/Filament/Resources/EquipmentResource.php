@@ -192,11 +192,13 @@ class EquipmentResource extends Resource
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.maintenance.fields.expected-mtbf'))
                                     ->numeric()
                                     ->suffix(__('maintenance::filament/resources/equipment.form.sections.maintenance.suffixes.days')),
-
-                                ...static::getCustomFormFields(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }

@@ -250,9 +250,11 @@ class RuleResource extends Resource
                                             ->preload(),
                                     ])
                                     ->columns(1),
-                                ...static::getCustomFormFields(),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }

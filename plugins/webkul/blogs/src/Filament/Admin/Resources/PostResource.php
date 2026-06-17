@@ -122,8 +122,11 @@ class PostResource extends Resource
                                     ->maxLength(255),
                                 Textarea::make('meta_description')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-description')),
-                                ...static::getCustomFormFields(),
+
                             ]),
+                        Section::make()
+                            ->schema(static::getCustomFormFields())
+                            ->columns(2),
                     ])
                     ->columnSpan(['lg' => 2]),
                 Group::make()

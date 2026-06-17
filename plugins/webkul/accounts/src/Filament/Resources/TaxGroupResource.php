@@ -65,8 +65,10 @@ class TaxGroupResource extends Resource
                         TextInput::make('preceding_subtotal')
                             ->label(__('accounts::filament/resources/tax-group.form.sections.fields.preceding-subtotal'))
                             ->maxLength(255),
-                        ...static::getCustomFormFields(),
                     ])->columns(2),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])->columns(1);
     }
 

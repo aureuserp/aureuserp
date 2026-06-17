@@ -115,8 +115,10 @@ class TeamResource extends Resource
                         Toggle::make('is_active')
                             ->inline(false)
                             ->label(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.status')),
-                        ...static::getCustomFormFields(),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

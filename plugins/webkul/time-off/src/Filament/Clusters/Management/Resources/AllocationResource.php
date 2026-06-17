@@ -156,9 +156,11 @@ class AllocationResource extends Resource
                                     ->suffix(__('time-off::filament/clusters/management/resources/allocation.form.fields.allocation-suffix')),
                                 RichEditor::make('notes')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.reason')),
-                                ...static::getCustomFormFields(),
                             ]),
                     ])->columns(1),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

@@ -125,9 +125,11 @@ class AccrualPlanResource extends Resource
                                 Toggle::make('is_active')
                                     ->inline(false)
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.status')),
-                                ...static::getCustomFormFields(),
                             ]),
                     ])->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

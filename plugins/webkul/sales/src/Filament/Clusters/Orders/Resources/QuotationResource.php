@@ -341,6 +341,7 @@ class QuotationResource extends Resource
                                             ->live()
                                             ->reactive()
                                             ->default(Auth::user()->defaultCompany?->currency_id),
+                                        ...static::getCustomFormFields(),
                                     ]),
                             ]),
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.form.tabs.term-and-conditions.title'))
@@ -350,7 +351,6 @@ class QuotationResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
-                ...static::getCustomFormFields(),
             ])
             ->columns(1);
     }

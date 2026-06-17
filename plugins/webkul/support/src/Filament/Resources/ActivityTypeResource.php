@@ -99,7 +99,6 @@ class ActivityTypeResource extends Resource
                                         RichEditor::make('default_note')
                                             ->label(__('support::filament/resources/activity-type.form.sections.activity-type-details.fields.note'))
                                             ->columnSpanFull(),
-                                        ...static::getCustomFormFields(),
                                     ])
                                     ->columns(2),
                                 Section::make(__('support::filament/resources/activity-type.form.sections.delay-information.title'))
@@ -174,6 +173,9 @@ class ActivityTypeResource extends Resource
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

@@ -151,8 +151,11 @@ class RouteResource extends Resource
                                     ->visible(fn (Get $get) => $get('warehouse_selectable')),
                             ])
                             ->hiddenOn(ManageRoutes::class),
-                        ...static::getCustomFormFields(),
                     ])
+                    ->columns(2),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
                     ->columns(2),
             ]);
     }

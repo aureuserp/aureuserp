@@ -173,9 +173,11 @@ class AccountResource extends Resource
                                 Toggle::make('non_trade')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.non-trade')),
-                                ...static::getCustomFormFields(),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }

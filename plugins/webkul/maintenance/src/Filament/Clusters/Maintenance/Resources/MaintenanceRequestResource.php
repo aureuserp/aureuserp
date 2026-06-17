@@ -313,11 +313,13 @@ class MaintenanceRequestResource extends Resource
                                     ->preload()
                                     ->required()
                                     ->default(Auth::user()?->default_company_id),
-
-                                ...static::getCustomFormFields(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }

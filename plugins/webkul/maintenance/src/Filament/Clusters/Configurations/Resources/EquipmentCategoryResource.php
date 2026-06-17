@@ -82,11 +82,12 @@ class EquipmentCategoryResource extends Resource
                             ->label(__('maintenance::filament/clusters/configurations/resources/equipment-category.form.sections.general.fields.note'))
                             ->rows(4)
                             ->columnSpanFull(),
-
-                        ...static::getCustomFormFields(),
                     ])
                     ->columns(2)
                     ->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

@@ -98,9 +98,11 @@ class StorageCategoryResource extends Resource
                             ->searchable()
                             ->preload()
                             ->default(Auth::user()->default_company_id),
-                        ...static::getCustomFormFields(),
                     ])
                     ->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 

@@ -119,7 +119,6 @@ class PaymentTermResource extends Resource
                             ])->columns(2),
                         RichEditor::make('note')
                             ->label(__('accounts::filament/resources/payment-term.form.sections.fields.note')),
-                        ...static::getCustomFormFields(),
                     ]),
                 Tabs::make()
                     ->schema([
@@ -243,6 +242,9 @@ class PaymentTermResource extends Resource
                                     ->columns(2),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])->columns(1);
     }
 

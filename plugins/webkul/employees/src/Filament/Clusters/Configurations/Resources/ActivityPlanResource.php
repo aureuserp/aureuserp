@@ -91,8 +91,10 @@ class ActivityPlanResource extends Resource
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.status'))
                             ->default(true)
                             ->inline(false),
-                        ...static::getCustomFormFields(),
                     ])->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
