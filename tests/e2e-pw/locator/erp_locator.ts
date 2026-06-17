@@ -20,6 +20,8 @@ export class ErpLocators {
     readonly pluginInstallSuccessNotification: Locator;
     readonly pluginUninstallSuccessNotification: Locator;
     readonly pluginActionFailedNotification: Locator;
+    readonly pluginUninstallModalReady: Locator;
+    readonly pluginsPerPageSelect: Locator;
 
     /**
      * Companies
@@ -311,6 +313,10 @@ export class ErpLocators {
         this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Installed Successfully' }).first();
         this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Uninstalled Successfully' }).first();
         this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed/ }).first();
+        // The uninstall confirmation heading is rendered for every plugin, even
+        // when the submit button is hidden, so it marks the modal as ready.
+        this.pluginUninstallModalReady = page.getByRole('dialog').getByText('Uninstall Confirmation').first();
+        this.pluginsPerPageSelect = page.locator('.fi-pagination-records-per-page-select-ctn select:visible');
 
         /**
          * Companies

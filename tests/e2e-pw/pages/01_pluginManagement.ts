@@ -75,48 +75,106 @@ export class PluginManagementPage {
     }
 
     /**
-     * Install/uninstall every plugin on the matching tab. The tab always
-     * contains exactly the remaining plugins, so acting on the first card
-     * until the tab is empty survives pagination, list reordering and the
-     * full-page redirect the app performs after every install/uninstall.
+     * Show every plugin on a single page. 
+     */
+    private async showAllPluginsOnOnePage() {
+        if (await this.erpLocators.pluginsPerPageSelect.count() === 0) {
+            return;
+        }
+
+        await this.erpLocators.pluginsPerPageSelect.selectOption('32');
+        await this.page.waitForLoadState('networkidle');
+    }
+
+    /**
+     * Install/uninstall every plugin on the matching tab.
+     * Installs are independent: installing a plugin pulls in its dependencies,
+     * Uninstalls are dependency-ordered: a plugin whose dependents are still installed cannot be removed
      */
     private async processAllPlugins(action: PluginAction) {
         const tab = action === 'install' ? 'not_installed' : 'installed';
 
         await this.gotoPluginTab(tab);
+        await this.showAllPluginsOnOnePage();
 
         const total = await this.erpLocators.pluginName.count();
         console.log(`Plugins to ${action}: ${total}`);
 
-        for (let i = 0; i < total; i++) {
-            if (await this.erpLocators.pluginName.count() === 0) {
-                break;
+        let guard = total + 5;
+
+        while (await this.erpLocators.pluginName.count() > 0 && guard-- > 0) {
+            const acted = action === 'install'
+                ? await this.installFirstPlugin()
+                : await this.uninstallFirstAvailablePlugin();
+
+            if (!acted) {
+                throw new Error(`No "${tab}" plugin could be ${action}ed; the remaining plugins may form an unresolved dependency order.`);
             }
-
-            const pluginTitle = (await this.erpLocators.pluginName.first().innerText()).trim();
-            console.log(`${action === 'install' ? 'Installing' : 'Uninstalling'} plugin: ${pluginTitle}`);
-
-            await this.erpLocators.pluginActionsButton.first().click();
-
-            const actionOption = action === 'install'
-                ? this.erpLocators.pluginInstallOption
-                : this.erpLocators.pluginUninstallOption;
-            await expect(actionOption).toBeVisible();
-            await actionOption.click();
-
-            const confirmButton = action === 'install'
-                ? this.erpLocators.pluginInstallConfirmButton
-                : this.erpLocators.pluginUninstallConfirmButton;
-            await expect(confirmButton).toBeVisible();
-            await confirmButton.click();
-
-            await this.expectActionSucceeded(action, pluginTitle);
 
             await this.gotoPluginTab(tab);
         }
 
         await expect(this.erpLocators.pluginName).toHaveCount(0);
         console.log(`All plugins ${action === 'install' ? 'installed' : 'uninstalled'}`);
+    }
+
+    /**
+     * Install the first plugin listed on the current tab
+     */
+    private async installFirstPlugin(): Promise<boolean> {
+        if (await this.erpLocators.pluginName.count() === 0) {
+            return false;
+        }
+
+        const pluginTitle = (await this.erpLocators.pluginName.first().innerText()).trim();
+        console.log(`Installing plugin: ${pluginTitle}`);
+
+        await this.erpLocators.pluginActionsButton.first().click();
+        await expect(this.erpLocators.pluginInstallOption).toBeVisible();
+        await this.erpLocators.pluginInstallOption.click();
+
+        await expect(this.erpLocators.pluginInstallConfirmButton).toBeVisible();
+        await this.erpLocators.pluginInstallConfirmButton.click();
+
+        await this.expectActionSucceeded('install', pluginTitle);
+        return true;
+    }
+
+    /**
+     * Uninstall the first plugin on the tab that has no installed dependents.
+     */
+    private async uninstallFirstAvailablePlugin(): Promise<boolean> {
+        const count = await this.erpLocators.pluginName.count();
+
+        for (let i = 0; i < count; i++) {
+            const pluginTitle = (await this.erpLocators.pluginName.nth(i).innerText()).trim();
+
+            await this.erpLocators.pluginActionsButton.nth(i).click();
+            await expect(this.erpLocators.pluginUninstallOption).toBeVisible();
+            await this.erpLocators.pluginUninstallOption.click();
+            await expect(this.erpLocators.pluginUninstallModalReady).toBeVisible();
+
+            if (!await this.erpLocators.pluginUninstallConfirmButton.isVisible()) {
+                console.log(`Skipping "${pluginTitle}" - dependent plugins still installed`);
+                await this.closeOpenModal();
+                continue;
+            }
+
+            console.log(`Uninstalling plugin: ${pluginTitle}`);
+            await this.erpLocators.pluginUninstallConfirmButton.click();
+            await this.expectActionSucceeded('uninstall', pluginTitle);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Dismiss the open modal and wait for it to disappear
+     */
+    private async closeOpenModal() {
+        await this.page.keyboard.press('Escape');
+        await expect(this.erpLocators.pluginUninstallModalReady).toBeHidden();
     }
 
     /**
