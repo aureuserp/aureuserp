@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use BackedEnum;
+use Exception;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -230,6 +231,7 @@ class WarehouseResource extends Resource
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
                 RestoreAction::make()
+                    ->databaseTransaction(true)
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -237,6 +239,29 @@ class WarehouseResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.restore.notification.body')),
                     ),
                 DeleteAction::make()
+                    ->databaseTransaction(true)
+                    ->action(function (Warehouse $record, DeleteAction $action) {
+                        try {
+                            $record->delete();
+
+                            $action->success();
+                        } catch (QueryException|Exception $e) {
+                            if ($e instanceof QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->danger()
+                                    ->body($e->getMessage())
+                                    ->send();
+                            }
+
+                            $action->cancel(shouldRollBackDatabaseTransaction: true);
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -244,15 +269,27 @@ class WarehouseResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.delete.notification.body')),
                     ),
                 ForceDeleteAction::make()
-                    ->action(function (Warehouse $record, $action) {
+                    ->databaseTransaction(true)
+                    ->action(function (Warehouse $record, ForceDeleteAction $action) {
                         try {
                             $record->forceDelete();
-                        } catch (QueryException $e) {
-                            Notification::make()
-                                ->danger()
-                                ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.title'))
-                                ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.body'))
-                                ->send();
+
+                            $action->success();
+                        } catch (QueryException|Exception $e) {
+                            if ($e instanceof QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->danger()
+                                    ->body($e->getMessage())
+                                    ->send();
+                            }
+
+                            $action->cancel(shouldRollBackDatabaseTransaction: true);
                         }
                     })
                     ->successNotification(
@@ -265,6 +302,7 @@ class WarehouseResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     RestoreBulkAction::make()
+                        ->databaseTransaction(true)
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -272,6 +310,29 @@ class WarehouseResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.restore.notification.body')),
                         ),
                     DeleteBulkAction::make()
+                        ->databaseTransaction(true)
+                        ->action(function (Collection $records, DeleteBulkAction $action) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+
+                                $action->success();
+                            } catch (QueryException|Exception $e) {
+                                if ($e instanceof QueryException) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.title'))
+                                        ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.body'))
+                                            ->send();
+                                } else {
+                                    Notification::make()
+                                        ->danger()
+                                        ->body($e->getMessage())
+                                        ->send();
+                                }
+
+                                $action->cancel(shouldRollBackDatabaseTransaction: true);
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -279,17 +340,27 @@ class WarehouseResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
+                        ->databaseTransaction(true)
                         ->action(function (Collection $records, ForceDeleteBulkAction $action) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
-                            } catch (QueryException $e) {
-                                Notification::make()
-                                    ->danger()
-                                    ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.title'))
-                                    ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.body'))
-                                    ->send();
 
-                                $action->cancel();
+                                $action->success();
+                            } catch (QueryException|Exception $e) {
+                                if ($e instanceof QueryException) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.title'))
+                                        ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.body'))
+                                        ->send();
+                                } else {
+                                    Notification::make()
+                                        ->danger()
+                                        ->body($e->getMessage())
+                                        ->send();
+                                }
+
+                                $action->cancel(shouldRollBackDatabaseTransaction: true);
                             }
                         })
                         ->successNotification(

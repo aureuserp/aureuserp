@@ -52,6 +52,8 @@ use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Inventory\Enums as InventoryEnums;
+use Webkul\Inventory\Models\OperationType;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
@@ -224,6 +226,34 @@ class OrderResource extends Resource
                                     ->hint('Test')
                                     ->hint(fn ($record): string => $record && $record->mail_reminder_confirmed ? __('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.confirmed-by-vendor') : '')
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
+                                Select::make('operation_type_id')
+                                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.deliver-to'))
+                                    ->relationship(
+                                        name: 'operationType',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->whereIn('type', [
+                                                InventoryEnums\OperationType::INCOMING,
+                                                InventoryEnums\OperationType::DROPSHIP
+                                            ])
+                                            ->where(function (Builder $query) use ($get) {
+                                                $query->whereNull('warehouse_id')
+                                                    ->orWhereHas('warehouse', fn (Builder $q) => $q->where('company_id', $get('company_id') ?? Auth::user()->default_company_id));
+                                            }),
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function (OperationType $record) {
+                                        if (! $record->warehouse) {
+                                            return $record->name;
+                                        }
+
+                                        return $record->warehouse->name.': '.$record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->visible(fn (): bool => static::canUseInventoryWarehouses())
+                                    ->default(fn (Get $get) => static::getInventoryOperationTypeId($get('company_id') ?? Auth::user()->default_company_id))
+                                    ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                             ]),
                     ])
                     ->columns(2),
@@ -273,6 +303,7 @@ class OrderResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->required()
+                                            ->live()
                                             ->default(Auth::user()->default_company_id)
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                                         TextInput::make('origin')
@@ -1464,22 +1495,6 @@ class OrderResource extends Resource
         return $totals;
     }
 
-    public static function getOrderSettings(): OrderSettings
-    {
-        return once(fn () => app(OrderSettings::class));
-    }
-
-    public static function getProductSettings(): ProductSettings
-    {
-        return once(fn () => app(ProductSettings::class));
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
-    }
-
     private static function handleVendorChange($state, Set $set, Get $get): void
     {
         if (! $state) {
@@ -1616,9 +1631,6 @@ class OrderResource extends Resource
         }
     }
 
-    /**
-     * Check if the product quantity exceeds the blanket order limit and show warning if needed.
-     */
     private static function checkBlanketOrderQtyLimit(Get $get, ?string $prefix = ''): void
     {
         $requisitionId = $get('../../requisition_id');
@@ -1666,5 +1678,47 @@ class OrderResource extends Resource
                 ]))
                 ->send();
         }
+    }
+
+    private static function getInventoryOperationTypeId(?int $companyId): ?int
+    {
+        if (! $companyId || ! static::canUseInventoryWarehouses()) {
+            return null;
+        }
+
+        $operationType = OperationType::where('type', InventoryEnums\OperationType::INCOMING)
+            ->whereHas('warehouse', function ($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            })
+            ->first();
+
+        if (! $operationType) {
+            $operationType = OperationType::where('type', InventoryEnums\OperationType::INCOMING)
+                ->whereDoesntHave('warehouse')
+                ->first();
+        }
+
+        return $operationType?->id;
+    }
+
+    private static function canUseInventoryWarehouses(): bool
+    {
+        return Package::isPluginInstalled('inventories');
+    }
+
+    public static function getOrderSettings(): OrderSettings
+    {
+        return once(fn () => app(OrderSettings::class));
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return once(fn () => app(ProductSettings::class));
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

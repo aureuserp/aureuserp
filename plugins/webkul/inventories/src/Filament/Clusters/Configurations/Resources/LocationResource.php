@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use BackedEnum;
+use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -271,6 +272,7 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.edit.notification.body')),
                     ),
                 RestoreAction::make()
+                    ->databaseTransaction(true)
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -278,6 +280,21 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.restore.notification.body')),
                     ),
                 DeleteAction::make()
+                    ->databaseTransaction(true)
+                    ->action(function (DeleteAction $action, Location $record) {
+                        try {
+                            $record->delete();
+
+                            $action->success();
+                        } catch (Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->body($e->getMessage())
+                                ->send();
+
+                            $action->cancel(shouldRollBackDatabaseTransaction: true);
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -285,16 +302,27 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.body')),
                     ),
                 ForceDeleteAction::make()
+                    ->databaseTransaction(true)
                     ->action(function (ForceDeleteAction $action, Location $record) {
                         try {
                             $record->forceDelete();
-                        } catch (QueryException $e) {
-                            Notification::make()
-                                ->danger()
-                                ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.title'))
-                                ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.body'))
-                                ->send();
-                            $action->cancel();
+
+                            $action->success();
+                        } catch (QueryException|Exception $e) {
+                            if ($e instanceof QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->danger()
+                                    ->body($e->getMessage())
+                                    ->send();
+                            }
+
+                            $action->cancel(shouldRollBackDatabaseTransaction: true);
                         }
                     })
                     ->successNotification(
@@ -321,6 +349,7 @@ class LocationResource extends Resource
                             }, 'Location-Barcode.pdf');
                         }),
                     RestoreBulkAction::make()
+                        ->databaseTransaction(true)
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -328,6 +357,19 @@ class LocationResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.restore.notification.body')),
                         ),
                     DeleteBulkAction::make()
+                        ->databaseTransaction(true)
+                        ->action(function (DeleteBulkAction $action, Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+                            } catch (Exception $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->body($e->getMessage())
+                                    ->send();
+
+                                $action->cancel(shouldRollBackDatabaseTransaction: true);
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -335,16 +377,25 @@ class LocationResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
+                        ->databaseTransaction(true)
                         ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
-                            } catch (QueryException $e) {
-                                Notification::make()
-                                    ->danger()
-                                    ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.title'))
-                                    ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.body'))
-                                    ->send();
-                                $action->cancel();
+                            } catch (QueryException|Exception $e) {
+                                if ($e instanceof QueryException) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.title'))
+                                        ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.body'))
+                                        ->send();
+                                } else {
+                                    Notification::make()
+                                        ->danger()
+                                        ->body($e->getMessage())
+                                        ->send();
+                                }
+
+                                $action->cancel(shouldRollBackDatabaseTransaction: true);
                             }
                         })
                         ->successNotification(

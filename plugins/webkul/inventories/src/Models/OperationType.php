@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
@@ -110,6 +111,11 @@ class OperationType extends Model implements Sortable
     public function warehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class)->withTrashed();
+    }
+
+    public function moves(): HasMany
+    {
+        return $this->hasMany(Move::class);
     }
 
     public function storageCategoryCapacities(): BelongsToMany
