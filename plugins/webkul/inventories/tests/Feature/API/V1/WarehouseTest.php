@@ -1,5 +1,7 @@
 <?php
 
+use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
@@ -368,6 +370,16 @@ it('permanently deletes a warehouse', function () {
 
     $warehouse = Warehouse::factory()->create();
     $warehouse->delete();
+
+    Rule::withTrashed()
+        ->where('warehouse_id', $warehouse->id)
+        ->get()
+        ->each(fn (Rule $rule) => $rule->forceDelete());
+
+    OperationType::withTrashed()
+        ->where('warehouse_id', $warehouse->id)
+        ->get()
+        ->each(fn (OperationType $operationType) => $operationType->forceDelete());
 
     $this->deleteJson(inventoryWarehouseRoute('force-destroy', $warehouse))
         ->assertOk()

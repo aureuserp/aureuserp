@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Webkul\Chatter\Services\ChatterNotificationService;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
@@ -90,6 +91,10 @@ class Message extends Model
                 $data->causer_id = $user->id;
             });
         }
+
+        static::created(function (Message $message) {
+            app(ChatterNotificationService::class)->notifyFollowers($message);
+        });
     }
 
     public function attachments()

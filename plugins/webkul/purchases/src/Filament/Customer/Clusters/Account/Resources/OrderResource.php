@@ -110,7 +110,7 @@ class OrderResource extends Resource
                                             ]);
 
                                             $record->addMessage([
-                                                'body' => __('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.accept.decline.message.body'),
+                                                'body' => __('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.decline.message.body'),
                                                 'type' => 'comment',
                                             ]);
 
@@ -213,7 +213,8 @@ class OrderResource extends Resource
                                             return [
                                                 'record' => $record,
                                             ];
-                                        }),
+                                        })
+                                            ->key(fn (Order $record): string => 'order-products-'.$record->getKey()),
 
                                         /**
                                          * Order totals
@@ -277,7 +278,8 @@ class OrderResource extends Resource
                                                     ],
                                                 ],
                                             ];
-                                        }),
+                                        })
+                                            ->key(fn (Order $record): string => 'order-chatter-'.$record->getKey()),
                                     ]),
                             ]),
                     ])

@@ -54,7 +54,7 @@ class PurchaseOrder
         $record = $this->computePurchaseOrder($record);
 
         $message = $record->addMessage([
-            'body' => $data['message'],
+            'body' => Str::markdown($data['message']),
             'type' => 'comment',
         ]);
 
@@ -139,7 +139,7 @@ class PurchaseOrder
         }
 
         $message = $record->addMessage([
-            'body' => $data['message'],
+            'body' => Str::markdown($data['message']),
             'type' => 'comment',
         ]);
 
