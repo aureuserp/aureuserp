@@ -109,7 +109,7 @@ class ManageProducts extends ManageRelatedRecords
                         return $count > 0 ? $count : '—';
                     })
                     ->badge(fn ($record) => ($record->product->parent ?? $record->product)->variants_count > 0)
-                    ->color(fn ($record) => ($record->product->parent ?? $record->product)->variants_count > 0 ? Colors::Success : Colors::Gray)
+                    ->color(fn ($record) => ($record->product->parent ?? $record->product)->variants_count > 0 ? Colors::Success->value : Colors::Gray->value)
                     ->action(
                         Action::make('view_variants')
                             ->modal()
@@ -157,7 +157,7 @@ class ManageProducts extends ManageRelatedRecords
                     ->state(fn ($record) => ($record->product->parent ?? $record->product)->uom?->name)
                     ->placeholder('—'),
             ])
-            ->toolbarAction([
+            ->recordActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(fn (Collection $records) => $records->each(
