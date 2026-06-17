@@ -39,12 +39,10 @@ class UninstallCommand extends Command
             return;
         }
 
-        $installedDependents = collect($this->package->getPlugin()->getDependentsFromConfig())
-            ->filter(fn ($dependent) => Package::isPluginInstalled($dependent))
-            ->values();
+        $installedDependents = $this->package->getPlugin()->dependents->filter(fn ($plugin) => $plugin->is_installed);
 
         if ($installedDependents->isNotEmpty()) {
-            $this->error("Package {$this->package->shortName()} has installed dependents: <comment>".$installedDependents->implode(', ').'</comment>. Please uninstall these dependents first!');
+            $this->error("Package {$this->package->shortName()} has installed dependents: <comment>".$installedDependents->pluck('name')->implode(', ').'</comment>. Please uninstall these dependents first!');
 
             return;
         }

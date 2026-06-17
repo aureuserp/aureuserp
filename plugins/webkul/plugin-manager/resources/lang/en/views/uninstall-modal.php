@@ -15,11 +15,6 @@ return [
         'not_installed' => 'Not Installed',
     ],
 
-    'dependency_warning' => [
-        'title'   => 'Action Required',
-        'message' => '⚠️ Please uninstall the following dependent plugins first before uninstalling :name.',
-    ],
-
     'data_impact' => [
         'title'       => 'Data Impact',
         'description' => 'The following database tables contain data that will be permanently deleted.',

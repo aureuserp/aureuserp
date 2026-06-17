@@ -78,30 +78,4 @@
             </div>
         </div>
     @endif
-
-    @php
-        $installedDependents = collect($dependents ?? [])
-            ->filter(fn ($dependent) => \Webkul\PluginManager\Package::isPluginInstalled($dependent));
-    @endphp
-
-    @if($installedDependents->isNotEmpty())
-        <div class="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-            <h3 class="text-base font-semibold text-gray-950 dark:text-white">
-               {{ __('plugin-manager::views/uninstall-modal.dependency_warning.title') }}
-            </h3>
-
-            <p class="mt-2 text-sm text-red-600 dark:text-red-400">
-               {{ __('plugin-manager::views/uninstall-modal.dependency_warning.message', ['name' => $record->name]) }}
-            </p>
-
-            <ul class="mt-3 space-y-1">
-                @foreach($installedDependents as $dependent)
-                    <span class="fi-color fi-color-warning fi-text-color-700 dark:fi-text-color-400 fi-badge fi-size-sm">
-                        {{ ucfirst($dependent) }}
-                    </span>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
 </div>
