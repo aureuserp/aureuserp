@@ -29,7 +29,7 @@
 
                     'error' => [
                         'title' => 'Follower added error',
-                        'body'  => 'Failed to ":partner" as follower',
+                        'body'  => 'Failed to add ":partner" as follower',
                     ],
                 ],
 

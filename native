@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+if ($_SERVER['argv'][1] ?? false) {
+    $_SERVER['argv'][1] = 'native:' . $_SERVER['argv'][1];
+} else {
+    $_SERVER['argv'][1] = 'native';
+}
+
+include 'artisan';

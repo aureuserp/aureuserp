@@ -1,0 +1,21 @@
+{
+    "namespace": "Barcode",
+    "android": {
+        "min_version": 26,
+        "permissions": [
+            "android.permission.CAMERA"
+        ],
+        "features": [
+            {
+                "name": "android.hardware.camera.any",
+                "required": false
+            }
+        ]
+    },
+    "ios": {
+        "min_version": "15.0",
+        "info_plist": {
+            "NSCameraUsageDescription": "Barcode uses your camera to scan products, lots, packages, and inventory operations."
+        }
+    }
+}

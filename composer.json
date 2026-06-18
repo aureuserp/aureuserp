@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "aureuserp/nativephp-remote": "^0.1.0",
         "barryvdh/laravel-debugbar": "^4.0",
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-language-switch": "^4.3",
@@ -26,6 +27,7 @@
         "maatwebsite/excel": "^3.1",
         "malzariey/filament-daterangepicker-filter": "^5.0",
         "milon/barcode": "^13.0",
+        "nativephp/mobile": "^3.3",
         "spatie/eloquent-sortable": "^5.0",
         "spatie/laravel-query-builder": "^7.0",
         "wikimedia/composer-merge-plugin": "^2.1"

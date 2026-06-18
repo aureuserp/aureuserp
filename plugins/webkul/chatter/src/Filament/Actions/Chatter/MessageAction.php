@@ -13,11 +13,8 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
-use Webkul\Chatter\Mail\MessageMail;
-use Webkul\Support\Services\EmailService;
 
 class MessageAction extends Action
 {
@@ -139,8 +136,6 @@ class MessageAction extends Action
                         );
                     }
 
-                    $this->notifyFollower($record, $message);
-
                     Notification::make()
                         ->success()
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.title'))
@@ -169,52 +164,5 @@ class MessageAction extends Action
                 $action->icon('heroicon-m-paper-airplane');
             })
             ->slideOver(false);
-    }
-
-    private function notifyFollower(mixed $record, mixed $message): void
-    {
-        foreach ($record->followers as $follower) {
-            if ($follower?->partner?->email) {
-                app(EmailService::class)->send(
-                    mailClass: MessageMail::class,
-                    view: $this->getMessageMailView(),
-                    attachments: $this->prepareAttachments($message->attachments),
-                    payload: $this->preparePayload($record, $follower->partner, $message),
-                );
-            }
-        }
-    }
-
-    private function prepareResourceUrl(mixed $record): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $record]);
-    }
-
-    private function preparePayload(Model $record, mixed $partner, mixed $message): array
-    {
-        return [
-            'record_url'     => $this->prepareResourceUrl($record) ?? '',
-            'record_name'    => $recordName = $record->{$record->recordTitleAttribute} ?? $record->name,
-            'model_name'     => class_basename($record),
-            'subject'        => __('chatter::filament/resources/actions/chatter/message-action.setup.actions.mail.subject', [
-                'record_name' => $recordName,
-            ]),
-            'content'        => $message->body ?? '',
-            'to'             => [
-                'address' => $partner->email,
-                'name'    => $partner->name,
-            ],
-        ];
-    }
-
-    private function prepareAttachments(Collection $attachments): array
-    {
-        return $attachments?->map(function ($attachment) {
-            return [
-                'path' => asset($attachment->url),
-                'name' => $attachment->name,
-                'mime' => $attachment->mime,
-            ];
-        })->toArray();
     }
 }

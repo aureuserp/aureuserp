@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Incoterm;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\PaymentTerm;
-use Webkul\Chatter\Models\Message;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -23,6 +23,8 @@ use Webkul\Purchase\Database\Factories\OrderFactory;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
@@ -201,23 +203,17 @@ class Order extends Model
         return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
     }
 
-    public function addMessage(array $data): Message
+    public function getChatterResourceUrl(): string
     {
-        $message = new Message;
+        $resource = in_array($this->state, [OrderState::PURCHASE, OrderState::DONE])
+            ? PurchaseOrderResource::class
+            : QuotationResource::class;
 
-        $user = Auth::user();
-
-        $message->fill(array_merge([
-            'creator_id'       => $user?->id,
-            'date_deadline'    => $data['date_deadline'] ?? now(),
-            'company_id'       => $data['company_id'] ?? ($user->defaultCompany?->id ?? null),
-            'messageable_type' => Order::class,
-            'messageable_id'   => $this->id,
-        ], $data));
-
-        $message->save();
-
-        return $message;
+        try {
+            return $resource::getUrl('view', ['record' => $this->getKey()], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     protected static function boot()

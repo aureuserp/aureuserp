@@ -178,7 +178,9 @@ class FollowerAction extends Action
                     Notification::make()
                         ->danger()
                         ->title(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.error.title'))
-                        ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.error.body'))
+                        ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.error.body', [
+                            'partner' => $partner?->name ?? '',
+                        ]))
                         ->send();
                 }
             })
@@ -207,7 +209,21 @@ class FollowerAction extends Action
 
     private function prepareResourceUrl(mixed $record): string
     {
-        return $this->getResource()::getUrl('view', ['record' => $record]);
+        $resource = $this->getResource();
+
+        if (empty($resource)) {
+            return '';
+        }
+
+        foreach (['view', 'edit'] as $page) {
+            try {
+                return $resource::getUrl($page, ['record' => $record]);
+            } catch (Throwable $e) {
+                continue;
+            }
+        }
+
+        return '';
     }
 
     public function preparePayload(Model $record, Partner $partner, $data): array

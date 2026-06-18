@@ -245,6 +245,10 @@ class Warehouse extends Model implements Sortable
         });
 
         static::deleted(function (Warehouse $warehouse) {
+            if ($warehouse->isForceDeleting()) {
+                return;
+            }
+
             $operationTypes = $warehouse->operationTypes;
 
             $moves = Move::whereIn('operation_type_id', $operationTypes->pluck('id')->all())
@@ -295,8 +299,8 @@ class Warehouse extends Model implements Sortable
             $rules->each(fn ($rule) => $rule->delete());
         });
 
-        static::forceDeleting(function (Warehouse $warehouse) {
-            $warehouse->viewLocation->forceDelete();
+        static::forceDeleted(function (Warehouse $warehouse) {
+            $warehouse->viewLocation()->withTrashed()->first()?->forceDelete();
         });
 
         static::restoring(function (Warehouse $warehouse) {
