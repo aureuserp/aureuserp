@@ -157,7 +157,7 @@ class ManageProducts extends ManageRelatedRecords
                     ->state(fn ($record) => ($record->product->parent ?? $record->product)->uom?->name)
                     ->placeholder('—'),
             ])
-            ->recordActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->action(fn (Collection $records) => $records->each(
