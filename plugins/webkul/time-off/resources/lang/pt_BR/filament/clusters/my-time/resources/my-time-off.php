@@ -1,0 +1,106 @@
+<?php
+
+return [
+    'title' => 'Ausência',
+
+    'model-label' => 'Minhas ausências',
+
+    'navigation' => [
+        'title' => 'Minhas ausências',
+    ],
+
+    'form' => [
+        'fields' => [
+            'time-off-type' => 'Tipo de ausência',
+            'date' => 'Data',
+            'dates' => 'Datas',
+            'request-date-from' => 'Data inicial da solicitação',
+            'request-date-to' => 'Data final da solicitação',
+            'description' => 'Descrição',
+            'period' => 'Período',
+            'half-day' => 'Meio dia',
+            'requested-days' => 'Solicitado (dias/horas)',
+            'description' => 'Descrição',
+            'attachment' => 'Anexo',
+            'day' => ':day dia',
+            'days' => ':days dia(s)',
+        ],
+    ],
+
+    'table' => [
+        'columns' => [
+            'employee-name' => 'Funcionário',
+            'time-off-type' => 'Tipo de ausência',
+            'description' => 'Descrição',
+            'date-from' => 'Data inicial',
+            'date-to' => 'Data até',
+            'duration' => 'Duração',
+            'status' => 'Status',
+        ],
+
+        'groups' => [
+            'employee-name' => 'Funcionário',
+            'time-off-type' => 'Tipo de ausência',
+            'status' => 'Status',
+            'start-date' => 'Data de início',
+            'start-to' => 'Data de término',
+            'updated-at' => 'Atualizado em',
+            'created-at' => 'Criado em',
+        ],
+
+        'actions' => [
+            'approve' => [
+                'title' => [
+                    'validate' => 'Validar',
+                    'approve' => 'Aprovar',
+                ],
+                'notification' => [
+                    'title' => 'Ausência aprovada',
+                    'body' => 'A ausência foi aprovada com sucesso.',
+                ],
+            ],
+
+            'delete' => [
+                'notification' => [
+                    'title' => 'Ausência excluída',
+                    'body' => 'A ausência foi excluída com sucesso.',
+                ],
+            ],
+
+            'refused' => [
+                'title' => 'Recusar',
+                'notification' => [
+                    'title' => 'Ausência recusada',
+                    'body' => 'A ausência foi recusada com sucesso.',
+                ],
+            ],
+        ],
+
+        'bulk-actions' => [
+            'delete' => [
+                'notification' => [
+                    'title' => 'Ausências excluídas',
+                    'body' => 'As ausências foram excluídas com sucesso.',
+                ],
+            ],
+        ],
+    ],
+
+    'infolist' => [
+        'entries' => [
+            'time-off-type' => 'Tipo de ausência',
+            'date' => 'Data',
+            'dates' => 'Datas',
+            'request-date-from' => 'Data inicial da solicitação',
+            'request-date-to' => 'Data final da solicitação',
+            'description' => 'Descrição',
+            'period' => 'Período',
+            'half-day' => 'Meio dia',
+            'requested-days' => 'Solicitado (dias/horas)',
+            'description' => 'Descrição',
+            'attachment' => 'Anexo',
+            'day' => ':day dia',
+            'days' => ':days dia(s)',
+        ],
+    ],
+];
