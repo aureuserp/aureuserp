@@ -1,3 +1,32 @@
+# 🚀 CHANGELOG — v1.5.0
+
+### 🧩 Features
+
+* #1215 Added Maintenance module
+* #1214 Added Putaway Rules for inventory operations
+* #1224 Added Time-off dashboard widget
+
+### ✨ Improvements
+
+* #1221 Added `trustProxies` middleware for improved proxy handling
+* #1212 Added Docker setup for the production environment
+* #1213 Simplified Docker image publishing logic and enhanced tag handling
+* #1165 Added Playwright tests for the Website plugin
+* #1243 Added pull request template
+* #1207 Updated README
+* #1162 Removed redundant Arabic translation file
+* #1211 Untracked `.codex` directory
+
+### 🐛 Fixes
+
+* #1245 [fixed] - Job Title and Title fields now hidden for company-type partners (shown only for individuals)
+* #1231 [fixed] - Fixed broken Facebook social link URL in Website plugin
+* #1229 [fixed] - Archived records appearing in the "All" tab for Manufacturing Operations, Work Centers, and Bills of Materials
+* #1225 [fixed] - Fixed inventory operation cancellation on sales orders
+* #1220 [fixed] - Linked purchase order receipts to their order operations
+* #1219 [fixed] - Navigation group labels now update correctly on locale switch
+* #1216 [fixed] - Removed duplicate Auth import in LeaveAccrualLevel model
+
 # 🚀 CHANGELOG — v1.4.0
 
 ### 🧩 Features
