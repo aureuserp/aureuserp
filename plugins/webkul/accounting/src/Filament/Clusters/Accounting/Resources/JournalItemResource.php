@@ -21,11 +21,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource\Pages\ListJournalItems;
+use Webkul\Accounting\Filament\Concerns\HasCompanyScope;
 use Webkul\Accounting\Filament\Exports\JournalItemExporter;
 use Webkul\Accounting\Models\JournalItem;
 
 class JournalItemResource extends Resource
 {
+    use HasCompanyScope;
+
     protected static ?string $model = JournalItem::class;
 
     protected static bool $shouldRegisterNavigation = true;
@@ -331,7 +334,16 @@ class JournalItemResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery();
+
+        $companyIds = static::getAccessibleCompanyIds();
+
+        if (empty($companyIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query
+            ->whereIn('company_id', $companyIds)
             ->orderByDesc('date');
     }
 }

@@ -68,6 +68,7 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
+use Webkul\Accounting\Filament\Concerns\HasCompanyScope;
 use Webkul\Accounting\Filament\Exports\JournalEntryExporter;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
@@ -83,6 +84,7 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
+    use HasCompanyScope;
     use HasResourcePermissionQuery;
 
     protected static ?string $model = JournalEntry::class;
@@ -150,10 +152,10 @@ class JournalEntryResource extends Resource
                     ->schema([
                         Actions::make([
                             Action::make('payment_state')
-                                ->icon(fn ($record) => $record->payment_state->getIcon())
-                                ->color(fn ($record) => $record->payment_state->getColor())
-                                ->visible(fn ($record) => in_array($record?->payment_state, [PaymentState::PAID, PaymentState::REVERSED]))
-                                ->label(fn ($record) => $record->payment_state->getLabel())
+                                ->icon(fn($record) => $record->payment_state->getIcon())
+                                ->color(fn($record) => $record->payment_state->getColor())
+                                ->visible(fn($record) => in_array($record?->payment_state, [PaymentState::PAID, PaymentState::REVERSED]))
+                                ->label(fn($record) => $record->payment_state->getLabel())
                                 ->size(Size::ExtraLarge->value),
                         ]),
 
@@ -163,7 +165,7 @@ class JournalEntryResource extends Resource
                                     ->schema([
                                         TextInput::make('reference')
                                             ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.fields.reference'))
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                            ->disabled(fn($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
 
                                 Group::make()
@@ -172,20 +174,22 @@ class JournalEntryResource extends Resource
                                             ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.fields.accounting-date'))
                                             ->default(now())
                                             ->native(false)
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                            ->disabled(fn($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
 
                                         Select::make('journal_id')
                                             ->relationship(
-                                                'journal',
-                                                'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::GENERAL),
+                                                name: 'journal',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn(Builder $query) => $query
+                                                    ->where('type', JournalType::GENERAL)
+                                                    ->whereIn('company_id', static::getAccessibleCompanyIds()),
                                             )
                                             ->searchable()
                                             ->preload()
                                             ->required()
                                             ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.fields.journal'))
-                                            ->createOptionForm(fn ($form) => JournalResource::form($form))
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                            ->createOptionForm(fn($form) => JournalResource::form($form))
+                                            ->disabled(fn($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
                             ])->columns(2),
                     ]),
@@ -203,9 +207,15 @@ class JournalEntryResource extends Resource
                             ->schema([
                                 Select::make('company_id')
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.company'))
-                                    ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                    ->relationship(
+                                        name: 'company',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn(Builder $query) => $query
+                                            ->withTrashed()
+                                            ->whereIn('companies.id', static::getAccessibleCompanyIds())
+                                    )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                     })
                                     ->disableOptionWhen(function ($label) {
                                         return str_contains($label, ' (Deleted)');
@@ -213,7 +223,7 @@ class JournalEntryResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->reactive()
-                                    ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
+                                    ->afterStateUpdated(fn(callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
                                     ->default(Auth::user()->default_company_id)
                                     ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set) {
@@ -232,7 +242,7 @@ class JournalEntryResource extends Resource
                                     ->searchable()
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.fiscal-position'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.fiscal-position-tooltip'))
-                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                    ->disabled(fn($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                             ])
                             ->columns(2),
                         Tab::make(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.term-and-conditions.title'))
@@ -297,7 +307,7 @@ class JournalEntryResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->summarize(Sum::make()->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.total')))
-                    ->money(fn ($record) => $record->company->currency?->name),
+                    ->money(fn($record) => $record->company->currency?->name),
                 TextColumn::make('state')
                     ->placeholder('-')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.state'))
@@ -440,7 +450,7 @@ class JournalEntryResource extends Resource
                             ->badge(),
                     ])
                     ->compact()
-                    ->visible(fn ($record) => in_array($record?->payment_state, [PaymentState::PAID, PaymentState::REVERSED])),
+                    ->visible(fn($record) => in_array($record?->payment_state, [PaymentState::PAID, PaymentState::REVERSED])),
 
                 Section::make(__('accounting::filament/clusters/accounting/resources/journal-entry.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
@@ -526,31 +536,31 @@ class JournalEntryResource extends Resource
                                     ->schema([
                                         TextEntry::make('account')
                                             ->placeholder('-')
-                                            ->formatStateUsing(fn ($state) => $state['name'] ?? '-'),
+                                            ->formatStateUsing(fn($state) => $state['name'] ?? '-'),
                                         TextEntry::make('partner')
                                             ->placeholder('-')
-                                            ->formatStateUsing(fn ($state) => $state ? ($state['name'] ?? '-') : '-'),
+                                            ->formatStateUsing(fn($state) => $state ? ($state['name'] ?? '-') : '-'),
                                         TextEntry::make('name')
                                             ->placeholder('-'),
                                         TextEntry::make('currency')
                                             ->placeholder('-')
-                                            ->formatStateUsing(fn ($state) => $state['name'] ?? '-'),
+                                            ->formatStateUsing(fn($state) => $state['name'] ?? '-'),
                                         TextEntry::make('taxes')
                                             ->badge()
                                             ->state(function ($record): array {
-                                                return $record->taxes->map(fn ($tax) => [
+                                                return $record->taxes->map(fn($tax) => [
                                                     'name' => $tax->name,
                                                 ])->toArray();
                                             })
-                                            ->formatStateUsing(fn ($state) => $state['name'] ?? '-')
+                                            ->formatStateUsing(fn($state) => $state['name'] ?? '-')
                                             ->placeholder('-')
                                             ->weight(FontWeight::Bold),
                                         TextEntry::make('debit')
                                             ->placeholder('-')
-                                            ->money(fn ($record) => $record->currency?->name),
+                                            ->money(fn($record) => $record->currency?->name),
                                         TextEntry::make('credit')
                                             ->placeholder('-')
-                                            ->money(fn ($record) => $record->currency?->name),
+                                            ->money(fn($record) => $record->currency?->name),
                                     ])->columns(5),
                             ]),
 
@@ -599,8 +609,8 @@ class JournalEntryResource extends Resource
             ->deleteAction(function (Action $action) {
                 $action->requiresConfirmation();
             })
-            ->addable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+            ->addable(fn($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+            ->deletable(fn($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
             ->reorderable(false)
             ->table([
                 TableColumn::make('account_id')
@@ -656,7 +666,7 @@ class JournalEntryResource extends Resource
                     ->wrapOptionLabels(false)
                     ->selectablePlaceholder(false)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Select::make('partner_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.partner'))
                     ->relationship('partner', 'name')
@@ -665,11 +675,11 @@ class JournalEntryResource extends Resource
                     ->preload()
                     ->selectablePlaceholder(false)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 TextInput::make('name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.label'))
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 TextInput::make('amount_currency')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.amount-currency'))
                     ->numeric()
@@ -677,14 +687,14 @@ class JournalEntryResource extends Resource
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::amountCurrencyUpdated($set, $get))
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->afterStateUpdated(fn(Set $set, Get $get) => self::amountCurrencyUpdated($set, $get))
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Select::make('currency_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.currency'))
                     ->relationship(
                         name: 'currency',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->active(),
+                        modifyQueryUsing: fn(Builder $query) => $query->active(),
                     )
                     ->default(Auth::user()->defaultCompany?->currency_id)
                     ->required()
@@ -698,7 +708,7 @@ class JournalEntryResource extends Resource
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.taxes'))
                     ->relationship('taxes', 'name')
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.' ('.$record->type_tax_use->getLabel().')';
+                        return $record->name . ' (' . $record->type_tax_use->getLabel() . ')';
                     })
                     ->searchable()
                     ->multiple()
@@ -717,8 +727,8 @@ class JournalEntryResource extends Resource
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::debitUpdated($set, $get)),
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn(Set $set, Get $get) => self::debitUpdated($set, $get)),
                 TextInput::make('credit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.credit'))
                     ->required()
@@ -728,8 +738,8 @@ class JournalEntryResource extends Resource
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::creditUpdated($set, $get)),
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn(Set $set, Get $get) => self::creditUpdated($set, $get)),
                 TextInput::make('discount_amount_currency')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.discount-amount-currency'))
                     ->numeric()
@@ -738,8 +748,8 @@ class JournalEntryResource extends Resource
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::discountAmountCurrencyUpdated($set, $get)),
+                    ->disabled(fn($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn(Set $set, Get $get) => self::discountAmountCurrencyUpdated($set, $get)),
             ]);
     }
 
@@ -833,8 +843,8 @@ class JournalEntryResource extends Resource
         $mockMove->setRelation('currency', $currency);
         $mockMove->setRelation('company', $company);
 
-        $totalDebit = collect($lines)->sum(fn ($lineData) => (float) ($lineData['debit'] ?? 0));
-        $totalCredit = collect($lines)->sum(fn ($lineData) => (float) ($lineData['credit'] ?? 0));
+        $totalDebit = collect($lines)->sum(fn($lineData) => (float) ($lineData['debit'] ?? 0));
+        $totalCredit = collect($lines)->sum(fn($lineData) => (float) ($lineData['credit'] ?? 0));
 
         $baseLines = [];
 
@@ -873,7 +883,7 @@ class JournalEntryResource extends Resource
 
                     $partnerId = $baseLine['partner']->id ?? null;
 
-                    $key = $accountId.'_'.($partnerId ?? 'null');
+                    $key = $accountId . '_' . ($partnerId ?? 'null');
 
                     if (! isset($taxLinesMap[$key])) {
                         $taxName = $taxData['tax']->name ?? 'Tax';
@@ -882,7 +892,7 @@ class JournalEntryResource extends Resource
                             'display_type'             => 'tax',
                             'account_id'               => $accountId,
                             'partner_id'               => $partnerId,
-                            'name'                     => 'Tax: '.$taxName,
+                            'name'                     => 'Tax: ' . $taxName,
                             'amount_currency'          => 0,
                             'currency_id'              => $currency->id,
                             'taxes'                    => [],
@@ -985,12 +995,12 @@ class JournalEntryResource extends Resource
         $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
 
         $linesWithoutBalancing = collect($lines)
-            ->reject(fn ($line) => ($line['is_auto_generated'] ?? false) && ($line['auto_type'] ?? null) === 'balancing')
+            ->reject(fn($line) => ($line['is_auto_generated'] ?? false) && ($line['auto_type'] ?? null) === 'balancing')
             ->values()
             ->all();
 
-        $totalDebit = collect($linesWithoutBalancing)->sum(fn ($lineData) => data_get($lineData, 'debit', 0));
-        $totalCredit = collect($linesWithoutBalancing)->sum(fn ($lineData) => data_get($lineData, 'credit', 0));
+        $totalDebit = collect($linesWithoutBalancing)->sum(fn($lineData) => data_get($lineData, 'debit', 0));
+        $totalCredit = collect($linesWithoutBalancing)->sum(fn($lineData) => data_get($lineData, 'credit', 0));
 
         $balancingLine = self::calculateBalancingLine($totalDebit, $totalCredit, $company, $suspenseAccountId);
 
@@ -1058,5 +1068,20 @@ class JournalEntryResource extends Resource
             'view'     => ViewJournalEntry::route('/{record}'),
             'edit'     => EditJournalEntry::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $companyIds = static::getAccessibleCompanyIds();
+
+        if (empty($companyIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query
+            ->whereIn('company_id', $companyIds)
+            ->orderByDesc('date');
     }
 }
