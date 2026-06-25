@@ -3,11 +3,11 @@
 return [
     'navigation' => [
         'title' => 'Contatos',
-        'group' => 'Contato',
+        'group' => 'Contatos',
     ],
 
     'global-search' => [
         'project-manager' => 'Gerente de projeto',
-        'customer' => 'Cliente',
+        'customer'        => 'Cliente',
     ],
 ];

@@ -5,12 +5,12 @@ return [
 
     'navigation' => [
         'title' => 'Tarefas',
-        'group' => 'Projeto',
+        'group' => 'Projetos',
     ],
 
     'global-search' => [
-        'project' => 'Projeto',
-        'customer' => 'Cliente',
+        'project'   => 'Projeto',
+        'customer'  => 'Cliente',
         'milestone' => 'Marco',
     ],
 
@@ -20,16 +20,16 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'title' => 'Título',
+                    'title'             => 'Título',
                     'title-placeholder' => 'Título da tarefa...',
-                    'tags' => 'Tags',
-                    'name' => 'Nome',
-                    'color' => 'Cor',
-                    'description' => 'Descrição',
-                    'project' => 'Projeto',
-                    'status' => 'Status',
-                    'start_date' => 'Data de início',
-                    'end_date' => 'Data de término',
+                    'tags'              => 'Tags',
+                    'name'              => 'Nome',
+                    'color'             => 'Cor',
+                    'description'       => 'Descrição',
+                    'project'           => 'Projeto',
+                    'status'            => 'Status',
+                    'start_date'        => 'Data de início',
+                    'end_date'          => 'Data de término',
                 ],
             ],
 
@@ -41,15 +41,15 @@ return [
                 'title' => 'Configurações',
 
                 'fields' => [
-                    'project' => 'Projeto',
-                    'milestone' => 'Marco',
-                    'milestone-hint-text' => 'Entregue automaticamente seus serviços ao atingir um marco vinculando-o a um item do pedido de venda.',
-                    'name' => 'Nome',
-                    'deadline' => 'Prazo final',
-                    'is-completed' => 'Está concluído',
-                    'customer' => 'Cliente',
-                    'assignees' => 'Responsáveis',
-                    'allocated-hours' => 'Horas alocadas',
+                    'project'                     => 'Projeto',
+                    'milestone'                   => 'Marco',
+                    'milestone-hint-text'         => 'Entregue automaticamente seus serviços ao atingir um marco vinculando-o a um item do pedido de venda.',
+                    'name'                        => 'Nome',
+                    'deadline'                    => 'Prazo final',
+                    'is-completed'                => 'Está concluído',
+                    'customer'                    => 'Cliente',
+                    'assignees'                   => 'Responsáveis',
+                    'allocated-hours'             => 'Horas alocadas',
                     'allocated-hours-helper-text' => 'Em horas (Ex.: 1,5 horas significa 1 hora e 30 minutos)',
                 ],
             ],
@@ -58,24 +58,24 @@ return [
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'priority' => 'Prioridade',
-            'state' => 'Estado',
-            'new-state' => 'Novo estado',
-            'update-state' => 'Atualizar estado',
-            'title' => 'Título',
-            'project' => 'Projeto',
+            'id'                  => 'ID',
+            'priority'            => 'Prioridade',
+            'state'               => 'Estado',
+            'new-state'           => 'Novo estado',
+            'update-state'        => 'Atualizar estado',
+            'title'               => 'Título',
+            'project'             => 'Projeto',
             'project-placeholder' => 'Tarefa privada',
-            'milestone' => 'Marco',
-            'customer' => 'Cliente',
-            'assignees' => 'Responsáveis',
-            'allocated-time' => 'Tempo alocado',
-            'time-spent' => 'Tempo gasto',
-            'time-remaining' => 'Tempo restante',
-            'progress' => 'Progresso',
-            'deadline' => 'Prazo final',
-            'tags' => 'Tags',
-            'stage' => 'Estágio',
+            'milestone'           => 'Marco',
+            'customer'            => 'Cliente',
+            'assignees'           => 'Responsáveis',
+            'allocated-time'      => 'Tempo alocado',
+            'time-spent'          => 'Tempo gasto',
+            'time-remaining'      => 'Tempo restante',
+            'progress'            => 'Progresso',
+            'deadline'            => 'Prazo final',
+            'tags'                => 'Tags',
+            'stage'               => 'Estágio',
         ],
 
         'actions' => [
@@ -85,58 +85,58 @@ return [
         ],
 
         'groups' => [
-            'state' => 'Estado',
-            'project' => 'Projeto',
-            'milestone' => 'Marco',
-            'customer' => 'Cliente',
-            'deadline' => 'Prazo final',
-            'stage' => 'Estágio',
+            'state'      => 'Estado',
+            'project'    => 'Projeto',
+            'milestone'  => 'Marco',
+            'customer'   => 'Cliente',
+            'deadline'   => 'Prazo final',
+            'stage'      => 'Estágio',
             'created-at' => 'Criado em',
         ],
 
         'filters' => [
-            'title' => 'Título',
-            'priority' => 'Prioridade',
-            'low' => 'Baixo',
-            'high' => 'Alto',
-            'state' => 'Estado',
-            'tags' => 'Tags',
-            'allocated-hours' => 'Horas alocadas',
+            'title'             => 'Título',
+            'priority'          => 'Prioridade',
+            'low'               => 'Baixo',
+            'high'              => 'Alto',
+            'state'             => 'Estado',
+            'tags'              => 'Tags',
+            'allocated-hours'   => 'Horas alocadas',
             'total-hours-spent' => 'Total de horas gastas',
-            'remaining-hours' => 'Horas restantes',
-            'overtime' => 'Hora extra',
-            'progress' => 'Progresso',
-            'deadline' => 'Prazo final',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
-            'assignees' => 'Responsáveis',
-            'customer' => 'Cliente',
-            'project' => 'Projeto',
-            'stage' => 'Estágio',
-            'milestone' => 'Marco',
-            'company' => 'Empresa',
-            'creator' => 'Criador',
+            'remaining-hours'   => 'Horas restantes',
+            'overtime'          => 'Hora extra',
+            'progress'          => 'Progresso',
+            'deadline'          => 'Prazo final',
+            'created-at'        => 'Criado em',
+            'updated-at'        => 'Atualizado em',
+            'assignees'         => 'Responsáveis',
+            'customer'          => 'Cliente',
+            'project'           => 'Projeto',
+            'stage'             => 'Estágio',
+            'milestone'         => 'Marco',
+            'company'           => 'Empresa',
+            'creator'           => 'Criador',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
                     'title' => 'Tarefa restaurada',
-                    'body' => 'A tarefa foi restaurada com sucesso.',
+                    'body'  => 'A tarefa foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tarefa excluída',
-                    'body' => 'A tarefa foi excluída com sucesso.',
+                    'body'  => 'A tarefa foi excluída com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Tarefa excluída permanentemente',
-                    'body' => 'A tarefa foi excluída permanentemente com sucesso.',
+                    'body'  => 'A tarefa foi excluída permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -145,21 +145,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Tarefas restauradas',
-                    'body' => 'As tarefas foram restauradas com sucesso.',
+                    'body'  => 'As tarefas foram restauradas com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tarefas excluídas',
-                    'body' => 'As tarefas foram excluídas com sucesso.',
+                    'body'  => 'As tarefas foram excluídas com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Tarefas excluídas permanentemente',
-                    'body' => 'As tarefas foram excluídas permanentemente com sucesso.',
+                    'body'  => 'As tarefas foram excluídas permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -171,10 +171,10 @@ return [
                 'title' => 'Geral',
 
                 'entries' => [
-                    'title' => 'Título',
-                    'state' => 'Estado',
-                    'tags' => 'Tags',
-                    'priority' => 'Prioridade',
+                    'title'       => 'Título',
+                    'state'       => 'Estado',
+                    'tags'        => 'Tags',
+                    'priority'    => 'Prioridade',
                     'description' => 'Descrição',
                 ],
             ],
@@ -183,12 +183,12 @@ return [
                 'title' => 'Informações do projeto',
 
                 'entries' => [
-                    'project' => 'Projeto',
+                    'project'   => 'Projeto',
                     'milestone' => 'Marco',
-                    'customer' => 'Cliente',
+                    'customer'  => 'Cliente',
                     'assignees' => 'Responsáveis',
-                    'deadline' => 'Prazo final',
-                    'stage' => 'Estágio',
+                    'deadline'  => 'Prazo final',
+                    'stage'     => 'Estágio',
                 ],
             ],
 
@@ -196,12 +196,12 @@ return [
                 'title' => 'Controle de tempo',
 
                 'entries' => [
-                    'allocated-time' => 'Tempo alocado',
-                    'time-spent' => 'Tempo gasto',
-                    'time-spent-suffix' => ' horas',
-                    'time-remaining' => 'Tempo restante',
+                    'allocated-time'        => 'Tempo alocado',
+                    'time-spent'            => 'Tempo gasto',
+                    'time-spent-suffix'     => ' horas',
+                    'time-remaining'        => 'Tempo restante',
                     'time-remaining-suffix' => ' horas',
-                    'progress' => 'Progresso',
+                    'progress'              => 'Progresso',
                 ],
             ],
 
@@ -213,8 +213,8 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'created-at' => 'Criado em',
-                    'created-by' => 'Criado por',
+                    'created-at'   => 'Criado em',
+                    'created-by'   => 'Criado por',
                     'last-updated' => 'Última atualização',
                 ],
             ],
@@ -223,7 +223,7 @@ return [
                 'title' => 'Estatísticas',
 
                 'entries' => [
-                    'sub-tasks' => 'Subtarefas',
+                    'sub-tasks'         => 'Subtarefas',
                     'timesheet-entries' => 'Entradas de apontamento de horas',
                 ],
             ],
