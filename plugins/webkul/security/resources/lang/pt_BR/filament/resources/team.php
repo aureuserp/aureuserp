@@ -16,7 +16,7 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
         ],
 
@@ -24,14 +24,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Equipe atualizada',
-                    'body' => 'A equipe foi atualizada com sucesso.',
+                    'body'  => 'A equipe foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Equipe excluída',
-                    'body' => 'A equipe foi excluída com sucesso.',
+                    'body'  => 'A equipe foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -40,7 +40,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Equipes criadas',
-                    'body' => 'As equipes foram criadas com sucesso.',
+                    'body'  => 'As equipes foram criadas com sucesso.',
                 ],
             ],
         ],
@@ -49,15 +49,15 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'          => 'Name',
-                'job-title'     => 'Job Title',
-                'work-email'    => 'Work Email',
-                'work-mobile'   => 'Work Mobile',
-                'work-phone'    => 'Work Phone',
-                'manager'       => 'Manager',
-                'department'    => 'Department',
-                'job-position'  => 'Job Position',
-                'team-tags'     => 'Team Tags',
+                'name'          => 'Nome',
+                'job-title'     => 'Cargo',
+                'work-email'    => 'E-mail corporativo',
+                'work-mobile'   => 'Celular corporativo',
+                'work-phone'    => 'Telefone corporativo',
+                'manager'       => 'Gestor',
+                'department'    => 'Departamento',
+                'job-position'  => 'Função',
+                'team-tags'     => 'Tags da equipe',
                 'coach'         => 'Coach',
             ],
         ],

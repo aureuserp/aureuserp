@@ -12,18 +12,18 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'name' => 'Nome',
+                    'name'             => 'Nome',
                     'name-placeholder' => 'ex.: camiseta',
-                    'description' => 'Descrição',
-                    'tags' => 'Tags',
-                    'sales' => 'Vendas',
-                    'purchase' => 'Compras',
+                    'description'      => 'Descrição',
+                    'tags'             => 'Tags',
+                    'sales'            => 'Vendas',
+                    'purchase'         => 'Compras',
                 ],
             ],
 
             'invoice-policy' => [
-                'title' => 'Política de faturamento',
-                'ordered-policy' => 'Você pode faturar bens antes que sejam entregues.',
+                'title'            => 'Política de faturamento',
+                'ordered-policy'   => 'Você pode faturar produtos antes que sejam entregues.',
                 'delivered-policy' => 'Faturar após a entrega, com base nas quantidades entregues, não nas pedidas.',
             ],
 
@@ -35,11 +35,11 @@ return [
                 'title' => 'Configurações',
 
                 'fields' => [
-                    'type' => 'Tipo',
+                    'type'      => 'Tipo',
                     'reference' => 'Referência',
-                    'barcode' => 'Código de barras',
-                    'category' => 'Categoria',
-                    'company' => 'Empresa',
+                    'barcode'   => 'Código de barras',
+                    'category'  => 'Categoria',
+                    'company'   => 'Empresa',
                 ],
             ],
 
@@ -48,7 +48,7 @@ return [
 
                 'fields' => [
                     'category' => 'Categoria',
-                    'tags' => 'Tags',
+                    'tags'     => 'Tags',
                 ],
             ],
 
@@ -57,7 +57,7 @@ return [
 
                 'fields' => [
                     'price' => 'Preço',
-                    'cost' => 'Custo',
+                    'cost'  => 'Custo',
                 ],
             ],
 
@@ -69,66 +69,66 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'images' => 'Imagens',
-            'type' => 'Tipo',
-            'reference' => 'Referência',
+            'name'        => 'Nome',
+            'images'      => 'Imagens',
+            'type'        => 'Tipo',
+            'reference'   => 'Referência',
             'responsible' => 'Responsável',
-            'barcode' => 'Código de barras',
-            'category' => 'Categoria',
-            'company' => 'Empresa',
-            'price' => 'Preço',
-            'cost' => 'Custo',
-            'tags' => 'Tags',
-            'deleted-at' => 'Excluído em',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'barcode'     => 'Código de barras',
+            'category'    => 'Categoria',
+            'company'     => 'Empresa',
+            'price'       => 'Preço',
+            'cost'        => 'Custo',
+            'tags'        => 'Tags',
+            'deleted-at'  => 'Excluído em',
+            'created-at'  => 'Criado em',
+            'updated-at'  => 'Atualizado em',
         ],
 
         'groups' => [
-            'type' => 'Tipo',
-            'category' => 'Categoria',
+            'type'       => 'Tipo',
+            'category'   => 'Categoria',
             'created-at' => 'Criado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
-            'type' => 'Tipo',
-            'reference' => 'Referência',
-            'barcode' => 'Código de barras',
-            'category' => 'Categoria',
-            'company' => 'Empresa',
-            'price' => 'Preço',
-            'cost' => 'Custo',
+            'name'        => 'Nome',
+            'type'        => 'Tipo',
+            'reference'   => 'Referência',
+            'barcode'     => 'Código de barras',
+            'category'    => 'Categoria',
+            'company'     => 'Empresa',
+            'price'       => 'Preço',
+            'cost'        => 'Custo',
             'is-favorite' => 'É favorito',
-            'weight' => 'Peso',
-            'volume' => 'Volume',
-            'tags' => 'Tags',
+            'weight'      => 'Peso',
+            'volume'      => 'Volume',
+            'tags'        => 'Tags',
             'responsible' => 'Responsável',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
-            'creator' => 'Criador',
+            'created-at'  => 'Criado em',
+            'updated-at'  => 'Atualizado em',
+            'creator'     => 'Criador',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
                     'title' => 'Produto restaurado',
-                    'body' => 'O produto foi restaurado com sucesso.',
+                    'body'  => 'O produto foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Produto excluído',
-                    'body' => 'O produto foi excluído com sucesso.',
+                    'body'  => 'O produto foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Produto excluído permanentemente',
-                    'body' => 'O produto foi excluído permanentemente com sucesso.',
+                    'body'  => 'O produto foi excluído permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -137,21 +137,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Produtos restaurados',
-                    'body' => 'Os produtos foram restaurados com sucesso.',
+                    'body'  => 'Os produtos foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Produtos excluídos',
-                    'body' => 'Os produtos foram excluídos com sucesso.',
+                    'body'  => 'Os produtos foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Produtos excluídos permanentemente',
-                    'body' => 'Os produtos foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os produtos foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -163,10 +163,10 @@ return [
                 'title' => 'Geral',
 
                 'entries' => [
-                    'name' => 'Nome',
+                    'name'             => 'Nome',
                     'name-placeholder' => 'ex.: camiseta',
-                    'description' => 'Descrição',
-                    'tags' => 'Tags',
+                    'description'      => 'Descrição',
+                    'tags'             => 'Tags',
                 ],
             ],
 
@@ -180,11 +180,11 @@ return [
                 'title' => 'Configurações',
 
                 'entries' => [
-                    'type' => 'Tipo',
+                    'type'      => 'Tipo',
                     'reference' => 'Referência',
-                    'barcode' => 'Código de barras',
-                    'category' => 'Categoria',
-                    'company' => 'Empresa',
+                    'barcode'   => 'Código de barras',
+                    'category'  => 'Categoria',
+                    'company'   => 'Empresa',
                 ],
             ],
 
@@ -193,7 +193,7 @@ return [
 
                 'entries' => [
                     'price' => 'Preço',
-                    'cost' => 'Custo',
+                    'cost'  => 'Custo',
                 ],
             ],
 
@@ -208,7 +208,7 @@ return [
 
                         'entries' => [
                             'track-inventory' => 'Rastrear estoque',
-                            'track-by' => 'Rastrear por',
+                            'track-by'        => 'Rastrear por',
                             'expiration-date' => 'Data de validade',
                         ],
                     ],
@@ -226,9 +226,9 @@ return [
 
                         'entries' => [
                             'responsible' => 'Responsável',
-                            'weight' => 'Peso',
-                            'volume' => 'Volume',
-                            'sale-delay' => 'Prazo de entrega ao cliente (dias)',
+                            'weight'      => 'Peso',
+                            'volume'      => 'Volume',
+                            'sale-delay'  => 'Prazo de entrega ao cliente (dias)',
                         ],
                     ],
 
@@ -236,10 +236,10 @@ return [
                         'title' => 'Rastreabilidade',
 
                         'entries' => [
-                            'expiration-date' => 'Data de validade (dias)',
+                            'expiration-date'  => 'Data de validade (dias)',
                             'best-before-date' => 'Data de consumo preferencial (dias)',
-                            'removal-date' => 'Data de remoção (dias)',
-                            'alert-date' => 'Data de alerta (dias)',
+                            'removal-date'     => 'Data de remoção (dias)',
+                            'alert-date'       => 'Data de alerta (dias)',
                         ],
                     ],
                 ],

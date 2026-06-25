@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Cotação',
+    'title' => 'Orçamento',
 ];

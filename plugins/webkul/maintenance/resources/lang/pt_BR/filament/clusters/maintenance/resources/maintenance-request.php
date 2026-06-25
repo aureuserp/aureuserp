@@ -9,17 +9,17 @@ return [
     'form' => [
         'sections' => [
             'request' => [
-                'title' => 'Solicitação',
+                'title'  => 'Solicitação',
                 'fields' => [
-                    'name' => 'Solicitação',
-                    'name-placeholder' => 'ex.: tela não funciona',
-                    'equipment' => 'Equipamento',
-                    'category' => 'Categoria',
-                    'requested-at' => 'Data da solicitação',
+                    'name'                      => 'Solicitação',
+                    'name-placeholder'          => 'ex.: tela não funciona',
+                    'equipment'                 => 'Equipamento',
+                    'category'                  => 'Categoria',
+                    'requested-at'              => 'Data da solicitação',
                     'requested-at-hint-tooltip' => 'A data em que a solicitação de manutenção foi informada.',
-                    'maintenance-type' => 'Tipo de manutenção',
-                    'recurrent' => 'Recorrente',
-                    'repeat-every' => 'Repetir a cada',
+                    'maintenance-type'          => 'Tipo de manutenção',
+                    'recurrent'                 => 'Recorrente',
+                    'repeat-every'              => 'Repetir a cada',
                     'maintenance-type-options'  => [
                         'corrective' => 'Corretiva',
                         'preventive' => 'Preventiva',
@@ -27,24 +27,24 @@ return [
                 ],
                 'tabs' => [
                     'notes' => [
-                        'title' => 'Notas',
+                        'title'  => 'Notas',
                         'fields' => [
-                            'description' => 'Notas internas',
+                            'description'             => 'Notas internas',
                             'description-placeholder' => 'Notas internas',
                         ],
                     ],
                     'instructions' => [
-                        'title' => 'Instruções',
+                        'title'  => 'Instruções',
                         'fields' => [
-                            'instruction-type' => 'Tipo de instrução',
+                            'instruction-type'         => 'Tipo de instrução',
                             'instruction-type-options' => [
-                                'pdf' => 'PDF',
+                                'pdf'          => 'PDF',
                                 'google-slide' => 'Google Slide',
-                                'text' => 'Texto',
+                                'text'         => 'Texto',
                             ],
-                            'instruction-pdf' => 'PDF',
-                            'instruction-google-slide' => 'Google Slide',
-                            'instruction-text' => 'Descrição',
+                            'instruction-pdf'              => 'PDF',
+                            'instruction-google-slide'     => 'Google Slide',
+                            'instruction-text'             => 'Descrição',
                             'instruction-text-placeholder' => 'Descrição',
                         ],
                     ],
@@ -52,17 +52,17 @@ return [
             ],
 
             'settings' => [
-                'title' => 'Configurações',
+                'title'  => 'Configurações',
                 'fields' => [
-                    'team' => 'Equipe',
-                    'responsible' => 'Responsável',
-                    'scheduled-at' => 'Data agendada',
+                    'team'                      => 'Equipe',
+                    'responsible'               => 'Responsável',
+                    'scheduled-at'              => 'Data agendada',
                     'scheduled-at-hint-tooltip' => 'A data e hora em que este trabalho de manutenção está planejado para começar.',
-                    'duration' => 'Duração',
-                    'duration-hint-tooltip' => 'Duração esperada da manutenção.',
-                    'duration-suffix' => 'horas',
-                    'priority' => 'Prioridade',
-                    'company' => 'Empresa',
+                    'duration'                  => 'Duração',
+                    'duration-hint-tooltip'     => 'Duração esperada da manutenção.',
+                    'duration-suffix'           => 'horas',
+                    'priority'                  => 'Prioridade',
+                    'company'                   => 'Empresa',
                 ],
             ],
         ],
@@ -70,43 +70,43 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Assuntos',
-            'creator' => 'Criado pelo usuário',
+            'name'       => 'Assuntos',
+            'creator'    => 'Criado pelo usuário',
             'technician' => 'Técnico',
-            'category' => 'Categoria',
-            'stage' => 'Estágio',
-            'company' => 'Empresa',
+            'category'   => 'Categoria',
+            'stage'      => 'Etapa',
+            'company'    => 'Empresa',
         ],
 
         'groups' => [
-            'stage' => 'Estágio',
+            'stage'       => 'Etapa',
             'assigned-to' => 'Atribuído a',
-            'category' => 'Categoria',
-            'created-by' => 'Criado por',
+            'category'    => 'Categoria',
+            'created-by'  => 'Criado por',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
                     'title' => 'Solicitação de manutenção restaurada',
-                    'body' => 'A solicitação de manutenção foi restaurada com sucesso.',
+                    'body'  => 'A solicitação de manutenção foi restaurada com sucesso.',
                 ],
             ],
             'delete' => [
                 'notification' => [
                     'title' => 'Solicitação de manutenção arquivada',
-                    'body' => 'A solicitação de manutenção foi arquivada com sucesso.',
+                    'body'  => 'A solicitação de manutenção foi arquivada com sucesso.',
                 ],
             ],
             'force-delete' => [
                 'notification' => [
                     'success' => [
                         'title' => 'Solicitação de manutenção excluída',
-                        'body' => 'A solicitação de manutenção foi excluída permanentemente.',
+                        'body'  => 'A solicitação de manutenção foi excluída permanentemente.',
                     ],
                     'error' => [
                         'title' => 'Solicitação de manutenção não pôde ser excluída',
-                        'body' => 'Esta solicitação de manutenção é referenciada por outro registro.',
+                        'body'  => 'Esta solicitação de manutenção é referenciada por outro registro.',
                     ],
                 ],
             ],
@@ -116,13 +116,13 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Solicitações de manutenção restauradas',
-                    'body' => 'As solicitações de manutenção selecionadas foram restauradas com sucesso.',
+                    'body'  => 'As solicitações de manutenção selecionadas foram restauradas com sucesso.',
                 ],
             ],
             'delete' => [
                 'notification' => [
                     'title' => 'Solicitações de manutenção arquivadas',
-                    'body' => 'As solicitações de manutenção selecionadas foram arquivadas com sucesso.',
+                    'body'  => 'As solicitações de manutenção selecionadas foram arquivadas com sucesso.',
                 ],
             ],
         ],
@@ -131,31 +131,31 @@ return [
     'infolist' => [
         'sections' => [
             'request' => [
-                'title' => 'Solicitação',
+                'title'   => 'Solicitação',
                 'entries' => [
-                    'name' => 'Solicitação',
-                    'equipment' => 'Equipamento',
-                    'category' => 'Categoria',
-                    'requested-at' => 'Data da solicitação',
-                    'maintenance-type' => 'Tipo de manutenção',
-                    'instruction-type' => 'Tipo de instrução',
-                    'instruction-pdf' => 'PDF',
+                    'name'                     => 'Solicitação',
+                    'equipment'                => 'Equipamento',
+                    'category'                 => 'Categoria',
+                    'requested-at'             => 'Data da solicitação',
+                    'maintenance-type'         => 'Tipo de manutenção',
+                    'instruction-type'         => 'Tipo de instrução',
+                    'instruction-pdf'          => 'PDF',
                     'instruction-google-slide' => 'Google Slide',
-                    'description' => 'Notas internas',
-                    'instruction-text' => 'Descrição',
+                    'description'              => 'Notas internas',
+                    'instruction-text'         => 'Descrição',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Configurações',
+                'title'   => 'Configurações',
                 'entries' => [
-                    'team' => 'Equipe',
-                    'responsible' => 'Responsável',
-                    'scheduled-at' => 'Data agendada',
-                    'duration' => 'Duração',
+                    'team'            => 'Equipe',
+                    'responsible'     => 'Responsável',
+                    'scheduled-at'    => 'Data agendada',
+                    'duration'        => 'Duração',
                     'duration-suffix' => 'horas',
-                    'priority' => 'Prioridade',
-                    'company' => 'Empresa',
+                    'priority'        => 'Prioridade',
+                    'company'         => 'Empresa',
                 ],
             ],
         ],

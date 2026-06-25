@@ -10,10 +10,10 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'             => 'Nome',
             'template'         => [
-                'title' => 'Modelo',
-                'applicant-refuse' => 'Recusa do candidato',
+                'title'                    => 'Modelo',
+                'applicant-refuse'         => 'Recusa do candidato',
                 'applicant-not-interested' => 'Candidato não interessado',
             ],
             'name-placeholder' => 'Informe o nome do motivo de recusa',
@@ -22,17 +22,17 @@ return [
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Nome',
-            'template' => 'Modelo',
+            'id'         => 'ID',
+            'name'       => 'Nome',
+            'template'   => 'Modelo',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
-            'employee' => 'Funcionário',
+            'name'       => 'Nome',
+            'employee'   => 'Colaborador',
             'created-by' => 'Criado por',
             'updated-at' => 'Atualizado em',
             'created-at' => 'Criado em',
@@ -42,14 +42,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Motivo de recusa atualizado',
-                    'body' => 'O motivo de recusa foi atualizado com sucesso.',
+                    'body'  => 'O motivo de recusa foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Motivo de recusa excluído',
-                    'body' => 'O motivo de recusa foi excluído com sucesso.',
+                    'body'  => 'O motivo de recusa foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -58,7 +58,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Motivos de recusa excluídos',
-                    'body' => 'Os motivos de recusa foram excluídos com sucesso.',
+                    'body'  => 'Os motivos de recusa foram excluídos com sucesso.',
                 ],
             ],
         ],
@@ -67,14 +67,14 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Motivo de recusa criado',
-                    'body' => 'O motivo de recusa foi criado com sucesso.',
+                    'body'  => 'O motivo de recusa foi criado com sucesso.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Nome',
+        'name'     => 'Nome',
         'template' => 'Modelo',
     ],
 ];

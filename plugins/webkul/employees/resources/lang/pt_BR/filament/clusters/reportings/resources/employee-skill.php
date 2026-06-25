@@ -13,10 +13,10 @@ return [
                 'title' => 'Detalhes da habilidade',
 
                 'fields' => [
-                    'employee' => 'Funcionário',
-                    'skill' => 'Habilidade',
+                    'employee'    => 'Colaborador',
+                    'skill'       => 'Habilidade',
                     'skill-level' => 'Nível',
-                    'skill-type' => 'Tipo de habilidade',
+                    'skill-type'  => 'Tipo de habilidade',
                 ],
             ],
             'addition-information' => [
@@ -32,30 +32,30 @@ return [
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'employee' => 'Funcionário',
-            'skill' => 'Habilidade',
+            'id'          => 'ID',
+            'employee'    => 'Colaborador',
+            'skill'       => 'Habilidade',
             'skill-level' => 'Nível',
-            'skill-type' => 'Tipo de habilidade',
-            'user' => 'Usuário',
+            'skill-type'  => 'Tipo de habilidade',
+            'user'        => 'Usuário',
             'proficiency' => 'Proficiência',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
+            'created-by'  => 'Criado por',
+            'created-at'  => 'Criado em',
         ],
 
         'filters' => [
-            'employee' => 'Funcionário',
-            'skill' => 'Habilidade',
+            'employee'    => 'Colaborador',
+            'skill'       => 'Habilidade',
             'skill-level' => 'Nível',
-            'skill-type' => 'Tipo de habilidade',
-            'user' => 'Usuário',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'skill-type'  => 'Tipo de habilidade',
+            'user'        => 'Usuário',
+            'created-by'  => 'Criado por',
+            'created-at'  => 'Criado em',
+            'updated-at'  => 'Atualizado em',
         ],
 
         'groups' => [
-            'employee' => 'Funcionário',
+            'employee'   => 'Colaborador',
             'skill-type' => 'Tipo de habilidade',
         ],
     ],
@@ -66,10 +66,10 @@ return [
                 'title' => 'Detalhes da habilidade',
 
                 'entries' => [
-                    'employee' => 'Funcionário',
-                    'skill' => 'Habilidade',
+                    'employee'    => 'Colaborador',
+                    'skill'       => 'Habilidade',
                     'skill-level' => 'Nível',
-                    'skill-type' => 'Tipo de habilidade',
+                    'skill-type'  => 'Tipo de habilidade',
                 ],
             ],
 

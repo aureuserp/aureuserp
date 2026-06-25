@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Estágio excluído',
-                'body' => 'O estágio foi excluído com sucesso.',
+                'title' => 'Etapa excluído',
+                'body'  => 'O etapa foi excluído com sucesso.',
             ],
         ],
     ],

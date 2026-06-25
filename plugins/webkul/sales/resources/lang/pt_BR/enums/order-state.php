@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'draft' => 'Cotação',
-    'sent' => 'Cotação enviada',
-    'sale' => 'Pedido de venda',
+    'draft'  => 'Orçamento',
+    'sent'   => 'Orçamento enviada',
+    'sale'   => 'Pedido de venda',
     'cancel' => 'Cancelada',
 ];

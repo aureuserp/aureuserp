@@ -5,28 +5,28 @@ return [
 
     'navigation' => [
         'title' => 'Tipos de habilidade',
-        'group' => 'Funcionário',
+        'group' => 'Colaborador',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'name' => 'Nome',
+                'name'             => 'Nome',
                 'name-placeholder' => 'Informe o nome do tipo de habilidade',
-                'color' => 'Cor',
-                'status' => 'Status',
+                'color'            => 'Cor',
+                'status'           => 'Status',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Tipo de habilidade',
-            'status' => 'Status',
-            'color' => 'Cor',
-            'skills' => 'Habilidades',
-            'levels' => 'Níveis',
+            'id'         => 'ID',
+            'name'       => 'Tipo de habilidade',
+            'status'     => 'Status',
+            'color'      => 'Cor',
+            'skills'     => 'Habilidades',
+            'levels'     => 'Níveis',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
@@ -34,17 +34,17 @@ return [
 
         'filters' => [
             'skill-levels' => 'Níveis de habilidade',
-            'skills' => 'Habilidades',
-            'created-by' => 'Criado por',
-            'status' => 'Status',
-            'updated-at' => 'Atualizado em',
-            'created-at' => 'Criado em',
+            'skills'       => 'Habilidades',
+            'created-by'   => 'Criado por',
+            'status'       => 'Status',
+            'updated-at'   => 'Atualizado em',
+            'created-at'   => 'Criado em',
         ],
 
         'groups' => [
-            'name' => 'Tipo de habilidade',
-            'color' => 'Cor',
-            'status' => 'Status',
+            'name'       => 'Tipo de habilidade',
+            'color'      => 'Cor',
+            'status'     => 'Status',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
@@ -54,14 +54,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Tipo de habilidade restaurado',
-                    'body' => 'O tipo de habilidade foi restaurado com sucesso.',
+                    'body'  => 'O tipo de habilidade foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de habilidade excluído',
-                    'body' => 'O tipo de habilidade foi excluído com sucesso.',
+                    'body'  => 'O tipo de habilidade foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -70,21 +70,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Tipos de habilidade restaurados',
-                    'body' => 'Os tipos de habilidade foram restaurados com sucesso.',
+                    'body'  => 'Os tipos de habilidade foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tipos de habilidade excluídos',
-                    'body' => 'Os tipos de habilidade foram excluídos com sucesso.',
+                    'body'  => 'Os tipos de habilidade foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Tipos de habilidade excluídos permanentemente',
-                    'body' => 'Os tipos de habilidade foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os tipos de habilidade foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -93,7 +93,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Tipos de habilidade',
-                    'body' => 'Os tipos de habilidade foram criados com sucesso.',
+                    'body'  => 'Os tipos de habilidade foram criados com sucesso.',
                 ],
             ],
         ],
@@ -102,8 +102,8 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name' => 'Tipo de habilidade',
-                'color' => 'Cor',
+                'name'   => 'Tipo de habilidade',
+                'color'  => 'Cor',
                 'status' => 'Status',
             ],
         ],

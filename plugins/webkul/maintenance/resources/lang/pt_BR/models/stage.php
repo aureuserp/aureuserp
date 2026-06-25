@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Estágio de manutenção',
+    'title' => 'Etapa de manutenção',
 ];

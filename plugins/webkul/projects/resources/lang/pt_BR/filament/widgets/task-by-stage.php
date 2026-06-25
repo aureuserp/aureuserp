@@ -2,7 +2,7 @@
 
 return [
     'heading' => [
-        'title' => 'Tarefas por estágio',
+        'title' => 'Tarefas por etapa',
     ],
 
     'datasets' => [

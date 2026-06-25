@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Posts',
+        'title' => 'Publicações',
     ],
 
     'global-search' => [

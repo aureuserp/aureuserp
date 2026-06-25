@@ -5,11 +5,11 @@ return [
 
     'navigation' => [
         'title' => 'Tags',
-        'group' => 'Funcionário',
+        'group' => 'Colaborador',
     ],
 
     'groups' => [
-        'status' => 'Status',
+        'status'     => 'Status',
         'created-by' => 'Criado por',
         'created-at' => 'Criado em',
         'updated-at' => 'Atualizado em',
@@ -17,24 +17,24 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'             => 'Nome',
             'name-placeholder' => 'Informe o nome da tag',
-            'color' => 'Cor',
+            'color'            => 'Cor',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Nome',
-            'color' => 'Cor',
+            'id'         => 'ID',
+            'name'       => 'Nome',
+            'color'      => 'Cor',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
             'updated-by' => 'Atualizado por',
             'updated-at' => 'Atualizado em',
@@ -42,26 +42,26 @@ return [
         ],
 
         'groups' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'job-position' => 'Cargo',
-            'color' => 'Cor',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'color'        => 'Cor',
+            'created-by'   => 'Criado por',
+            'created-at'   => 'Criado em',
+            'updated-at'   => 'Atualizado em',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Tag atualizada',
-                    'body' => 'A tag foi atualizada com sucesso.',
+                    'body'  => 'A tag foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tag excluída',
-                    'body' => 'A tag foi excluída com sucesso.',
+                    'body'  => 'A tag foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -70,7 +70,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Tags excluídas',
-                    'body' => 'As tags foram excluídas com sucesso.',
+                    'body'  => 'As tags foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -79,14 +79,14 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Tag criada',
-                    'body' => 'A tag foi criada com sucesso.',
+                    'body'  => 'A tag foi criada com sucesso.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Nome',
+        'name'  => 'Nome',
         'color' => 'Cor',
     ],
 ];

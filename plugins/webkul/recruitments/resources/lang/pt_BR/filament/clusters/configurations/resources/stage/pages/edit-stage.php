@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Estágio atualizado',
-        'body' => 'O estágio foi atualizado com sucesso.',
+        'title' => 'Etapa atualizado',
+        'body'  => 'O etapa foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Estágio excluído',
-                'body' => 'O estágio foi excluído com sucesso.',
+                'title' => 'Etapa excluído',
+                'body'  => 'O etapa foi excluído com sucesso.',
             ],
         ],
     ],

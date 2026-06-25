@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title' => 'Enviar por e-mail',
+    'title'        => 'Enviar por e-mail',
     'resend-title' => 'Reenviar por e-mail',
-    'quotation' => 'cotação',
-    'quotations' => 'cotações',
+    'quotation'    => 'orçamento',
+    'quotations'   => 'orçamentos',
 
     'modal' => [
-        'heading' => 'Enviar cotação por e-mail',
+        'heading' => 'Enviar orçamento por e-mail',
     ],
 
     'form' => [
         'fields' => [
-            'partners' => 'Parceiros',
-            'subject' => 'Assunto',
+            'partners'    => 'Parceiros',
+            'subject'     => 'Assunto',
             'description' => 'Descrição',
-            'attachment' => 'Anexo',
+            'attachment'  => 'Anexo',
         ],
     ],
 
@@ -24,22 +24,22 @@ return [
             'email' => [
                 'no_recipients' => [
                     'title' => 'Nenhum destinatário selecionado',
-                    'body' => 'Selecione pelo menos um parceiro para enviar cotações.',
+                    'body'  => 'Selecione pelo menos um parceiro para enviar orçamentos.',
                 ],
 
                 'all_success' => [
-                    'title' => 'Cotações enviadas!',
-                    'body' => 'Suas :plural foram entregues com sucesso para: :recipients',
+                    'title' => 'Orçamentos enviadas!',
+                    'body'  => 'Suas :plural foram entregues com sucesso para: :recipients',
                 ],
 
                 'all_failed' => [
-                    'title' => 'Não foi possível enviar as cotações',
-                    'body' => 'Encontramos problemas ao enviar suas cotações: :failures',
+                    'title' => 'Não foi possível enviar as orçamentos',
+                    'body'  => 'Encontramos problemas ao enviar suas orçamentos: :failures',
                 ],
 
                 'partial_success' => [
-                    'title' => 'Algumas cotações foram enviadas',
-                    'sent_part' => 'Entregue com sucesso para: :recipients',
+                    'title'       => 'Algumas orçamentos foram enviadas',
+                    'sent_part'   => 'Entregue com sucesso para: :recipients',
                     'failed_part' => 'Não foi possível entregar para: :failures',
                 ],
 

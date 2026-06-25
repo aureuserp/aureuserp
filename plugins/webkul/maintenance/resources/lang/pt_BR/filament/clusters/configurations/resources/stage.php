@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Estágios',
+        'title' => 'Etapas',
     ],
 
     'form' => [
@@ -14,28 +14,28 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'done' => 'Concluído',
+            'name'       => 'Nome',
+            'done'       => 'Concluído',
             'created-at' => 'Criado em',
         ],
 
         'groups' => [
-            'done' => 'Concluído',
+            'done'       => 'Concluído',
             'created-at' => 'Criado em',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Estágio atualizado',
-                    'body' => 'O estágio foi atualizado com sucesso.',
+                    'title' => 'Etapa atualizado',
+                    'body'  => 'O etapa foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Estágio excluído',
-                    'body' => 'O estágio foi excluído com sucesso.',
+                    'title' => 'Etapa excluído',
+                    'body'  => 'O etapa foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -43,8 +43,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Estágios excluídos',
-                    'body' => 'Os estágios foram excluídos com sucesso.',
+                    'title' => 'Etapas excluídos',
+                    'body'  => 'Os etapas foram excluídos com sucesso.',
                 ],
             ],
         ],

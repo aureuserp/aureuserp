@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'label' => 'Desplanejar',
+    'label' => 'Remover planejamento',
 
     'notification' => [
         'success' => [
-            'title' => 'Ordem de produção desplanejada',
-            'body' => 'A ordem de produção foi desplanejada com sucesso.',
+            'title' => 'Planejamento removido',
+            'body'  => 'O planejamento da ordem de produção foi removido com sucesso.',
         ],
     ],
 ];

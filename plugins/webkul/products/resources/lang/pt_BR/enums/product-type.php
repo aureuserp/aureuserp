@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'goods' => 'Bens',
+    'goods'   => 'Produto',
     'service' => 'Serviço',
 ];

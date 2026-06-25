@@ -1,20 +1,20 @@
 <?php
 
 return [
-    'title' => 'Gerenciar cotação e pedido',
+    'title' => 'Gerenciar orçamento e pedido',
 
-    'breadcrumb' => 'Gerenciar cotação e pedido',
+    'breadcrumb' => 'Gerenciar orçamento e pedido',
 
     'navigation' => [
-        'title' => 'Gerenciar cotação e pedido',
+        'title' => 'Gerenciar orçamento e pedido',
     ],
 
     'form' => [
         'fields' => [
-            'validity-suffix' => 'dias',
-            'validity' => 'Validade padrão da cotação',
-            'validity-help' => 'O número padrão de dias em que uma cotação é válida.',
-            'lock-confirm-sales' => 'Bloquear vendas confirmadas',
+            'validity-suffix'         => 'dias',
+            'validity'                => 'Validade padrão da orçamento',
+            'validity-help'           => 'O número padrão de dias em que uma orçamento é válida.',
+            'lock-confirm-sales'      => 'Bloquear vendas confirmadas',
             'lock-confirm-sales-help' => 'Se habilitado, o pedido de venda será bloqueado após a confirmação.',
         ],
     ],

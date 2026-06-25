@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'heading' => 'Chatter',
+    'heading' => 'Conversas',
 
     'placeholders' => [
         'no-record-found' => 'Nenhum registro encontrado.',
-        'loading' => 'Carregando Chatter...',
+        'loading'         => 'Carregando conversas...',
     ],
 
     'activity-infolist' => [
@@ -26,12 +26,12 @@ return [
         'form' => [
             'fields' => [
                 'activity-plan' => 'Plano de atividade',
-                'plan-date' => 'Data do plano',
-                'plan-summary' => 'Resumo do plano',
+                'plan-date'     => 'Data do plano',
+                'plan-summary'  => 'Resumo do plano',
                 'activity-type' => 'Tipo de atividade',
-                'due-date' => 'Data de vencimento',
-                'summary' => 'Resumo',
-                'assigned-to' => 'Atribuído a',
+                'due-date'      => 'Data de vencimento',
+                'summary'       => 'Resumo',
+                'assigned-to'   => 'Atribuído a',
             ],
         ],
 
@@ -39,7 +39,7 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Atividade atualizada',
-                    'body' => 'A atividade foi atualizada com sucesso.',
+                    'body'  => 'A atividade foi atualizada com sucesso.',
                 ],
             ],
         ],
@@ -48,11 +48,11 @@ return [
     'process-message' => [
         'original-note' => '<br><div><span class="font-bold">Nota original</span>: :body</div>',
         'original-note' => '<br><div><span class="font-bold">Nota original</span>: :body</div>',
-        'feedback' => '<div><span class="font-bold">Feedback</span>: <p>:feedback</p></div>',
+        'feedback'      => '<div><span class="font-bold">Feedback</span>: <p>:feedback</p></div>',
     ],
 
     'mark-as-done' => [
-        'title' => 'Marcar como concluída',
+        'title'   => 'Marcar como concluída',
         'actions' => [
             'done' => [
                 'label' => 'Concluído',
@@ -71,7 +71,7 @@ return [
                 'notification' => [
                     'mark-as-done' => [
                         'title' => 'Atividade marcada como concluída',
-                        'body' => 'A atividade foi marcada como concluída com sucesso.',
+                        'body'  => 'A atividade foi marcada como concluída com sucesso.',
                     ],
                 ],
             ],

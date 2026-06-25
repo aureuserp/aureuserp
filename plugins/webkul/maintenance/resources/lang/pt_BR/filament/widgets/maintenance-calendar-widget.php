@@ -8,25 +8,25 @@ return [
     'config' => [
         'button-text' => [
             'today' => 'Hoje',
-            'year' => 'Ano',
+            'year'  => 'Ano',
             'month' => 'Mês',
-            'week' => 'Semana',
-            'list' => 'Lista',
+            'week'  => 'Semana',
+            'list'  => 'Lista',
         ],
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'Nova solicitação',
+            'label'         => 'Nova solicitação',
             'modal-heading' => 'Nova solicitação de manutenção',
             'notification'  => [
                 'success' => [
                     'title' => 'Solicitação de manutenção criada',
-                    'body' => 'A solicitação de manutenção foi criada com sucesso.',
+                    'body'  => 'A solicitação de manutenção foi criada com sucesso.',
                 ],
                 'error' => [
                     'title' => 'Solicitação de manutenção não pôde ser criada',
-                    'body' => 'Crie primeiro um estágio e uma equipe de manutenção.',
+                    'body'  => 'Crie primeiro um etapa e uma equipe de manutenção.',
                 ],
             ],
         ],
@@ -44,21 +44,21 @@ return [
 
     'form' => [
         'fields' => [
-            'subject' => 'Assunto',
+            'subject'      => 'Assunto',
             'scheduled-at' => 'Agendado em',
         ],
     ],
 
     'infolist' => [
-        'title' => 'Solicitação de manutenção',
+        'title'   => 'Solicitação de manutenção',
         'entries' => [
-            'subject' => 'Assunto',
-            'date' => 'Data',
-            'time' => 'Hora',
-            'technician' => 'Técnico',
-            'priority' => 'Prioridade',
+            'subject'          => 'Assunto',
+            'date'             => 'Data',
+            'time'             => 'Hora',
+            'technician'       => 'Técnico',
+            'priority'         => 'Prioridade',
             'maintenance-type' => 'Tipo de manutenção',
-            'stage' => 'Estágio',
+            'stage'            => 'Etapa',
         ],
     ],
 ];

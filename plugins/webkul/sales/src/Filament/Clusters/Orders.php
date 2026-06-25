@@ -13,6 +13,11 @@ class Orders extends Cluster
         return __('sales::filament/clusters/orders.navigation.title');
     }
 
+    public static function getClusterBreadcrumb(): ?string
+    {
+        return __('sales::filament/clusters/orders.navigation.title');
+    }
+
     public static function getNavigationGroup(): string
     {
         return __('sales::filament/clusters/orders.navigation.group');

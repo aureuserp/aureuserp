@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'Novo estágio do projeto',
+            'label' => 'Novo etapa do projeto',
 
             'notification' => [
-                'title' => 'Estágio do projeto criado',
-                'body' => 'O estágio do projeto foi criado com sucesso.',
+                'title' => 'Etapa do projeto criado',
+                'body'  => 'O etapa do projeto foi criado com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

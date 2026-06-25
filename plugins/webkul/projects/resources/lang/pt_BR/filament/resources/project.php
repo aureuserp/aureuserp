@@ -43,7 +43,7 @@ return [
 
                 'fields' => [
                     'visibility'                   => 'Visibilidade',
-                    'visibility-hint-tooltip'      => 'Permita que funcionários acessem seu projeto ou tarefas adicionando-os como seguidores. Eles ganharão automaticamente acesso a qualquer tarefa atribuída a eles..',
+                    'visibility-hint-tooltip'      => 'Permita que colaboradores acessem seu projeto ou suas tarefas adicionando-os como seguidores. Eles terão acesso automático às tarefas atribuídas a eles.',
                     'private-description'          => 'Somente usuários internos convidados.',
                     'internal-description'         => 'Todos os usuários internos podem ver.',
                     'public-description'           => 'Usuários do portal convidados e todos os usuários internos.',
@@ -70,7 +70,7 @@ return [
         ],
 
         'groups' => [
-            'stage'           => 'Estágio',
+            'stage'           => 'Etapa',
             'project-manager' => 'Gerente de projeto',
             'customer'        => 'Cliente',
             'created-at'      => 'Criado em',
@@ -86,7 +86,7 @@ return [
             'allocated-hours'  => 'Horas alocadas',
             'created-at'       => 'Criado em',
             'updated-at'       => 'Atualizado em',
-            'stage'            => 'Estágio',
+            'stage'            => 'Etapa',
             'customer'         => 'Cliente',
             'project-manager'  => 'Gerente de projeto',
             'company'          => 'Empresa',
@@ -155,7 +155,7 @@ return [
                     'allocated-hours-suffix' => ' horas',
                     'remaining-hours'        => 'Horas restantes',
                     'remaining-hours-suffix' => ' horas',
-                    'current-stage'          => 'Estágio atual',
+                    'current-stage'          => 'Etapa atual',
                     'tags'                   => 'Tags',
                 ],
             ],

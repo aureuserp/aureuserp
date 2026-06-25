@@ -75,7 +75,7 @@ return [
             'progress'            => 'Progresso',
             'deadline'            => 'Prazo final',
             'tags'                => 'Tags',
-            'stage'               => 'Estágio',
+            'stage'               => 'Etapa',
         ],
 
         'actions' => [
@@ -90,7 +90,7 @@ return [
             'milestone'  => 'Marco',
             'customer'   => 'Cliente',
             'deadline'   => 'Prazo final',
-            'stage'      => 'Estágio',
+            'stage'      => 'Etapa',
             'created-at' => 'Criado em',
         ],
 
@@ -112,7 +112,7 @@ return [
             'assignees'         => 'Responsáveis',
             'customer'          => 'Cliente',
             'project'           => 'Projeto',
-            'stage'             => 'Estágio',
+            'stage'             => 'Etapa',
             'milestone'         => 'Marco',
             'company'           => 'Empresa',
             'creator'           => 'Criador',
@@ -188,7 +188,7 @@ return [
                     'customer'  => 'Cliente',
                     'assignees' => 'Responsáveis',
                     'deadline'  => 'Prazo final',
-                    'stage'     => 'Estágio',
+                    'stage'     => 'Etapa',
                 ],
             ],
 

@@ -10,25 +10,25 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'             => 'Nome',
             'name-placeholder' => 'Informe o nome das tags',
-            'color' => 'Cor',
+            'color'            => 'Cor',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Nome',
-            'color' => 'Cor',
+            'id'         => 'ID',
+            'name'       => 'Nome',
+            'color'      => 'Cor',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
-            'employee' => 'Funcionário',
+            'name'       => 'Nome',
+            'employee'   => 'Colaborador',
             'created-by' => 'Criado por',
             'updated-at' => 'Atualizado em',
             'created-at' => 'Criado em',
@@ -38,14 +38,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Tags atualizadas',
-                    'body' => 'As tags foram atualizadas com sucesso.',
+                    'body'  => 'As tags foram atualizadas com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tags excluídas',
-                    'body' => 'As tags foram excluídas com sucesso.',
+                    'body'  => 'As tags foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -54,7 +54,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Categorias de candidatos excluídas',
-                    'body' => 'As categorias de candidatos foram excluídas com sucesso.',
+                    'body'  => 'As categorias de candidatos foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -63,14 +63,14 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Tags criadas',
-                    'body' => 'As tags foram criadas com sucesso.',
+                    'body'  => 'As tags foram criadas com sucesso.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Nome',
+        'name'  => 'Nome',
         'color' => 'Cor',
     ],
 ];

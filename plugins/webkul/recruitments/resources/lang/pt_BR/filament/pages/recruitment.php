@@ -8,21 +8,21 @@ return [
 
     'filters-form' => [
         'job-position' => 'Cargo',
-        'departments' => 'Departamentos',
-        'companies' => 'Empresas',
-        'stages' => 'Estágios',
+        'departments'  => 'Departamentos',
+        'companies'    => 'Empresas',
+        'stages'       => 'Etapas',
         'status'       => [
-            'title' => 'Status',
+            'title'   => 'Status',
             'options' => [
-                'all' => 'Todos',
-                'ongoing' => 'Em andamento',
-                'hired' => 'Contratado',
-                'refused' => 'Recusado',
+                'all'      => 'Todos',
+                'ongoing'  => 'Em andamento',
+                'hired'    => 'Contratado',
+                'refused'  => 'Recusado',
                 'archived' => 'Arquivados',
             ],
         ],
 
         'start-date' => 'Data de início',
-        'end-date' => 'Data de término',
+        'end-date'   => 'Data de término',
     ],
 ];

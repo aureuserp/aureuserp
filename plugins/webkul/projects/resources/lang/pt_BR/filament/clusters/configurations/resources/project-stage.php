@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Estágios do projeto',
+        'title' => 'Etapas do projeto',
     ],
 
     'form' => [
@@ -11,55 +11,55 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'groups' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'is-completed' => 'Está concluído',
-            'project' => 'Projeto',
-            'created-at' => 'Criado em',
+            'project'      => 'Projeto',
+            'created-at'   => 'Criado em',
         ],
 
         'filters' => [
             'is-completed' => 'Está concluído',
-            'project' => 'Projeto',
-            'creator' => 'Criador',
+            'project'      => 'Projeto',
+            'creator'      => 'Criador',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Estágio do projeto atualizado',
-                    'body' => 'O estágio do projeto foi atualizado com sucesso.',
+                    'title' => 'Etapa do projeto atualizado',
+                    'body'  => 'O etapa do projeto foi atualizado com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Estágio do projeto restaurado',
-                    'body' => 'O estágio do projeto foi restaurado com sucesso.',
+                    'title' => 'Etapa do projeto restaurado',
+                    'body'  => 'O etapa do projeto foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Estágio do projeto excluído',
-                    'body' => 'O estágio do projeto foi excluído com sucesso.',
+                    'title' => 'Etapa do projeto excluído',
+                    'body'  => 'O etapa do projeto foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Estágio do projeto excluído permanentemente',
-                        'body' => 'O estágio do projeto foi excluído permanentemente com sucesso.',
+                        'title' => 'Etapa do projeto excluído permanentemente',
+                        'body'  => 'O etapa do projeto foi excluído permanentemente com sucesso.',
                     ],
                     'error' => [
-                        'title' => 'Estágio do projeto não pôde ser excluído',
-                        'body' => 'O estágio do projeto não pode ser excluído porque está em uso no momento.',
+                        'title' => 'Etapa do projeto não pôde ser excluído',
+                        'body'  => 'O etapa do projeto não pode ser excluído porque está em uso no momento.',
                     ],
                 ],
             ],
@@ -68,22 +68,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Estágios do projeto restaurados',
-                    'body' => 'Os estágios do projeto foram restaurados com sucesso.',
+                    'title' => 'Etapas do projeto restaurados',
+                    'body'  => 'Os etapas do projeto foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Estágios do projeto excluídos',
-                    'body' => 'Os estágios do projeto foram excluídos com sucesso.',
+                    'title' => 'Etapas do projeto excluídos',
+                    'body'  => 'Os etapas do projeto foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Estágios do projeto excluídos permanentemente',
-                    'body' => 'Os estágios do projeto foram excluídos permanentemente com sucesso.',
+                    'title' => 'Etapas do projeto excluídos permanentemente',
+                    'body'  => 'Os etapas do projeto foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],

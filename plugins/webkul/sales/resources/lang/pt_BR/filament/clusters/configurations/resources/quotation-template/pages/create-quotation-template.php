@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Modelo de cotação criado',
-        'body' => 'O modelo de cotação foi criado com sucesso.',
+        'title' => 'Modelo de orçamento criado',
+        'body'  => 'O modelo de orçamento foi criado com sucesso.',
     ],
 ];

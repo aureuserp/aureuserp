@@ -1,28 +1,28 @@
 <?php
 
 return [
-    'title' => 'Cotação',
+    'title' => 'Orçamento',
 
     'navigation' => [
-        'title' => 'Cotações',
+        'title' => 'Orçamentos',
     ],
 
     'global-search' => [
-        'customer' => 'Cliente',
+        'customer'  => 'Cliente',
         'reference' => 'Referência',
-        'amount' => 'Valor',
+        'amount'    => 'Valor',
     ],
 
     'form' => [
         'section' => [
             'general' => [
-                'title' => 'Geral',
+                'title'  => 'Geral',
                 'fields' => [
-                    'customer' => 'Cliente',
-                    'expiration' => 'Expiração',
-                    'quotation-date' => 'Data da cotação',
-                    'order-date' => 'Data do pedido',
-                    'payment-term' => 'Condição de pagamento',
+                    'customer'       => 'Cliente',
+                    'expiration'     => 'Expiração',
+                    'quotation-date' => 'Data do orçamento',
+                    'order-date'     => 'Data do pedido',
+                    'payment-term'   => 'Condição de pagamento',
                 ],
             ],
         ],
@@ -33,61 +33,61 @@ return [
 
                 'repeater' => [
                     'products' => [
-                        'title' => 'Produtos',
+                        'title'       => 'Produtos',
                         'add-product' => 'Adicionar produto',
 
                         'columns'     => [
-                            'product' => 'Produto',
-                            'product-variants' => 'Variantes do produto',
-                            'product-simple' => 'Produto simples',
-                            'quantity' => 'Quantidade',
+                            'product'                    => 'Produto',
+                            'product-variants'           => 'Variantes do produto',
+                            'product-simple'             => 'Produto simples',
+                            'quantity'                   => 'Quantidade',
                             'insufficient-stock-tooltip' => 'Estoque insuficiente para atender a esta demanda.',
-                            'uom' => 'Unidade de medida',
-                            'lead-time' => 'Prazo de entrega',
-                            'qty-delivered' => 'Entregue',
-                            'qty-invoiced' => 'Faturado',
-                            'packaging-qty' => 'Quantidade por embalagem',
-                            'packaging' => 'Embalagem',
-                            'unit-price' => 'Preço unitário',
-                            'cost' => 'Custo',
-                            'margin' => 'Margem',
-                            'taxes' => 'Impostos',
-                            'amount' => 'Valor',
-                            'margin-percentage' => 'Margem (%)',
-                            'discount-percentage' => 'Desconto (%)',
+                            'uom'                        => 'Unidade de medida',
+                            'lead-time'                  => 'Prazo de entrega',
+                            'qty-delivered'              => 'Entregue',
+                            'qty-invoiced'               => 'Faturado',
+                            'packaging-qty'              => 'Quantidade por embalagem',
+                            'packaging'                  => 'Embalagem',
+                            'unit-price'                 => 'Preço unitário',
+                            'cost'                       => 'Custo',
+                            'margin'                     => 'Margem',
+                            'taxes'                      => 'Impostos',
+                            'amount'                     => 'Valor',
+                            'margin-percentage'          => 'Margem (%)',
+                            'discount-percentage'        => 'Desconto (%)',
                         ],
 
                         'fields'      => [
-                            'product' => 'Produto',
-                            'product-variants' => 'Variantes do produto',
-                            'product-simple' => 'Produto simples',
-                            'quantity' => 'Quantidade',
-                            'uom' => 'Unidade de medida',
-                            'lead-time' => 'Prazo de entrega',
-                            'qty-delivered' => 'Quantidade entregue',
-                            'qty-invoiced' => 'Quantidade faturada',
-                            'packaging-qty' => 'Quantidade por embalagem',
-                            'packaging' => 'Embalagem',
-                            'unit-price' => 'Preço unitário',
-                            'cost' => 'Custo',
-                            'margin' => 'Margem',
-                            'taxes' => 'Impostos',
-                            'amount' => 'Valor',
-                            'margin-percentage' => 'Margem (%)',
+                            'product'             => 'Produto',
+                            'product-variants'    => 'Variantes do produto',
+                            'product-simple'      => 'Produto simples',
+                            'quantity'            => 'Quantidade',
+                            'uom'                 => 'Unidade de medida',
+                            'lead-time'           => 'Prazo de entrega',
+                            'qty-delivered'       => 'Quantidade entregue',
+                            'qty-invoiced'        => 'Quantidade faturada',
+                            'packaging-qty'       => 'Quantidade por embalagem',
+                            'packaging'           => 'Embalagem',
+                            'unit-price'          => 'Preço unitário',
+                            'cost'                => 'Custo',
+                            'margin'              => 'Margem',
+                            'taxes'               => 'Impostos',
+                            'amount'              => 'Valor',
+                            'margin-percentage'   => 'Margem (%)',
                             'discount-percentage' => 'Desconto (%)',
                         ],
 
                         'notifications' => [
                             'quantity-below-delivered' => [
                                 'title' => 'Não é possível reduzir a quantidade',
-                                'body' => 'Você não pode reduzir a quantidade abaixo da quantidade entregue (:qty).',
+                                'body'  => 'Você não pode reduzir a quantidade abaixo da quantidade entregue (:qty).',
                             ],
                         ],
 
                         'delete-action' => [
                             'error' => [
                                 'title' => 'Não é possível excluir o produto',
-                                'body' => 'Produtos não podem ser excluídos de um pedido de venda confirmado.',
+                                'body'  => 'Produtos não podem ser excluídos de um pedido de venda confirmado.',
                             ],
                         ],
 
@@ -99,24 +99,24 @@ return [
                     ],
 
                     'product-optional' => [
-                        'title' => 'Produtos opcionais',
+                        'title'       => 'Produtos opcionais',
                         'add-product' => 'Adicionar produto',
 
                         'columns' => [
-                            'product' => 'Produto',
-                            'description' => 'Descrição',
-                            'quantity' => 'Quantidade',
-                            'uom' => 'Unidade de medida',
-                            'unit-price' => 'Preço unitário',
+                            'product'             => 'Produto',
+                            'description'         => 'Descrição',
+                            'quantity'            => 'Quantidade',
+                            'uom'                 => 'Unidade de medida',
+                            'unit-price'          => 'Preço unitário',
                             'discount-percentage' => 'Desconto (%)',
                         ],
 
                         'fields'      => [
-                            'product' => 'Produto',
-                            'description' => 'Descrição',
-                            'quantity' => 'Quantidade',
-                            'uom' => 'Unidade de medida',
-                            'unit-price' => 'Preço unitário',
+                            'product'             => 'Produto',
+                            'description'         => 'Descrição',
+                            'quantity'            => 'Quantidade',
+                            'uom'                 => 'Unidade de medida',
+                            'unit-price'          => 'Preço unitário',
                             'discount-percentage' => 'Desconto (%)',
 
                             'actions' => [
@@ -127,7 +127,7 @@ return [
                                 'notifications' => [
                                     'product-added' => [
                                         'title' => 'Produto adicionado',
-                                        'body' => 'O produto foi adicionado com sucesso.',
+                                        'body'  => 'O produto foi adicionado com sucesso.',
                                     ],
 
                                     'product-not-found' => [
@@ -136,12 +136,12 @@ return [
 
                                     'product-already-exists' => [
                                         'title' => 'Produto já existe',
-                                        'body' => 'Este produto já está nas linhas do pedido. Atualize a linha existente.',
+                                        'body'  => 'Este produto já está nas linhas do pedido. Atualize a linha existente.',
                                     ],
 
                                     'missing-product-data' => [
                                         'title' => 'Dados do produto ausentes',
-                                        'body' => 'Não foi possível processar o produto selecionado.',
+                                        'body'  => 'Não foi possível processar o produto selecionado.',
                                     ],
                                 ],
                             ],
@@ -157,27 +157,27 @@ return [
                         'title' => 'Vendas',
 
                         'fields' => [
-                            'sales-person' => 'Vendedor',
+                            'sales-person'       => 'Vendedor',
                             'customer-reference' => 'Referência do cliente',
-                            'tags' => 'Tags',
+                            'tags'               => 'Tags',
                         ],
                     ],
 
                     'shipping' => [
-                        'title' => 'Envio',
+                        'title'  => 'Envio',
                         'fields' => [
-                            'warehouse' => 'Armazém',
+                            'warehouse'       => 'Armazém',
                             'commitment-date' => 'Data de entrega',
                         ],
                     ],
 
                     'tracking' => [
-                        'title' => 'Rastreamento',
+                        'title'  => 'Rastreamento',
                         'fields' => [
                             'source-document' => 'Documento de origem',
-                            'medium' => 'Médio',
-                            'source' => 'Origem',
-                            'campaign' => 'Campanha',
+                            'medium'          => 'Médio',
+                            'source'          => 'Origem',
+                            'campaign'        => 'Campanha',
                         ],
                     ],
 
@@ -185,7 +185,7 @@ return [
                         'title' => 'Informações adicionais',
 
                         'fields' => [
-                            'company' => 'Empresa',
+                            'company'  => 'Empresa',
                             'currency' => 'Moeda',
                         ],
                     ],
@@ -200,74 +200,74 @@ return [
 
     'table' => [
         'columns' => [
-            'number' => 'Número',
-            'status' => 'Status',
-            'delivery-status' => 'Status da entrega',
-            'invoice-status' => 'Status da fatura',
-            'creation-date' => 'Data de criação',
-            'commitment-date' => 'Data de compromisso',
-            'expected-date' => 'Data esperada',
-            'customer' => 'Cliente',
-            'sales-person' => 'Vendedor',
-            'sales-team' => 'Equipe de vendas',
-            'untaxed-amount' => 'Valor sem impostos',
-            'amount-tax' => 'Valor do imposto',
-            'amount-total' => 'Valor total',
+            'number'             => 'Número',
+            'status'             => 'Status',
+            'delivery-status'    => 'Status da entrega',
+            'invoice-status'     => 'Status da fatura',
+            'creation-date'      => 'Data de criação',
+            'commitment-date'    => 'Data de compromisso',
+            'expected-date'      => 'Data esperada',
+            'customer'           => 'Cliente',
+            'sales-person'       => 'Vendedor',
+            'sales-team'         => 'Equipe de vendas',
+            'untaxed-amount'     => 'Valor sem impostos',
+            'amount-tax'         => 'Valor do imposto',
+            'amount-total'       => 'Valor total',
             'customer-reference' => 'Referência do cliente',
         ],
 
         'summarizers' => [
-            'total' => 'Total',
-            'taxes' => 'Impostos',
+            'total'        => 'Total',
+            'taxes'        => 'Impostos',
             'total-amount' => 'Valor total',
         ],
 
         'filters' => [
-            'sales-person' => 'Vendedor',
-            'utm-source' => 'Origem UTM',
-            'company' => 'Empresa',
-            'customer' => 'Cliente',
-            'journal' => 'Diário',
-            'invoice-address' => 'Endereço de faturamento',
+            'sales-person'     => 'Vendedor',
+            'utm-source'       => 'Origem UTM',
+            'company'          => 'Empresa',
+            'customer'         => 'Cliente',
+            'journal'          => 'Diário',
+            'invoice-address'  => 'Endereço de faturamento',
             'shipping-address' => 'Endereço de entrega',
-            'fiscal-position' => 'Posição fiscal',
-            'payment-term' => 'Condição de pagamento',
-            'currency' => 'Moeda',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'fiscal-position'  => 'Posição fiscal',
+            'payment-term'     => 'Condição de pagamento',
+            'currency'         => 'Moeda',
+            'created-at'       => 'Criado em',
+            'updated-at'       => 'Atualizado em',
         ],
 
         'groups' => [
-            'medium' => 'Médio',
-            'source' => 'Origem',
-            'team' => 'Equipe',
-            'sales-person' => 'Vendedor',
-            'currency' => 'Moeda',
-            'company' => 'Empresa',
-            'customer' => 'Cliente',
-            'quotation-date' => 'Data da cotação',
+            'medium'          => 'Médio',
+            'source'          => 'Origem',
+            'team'            => 'Equipe',
+            'sales-person'    => 'Vendedor',
+            'currency'        => 'Moeda',
+            'company'         => 'Empresa',
+            'customer'        => 'Cliente',
+            'quotation-date'  => 'Data do orçamento',
             'commitment-date' => 'Data de compromisso',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Cotação restaurada',
-                    'body' => 'A cotação foi restaurada com sucesso.',
+                    'title' => 'Orçamento restaurada',
+                    'body'  => 'A orçamento foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Cotação excluída',
-                    'body' => 'A cotação foi excluída com sucesso.',
+                    'title' => 'Orçamento excluída',
+                    'body'  => 'A orçamento foi excluída com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Cotação excluída permanentemente',
-                    'body' => 'A cotação foi excluída permanentemente com sucesso.',
+                    'title' => 'Orçamento excluída permanentemente',
+                    'body'  => 'A orçamento foi excluída permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -275,22 +275,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Cotações restauradas',
-                    'body' => 'As cotações foram restauradas com sucesso.',
+                    'title' => 'Orçamentos restauradas',
+                    'body'  => 'As orçamentos foram restauradas com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Cotações excluídas',
-                    'body' => 'As cotações foram excluídas com sucesso.',
+                    'title' => 'Orçamentos excluídas',
+                    'body'  => 'As orçamentos foram excluídas com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Cotações excluídas permanentemente',
-                    'body' => 'As cotações foram excluídas permanentemente com sucesso.',
+                    'title' => 'Orçamentos excluídas permanentemente',
+                    'body'  => 'As orçamentos foram excluídas permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -298,8 +298,8 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Cotações criadas',
-                    'body' => 'As cotações foram criadas com sucesso.',
+                    'title' => 'Orçamentos criadas',
+                    'body'  => 'As orçamentos foram criadas com sucesso.',
                 ],
             ],
         ],
@@ -308,13 +308,13 @@ return [
     'infolist' => [
         'section' => [
             'general' => [
-                'title' => 'Geral',
+                'title'   => 'Geral',
                 'entries' => [
-                    'sale-order' => 'Pedido de venda',
-                    'customer' => 'Cliente',
-                    'expiration' => 'Expiração',
-                    'quotation-date' => 'Data da cotação',
-                    'payment-term' => 'Condição de pagamento',
+                    'sale-order'     => 'Pedido de venda',
+                    'customer'       => 'Cliente',
+                    'expiration'     => 'Expiração',
+                    'quotation-date' => 'Data do orçamento',
+                    'payment-term'   => 'Condição de pagamento',
                 ],
             ],
         ],
@@ -325,41 +325,41 @@ return [
 
                 'repeater' => [
                     'products' => [
-                        'title' => 'Produtos',
+                        'title'       => 'Produtos',
                         'add-product' => 'Adicionar produto',
                         'entries'     => [
-                            'product' => 'Produto',
-                            'product-variants' => 'Variantes do produto',
-                            'product-simple' => 'Produto simples',
-                            'quantity' => 'Quantidade',
-                            'qty-delivered' => 'Entregue',
-                            'qty-invoiced' => 'Faturado',
-                            'uom' => 'Unidade de medida',
-                            'lead-time' => 'Prazo de entrega',
-                            'packaging-qty' => 'Quantidade por embalagem',
-                            'packaging' => 'Embalagem',
-                            'unit-price' => 'Preço unitário',
-                            'cost' => 'Custo',
-                            'margin' => 'Margem',
-                            'taxes' => 'Impostos',
-                            'amount' => 'Valor',
-                            'margin-percentage' => 'Margem (%)',
+                            'product'             => 'Produto',
+                            'product-variants'    => 'Variantes do produto',
+                            'product-simple'      => 'Produto simples',
+                            'quantity'            => 'Quantidade',
+                            'qty-delivered'       => 'Entregue',
+                            'qty-invoiced'        => 'Faturado',
+                            'uom'                 => 'Unidade de medida',
+                            'lead-time'           => 'Prazo de entrega',
+                            'packaging-qty'       => 'Quantidade por embalagem',
+                            'packaging'           => 'Embalagem',
+                            'unit-price'          => 'Preço unitário',
+                            'cost'                => 'Custo',
+                            'margin'              => 'Margem',
+                            'taxes'               => 'Impostos',
+                            'amount'              => 'Valor',
+                            'margin-percentage'   => 'Margem (%)',
                             'discount-percentage' => 'Desconto (%)',
-                            'sub-total' => 'Subtotal',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
 
                     'product-optional' => [
-                        'title' => 'Produtos opcionais',
+                        'title'       => 'Produtos opcionais',
                         'add-product' => 'Adicionar produto',
                         'entries'     => [
-                            'product' => 'Produto',
-                            'description' => 'Descrição',
-                            'quantity' => 'Quantidade',
-                            'uom' => 'Unidade de medida',
-                            'unit-price' => 'Preço unitário',
+                            'product'             => 'Produto',
+                            'description'         => 'Descrição',
+                            'quantity'            => 'Quantidade',
+                            'uom'                 => 'Unidade de medida',
+                            'unit-price'          => 'Preço unitário',
                             'discount-percentage' => 'Desconto (%)',
-                            'sub-total' => 'Subtotal',
+                            'sub-total'           => 'Subtotal',
 
                             'actions' => [
                                 'tooltip' => [
@@ -369,7 +369,7 @@ return [
                                 'notifications' => [
                                     'product-added' => [
                                         'title' => 'Produto adicionado',
-                                        'body' => 'O produto foi adicionado com sucesso.',
+                                        'body'  => 'O produto foi adicionado com sucesso.',
                                     ],
                                 ],
                             ],
@@ -385,26 +385,26 @@ return [
                         'title' => 'Vendas',
 
                         'entries' => [
-                            'sales-person' => 'Vendedor',
+                            'sales-person'       => 'Vendedor',
                             'customer-reference' => 'Referência do cliente',
-                            'tags' => 'Tags',
+                            'tags'               => 'Tags',
                         ],
                     ],
 
                     'shipping' => [
-                        'title' => 'Envio',
+                        'title'   => 'Envio',
                         'entries' => [
                             'commitment-date' => 'Data de entrega',
                         ],
                     ],
 
                     'tracking' => [
-                        'title' => 'Rastreamento',
+                        'title'   => 'Rastreamento',
                         'entries' => [
                             'source-document' => 'Documento de origem',
-                            'medium' => 'Médio',
-                            'source' => 'Origem',
-                            'campaign' => 'Campanha',
+                            'medium'          => 'Médio',
+                            'source'          => 'Origem',
+                            'campaign'        => 'Campanha',
                         ],
                     ],
 
@@ -412,7 +412,7 @@ return [
                         'title' => 'Informações adicionais',
 
                         'entries' => [
-                            'company' => 'Empresa',
+                            'company'  => 'Empresa',
                             'currency' => 'Moeda',
                         ],
                     ],

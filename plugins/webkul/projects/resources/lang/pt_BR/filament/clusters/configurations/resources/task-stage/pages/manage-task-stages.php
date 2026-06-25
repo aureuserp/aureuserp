@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'Novo estágio da tarefa',
+            'label' => 'Novo etapa da tarefa',
 
             'notification' => [
-                'title' => 'Estágio da tarefa criado',
-                'body' => 'O estágio da tarefa foi criado com sucesso.',
+                'title' => 'Etapa da tarefa criado',
+                'body'  => 'O etapa da tarefa foi criado com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

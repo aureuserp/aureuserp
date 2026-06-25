@@ -2,10 +2,10 @@
 
 return [
     'tabs' => [
-        'goods' => 'Bens',
-        'services' => 'Serviços',
+        'goods'     => 'Produtos',
+        'services'  => 'Serviços',
         'favorites' => 'Favoritos',
-        'archived' => 'Arquivados',
+        'archived'  => 'Arquivados',
     ],
 
     'header-actions' => [
@@ -14,7 +14,7 @@ return [
 
             'notification' => [
                 'title' => 'Produto criado',
-                'body' => 'O produto foi criado com sucesso.',
+                'body'  => 'O produto foi criado com sucesso.',
             ],
         ],
     ],

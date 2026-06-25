@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Estágio criado',
-        'body' => 'O estágio foi criado com sucesso.',
+        'title' => 'Etapa criado',
+        'body'  => 'O etapa foi criado com sucesso.',
     ],
 ];

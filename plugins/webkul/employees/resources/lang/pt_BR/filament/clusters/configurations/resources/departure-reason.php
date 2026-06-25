@@ -5,11 +5,11 @@ return [
 
     'navigation' => [
         'title' => 'Motivos de saída',
-        'group' => 'Funcionário',
+        'group' => 'Colaborador',
     ],
 
     'groups' => [
-        'status' => 'Status',
+        'status'     => 'Status',
         'created-by' => 'Criado por',
         'created-at' => 'Criado em',
         'updated-at' => 'Atualizado em',
@@ -23,16 +23,16 @@ return [
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Nome',
+            'id'         => 'ID',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
-            'employee' => 'Funcionário',
+            'name'       => 'Nome',
+            'employee'   => 'Colaborador',
             'created-by' => 'Criado por',
             'updated-at' => 'Atualizado em',
             'created-at' => 'Criado em',
@@ -42,14 +42,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Motivo de saída atualizado',
-                    'body' => 'O motivo de saída foi atualizado com sucesso.',
+                    'body'  => 'O motivo de saída foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Motivo de saída excluído',
-                    'body' => 'O motivo de saída foi excluído com sucesso.',
+                    'body'  => 'O motivo de saída foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -58,7 +58,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Motivos de saída excluídos',
-                    'body' => 'Os motivos de saída foram excluídos com sucesso.',
+                    'body'  => 'Os motivos de saída foram excluídos com sucesso.',
                 ],
             ],
         ],
@@ -67,7 +67,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Motivo de saída criado',
-                    'body' => 'O motivo de saída foi criado com sucesso.',
+                    'body'  => 'O motivo de saída foi criado com sucesso.',
                 ],
             ],
         ],
