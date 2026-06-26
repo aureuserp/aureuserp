@@ -62,6 +62,11 @@ class ProductResource extends Resource
             ->with(array_merge(['uom', 'uomPO'], ProductSchemaRegistry::eagerLoads()));
     }
 
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()->withTrashed();
+    }
+
     public static function getDefaultUomIdByProductType(ProductType|string|null $type): ?int
     {
         if (is_string($type)) {
