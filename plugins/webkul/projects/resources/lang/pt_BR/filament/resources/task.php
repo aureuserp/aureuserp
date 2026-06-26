@@ -78,12 +78,6 @@ return [
             'stage'               => 'Etapa',
         ],
 
-        'actions' => [
-            'update-state' => [
-                'modal-heading' => 'Atualizar estado da tarefa',
-            ],
-        ],
-
         'groups' => [
             'state'      => 'Estado',
             'project'    => 'Projeto',
@@ -119,6 +113,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Atualizar estado da tarefa',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Tarefa restaurada',
