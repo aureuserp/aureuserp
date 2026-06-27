@@ -43,7 +43,9 @@ class BillOfMaterialOverview extends Page implements HasForms
             'product.variants',
             'product.variants.combinations.productAttributeValue.attributeOption',
             'uom',
+            'lines.uom',
             'lines.product.uom',
+            'lines.product.uomPO',
             'lines.attributeValues.attributeOption',
             'operations.workCenter',
             'operations.attributeValues.attributeOption',
@@ -109,12 +111,12 @@ class BillOfMaterialOverview extends Page implements HasForms
         ])->merge(
             $billOfMaterial->getMatchedLines($selectedAttributeValueIds)
                 ->map(function (BillOfMaterialLine $line) use ($quantityMultiplier): array {
-                    $unitCost = (float) ($line->product?->cost ?? 0);
-                    $totalCost = $unitCost * ((float) $line->quantity * $quantityMultiplier);
+                    $quantity = (float) $line->quantity * $quantityMultiplier;
+                    $totalCost = $line->product?->getCostForQuantity($quantity, $line->uom) ?? 0;
 
                     return [
                         'label'        => $line->product?->name ?? '—',
-                        'quantity'     => (float) $line->quantity * $quantityMultiplier,
+                        'quantity'     => $quantity,
                         'uom'          => $line->uom?->name ?? $line->product?->uom?->name ?? '—',
                         'lead_time'    => null,
                         'route'        => '—',

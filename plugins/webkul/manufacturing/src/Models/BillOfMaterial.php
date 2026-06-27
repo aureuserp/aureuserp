@@ -163,7 +163,10 @@ class BillOfMaterial extends Model
 
         return (float) $this->getMatchedLines($selectedAttributeValueIds)
             ->sum(fn (BillOfMaterialLine $line): float => round(
-                ((float) $line->quantity * $quantityMultiplier) * (float) ($line->product?->cost ?? 0),
+                $line->product?->getCostForQuantity(
+                    (float) $line->quantity * $quantityMultiplier,
+                    $line->uom,
+                ) ?? 0,
                 2,
             ));
     }
@@ -172,7 +175,10 @@ class BillOfMaterial extends Model
     {
         return (float) $this->getMatchedLines($selectedAttributeValueIds)
             ->sum(fn (BillOfMaterialLine $line): float => round(
-                (float) $line->quantity * (float) ($line->product?->cost ?? 0),
+                $line->product?->getCostForQuantity(
+                    (float) $line->quantity,
+                    $line->uom,
+                ) ?? 0,
                 2,
             ));
     }

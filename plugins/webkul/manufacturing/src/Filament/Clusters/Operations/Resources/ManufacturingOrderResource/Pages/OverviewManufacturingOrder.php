@@ -28,10 +28,13 @@ class OverviewManufacturingOrder extends ViewRecord
 
         $this->getRecord()->load([
             'product.uom',
+            'product.uomPO',
             'product.quantities',
             'uom',
             'billOfMaterial',
+            'rawMaterialMoves.uom',
             'rawMaterialMoves.product.uom',
+            'rawMaterialMoves.product.uomPO',
             'rawMaterialMoves.product.quantities',
             'rawMaterialMoves.lines',
             'workOrders.product.uom',
@@ -154,12 +157,15 @@ class OverviewManufacturingOrder extends ViewRecord
 
     public function getComponentUnitCost(Move $move): float
     {
-        return round((float) ($move->product?->cost ?? 0), 2);
+        return round($move->product?->getCostForQuantity(1, $move->uom) ?? 0, 2);
     }
 
     public function getComponentTotalCost(Move $move): float
     {
-        return round($this->getComponentUnitCost($move) * (float) $move->product_uom_qty, 2);
+        return round(
+            $move->product?->getCostForQuantity((float) $move->product_uom_qty, $move->uom) ?? 0,
+            2,
+        );
     }
 
     public function getComponentRealCost(Move $move): float
@@ -170,7 +176,7 @@ class OverviewManufacturingOrder extends ViewRecord
 
         $actualQuantity = (float) ($move->quantity ?: $move->product_uom_qty);
 
-        return round($this->getComponentUnitCost($move) * $actualQuantity, 2);
+        return round($move->product?->getCostForQuantity($actualQuantity, $move->uom) ?? 0, 2);
     }
 
     public function getWorkOrderUnitCost(WorkOrder $workOrder): float
@@ -279,6 +285,12 @@ class OverviewManufacturingOrder extends ViewRecord
 
     public function getParentProductCost(): float
     {
-        return round((float) ($this->getRecord()->product?->cost ?? 0) * (float) $this->getRecord()->quantity, 2);
+        return round(
+            $this->getRecord()->product?->getCostForQuantity(
+                (float) $this->getRecord()->quantity,
+                $this->getRecord()->uom,
+            ) ?? 0,
+            2,
+        );
     }
 }
