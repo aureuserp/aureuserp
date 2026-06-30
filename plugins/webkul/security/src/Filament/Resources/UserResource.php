@@ -234,6 +234,13 @@ class UserResource extends Resource
                                             })
                                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
+                                            ->rule(fn (Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                                $allowed = $get('allowed_companies') ?? [];
+
+                                                if (! empty($value) && ! in_array((string) $value, array_map('strval', (array) $allowed), true)) {
+                                                    $fail(__('security::filament/resources/user.form.sections.multi-company.default-company-not-allowed'));
+                                                }
+                                            })
                                             ->searchable()
                                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {

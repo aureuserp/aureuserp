@@ -53,9 +53,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'                       => 'Multi Company',
+                'allowed-companies'           => 'Allowed Companies',
+                'default-company'             => 'Default Company',
+                'default-company-not-allowed' => 'The default company must be one of the allowed companies.',
             ],
         ],
     ],
@@ -182,9 +183,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'                       => 'Multi Company',
+                'allowed-companies'           => 'Allowed Companies',
+                'default-company'             => 'Default Company',
+                'default-company-not-allowed' => 'The default company must be one of the allowed companies.',
             ],
         ],
     ],
