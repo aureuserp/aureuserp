@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeJobPosition as BaseJobPosition;
 use Webkul\Employee\Models\Skill;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Industry;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 
 class JobPosition extends BaseJobPosition
 {
+    use HasCustomFields;
+
     public function __construct(array $attributes = [])
     {
         $this->mergeFillable([

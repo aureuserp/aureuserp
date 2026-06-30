@@ -60,7 +60,7 @@ class CustomColumns extends Component
     protected function getFields(): Collection
     {
         $query = Field::query()
-            ->where('customizable_type', $this->getResourceClass()::getModel())
+            ->whereIn('customizable_type', Field::customizableTypes($this->getResourceClass()::getModel()))
             ->where('use_in_table', true);
 
         if (! empty($this->include)) {

@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource;
 use Webkul\TimeOff\Filament\Clusters\MyTime;
@@ -23,6 +24,7 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class MyTimeOffResource extends Resource
 {
+    use HasCustomFields;
     use TimeOffHelper;
 
     protected static ?string $model = Leave::class;
@@ -45,12 +47,21 @@ class MyTimeOffResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components((new self)->getFormSchema());
+        return $schema->components([
+            ...(new self)->getFormSchema(),
+            Section::make()
+                ->schema(static::getCustomFormFields())
+                ->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table = TimeOffResource::table($table);
+        $table = TimeOffResource::table($table);
+
+        return $table
+            ->columns(static::mergeCustomTableColumns(array_values($table->getColumns())))
+            ->filters(static::mergeCustomTableFilters(array_values($table->getFilters())));
     }
 
     public static function getPages(): array
@@ -121,6 +132,9 @@ class MyTimeOffResource extends Resource
                                     ->visible(fn ($record) => $record->holidayStatus?->support_document),
                             ]),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 }

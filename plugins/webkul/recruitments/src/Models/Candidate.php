@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class Candidate extends Model
 {
-    use HasChatter, HasLogActivity, SoftDeletes;
+    use HasChatter, HasCustomFields, HasLogActivity, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 

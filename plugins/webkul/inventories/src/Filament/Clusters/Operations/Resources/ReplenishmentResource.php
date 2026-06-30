@@ -7,16 +7,20 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Filament\Clusters\Operations;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReplenishmentResource\Pages\ManageReplenishment;
 use Webkul\Inventory\Models\OrderPoint;
 
 class ReplenishmentResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = OrderPoint::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-up-down';
@@ -44,6 +48,10 @@ class ReplenishmentResource extends Resource
     {
         return $schema
             ->components([
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2)
+                    ->visible(fn () => filled(static::getCustomFormFields())),
             ])
             ->columns(1);
     }
@@ -52,9 +60,9 @@ class ReplenishmentResource extends Resource
     {
         return $table
             ->recordTitleAttribute('name')
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
 
-            ])
+            ]))
             ->groups(
                 collect([
                 ])->filter(function ($group) {
@@ -63,11 +71,11 @@ class ReplenishmentResource extends Resource
                     };
                 })->all()
             )
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraints(collect([
                     ])->filter()->values()->all()),
-            ], layout: FiltersLayout::Modal)
+            ]), layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->slideOver(),

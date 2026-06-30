@@ -22,11 +22,14 @@ use Filament\Tables\Table;
 use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
 use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRoundings;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Settings\CustomerInvoiceSettings;
 
 class CashRoundingResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = CashRounding::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
@@ -89,13 +92,16 @@ class CashRoundingResource extends Resource
 
                             ])->columns(2),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('accounts::filament/resources/cash-rounding.table.columns.name'))
                     ->searchable()
@@ -114,7 +120,7 @@ class CashRoundingResource extends Resource
                     ->label(__('accounts::filament/resources/cash-rounding.table.columns.created-by'))
                     ->searchable()
                     ->sortable(),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/cash-rounding.table.groups.name'))
@@ -194,6 +200,9 @@ class CashRoundingResource extends Resource
 
                             ])->columns(2),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

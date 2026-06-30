@@ -798,7 +798,7 @@ class EmployeeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 Stack::make([
                     ImageColumn::make('partner.avatar')
                         ->imageHeight(150)
@@ -854,7 +854,7 @@ class EmployeeResource extends Resource
                             ->visible(fn ($record): bool => (bool) $record->categories->count()),
                     ])->space(1),
                 ])->space(4),
-            ])
+            ]))
             ->contentGrid([
                 'md' => 2,
                 'xl' => 4,
@@ -866,7 +866,7 @@ class EmployeeResource extends Resource
                 'all',
             ])
             ->filtersFormColumns(3)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('skills')
                     ->relationship('skills.skill', 'name')
                     ->searchable()
@@ -1234,7 +1234,7 @@ class EmployeeResource extends Resource
                                     ->preload(),
                             ),
                     ]),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('employees::filament/resources/employee.table.groups.name'))
@@ -1420,6 +1420,7 @@ class EmployeeResource extends Resource
                                     ->placeholder('—')
                                     ->label(__('employees::filament/resources/employee.infolist.sections.entries.coach')),
                             ]),
+                        ...static::getCustomInfolistEntries(),
                     ])->columnSpanFull(),
 
                 Tabs::make()

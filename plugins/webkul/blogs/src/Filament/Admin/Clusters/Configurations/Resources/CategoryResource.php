@@ -13,6 +13,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -23,10 +24,13 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource\Pages\ManageCategories;
 use Webkul\Blog\Models\Category;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Website\Filament\Admin\Clusters\Configurations;
 
 class CategoryResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $cluster = Configurations::class;
@@ -66,6 +70,9 @@ class CategoryResource extends Resource
                 TextInput::make('sub_title')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.form.fields.sub-title'))
                     ->maxLength(255),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -73,7 +80,7 @@ class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.table.columns.name'))
                     ->searchable()
@@ -81,7 +88,7 @@ class CategoryResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.table.columns.created-at'))
                     ->sortable(),
-            ])
+            ]))
             ->recordActions([
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())

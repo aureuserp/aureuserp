@@ -28,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
@@ -40,6 +41,8 @@ use Webkul\TimeOff\Models\LeaveAllocation;
 
 class MyAllocationResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = LeaveAllocation::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
@@ -133,13 +136,16 @@ class MyAllocationResource extends Resource
                                     ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.form.fields.reason')),
                             ]),
                     ])->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('holidayStatus.name')
                     ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.table.columns.time-off-type'))
                     ->sortable()
@@ -159,7 +165,7 @@ class MyAllocationResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable(),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('employee.name')
                     ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.table.groups.employee-name'))
@@ -316,6 +322,9 @@ class MyAllocationResource extends Resource
                                 ]),
                         ])->columnSpan(1),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\OperationState;
@@ -62,6 +63,8 @@ use Webkul\Product\Settings\ProductSettings;
 
 class ScrapResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Scrap::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-trash';
@@ -270,6 +273,9 @@ class ScrapResource extends Resource
                             ])
                             ->columns(2),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -277,7 +283,7 @@ class ScrapResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('closed_at')
                     ->label(__('inventories::filament/clusters/operations/resources/scrap.table.columns.date'))
                     ->sortable()
@@ -322,7 +328,7 @@ class ScrapResource extends Resource
                     ->sortable()
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups(
                 collect([
                     Tables\Grouping\Group::make('product.name')
@@ -338,7 +344,7 @@ class ScrapResource extends Resource
                     };
                 })->all()
             )
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraints(collect([
                         static::getWarehouseSettings()->enable_locations
@@ -465,7 +471,7 @@ class ScrapResource extends Resource
                             )
                             ->icon('heroicon-o-user'),
                     ])->filter()->values()->all()),
-            ], layout: FiltersLayout::Modal)
+            ]), layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->slideOver(),
@@ -596,6 +602,7 @@ class ScrapResource extends Resource
                                                     ]),
                                             ])
                                             ->columns(2),
+                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),

@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Maintenance\Database\Factories\EquipmentCategoryFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class EquipmentCategory extends Model
 {
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'maintenance_equipment_categories';

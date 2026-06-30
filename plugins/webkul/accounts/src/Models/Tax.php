@@ -15,13 +15,14 @@ use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Settings\TaxesSettings;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
 
 class Tax extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_taxes';
 

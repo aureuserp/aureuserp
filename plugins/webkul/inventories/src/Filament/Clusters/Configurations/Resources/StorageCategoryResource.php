@@ -21,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\CreateStorageCategory;
@@ -37,6 +38,8 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 
 class StorageCategoryResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = StorageCategory::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-folder';
@@ -97,13 +100,16 @@ class StorageCategoryResource extends Resource
                             ->default(Auth::user()->default_company_id),
                     ])
                     ->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.name'))
                     ->searchable(),
@@ -128,7 +134,8 @@ class StorageCategoryResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
+            ->filters(static::mergeCustomTableFilters([]))
             ->groups([
                 Group::make('allow_new_products')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.groups.allow-new-products'))
@@ -188,6 +195,7 @@ class StorageCategoryResource extends Resource
                                 TextEntry::make('company.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.entries.company'))
                                     ->icon('heroicon-o-building-office'), // Example icon for company
+                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(2),
                     ])

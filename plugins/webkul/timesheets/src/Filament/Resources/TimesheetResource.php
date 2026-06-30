@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -25,11 +26,14 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
 
 class TimesheetResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Timesheet::class;
 
     public static function getNavigationLabel(): string
@@ -106,6 +110,9 @@ class TimesheetResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->helperText(__('timesheets::filament/resources/timesheet.form.time-spent-helper-text')),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -114,7 +121,7 @@ class TimesheetResource extends Resource
     {
         return $table
             ->recordTitleAttribute('name')
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('date')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.date'))
                     ->date('Y-m-d')
@@ -164,7 +171,7 @@ class TimesheetResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Group::make('date')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.date'))
@@ -178,7 +185,7 @@ class TimesheetResource extends Resource
                 Group::make('creator.name')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.creator')),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 Filter::make('date')
                     ->schema([
                         DatePicker::make('date_from')
@@ -232,7 +239,7 @@ class TimesheetResource extends Resource
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 EditAction::make()
                     ->successNotification(

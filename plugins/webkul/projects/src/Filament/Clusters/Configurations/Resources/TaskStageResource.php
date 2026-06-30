@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource\Pages\ManageTaskStages;
 use Webkul\Project\Filament\Resources\ProjectResource\RelationManagers\TaskStagesRelationManager;
@@ -30,6 +32,8 @@ use Webkul\Project\Models\TaskStage;
 
 class TaskStageResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = TaskStage::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -66,6 +70,9 @@ class TaskStageResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -73,7 +80,7 @@ class TaskStageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.columns.name'))
                     ->searchable()
@@ -82,15 +89,15 @@ class TaskStageResource extends Resource
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.columns.project'))
                     ->hiddenOn(TaskStagesRelationManager::class)
                     ->sortable(),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('project_id')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.filters.project'))
                     ->relationship('project', 'name')
                     ->hiddenOn(TaskStagesRelationManager::class)
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->groups([
                 Group::make('project.name')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.groups.project')),

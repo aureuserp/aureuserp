@@ -41,6 +41,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\Department;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Partner\Filament\Resources\AddressResource;
 use Webkul\Partner\Filament\Resources\IndustryResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
@@ -54,6 +55,8 @@ use Webkul\Security\Filament\Resources\UserResource;
 
 class JobPositionResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = JobPosition::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
@@ -241,6 +244,9 @@ class JobPositionResource extends Resource
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -248,7 +254,7 @@ class JobPositionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.columns.id'))
                     ->searchable()
@@ -294,9 +300,9 @@ class JobPositionResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->columnToggleFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('department')
                     ->relationship('department', 'name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.filters.department')),
@@ -363,7 +369,7 @@ class JobPositionResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->filtersFormColumns(2)
             ->groups([
                 Tables\Grouping\Group::make('name')
@@ -551,6 +557,9 @@ class JobPositionResource extends Resource
                                 ]),
                         ])->columnSpan(1),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

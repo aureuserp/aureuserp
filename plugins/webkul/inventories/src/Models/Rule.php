@@ -14,13 +14,14 @@ use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\RuleAction;
 use Webkul\Inventory\Enums\RuleAuto;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class Rule extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_rules';
 

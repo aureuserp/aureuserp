@@ -26,9 +26,12 @@ use Webkul\Account\Filament\Resources\TaxGroupResource\Pages\EditTaxGroup;
 use Webkul\Account\Filament\Resources\TaxGroupResource\Pages\ListTaxGroups;
 use Webkul\Account\Filament\Resources\TaxGroupResource\Pages\ViewTaxGroup;
 use Webkul\Account\Models\TaxGroup;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class TaxGroupResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = TaxGroup::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-group';
@@ -63,13 +66,16 @@ class TaxGroupResource extends Resource
                             ->label(__('accounts::filament/resources/tax-group.form.sections.fields.preceding-subtotal'))
                             ->maxLength(255),
                     ])->columns(2),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('company.name')
                     ->label(__('accounts::filament/resources/tax-group.table.columns.company'))
                     ->sortable(),
@@ -95,7 +101,7 @@ class TaxGroupResource extends Resource
                     ->label(__('accounts::filament/resources/tax-group.table.columns.updated-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Group::make('name')
                     ->label(__('accounts::filament/resources/tax-group.table.groups.name'))
@@ -187,6 +193,7 @@ class TaxGroupResource extends Resource
                             ->icon('heroicon-o-rectangle-group')
                             ->placeholder('-')
                             ->label(__('accounts::filament/resources/tax-group.infolist.sections.entries.preceding-subtotal')),
+                        ...static::getCustomInfolistEntries(),
                     ])->columns(2),
             ])
             ->columns(1);

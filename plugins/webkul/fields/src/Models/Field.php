@@ -56,4 +56,22 @@ class Field extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    /**
+     * Resolve a model and its parent classes as customizable types.
+     */
+    public static function customizableTypes(string $model): array
+    {
+        $types = [$model];
+
+        foreach (class_parents($model) as $parent) {
+            if ($parent === Model::class) {
+                break;
+            }
+
+            $types[] = $parent;
+        }
+
+        return $types;
+    }
 }

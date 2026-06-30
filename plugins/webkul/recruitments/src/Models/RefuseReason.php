@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 
 class RefuseReason extends Model implements Sortable
 {
+    use HasCustomFields;
     use SortableTrait;
 
     public $sortable = [

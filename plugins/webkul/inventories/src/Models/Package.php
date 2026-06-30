@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\PackageFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\PackageUse;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class Package extends Model
 {
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'inventories_packages';

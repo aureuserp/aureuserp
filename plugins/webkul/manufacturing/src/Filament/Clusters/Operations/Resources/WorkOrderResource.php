@@ -38,6 +38,7 @@ use Filament\Tables\Grouping\Group as TableGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
@@ -62,6 +63,8 @@ use Webkul\Support\Models\UOM;
 
 class WorkOrderResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = WorkOrder::class;
 
     protected static ?string $cluster = Operations::class;
@@ -273,6 +276,10 @@ class WorkOrderResource extends Resource
                 Hidden::make('product_id'),
                 Hidden::make('uom_id'),
                 Hidden::make('display_quantity'),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -286,7 +293,7 @@ class WorkOrderResource extends Resource
                 ->orderBy('calendar_leave_id')
                 ->orderBy('started_at')
                 ->orderBy('id'))
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('operation.name')
                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.table.columns.operation'))
                     ->searchable(),
@@ -342,7 +349,7 @@ class WorkOrderResource extends Resource
                 TextColumn::make('state')
                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.table.columns.status'))
                     ->badge(),
-            ])
+            ]))
             ->groups([
                 TableGroup::make('state')
                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.table.groups.status')),
@@ -359,7 +366,7 @@ class WorkOrderResource extends Resource
                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.table.groups.end'))
                     ->date(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraints([
                         TextConstraint::make('name')
@@ -422,7 +429,7 @@ class WorkOrderResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('manufacturing::filament/clusters/operations/resources/work-order.table.filters.updated-at')),
                     ]),
-            ], layout: FiltersLayout::Modal)
+            ]), layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
                 fn (Action $action) => $action->slideOver(),
             )
@@ -631,6 +638,10 @@ class WorkOrderResource extends Resource
                                     ]),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ])
             ->columns(1);
     }

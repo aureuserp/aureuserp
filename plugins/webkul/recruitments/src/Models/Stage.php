@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Models\EmployeeJobPosition;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 
 class Stage extends Model implements Sortable
 {
+    use HasCustomFields;
     use HasFactory;
     use SortableTrait;
 

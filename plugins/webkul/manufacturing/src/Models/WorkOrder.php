@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Manufacturing\Database\Factories\WorkOrderFactory;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
@@ -23,7 +24,7 @@ use Webkul\Support\Models\UOM;
 
 class WorkOrder extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'manufacturing_work_orders';
 

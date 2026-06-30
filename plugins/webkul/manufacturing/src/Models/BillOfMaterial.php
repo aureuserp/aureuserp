@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Manufacturing\Database\Factories\BillOfMaterialFactory;
 use Webkul\Manufacturing\Enums\BillOfMaterialConsumption;
@@ -21,7 +22,7 @@ use Webkul\Support\Models\UOM;
 
 class BillOfMaterial extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'manufacturing_bills_of_materials';
 

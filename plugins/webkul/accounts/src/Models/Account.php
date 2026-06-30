@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Database\Factories\AccountFactory;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class Account extends Model
 {
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'accounts_accounts';

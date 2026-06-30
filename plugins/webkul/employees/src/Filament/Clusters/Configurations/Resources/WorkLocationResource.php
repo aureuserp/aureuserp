@@ -19,6 +19,7 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -34,9 +35,12 @@ use Webkul\Employee\Enums\WorkLocation as WorkLocationEnum;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\WorkLocationResource\Pages\ListWorkLocations;
 use Webkul\Employee\Models\WorkLocation;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class WorkLocationResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = WorkLocation::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
@@ -82,6 +86,9 @@ class WorkLocationResource extends Resource
                 Toggle::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.status'))
                     ->required(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
@@ -90,7 +97,7 @@ class WorkLocationResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.columns.id'))
                     ->searchable()
@@ -132,7 +139,7 @@ class WorkLocationResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.groups.name'))
@@ -157,7 +164,7 @@ class WorkLocationResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 TernaryFilter::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.filters.status')),
                 QueryBuilder::make()
@@ -199,7 +206,7 @@ class WorkLocationResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/work-location.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -284,6 +291,7 @@ class WorkLocationResource extends Resource
                 IconEntry::make('is_active')
                     ->boolean()
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.infolist.status')),
+                ...static::getCustomInfolistEntries(),
             ]);
     }
 

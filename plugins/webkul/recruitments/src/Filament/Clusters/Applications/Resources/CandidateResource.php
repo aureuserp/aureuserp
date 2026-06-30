@@ -42,9 +42,12 @@ use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResourc
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\ViewCandidate;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\RelationManagers\SkillsRelationManager;
 use Webkul\Recruitment\Models\Candidate;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class CandidateResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Candidate::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
@@ -134,6 +137,7 @@ class CandidateResource extends Resource
                                 DatePicker::make('availability_date')
                                     ->native(false)
                                     ->label(__('recruitments::filament/clusters/applications/resources/candidate.form.sections.additional-details.fields.availability-date')),
+                                ...static::getCustomFormFields(),
                             ])
                             ->columns(2),
                     ])
@@ -173,7 +177,7 @@ class CandidateResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 Stack::make([
                     Stack::make([
                         TextColumn::make('name')
@@ -217,13 +221,13 @@ class CandidateResource extends Resource
                     ])->space(1),
                 ])
                     ->space(4),
-            ])
+            ]))
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(1)
                     ->constraints([
@@ -272,7 +276,7 @@ class CandidateResource extends Resource
                                     ->preload(),
                             ),
                     ]),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('manager.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.groups.manager-name'))
@@ -380,6 +384,7 @@ class CandidateResource extends Resource
                                             ->placeholder('—')
                                             ->date()
                                             ->label(__('recruitments::filament/clusters/applications/resources/candidate.infolist.sections.additional-details.entries.availability-date')),
+                                        ...static::getCustomInfolistEntries(),
                                     ])
                                     ->columns(2),
                             ])

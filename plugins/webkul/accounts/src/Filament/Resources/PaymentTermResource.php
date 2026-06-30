@@ -46,6 +46,7 @@ use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\ManagePaymentDue
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\ViewPaymentTerm;
 use Webkul\Account\Filament\Resources\PaymentTermResource\RelationManagers\PaymentDueTermRelationManager;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -53,6 +54,8 @@ use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as Infolis
 
 class PaymentTermResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = PaymentTerm::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
@@ -239,13 +242,16 @@ class PaymentTermResource extends Resource
                                     ->columns(2),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('accounts::filament/resources/payment-term.table.columns.payment-term'))
                     ->searchable()
@@ -264,7 +270,7 @@ class PaymentTermResource extends Resource
                     ->label(__('accounts::filament/resources/payment-term.table.columns.updated-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('company.name')
                     ->label(__('accounts::filament/resources/payment-term.table.groups.company-name'))
@@ -418,6 +424,7 @@ class PaymentTermResource extends Resource
                                     ->columnSpanFull()
                                     ->formatStateUsing(fn ($state) => new HtmlString($state))
                                     ->placeholder('—'),
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ]),
                 Tabs::make()

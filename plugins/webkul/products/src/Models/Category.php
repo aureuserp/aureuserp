@@ -10,12 +10,13 @@ use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\CategoryFactory;
 use Webkul\Security\Models\User;
 
 class Category extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 

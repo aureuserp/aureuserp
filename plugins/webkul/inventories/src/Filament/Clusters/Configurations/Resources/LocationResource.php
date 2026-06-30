@@ -41,6 +41,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\CreateLocation;
@@ -53,6 +54,8 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 
 class LocationResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Location::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
@@ -186,6 +189,10 @@ class LocationResource extends Resource
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -193,7 +200,7 @@ class LocationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('full_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.location'))
                     ->searchable(),
@@ -223,7 +230,7 @@ class LocationResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('warehouse.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.groups.warehouse'))
@@ -239,7 +246,7 @@ class LocationResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('type')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.filters.type'))
                     ->options(LocationType::class)
@@ -256,7 +263,7 @@ class LocationResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed())
@@ -442,6 +449,8 @@ class LocationResource extends Resource
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.storage-category'))
                                     ->icon('heroicon-o-archive-box')
                                     ->placeholder('—'),
+
+                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(2),
 

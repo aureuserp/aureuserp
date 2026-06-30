@@ -41,6 +41,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Storage;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Manufacturing\Enums\OperationTimeMode;
 use Webkul\Manufacturing\Enums\OperationWorksheetType;
 use Webkul\Manufacturing\Filament\Clusters\Configurations;
@@ -58,6 +59,8 @@ use Webkul\Product\Models\ProductAttributeValue;
 
 class OperationResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Operation::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
@@ -258,6 +261,8 @@ class OperationResource extends Resource
                                     })
                                     ->dehydrateStateUsing(fn (?string $state): string => parse_float_time($state, 'minutes'))
                                     ->suffix(__('manufacturing::filament/clusters/configurations/resources/operation.form.sections.settings.fields.manual-cycle-time-suffix')),
+
+                                ...static::getCustomFormFields(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -269,7 +274,7 @@ class OperationResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.table.columns.name'))
                     ->searchable(),
@@ -314,8 +319,8 @@ class OperationResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('work_center_id')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.table.filters.work-center'))
                     ->relationship('workCenter', 'name')
@@ -327,7 +332,7 @@ class OperationResource extends Resource
                 SelectFilter::make('worksheet_type')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.table.filters.worksheet-type'))
                     ->options(OperationWorksheetType::options()),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make()
                     ->hidden(fn (Operation $record): bool => $record->trashed()),
@@ -445,6 +450,8 @@ class OperationResource extends Resource
                                 TextEntry::make('billOfMaterial.company.name')
                                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.infolist.sections.general.entries.company'))
                                     ->placeholder('—'),
+
+                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(2),
 

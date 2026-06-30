@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\WarehouseFactory;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\DeliveryStep;
@@ -31,7 +32,7 @@ use Webkul\Support\Models\Company;
 
 class Warehouse extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_warehouses';
 

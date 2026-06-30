@@ -41,6 +41,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\LocationType;
@@ -60,6 +61,8 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 
 class OperationTypeResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = OperationType::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-queue-list';
@@ -325,13 +328,18 @@ class OperationTypeResource extends Resource
                             ]),
                     ])
                     ->columnSpan('full'),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2)
+                    ->visible(fn () => filled(static::getCustomFormFields())),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.table.columns.name'))
                     ->searchable(),
@@ -351,7 +359,7 @@ class OperationTypeResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('warehouse.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.table.groups.warehouse'))
@@ -367,7 +375,7 @@ class OperationTypeResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('type')
                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.table.filters.type'))
                     ->options(Enums\OperationType::class)
@@ -384,7 +392,7 @@ class OperationTypeResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
@@ -482,6 +490,7 @@ class OperationTypeResource extends Resource
                                     ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold)
                                     ->columnSpan(2),
+                                ...static::getCustomInfolistEntries(),
                             ]),
 
                         Tabs::make()

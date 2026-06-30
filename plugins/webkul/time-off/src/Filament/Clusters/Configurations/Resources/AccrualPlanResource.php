@@ -27,6 +27,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\TimeOff\Enums\AccruedGainTime;
 use Webkul\TimeOff\Enums\CarryoverDate;
 use Webkul\TimeOff\Enums\CarryoverMonth;
@@ -41,6 +42,8 @@ use Webkul\TimeOff\Models\LeaveAccrualPlan;
 
 class AccrualPlanResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = LeaveAccrualPlan::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-paper-airplane';
@@ -123,20 +126,24 @@ class AccrualPlanResource extends Resource
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.status')),
                             ]),
                     ])->columns(2)->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->searchable()
                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.columns.name')),
                 TextColumn::make('leaveAccrualLevels')
                     ->formatStateUsing(fn ($record) => $record?->leaveAccrualLevels?->count() ?? 0)
                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.columns.levels')),
-            ])
+            ]))
+            ->filters(static::mergeCustomTableFilters([]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -192,6 +199,7 @@ class AccrualPlanResource extends Resource
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
                                             ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.infolist.entries.carry-over-month')),
+                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ])
                             ->columnSpan(2),

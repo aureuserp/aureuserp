@@ -43,6 +43,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
 use Webkul\Manufacturing\Filament\Clusters\Configurations;
 use Webkul\Manufacturing\Filament\Clusters\Configurations\Resources\WorkCenterResource\Pages\CreateWorkCenter;
@@ -60,6 +61,8 @@ use Webkul\Support\Models\Calendar;
 
 class WorkCenterResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = WorkCenter::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wrench-screwdriver';
@@ -349,6 +352,10 @@ class WorkCenterResource extends Resource
                             ->columns(1),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -357,7 +364,7 @@ class WorkCenterResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.table.columns.name'))
                     ->searchable(),
@@ -403,8 +410,8 @@ class WorkCenterResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('company_id')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.table.filters.company'))
                     ->relationship('company', 'name')
@@ -413,7 +420,7 @@ class WorkCenterResource extends Resource
                 SelectFilter::make('working_state')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.table.filters.working-state'))
                     ->options(WorkCenterWorkingState::options()),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('company.name')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.table.groups.company'))
@@ -540,6 +547,8 @@ class WorkCenterResource extends Resource
                                 TextEntry::make('company.name')
                                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.infolist.sections.general.entries.company'))
                                     ->placeholder('—'),
+
+                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(2),
 

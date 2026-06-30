@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\EditDelivery;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\EditDropship;
@@ -50,6 +51,8 @@ use Webkul\Inventory\Settings\TraceabilitySettings;
 
 class LotResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Lot::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -139,13 +142,16 @@ class LotResource extends Resource
                             ])
                             ->columns(2),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.name'))
                     ->searchable()
@@ -175,7 +181,7 @@ class LotResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.groups.product')),
@@ -185,7 +191,7 @@ class LotResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.groups.created-at'))
                     ->date(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('product_id')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.filters.product'))
                     ->relationship('product', 'name')
@@ -207,7 +213,7 @@ class LotResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -312,6 +318,8 @@ class LotResource extends Resource
                                             ->label(__('inventories::filament/clusters/products/resources/lot.infolist.sections.general.entries.company'))
                                             ->icon('heroicon-o-building-office'),
                                     ]),
+
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),

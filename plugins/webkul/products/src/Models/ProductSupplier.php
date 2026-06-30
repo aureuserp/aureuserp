@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Partner\Models\Partner;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\ProductSupplierFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -17,6 +18,7 @@ use Webkul\Support\Models\UOM;
 
 class ProductSupplier extends Model implements Sortable
 {
+    use HasCustomFields;
     use HasFactory;
     use SortableTrait;
 

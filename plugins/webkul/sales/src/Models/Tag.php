@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Sale\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
 
 class Tag extends Model
 {
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'sales_tags';

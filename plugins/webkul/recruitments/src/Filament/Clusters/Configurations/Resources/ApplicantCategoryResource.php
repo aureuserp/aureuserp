@@ -13,18 +13,22 @@ use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ApplicantCategoryResource\Pages\ListApplicantCategories;
 use Webkul\Recruitment\Models\ApplicantCategory;
 
 class ApplicantCategoryResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = ApplicantCategory::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
@@ -59,13 +63,16 @@ class ApplicantCategoryResource extends Resource
                     ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.form.fields.color'))
                     ->required()
                     ->hexColor(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.table.columns.id'))
                     ->searchable()
@@ -91,8 +98,8 @@ class ApplicantCategoryResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -100,7 +107,7 @@ class ApplicantCategoryResource extends Resource
                             ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.table.filters.name'))
                             ->icon('heroicon-o-user'),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -143,6 +150,9 @@ class ApplicantCategoryResource extends Resource
                 ColorEntry::make('color')
                     ->placeholder('—')
                     ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.infolist.color')),
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 
