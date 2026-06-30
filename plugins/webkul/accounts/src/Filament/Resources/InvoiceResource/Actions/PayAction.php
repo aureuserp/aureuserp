@@ -44,9 +44,9 @@ class PayAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
             ->schema(function (Schema $schema) {
-                try {
-                    $paymentRegister = (new PaymentRegister);
+                $paymentRegister = new PaymentRegister;
 
+                try {
                     $paymentRegister->lines = $this->getRecord()->lines;
                     $paymentRegister->company = $this->getRecord()->company;
                     $paymentRegister->currency = $this->getRecord()->currency;
@@ -122,6 +122,7 @@ class PayAction extends Action
                                         $query->whereIn('id', $paymentMethodLineIds);
                                     }
                                 )
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                 ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
                                     $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));

@@ -20,7 +20,7 @@ class PaymentMethodSeeder extends Seeder
 
         $now = now();
 
-        $paymentMethods = [
+        DB::table('accounts_payment_methods')->insert([
             [
                 'id'           => 1,
                 'code'         => 'manual',
@@ -39,8 +39,6 @@ class PaymentMethodSeeder extends Seeder
                 'created_at'   => $now,
                 'updated_at'   => $now,
             ],
-        ];
-
-        DB::table('accounts_payment_methods')->insert($paymentMethods);
+        ]);
     }
 }
