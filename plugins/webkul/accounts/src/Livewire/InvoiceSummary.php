@@ -57,7 +57,7 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
     public function reconcileAction(): Action
     {
         return Action::make('reconcile')
-            ->label('Add')
+            ->label(__('accounts::filament/resources/invoice.summary.actions.reconcile.label'))
             ->icon('heroicon-o-check-circle')
             ->size('xs')
             ->requiresConfirmation()
@@ -75,7 +75,7 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
     public function unReconcileAction(): Action
     {
         return Action::make('unReconcile')
-            ->label('Unlink')
+            ->label(__('accounts::filament/resources/invoice.summary.actions.unreconcile.label'))
             ->icon('heroicon-o-x-circle')
             ->size('xs')
             ->requiresConfirmation()

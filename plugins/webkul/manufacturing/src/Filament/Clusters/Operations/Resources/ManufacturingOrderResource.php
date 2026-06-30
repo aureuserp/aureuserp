@@ -982,7 +982,7 @@ class ManufacturingOrderResource extends Resource
                     },
                 )
                 ->default(fn (Get $get): ?int => Product::query()->withTrashed()->find($get('product_id'))?->uom_id)
-                ->placeholder('UoM')
+                ->placeholder(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.sections.general.fields.uom-placeholder'))
                 ->columnSpan(1),
         ])
             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.sections.general.fields.quantity'))
@@ -1172,7 +1172,7 @@ class ManufacturingOrderResource extends Resource
             ->compact()
             ->extraItemActions([
                 Action::make('openWorkOrder')
-                    ->tooltip('Open work order')
+                    ->tooltip(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.open-work-order.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (array $arguments, Get $get): ?string => filled($get("workOrders.{$arguments['item']}.id"))
                         ? WorkOrderResource::getUrl('view', [
@@ -1383,7 +1383,7 @@ class ManufacturingOrderResource extends Resource
                             }),
                         Action::make('button_done')
                             ->icon('heroicon-m-check-circle')
-                            ->label('Done')
+                            ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.done.label'))
                             ->color('primary')
                             ->size(Size::ExtraLarge)
                             ->databaseTransaction()

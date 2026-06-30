@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Support\ChatterMentions;
 use Illuminate\Support\HtmlString;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
@@ -145,6 +146,7 @@ class ActivityAction extends Action
                                 ])->columns(2),
                             RichEditor::make('body')
                                 ->hiddenLabel()
+                                ->mentions([ChatterMentions::provider()])
                                 ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))->category == 'meeting' : false)
                                 ->visible(fn (Get $get) => ! $get('activity_plan_id'))
                                 ->placeholder(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.log-note'))

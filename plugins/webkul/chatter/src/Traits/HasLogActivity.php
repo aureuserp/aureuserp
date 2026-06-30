@@ -8,6 +8,7 @@ use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 trait HasLogActivity
 {
@@ -225,12 +226,23 @@ trait HasLogActivity
         $attributes = [];
 
         foreach ($logAttributes as $key => $title) {
-            if ($parsed = $this->parseRelationAttribute($key)) {
-                [$relation, $attribute] = $parsed;
-                $foreignKey = $this->$relation()->getForeignKeyName();
-                $attributes[$title] = $this->getRelatedValue($relation, $this->$foreignKey, $attribute);
-            } else {
-                $attributes[$title] = $this->formatAttributeValue($key, $this->getAttribute($key));
+            try {
+                if ($parsed = $this->parseRelationAttribute($key)) {
+                    [$relation, $attribute] = $parsed;
+
+                    if (! method_exists($this, $relation)) {
+                        continue;
+                    }
+
+                    $foreignKey = $this->$relation()->getForeignKeyName();
+                    $attributes[$title] = $this->getRelatedValue($relation, $this->$foreignKey, $attribute);
+                } else {
+                    $attributes[$title] = $this->formatAttributeValue($key, $this->getAttribute($key));
+                }
+            } catch (Throwable $e) {
+                Log::error("Error logging attribute {$key}: ".$e->getMessage());
+
+                continue;
             }
         }
 

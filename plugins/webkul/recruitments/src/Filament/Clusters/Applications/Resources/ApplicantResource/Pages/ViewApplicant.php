@@ -115,7 +115,7 @@ class ViewApplicant extends ViewRecord
             Action::make('Refuse')
                 ->modalIcon('heroicon-s-bug-ant')
                 ->hidden(fn ($record) => $record->refuse_reason_id || $record->application_status->value === ApplicationStatus::ARCHIVED->value)
-                ->modalHeading('Refuse Reason')
+                ->modalHeading(__('recruitments::filament/clusters/applications/resources/applicant/pages/view-applicant.header-actions.refuse.title'))
                 ->schema(function (Schema $schema, $record) {
                     return $schema->components([
                         ToggleButtons::make('refuse_reason_id')
@@ -128,11 +128,11 @@ class ViewApplicant extends ViewRecord
                             ->live()
                             ->default(true)
                             ->visible(fn (Get $get) => $get('refuse_reason_id'))
-                            ->label('Notify'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/view-applicant.header-actions.refuse.form.fields.notify')),
                         TextInput::make('email')
                             ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
-                            ->label('Email To'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/view-applicant.header-actions.refuse.form.fields.email-to')),
                     ]);
                 })
                 ->action(function (array $data, Applicant $record) {
@@ -162,7 +162,7 @@ class ViewApplicant extends ViewRecord
                 }),
             Action::make('Restore')
                 ->hidden(fn ($record) => ! $record->refuse_reason_id)
-                ->modalHeading('Restore Applicant from refuse')
+                ->modalHeading(__('recruitments::filament/clusters/applications/resources/applicant/pages/view-applicant.header-actions.reopen.title'))
                 ->requiresConfirmation()
                 ->color('gray')
                 ->action(function (Applicant $record) {

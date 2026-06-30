@@ -84,6 +84,12 @@ return [
                                 'body'  => 'Products cannot be deleted from a confirmed purchase order.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Open product',
+                            ],
+                        ],
                     ],
 
                     'section' => [
@@ -196,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'Tax',
     ],
 
     'infolist' => [

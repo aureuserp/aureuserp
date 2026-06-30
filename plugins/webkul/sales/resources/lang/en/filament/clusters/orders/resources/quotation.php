@@ -90,6 +90,12 @@ return [
                                 'body'  => 'Products cannot be deleted from a confirmed sales order.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Open product',
+                            ],
+                        ],
                     ],
 
                     'product-optional' => [
@@ -208,6 +214,12 @@ return [
             'amount-tax'         => 'Amount Tax',
             'amount-total'       => 'Amount Total',
             'customer-reference' => 'Customer Reference',
+        ],
+
+        'summarizers' => [
+            'total'        => 'Total',
+            'taxes'        => 'Taxes',
+            'total-amount' => 'Total Amount',
         ],
 
         'filters' => [

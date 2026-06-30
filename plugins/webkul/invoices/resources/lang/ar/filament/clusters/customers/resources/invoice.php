@@ -6,4 +6,10 @@ return [
     'navigation' => [
         'title' => 'الفواتير',
     ],
+
+    'actions' => [
+        'open-product' => [
+            'tooltip' => 'فتح المنتج',
+        ],
+    ],
 ];

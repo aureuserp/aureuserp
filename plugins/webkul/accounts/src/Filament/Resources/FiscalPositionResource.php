@@ -152,7 +152,7 @@ class FiscalPositionResource extends Resource
                                     ])
                                     ->schema([
                                         Select::make('account_source_id')
-                                            ->label('Source Account')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.source-account'))
                                             ->wrapOptionLabels(false)
                                             ->searchable()
                                             ->preload()
@@ -160,7 +160,7 @@ class FiscalPositionResource extends Resource
                                             ->required(),
 
                                         Select::make('account_destination_id')
-                                            ->label('Destination Account')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.destination-account'))
                                             ->wrapOptionLabels(false)
                                             ->searchable()
                                             ->preload()

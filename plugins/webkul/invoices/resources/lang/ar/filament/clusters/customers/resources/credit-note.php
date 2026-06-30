@@ -6,4 +6,10 @@ return [
     'navigation' => [
         'title' => 'إشعارات دائنة',
     ],
+
+    'actions' => [
+        'open-product' => [
+            'tooltip' => 'فتح المنتج',
+        ],
+    ],
 ];

@@ -221,7 +221,7 @@
 
         <!-- Agreement Title -->
         <div class="agreement-title">
-            Credit Note ID #{{ $record->name }}
+            {{ __('accounts::account-manager.documents.titles.credit-note', ['name' => $record->name]) }}
         </div>
 
         <!-- Details Table -->
@@ -229,21 +229,21 @@
             <tr>
                 @if ($record->invoice_date)
                     <td width="33%">
-                        <strong>Credit Note Date</strong><br>
+                        <strong>{{ __('accounts::account-manager.documents.labels.credit-note-date') }}</strong><br>
                         {{ $record->invoice_date }}
                     </td>
                 @endif
 
                 @if ($record->ref)
                     <td width="33%">
-                        <strong>Source</strong><br>
+                        <strong>{{ __('accounts::account-manager.documents.labels.source') }}</strong><br>
                         {{ $record->ref }}
                     </td>
                 @endif
 
                 @if ($record->invoice_date_due)
                     <td width="33%">
-                        <strong>Due Date</strong><br>
+                        <strong>{{ __('accounts::account-manager.documents.labels.due-date') }}</strong><br>
                         {{ $record->invoice_date_due?->format('Y-m-d') }}
                     </td>
                 @endif
@@ -255,14 +255,14 @@
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
+                        <th>{{ __('accounts::account-manager.documents.labels.product') }}</th>
+                        <th>{{ __('accounts::account-manager.documents.labels.quantity') }}</th>
 
                         @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
-                            <th>Unit</th>
+                            <th>{{ __('accounts::account-manager.documents.labels.unit') }}</th>
                         @endif
 
-                        <th>Unit Price</th>
+                        <th>{{ __('accounts::account-manager.documents.labels.unit-price') }}</th>
                     </tr>
                 </thead>
 
@@ -287,23 +287,23 @@
             <table class="ltr">
                 <tbody>
                     <tr>
-                        <td>Subtotal</td>
+                        <td>{{ __('accounts::account-manager.documents.labels.subtotal') }}</td>
                         <td>-</td>
                         <td>{{ money($record->amount_untaxed, $record->currency->name) }}</td>
                     </tr>
                     <tr>
-                        <td>Tax</td>
+                        <td>{{ __('accounts::account-manager.documents.labels.tax') }}</td>
                         <td>-</td>
                         <td>{{ money($record->amount_tax, $record->currency->name) }}</td>
                     </tr>
                     <tr>
-                        <td>Discount</td>
+                        <td>{{ __('accounts::account-manager.documents.labels.discount') }}</td>
                         <td>-</td>
                         <td>-{{ money($record->total_discount, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td style="border-top: 1px solid #FFFFFF;">
-                            <b>Grand Total</b>
+                            <b>{{ __('accounts::account-manager.documents.labels.grand-total') }}</b>
                         </td>
                         <td style="border-top: 1px solid #FFFFFF;">-</td>
                         <td style="border-top: 1px solid #FFFFFF;">
@@ -317,12 +317,12 @@
         <!-- Payment Information Section -->
         @if ($record->name)
             <div class="payment-info">
-                <div class="payment-info-title">Payment Information</div>
+                <div class="payment-info-title">{{ __('accounts::account-manager.documents.labels.payment-information') }}</div>
                 <div>
-                    Payment Communication: {{ $record->name }}
+                    {{ __('accounts::account-manager.documents.labels.payment-communication') }}: {{ $record->name }}
                     @if ($record?->partnerBank?->bank?->name || $record?->partnerBank?->account_number)
                         <br>
-                        <span>on this account details:</span>
+                        <span>{{ __('accounts::account-manager.documents.labels.account-details') }}</span>
                         {{ $record?->partnerBank?->bank?->name ?? 'N/A' }}
                         ({{ $record?->partnerBank?->account_number ?? 'N/A' }})
                     @endif

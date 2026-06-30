@@ -13,4 +13,33 @@ return [
         'draft-state-required' => 'يمكن تأكيد الفواتير في حالة المسودة فقط.',
         'journal-archived'     => 'لا يمكنك تأكيد فاتورة بيوميات مؤرشفة.',
     ],
+
+    'documents' => [
+        'titles' => [
+            'invoice'     => 'الفاتورة رقم :name',
+            'bill'        => 'فاتورة المورد رقم :name',
+            'refund'      => 'الاسترداد رقم :name',
+            'credit-note' => 'إشعار الائتمان رقم :name',
+        ],
+
+        'labels' => [
+            'invoice-date'          => 'تاريخ الفاتورة',
+            'bill-date'             => 'التاريخ',
+            'refund-date'           => 'تاريخ الاسترداد',
+            'credit-note-date'      => 'تاريخ إشعار الائتمان',
+            'source'                => 'المصدر',
+            'due-date'              => 'تاريخ الاستحقاق',
+            'product'               => 'المنتج',
+            'quantity'              => 'الكمية',
+            'unit'                  => 'الوحدة',
+            'unit-price'            => 'سعر الوحدة',
+            'subtotal'              => 'المجموع الفرعي',
+            'tax'                   => 'الضريبة',
+            'discount'              => 'الخصم',
+            'grand-total'           => 'الإجمالي العام',
+            'payment-information'   => 'معلومات الدفع',
+            'payment-communication' => 'بيان الدفع',
+            'account-details'       => 'على تفاصيل هذا الحساب:',
+        ],
+    ],
 ];

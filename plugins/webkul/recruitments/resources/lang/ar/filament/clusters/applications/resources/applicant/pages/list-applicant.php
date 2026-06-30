@@ -24,6 +24,12 @@ return [
             'label' => 'متقدم جديد',
 
             'modal-title' => 'إنشاء متقدم',
+
+            'form' => [
+                'fields' => [
+                    'candidate' => 'المتقدم',
+                ],
+            ],
         ],
     ],
 ];

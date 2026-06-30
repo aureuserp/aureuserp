@@ -831,12 +831,12 @@ class ApplicantResource extends Resource
                                             ->formatStateUsing(fn ($state) => $state['label'])
                                             ->color(fn ($state) => Color::generateV3Palette($state['color']))
                                             ->listWithLineBreaks()
-                                            ->label('Tags'),
+                                            ->label(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.entries.tags')),
                                         TextEntry::make('interviewer.name')
                                             ->icon('heroicon-o-user')
                                             ->placeholder('—')
                                             ->badge()
-                                            ->label('Interviewers'),
+                                            ->label(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.entries.interviewer')),
                                         ...static::getCustomInfolistEntries(),
                                     ])
                                     ->columns(2),

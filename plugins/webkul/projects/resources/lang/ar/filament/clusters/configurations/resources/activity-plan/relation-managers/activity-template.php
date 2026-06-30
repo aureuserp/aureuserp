@@ -67,6 +67,15 @@ return [
             'has-delay'       => 'يوجد تأخير',
         ],
 
+        'header-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'تم إنشاء قالب خطة النشاط',
+                    'body'  => 'تم إنشاء قالب خطة النشاط بنجاح.',
+                ],
+            ],
+        ],
+
         'actions' => [
             'edit' => [
                 'notification' => [

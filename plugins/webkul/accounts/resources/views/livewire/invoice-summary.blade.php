@@ -71,20 +71,20 @@
     <div class="flex justify-end">
         <div class="invoice-container">
             <div class="invoice-item">
-                <span>Untaxed Amount</span>
+                <span>{{ __('accounts::filament/resources/invoice.table.columns.tax-excluded') }}</span>
                 <span>{{ money($subtotal, $currency?->name) }}</span>
             </div>
 
             @if ($totalTax > 0)
                 <div class="invoice-item">
-                    <span>Tax</span>
+                    <span>{{ __('accounts::filament/resources/invoice.table.columns.tax') }}</span>
                     <span>{{ money($totalTax, $currency?->name) }}</span>
                 </div>
             @endif
 
             @if ($rounding != 0)
                 <div class="invoice-item">
-                    <span>Cash Rounding</span>
+                    <span>{{ __('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.cash-rounding') }}</span>
                     <span>{{ money($rounding, $currency?->name) }}</span>
                 </div>
             @endif
@@ -92,7 +92,7 @@
             <div class="divider"></div>
 
             <div class="invoice-item font-semibold">
-                <span>Total</span>
+                <span>{{ __('accounts::filament/resources/invoice.table.columns.total') }}</span>
                 <span>{{ money($grandTotal, $currency?->name) }}</span>
             </div>
 

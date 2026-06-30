@@ -89,6 +89,7 @@ class InventoryServiceProvider extends PackageServiceProvider
                 '2026_04_23_043412_add_procurement_group_id_column_in_purchases_order_lines_table_from_inventories',
                 '2026_05_14_092628_inventories_create_putaway_rules_table',
                 '2026_05_15_103923_create_inventories_putaway_rule_package_types_table',
+                '2026_06_22_104603_add_additional_column_in_inventories_moves_table',
             ])
             ->runsMigrations()
             ->hasSettings([

@@ -27,6 +27,7 @@ return [
             'accrual-validity-type'       => 'Accrual Validity Type',
             'advanced-accrual-settings'   => 'Advanced Accrual Settings',
             'after-allocation-start'      => 'After Allocation Start Date',
+            'to-date'                     => 'To Date',
         ],
     ],
 

@@ -17,7 +17,6 @@ class ManageTags extends ManageRecords
     {
         return [
             CreateAction::make()
-                ->label('New Tag')
                 ->label(__('blogs::filament/admin/clusters/configurations/resources/tag/pages/manage-tags.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
                 ->successNotification(

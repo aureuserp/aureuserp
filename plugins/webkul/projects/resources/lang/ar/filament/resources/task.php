@@ -113,6 +113,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'تحديث حالة المهمة',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'تم استعادة المهمة',

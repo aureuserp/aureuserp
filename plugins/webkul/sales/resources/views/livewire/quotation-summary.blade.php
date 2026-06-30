@@ -57,13 +57,13 @@
     <div class="flex justify-end">
         <div class="invoice-container">
             <div class="invoice-item">
-                <span>Untaxed Amount</span>
+                <span>{{ __('sales::filament/clusters/orders/resources/quotation.table.columns.untaxed-amount') }}</span>
                 <span>{{ money($subtotal, $currency?->name) }}</span>
             </div>
 
             @if ($totalTax > 0)
                 <div class="invoice-item">
-                    <span>Tax</span>
+                    <span>{{ __('sales::filament/clusters/orders/resources/quotation.table.columns.amount-tax') }}</span>
                     <span>{{ money($totalTax, $currency?->name) }}</span>
                 </div>
             @endif
@@ -71,13 +71,13 @@
             <div class="divider"></div>
 
             <div class="invoice-item font-bold">
-                <span>Total</span>
+                <span>{{ __('sales::filament/clusters/orders/resources/quotation.table.columns.amount-total') }}</span>
                 <span>{{ money($grandTotal, $currency?->name) }}</span>
             </div>
 
             @if ($enableMargin && $margin > 0)
                 <div class="invoice-item font-bold">
-                    <span>Margin</span>
+                    <span>{{ __('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.margin') }}</span>
                     <span>{{ money($margin, $currency?->name) }} ({{ number_format($marginPercentage, 1) }}%)</span>
                 </div>
             @endif

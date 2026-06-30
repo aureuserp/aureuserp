@@ -157,7 +157,6 @@ class PartnerForm
                                     ->unique('partners_titles'),
                                 TextInput::make('short_name')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.short-name'))
-                                    ->label('Short Name')
                                     ->required()
                                     ->maxLength(255)
                                     ->unique('partners_titles'),

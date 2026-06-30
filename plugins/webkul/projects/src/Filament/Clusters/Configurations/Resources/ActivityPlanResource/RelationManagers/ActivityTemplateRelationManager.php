@@ -209,8 +209,8 @@ class ActivityTemplateRelationManager extends RelationManager
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title('Activity plan template created')
-                            ->body('The activity plan template has been created successfully.'),
+                            ->title(__('projects::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.header-actions.create.notification.title'))
+                            ->body(__('projects::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.header-actions.create.notification.body')),
                     ),
             ])
             ->recordActions([

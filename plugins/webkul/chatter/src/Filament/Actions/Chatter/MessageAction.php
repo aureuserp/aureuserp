@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
+use Webkul\Chatter\Support\ChatterMentions;
 
 class MessageAction extends Action
 {
@@ -95,6 +96,7 @@ class MessageAction extends Action
                     ->visible(fn ($get) => $get('showSubject')),
                 RichEditor::make('body')
                     ->hiddenLabel()
+                    ->mentions([ChatterMentions::provider()])
                     ->placeholder(__('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.write-message-here'))
                     ->fileAttachmentsDirectory('log-attachments')
                     ->required(),

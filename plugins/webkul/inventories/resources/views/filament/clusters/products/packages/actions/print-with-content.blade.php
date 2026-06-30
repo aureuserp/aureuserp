@@ -116,14 +116,14 @@
                     <tr>
                         @if ($record->package_type_id)
                             <td width="50%">
-                                <strong>Package Type:</strong><br>
+                                <strong>{{ __('inventories::app.documents.package-type') }}</strong><br>
                                 {{ $record->packageType->name }}
                             </td>
                         @endif
 
                         @if ($record->pack_date)
                             <td width="50%">
-                                <strong>Pack Date:</strong><br>
+                                <strong>{{ __('inventories::app.documents.pack-date') }}</strong><br>
                                 {{ $record->pack_date }}
                             </td>
                         @endif
@@ -136,9 +136,9 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Barcode</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
+                            <th>{{ __('inventories::app.documents.barcode') }}</th>
+                            <th>{{ __('inventories::app.documents.product') }}</th>
+                            <th>{{ __('inventories::app.documents.quantity') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -162,7 +162,7 @@
                                     <td colspan="3">
                                         <div class="lot-info">
                                             <div style="margin-bottom: 8px">
-                                                <strong>Lot/Serial:</strong> {{ $item->lot->name }}
+                                                <strong>{{ __('inventories::app.documents.lot-serial') }}</strong> {{ $item->lot->name }}
                                             </div>
                                             
                                             <div class="barcode-container">

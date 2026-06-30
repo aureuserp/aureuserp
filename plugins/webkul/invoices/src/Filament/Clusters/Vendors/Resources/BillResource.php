@@ -67,7 +67,7 @@ class BillResource extends BaseBillResource
         return parent::getProductRepeater()
             ->extraItemActions([
                 Action::make('openProduct')
-                    ->tooltip('Open product')
+                    ->tooltip(__('invoices::filament/clusters/vendors/resources/bill.actions.open-product.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(
                         fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [

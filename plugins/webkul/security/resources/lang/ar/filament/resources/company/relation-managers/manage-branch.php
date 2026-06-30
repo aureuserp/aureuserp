@@ -196,6 +196,7 @@ return [
                         'entries' => [
                             'company-name'                => 'اسم الشركة',
                             'registration-number'         => 'رقم التسجيل',
+                            'tax-id'                      => 'الرقم الضريبي',
                             'registration-number-tooltip' => 'الرقم الضريبي هو معرف فريد لشركتك.',
                             'color'                       => 'اللون',
                         ],

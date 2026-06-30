@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Filament\Customer\Clusters\Account\Resources;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Http\Middleware\Authenticate;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
@@ -32,6 +33,8 @@ class OrderResource extends Resource
     protected static ?string $cluster = Account::class;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string | array $routeMiddleware = [Authenticate::class];
 
     public static function table(Table $table): Table
     {

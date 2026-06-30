@@ -181,7 +181,7 @@ class ProductForm
                         ->minValue(0)
                         ->columnSpan(2),
                     Select::make('uom_id')
-                        ->placeholder('UOM')
+                        ->placeholder(__('products::filament/resources/product.form.sections.pricing.fields.uom-placeholder'))
                         ->native(false)
                         ->required()
                         ->options(UOM::pluck('name', 'id'))
@@ -199,7 +199,7 @@ class ProductForm
                         ->minValue(0)
                         ->columnSpan(2),
                     Select::make('uom_po_id')
-                        ->placeholder('UOM')
+                        ->placeholder(__('products::filament/resources/product.form.sections.pricing.fields.uom-placeholder'))
                         ->native(false)
                         ->required()
                         ->options(UOM::pluck('name', 'id'))

@@ -3,9 +3,11 @@
 namespace Webkul\PluginManager;
 
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package as BasePackage;
+use Throwable;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Models\Plugin;
@@ -192,6 +194,64 @@ class Package extends BasePackage
         }
 
         return static::$plugins[$name] ??= Plugin::where('name', $name)->first();
+    }
+
+   
+    public static function refreshPluginCaches(): void
+    {
+        try {
+            Artisan::call('optimize:clear');
+
+           if (app()->isProduction()) {
+                static::rebuildCachesInBackground();
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected static function rebuildCachesInBackground(): void
+    {
+        if (! app()->isProduction() || PHP_OS_FAMILY === 'Windows') {
+            return;
+        }
+
+        $command = sprintf(
+            '%s %s optimize > /dev/null 2>&1 &',
+            escapeshellarg(static::phpBinaryPath()),
+            escapeshellarg(base_path('artisan'))
+        );
+
+        exec($command);
+    }
+
+  
+    public static function phpBinaryPath(): string
+    {
+        $php = trim((string) @shell_exec('which php 2>/dev/null'));
+
+        if ($php !== '' && is_file($php)) {
+            return $php;
+        }
+
+        if (! str_contains(PHP_BINARY, 'fpm') && is_file(PHP_BINARY)) {
+            return PHP_BINARY;
+        }
+
+        $candidates = [
+            '/usr/local/bin/php',
+            '/usr/bin/php',
+            '/opt/homebrew/bin/php',
+            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
+        ];
+
+        foreach ($candidates as $path) {
+            if (is_file($path)) {
+                return $path;
+            }
+        }
+
+        return 'php';
     }
 
     public static function isPluginInstalled(string $name): bool

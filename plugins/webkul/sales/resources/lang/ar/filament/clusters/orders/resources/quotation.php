@@ -90,6 +90,12 @@ return [
                                 'body'  => 'لا يمكن حذف المنتجات من أمر بيع مؤكد.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'فتح المنتج',
+                            ],
+                        ],
                     ],
 
                     'product-optional' => [
@@ -208,6 +214,12 @@ return [
             'amount-tax'         => 'مبلغ الضريبة',
             'amount-total'       => 'المبلغ الإجمالي',
             'customer-reference' => 'مرجع العميل',
+        ],
+
+        'summarizers' => [
+            'total'        => 'الإجمالي',
+            'taxes'        => 'الضرائب',
+            'total-amount' => 'المبلغ الإجمالي',
         ],
 
         'filters' => [

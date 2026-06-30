@@ -13,6 +13,8 @@ use Webkul\Inventory\Models\Warehouse;
 
 class CreateScrap extends CreateRecord
 {
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
