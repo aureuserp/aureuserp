@@ -25,6 +25,12 @@ return [
 
         'refuse' => [
             'title'        => 'سبب الرفض',
+            'form'         => [
+                'fields' => [
+                    'notify'   => 'إشعار',
+                    'email-to' => 'إرسال البريد إلى',
+                ],
+            ],
             'notification' => [
                 'title' => 'تم رفض المتقدم',
                 'body'  => 'تم رفض المتقدم بنجاح.',

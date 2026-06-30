@@ -287,4 +287,16 @@ return [
         ],
     ],
 
+    'summary' => [
+        'actions' => [
+            'reconcile' => [
+                'label' => 'إضافة',
+            ],
+
+            'unreconcile' => [
+                'label' => 'إلغاء الربط',
+            ],
+        ],
+    ],
+
 ];

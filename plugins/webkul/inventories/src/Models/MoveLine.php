@@ -75,7 +75,7 @@ class MoveLine extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -278,13 +278,31 @@ class MoveLine extends Model
         });
 
         static::deleted(function ($moveLine) {
-            ProductQuantity::updateReservedQuantity(
-                product: $moveLine->product,
-                location: $moveLine->sourceLocation,
-                quantity: -$moveLine->uom_qty,
-                lot: $moveLine->lot,
-                package: $moveLine->package,
-            );
+            if (
+                ! float_is_zero($moveLine->uom_qty, precisionRounding: 2)
+                && $moveLine->move_id
+                && ! $moveLine->move->shouldBypassReservation($moveLine->location)
+            ) {
+                ProductQuantity::updateReservedQuantity(
+                    product: $moveLine->product,
+                    location: $moveLine->sourceLocation,
+                    quantity: -$moveLine->uom_qty,
+                    lot: $moveLine->lot,
+                    package: $moveLine->package,
+                );
+            }
+
+            if ($moveLine->package_level_id) {
+                $packageLevel = $moveLine->packageLevel;
+
+                if (
+                    $packageLevel
+                    && $packageLevel->moveLines()->count() === 0
+                    && $packageLevel->moves()->count() === 0
+                ) {
+                    $packageLevel->delete();
+                }
+            }
 
             $moveLine->move->computeQuantity();
 

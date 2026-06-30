@@ -5,6 +5,28 @@ return [
         'title' => 'Reporting',
         'group' => 'Accounting',
     ],
+    'common' => [
+        'from-to' => ':report - From :from to :to',
+        'expand-all' => 'Expand All',
+        'collapse-all' => 'Collapse All',
+        'account' => 'Account',
+        'date' => 'Date',
+        'communication' => 'Communication',
+        'partner' => 'Partner',
+        'journal' => 'Journal',
+        'invoice-date' => 'Invoice Date',
+        'due-date' => 'Due Date',
+        'debit' => 'Debit',
+        'credit' => 'Credit',
+        'balance' => 'Balance',
+        'total' => 'Total',
+        'opening-balance' => 'Opening Balance',
+        'initial-balance' => 'Initial Balance',
+        'end-balance' => 'End Balance',
+        'not-due' => 'Not due',
+        'no-data' => 'No data available',
+        'no-accounts-transactions' => 'No accounts with transactions in this period',
+    ],
     'pages' => [
         'balance-sheet' => [
             'navigation' => [

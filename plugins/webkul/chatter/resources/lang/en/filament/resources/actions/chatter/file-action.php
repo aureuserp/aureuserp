@@ -5,6 +5,8 @@ return [
         'title'   => 'Attachments',
         'tooltip' => 'Upload Attachments',
 
+        'modal-submit-action-label' => 'Upload',
+
         'form' => [
             'fields' => [
                 'files'                  => 'Files',

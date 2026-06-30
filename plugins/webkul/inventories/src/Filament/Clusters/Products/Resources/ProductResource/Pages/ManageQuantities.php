@@ -172,28 +172,20 @@ class ManageQuantities extends ManageRelatedRecords
                     ->relationship(
                         name: 'package',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(function ($query) use ($get) {
-                            $locationId = $get('location_id');
-
-                            if ($locationId) {
-                                $query->where('location_id', $locationId);
-                            } else {
-                                $query->whereNull('location_id');
-                            }
-                        }),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('location_id', $get('location_id'))
+                            ->orWhereNull('location_id'),
                     )
                     ->searchable()
                     ->reactive()
                     ->preload()
                     ->createOptionForm(fn (Schema $schema): Schema => PackageResource::form($schema))
-                    ->createOptionAction(function (Action $action, Set $set) {
-                        $action
-                            ->mutateDataUsing(function (array $data) {
-                                $data['company_id'] = $this->getOwnerRecord()->company_id;
+                    ->createOptionUsing(function (array $data, Get $get) {
+                        $data['company_id'] = $this->getOwnerRecord()->company_id;
 
-                                return $data;
-                            })
-                            ->after(fn () => $set('package_id', null));
+                        $data['location_id'] = $get('location_id');
+
+                        return PackageResource::getModel()::create($data)->getKey();
                     })
                     ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
                 TextInput::make('quantity')

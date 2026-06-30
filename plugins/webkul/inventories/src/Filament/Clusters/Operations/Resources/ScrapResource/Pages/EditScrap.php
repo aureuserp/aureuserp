@@ -16,6 +16,8 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 class EditScrap extends EditRecord
 {
     use HasRecordNavigationTabs;
+    
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = ScrapResource::class;
 

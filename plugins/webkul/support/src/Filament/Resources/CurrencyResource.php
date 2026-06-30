@@ -283,8 +283,7 @@ class CurrencyResource extends Resource
                                 ->body(__('support::filament/resources/currency.table.bulk-actions.delete.notification.body')),
                         ),
                 ]),
-            ])
-            ->reorderable('id');
+            ]);
     }
 
     public static function infolist(Schema $schema): Schema

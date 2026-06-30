@@ -196,6 +196,7 @@ return [
                         'entries' => [
                             'company-name'                => 'Company Name',
                             'registration-number'         => 'Registration Number',
+                            'tax-id'                      => 'Tax ID',
                             'registration-number-tooltip' => 'The Tax ID is a unique identifier for your company.',
                             'color'                       => 'Color',
                         ],

@@ -113,6 +113,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Update Task State',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Task restored',

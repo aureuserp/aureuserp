@@ -11,9 +11,10 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'       => 'الاسم',
-                'color'      => 'اللون',
-                'status'     => 'الحالة',
+                'name'             => 'الاسم',
+                'name-placeholder' => 'أدخل اسم نوع المهارة',
+                'color'            => 'اللون',
+                'status'           => 'الحالة',
             ],
         ],
     ],

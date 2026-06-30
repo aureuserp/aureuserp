@@ -93,7 +93,11 @@ class Message extends Model
         }
 
         static::created(function (Message $message) {
-            app(ChatterNotificationService::class)->notifyFollowers($message);
+            app()->terminating(function () use ($message) {
+                $message->unsetRelation('messageable');
+
+                app(ChatterNotificationService::class)->notifyFollowers($message);
+            });
         });
     }
 

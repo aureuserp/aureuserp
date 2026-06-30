@@ -16,6 +16,8 @@ class CreateDelivery extends CreateRecord
 
     protected static string $resource = DeliveryResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

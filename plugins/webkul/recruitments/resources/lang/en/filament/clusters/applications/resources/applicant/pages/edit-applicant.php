@@ -25,6 +25,12 @@ return [
 
         'refuse' => [
             'title'        => 'Refuse Reason',
+            'form'         => [
+                'fields' => [
+                    'notify'   => 'Notify',
+                    'email-to' => 'Email To',
+                ],
+            ],
             'notification' => [
                 'title' => 'Applicant refused',
                 'body'  => 'The applicant has been refused successfully.',

@@ -19,6 +19,8 @@ class EditReceipt extends EditRecord
 {
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = ReceiptResource::class;
 
     protected function getRedirectUrl(): string

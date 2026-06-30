@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveFactory;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
@@ -48,6 +49,7 @@ class Move extends Model
         'is_picked',
         'is_scraped',
         'is_inventory',
+        'additional',
         'is_refund',
         'deadline',
         'reservation_date',
@@ -84,6 +86,7 @@ class Move extends Model
         'is_picked'        => 'boolean',
         'is_scraped'       => 'boolean',
         'is_inventory'     => 'boolean',
+        'additional'       => 'boolean',
         'is_refund'        => 'boolean',
         'reservation_date' => 'date',
         'scheduled_at'     => 'datetime',
@@ -135,7 +138,7 @@ class Move extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -317,6 +320,21 @@ class Move extends Model
             $move->company_id ??= $move->operation?->company_id ?? $move->operationType?->company_id;
 
             $move->state ??= MoveState::DRAFT;
+
+            if (
+                $move->operation
+                && ! in_array($move->operation->state, [OperationState::DRAFT, OperationState::DONE, OperationState::CANCELED])
+            ) {
+                $move->additional = true;
+            }
+        });
+
+        static::created(function ($move) {
+            if (! $move->additional) {
+                return;
+            }
+
+            $move->operation->autoConfirm();
         });
 
         static::saving(function ($move) {
@@ -1318,5 +1336,46 @@ class Move extends Model
             $forecastAvailability,
             $forecastExpectedDate,
         ];
+    }
+
+    public function checkQuantity()
+    {
+        $locationIds = $this->destinationLocation->getInternalChildLocations()->pluck('id')->unique()->all();
+
+        $quantities = ProductQuantity::where('product_id', $this->product_id)
+            ->whereIn('location_id', $locationIds)
+            ->whereIn('lot_id', $this->lines->pluck('lot_id')->unique()->filter()->all())
+            ->get();
+        
+        $serialNumberQuantities = $quantities->filter(
+            fn ($quantity) => $quantity->product->tracking === ProductTracking::SERIAL
+                && $quantity->location->type !== LocationType::INVENTORY
+                && $quantity->lot_id
+        );
+
+        if ($serialNumberQuantities->isEmpty()) {
+            return;
+        }
+
+        $locationIds = $serialNumberQuantities->flatMap(
+            fn ($quantity) => $quantity->location->getInternalChildLocations()->pluck('id')
+        )->unique()->all();
+
+        $groups = ProductQuantity::whereIn('product_id', $serialNumberQuantities->pluck('product_id')->unique()->all())
+            ->whereIn('location_id', $locationIds)
+            ->whereIn('lot_id', $serialNumberQuantities->pluck('lot_id')->unique()->filter()->all())
+            ->groupBy('product_id', 'location_id', 'lot_id')
+            ->selectRaw('product_id, location_id, lot_id, SUM(quantity) as qty')
+            ->with(['product', 'lot'])
+            ->get();
+
+        foreach ($groups as $group) {
+            if (float_compare(abs($group->qty), 1, precisionRounding: $group->product->uom->rounding) > 0) {
+                throw new \Exception(__('inventories::system.move.serial-already-assigned', [
+                    'product'       => $group->product->name,
+                    'serial_number' => $group->lot->name,
+                ]));
+            }
+        }
     }
 }

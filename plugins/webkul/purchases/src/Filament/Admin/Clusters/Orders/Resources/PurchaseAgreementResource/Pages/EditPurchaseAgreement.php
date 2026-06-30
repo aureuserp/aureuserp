@@ -49,8 +49,8 @@ class EditPurchaseAgreement extends EditRecord
                     if (! PurchaseAgreementResource::canBeConfirmed($record)) {
                         Notification::make()
                             ->danger()
-                            ->title('Unable to confirm purchase agreement')
-                            ->body('Add at least one product line before confirming this purchase agreement.')
+                            ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.notification.unable.title'))
+                            ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.notification.unable.body'))
                             ->send();
 
                         return;

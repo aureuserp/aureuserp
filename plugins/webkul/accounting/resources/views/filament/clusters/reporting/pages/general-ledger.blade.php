@@ -10,7 +10,7 @@
             @endphp
             
             <x-slot name="heading">
-                General Ledger - From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}
+                {{ __('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title'), 'from' => \Carbon\Carbon::parse($data['date_from'])->format('M d, Y'), 'to' => \Carbon\Carbon::parse($data['date_to'])->format('M d, Y')]) }}
             </x-slot>
 
             <x-slot name="afterHeader">
@@ -21,7 +21,7 @@
                         size="sm"
                         color="primary"
                     >
-                        Expand All
+                        {{ __('accounting::filament/clusters/reporting.common.expand-all') }}
                     </x-filament::link>
 
                     <span class="text-gray-500 dark:text-gray-400 flex items-center">/</span>
@@ -32,7 +32,7 @@
                         size="sm"
                         color="primary"
                     >
-                        Collapse All
+                        {{ __('accounting::filament/clusters/reporting.common.collapse-all') }}
                     </x-filament::link>
                 </div>
             </x-slot>
@@ -54,13 +54,13 @@
                     <thead class="bg-gray-50/50 dark:bg-white/5">
                         <tr>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Date</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Communication</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Partner</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Balance</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.date') }}</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.communication') }}</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.partner') }}</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.balance') }}</th>
                         </tr>
                     </thead>
                     

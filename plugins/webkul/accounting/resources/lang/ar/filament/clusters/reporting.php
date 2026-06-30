@@ -5,6 +5,28 @@ return [
         'title' => 'التقارير',
         'group' => 'المحاسبة',
     ],
+    'common' => [
+        'from-to' => ':report - من :from إلى :to',
+        'expand-all' => 'توسيع الكل',
+        'collapse-all' => 'طي الكل',
+        'account' => 'الحساب',
+        'date' => 'التاريخ',
+        'communication' => 'التواصل',
+        'partner' => 'الشريك',
+        'journal' => 'دفتر اليومية',
+        'invoice-date' => 'تاريخ الفاتورة',
+        'due-date' => 'تاريخ الاستحقاق',
+        'debit' => 'مدين',
+        'credit' => 'دائن',
+        'balance' => 'الرصيد',
+        'total' => 'الإجمالي',
+        'opening-balance' => 'الرصيد الافتتاحي',
+        'initial-balance' => 'الرصيد الابتدائي',
+        'end-balance' => 'الرصيد النهائي',
+        'not-due' => 'غير مستحق',
+        'no-data' => 'لا توجد بيانات متاحة',
+        'no-accounts-transactions' => 'لا توجد حسابات بها معاملات في هذه الفترة',
+    ],
     'pages' => [
         'balance-sheet' => [
             'navigation' => [

@@ -27,6 +27,7 @@ return [
             'accrual-validity-type'       => 'نوع صلاحية الاستحقاق',
             'advanced-accrual-settings'   => 'إعدادات الاستحقاق المتقدمة',
             'after-allocation-start'      => 'بعد تاريخ بدء التخصيص',
+            'to-date'                     => 'إلى تاريخ',
         ],
     ],
 

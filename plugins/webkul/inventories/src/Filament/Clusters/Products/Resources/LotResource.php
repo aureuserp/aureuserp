@@ -107,8 +107,15 @@ class LotResource extends Resource
                                     ->relationship(
                                         name: 'product',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->where('tracking', ProductTracking::LOT)->whereNull('is_configurable'),
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])->whereNull('is_configurable'),
                                     )
+
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
+                                    })
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -146,7 +153,10 @@ class LotResource extends Resource
                 TextColumn::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.product'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($record) {
+                        return $record->product->name.($record->product->trashed() ? ' (Deleted)' : '');
+                    }),
                 TextColumn::make('reference')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.reference'))
                     ->placeholder('—')

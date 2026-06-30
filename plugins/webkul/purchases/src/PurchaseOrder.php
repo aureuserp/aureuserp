@@ -154,7 +154,8 @@ class PurchaseOrder
     public function cancelPurchaseOrder(Order $record): Order
     {
         $record->update([
-            'state' => PurchaseEnums\OrderState::CANCELED,
+            'state'                   => PurchaseEnums\OrderState::CANCELED,
+            'mail_reminder_confirmed' => false,
         ]);
 
         $record = $this->computePurchaseOrder($record);

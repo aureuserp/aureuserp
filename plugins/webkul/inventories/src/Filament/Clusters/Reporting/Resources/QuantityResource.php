@@ -107,22 +107,18 @@ class QuantityResource extends Resource
                     ->relationship(
                         name: 'package',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(function ($query) use ($get) {
-                            $locationId = $get('location_id');
-
-                            if ($locationId) {
-                                $query->where('location_id', $locationId);
-                            } else {
-                                $query->whereNull('location_id');
-                            }
-                        }),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('location_id', $get('location_id'))
+                            ->orWhereNull('location_id'),
                     )
                     ->searchable()
                     ->reactive()
                     ->preload()
                     ->createOptionForm(fn (Schema $schema): Schema => PackageResource::form($schema))
-                    ->createOptionAction(function (Action $action, Set $set) {
-                        $action->after(fn () => $set('package_id', null));
+                    ->createOptionUsing(function (array $data, Get $get) {
+                        $data['location_id'] = $get('location_id');
+
+                        return PackageResource::getModel()::create($data)->getKey();
                     })
                     ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
                 TextInput::make('quantity')

@@ -1199,7 +1199,7 @@ class OrderResource extends Resource
                 return $data;
             })->extraItemActions([
                 Action::make('openProduct')
-                    ->tooltip('Open product')
+                    ->tooltip(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.actions.open-product.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(function (array $arguments, Get $get): ?string {
                         $productId = $get("products.{$arguments['item']}.product_id");

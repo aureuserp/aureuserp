@@ -54,6 +54,20 @@ trait HasChatter
         return 'user_id';
     }
 
+    public function getChatterResponsibleLabel(): ?string
+    {
+        $column = $this->getChatterResponsibleColumn();
+
+        if (! $column || ! method_exists($this, 'getLogAttributeLabels')) {
+            return null;
+        }
+
+        $labels = $this->getLogAttributeLabels();
+        $relation = str_ends_with($column, '_id') ? substr($column, 0, -3) : $column;
+
+        return $labels[$relation.'.name'] ?? $labels[$column] ?? null;
+    }
+
     public function getChatterFollowerUserIds(): array
     {
         $columns = ['creator_id'];

@@ -272,7 +272,6 @@ class WorkLocationResource extends Resource
                 TextEntry::make('location_type')
                     ->icon('heroicon-o-map')
                     ->placeholder('—')
-                    ->label('Location Type')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.infolist.location-type')),
                 TextEntry::make('location_number')
                     ->placeholder('—')

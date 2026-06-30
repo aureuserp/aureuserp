@@ -145,7 +145,7 @@ class FileAction extends Action
             })
             ->modalSubmitAction(
                 fn ($action) => $action
-                    ->label('Upload')
+                    ->label(__('chatter::filament/resources/actions/chatter/file-action.setup.modal-submit-action-label'))
                     ->icon('heroicon-m-paper-airplane')
             )
             ->modalWidth(Width::TwoExtraLarge)

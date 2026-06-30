@@ -49,6 +49,7 @@ return [
         'quantity-rounding-mismatch' => 'The quantity done for the product :product doesn\'t respect the rounding precision defined on the unit of measure :unit. Please change the quantity done or the rounding precision of your unit of measure.',
         'split-done-or-cancel'       => 'You cannot split a stock move that has been set to \'Done\' or \'Cancel\'.',
         'split-draft'                => 'You cannot split a draft move. It needs to be confirmed first.',
+        'serial-already-assigned'    => 'The serial number has already been assigned to the Product: :product, Serial Number: :serial_number',
     ],
 
     'rule' => [
