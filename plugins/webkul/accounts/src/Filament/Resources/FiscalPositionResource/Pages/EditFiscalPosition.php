@@ -45,7 +45,7 @@ class EditFiscalPosition extends EditRecord
     {
         $user = Auth::user();
 
-        $data['company_id'] = $user?->default_company_id;
+        $data['company_id'] = current_company_id();
 
         return $data;
     }

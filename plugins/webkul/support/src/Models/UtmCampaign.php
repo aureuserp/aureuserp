@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\UtmCampaignFactory;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class UtmCampaign extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'utm_campaigns';

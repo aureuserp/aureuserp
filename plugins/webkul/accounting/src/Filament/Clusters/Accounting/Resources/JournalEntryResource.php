@@ -212,7 +212,7 @@ class JournalEntryResource extends Resource
                                     ->preload()
                                     ->reactive()
                                     ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
-                                    ->default(Auth::user()->default_company_id)
+                                    ->default(current_company_id())
                                     ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set) {
                                         $company = Company::find($get('company_id'));
@@ -684,7 +684,7 @@ class JournalEntryResource extends Resource
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->active(),
                     )
-                    ->default(Auth::user()->defaultCompany?->currency_id)
+                    ->default(current_company()?->currency_id)
                     ->required()
                     ->live()
                     ->selectablePlaceholder(false)

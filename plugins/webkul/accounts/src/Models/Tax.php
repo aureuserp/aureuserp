@@ -18,9 +18,11 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Tax extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'accounts_taxes';

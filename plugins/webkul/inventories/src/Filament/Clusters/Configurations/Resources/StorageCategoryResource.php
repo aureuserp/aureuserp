@@ -94,7 +94,7 @@ class StorageCategoryResource extends Resource
                             ->relationship(name: 'company', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
-                            ->default(Auth::user()->default_company_id),
+                            ->default(current_company_id()),
                     ])
                     ->columns(2)->columnSpanFull(),
             ]);

@@ -48,7 +48,7 @@ class CreateScrap extends CreateRecord
 
         $data['destination_location_id'] ??= Location::where('is_scrap', true)->first()->id;
 
-        $data['company_id'] ??= Auth::user()->default_company_id;
+        $data['company_id'] ??= current_company_id();
 
         return $data;
     }

@@ -13,9 +13,11 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Project\Database\Factories\TaskStageFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class TaskStage extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'projects_task_stages';

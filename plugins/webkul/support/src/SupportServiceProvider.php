@@ -5,13 +5,18 @@ namespace Webkul\Support;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
+use Webkul\Support\Http\Controllers\CompanyContextController;
+use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
@@ -78,7 +83,37 @@ class SupportServiceProvider extends PackageServiceProvider
     {
         include __DIR__.'/helpers.php';
 
+        Gate::before(function ($user, string $ability) {
+            if ($ability !== 'bypass_company_scope') {
+                return null;
+            }
+
+            if ($user && method_exists($user, 'hasRole') && $user->hasRole('super_admin')) {
+                return true;
+            }
+
+            return null;
+        });
+
         Livewire::component('accept-invitation', AcceptInvitation::class);
+
+        Route::post('company-context/set', [CompanyContextController::class, 'set'])
+            ->middleware(['web', 'auth'])
+            ->name('company-context.set');
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
+            function (): string {
+                if (filament()->getCurrentPanel()?->getId() !== 'admin') {
+                    return '';
+                }
+
+                return view('support::company-switcher', [
+                    'companies' => app(CompanyContext::class)->allowedCompanies(),
+                    'active'    => app(CompanyContext::class)->activeIds(),
+                ])->render();
+            },
+        );
 
         Gate::policy(Role::class, RolePolicy::class);
 
@@ -101,6 +136,8 @@ class SupportServiceProvider extends PackageServiceProvider
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(SupportPlugin::make());
         });
+
+        $this->app->scoped(CompanyContext::class);
 
         $this->registerLanguageSwitch();
 

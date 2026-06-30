@@ -29,9 +29,11 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Order extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'purchases';

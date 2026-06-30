@@ -21,9 +21,11 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Support\OwnerSource;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Task extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'projects';
@@ -180,7 +182,7 @@ class Task extends Model implements Sortable
 
             $task->creator_id ??= $authUser->id;
 
-            $task->company_id ??= $authUser?->default_company_id;
+            $task->company_id ??= current_company_id();
         });
 
         static::updated(function ($task) {

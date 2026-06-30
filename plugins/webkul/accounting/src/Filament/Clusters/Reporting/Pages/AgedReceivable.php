@@ -261,7 +261,7 @@ class AgedReceivable extends Page implements HasForms
         $asOfDate = Carbon::parse($state['as_of_date'] ?? now());
         $basis = $state['basis'] ?? 'due_date';
         $period = $state['period'] ?? 30;
-        $companyId = Auth::user()->default_company_id;
+        $companyId = current_company_id();
         $postedOnly = ($state['posted_entries'] ?? 'posted') === 'posted';
 
         $query = MoveLine::select(
@@ -341,7 +341,7 @@ class AgedReceivable extends Page implements HasForms
         $journalIds = $state['journals'] ?? [];
         $partnerIds = $state['partners'] ?? [];
         $postedOnly = ($state['posted_entries'] ?? 'posted') === 'posted';
-        $companyId = Auth::user()->default_company_id;
+        $companyId = current_company_id();
 
         $query = MoveLine::select(
             'accounts_account_move_lines.*',

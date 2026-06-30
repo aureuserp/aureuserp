@@ -178,7 +178,7 @@ class JournalResource extends Resource
                                                                         titleAttribute: 'account_number',
                                                                         modifyQueryUsing: function ($query, Get $get) {
                                                                             $company = Company::find(
-                                                                                $get('company_id') ?? Auth::user()->default_company_id
+                                                                                $get('company_id') ?? current_company_id()
                                                                             );
 
                                                                             if ($company?->partner_id) {
@@ -368,7 +368,7 @@ class JournalResource extends Resource
                                                     ->disabled()
                                                     ->dehydrated()
                                                     ->options(fn () => Company::pluck('name', 'id'))
-                                                    ->default(Auth::user()->default_company_id)
+                                                    ->default(current_company_id())
                                                     ->required(),
                                             ]),
                                     ]),

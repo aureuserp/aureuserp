@@ -14,9 +14,11 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Sale\Database\Factories\TeamFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Team extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'sales';

@@ -61,7 +61,7 @@ class Currency extends Model
             return 1;
         }
 
-        $company = $company ?? Auth::user()?->defaultCompany;
+        $company = $company ?? current_company();
 
         $date = $date ?? now()->toDateString();
 

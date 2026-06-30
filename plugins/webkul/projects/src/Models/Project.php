@@ -21,9 +21,11 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Support\OwnerSource;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Project extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'projects';

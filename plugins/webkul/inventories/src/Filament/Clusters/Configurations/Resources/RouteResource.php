@@ -110,7 +110,7 @@ class RouteResource extends Resource
                             ->live()
                             ->searchable()
                             ->preload()
-                            ->default(Auth::user()->default_company_id),
+                            ->default(current_company_id()),
                     ]),
 
                 Section::make(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.title'))

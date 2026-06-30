@@ -214,7 +214,7 @@ class AccountManager
 
         $messageData = [
             'from' => [
-                'company' => Auth::user()->defaultCompany->toArray(),
+                'company' => current_company()->toArray(),
             ],
             'body' => view($viewTemplate, [
                 'payload' => $this->preparePayloadForSendByEmail($record, $partner, $data),

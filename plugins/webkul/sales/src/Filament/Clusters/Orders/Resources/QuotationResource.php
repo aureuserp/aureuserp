@@ -266,11 +266,11 @@ class QuotationResource extends Resource
                                                 'name',
                                                 modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(
                                                     'company_id',
-                                                    $get('company_id') ?? Auth::user()->default_company_id,
+                                                    $get('company_id') ?? current_company_id(),
                                                 )->orderBy('id'),
                                             )
                                             ->default(fn (Get $get): ?int => static::getDefaultWarehouseId(
-                                                $get('company_id') ?? Auth::user()->default_company_id
+                                                $get('company_id') ?? current_company_id()
                                             ))
                                             ->searchable()
                                             ->preload()
@@ -318,13 +318,13 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->afterStateUpdated(function (Set $set, ?int $state): void {
-                                                $companyId = $state ?? Auth::user()->default_company_id;
+                                                $companyId = $state ?? current_company_id();
 
                                                 $set('currency_id', Company::find($state)?->currency_id);
                                                 $set('warehouse_id', static::getDefaultWarehouseId($companyId));
                                             })
                                             ->reactive()
-                                            ->default(Auth::user()->default_company_id),
+                                            ->default(current_company_id()),
                                         Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
                                             ->relationship(
@@ -337,7 +337,7 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->reactive()
-                                            ->default(Auth::user()->defaultCompany?->currency_id),
+                                            ->default(current_company()?->currency_id),
                                     ]),
                             ]),
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.form.tabs.term-and-conditions.title'))
@@ -1315,7 +1315,7 @@ class QuotationResource extends Resource
                             $context['warehouse_id'] = (int) $warehouseId;
                         }
 
-                        $companyId = $get('../../company_id') ?? Auth::user()?->default_company_id;
+                        $companyId = $get('../../company_id') ?? current_company_id();
 
                         if (filled($companyId)) {
                             $context['company_ids'] = [(int) $companyId];
@@ -1764,7 +1764,7 @@ class QuotationResource extends Resource
             'currency_id'          => $record->currency_id,
             'partner_id'           => $record->partner_id,
             'creator_id'           => Auth::id(),
-            'company_id'           => Auth::user()->default_company_id,
+            'company_id'           => current_company_id(),
             ...$data,
         ];
     }

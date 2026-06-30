@@ -12,9 +12,11 @@ use Webkul\Maintenance\Database\Factories\EquipmentFactory;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Equipment extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     protected $table = 'maintenance_equipments';
@@ -113,7 +115,7 @@ class Equipment extends Model
             $authUser = Auth::user();
 
             $equipment->creator_id ??= $authUser?->id;
-            $equipment->company_id ??= $authUser?->default_company_id;
+            $equipment->company_id ??= current_company_id();
             $equipment->effective_date ??= now()->toDateString();
             $equipment->maintenance_count ??= 0;
             $equipment->maintenance_open_count ??= 0;

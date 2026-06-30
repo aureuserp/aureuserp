@@ -108,8 +108,8 @@ class WarehouseResource extends Resource
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.company'))
                                             ->relationship('company', 'name')
                                             ->required()
-                                            ->disabled(fn () => Auth::user()->default_company_id)
-                                            ->default(Auth::user()->default_company_id),
+                                            ->disabled(fn () => current_company_id())
+                                            ->default(current_company_id()),
                                         Select::make('partner_address_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.address'))
                                             ->relationship('partnerAddress', 'name')

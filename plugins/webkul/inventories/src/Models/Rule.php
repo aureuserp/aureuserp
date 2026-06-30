@@ -17,9 +17,11 @@ use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Rule extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_rules';
@@ -173,7 +175,7 @@ class Rule extends Model implements Sortable
 
             $rule->creator_id ??= $authUser->id;
 
-            $rule->company_id ??= $authUser?->default_company_id;
+            $rule->company_id ??= current_company_id();
 
             $rule->warehouse_id ??= $rule->operationType?->warehouse_id;
 

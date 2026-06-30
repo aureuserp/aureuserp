@@ -149,7 +149,7 @@ class ProfitLoss extends Page implements HasForms
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfMonth();
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now()->endOfMonth();
 
-        $companyId = Auth::user()->default_company_id;
+        $companyId = current_company_id();
         $journalIds = $this->data['journals'] ?? [];
 
         $query = MoveLine::query()

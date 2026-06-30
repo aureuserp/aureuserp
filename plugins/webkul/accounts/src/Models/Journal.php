@@ -17,9 +17,11 @@ use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Journal extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'accounts_journals';

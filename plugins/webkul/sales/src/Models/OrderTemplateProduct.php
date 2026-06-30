@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class OrderTemplateProduct extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'sales_order_template_products';
 
     protected $fillable = [

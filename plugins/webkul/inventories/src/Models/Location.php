@@ -13,14 +13,16 @@ use Webkul\Inventory\Database\Factories\LocationFactory;
 use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
-use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
+use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Location extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     protected $table = 'inventories_locations';
@@ -113,7 +115,7 @@ class Location extends Model
     public function getInternalChildLocations()
     {
         return static::where('type', LocationType::INTERNAL)
-            ->whereRaw('parent_path LIKE ?', [$this->parent_path . '%'])
+            ->whereRaw('parent_path LIKE ?', [$this->parent_path.'%'])
             ->get();
     }
 
@@ -179,12 +181,12 @@ class Location extends Model
                     ->where('destination_location_id', $location->id)->exists();
 
                 if ($usedByMrp) {
-                    throw new \Exception("You cannot set a location as a scrap location when it is assigned as a destination location for a manufacturing type operation.");
+                    throw new \Exception('You cannot set a location as a scrap location when it is assigned as a destination location for a manufacturing type operation.');
                 }
             }
 
             if ($location->isDirty('company_id')) {
-                throw new \Exception("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one.");
+                throw new \Exception('Changing the company of this record is forbidden at this point, you should rather archive it and create a new one.');
             }
 
             if (
@@ -216,9 +218,9 @@ class Location extends Model
 
         static::deleting(function (Location $location) {
             $warehouse = Warehouse::where(function ($q) use ($location) {
-                    $q->where('lot_stock_location_id', $location->id)
-                        ->orWhere('view_location_id', $location->id);
-                })
+                $q->where('lot_stock_location_id', $location->id)
+                    ->orWhere('view_location_id', $location->id);
+            })
                 ->first();
 
             if ($warehouse) {
@@ -229,7 +231,7 @@ class Location extends Model
             }
 
             $childrenLocations = Location::withTrashed()
-                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
+                ->whereRaw('parent_path LIKE ?', [$location->parent_path.'%'])
                 ->where('id', '!=', $location->id)
                 ->get();
 
@@ -238,9 +240,9 @@ class Location extends Model
             )->pluck('id')->push($location->id)->all();
 
             $childrenQuantities = ProductQuantity::where(function ($q) {
-                    $q->where('quantity', '!=', 0)
-                        ->orWhere('reserved_quantity', '!=', 0);
-                })
+                $q->where('quantity', '!=', 0)
+                    ->orWhere('reserved_quantity', '!=', 0);
+            })
                 ->whereIn('location_id', $internalChildrenLocationIds)
                 ->get();
 
@@ -257,7 +259,7 @@ class Location extends Model
 
         static::forceDeleting(function (Location $location) {
             Location::withTrashed()
-                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
+                ->whereRaw('parent_path LIKE ?', [$location->parent_path.'%'])
                 ->where('id', '!=', $location->id)
                 ->get()
                 ->each(fn ($childLocation) => $childLocation->forceDelete());
@@ -265,7 +267,7 @@ class Location extends Model
 
         static::restored(function (Location $location) {
             Location::withTrashed()
-                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
+                ->whereRaw('parent_path LIKE ?', [$location->parent_path.'%'])
                 ->where('id', '!=', $location->id)
                 ->get()
                 ->each(fn ($childLocation) => $childLocation->restore());
@@ -288,7 +290,7 @@ class Location extends Model
 
         while ($current) {
             $categoryIds->push($current->id);
-            
+
             $current = $current->parent_id ? $current->parent : null;
         }
 
@@ -383,7 +385,7 @@ class Location extends Model
                 $lastUsedLocation = MoveLine::where('state', MoveState::DONE)
                     ->where('product_id', $product->id)
                     ->whereHas('destinationLocation', fn ($q) => $q->where('id', $this->locationOut->id)
-                        ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%'])
+                        ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path.'%'])
                     )
                     ->when($putawayRule->packageTypes->isNotEmpty(), function ($query) use ($putawayRule) {
                         $query->whereHas('resultPackage', fn ($q) => $q->whereIn('package_type_id', $putawayRule->packageTypes->pluck('id')->all()));
@@ -391,7 +393,7 @@ class Location extends Model
                     ->orderBy('scheduled_at', 'desc')
                     ->first()
                     ?->destinationLocation;
-                
+
                 $outLocation = $lastUsedLocation ?? $outLocation;
             }
 
@@ -461,8 +463,7 @@ class Location extends Model
         ?Package $package = null,
         float $locationQty = 0,
         array $excludeMoveLineIds = []
-    ): bool
-    {
+    ): bool {
         if (! $this->storage_category_id) {
             return true;
         }

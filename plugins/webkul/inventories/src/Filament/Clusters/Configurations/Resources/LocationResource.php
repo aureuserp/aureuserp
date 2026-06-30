@@ -139,7 +139,7 @@ class LocationResource extends Resource
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()->default_company_id),
+                                    ->default(current_company_id()),
                                 Select::make('storage_category_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.storage-category'))
                                     ->relationship('storageCategory', 'name')

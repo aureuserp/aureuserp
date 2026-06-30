@@ -1219,7 +1219,7 @@ class TaxManager
         bool $roundBase = false
     ) {
         if ($taxes->isEmpty()) {
-            $company = Auth::user()->defaultCompany;
+            $company = current_company();
         } else {
             $company = $taxes->first()->company;
         }

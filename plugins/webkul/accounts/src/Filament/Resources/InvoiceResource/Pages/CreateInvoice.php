@@ -45,7 +45,7 @@ class CreateInvoice extends CreateRecord
         parent::mount();
 
         $journal = Journal::where('type', JournalType::SALE)
-            ->where('company_id', Auth::user()->default_company_id)
+            ->where('company_id', current_company_id())
             ->first();
 
         $this->data['move_type'] ??= MoveType::OUT_INVOICE->value;

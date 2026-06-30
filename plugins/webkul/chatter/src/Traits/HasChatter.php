@@ -233,7 +233,7 @@ trait HasChatter
             'date_deadline' => $data['date_deadline'] ?? now(),
             'causer_type'   => $user?->getMorphClass(),
             'causer_id'     => $user?->id,
-            'company_id'    => $data['company_id'] ?? ($user?->defaultCompany?->id ?? null),
+            'company_id'    => $data['company_id'] ?? (current_company()?->id ?? null),
         ], $data));
 
         $this->messages()->save($message);

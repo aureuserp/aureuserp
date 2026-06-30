@@ -233,3 +233,17 @@ if (! function_exists('make_aware')) {
         return [$dt, fn (Carbon\Carbon $val) => $val->clone()->setTimezone($tz)];
     }
 }
+
+if (! function_exists('current_company')) {
+    function current_company(): ?\Webkul\Support\Models\Company
+    {
+        return app(\Webkul\Support\Services\CompanyContext::class)->currentCompany();
+    }
+}
+
+if (! function_exists('current_company_id')) {
+    function current_company_id(): ?int
+    {
+        return app(\Webkul\Support\Services\CompanyContext::class)->currentId();
+    }
+}

@@ -31,9 +31,11 @@ use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Move extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
@@ -477,7 +479,7 @@ class Move extends Model implements Sortable
             return;
         }
 
-        $this->company_id ??= Auth::user()->default_company_id;
+        $this->company_id ??= current_company_id();
     }
 
     public function computeName()

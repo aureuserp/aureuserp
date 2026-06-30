@@ -23,9 +23,11 @@ use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Partner extends Authenticatable implements FilamentUser
 {
+    use BelongsToCompany;
     use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, HasOwnershipScope, Notifiable, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'partners';

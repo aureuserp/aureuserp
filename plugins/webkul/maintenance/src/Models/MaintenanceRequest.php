@@ -18,9 +18,11 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class MaintenanceRequest extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'maintenance';
@@ -126,7 +128,7 @@ class MaintenanceRequest extends Model
 
             $request->creator_id ??= $authUser?->id;
 
-            $request->company_id ??= $authUser?->default_company_id;
+            $request->company_id ??= current_company_id();
         });
 
         static::updated(function (self $request): void {

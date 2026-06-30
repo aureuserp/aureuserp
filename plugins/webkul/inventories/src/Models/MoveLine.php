@@ -15,9 +15,11 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class MoveLine extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_move_lines';

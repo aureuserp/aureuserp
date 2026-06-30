@@ -245,7 +245,7 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
             'stage_id'            => $stageId,
             'user_id'             => Auth::id(),
             'maintenance_team_id' => $teamId,
-            'company_id'          => Auth::user()?->default_company_id,
+            'company_id'          => current_company_id(),
         ]);
 
         Notification::make()

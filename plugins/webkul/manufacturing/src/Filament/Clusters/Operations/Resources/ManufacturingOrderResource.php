@@ -206,7 +206,7 @@ class ManufacturingOrderResource extends Resource
 
                                         $set('uom_id', $product->uom_id ?: static::getDefaultUomId());
 
-                                        $set('company_id', $product->company_id ?? Auth::user()?->default_company_id);
+                                        $set('company_id', $product->company_id ?? current_company_id());
 
                                         $billOfMaterialId = static::getDefaultBillOfMaterialId($product);
 
@@ -393,7 +393,7 @@ class ManufacturingOrderResource extends Resource
                                             ->preload()
                                             ->native(false)
                                             ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
-                                            ->default(Auth::user()?->default_company_id),
+                                            ->default(current_company_id()),
                                     ]),
                             ]),
                     ]),

@@ -73,7 +73,7 @@ class EquipmentCategoryResource extends Resource
                             ->relationship('company', 'name')
                             ->searchable()
                             ->preload()
-                            ->default(Auth::user()?->default_company_id),
+                            ->default(current_company_id()),
 
                         Textarea::make('note')
                             ->label(__('maintenance::filament/clusters/configurations/resources/equipment-category.form.sections.general.fields.note'))

@@ -12,9 +12,11 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Lot extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_lots';

@@ -264,7 +264,7 @@ class BillResource extends Resource
                                                                 'type'                     => JournalType::PURCHASE,
                                                                 'invoice_reference_type'   => CommunicationType::INVOICE,
                                                                 'invoice_reference_model'  => CommunicationStandard::AUREUS,
-                                                                'company_id'               => $get('company_id') ?? Auth::user()->default_company_id,
+                                                                'company_id'               => $get('company_id') ?? current_company_id(),
                                                             ])
                                                     )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -281,7 +281,7 @@ class BillResource extends Resource
                                                     ->preload()
                                                     ->live()
                                                     ->reactive()
-                                                    ->default(Auth::user()->defaultCompany?->currency_id)
+                                                    ->default(current_company()?->currency_id)
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                             ])
                                             ->columns(2),
@@ -335,7 +335,7 @@ class BillResource extends Resource
                                                     $set('currency_id', $company->currency_id);
                                                 }
                                             })
-                                            ->default(Auth::user()->default_company_id),
+                                            ->default(current_company_id()),
                                         Select::make('invoice_incoterm_id')
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm'))
                                             ->relationship('invoiceIncoterm', 'name')
@@ -1227,10 +1227,10 @@ class BillResource extends Resource
         if ($get('../../currency_id')) {
             $currency = Currency::find($get('../../currency_id'));
 
-            $priceUnit = Auth::user()->defaultCompany->currency->convert(
+            $priceUnit = current_company()->currency->convert(
                 $priceUnit,
                 $currency,
-                Auth::user()->defaultCompany
+                current_company()
             );
         }
 

@@ -13,9 +13,11 @@ use Webkul\Employee\Enums\WorkLocation as WorkLocationEnum;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class WorkLocation extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'employees_work_locations';

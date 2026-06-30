@@ -172,7 +172,7 @@ class PaymentResource extends Resource
                                                     ->required()
                                                     ->searchable()
                                                     ->preload()
-                                                    ->default(fn () => Auth::user()->defaultCompany?->currency_id),
+                                                    ->default(fn () => current_company()?->currency_id),
                                             ])
                                             ->columns(2),
 

@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class LeaveMandatoryDay extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'time_off_leave_mandatory_days';
@@ -48,7 +50,7 @@ class LeaveMandatoryDay extends Model
 
             $leaveMandatoryDay->creator_id ??= $authUser->id;
 
-            $leaveMandatoryDay->company_id ??= $authUser?->default_company_id;
+            $leaveMandatoryDay->company_id ??= current_company_id();
         });
     }
 }

@@ -37,7 +37,7 @@ class CreateFiscalPosition extends CreateRecord
     {
         $user = Auth::user();
 
-        $data['company_id'] = $user?->default_company_id;
+        $data['company_id'] = current_company_id();
 
         $data['creator_id'] = $user->id;
 

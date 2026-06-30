@@ -18,9 +18,11 @@ use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class WorkCenter extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'manufacturing_work_centers';
@@ -300,7 +302,7 @@ class WorkCenter extends Model implements Sortable
             $authUser = Auth::user();
 
             $workCenter->creator_id ??= $authUser?->id;
-            $workCenter->company_id ??= $authUser?->default_company_id;
+            $workCenter->company_id ??= current_company_id();
             $workCenter->working_state ??= WorkCenterWorkingState::NORMAL;
             $workCenter->time_efficiency ??= 100;
             $workCenter->default_capacity ??= 1;

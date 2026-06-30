@@ -162,7 +162,7 @@ class EquipmentResource extends Resource
                                     ->native(false)
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()?->default_company_id),
+                                    ->default(current_company_id()),
 
                                 Select::make('technician_user_id')
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.settings.fields.technician'))

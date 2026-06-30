@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Maintenance\Database\Factories\TeamFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Team extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     protected $table = 'maintenance_teams';
@@ -69,7 +71,7 @@ class Team extends Model
             $authUser = Auth::user();
 
             $team->creator_id ??= $authUser?->id;
-            $team->company_id ??= $authUser?->default_company_id;
+            $team->company_id ??= current_company_id();
         });
     }
 }

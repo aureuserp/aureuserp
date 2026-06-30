@@ -27,9 +27,11 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class OrderLine extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'purchases_order_lines';

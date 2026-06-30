@@ -346,7 +346,7 @@ class Product extends BaseProduct
         $strict = $this->context['strict'] ?? false;
 
         if (empty($companyIds)) {
-            $companyIds = array_filter([Auth::user()?->default_company_id]);
+            $companyIds = array_filter([current_company_id()]);
         }
 
         $searchIds = function (string $modelClass, array $values): array {

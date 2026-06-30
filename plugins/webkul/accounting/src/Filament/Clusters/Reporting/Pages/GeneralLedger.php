@@ -164,7 +164,7 @@ class GeneralLedger extends Page implements HasForms
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now();
 
         $journalIds = $this->form->getState()['journals'] ?? [];
-        $companyId = Auth::user()->default_company_id;
+        $companyId = current_company_id();
 
         $accountsQuery = Account::select(
             'accounts_accounts.id',
@@ -255,7 +255,7 @@ class GeneralLedger extends Page implements HasForms
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfYear();
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now();
         $journalIds = $this->form->getState()['journals'] ?? [];
-        $companyId = Auth::user()->default_company_id;
+        $companyId = current_company_id();
 
         $query = MoveLine::select(
             'accounts_account_move_lines.*',

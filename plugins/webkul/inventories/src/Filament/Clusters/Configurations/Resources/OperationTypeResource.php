@@ -196,7 +196,7 @@ class OperationTypeResource extends Resource
                                                     ->relationship('company', 'name')
                                                     ->searchable()
                                                     ->preload()
-                                                    ->default(Auth::user()->default_company_id),
+                                                    ->default(current_company_id()),
                                                 Select::make('return_operation_type_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.return-type'))
                                                     ->relationship(
