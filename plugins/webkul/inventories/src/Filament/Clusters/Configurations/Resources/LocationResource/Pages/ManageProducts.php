@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Webkul\Employee\Enums\Colors;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
+use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -146,7 +147,7 @@ class ManageProducts extends ManageRelatedRecords
                 TextColumn::make('forecast')
                     ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.columns.forecast'))
                     ->state(function ($record) {
-                        $templateProduct = $record->product->parent ?? $record->product;
+                        $templateProduct = $this->getTemplateProduct($record);
                         $templateProduct->setContext(['location_id' => $record->location_id]);
 
                         return $templateProduct->virtual_available_qty;
@@ -174,17 +175,30 @@ class ManageProducts extends ManageRelatedRecords
             ->groups([
                 Group::make('product_type')
                     ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.groups.product-type'))
-                    ->getTitleFromRecordUsing(fn ($record) => $record->product->type?->getLabel() ?? $record->product_type),
+                    ->getKeyFromRecordUsing(fn ($record) => $record->product_type)
+                    ->getTitleFromRecordUsing(fn ($record) => $record->product->type?->getLabel() ?? $record->product_type)
+                    ->scopeQueryByKeyUsing(fn (Builder $query, $key) => $query->where('products_products.type', $key))
+                    ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('products_products.type', $direction)),
                 Group::make('product_category_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.groups.category'))
+                    ->getKeyFromRecordUsing(fn ($record) => $record->product_category_name)
                     ->getTitleFromRecordUsing(fn ($record) => $record->product_category_name
-                        ?? __('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.groups.uncategorized')),
+                        ?? __('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.groups.uncategorized'))
+                    ->scopeQueryByKeyUsing(fn (Builder $query, $key) => $query->where('products_categories.name', $key))
+                    ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('products_categories.name', $direction)),
             ]);
+    }
+
+    protected function getTemplateProduct(ProductQuantity $record): Product
+    {
+        return $record->product->parent_id
+            ? Product::withTrashed()->find($record->product->parent_id)
+            : $record->product;
     }
 
     public function getVariantsInfolist(ProductQuantity $record): array
     {
-        $templateProduct = $record->product->parent ?? $record->product;
+        $templateProduct = $this->getTemplateProduct($record);
         $locationId = $record->location_id;
 
         return [
@@ -210,22 +224,29 @@ class ManageProducts extends ManageRelatedRecords
                 })->toArray())
                 ->table([
                     InfolistTableColumn::make('name')
+                        ->resizable()
                         ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.variants-infolist.name')),
                     InfolistTableColumn::make('price')
+                        ->resizable()
                         ->alignEnd()
                         ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.variants-infolist.sales-price')),
                     InfolistTableColumn::make('cost')
                         ->alignEnd()
+                        ->resizable()
                         ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.variants-infolist.cost-price')),
                     InfolistTableColumn::make('on_hand')
                         ->alignEnd()
+                        ->resizable()
                         ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.variants-infolist.on-hand')),
                     InfolistTableColumn::make('forecast')
                         ->alignEnd()
+                        ->resizable()
                         ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.variants-infolist.forecast')),
                     InfolistTableColumn::make('unit')
                         ->alignCenter()
+                        ->resizable()
                         ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.variants-infolist.unit')),
+                    InfolistTableColumn::make('action'),
                 ])
                 ->schema([
                     TextEntry::make('name')
@@ -246,6 +267,7 @@ class ManageProducts extends ManageRelatedRecords
                 ->extraItemActions([
                     Action::make('viewVariants')
                         ->iconButton()
+                        ->openUrlInNewTab()
                         ->icon('heroicon-m-arrow-top-right-on-square')
                         ->url(fn (): string => ProductResource::getUrl('variants', ['record' => $templateProduct->id])),
                 ]),
