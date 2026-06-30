@@ -155,7 +155,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
 
     private function handlePartnerUpdation(self $user)
     {
-        $partner = Partner::updateOrCreate(
+        $partner = Partner::withoutGlobalScopes()->updateOrCreate(
             ['id' => $user->partner_id],
             [
                 'creator_id' => Auth::user()->id ?? $user->id,

@@ -34,7 +34,8 @@ class ManageAccounts extends ManageRecords
                     ? $query->where('code', 'like', $this->selectedCodePrefix.'%')
                     : $query,
             )
-            ->paginated(fn (): bool => $this->selectedCodePrefix !== null);
+            ->paginated([25, 50, 100])
+            ->defaultPaginationPageOption(25);
     }
 
     public function selectPrefix(?string $prefix): void
