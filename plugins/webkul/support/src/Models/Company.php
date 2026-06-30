@@ -14,12 +14,17 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Database\Factories\CompanyFactory;
 
 class Company extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasPermissionScope, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasOwnershipScope, SoftDeletes, SortableTrait;
+
+    protected static function ownershipScopeIsGlobal(): bool
+    {
+        return false;
+    }
 
     protected $fillable = [
         'sort',

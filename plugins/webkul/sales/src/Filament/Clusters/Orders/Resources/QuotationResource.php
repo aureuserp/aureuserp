@@ -78,7 +78,6 @@ use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Quotation as Order;
 use Webkul\Sale\Settings\PriceSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -89,7 +88,6 @@ use Webkul\Support\Models\UOM;
 
 class QuotationResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 

@@ -73,7 +73,6 @@ use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Partner\Models\Partner;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -83,7 +82,6 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = JournalEntry::class;
 

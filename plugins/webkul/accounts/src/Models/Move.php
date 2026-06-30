@@ -24,7 +24,8 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -33,7 +34,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Move extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
 
@@ -171,9 +172,12 @@ class Move extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    protected function getAssignmentColumn(): ?string
+    public function ownershipSources(): array
     {
-        return 'invoice_user_id';
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('invoice_user_id'),
+        ];
     }
 
     public function campaign()

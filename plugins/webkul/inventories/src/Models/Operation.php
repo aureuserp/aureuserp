@@ -23,13 +23,13 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Throwable;
 
 class Operation extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 

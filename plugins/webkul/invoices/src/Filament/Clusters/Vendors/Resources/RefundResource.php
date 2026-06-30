@@ -12,11 +12,9 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
 use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Refund;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class RefundResource extends BaseRefundResource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Refund::class;
 

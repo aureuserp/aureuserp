@@ -38,11 +38,9 @@ use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ListEquipment;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ViewEquipment;
 use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\EquipmentCategory;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class EquipmentResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Equipment::class;
 

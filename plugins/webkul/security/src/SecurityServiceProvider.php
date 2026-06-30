@@ -4,6 +4,7 @@ namespace Webkul\Security;
 
 use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Gate;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Facades\Bouncer as BouncerFacade;
@@ -45,6 +46,18 @@ class SecurityServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         require_once __DIR__.'/Helpers/helpers.php';
+
+        Gate::before(function ($user, string $ability) {
+            if ($ability !== 'bypass_ownership_scope') {
+                return null;
+            }
+
+            if ($user && method_exists($user, 'hasRole') && $user->hasRole(['admin', 'super_admin'])) {
+                return true;
+            }
+
+            return null;
+        });
     }
 
     public function packageRegistered(): void

@@ -25,7 +25,7 @@ use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -34,7 +34,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'sales';
 

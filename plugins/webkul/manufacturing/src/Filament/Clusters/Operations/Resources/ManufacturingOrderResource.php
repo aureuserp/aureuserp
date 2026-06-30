@@ -62,7 +62,6 @@ use Webkul\Manufacturing\Models\Product;
 use Webkul\Manufacturing\Models\WorkOrder;
 use Webkul\Manufacturing\Settings\OperationSettings;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -71,7 +70,6 @@ use Webkul\Support\Models\UOM;
 
 class ManufacturingOrderResource extends Resource
 {
-    use HasResourcePermissionQuery;
     
     protected static ?string $model = Order::class;
 

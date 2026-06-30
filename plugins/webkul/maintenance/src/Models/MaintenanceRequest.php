@@ -15,13 +15,13 @@ use Webkul\Maintenance\Enums\MaintenanceRepeatType;
 use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
 use Webkul\Maintenance\Enums\MaintenanceRequestType;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
 
 class MaintenanceRequest extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+    use HasChatter, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'maintenance';
 

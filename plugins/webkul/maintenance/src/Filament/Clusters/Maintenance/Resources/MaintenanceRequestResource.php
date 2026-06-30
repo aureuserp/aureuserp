@@ -60,11 +60,9 @@ use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\MaintenanceRequest;
 use Webkul\Maintenance\Models\Stage;
 use Webkul\Maintenance\Models\Team;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class MaintenanceRequestResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = MaintenanceRequest::class;
 

@@ -48,18 +48,21 @@ use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
 use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 
 class UserResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = User::class;
 
     protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->ownership();
+    }
 
     public static function getNavigationLabel(): string
     {

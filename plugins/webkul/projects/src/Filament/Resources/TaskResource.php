@@ -73,12 +73,11 @@ use Webkul\Project\Models\TaskStage;
 use Webkul\Project\Settings\TaskSettings;
 use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\UserResource;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 
 class TaskResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Task::class;
 

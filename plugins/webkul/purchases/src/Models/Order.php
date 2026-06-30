@@ -26,13 +26,13 @@ use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
