@@ -10,6 +10,12 @@ class CompanyContextController extends Controller
 {
     public function set(Request $request)
     {
+        if ($request->input('action') === 'reset') {
+            session()->forget(CompanyContext::SESSION_KEY);
+
+            return back();
+        }
+
         $ids = array_map('intval', (array) $request->input('companies', []));
 
         app(CompanyContext::class)->setActive($ids);

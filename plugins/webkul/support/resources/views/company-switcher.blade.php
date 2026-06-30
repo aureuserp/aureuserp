@@ -20,20 +20,37 @@
                 </button>
             </x-slot>
 
-            <form method="POST" action="{{ route('company-context.set') }}">
+            <form method="POST" action="{{ route('company-context.set') }}" x-data>
                 @csrf
 
                 <div style="display:flex;flex-direction:column;gap:0.125rem;padding:0.5rem;max-height:18rem;overflow-y:auto;">
                     @foreach ($companies as $company)
-                        <label style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.625rem;border-radius:0.5rem;font-size:0.875rem;cursor:pointer;">
+                        <div
+                            @click="
+                                const boxes = $root.querySelectorAll('input[type=checkbox]');
+                                const checked = [...boxes].filter(c => c.checked);
+                                const me = $el.querySelector('input[type=checkbox]');
+                                if (checked.length <= 1) {
+                                    boxes.forEach(c => c.checked = false);
+                                    me.checked = true;
+                                } else {
+                                    me.checked = ! me.checked;
+                                }
+                                $root.requestSubmit();
+                            "
+                            onmouseover="this.style.background='rgba(128,128,128,0.14)'"
+                            onmouseout="this.style.background='transparent'"
+                            style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.625rem;border-radius:0.5rem;font-size:0.875rem;cursor:pointer;transition:background .1s;"
+                        >
                             <x-filament::input.checkbox
                                 name="companies[]"
                                 value="{{ $company->id }}"
                                 :checked="in_array($company->id, $active)"
+                                x-on:click.stop
                             />
 
-                            <span>{{ $company->name }}</span>
-                        </label>
+                            <span style="flex:1;">{{ $company->name }}</span>
+                        </div>
                     @endforeach
                 </div>
 
@@ -42,7 +59,7 @@
                         {{ __('support::company-switcher.confirm') }}
                     </x-filament::button>
 
-                    <x-filament::button type="reset" color="gray" size="sm" style="width:100%;justify-content:center;">
+                    <x-filament::button type="submit" name="action" value="reset" color="gray" size="sm" style="width:100%;justify-content:center;">
                         {{ __('support::company-switcher.reset') }}
                     </x-filament::button>
                 </div>
