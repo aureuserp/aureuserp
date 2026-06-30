@@ -17,6 +17,7 @@ use Webkul\Support\Models\Currency;
 
 class Account extends Model
 {
+    use \Webkul\Support\Traits\BelongsToCompanies;
     use HasFactory;
 
     protected $table = 'accounts_accounts';
