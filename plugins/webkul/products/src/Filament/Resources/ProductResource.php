@@ -28,6 +28,16 @@ class ProductResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
+    public static function getModelLabel(): string
+    {
+        return __('products::models/product.title');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('products::models/product.plural-title');
+    }
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'reference', 'barcode'];

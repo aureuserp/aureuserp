@@ -1,0 +1,97 @@
+<?php
+
+return [
+    'title' => 'Itens do lançamento',
+
+    'navigation' => [
+        'title' => 'Itens do lançamento',
+    ],
+
+    'table' => [
+        'total' => 'Total',
+        'columns' => [
+            'number' => 'Número',
+            'date' => 'Data',
+            'account' => 'Conta',
+            'partner' => 'Parceiro',
+            'label' => 'Rótulo',
+            'reference' => 'Referência',
+            'journal' => 'Diário',
+            'debit' => 'Débito',
+            'credit' => 'Crédito',
+            'balance' => 'Saldo',
+            'currency' => 'Moeda',
+            'company' => 'Empresa',
+            'status' => 'Status',
+            'amount-currency' => 'Valor em moeda',
+            'amount-residual' => 'Valor residual',
+            'reconciled' => 'Reconciliado',
+            'due-date' => 'Data de vencimento',
+        ],
+
+        'groups' => [
+            'journal-entry' => 'Lançamento contábil',
+            'account' => 'Conta',
+            'partner' => 'Parceiro',
+            'journal' => 'Diário',
+            'date' => 'Data',
+            'invoice-date' => 'Data da fatura',
+            'matching' => 'Correspondência',
+            'status' => 'Status',
+            'company' => 'Empresa',
+        ],
+
+        'filters' => [
+            'number' => 'Número',
+            'label' => 'Rótulo',
+            'reference' => 'Referência',
+            'matching-number' => 'Número de correspondência',
+            'account' => 'Conta',
+            'partner' => 'Parceiro',
+            'journal' => 'Diário',
+            'currency' => 'Moeda',
+            'company' => 'Empresa',
+            'date' => 'Data',
+            'invoice-date' => 'Data da fatura',
+            'due-date' => 'Data de vencimento',
+            'discount-date' => 'Data do desconto',
+            'debit' => 'Débito',
+            'credit' => 'Crédito',
+            'balance' => 'Saldo',
+            'amount-currency' => 'Valor em moeda',
+            'amount-residual' => 'Valor residual',
+            'quantity' => 'Quantidade',
+            'price-unit' => 'Preço unitário',
+            'discount' => 'Desconto',
+            'reconciled' => 'Reconciliado',
+            'imported' => 'Importado',
+            'down-payment' => 'Adiantamento',
+            'created-at' => 'Criado em',
+            'updated-at' => 'Atualizado em',
+        ],
+
+        'saved-filters' => [
+            'label' => 'Filtros salvos',
+            'unposted' => 'Não publicado',
+            'posted' => 'Publicado',
+            'to-check' => 'A verificar',
+            'unreconciled' => 'Não reconciliado',
+            'with-residual' => 'Com residual',
+            'sales' => 'Vendas',
+            'purchases' => 'Compras',
+            'bank' => 'Banco',
+            'cash' => 'Caixa',
+            'credit' => 'Crédito',
+            'miscellaneous' => 'Diversos',
+            'payable' => 'A pagar',
+            'receivable' => 'A receber',
+            'pl-accounts' => 'Contas de DRE',
+        ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Exportar',
+            ],
+        ],
+    ],
+];
