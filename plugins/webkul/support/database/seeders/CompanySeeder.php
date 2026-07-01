@@ -49,7 +49,13 @@ class CompanySeeder extends Seeder
                 'updated_at'       => now(),
             ]);
 
-            $currency = Currency::find(1);
+            $configuredCurrencyCode = strtoupper((string) config('app.currency', 'USD'));
+
+            $currency = Currency::query()
+                ->where('name', $configuredCurrencyCode)
+                ->first()
+                ?? Currency::active()->first()
+                ?? Currency::query()->first();
 
             if (! $currency) {
                 throw new Exception('Currency with ID 1 not found.');

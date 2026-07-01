@@ -48,6 +48,7 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\EditCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
+use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Security\Settings\UserSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
@@ -194,7 +195,7 @@ class CompanyResource extends Resource
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::active()->first()?->id)
+                                            ->default(fn () => app(CurrencySettings::class)->default_currency_id ?? Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([

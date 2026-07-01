@@ -137,7 +137,7 @@ class InstallERP extends Command
             Artisan::call('migrate:fresh', [], $this->getOutput());
             $this->info('✅ Database wiped successfully.');
         } catch (Exception $e) {
-            $this->error('❌ Failed to wipe database: '.$e->getMessage());
+            $this->error('❌ Failed to wipe database: ' . $e->getMessage());
 
             $this->error('Please manually drop your database and create a new one before proceeding.');
 
@@ -278,7 +278,7 @@ class InstallERP extends Command
                 'Email address',
                 default: 'admin@example.com',
                 required: true,
-                validate: fn ($email) => $this->validateAdminEmail($email, $userModel)
+                validate: fn($email) => $this->validateAdminEmail($email, $userModel)
             );
         } else {
             $emailValidation = $this->validateAdminEmail($email, $userModel);
@@ -296,7 +296,7 @@ class InstallERP extends Command
             $passwordInput = password(
                 'Password',
                 required: true,
-                validate: fn ($value) => $this->validateAdminPassword($value)
+                validate: fn($value) => $this->validateAdminPassword($value)
             );
         } else {
             $passwordValidation = $this->validateAdminPassword($passwordInput);
@@ -400,8 +400,8 @@ class InstallERP extends Command
         ];
 
         collect($mappings)
-            ->filter(fn ($column) => ! is_null($column))
-            ->each(fn ($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
+            ->filter(fn($column) => ! is_null($column))
+            ->each(fn($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
     }
 
     /**
@@ -423,7 +423,7 @@ class InstallERP extends Command
             [
                 'group'   => 'currency',
                 'name'    => 'default_currency_id',
-                'payload' => Currency::active()->first()?->id,
+                'payload' => $this->resolveDefaultCurrencyId(),
             ],
         ];
 
@@ -440,5 +440,16 @@ class InstallERP extends Command
                 ]
             );
         }
+    }
+
+    private function resolveDefaultCurrencyId(): ?int
+    {
+        $configuredCurrencyCode = strtoupper((string) config('app.currency', 'USD'));
+
+        return Currency::query()
+            ->where('name', $configuredCurrencyCode)
+            ->value('id')
+            ?? Currency::active()->first()?->id
+            ?? Currency::query()->value('id');
     }
 }

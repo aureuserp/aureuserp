@@ -41,6 +41,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
+use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
@@ -185,7 +186,7 @@ class CompanyResource extends Resource
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::active()->first()?->id)
+                                            ->default(fn () => app(CurrencySettings::class)->default_currency_id ?? Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([

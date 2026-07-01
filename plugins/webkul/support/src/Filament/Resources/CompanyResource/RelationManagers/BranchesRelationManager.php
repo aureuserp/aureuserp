@@ -40,6 +40,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\Currency;
 
@@ -163,7 +164,7 @@ class BranchesRelationManager extends RelationManager
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::active()->first()?->id)
+                                            ->default(fn () => app(CurrencySettings::class)->default_currency_id ?? Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([
