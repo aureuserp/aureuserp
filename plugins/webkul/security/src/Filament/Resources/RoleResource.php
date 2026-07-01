@@ -15,6 +15,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
@@ -28,7 +29,6 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\CreateRole;
@@ -50,6 +50,8 @@ class RoleResource extends RolesRoleResource
     public static $permissions = null;
 
     protected static ?Collection $allFormPermissions = null;
+
+    protected static ?array $matrixData = null;
 
     public static function canGloballySearch(): bool
     {
@@ -82,139 +84,9 @@ class RoleResource extends RolesRoleResource
     {
         return $schema
             ->components([
-                Grid::make()
+                Section::make()
                     ->schema([
-                        Section::make()
-                            ->extraAlpineAttributes([
-                                // Bulk mode keeps "all" and "none" cheap by avoiding mass Livewire state writes.
-                                // If the user switches back to manual edits after "all", we materialize state once.
-                                'x-init' => <<<'JS'
-let bulkMode = 'manual';
-let updateToggleTimer = null;
-const checkboxSelector = '.fi-fo-checkbox-list-option input[type=checkbox]';
-
-const getCheckboxes = () => Array.from(document.querySelectorAll(checkboxSelector));
-const setBulkMode = (mode) => {
-    bulkMode = mode;
-    $wire.$set('data.permissions_sync_mode', mode, false);
-};
-const getCheckboxModels = () => Array.from(new Set(
-    getCheckboxes()
-        .map((checkbox) => checkbox.getAttribute('wire:model')
-            || checkbox.getAttribute('wire:model.defer')
-            || checkbox.getAttribute('wire:model.live'))
-        .filter(Boolean)
-));
-
-const getCheckboxGroups = () => {
-    const groups = {};
-
-    getCheckboxes().forEach((checkbox) => {
-        const model = checkbox.getAttribute('wire:model')
-            || checkbox.getAttribute('wire:model.defer')
-            || checkbox.getAttribute('wire:model.live');
-
-        if (! model || checkbox.disabled) {
-            return;
-        }
-
-        groups[model] ??= [];
-
-        if (checkbox.checked) {
-            groups[model].push(checkbox.value);
-        }
-    });
-
-    return groups;
-};
-
-const syncManualStateFromDom = () => {
-    Object.entries(getCheckboxGroups()).forEach(([model, values]) => {
-        $wire.$set(model, values, false);
-    });
-};
-
-const updateToggleState = () => {
-    clearTimeout(updateToggleTimer);
-
-    updateToggleTimer = setTimeout(() => {
-        const checkboxes = getCheckboxes().filter((checkbox) => ! checkbox.disabled);
-        const areAllChecked = checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
-
-        $wire.$set('data.select_all', areAllChecked, false);
-        window.dispatchEvent(new CustomEvent('shield-set-state', { detail: areAllChecked }));
-    }, 40);
-};
-
-const setAllCheckboxes = (checked) => {
-    getCheckboxes().forEach((checkbox) => {
-        if (! checkbox.disabled) {
-            checkbox.checked = checked;
-        }
-    });
-
-    setBulkMode(checked ? 'all' : 'none');
-    window.dispatchEvent(new CustomEvent('shield-set-state', { detail: checked }));
-};
-
-const compactPermissionStateForSubmit = () => {
-    if (bulkMode === 'manual') {
-        return;
-    }
-
-    getCheckboxModels().forEach((model) => {
-        $wire.$set(model, [], false);
-    });
-};
-
-setTimeout(() => {
-    const toggle = $el.querySelector('.fi-fo-toggle[role=switch]');
-    const form = $el.closest('form');
-
-    if (toggle && toggle.getAttribute('aria-checked') === 'true') {
-        setAllCheckboxes(true);
-    }
-
-    if (form) {
-        form.addEventListener('submit', () => {
-            compactPermissionStateForSubmit();
-        });
-    }
-}, 200);
-
-document.addEventListener('change', (event) => {
-    const checkbox = event.target.closest(checkboxSelector);
-
-    if (! checkbox) {
-        return;
-    }
-
-    if (bulkMode === 'all') {
-        syncManualStateFromDom();
-    }
-
-    setBulkMode('manual');
-    updateToggleState();
-});
-
-document.addEventListener('click', (event) => {
-    const toggle = event.target.closest('.fi-fo-toggle[role=switch]');
-
-    if (toggle) {
-        setTimeout(() => {
-            setAllCheckboxes(toggle.getAttribute('aria-checked') === 'true');
-        }, 0);
-
-        return;
-    }
-
-    if (event.target.closest('.fi-fo-checkbox-list-actions')) {
-        setBulkMode('manual');
-        updateToggleState();
-    }
-});
-JS,
-                            ])
+                        Grid::make()
                             ->schema([
                                 TextInput::make('name')
                                     ->label(__('filament-shield::filament-shield.field.name'))
@@ -238,27 +110,196 @@ JS,
                                     ->default(Utils::getFilamentAuthGuard())
                                     ->disabled(fn (?Model $record): bool => $record instanceof Role && $record->isSystemRole())
                                     ->dehydrated(),
-
-                                Select::make(config('permission.column_names.team_foreign_key'))
-                                    ->label(__('filament-shield::filament-shield.field.team'))
-                                    ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
-                                    ->default(Filament::getTenant()?->id)
-                                    ->options(fn (): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
-                                    ->hidden(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
-                                    ->dehydrated(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
-                                Hidden::make('permissions_sync_mode')
-                                    ->default('manual'),
-                                static::getSelectAllFormComponent(),
                             ])
                             ->columns([
                                 'sm' => 2,
-                                'lg' => 3,
-                            ])
-                            ->columnSpanFull(),
+                                'lg' => 2,
+                            ]),
+                        Select::make(config('permission.column_names.team_foreign_key'))
+                            ->label(__('filament-shield::filament-shield.field.team'))
+                            ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
+                            ->default(Filament::getTenant()?->id)
+                            ->options(fn (): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
+                            ->hidden(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
+                            ->dehydrated(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
+
+                        Hidden::make('permissions_sync_mode')
+                            ->default('manual'),
+                    ])
+                    ->columns([
+                        'sm' => 2,
+                        'lg' => 3,
                     ])
                     ->columnSpanFull(),
-                static::getShieldFormComponents(),
+
+                static::getPermissionMatrixField(),
             ]);
+    }
+
+    /**
+     * Module-navigator matrix field replacing the raw checkbox tabs.
+     */
+    public static function getPermissionMatrixField(): Component
+    {
+        $matrix = static::getPermissionMatrixData();
+
+        return ViewField::make('permission_matrix')
+            ->view('security::filament.resources.role.permission-matrix')
+            ->viewData(['matrix' => $matrix])
+            ->dehydrated()
+            ->afterStateHydrated(function (ViewField $component, ?Model $record) use ($matrix): void {
+                $names = collect($matrix['allNames']);
+                $granted = $record instanceof Model ? $record->permissions->pluck('name') : collect();
+
+                $component->state($granted->intersect($names)->values()->all());
+            })
+            ->columnSpanFull();
+    }
+
+    /**
+     * Builds the module → resources/pages/widgets structure the matrix renders.
+     */
+    public static function getPermissionMatrixData(): array
+    {
+        if (static::$matrixData !== null) {
+            return static::$matrixData;
+        }
+
+        $abilityOrder = static::getMatrixAbilityPrefixes();
+        $resourcesByPlugin = static::getPluginResources() ?? [];
+        $pagesByPlugin = static::getPluginPages();
+        $widgetsByPlugin = static::getPluginWidgets();
+
+        $moduleKeys = collect(array_keys($resourcesByPlugin))
+            ->merge(array_keys($pagesByPlugin))
+            ->merge(array_keys($widgetsByPlugin))
+            ->unique()
+            ->sort()
+            ->values();
+
+        $modules = [];
+        $allNames = [];
+
+        foreach ($moduleKeys as $moduleKey) {
+            $resources = [];
+            $moduleAbilities = [];
+            $moduleNames = [];
+
+            foreach (($resourcesByPlugin[$moduleKey] ?? []) as $entity) {
+                $options = static::getResourcePermissionOptions($entity);
+
+                if (empty($options)) {
+                    continue;
+                }
+
+                $abilities = [];
+
+                foreach (array_keys($options) as $permission) {
+                    $ability = static::matchAbilityPrefix($permission, $abilityOrder);
+
+                    if ($ability === null) {
+                        continue;
+                    }
+
+                    $abilities[$ability] = $permission;
+                    $moduleAbilities[$ability] = true;
+                    $moduleNames[] = $permission;
+                }
+
+                if (empty($abilities)) {
+                    continue;
+                }
+
+                $resources[] = [
+                    'label'     => strval(static::shield()->hasLocalizedPermissionLabels()
+                        ? FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
+                        : $entity['model']),
+                    'abilities' => $abilities,
+                ];
+            }
+
+            usort($resources, fn (array $a, array $b): int => strcasecmp($a['label'], $b['label']));
+
+            $columns = array_values(array_filter($abilityOrder, fn (string $ability): bool => isset($moduleAbilities[$ability])));
+
+            $pages = [];
+            foreach (($pagesByPlugin[$moduleKey] ?? []) as $page) {
+                foreach ($page['permissions'] as $permission => $label) {
+                    $pages[$permission] = $label;
+                    $moduleNames[] = $permission;
+                }
+            }
+
+            $widgets = [];
+            foreach (($widgetsByPlugin[$moduleKey] ?? []) as $widget) {
+                foreach ($widget['permissions'] as $permission => $label) {
+                    $widgets[$permission] = $label;
+                    $moduleNames[] = $permission;
+                }
+            }
+
+            $moduleNames = array_values(array_unique($moduleNames));
+
+            if (empty($moduleNames)) {
+                continue;
+            }
+
+            $allNames = array_merge($allNames, $moduleNames);
+
+            $modules[] = [
+                'key'       => $moduleKey,
+                'label'     => Str::headline($moduleKey),
+                'columns'   => $columns,
+                'resources' => $resources,
+                'pages'     => $pages,
+                'widgets'   => $widgets,
+                'names'     => $moduleNames,
+            ];
+        }
+
+        return static::$matrixData = [
+            'modules'       => $modules,
+            'allNames'      => array_values(array_unique($allNames)),
+            'abilityLabels' => static::getAbilityLabels($abilityOrder),
+        ];
+    }
+
+    /**
+     * Ability prefixes ordered longest-first so "view_any" wins over "view".
+     */
+    protected static function getMatrixAbilityPrefixes(): array
+    {
+        return [
+            'view_any',
+            'view',
+            'create',
+            'update',
+            'delete_any',
+            'delete',
+            'reorder',
+            'restore_any',
+            'restore',
+            'force_delete_any',
+            'force_delete',
+        ];
+    }
+
+    protected static function matchAbilityPrefix(string $permission, array $orderedPrefixes): ?string
+    {
+        foreach ($orderedPrefixes as $prefix) {
+            if (str_starts_with($permission, $prefix.'_')) {
+                return $prefix;
+            }
+        }
+
+        return null;
+    }
+
+    protected static function getAbilityLabels(array $prefixes): array
+    {
+        return collect($prefixes)
+            ->mapWithKeys(fn (string $prefix): array => [$prefix => Str::headline($prefix)])
+            ->all();
     }
 
     public static function table(Table $table): Table
@@ -549,19 +590,11 @@ JS,
 
     public static function getSelectAllFormComponent(): Component
     {
-        // The Toggle uses $wire.$entangle('data.select_all') internally.
-        // We intentionally do NOT call tog.click() or use $watch('$wire.data.select_all')
-        // anywhere — those were the cause of the stuck-loader loop after save.
-        //
-        // Instead, _chk() dispatches window event 'shield-set-state' which the Toggle
-        // catches via x-on:shield-set-state.window and sets its own `state` directly.
-        // Since the binding is deferred (not live), this queues the value for the next
-        // form submit without firing an immediate Livewire network request.
         return Toggle::make('select_all')
             ->onIcon('heroicon-s-shield-check')
             ->offIcon('heroicon-s-shield-exclamation')
             ->label(__('filament-shield::filament-shield.field.select_all.name'))
-            ->helperText(fn (): HtmlString => new HtmlString(__('filament-shield::filament-shield.field.select_all.message')))
+            ->helperText(fn (): Htmlable => str(__('filament-shield::filament-shield.field.select_all.message'))->toHtmlString())
             ->dehydrated(fn (bool $state): bool => $state)
             ->extraAlpineAttributes(['x-on:shield-set-state.window' => 'state = $event.detail']);
     }
