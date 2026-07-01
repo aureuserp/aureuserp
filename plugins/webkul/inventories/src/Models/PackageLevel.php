@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\PackageLevelFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PackageLevel extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_package_levels';

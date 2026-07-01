@@ -14,12 +14,10 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource\Page
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Accounting\Livewire\InvoiceSummary;
 use Webkul\Accounting\Models\Invoice;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends BaseInvoiceResource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Invoice::class;
 

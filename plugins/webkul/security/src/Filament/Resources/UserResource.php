@@ -48,18 +48,21 @@ use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
 use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 
 class UserResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = User::class;
 
     protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->ownership();
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -231,6 +234,13 @@ class UserResource extends Resource
                                             })
                                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
+                                            ->rule(fn (Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                                $allowed = $get('allowed_companies') ?? [];
+
+                                                if (! empty($value) && ! in_array((string) $value, array_map('strval', (array) $allowed), true)) {
+                                                    $fail(__('security::filament/resources/user.form.sections.multi-company.default-company-not-allowed'));
+                                                }
+                                            })
                                             ->searchable()
                                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {

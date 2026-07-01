@@ -147,7 +147,7 @@ class BalanceSheet extends Page implements HasForms
         $dateRange = $this->parseDateRange();
         $date = $dateRange ? Carbon::parse($dateRange[1]) : now();
 
-        $companyId = Auth::user()->default_company_id;
+        $companyId = current_company_id();
         $journalIds = $this->data['journals'] ?? [];
 
         $query = MoveLine::query()

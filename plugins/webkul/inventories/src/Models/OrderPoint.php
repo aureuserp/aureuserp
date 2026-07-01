@@ -11,9 +11,11 @@ use Webkul\Inventory\Database\Factories\OrderPointFactory;
 use Webkul\Inventory\Enums\OrderPointTrigger;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class OrderPoint extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     protected $table = 'inventories_order_points';

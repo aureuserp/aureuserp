@@ -28,13 +28,16 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Order extends Model
 {
-    use HasFactory, HasPermissionScope;
+    use BelongsToCompany;
+    use HasFactory, HasOwnershipScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -86,9 +89,12 @@ class Order extends Model
 
     protected array $context = [];
 
-    protected function getAssignmentColumn(): ?string
+    public function ownershipSources(): array
     {
-        return 'assigned_user_id';
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('assigned_user_id'),
+        ];
     }
 
     public function setContext(array $context)
@@ -347,7 +353,7 @@ class Order extends Model
 
             $order->creator_id ??= $authUser?->id;
 
-            $order->company_id ??= $authUser?->default_company_id;
+            $order->company_id ??= current_company_id();
 
             $order->computeState();
 

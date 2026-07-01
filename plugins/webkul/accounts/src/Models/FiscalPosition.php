@@ -12,9 +12,11 @@ use Webkul\Account\Database\Factories\FiscalPositionFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class FiscalPosition extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'accounts_fiscal_positions';

@@ -12,11 +12,9 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\CreditNoteResource\P
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CreditNoteResource\Pages\ViewCreditNote;
 use Webkul\Accounting\Livewire\InvoiceSummary;
 use Webkul\Accounting\Models\CreditNote;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class CreditNoteResource extends BaseCreditNoteResource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = CreditNote::class;
 

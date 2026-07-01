@@ -133,7 +133,7 @@ class PayAction extends Action
                                     'partnerBank',
                                     'account_number',
                                     modifyQueryUsing: function (Builder $query, Get $get) {
-                                        $companyId = $get('company_id') ?? filament()->auth()->user()->default_company_id;
+                                        $companyId = $get('company_id') ?? current_company_id();
 
                                         $bankAccountIds = \Webkul\Account\Models\Journal::where('type', JournalType::BANK)
                                             ->where('company_id', $companyId)

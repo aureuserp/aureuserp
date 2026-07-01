@@ -13,17 +13,21 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Security\Filament\Resources\TeamResource\Pages\ManageTeams;
 use Webkul\Security\Models\Team;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class TeamResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Team::class;
 
     protected static ?int $navigationSort = 3;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->ownership();
+    }
 
     public static function getNavigationLabel(): string
     {

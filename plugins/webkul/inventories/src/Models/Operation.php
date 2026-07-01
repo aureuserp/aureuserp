@@ -9,27 +9,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
-use Throwable;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Operation extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
@@ -283,7 +285,7 @@ class Operation extends Model
                 $operation->wasChanged('source_location_id')
                 || $operation->wasChanged('destination_location_id')
             ) {
-                $operation->moves->each(function($move) use ($operation) {
+                $operation->moves->each(function ($move) use ($operation) {
                     $move->source_location_id = $operation->source_location_id ?? $operation->operationType?->source_location_id;
 
                     $move->destination_location_id = $operation->destination_location_id ?? $operation->operationType?->destination_location_id;
@@ -440,7 +442,6 @@ class Operation extends Model
 
         return $impactedOperations->unique('id');
     }
-
 
     public function getEntirePackDestinationLocation($moveLines)
     {

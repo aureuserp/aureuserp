@@ -60,11 +60,9 @@ use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\MaintenanceRequest;
 use Webkul\Maintenance\Models\Stage;
 use Webkul\Maintenance\Models\Team;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class MaintenanceRequestResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = MaintenanceRequest::class;
 
@@ -138,7 +136,7 @@ class MaintenanceRequestResource extends Resource
 
                                         $set('user_id', $equipment?->technician_user_id ?? $equipment?->category?->technician_user_id ?? Auth::id());
 
-                                        $set('company_id', $equipment?->company_id ?? Auth::user()?->default_company_id);
+                                        $set('company_id', $equipment?->company_id ?? current_company_id());
                                     }),
 
                                 Select::make('category_id')
@@ -310,7 +308,7 @@ class MaintenanceRequestResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(Auth::user()?->default_company_id),
+                                    ->default(current_company_id()),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

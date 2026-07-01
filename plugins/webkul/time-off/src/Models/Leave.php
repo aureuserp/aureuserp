@@ -13,11 +13,13 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'time-off';
@@ -163,7 +165,7 @@ class Leave extends Model
 
             $leave->creator_id = $authUser->id;
 
-            $leave->company_id ??= $authUser?->default_company_id;
+            $leave->company_id ??= current_company_id();
         });
     }
 }

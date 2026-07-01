@@ -264,7 +264,7 @@ class ScrapResource extends Resource
                                             ->required()
                                             ->searchable()
                                             ->preload()
-                                            ->default(Auth::user()->default_company_id)
+                                            ->default(current_company_id())
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                     ]),
                             ])

@@ -165,7 +165,7 @@ class ProductForm
                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                     ->searchable()
                     ->preload()
-                    ->default(Auth::user()->default_company_id),
+                    ->default(current_company_id()),
             ]);
     }
 

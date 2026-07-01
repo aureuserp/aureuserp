@@ -169,7 +169,7 @@ class PurchaseAgreementResource extends Resource
                                     )
                                     ->required()
                                     ->searchable()
-                                    ->default(Auth::user()->defaultCompany?->currency_id)
+                                    ->default(current_company()?->currency_id)
                                     ->preload(),
                             ]),
 
@@ -220,7 +220,7 @@ class PurchaseAgreementResource extends Resource
                                     ->searchable()
                                     ->required()
                                     ->preload()
-                                    ->default(Auth::user()->default_company_id)
+                                    ->default(current_company_id())
                                     ->live()
                                     ->afterStateHydrated(static::handleCompanyChange(...))
                                     ->afterStateUpdated(static::handleCompanyChange(...))

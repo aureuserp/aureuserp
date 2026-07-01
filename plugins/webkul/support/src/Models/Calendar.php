@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\CalendarFactory;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Calendar extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'calendars';

@@ -73,7 +73,7 @@ class PutawayRuleResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->default(Auth::user()->default_company_id)
+                    ->default(current_company_id())
                     ->live()
                     ->afterStateUpdated(function (Set $set): void {
                         $set('in_location_id', null);

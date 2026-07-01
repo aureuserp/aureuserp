@@ -12,9 +12,11 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\TaxPartitionFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class TaxPartition extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'accounts_tax_partition_lines';

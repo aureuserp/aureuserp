@@ -13,9 +13,11 @@ use Webkul\Inventory\Database\Factories\StorageCategoryFactory;
 use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class StorageCategory extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'inventories_storage_categories';

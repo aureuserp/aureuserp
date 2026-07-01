@@ -17,9 +17,11 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class ProductQuantity extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_product_quantities';
@@ -171,7 +173,7 @@ class ProductQuantity extends Model
 
         $package->location_id = null;
 
-        $package->company_id  = null;
+        $package->company_id = null;
 
         $quantities = $package->quantities->filter(
             fn ($quantity) => float_compare($quantity->quantity, 0, precisionRounding: $quantity->uom->rounding) > 0
@@ -270,7 +272,7 @@ class ProductQuantity extends Model
             'uom_id'                  => $this->uom->id,
             'source_location_id'      => $sourceLocation->id,
             'destination_location_id' => $destinationLocation->id,
-            'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
+            'company_id'              => $this->company->id ?? current_company_id(),
             'lines'                   => [[
                 'reference'               => $name,
                 'qty'                     => $qty,
@@ -282,7 +284,7 @@ class ProductQuantity extends Model
                 'lot_id'                  => $this->lot_id,
                 'package_id'              => $package?->id,
                 'result_package_id'       => $destinationPackage?->id,
-                'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
+                'company_id'              => $this->company->id ?? current_company_id(),
             ]],
         ];
     }

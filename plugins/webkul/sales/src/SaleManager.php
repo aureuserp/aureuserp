@@ -491,7 +491,7 @@ class SaleManager
 
                 $message = $record->addMessage([
                     'from' => [
-                        'company' => Auth::user()->defaultCompany->toArray(),
+                        'company' => current_company()->toArray(),
                     ],
                     'body' => view($viewName, compact('payload'))->render(),
                     'type' => 'comment',
@@ -543,7 +543,7 @@ class SaleManager
 
             $record->addMessage([
                 'from' => [
-                    'company' => Auth::user()->defaultCompany->toArray(),
+                    'company' => current_company()->toArray(),
                 ],
                 'body' => view($viewName, compact('payload'))->render(),
                 'type' => 'comment',

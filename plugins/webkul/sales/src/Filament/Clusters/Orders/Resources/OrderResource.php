@@ -14,11 +14,9 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrder
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageDeliveries;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class OrderResource extends QuotationResource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 
@@ -72,7 +70,6 @@ class OrderResource extends QuotationResource
     {
         $query = parent::getEloquentQuery();
 
-        $query = static::getModel()::applyPermissionScope($query);
 
         return $query->where('state', OrderState::SALE);
     }

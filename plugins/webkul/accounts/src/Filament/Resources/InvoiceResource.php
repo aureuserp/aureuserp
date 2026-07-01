@@ -80,7 +80,6 @@ use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -91,7 +90,6 @@ use Webkul\Support\Models\UOM;
 
 class InvoiceResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Invoice::class;
 
@@ -247,7 +245,7 @@ class InvoiceResource extends Resource
                                                                 'type'                     => JournalType::SALE,
                                                                 'invoice_reference_type'   => CommunicationType::INVOICE,
                                                                 'invoice_reference_model'  => CommunicationStandard::AUREUS,
-                                                                'company_id'               => $get('company_id') ?? Auth::user()->default_company_id,
+                                                                'company_id'               => $get('company_id') ?? current_company_id(),
                                                             ])
                                                     )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -264,7 +262,7 @@ class InvoiceResource extends Resource
                                                     ->preload()
                                                     ->live()
                                                     ->reactive()
-                                                    ->default(Auth::user()->defaultCompany?->currency_id)
+                                                    ->default(current_company()?->currency_id)
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                             ])
                                             ->columns(2),
@@ -318,7 +316,7 @@ class InvoiceResource extends Resource
                                                 'partnerBank',
                                                 'account_number',
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
-                                                    $companyId = $get('company_id') ?? filament()->auth()->user()->default_company_id;
+                                                    $companyId = $get('company_id') ?? current_company_id();
 
                                                     $bankAccountIds = Journal::where('type', JournalType::BANK)
                                                         ->where('company_id', $companyId)
@@ -361,7 +359,7 @@ class InvoiceResource extends Resource
                                             ->preload()
                                             ->reactive()
                                             ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
-                                            ->default(Auth::user()->default_company_id)
+                                            ->default(current_company_id())
                                             ->live()
                                             ->afterStateUpdated(function (Get $get, Set $set) {
                                                 $company = Company::find($get('company_id'));
@@ -1287,10 +1285,10 @@ class InvoiceResource extends Resource
         if ($get('../../currency_id')) {
             $currency = Currency::find($get('../../currency_id'));
 
-            $priceUnit = Auth::user()->defaultCompany->currency->convert(
+            $priceUnit = current_company()->currency->convert(
                 $priceUnit,
                 $currency,
-                Auth::user()->defaultCompany
+                current_company()
             );
         }
 

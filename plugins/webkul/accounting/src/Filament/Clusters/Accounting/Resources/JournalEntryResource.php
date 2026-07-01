@@ -73,7 +73,6 @@ use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Partner\Models\Partner;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -83,7 +82,6 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = JournalEntry::class;
 
@@ -214,7 +212,7 @@ class JournalEntryResource extends Resource
                                     ->preload()
                                     ->reactive()
                                     ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
-                                    ->default(Auth::user()->default_company_id)
+                                    ->default(current_company_id())
                                     ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set) {
                                         $company = Company::find($get('company_id'));
@@ -686,7 +684,7 @@ class JournalEntryResource extends Resource
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->active(),
                     )
-                    ->default(Auth::user()->defaultCompany?->currency_id)
+                    ->default(current_company()?->currency_id)
                     ->required()
                     ->live()
                     ->selectablePlaceholder(false)

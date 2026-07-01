@@ -25,7 +25,7 @@ class ListRules extends ListRecords
 
                     $data['creator_id'] = $user->id;
 
-                    $data['company_id'] = $user->default_company_id;
+                    $data['company_id'] = current_company_id();
 
                     return $data;
                 })

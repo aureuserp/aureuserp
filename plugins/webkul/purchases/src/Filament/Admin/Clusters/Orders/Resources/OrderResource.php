@@ -69,7 +69,6 @@ use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -79,7 +78,7 @@ use Webkul\Support\Models\UOM;
 
 class OrderResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Order::class;
 
@@ -199,7 +198,7 @@ class OrderResource extends Resource
                                     ->required()
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()->defaultCompany?->currency_id)
+                                    ->default(current_company()?->currency_id)
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                             ]),
 
@@ -238,7 +237,7 @@ class OrderResource extends Resource
                                             ])
                                             ->where(function (Builder $query) use ($get) {
                                                 $query->whereNull('warehouse_id')
-                                                    ->orWhereHas('warehouse', fn (Builder $q) => $q->where('company_id', $get('company_id') ?? Auth::user()->default_company_id));
+                                                    ->orWhereHas('warehouse', fn (Builder $q) => $q->where('company_id', $get('company_id') ?? current_company_id()));
                                             }),
                                     )
                                     ->getOptionLabelFromRecordUsing(function (OperationType $record) {
@@ -252,7 +251,7 @@ class OrderResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->visible(fn (): bool => static::canUseInventoryWarehouses())
-                                    ->default(fn (Get $get) => static::getInventoryOperationTypeId($get('company_id') ?? Auth::user()->default_company_id))
+                                    ->default(fn (Get $get) => static::getInventoryOperationTypeId($get('company_id') ?? current_company_id()))
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                             ]),
                     ])
@@ -304,7 +303,7 @@ class OrderResource extends Resource
                                             ->preload()
                                             ->required()
                                             ->live()
-                                            ->default(Auth::user()->default_company_id)
+                                            ->default(current_company_id())
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                                         TextInput::make('origin')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.source-document'))
@@ -1193,7 +1192,7 @@ class OrderResource extends Resource
                     'currency_id'         => $record->currency_id,
                     'partner_id'          => $record->partner_id,
                     'creator_id'          => Auth::id(),
-                    'company_id'          => Auth::user()->default_company_id,
+                    'company_id'          => current_company_id(),
                 ]);
 
                 return $data;

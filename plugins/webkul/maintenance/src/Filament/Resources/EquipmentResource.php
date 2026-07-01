@@ -38,11 +38,9 @@ use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ListEquipment;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ViewEquipment;
 use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\EquipmentCategory;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class EquipmentResource extends Resource
 {
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Equipment::class;
 
@@ -164,7 +162,7 @@ class EquipmentResource extends Resource
                                     ->native(false)
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()?->default_company_id),
+                                    ->default(current_company_id()),
 
                                 Select::make('technician_user_id')
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.settings.fields.technician'))

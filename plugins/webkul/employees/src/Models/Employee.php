@@ -18,9 +18,11 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Employee extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'employees';

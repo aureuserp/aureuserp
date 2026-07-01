@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class FiscalPositionAccount extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'accounts_fiscal_position_accounts';

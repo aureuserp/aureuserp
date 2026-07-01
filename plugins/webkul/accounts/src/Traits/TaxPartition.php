@@ -104,7 +104,7 @@ trait TaxPartition
 
                         $data['creator_id'] = $user->id;
 
-                        $data['company_id'] = $user->default_company_id;
+                        $data['company_id'] = current_company_id();
 
                         $data['factor'] = (float) $data['factor_percent'] / 100;
 

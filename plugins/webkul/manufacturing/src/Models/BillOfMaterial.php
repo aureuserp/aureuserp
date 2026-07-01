@@ -18,9 +18,11 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class BillOfMaterial extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     protected $table = 'manufacturing_bills_of_materials';
@@ -243,7 +245,7 @@ class BillOfMaterial extends Model
 
             $billOfMaterial->creator_id ??= $authUser?->id;
 
-            $billOfMaterial->company_id ??= $authUser?->default_company_id;
+            $billOfMaterial->company_id ??= current_company_id();
 
             $billOfMaterial->type ??= BillOfMaterialType::NORMAL;
 

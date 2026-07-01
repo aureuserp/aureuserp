@@ -67,11 +67,10 @@ use Webkul\Project\Settings\TaskSettings;
 use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class ProjectResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Project::class;
 
@@ -177,7 +176,7 @@ class ProjectResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.company'))
-                                    ->default(fn () => Auth::user()->default_company_id)
+                                    ->default(fn () => current_company_id())
                                     ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),
                             ]))
                             ->columns(2),

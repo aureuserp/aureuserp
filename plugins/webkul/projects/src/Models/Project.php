@@ -17,14 +17,16 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Project\Database\Factories\ProjectFactory;
-use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Project extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'projects';
 
@@ -170,9 +172,13 @@ class Project extends Model implements Sortable
         return $this->belongsToMany(Tag::class, 'projects_project_tag', 'project_id', 'tag_id');
     }
 
-    protected static function booted()
+    public function ownershipSources(): array
     {
-        static::addGlobalScope(new UserPermissionScope('user'));
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('user_id'),
+            OwnerSource::followers(),
+        ];
     }
 
     protected static function newFactory(): ProjectFactory

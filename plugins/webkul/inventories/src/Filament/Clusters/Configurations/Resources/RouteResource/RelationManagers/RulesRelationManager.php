@@ -49,7 +49,7 @@ class RulesRelationManager extends RelationManager
                     ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
-                        $data['company_id'] = $data['company_id'] ?? Auth::user()->default_company_id;
+                        $data['company_id'] = $data['company_id'] ?? current_company_id();
 
                         return $data;
                     })

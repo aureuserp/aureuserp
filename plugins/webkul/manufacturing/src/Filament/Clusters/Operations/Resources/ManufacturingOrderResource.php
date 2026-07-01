@@ -62,7 +62,6 @@ use Webkul\Manufacturing\Models\Product;
 use Webkul\Manufacturing\Models\WorkOrder;
 use Webkul\Manufacturing\Settings\OperationSettings;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -71,7 +70,6 @@ use Webkul\Support\Models\UOM;
 
 class ManufacturingOrderResource extends Resource
 {
-    use HasResourcePermissionQuery;
     
     protected static ?string $model = Order::class;
 
@@ -208,7 +206,7 @@ class ManufacturingOrderResource extends Resource
 
                                         $set('uom_id', $product->uom_id ?: static::getDefaultUomId());
 
-                                        $set('company_id', $product->company_id ?? Auth::user()?->default_company_id);
+                                        $set('company_id', $product->company_id ?? current_company_id());
 
                                         $billOfMaterialId = static::getDefaultBillOfMaterialId($product);
 
@@ -395,7 +393,7 @@ class ManufacturingOrderResource extends Resource
                                             ->preload()
                                             ->native(false)
                                             ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
-                                            ->default(Auth::user()?->default_company_id),
+                                            ->default(current_company_id()),
                                     ]),
                             ]),
                     ]),

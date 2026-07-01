@@ -17,9 +17,11 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PaymentRegister extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'accounts_payment_registers';

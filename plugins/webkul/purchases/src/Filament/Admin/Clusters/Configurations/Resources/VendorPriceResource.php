@@ -123,7 +123,7 @@ class VendorPriceResource extends Resource
                                             )
                                             ->required()
                                             ->searchable()
-                                            ->default(Auth::user()->defaultCompany?->currency_id)
+                                            ->default(current_company()?->currency_id)
                                             ->preload(),
                                         DatePicker::make('starts_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.valid-from'))
@@ -145,7 +145,7 @@ class VendorPriceResource extends Resource
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.company'))
                                     ->relationship('company', 'name')
                                     ->searchable()
-                                    ->default(Auth::user()->default_company_id)
+                                    ->default(current_company_id())
                                     ->preload(),
                             ]),
                     ])

@@ -230,7 +230,7 @@ class BillsOfMaterialResource extends Resource
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()?->default_company_id)
+                                    ->default(current_company_id())
                                     ->required(),
                             ])
                             ->columns(2),
@@ -1249,7 +1249,7 @@ class BillsOfMaterialResource extends Resource
             'worksheet'                  => null,
             'worksheet_google_slide_url' => null,
             'note'                       => null,
-            'company_id'                 => Auth::user()?->default_company_id,
+            'company_id'                 => current_company_id(),
             'attributeValues'            => [],
             ...$overrides,
         ]);
@@ -1257,7 +1257,7 @@ class BillsOfMaterialResource extends Resource
 
     protected static function normalizeOperationRepeaterData(array $data): array
     {
-        $data['company_id'] ??= Auth::user()?->default_company_id;
+        $data['company_id'] ??= current_company_id();
         $data['attributeValues'] = array_values($data['attributeValues'] ?? []);
         $data['time_mode'] ??= OperationTimeMode::MANUAL->value;
         $data['time_mode_batch'] ??= 10;

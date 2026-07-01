@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 
 class Team extends Model
 {
-    use HasPermissionScope;
+    use HasOwnershipScope;
+
+    protected static function ownershipScopeIsGlobal(): bool
+    {
+        return false;
+    }
 
     protected $fillable = [
         'name',

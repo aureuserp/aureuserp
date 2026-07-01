@@ -163,8 +163,8 @@ class WorkCenterResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->disabled(fn (): bool => filled(Auth::user()?->default_company_id))
-                                    ->default(Auth::user()?->default_company_id),
+                                    ->disabled(fn (): bool => filled(current_company_id()))
+                                    ->default(current_company_id()),
 
                                 Textarea::make('note')
                                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.form.sections.description.fields.note'))

@@ -221,7 +221,7 @@ class ScrapController extends Controller
         }
 
         if (! isset($data['company_id'])) {
-            $data['company_id'] = $existing?->company_id ?? Auth::user()?->default_company_id;
+            $data['company_id'] = $existing?->company_id ?? current_company_id();
         }
 
         if (! isset($data['state']) && ! $existing) {

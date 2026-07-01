@@ -11,9 +11,11 @@ use Webkul\Purchase\Enums\OrderState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class RequisitionLine extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'purchases_requisition_lines';

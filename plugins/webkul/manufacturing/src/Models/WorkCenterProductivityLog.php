@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class WorkCenterProductivityLog extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'manufacturing_work_center_productivity_logs';
 
     protected $fillable = [
@@ -79,7 +82,7 @@ class WorkCenterProductivityLog extends Model
 
             $productivityLog->assigned_user_id ??= $user?->id;
 
-            $productivityLog->company_id ??= $user?->default_company_id;
+            $productivityLog->company_id ??= current_company_id();
 
             $productivityLog->description ??= __('manufacturing::system.work-center-productivity-log.time-tracking', ['name' => $user->name]);
 

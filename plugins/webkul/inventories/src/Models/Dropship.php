@@ -19,7 +19,7 @@ class Dropship extends Operation
         static::creating(function ($operation) {
             $operationType = OperationType::find($operation->operation_type_id);
 
-            $operation->company_id ??= $operationType->destinationLocation->company_id ?? $operationType->sourceLocation->company_id ?? Auth::user()->default_company_id;
+            $operation->company_id ??= $operationType->destinationLocation->company_id ?? $operationType->sourceLocation->company_id ?? current_company_id();
 
             $operation->source_location_id ??= $operationType->source_location_id;
 

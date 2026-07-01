@@ -14,9 +14,11 @@ use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PaymentTerm extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'accounts_payment_terms';

@@ -11,9 +11,11 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\PackageTypeFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PackageType extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'inventories_package_types';
@@ -62,7 +64,7 @@ class PackageType extends Model implements Sortable
 
             $packageType->creator_id ??= $authUser->id;
 
-            $packageType->company_id ??= $authUser?->default_company_id;
+            $packageType->company_id ??= current_company_id();
         });
     }
 }
