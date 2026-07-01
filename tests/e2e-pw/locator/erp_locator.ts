@@ -150,11 +150,168 @@ export class ErpLocators {
     readonly salesValidationMessage: Locator;
 
     /**
-     * Purchases - Vendors, Products, Quotations, Agreements
+     * Inventory - Settings (Operations, Products, Warehouses, Traceability, Logistics)
      */
 
-    readonly purchaseAgreementSettingsToggle: Locator;
+    readonly inventoryManageOperationsToggleEnablePackages: Locator;
+    readonly inventoryManageOperationsAnnualDay: Locator;
+    readonly inventoryManageOperationsAnnualMonth: Locator;
+    readonly inventoryManageProductsToggleEnableVariants: Locator;
+    readonly inventoryManageProductsToggleEnableUom: Locator;
+    readonly inventoryManageProductsToggleEnablePackagings: Locator;
+    readonly inventoryManageWarehousesToggleEnableLocations: Locator;
+    readonly inventoryManageWarehousesToggleEnableMultiSteps: Locator;
+    readonly inventoryManageTraceabilityToggleEnableLots: Locator;
+    readonly inventoryManageTraceabilityToggleDisplayOnDeliverySlips: Locator;
+    readonly inventoryManageLogisticsToggleEnableDropshipping: Locator;
+    readonly inventorySettingsSaveButton: Locator;
 
+    /**
+     * Inventory - Warehouses, Locations, Operation Types, Routes, Rules
+     */
+
+    readonly inventoryWarehouseCreateButton: Locator;
+    readonly inventoryWarehouseNameInput: Locator;
+    readonly inventoryWarehouseCodeInput: Locator;
+    readonly inventoryWarehouseReceptionOneStep: Locator;
+    readonly inventoryWarehouseReceptionTwoSteps: Locator;
+    readonly inventoryWarehouseReceptionThreeSteps: Locator;
+    readonly inventoryWarehouseDeliveryOneStep: Locator;
+    readonly inventoryWarehouseDeliveryTwoSteps: Locator;
+    readonly inventoryWarehouseDeliveryThreeSteps: Locator;
+    readonly inventoryWarehouseSaveButton: Locator;
+    readonly inventoryWarehouseEditSaveButton: Locator;
+    readonly inventoryWarehouseTable: Locator;
+    readonly inventoryWarehouseRowActions: Locator;
+    readonly inventoryWarehouseEditAction: Locator;
+    // readonly inventoryOpenWarehouseRow: Locator;
+    readonly inventoryWarehouseDeleteAction: Locator;
+    readonly inventoryWarehouseConfirmDeleteButton: Locator;
+
+    readonly inventoryLocationsTable: Locator;
+    readonly inventoryOperationTypesTable: Locator;
+    readonly inventoryRoutesTable: Locator;
+    readonly inventoryRulesTable: Locator;
+
+    /**
+     * Inventory - Products
+     */
+
+    readonly inventoryProductCreateButton: Locator;
+    readonly inventoryProductNameInput: Locator;
+    readonly inventoryProductPriceInput: Locator;
+    readonly inventoryProductSaveButton: Locator;
+    readonly inventoryProductEditSaveButton: Locator;
+    readonly inventoryProductQuantityEditableInput: Locator;
+    readonly inventoryProductTable: Locator;
+    readonly inventoryProductRowActions: Locator;
+    readonly inventoryProductEditAction: Locator;
+    readonly inventoryProductDeleteAction: Locator;
+    readonly inventoryProductIsStorableToggle: Locator;
+    readonly inventoryProductQuantitiesTab: Locator;
+    readonly inventoryProductMovesTab: Locator;
+    readonly inventoryProductQuantityCreateButton: Locator;
+    readonly inventoryProductQuantityOpenModal: Locator;
+    readonly inventoryProductQuantityProductSelect: Locator;
+    readonly inventoryProductQuantityLocationSelect: Locator;
+    readonly inventoryProductQuantityPackageSelect: Locator;
+    readonly inventoryProductQuantityInput: Locator;
+    readonly inventoryProductQuantityDialogCreate: Locator;
+    readonly inventoryProductQuantityTableRows: Locator;
+    readonly inventoryProductQuantityOnHandCells: Locator;
+    readonly inventoryProductQuantityOnHandInlineInputs: Locator;
+    readonly inventoryProductQuantityReservedCells: Locator;
+
+    /**
+     * Inventory - Operations (Receipts, Deliveries, Internals)
+     */
+
+    readonly inventoryOperationCreateButton: Locator;
+    readonly inventoryOperationPartnerSelect: Locator;
+    readonly inventoryOperationTypeSelect: Locator;
+    readonly inventoryOperationSourceLocationSelect: Locator;
+    readonly inventoryOperationDestinationLocationSelect: Locator;
+    readonly inventoryOperationAddMoveButton: Locator;
+    readonly inventoryOperationMoveProductSelect: Locator;
+    readonly inventoryOperationMoveDemandInput: Locator;
+    readonly inventoryOperationMoveQuantityInput: Locator;
+    readonly inventoryOperationSaveButton: Locator;
+    readonly inventoryOperationEditSaveButton: Locator;
+    readonly inventoryOperationConfirmButton: Locator;
+    readonly inventoryOperationMarkAsTodoButton: Locator;
+    readonly inventoryOperationCheckAvailabilityButton: Locator;
+    readonly inventoryOperationValidateButton: Locator;
+    readonly inventoryOperationNoBackorderButton: Locator;
+    readonly inventoryOperationNextTransferButton: Locator;
+    readonly inventoryOperationStateBadge: Locator;
+    readonly inventoryOperationTable: Locator;
+    readonly inventoryOperationRowActions: Locator;
+    readonly inventoryOperationEditAction: Locator;
+    readonly inventoryOperationDeleteAction: Locator;
+
+    /**
+     * Inventory - Generic UI helpers
+     */
+
+    readonly inventorySearchInput: Locator;
+    readonly inventorySelectSearchInput: Locator;
+    readonly inventorySelectOption: Locator;
+    readonly inventorySuccessToast: Locator;
+    readonly inventoryErrorToast: Locator;
+    readonly inventoryValidationMessage: Locator;
+    readonly inventoryConfirmDialogButton: Locator;
+    readonly inventoryTableRows: Locator;
+    readonly inventoryPageHeading: Locator;
+    readonly inventorySelectPanel: Locator;
+
+    /**
+     * Inventory - Traceability (product lot/serial tracking)
+     */
+
+    readonly inventoryProductTrackingSelect: Locator;
+    readonly inventoryMoveManageLinesAction: Locator;
+    readonly inventoryMoveLinesModal: Locator;
+    readonly inventoryMoveGenerateLotsAction: Locator;
+    readonly inventoryMoveLinesFirstLotInput: Locator;
+    readonly inventoryMoveLinesQuantityReceivedInput: Locator;
+    readonly inventoryMoveLinesGenerateSubmit: Locator;
+    readonly inventoryMoveLinesModalSaveButton: Locator;
+    readonly inventoryMoveLinesResultPackageSelect: Locator;
+
+    /**
+     * Inventory - Packages & Package Types
+     */
+
+    readonly inventoryPackageTypeCreateButton: Locator;
+    readonly inventoryPackageTypeNameInput: Locator;
+    readonly inventoryPackageTypeLengthInput: Locator;
+    readonly inventoryPackageTypeWidthInput: Locator;
+    readonly inventoryPackageTypeHeightInput: Locator;
+    readonly inventoryPackageTypeBaseWeightInput: Locator;
+    readonly inventoryPackageTypeMaxWeightInput: Locator;
+    readonly inventoryPackageTypeSaveButton: Locator;
+    readonly inventoryPackageTypeTable: Locator;
+    readonly inventoryPackageCreateButton: Locator;
+    readonly inventoryPackageNameInput: Locator;
+    readonly inventoryPackageTypeSelect: Locator;
+    readonly inventoryPackageLocationSelect: Locator;
+    readonly inventoryPackageSaveButton: Locator;
+    readonly inventoryPackageTable: Locator;
+    readonly inventoryPackageDeleteAction: Locator;
+
+    readonly inventoryScrapCreateButton: Locator;
+    readonly inventoryScrapProductSelect: Locator;
+    readonly inventoryScrapQtyInput: Locator;
+    readonly inventoryScrapSourceLocationSelect: Locator;
+
+    readonly inventoryQuantityCountedInput: Locator;
+    readonly inventoryQuantityApplyAction: Locator;
+
+   /**
+    * Purchases - Vendors, Products, Quotations, Agreements 
+    */
+     
+    readonly purchaseAgreementSettingsToggle: Locator;
     readonly purchaseVendorsTable: Locator;
     readonly purchaseVendorNewCreateButton: Locator;
     readonly purchaseVendorNameInput: Locator;
@@ -438,11 +595,205 @@ export class ErpLocators {
         this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
 
         /**
+         * Inventory - Settings (Operations, Products, Warehouses, Traceability, Logistics)
+         */
+
+        this.inventoryManageOperationsToggleEnablePackages = page.getByRole("switch", { name: /Storage Locations|Packages|Enable Packages/i }).first();
+        this.inventoryManageOperationsAnnualDay = page.locator('input[id="form.annual_inventory_day"]');
+        this.inventoryManageOperationsAnnualMonth = page.locator('[wire\\:key$="form.annual_inventory_month"] button.fi-select-input-btn').first();
+        this.inventoryManageProductsToggleEnableVariants = page.getByRole("switch", { name: /Variants/i }).first();
+        this.inventoryManageProductsToggleEnableUom = page.getByRole("switch", { name: /Units of Measure|UoM|UOM/i }).first();
+        this.inventoryManageProductsToggleEnablePackagings = page.getByRole("switch", { name: /Packagings/i }).first();
+        this.inventoryManageWarehousesToggleEnableLocations = page.getByRole("switch", { name: /Storage Locations|Locations/i }).first();
+        this.inventoryManageWarehousesToggleEnableMultiSteps = page.getByRole("switch", { name: /Multi-Step Routes|Multi Step|Multi-step/i }).first();
+        this.inventoryManageTraceabilityToggleEnableLots = page.getByRole("switch", { name: /Lots & Serial Numbers|Lots|Serial/i }).first();
+        this.inventoryManageTraceabilityToggleDisplayOnDeliverySlips = page.getByRole("switch", { name: /Display Lots & Serial Numbers on Delivery Slips|Delivery Slips/i }).first();
+        this.inventoryManageLogisticsToggleEnableDropshipping = page.getByRole("switch", { name: /Dropshipping/i }).first();
+        this.inventorySettingsSaveButton = page.getByRole("button", { name: /Save changes|save|update|submit/i }).first();
+
+        /**
+         * Inventory - Warehouses, Locations, Operation Types, Routes, Rules
+         */
+
+        this.inventoryWarehouseCreateButton = page.locator("a,button").filter({ hasText: /new warehouse|create warehouse|add warehouse|create/i }).first();
+        this.inventoryWarehouseNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryWarehouseCodeInput = page.locator('input[id="form.code"]').first();
+        this.inventoryWarehouseReceptionOneStep = page.getByRole("radio", { name: /One step/i }).first();
+        this.inventoryWarehouseReceptionTwoSteps = page.getByRole("radio", { name: /Two steps/i }).first();
+        this.inventoryWarehouseReceptionThreeSteps = page.getByRole("radio", { name: /Three steps/i }).first();
+        this.inventoryWarehouseDeliveryOneStep = page.getByRole("radio", { name: /One step/i }).nth(1);
+        this.inventoryWarehouseDeliveryTwoSteps = page.getByRole("radio", { name: /Two steps/i }).nth(1);
+        this.inventoryWarehouseDeliveryThreeSteps = page.getByRole("radio", { name: /Three steps/i }).nth(1);
+        this.inventoryWarehouseSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        // this.inventoryOpenWarehouseRow = page.
+        this.inventoryWarehouseEditSaveButton = page.locator('button[id="key-bindings-2"]').first();
+        this.inventoryWarehouseTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryWarehouseRowActions = page.getByRole("button", { name: "Actions" }).first();
+        this.inventoryWarehouseEditAction = page.locator("a.fi-ac-link-action").nth(1);  
+        this.inventoryWarehouseDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryWarehouseConfirmDeleteButton = page.getByRole("dialog").getByRole("button", { name: /Delete/i }).first();
+
+        this.inventoryLocationsTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryOperationTypesTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryRoutesTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryRulesTable = page.locator("table, div.fi-ta-empty-state");
+
+        /**
+         * Inventory - Products
+         */
+
+        this.inventoryProductCreateButton = page.locator("a,button").filter({ hasText: /new product|create product|add product|create/i }).first();
+        this.inventoryProductNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryProductPriceInput = page.locator('input[id="form.price"]').first();
+        this.inventoryProductSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryProductEditSaveButton = page.getByRole("button", { name: /Save changes/i }).first();
+        this.inventoryProductQuantityEditableInput = page.locator('table tbody tr input:not([type="hidden"])').first();
+        this.inventoryProductTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryProductRowActions = page.getByRole("button", { name: "Actions" }).first();
+        this.inventoryProductEditAction = page.getByRole("link", { name: /Edit/i }).first();
+        this.inventoryProductDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryProductIsStorableToggle = page.getByRole("switch", { name: /Track Inventory|Storable/i }).first();
+        this.inventoryProductQuantitiesTab = page.locator("a, li").filter({ hasText: /On Hand|Quantities/i }).first();
+        this.inventoryProductMovesTab = page.getByRole('link', { name: 'IN/OUT' });
+        this.inventoryProductQuantityCreateButton = page.getByRole('button', { name: 'Add Quantity' });
+        // The open Filament action-modal window (`.fi-modal-window` is only
+        // rendered when the modal is open). All on-hand quantity dialog
+        // children are scoped to it.
+        this.inventoryProductQuantityOpenModal = page.locator('.fi-modal-window:visible').first();
+        this.inventoryProductQuantityDialogCreate = page
+            .locator('.fi-modal-footer button.fi-btn, .fi-modal-window button[type="submit"]')
+            .filter({ hasText: /Create|Save|Submit/i })
+            .first();
+        this.inventoryProductQuantityProductSelect = page
+            .locator('.fi-modal-window:visible div.fi-fo-field, .fi-modal-window:visible div[data-field-wrapper]')
+            .filter({ has: page.locator('label', { hasText: /^Product$/i }) })
+            .locator('button.fi-select-input-btn')
+            .first();
+        this.inventoryProductQuantityLocationSelect = page
+            .locator('.fi-modal-window:visible, .fi-modal:visible, [role="dialog"]:visible')
+            .last()
+            .locator('label:has-text("Location")')
+            .locator('xpath=ancestor::div[@data-field-wrapper][1]')
+            .locator('button.fi-select-input-btn')
+            .first();
+        this.inventoryProductQuantityPackageSelect = page
+            .locator('.fi-modal-window:visible, .fi-modal:visible, [role="dialog"]:visible')
+            .last()
+            .locator('label:has-text("Package")')
+            .locator('xpath=ancestor::div[@data-field-wrapper][1]')
+            .locator('button.fi-select-input-btn')
+            .first();
+        this.inventoryProductQuantityInput = page
+            .locator('.fi-modal-window:visible div.fi-fo-field, .fi-modal-window:visible div[data-field-wrapper]')
+            .filter({ has: page.locator('label', { hasText: /On Hand Quantity|Quantity|On-hand/i }) })
+            .locator('input')
+            .first();
+        this.inventoryProductQuantityTableRows = page.locator("table tbody tr");
+        // Per-column cell locators for the product quantities table. The on-hand
+        // column is rendered as Filament `TextInputColumn` (editable inline input);
+        // the reserved column is a `TextColumn` (read-only text content).
+        this.inventoryProductQuantityOnHandCells = page.locator("td.fi-ta-cell-quantity");
+        this.inventoryProductQuantityOnHandInlineInputs = page.locator(
+            "td.fi-ta-cell-quantity .fi-ta-text-input input:not([type=hidden])"
+        );
+        this.inventoryProductQuantityReservedCells = page.locator("td.fi-ta-cell-reserved_quantity");
+
+        /**
+         * Inventory - Operations (Receipts, Deliveries, Internals)
+         */
+
+        this.inventoryOperationCreateButton = page.locator("a,button").filter({ hasText: /new receipt|new delivery|new internal|new transfer|create receipt|create delivery|create internal|create transfer|create/i }).first();
+        this.inventoryOperationPartnerSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
+        this.inventoryOperationTypeSelect = page.locator('[wire\\:key$="form.operation_type_id"] button.fi-select-input-btn').first();
+        this.inventoryOperationSourceLocationSelect = page.locator('[wire\\:key$="form.source_location_id"] button.fi-select-input-btn').first();
+        this.inventoryOperationDestinationLocationSelect = page.locator('[wire\\:key$="form.destination_location_id"] button.fi-select-input-btn').first();
+        this.inventoryOperationAddMoveButton = page.getByRole("button", { name: /Add a line|Add Move|Add Item|Add to Cart|Add product|Add/i }).first();
+        this.inventoryOperationMoveProductSelect = page.locator('[wire\\:key*=".form.moves."][wire\\:key*=".product_id."] button.fi-select-input-btn');
+        this.inventoryOperationMoveDemandInput = page.locator('input[id^="form.moves."][id$=".product_uom_qty"]');
+        this.inventoryOperationMoveQuantityInput = page.locator('input[id^="form.moves."][id$=".quantity"]');
+        this.inventoryOperationSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryOperationEditSaveButton = page.locator('button[id="key-bindings-2"]').first();
+        this.inventoryOperationConfirmButton = page.getByRole("button", { name: /^Confirm$/i }).first();
+        this.inventoryOperationMarkAsTodoButton = page.getByRole("button", { name: /Mark as Todo/i }).first();
+        this.inventoryOperationCheckAvailabilityButton = page.getByRole("button", { name: /Check Availability/i }).first();
+        this.inventoryOperationValidateButton = page.getByRole('button', { name: 'Validate' }).first();
+        this.inventoryOperationNoBackorderButton = page.getByRole("button", { name: /No Backorder/i }).first();
+        this.inventoryOperationNextTransferButton = page.locator("a,button").filter({ hasText: /Next Transfer/i }).first();
+        this.inventoryOperationStateBadge = page.locator('[wire\\:key$="form.state"], .fi-progress-stepper').first();
+        this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryOperationRowActions = page.getByRole("button", { name: "Actions" }).first();
+        this.inventoryOperationEditAction = page.getByRole("link", { name: /Edit/i }).first();
+        this.inventoryOperationDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+
+        /**
+         * Inventory - Generic UI helpers
+         */
+
+        this.inventorySearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.inventorySelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"]').last();
+        this.inventorySelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+        this.inventorySuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.inventoryErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
+        this.inventoryValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+        this.inventoryConfirmDialogButton = page.getByRole("dialog").getByRole("button", { name: /Confirm|Delete|Yes/i }).first();
+        this.inventoryTableRows = page.locator("table tbody tr");
+        this.inventoryPageHeading = page.locator("h1").first();
+        this.inventorySelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
+
+        /**
+         * Inventory - Traceability (product lot/serial tracking)
+         */
+
+        this.inventoryProductTrackingSelect = page.locator('select[id="form.tracking"]').first();
+        // "Manage Stock Moves" lot/serial detail flow, reached from the suffix
+        // action on a confirmed move's quantity field.
+        this.inventoryMoveManageLinesAction = page.locator('button[wire\\:click*="manageLines"]');
+        this.inventoryMoveLinesModal = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).first();
+        this.inventoryMoveGenerateLotsAction = page.getByRole("button", { name: /Generate Serials\/Lots/i }).first();
+        this.inventoryMoveLinesFirstLotInput = page.getByLabel(/First Lot Number/i).first();
+        this.inventoryMoveLinesQuantityReceivedInput = page.getByLabel(/Quantity Received/i).first();
+        this.inventoryMoveLinesGenerateSubmit = page.locator('.fi-modal-window:visible').last().locator('button[type="submit"], .fi-modal-footer-actions button').first();
+        this.inventoryMoveLinesModalSaveButton = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).getByRole("button", { name: /^Save$/i }).first();
+        this.inventoryMoveLinesResultPackageSelect = page
+            .locator('.fi-modal-window:visible')
+            .filter({ hasText: /Manage Stock Moves/i })
+            .locator('[wire\\:key*="result_package_id"] button.fi-select-input-btn')
+            .first();
+
+        /**
+         * Inventory - Packages & Package Types
+         */
+
+        this.inventoryPackageTypeCreateButton = page.locator("a,button").filter({ hasText: /new package type|create/i }).first();
+        this.inventoryPackageTypeNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryPackageTypeLengthInput = page.locator('input[id="form.length"]').first();
+        this.inventoryPackageTypeWidthInput = page.locator('input[id="form.width"]').first();
+        this.inventoryPackageTypeHeightInput = page.locator('input[id="form.height"]').first();
+        this.inventoryPackageTypeBaseWeightInput = page.locator('input[id="form.base_weight"]').first();
+        this.inventoryPackageTypeMaxWeightInput = page.locator('input[id="form.max_weight"]').first();
+        this.inventoryPackageTypeSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryPackageTypeTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryPackageCreateButton = page.locator("a,button").filter({ hasText: /new package|create/i }).first();
+        this.inventoryPackageNameInput = page.locator('input[id="form.name"]').first();
+        this.inventoryPackageTypeSelect = page.locator('[wire\\:key$="form.package_type_id"] button.fi-select-input-btn').first();
+        this.inventoryPackageLocationSelect = page.locator('[wire\\:key$="form.location_id"] button.fi-select-input-btn').first();
+        this.inventoryPackageSaveButton = page.locator('button[id="key-bindings-1"]').first();
+        this.inventoryPackageTable = page.locator("table, div.fi-ta-empty-state");
+        this.inventoryPackageDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+
+        this.inventoryScrapCreateButton = page.locator("a,button").filter({ hasText: /new scrap|create/i }).first();
+        this.inventoryScrapProductSelect = page.locator('[wire\\:key$="form.product_id"] button.fi-select-input-btn').first();
+        this.inventoryScrapQtyInput = page.locator('input[id="form.qty"]').first();
+        this.inventoryScrapSourceLocationSelect = page.locator('[wire\\:key$="form.source_location_id"] button.fi-select-input-btn').first();
+
+        this.inventoryQuantityCountedInput = page.locator('table tbody tr input:not([type="hidden"])').first();
+        this.inventoryQuantityApplyAction = page.getByRole("button", { name: /^Apply$/i }).first();
+
+        /* 
          * Purchases - Vendors, Products, Quotations, Agreements
          */
 
         this.purchaseAgreementSettingsToggle = page.getByRole("switch", { name: /Purchase Agreements/i });
-
         this.purchaseVendorsTable = page.locator("div.fi-ta-content-grid, div.fi-ta-empty-state, table");
         this.purchaseVendorNewCreateButton = page.locator("a,button").filter({ hasText: /new vendor|create vendor|add vendor|create/i }).first();
         this.purchaseVendorNameInput = page.locator('input[id="form.name"]').first();
