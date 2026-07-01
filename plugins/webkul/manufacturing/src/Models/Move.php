@@ -88,7 +88,7 @@ class Move extends BaseMove
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function warehouse(): BelongsTo
@@ -193,7 +193,7 @@ class Move extends BaseMove
 
         static::saving(function ($move) {
             $move->warehouse_id = $move->operationType?->warehouse_id;
-            
+
             $move->mo_operation_id = $move->bomLine?->operation_id;
         });
     }
