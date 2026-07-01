@@ -2,11 +2,8 @@
     @if ($companies->count() > 1)
         <x-filament::dropdown placement="bottom-end" width="xs" teleport>
             <x-slot name="trigger">
-                <button
-                    type="button"
-                    style="display:flex;align-items:center;gap:0.375rem;border-radius:0.5rem;padding:0.375rem 0.625rem;font-size:0.875rem;font-weight:500;"
-                >
-                    <x-filament::icon icon="heroicon-o-building-office-2" style="height:1.25rem;width:1.25rem;" />
+                <x-filament::link size="sm" color="gray" style="text-decoration:none;">
+                    <x-filament::icon icon="heroicon-o-building-office-2" />
 
                     <span>
                         @if (count($active) === 1)
@@ -16,8 +13,8 @@
                         @endif
                     </span>
 
-                    <x-filament::icon icon="heroicon-m-chevron-down" style="height:1rem;width:1rem;" />
-                </button>
+                    <x-filament::icon icon="heroicon-m-chevron-down" color="gray" />
+                </x-filament::link>
             </x-slot>
 
             <form method="POST" action="{{ route('company-context.set') }}" x-data>
