@@ -3,7 +3,9 @@
 namespace Webkul\Security;
 
 use Filament\Panel;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
+use Filament\Support\Assets\Css;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Facades\Bouncer as BouncerFacade;
@@ -45,6 +47,15 @@ class SecurityServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         require_once __DIR__.'/Helpers/helpers.php';
+
+        $this->registerCustomCss();
+    }
+
+    public function registerCustomCss(): void
+    {
+        FilamentAsset::register([
+            Css::make('security', __DIR__.'/../resources/dist/security.css'),
+        ], 'security');
     }
 
     public function packageRegistered(): void
