@@ -5,6 +5,8 @@ return [
         'fields' => [
             'web'     => 'Web',
             'sanctum' => 'Sanctum',
+            'select-all-permissions'      => 'Select all permissions',
+            'select-all-permissions-hint' => 'Grant every permission to this role. Turn off to clear all.',
         ],
     ],
 
@@ -17,13 +19,12 @@ return [
 
     'matrix' => [
         'title'        => 'Permissions',
-        'all-modules'  => 'All modules:',
+        'all-modules'  => 'All plugins:',
         'select-all'   => 'Select all',
         'deselect-all' => 'Deselect all',
-        'search'       => 'Search module…',
-        'modules'      => 'Modules',
+        'search'       => 'Search plugins…',
         'model'        => 'Model',
-        'row'          => 'Row',
+        'action'       => 'Select Action',
         'all'          => 'all',
         'none'         => 'none',
         'granted'      => 'granted',

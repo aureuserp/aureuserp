@@ -1,15 +1,5 @@
 @import "tailwindcss";
 @variant dark (&:where(.dark, .dark *));
 
-@theme {
-    --color-primary-50: var(--primary-50);
-    --color-primary-100: var(--primary-100);
-    --color-primary-400: var(--primary-400);
-    --color-primary-500: var(--primary-500);
-    --color-primary-600: var(--primary-600);
-    --color-primary-700: var(--primary-700);
-    --color-success-600: var(--success-600);
-}
-
 @source '../../resources/views';
 @source '../../src';

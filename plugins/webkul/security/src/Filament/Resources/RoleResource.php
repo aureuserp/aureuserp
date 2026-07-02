@@ -10,7 +10,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -18,10 +17,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
-use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -45,10 +42,6 @@ class RoleResource extends RolesRoleResource
 
     protected static bool $isGloballySearchable = false;
 
-    protected static $permissionsCollection;
-
-    public static $permissions = null;
-
     protected static ?Collection $allFormPermissions = null;
 
     protected static ?array $matrixData = null;
@@ -66,18 +59,6 @@ class RoleResource extends RolesRoleResource
     public static function getActiveNavigationIcon(): BackedEnum|Htmlable|null|string
     {
         return null;
-    }
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            'delete_any',
-        ];
     }
 
     public static function form(Schema $schema): Schema
@@ -110,10 +91,15 @@ class RoleResource extends RolesRoleResource
                                     ->default(Utils::getFilamentAuthGuard())
                                     ->disabled(fn (?Model $record): bool => $record instanceof Role && $record->isSystemRole())
                                     ->dehydrated(),
+                                Toggle::make('select_all_permissions')
+                                    ->label(__('security::filament/resources/role.form.fields.select-all-permissions'))
+                                    ->helperText(__('security::filament/resources/role.form.fields.select-all-permissions-hint'))
+                                    ->dehydrated(false)
+                                    ->disabled(fn (?Model $record): bool => $record instanceof Role && $record->isSystemRole()),
                             ])
                             ->columns([
-                                'sm' => 2,
-                                'lg' => 2,
+                                'sm' => 3,
+                                'lg' => 3,
                             ]),
                         Select::make(config('permission.column_names.team_foreign_key'))
                             ->label(__('filament-shield::filament-shield.field.team'))
@@ -186,27 +172,33 @@ class RoleResource extends RolesRoleResource
             $moduleNames = [];
 
             foreach (($resourcesByPlugin[$moduleKey] ?? []) as $entity) {
+                $allOptions = parent::getResourcePermissionOptions($entity);
                 $options = static::getResourcePermissionOptions($entity);
 
-                if (empty($options)) {
+                if (empty($allOptions)) {
                     continue;
                 }
 
                 $abilities = [];
+                $hasColumn = false;
 
-                foreach (array_keys($options) as $permission) {
+                foreach (array_keys($allOptions) as $permission) {
                     $ability = static::matchAbilityPrefix($permission, $abilityOrder);
 
                     if ($ability === null) {
                         continue;
                     }
 
-                    $abilities[$ability] = $permission;
                     $moduleAbilities[$ability] = true;
-                    $moduleNames[] = $permission;
+                    $hasColumn = true;
+
+                    if (isset($options[$permission])) {
+                        $abilities[$ability] = $permission;
+                        $moduleNames[] = $permission;
+                    }
                 }
 
-                if (empty($abilities)) {
+                if (! $hasColumn) {
                     continue;
                 }
 
@@ -370,41 +362,6 @@ class RoleResource extends RolesRoleResource
         ];
     }
 
-    public static function getTabFormComponentForResources(): Component
-    {
-        return self::shield()->hasSimpleResourcePermissionView()
-            ? self::getTabFormComponentForSimpleResourcePermissionsView()
-            : Tab::make('resources')
-                ->label(__('filament-shield::filament-shield.resources'))
-                ->visible(fn (): bool => Utils::isResourceTabEnabled())
-                ->badge(static::getResourceTabBadgeCount())
-                ->schema(static::getPluginResourceEntitiesSchema());
-    }
-
-    public static function getTabFormComponentForPage(): Component
-    {
-        $options = static::getPageOptions();
-        $count = count($options);
-
-        return Tab::make('pages')
-            ->label(__('filament-shield::filament-shield.pages'))
-            ->visible(fn (): bool => Utils::isPageTabEnabled() && $count > 0)
-            ->badge($count)
-            ->schema(static::getPluginPageEntitiesSchema());
-    }
-
-    public static function getTabFormComponentForWidget(): Component
-    {
-        $options = static::getWidgetOptions();
-        $count = count($options);
-
-        return Tab::make('widgets')
-            ->label(__('filament-shield::filament-shield.widgets'))
-            ->visible(fn (): bool => Utils::isWidgetTabEnabled() && $count > 0)
-            ->badge($count)
-            ->schema(static::getPluginWidgetEntitiesSchema());
-    }
-
     /**
      * Returns the full set of permission names that the form checkboxes represent.
      * Uses the same data sources as the form so "Select All" saves exactly what is shown.
@@ -423,6 +380,39 @@ class RoleResource extends RolesRoleResource
             ->merge(array_keys(static::getWidgetOptions()))
             ->unique()
             ->values();
+    }
+
+    /**
+     * Modules whose resources expose only a limited set of ability prefixes.
+     */
+    protected static function getRestrictedModuleAbilities(): array
+    {
+        return [
+            'PluginManager' => ['view_any', 'view', 'update'],
+        ];
+    }
+
+    /**
+     * Filters a resource's permissions when its module is ability-restricted.
+     */
+    public static function getResourcePermissionOptions(array $entity): array
+    {
+        $options = parent::getResourcePermissionOptions($entity);
+
+        $module = explode('\\', $entity['resourceFqcn'])[1] ?? null;
+        $allowed = static::getRestrictedModuleAbilities()[$module] ?? null;
+
+        if ($allowed === null) {
+            return $options;
+        }
+
+        $prefixes = static::getMatrixAbilityPrefixes();
+
+        return array_filter(
+            $options,
+            fn (string $permission): bool => in_array(static::matchAbilityPrefix($permission, $prefixes), $allowed, true),
+            ARRAY_FILTER_USE_KEY
+        );
     }
 
     public static function getPluginResources(): ?array
@@ -478,179 +468,6 @@ class RoleResource extends RolesRoleResource
                 return explode('\\', $key)[1] ?? 'Unknown';
             })
             ->toArray();
-    }
-
-    public static function getPluginResourceEntitiesSchema(): ?array
-    {
-        return collect(static::getPluginResources())
-            ->sortKeys()
-            ->map(function ($plugin, $key) {
-                $hasAnyOptions = collect($plugin)->contains(function ($entity) {
-                    return ! empty(static::getResourcePermissionOptions($entity));
-                });
-
-                if (! $hasAnyOptions) {
-                    return;
-                }
-
-                return Section::make($key)
-                    ->collapsible()
-                    ->collapsed()
-                    ->persistCollapsed()
-                    ->schema([
-                        Grid::make()
-                            ->schema(function () use ($plugin) {
-                                return collect($plugin)
-                                    ->flatMap(function ($entity) {
-                                        $options = static::getResourcePermissionOptions($entity);
-
-                                        if (empty($options)) {
-                                            return [];
-                                        }
-
-                                        $fieldsetLabel = strval(
-                                            static::shield()->hasLocalizedPermissionLabels()
-                                                ? FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
-                                                : $entity['model']
-                                        );
-
-                                        return [
-                                            Fieldset::make($fieldsetLabel)
-                                                ->schema([
-                                                    static::getCheckBoxListComponentForResource($entity)->hiddenLabel(),
-                                                ])
-                                                ->columnSpan(static::shield()->getSectionColumnSpan()),
-                                        ];
-                                    })
-                                    ->toArray();
-                            })
-                            ->columns(static::shield()->getGridColumns()),
-                    ]);
-            })
-            ->toArray();
-    }
-
-    public static function getPluginPageEntitiesSchema(): ?array
-    {
-        return collect(static::getPluginPages())
-            ->sortKeys()
-            ->map(function ($plugin, $key) {
-                return Section::make($key)
-                    ->collapsible()
-                    ->collapsed()
-                    ->persistCollapsed()
-                    ->schema([
-                        Grid::make()
-                            ->schema(function () use ($plugin, $key) {
-                                $options = collect($plugin)
-                                    ->flatMap(fn ($page) => $page['permissions'])
-                                    ->toArray();
-
-                                return [
-                                    static::getCheckboxListFormComponent(
-                                        name: $key.'_pages_tab',
-                                        options: $options,
-                                    ),
-                                ];
-                            }),
-                    ]);
-            })
-            ->values()
-            ->toArray();
-    }
-
-    public static function getPluginWidgetEntitiesSchema(): ?array
-    {
-        return collect(static::getPluginWidgets())
-            ->sortKeys()
-            ->map(function ($plugin, $key) {
-                return Section::make($key)
-                    ->collapsible()
-                    ->collapsed()
-                    ->persistCollapsed()
-                    ->schema([
-                        Grid::make()
-                            ->schema(function () use ($plugin, $key) {
-                                $options = collect($plugin)
-                                    ->flatMap(fn ($page) => $page['permissions'])
-                                    ->toArray();
-
-                                return [
-                                    static::getCheckboxListFormComponent(
-                                        name: $key.'_widgets_tab',
-                                        options: $options,
-                                    ),
-                                ];
-                            }),
-                    ]);
-            })
-            ->values()
-            ->toArray();
-    }
-
-    public static function getSelectAllFormComponent(): Component
-    {
-        return Toggle::make('select_all')
-            ->onIcon('heroicon-s-shield-check')
-            ->offIcon('heroicon-s-shield-exclamation')
-            ->label(__('filament-shield::filament-shield.field.select_all.name'))
-            ->helperText(fn (): Htmlable => str(__('filament-shield::filament-shield.field.select_all.message'))->toHtmlString())
-            ->dehydrated(fn (bool $state): bool => $state)
-            ->extraAlpineAttributes(['x-on:shield-set-state.window' => 'state = $event.detail']);
-    }
-
-    public static function getCheckboxListFormComponent(
-        string $name,
-        array $options,
-        bool $searchable = true,
-        array|int|string|null $columns = null,
-        array|int|string|null $columnSpan = null
-    ): Component {
-        return CheckboxList::make($name)
-            ->hiddenLabel()
-            ->options(fn (): array => $options)
-            ->searchable($searchable)
-            ->afterStateHydrated(function (Component $component, string $operation, ?Model $record) use ($options): void {
-                static::setPermissionStateForRecordPermissions(
-                    component: $component,
-                    operation: $operation,
-                    permissions: $options,
-                    record: $record
-                );
-            })
-            ->dehydrated(fn ($state): bool => ! blank($state))
-            ->gridDirection('row')
-            ->columns($columns ?? static::shield()->getCheckboxListColumns())
-            ->columnSpan($columnSpan ?? static::shield()->getCheckboxListColumnSpan());
-    }
-
-    public static function setPermissionStateForRecordPermissions(Component $component, string $operation, array $permissions, ?Model $record): void
-    {
-        if (in_array($operation, ['edit', 'view'])) {
-            if (blank($record)) {
-                return;
-            }
-
-            if ($component->isVisible() && count($permissions) > 0) {
-                $component->state(
-                    collect($permissions)
-                        ->filter(function ($value, $key) use ($record) {
-                            return static::getPermissions($record)->contains($key);
-                        })
-                        ->keys()
-                        ->toArray()
-                );
-            }
-        }
-    }
-
-    public static function getPermissions($record)
-    {
-        if (! is_null(static::$permissions)) {
-            return static::$permissions;
-        }
-
-        return static::$permissions = $record->permissions()->pluck('name');
     }
 
     public static function isProtectedRoleRecord(?Model $record): bool
