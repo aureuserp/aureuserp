@@ -4,8 +4,15 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Atributo eliminado',
-                'body'  => 'El atributo ha sido eliminado correctamente.',
+                'success' => [
+                    'title' => 'Atributo eliminado',
+                    'body'  => 'El atributo ha sido eliminado correctamente.',
+                ],
+
+                'error' => [
+                    'title' => 'No se pudo eliminar el atributo',
+                    'body'  => 'El atributo no puede eliminarse porque está en uso.',
+                ],
             ],
         ],
     ],

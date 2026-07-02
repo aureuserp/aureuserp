@@ -53,8 +53,15 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Attribute deleted',
-                    'body'  => 'The attribute has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Attribute deleted',
+                        'body'  => 'The attribute has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Attribute could not be deleted',
+                        'body'  => 'The attribute cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
 
@@ -83,8 +90,15 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Attributes deleted',
-                    'body'  => 'The attributes has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Attributes deleted',
+                        'body'  => 'The attributes has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Attributes could not be deleted',
+                        'body'  => 'The attributes cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
 

@@ -144,22 +144,51 @@ class AttributeResource extends Resource
                             ->body(__('products::filament/resources/attribute.table.actions.restore.notification.body')),
                     ),
                 DeleteAction::make()
+                    ->action(function (DeleteAction $action, Attribute $record) {
+                        if ($record->productAttributes()->exists()) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('products::filament/resources/attribute.table.actions.delete.notification.error.title'))
+                                ->body(__('products::filament/resources/attribute.table.actions.delete.notification.error.body'))
+                                ->send();
+
+                            $action->cancel();
+
+                            return;
+                        }
+
+                        $record->delete();
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('products::filament/resources/attribute.table.actions.delete.notification.title'))
-                            ->body(__('products::filament/resources/attribute.table.actions.delete.notification.body')),
+                            ->title(__('products::filament/resources/attribute.table.actions.delete.notification.success.title'))
+                            ->body(__('products::filament/resources/attribute.table.actions.delete.notification.success.body')),
                     ),
                 ForceDeleteAction::make()
-                    ->action(function (Attribute $record) {
-                        try {
-                            $record->forceDelete();
-                        } catch (QueryException $e) {
+                    ->action(function (ForceDeleteAction $action, Attribute $record) {
+                        if ($record->productAttributes()->exists()) {
                             Notification::make()
                                 ->danger()
                                 ->title(__('products::filament/resources/attribute.table.actions.force-delete.notification.error.title'))
                                 ->body(__('products::filament/resources/attribute.table.actions.force-delete.notification.error.body'))
                                 ->send();
+
+                            $action->cancel();
+
+                            return;
+                        }
+
+                        try {
+                            $record->forceDelete();
+                        } catch (QueryException) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('products::filament/resources/attribute.table.actions.force-delete.notification.error.title'))
+                                ->body(__('products::filament/resources/attribute.table.actions.force-delete.notification.error.body'))
+                                ->send();
+
+                            $action->cancel();
                         }
                     })
                     ->successNotification(
@@ -179,22 +208,51 @@ class AttributeResource extends Resource
                                 ->body(__('products::filament/resources/attribute.table.bulk-actions.restore.notification.body')),
                         ),
                     DeleteBulkAction::make()
+                        ->action(function (DeleteBulkAction $action, Collection $records) {
+                            if ($records->contains(fn (Model $record) => $record->productAttributes()->exists())) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.error.body'))
+                                    ->send();
+
+                                $action->cancel();
+
+                                return;
+                            }
+
+                            $records->each(fn (Model $record) => $record->delete());
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.title'))
-                                ->body(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.body')),
+                                ->title(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.success.body')),
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records) {
-                            try {
-                                $records->each(fn (Model $record) => $record->forceDelete());
-                            } catch (QueryException $e) {
+                        ->action(function (ForceDeleteBulkAction $action, Collection $records) {
+                            if ($records->contains(fn (Model $record) => $record->productAttributes()->exists())) {
                                 Notification::make()
                                     ->danger()
                                     ->title(__('products::filament/resources/attribute.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('products::filament/resources/attribute.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
+
+                                $action->cancel();
+
+                                return;
+                            }
+
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                            } catch (QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('products::filament/resources/attribute.table.bulk-actions.force-delete.notification.error.title'))
+                                    ->body(__('products::filament/resources/attribute.table.bulk-actions.force-delete.notification.error.body'))
+                                    ->send();
+
+                                $action->cancel();
                             }
                         })
                         ->successNotification(

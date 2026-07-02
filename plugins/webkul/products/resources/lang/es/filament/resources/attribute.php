@@ -53,8 +53,15 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Atributo eliminado',
-                    'body'  => 'El atributo ha sido eliminado correctamente.',
+                    'success' => [
+                        'title' => 'Atributo eliminado',
+                        'body'  => 'El atributo ha sido eliminado correctamente.',
+                    ],
+
+                    'error' => [
+                        'title' => 'No se pudo eliminar el atributo',
+                        'body'  => 'El atributo no puede eliminarse porque está en uso.',
+                    ],
                 ],
             ],
 
@@ -83,8 +90,15 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Atributos eliminados',
-                    'body'  => 'Los atributos han sido eliminados correctamente.',
+                    'success' => [
+                        'title' => 'Atributos eliminados',
+                        'body'  => 'Los atributos han sido eliminados correctamente.',
+                    ],
+
+                    'error' => [
+                        'title' => 'No se pudieron eliminar los atributos',
+                        'body'  => 'Los atributos no pueden eliminarse porque están en uso.',
+                    ],
                 ],
             ],
 
