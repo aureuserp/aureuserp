@@ -46,6 +46,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\CreateLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\EditLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\ListLocations;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\ManageProducts;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\ViewLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageLocations;
 use Webkul\Inventory\Models\Location;
@@ -503,6 +504,7 @@ class LocationResource extends Resource
         return $page->generateNavigationItems([
             ViewLocation::class,
             EditLocation::class,
+            ManageProducts::class,
         ]);
     }
 
@@ -513,6 +515,7 @@ class LocationResource extends Resource
             'create' => CreateLocation::route('/create'),
             'view'   => ViewLocation::route('/{record}'),
             'edit'   => EditLocation::route('/{record}/edit'),
+            'products' => ManageProducts::route('/{record}/products'),
         ];
     }
 }
