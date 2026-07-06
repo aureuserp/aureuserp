@@ -16,7 +16,7 @@ return [
 
                 'error' => [
                     'title' => 'No se pudo eliminar el atributo',
-                    'body'  => 'El atributo no puede eliminarse porque está en uso.',
+                    'body'  => 'El atributo no puede eliminarse porque está en uso por el producto: :products',
                 ],
             ],
         ],

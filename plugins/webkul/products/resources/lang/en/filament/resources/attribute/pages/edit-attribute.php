@@ -16,7 +16,7 @@ return [
 
                 'error' => [
                     'title' => 'Attribute could not be deleted',
-                    'body'  => 'The attribute cannot be deleted because it is currently in use.',
+                    'body'  => 'The attribute cannot be deleted because it is currently in use by Product : :products',
                 ],
             ],
         ],

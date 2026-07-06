@@ -23,7 +23,9 @@ class ViewAttribute extends ViewRecord
                         Notification::make()
                             ->danger()
                             ->title(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.error.title'))
-                            ->body(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.error.body'))
+                            ->body(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.error.body', [
+                                'products' => AttributeResource::blockingProductNames($record),
+                            ]))
                             ->send();
 
                         $action->halt();
