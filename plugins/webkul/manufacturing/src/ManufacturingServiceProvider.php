@@ -14,12 +14,14 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
+use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Observers\MoveObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Models\Product;
 
 class ManufacturingServiceProvider extends PackageServiceProvider
 {
@@ -158,6 +160,20 @@ class ManufacturingServiceProvider extends PackageServiceProvider
         $this->registerCustomCss();
 
         $this->registerModelObservers();
+
+        $this->contributeProductSchema();
+    }
+
+    protected function contributeProductSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Product::resolveRelationUsing('billsOfMaterials', fn (Product $product) => $product->hasMany(
+            BillOfMaterial::class,
+            'product_id',
+        ));
     }
 
     public function packageRegistered(): void
