@@ -43,6 +43,7 @@ return [
                     'insufficient-stock-tooltip' => 'الكمية المتاحة غير كافية',
                     'unit'                       => 'الوحدة',
                     'picked'                     => 'تم الانتقاء',
+                    'lot-serial'                 => 'الدفعات/الأرقام التسلسلية',
                 ],
 
                 'actions' => [
@@ -188,6 +189,7 @@ return [
                     'quantity'       => 'الكمية',
                     'unit'           => 'الوحدة',
                     'picked'         => 'تم الانتقاء',
+                    'lot-serial'     => 'الدفعات/الأرقام التسلسلية',
                 ],
             ],
             'additional' => [

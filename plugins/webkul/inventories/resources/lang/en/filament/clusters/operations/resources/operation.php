@@ -43,6 +43,7 @@ return [
                     'insufficient-stock-tooltip' => 'Insufficient quantity available',
                     'unit'                       => 'Unit',
                     'picked'                     => 'Picked',
+                    'lot-serial'                 => 'Lots/Serial No.',
                 ],
 
                 'actions' => [
@@ -188,6 +189,7 @@ return [
                     'quantity'       => 'Quantity',
                     'unit'           => 'Unit',
                     'picked'         => 'Picked',
+                    'lot-serial'     => 'Lots/Serial No.',
                 ],
             ],
             'additional' => [

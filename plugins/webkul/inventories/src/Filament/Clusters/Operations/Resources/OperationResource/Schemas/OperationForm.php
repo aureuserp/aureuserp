@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
@@ -252,6 +253,8 @@ class OperationForm
                     'finalLocation',
                     'uom',
                     'productPackaging',
+                    'operationType',
+                    'lines' => fn ($q) => $q->with('lot'),
                 ])
             )
             ->columnManagerColumns(2)
@@ -300,6 +303,12 @@ class OperationForm
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.columns.picked'))
                     ->resizable()
                     ->toggleable(),
+                TableColumn::make('lot_serial')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.columns.lot-serial'))
+                    ->width(250)
+                    ->resizable()
+                    ->visible(OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->schema([
                 Select::make('product_id')
@@ -461,6 +470,19 @@ class OperationForm
                     ->default(0)
                     ->inline(false)
                     ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                TextEntry::make('lot_serial')
+                    ->hiddenLabel()
+                    ->placeholder('—')
+                    ->visible(OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers)
+                    ->state(function (?Move $record): string {
+                        if (! in_array($record?->product?->tracking, [ProductTracking::LOT, ProductTracking::SERIAL], true)) {
+                            return '—';
+                        }
+
+                        $names = static::getAssignedLotNames($record);
+
+                        return empty($names) ? '—' : implode(', ', $names);
+                    }),
                 Hidden::make('product_qty')
                     ->default(0),
             ])
@@ -871,6 +893,21 @@ class OperationForm
         }
 
         return $rows;
+    }
+
+    /**
+     * Get the lot/serial names already assigned to a move's lines.
+     */
+    protected static function getAssignedLotNames(?Move $move): array
+    {
+        return $move
+            ? $move->lines
+                ->map(fn ($line) => $line->lot?->name ?? $line->lot_name)
+                ->filter()
+                ->unique()
+                ->values()
+                ->all()
+            : [];
     }
 
     private static function afterProductUpdated(Set $set, Get $get): void

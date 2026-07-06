@@ -11,7 +11,9 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\Inventory\Models\Move;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
@@ -125,6 +127,12 @@ class OperationInfolist
                                             ->width(100)
                                             ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.picked')),
+                                        InfolistTableColumn::make('lot_serial')
+                                            ->alignStart()
+                                            ->width(200)
+                                            ->visible(OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers)
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.lot-serial')),
                                     ])
                                     ->schema([
                                         TextEntry::make('product.name'),
@@ -148,6 +156,26 @@ class OperationInfolist
                                         TextEntry::make('uom.name')
                                             ->visible(OperationResource::getProductSettings()->enable_uom),
                                         IconEntry::make('is_picked'),
+                                        TextEntry::make('lot_serial')
+                                            ->placeholder('—')
+                                            ->visible(OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers)
+                                            ->state(function (?Move $record): string {
+                                                if (! $record?->product_id) {
+                                                    return '—';
+                                                }
+
+                                                if (! in_array($record->product?->tracking, [ProductTracking::LOT, ProductTracking::SERIAL], true)) {
+                                                    return '—';
+                                                }
+
+                                                $names = $record->lines
+                                                    ->map(fn ($line) => $line->lot?->name ?? $line->lot_name)
+                                                    ->filter()
+                                                    ->unique()
+                                                    ->values();
+
+                                                return $names->isNotEmpty() ? $names->implode(', ') : '—';
+                                            }),
                                     ]),
                             ]),
 
