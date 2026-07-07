@@ -20,6 +20,9 @@
         <testsuite name="ManufacturingUnit">
             <directory>plugins/webkul/manufacturing/tests/Unit</directory>
         </testsuite>
+        <testsuite name="ManufacturingFeature">
+            <directory>plugins/webkul/manufacturing/tests/Feature</directory>
+        </testsuite>
         <testsuite name="SaleFeature">
             <directory>plugins/webkul/sales/tests/Feature</directory>
         </testsuite>

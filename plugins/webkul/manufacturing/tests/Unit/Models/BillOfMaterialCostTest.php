@@ -3,10 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Validation\ValidationException;
+use Tests\TestCase;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\BillOfMaterialLine;
 use Webkul\Product\Models\Product;
 use Webkul\Support\Models\UOM;
+
+uses(TestCase::class);
 
 function manufacturingCostUom(int $id, string $name, float $factor, int $categoryId = 2): UOM
 {
@@ -84,11 +88,11 @@ it('converts component quantities before applying the bom quantity multiplier', 
     expect($billOfMaterial->getComponentCost(3))->toBe(15.0);
 });
 
-it('rejects cost conversion between unrelated uom categories', function () {
+it('reports a validation error for cost conversion between unrelated uom categories', function () {
     $kilogram = manufacturingCostUom(1, 'kg', 1);
     $unit = manufacturingCostUom(2, 'Units', 1, categoryId: 1);
     $product = manufacturingCostProduct(10, $unit, $unit);
 
     expect(fn (): float => $product->getCostForQuantity(1, $kilogram))
-        ->toThrow(Exception::class);
+        ->toThrow(ValidationException::class, 'doesn\'t belong to the same category');
 });

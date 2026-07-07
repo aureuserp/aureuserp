@@ -10,12 +10,13 @@ class TestBootstrapHelper
     public static function ensurePluginInstalled(string $pluginName): void
     {
         $pluginTables = [
-            'projects'    => 'projects_projects',
-            'sales'       => 'sales_orders',
-            'purchases'   => 'purchases_orders',
-            'inventories' => 'inventories_operations',
-            'accounts'    => 'accounts_account_moves',
-            'products'    => 'products_products',
+            'projects'      => 'projects_projects',
+            'sales'         => 'sales_orders',
+            'purchases'     => 'purchases_orders',
+            'inventories'   => 'inventories_operations',
+            'manufacturing' => 'manufacturing_bills_of_materials',
+            'accounts'      => 'accounts_account_moves',
+            'products'      => 'products_products',
         ];
 
         $table = $pluginTables[$pluginName] ?? null;
