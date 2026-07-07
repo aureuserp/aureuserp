@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Moedas',
-        'group' => 'Configurações',
     ],
 
     'form' => [

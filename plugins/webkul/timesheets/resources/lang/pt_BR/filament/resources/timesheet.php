@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Apontamentos de horas',
-        'group' => 'Projeto',
     ],
 
     'global-search' => [

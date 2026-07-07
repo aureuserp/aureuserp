@@ -2,10 +2,6 @@
 
 return [
 
-    'navigation' => [
-        'group' => 'Plugins',
-    ],
-
     'title' => 'Plugin',
 
     'table' => [
@@ -34,7 +30,7 @@ return [
         'install' => [
             'title'       => 'Instalar',
             'heading'     => 'Instalar plugin :name',
-            'description' => "Are you sure you want to install the ':name' plugin? This will run migrations and seeders.",
+            'description' => "Tem certeza de que deseja instalar o plugin ':name'? Isso executará migrações e seeders.",
             'submit'      => 'Instalar plugin',
         ],
         'uninstall' => [
@@ -47,14 +43,14 @@ return [
     'notifications' => [
         'installed' => [
             'title' => 'Plugin instalado com sucesso',
-            'body'  => "The ':name' plugin has been installed.",
+            'body'  => "O plugin ':name' foi instalado.",
         ],
         'installed-failed' => [
             'title' => 'Falha na instalação',
         ],
         'uninstalled' => [
             'title' => 'Plugin desinstalado com sucesso',
-            'body'  => "The ':name' plugin has been uninstalled.",
+            'body'  => "O plugin ':name' foi desinstalado.",
         ],
         'uninstalled-failed' => [
             'title' => 'Falha na desinstalação',

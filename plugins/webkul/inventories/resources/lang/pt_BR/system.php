@@ -11,17 +11,17 @@ return [
         ],
 
         'unreserve-move' => [
-            'already-done' => "You can not unreserve a stock move that has been set to 'Done'.",
+            'already-done' => 'Você não pode cancelar a reserva de uma movimentação de estoque definida como \'Concluída\'.',
         ],
 
         'validate' => [
             'quantity-rounding-mismatch' => 'A quantidade concluída para o produto ":product" não respeita a precisão de arredondamento definida na unidade de medida ":unit". Altere a quantidade concluída ou a precisão de arredondamento da sua unidade de medida.',
             'no-negative-quantities'     => 'Quantidades negativas não são permitidas',
-            'missing-lot-serial-number'  => "You need to supply a Lot/Serial Number for product:\n:products",
+            'missing-lot-serial-number'  => "Informe um número de lote/série para o produto:\n:products",
         ],
 
         'run-procurement' => [
-            'no-rule-found'      => "No rule has been found to replenish \":product\" in \":location\".\nVerify the routes configuration on the product.",
+            'no-rule-found'      => "Nenhuma regra foi encontrada para reabastecer \":product\" em \":location\".\nVerifique a configuração das rotas no produto.",
             'no-source-location' => 'Nenhum local de origem definido na regra de estoque: :name!',
             'no-vendor-price'    => 'Não há preço de fornecedor correspondente para gerar o pedido de compra do produto :product (nenhum fornecedor definido, quantidade mínima não atingida, datas inválidas, ...). Acesse o formulário do produto e complete a lista de fornecedores.',
         ],
@@ -42,7 +42,7 @@ return [
     ],
 
     'product' => [
-        'endless-loop-rule' => "Invalid rule's configuration, the following rule causes an endless loop: :name",
+        'endless-loop-rule' => 'Configuração de regra inválida; a seguinte regra causa um loop infinito: :name',
     ],
 
     'move' => [

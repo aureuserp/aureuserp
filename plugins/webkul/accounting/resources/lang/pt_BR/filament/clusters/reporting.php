@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Relatórios',
-        'group' => 'Contabilidade',
     ],
     'common' => [
         'from-to' => ':report - De :from até :to',

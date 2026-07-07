@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Colaboradores',
-        'group' => 'Colaboradores',
     ],
 
     'global-search' => [

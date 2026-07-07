@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Contatos',
-        'group' => 'Contatos',
     ],
 
     'global-search' => [

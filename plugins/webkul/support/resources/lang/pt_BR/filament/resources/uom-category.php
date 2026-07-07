@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Configurações',
         'title' => 'Categorias de UOM',
     ],
 

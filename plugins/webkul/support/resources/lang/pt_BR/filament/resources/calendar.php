@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Horários de trabalho',
-        'group' => 'Colaborador',
     ],
 
     'groups' => [
