@@ -224,7 +224,7 @@
                         <tr>
                             <th>{{ __('inventories::app.documents.product') }}</th>
 
-                            @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
+                            @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
                                 <th>{{ __('inventories::app.documents.lot-serial-number') }}</th>
                             @endif
 
@@ -237,7 +237,7 @@
                             <tr>
                                 <td>{{ $item->product->name }}</td>
 
-                                @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
+                                @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
                                     <td>{{ $item->lot?->name }}</td>
                                 @endif
                                 

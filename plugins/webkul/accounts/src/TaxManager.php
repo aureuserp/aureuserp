@@ -37,7 +37,7 @@ class TaxManager
             $amount = floatval($tax->amount);
 
             if (! $tax->price_include_override) {
-                $tax->price_include_override = app(TaxesSettings::class)->account_price_include ?? TaxIncludeOverride::TAX_INCLUDED;
+                $tax->price_include_override = settings(TaxesSettings::class)->account_price_include ?? TaxIncludeOverride::TAX_INCLUDED;
             }
 
             $currentTaxBase = $adjustedSubTotal;

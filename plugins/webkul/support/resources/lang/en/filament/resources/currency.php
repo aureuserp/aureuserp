@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Currencies',
-        'group' => 'Settings',
     ],
 
     'form' => [

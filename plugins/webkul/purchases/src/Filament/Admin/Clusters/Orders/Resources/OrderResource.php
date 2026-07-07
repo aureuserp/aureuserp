@@ -964,15 +964,20 @@ class OrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->where('type', ProductType::GOODS)->withTrashed()->whereNull('is_configurable'),
+                        fn ($query) => $query
+                            ->withTrashed()
+                            ->where('type', ProductType::GOODS)
+                            ->whereNull('is_configurable'),
                     )
-                    ->searchable()
-                    ->preload()
-                    ->live()
-                    ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->required()
+                    ->wrapOptionLabels(false)
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED]))
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
                         if (str_contains($label, ' (Deleted)')) {
                             return true;
@@ -997,10 +1002,7 @@ class OrderResource extends Resource
                     })
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductUpdated($set, $get);
-                    })
-                    ->required()
-                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
-
+                    }),
                 DateTimePicker::make('planned_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.expected-arrival'))
                     ->native(false)
@@ -1708,12 +1710,12 @@ class OrderResource extends Resource
 
     public static function getOrderSettings(): OrderSettings
     {
-        return once(fn () => app(OrderSettings::class));
+        return settings(OrderSettings::class);
     }
 
     public static function getProductSettings(): ProductSettings
     {
-        return once(fn () => app(ProductSettings::class));
+        return settings(ProductSettings::class);
     }
 
     public static function getEloquentQuery(): Builder

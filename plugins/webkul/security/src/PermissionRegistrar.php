@@ -228,16 +228,16 @@ class PermissionRegistrar
             return true;
         });
 
-        if ($onlyOne) {
-            $permissions = new Collection($permissions ? [$permissions] : []);
-        }
+        $permissions = new Collection(
+            $onlyOne ? ($permissions ? [$permissions] : []) : $permissions->all()
+        );
 
         $permissions = $permissions->map(function ($permission) {
             $permissionInstance = (new ($this->getPermissionClass())())->newInstance([], true);
             $permissionInstance->id = $permission['id'];
             $permissionInstance->name = $permission['name'];
             $permissionInstance->guard_name = $permission['guard_name'];
-            $permissionInstance->setRelation('roles', $permission['roles']);
+            $permissionInstance->setRelation('roles', Collection::make($permission['roles']));
             $permissionInstance->exists = true;
 
             return $permissionInstance;
@@ -371,22 +371,6 @@ class PermissionRegistrar
                 ),
             ];
         }, $this->permissions['permissions']));
-
-        $permissionInstance = (new ($this->getPermissionClass())())->newInstance([], true);
-
-        return Collection::make(array_map(
-            fn ($item) => (clone $permissionInstance)
-                ->setRawAttributes($this->aliasedArray(array_diff_key($item, ['r' => 0])), true)
-                ->setRelation('roles', $this->getHydratedRoleCollection($item['r'] ?? [])),
-            $this->permissions['permissions']
-        ));
-    }
-
-    private function getHydratedRoleCollection(array $roles): Collection
-    {
-        return Collection::make(array_values(
-            array_intersect_key($this->cachedRoles, array_flip($roles))
-        ));
     }
 
     private function hydrateRolesCache(): void

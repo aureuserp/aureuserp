@@ -10,7 +10,6 @@ use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -24,6 +23,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\Manufacturing\ManufacturingPlugin;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\GlobalSearchProvider;
 
@@ -57,63 +57,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => Auth::user()?->name)
                     ->url(fn (): string => Profile::getUrl()),
             ])
-            ->navigationGroups([
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.dashboard'))
-                    ->icon('icon-dashboard'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.contact'))
-                    ->icon('icon-contacts'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.sale'))
-                    ->icon('icon-sales'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.purchase'))
-                    ->icon('icon-purchases'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.maintenance'))
-                    ->icon('icon-maintenance'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.manufacturing'))
-                    ->icon('icon-manufacturing'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.inventory'))
-                    ->icon('icon-inventories'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.invoice'))
-                    ->icon('icon-invoices'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.accounting'))
-                    ->icon('icon-accounting'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.project'))
-                    ->icon('icon-projects'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.employee'))
-                    ->icon('icon-employees'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.time-off'))
-                    ->icon('icon-time-offs'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.recruitment'))
-                    ->icon('icon-recruitments'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.website'))
-                    ->icon('icon-website'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.barcode'))
-                    ->icon('icon-barcode'),
-                NavigationGroup::make()
-                    ->label(__('admin.navigation.plugin'))
-                    ->label(fn (): string => __('admin.navigation.plugin'))
-                    ->icon('icon-plugin'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.setting'))
-                    ->icon('icon-settings'),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.help'))
-                    ->icon('icon-help'),
-            ])
+            ->navigationGroups(NavigationGroup::class)
             ->plugins([
                 ManufacturingPlugin::make(),
                 FilamentShieldPlugin::make()

@@ -115,21 +115,21 @@ class ManageQuantities extends ManageRelatedRecords
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 
     public static function getProductSettings(): ProductSettings
     {
-        return once(fn () => app(ProductSettings::class));
+        return settings(ProductSettings::class);
     }
 
     public static function getTraceabilitySettings(): TraceabilitySettings
     {
-        return once(fn () => app(TraceabilitySettings::class));
+        return settings(TraceabilitySettings::class);
     }
 
     public static function getWarehouseSettings(): WarehouseSettings
     {
-        return once(fn () => app(WarehouseSettings::class));
+        return settings(WarehouseSettings::class);
     }
 }

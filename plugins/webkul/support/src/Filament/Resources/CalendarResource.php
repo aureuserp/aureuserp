@@ -44,6 +44,7 @@ use Webkul\Support\Filament\Resources\CalendarResource\Pages\ListCalendars;
 use Webkul\Support\Filament\Resources\CalendarResource\Pages\ViewCalendar;
 use Webkul\Support\Filament\Resources\CalendarResource\RelationManagers\CalendarAttendance;
 use Webkul\Support\Models\Calendar;
+use Webkul\Support\Enums\NavigationGroup;
 
 class CalendarResource extends Resource
 {
@@ -58,9 +59,9 @@ class CalendarResource extends Resource
         return __('support::filament/resources/calendar.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('support::filament/resources/calendar.navigation.group');
+        return NavigationGroup::Employee;
     }
 
     public static function getNavigationLabel(): string

@@ -2,7 +2,6 @@
 
 namespace Webkul\Chatter\Services;
 
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -43,7 +42,7 @@ class ChatterNotificationService
         $authorPartnerId = $this->resolveAuthorPartnerId($causer);
 
         $from = $this->resolveFrom($message, $causer, $record);
-        $recordName = $record->name ?? (string) $record->getKey();
+        $recordName = $this->resolveRecordName($record);
         $recordUrl = $this->resolveRecordUrl($record);
 
         foreach ($followers as $follower) {
@@ -90,7 +89,7 @@ class ChatterNotificationService
         }
 
         $causerUserId = $this->resolveCauserUserId($message->causer);
-        $recordName = $record->name ?? (string) $record->getKey();
+        $recordName = $this->resolveRecordName($record);
         $recordUrl = $this->resolveRecordUrl($record);
         $causerName = $message->causer?->name ?? 'Someone';
 
@@ -105,6 +104,10 @@ class ChatterNotificationService
         [$titleKey, $icon, $color] = $this->resolveTypeMeta($message);
 
         $assignedUserId = $this->resolveAssignedUserId($message, $record);
+
+        if (! $assignedUserId && $message->assigned_to) {
+            $assignedUserId = (int) $message->assigned_to;
+        }
 
         if ($assignedUserId && $assignedUserId !== $causerUserId && ! in_array($assignedUserId, $mentionedUserIds, true)) {
             $this->sendAssignedNotification($assignedUserId, $causerName, $recordName, $recordUrl);
@@ -131,25 +134,13 @@ class ChatterNotificationService
 
     protected function resolveAssignedUserId(Message $message, Model $record): ?int
     {
-        if ($message->type !== 'notification' || ! method_exists($record, 'getChatterResponsibleColumn')) {
+        if ($message->type !== 'notification' || ! method_exists($record, 'resolveChatterAssignedUserId')) {
             return null;
         }
-
-        $column = $record->getChatterResponsibleColumn();
-
-        if (! $column) {
-            return null;
-        }
-
-        $label = method_exists($record, 'getChatterResponsibleLabel') ? $record->getChatterResponsibleLabel() : null;
 
         $properties = is_array($message->properties) ? $message->properties : [];
 
-        if (! $label || ! array_key_exists($label, $properties)) {
-            return null;
-        }
-
-        return (int) $record->getAttribute($column) ?: null;
+        return $record->resolveChatterAssignedUserId($properties);
     }
 
     protected function sendAssignedNotification(int $assigneeId, string $causerName, string $recordName, string $recordUrl): void
@@ -370,34 +361,20 @@ class ChatterNotificationService
         return $from;
     }
 
+    protected function resolveRecordName(mixed $record): string
+    {
+        $attribute = property_exists($record, 'recordTitleAttribute') ? $record->recordTitleAttribute : null;
+
+        return (string) ($record->name
+            ?? ($attribute ? $record->getAttribute($attribute) : null)
+            ?? $record->title
+            ?? $record->getKey());
+    }
+
     protected function resolveRecordUrl(mixed $record): string
     {
         if (method_exists($record, 'getChatterResourceUrl')) {
             return (string) $record->getChatterResourceUrl();
-        }
-
-        try {
-            $panel = Filament::getCurrentPanel() ?? Filament::getPanel('admin');
-
-            if (! $panel) {
-                return '';
-            }
-
-            foreach ($panel->getResources() as $resource) {
-                if (! ($record instanceof ($resource::getModel()))) {
-                    continue;
-                }
-
-                $pages = $resource::getPages();
-
-                foreach (['view', 'edit'] as $page) {
-                    if (array_key_exists($page, $pages)) {
-                        return $resource::getUrl($page, ['record' => $record->getKey()], panel: $panel->getId());
-                    }
-                }
-            }
-        } catch (Throwable $e) {
-            report($e);
         }
 
         return '';

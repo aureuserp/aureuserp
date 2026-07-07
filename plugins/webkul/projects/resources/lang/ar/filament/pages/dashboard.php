@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'المشاريع',
-        'group' => 'لوحة التحكم',
     ],
 
     'filters-form' => [

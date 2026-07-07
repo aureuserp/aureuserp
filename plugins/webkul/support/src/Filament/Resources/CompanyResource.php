@@ -43,6 +43,7 @@ use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Enums\NavigationGroup;
 
 class CompanyResource extends Resource
 {
@@ -59,9 +60,9 @@ class CompanyResource extends Resource
         return __('support::filament/resources/company.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('support::filament/resources/company.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function getGloballySearchableAttributes(): array

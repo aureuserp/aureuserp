@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Campos personalizados',
-        'group' => 'Configuración',
     ],
 
     'form' => [

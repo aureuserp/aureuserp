@@ -313,6 +313,6 @@ class WebsitePlugin implements Plugin
 
     public function getContactSettings(): ContactSettings
     {
-        return once(fn () => app(ContactSettings::class));
+        return settings(ContactSettings::class);
     }
 }

@@ -457,7 +457,7 @@ class WarehouseResource extends Resource
 
     public static function getWarehouseSettings(): WarehouseSettings
     {
-        return once(fn () => app(WarehouseSettings::class));
+        return settings(WarehouseSettings::class);
     }
 
     public static function getRecordSubNavigation(Page $page): array

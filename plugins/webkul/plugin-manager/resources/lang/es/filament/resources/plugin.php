@@ -2,10 +2,6 @@
 
 return [
 
-    'navigation' => [
-        'group' => 'Complementos',
-    ],
-
     'title' => 'Plugin',
 
     'table' => [

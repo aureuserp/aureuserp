@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Páginas',
-        'group' => 'Sitio web',
     ],
 
     'form' => [

@@ -17,6 +17,7 @@ use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PartnerResource extends BasePartnerResource
 {
@@ -33,9 +34,9 @@ class PartnerResource extends BasePartnerResource
         return __('contacts::filament/resources/partner.navigation.title');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('contacts::filament/resources/partner.navigation.group');
+        return NavigationGroup::Contact;
     }
 
     public static function getRecordSubNavigation(Page $page): array

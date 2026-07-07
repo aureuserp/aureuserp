@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Departments',
-        'group' => 'Employees',
     ],
 
     'global-search' => [

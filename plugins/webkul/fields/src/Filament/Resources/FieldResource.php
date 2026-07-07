@@ -35,6 +35,7 @@ use Webkul\Field\Filament\Resources\FieldResource\Pages\CreateField;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\EditField;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\ListFields;
 use Webkul\Field\Models\Field;
+use Webkul\Support\Enums\NavigationGroup;
 
 class FieldResource extends Resource
 {
@@ -52,9 +53,9 @@ class FieldResource extends Resource
         return __('fields::filament/resources/field.navigation.title');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('fields::filament/resources/field.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
