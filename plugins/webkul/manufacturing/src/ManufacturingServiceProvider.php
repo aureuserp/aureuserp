@@ -88,7 +88,15 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->startWith(function (UninstallCommand $command) {
+                // Operation types and locations created by manufacturing are referenced by
+                // `manufacturing_orders` with `restrictOnDelete()` foreign keys, so they cannot be
+                // deleted while that table still exists. We collect their ids in `startWith` and
+                // delete them in `endWith` — after `dropTables()` has dropped the manufacturing
+                // tables (and their restricting foreign keys).
+                $operationTypeIds = [];
+                $locationIds = [];
+
+                $command->startWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds) {
                     if (! Schema::hasColumn('inventories_warehouses', 'pbm_route_id')) {
                         return;
                     }
@@ -98,16 +106,16 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     foreach ($warehouses as $warehouse) {
                         $pbmRouteId = $warehouse->pbm_route_id;
 
-                        $operationTypeIds = array_filter([
+                        $operationTypeIds = array_merge($operationTypeIds, array_filter([
                             $warehouse->manu_type_id,
                             $warehouse->pbm_type_id,
                             $warehouse->sam_type_id,
-                        ]);
+                        ]));
 
-                        $locationIds = array_filter([
+                        $locationIds = array_merge($locationIds, array_filter([
                             $warehouse->pbm_loc_id,
                             $warehouse->sam_loc_id,
-                        ]);
+                        ]));
 
                         $warehouse->updateQuietly([
                             'manufacture_pull_id'     => null,
@@ -133,20 +141,22 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                                 ->where('id', $pbmRouteId)
                                 ->forceDelete();
                         }
+                    }
+                });
 
-                        // Delete operation types created by manufacturing
-                        if (! empty($operationTypeIds)) {
-                            OperationType::withTrashed()
-                                ->whereIn('id', $operationTypeIds)
-                                ->forceDelete();
-                        }
+                $command->endWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds) {
+                    // Delete operation types created by manufacturing.
+                    if (! empty($operationTypeIds)) {
+                        OperationType::withTrashed()
+                            ->whereIn('id', $operationTypeIds)
+                            ->forceDelete();
+                    }
 
-                        // Delete locations created by manufacturing
-                        if (! empty($locationIds)) {
-                            Location::withTrashed()
-                                ->whereIn('id', $locationIds)
-                                ->forceDelete();
-                        }
+                    // Delete locations created by manufacturing.
+                    if (! empty($locationIds)) {
+                        Location::withTrashed()
+                            ->whereIn('id', $locationIds)
+                            ->forceDelete();
                     }
                 });
             })
