@@ -45,7 +45,7 @@ return [
         'useful_links' => 'Links úteis',
         'contact_us' => 'Fale Conosco',
         'follow_us' => 'Siga-nos',
-        'copyright' => 'Copyright',
+        'copyright' => 'Direitos autorais',
         'powered_by' => 'Desenvolvido por',
     ],
 
