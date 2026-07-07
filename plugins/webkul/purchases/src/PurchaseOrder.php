@@ -32,7 +32,7 @@ class PurchaseOrder
 {
     public static function getOrderSettings(): OrderSettings
     {
-        return once(fn () => app(OrderSettings::class));
+        return settings(OrderSettings::class);
     }
 
     public function sendRFQ(Order $record, array $data): Order

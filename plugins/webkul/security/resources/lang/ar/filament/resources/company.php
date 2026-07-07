@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'الشركات',
-        'group' => 'الإعدادات',
     ],
 
     'global-search' => [

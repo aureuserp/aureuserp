@@ -4,6 +4,7 @@ namespace Webkul\TimeOff\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
 use Filament\Panel;
+use Webkul\Support\Enums\NavigationGroup;
 
 class MyTime extends Cluster
 {
@@ -19,8 +20,8 @@ class MyTime extends Cluster
         return __('time-off::filament/clusters/my-time.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('time-off::filament/clusters/my-time.navigation.group');
+        return NavigationGroup::TimeOff;
     }
 }

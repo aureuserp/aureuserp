@@ -46,6 +46,7 @@ use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ManageEmployee;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Models\Department;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Support\Enums\NavigationGroup;
 
 class DepartmentResource extends Resource
 {
@@ -62,9 +63,9 @@ class DepartmentResource extends Resource
         return __('employees::filament/resources/department.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('employees::filament/resources/department.navigation.group');
+        return NavigationGroup::Employee;
     }
 
     public static function getGloballySearchableAttributes(): array

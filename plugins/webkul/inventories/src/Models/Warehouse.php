@@ -594,7 +594,7 @@ class Warehouse extends Model implements Sortable
             'destination_location_id' => $this->lot_stock_location_id,
             'company_id'              => $this->company_id,
             'creator_id'              => $this->creator_id,
-            'deleted_at'              => app(WarehouseSettings::class)->enable_locations ? null : now(),
+            'deleted_at'              => settings(WarehouseSettings::class)->enable_locations ? null : now(),
         ])->id;
 
         $this->xdock_type_id = OperationType::create([
@@ -878,7 +878,7 @@ class Warehouse extends Model implements Sortable
             'operation_type_id'        => $this->store_type_id,
             'creator_id'               => $this->creator_id,
             'company_id'               => $this->company_id,
-            'deleted_at'               => $this->delivery_steps === ReceptionStep::TWO_STEPS ? null : now(),
+            'deleted_at'               => $this->reception_steps === ReceptionStep::TWO_STEPS ? null : now(),
         ])->id;
 
         $this->ruleIds[] = Rule::create([

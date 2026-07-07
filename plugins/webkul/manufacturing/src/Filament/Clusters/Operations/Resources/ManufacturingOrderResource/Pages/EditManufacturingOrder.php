@@ -2,8 +2,10 @@
 
 namespace Webkul\Manufacturing\Filament\Clusters\Operations\Resources\ManufacturingOrderResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Resources\Pages\EditRecord;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\CancelAction;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\ConfirmAction;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\DoneAction;
@@ -36,9 +38,26 @@ class EditManufacturingOrder extends EditRecord
         return $data;
     }
 
+    protected function configureAction(Action $action): void
+    {
+        if ($action instanceof ChatterAction) {
+            $action
+                ->record($this->getRecord())
+                ->recordTitle($this->getRecordTitle());
+
+            return;
+        }
+
+        parent::configureAction($action);
+    }
+
     protected function getHeaderActions(): array
     {
         return [
+            ChatterAction::make()
+                ->record($this->getRecord())
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             DoneAction::make('done'),
             ConfirmAction::make('confirm'),
             PlanAction::make('plan'),

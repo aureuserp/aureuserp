@@ -157,7 +157,7 @@
                                 <td>{{ number_format($item->quantity) }} {{ $item->product->uom->name }}</td>
                             </tr>
 
-                            @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && $item->lot)
+                            @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && $item->lot)
                                 <tr>
                                     <td colspan="3">
                                         <div class="lot-info">

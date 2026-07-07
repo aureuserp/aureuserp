@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Proyecto',
-        'group' => 'Panel de control',
     ],
 
     'filters-form' => [

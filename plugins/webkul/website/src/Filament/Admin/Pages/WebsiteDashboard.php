@@ -19,6 +19,7 @@ use Webkul\Website\Filament\Admin\Widgets\CategoriesPieChart;
 use Webkul\Website\Filament\Admin\Widgets\RecentBlogsTable;
 use Webkul\Website\Filament\Admin\Widgets\StatsOverview;
 use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
+use Webkul\Support\Enums\NavigationGroup;
 
 class WebsiteDashboard extends BaseDashboard
 {
@@ -38,9 +39,9 @@ class WebsiteDashboard extends BaseDashboard
         return 'Website';
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return 'Dashboard';
+        return NavigationGroup::Dashboard;
     }
 
     public function filtersForm(Schema $form): Schema

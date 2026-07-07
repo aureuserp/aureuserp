@@ -278,6 +278,19 @@ class Operation extends Model
             if ($operation->wasChanged('operation_type_id')) {
                 $operation->updateChildrenNames();
             }
+
+            if (
+                $operation->wasChanged('source_location_id')
+                || $operation->wasChanged('destination_location_id')
+            ) {
+                $operation->moves->each(function($move) use ($operation) {
+                    $move->source_location_id = $operation->source_location_id ?? $operation->operationType?->source_location_id;
+
+                    $move->destination_location_id = $operation->destination_location_id ?? $operation->operationType?->destination_location_id;
+
+                    $move->save();
+                });
+            }
         });
 
         static::saving(function ($operation) {

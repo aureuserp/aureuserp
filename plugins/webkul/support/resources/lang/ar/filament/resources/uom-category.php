@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'الإعدادات',
         'title' => 'فئات وحدات القياس',
     ],
 

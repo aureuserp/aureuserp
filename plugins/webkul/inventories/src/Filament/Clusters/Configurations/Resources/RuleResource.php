@@ -70,7 +70,7 @@ class RuleResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_multi_steps_routes;
+        return settings(WarehouseSettings::class)->enable_multi_steps_routes;
     }
 
     public static function getNavigationGroup(): string

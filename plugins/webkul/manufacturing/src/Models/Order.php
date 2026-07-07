@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Traits\HasChatter;
+use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\Inventory\Enums\MoveState;
@@ -34,7 +36,7 @@ use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasFactory, HasPermissionScope;
+    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -79,6 +81,7 @@ class Order extends Model
         'is_locked'          => 'boolean',
         'quantity'           => 'decimal:4',
         'quantity_producing' => 'decimal:4',
+        'product_uom_qty'    => 'decimal:4',
         'deadline_at'        => 'datetime',
         'started_at'         => 'datetime',
         'finished_at'        => 'datetime',
@@ -101,6 +104,21 @@ class Order extends Model
     public function getModelTitle(): string
     {
         return __('manufacturing::models/order.title');
+    }
+
+    public function getChatterResponsibles(): array
+    {
+        return ['assignedUser'];
+    }
+
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'quantity_producing' => __('manufacturing::models/order.log-attributes.product-qty'),
+            'state'              => __('manufacturing::models/order.log-attributes.state'),
+            'reservation_state'  => __('manufacturing::models/order.log-attributes.reservation-state'),
+            'assignedUser.name'  => __('manufacturing::models/order.log-attributes.assigned-user'),
+        ];
     }
 
     public function product(): BelongsTo

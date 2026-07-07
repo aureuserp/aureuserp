@@ -72,18 +72,18 @@ class MoveResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.lot'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (TraceabilitySettings $settings) => $settings->enable_lots_serial_numbers),
+                    ->visible(static::getTraceabilitySettings()->enable_lots_serial_numbers),
                 TextColumn::make('resultPackage.name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.package'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
+                    ->visible(static::getOperationSettings()->enable_packages),
                 TextColumn::make('sourceLocation.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.source-location'))
-                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 TextColumn::make('destinationLocation.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.destination-location'))
-                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 TextColumn::make('uom_qty')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.quantity'))
                     ->sortable()
@@ -92,7 +92,7 @@ class MoveResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.unit'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                    ->visible(static::getProductSettings()->enable_uom),
                 TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.state'))
                     ->sortable()
@@ -118,28 +118,28 @@ class MoveResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->visible(app(WarehouseSettings::class)->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 SelectFilter::make('destinationLocation')
                     ->label(__('inventories::filament/clusters/reporting.moves.filters.destination-location'))
                     ->relationship('destinationLocation', 'full_name')
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->visible(app(WarehouseSettings::class)->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 SelectFilter::make('resultPackage')
                     ->label(__('inventories::filament/clusters/reporting.moves.filters.package'))
                     ->relationship('resultPackage', 'name')
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->visible(app(OperationSettings::class)->enable_packages),
+                    ->visible(static::getOperationSettings()->enable_packages),
                 SelectFilter::make('package_type')
                     ->label(__('inventories::filament/clusters/reporting.moves.filters.package-type'))
                     ->options(fn () => PackageType::query()->orderBy('name')->pluck('name', 'id'))
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->visible(app(OperationSettings::class)->enable_packages)
+                    ->visible(static::getOperationSettings()->enable_packages)
                     ->query(fn (Builder $query, array $data) => empty($data['values'])
                         ? $query
                         : $query->whereHas('resultPackage', fn (Builder $q) => $q->whereIn('package_type_id', $data['values']))),
@@ -149,7 +149,7 @@ class MoveResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->visible(app(TraceabilitySettings::class)->enable_lots_serial_numbers),
+                    ->visible(static::getTraceabilitySettings()->enable_lots_serial_numbers),
             ])
             ->recordActions([
                 DeleteAction::make()
@@ -168,5 +168,25 @@ class MoveResource extends Resource
         return [
             'index' => ManageMoves::route('/'),
         ];
+    }
+
+    public static function getOperationSettings(): OperationSettings
+    {
+        return settings(OperationSettings::class);
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return settings(ProductSettings::class);
+    }
+
+    public static function getTraceabilitySettings(): TraceabilitySettings
+    {
+        return settings(TraceabilitySettings::class);
+    }
+
+    public static function getWarehouseSettings(): WarehouseSettings
+    {
+        return settings(WarehouseSettings::class);
     }
 }

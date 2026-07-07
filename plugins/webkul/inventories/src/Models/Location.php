@@ -569,6 +569,15 @@ class Location extends Model
         }
     }
 
+    public function ancestorIds(): array
+    {
+        return collect(explode('/', (string) $this->parent_path))
+            ->filter(fn ($id) => $id !== '' && (int) $id !== (int) $this->id)
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
+    }
+
     public function updateParentPath()
     {
         if ($this->type === LocationType::VIEW) {

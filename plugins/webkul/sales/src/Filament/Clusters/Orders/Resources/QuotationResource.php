@@ -1174,7 +1174,7 @@ class QuotationResource extends Resource
                     ->markAsRequired()
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_uom),
+                    ->visible(fn () => settings(ProductSettings::class)->enable_uom),
                 TableColumn::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.lead-time'))
                     ->markAsRequired()
@@ -1186,13 +1186,13 @@ class QuotationResource extends Resource
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging-qty'))
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
+                    ->visible(fn () => settings(ProductSettings::class)->enable_packagings),
                 TableColumn::make('product_packaging_id')
                     ->toggleable()
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging'))
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
+                    ->visible(fn () => settings(ProductSettings::class)->enable_packagings),
                 TableColumn::make('price_unit')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.unit-price'))
                     ->markAsRequired()
@@ -1203,13 +1203,13 @@ class QuotationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
+                    ->visible(fn () => settings(PriceSettings::class)->enable_margin),
                 TableColumn::make('margin_percent')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.margin-percentage'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
+                    ->visible(fn () => settings(PriceSettings::class)->enable_margin),
                 TableColumn::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.taxes'))
                     ->toggleable()
@@ -1220,7 +1220,7 @@ class QuotationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->resizable()
                     ->wrapHeader(false)
-                    ->visible(fn () => resolve(PriceSettings::class)->enable_discount),
+                    ->visible(fn () => settings(PriceSettings::class)->enable_discount),
                 TableColumn::make('price_subtotal')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.amount'))
                     ->toggleable()
@@ -1240,9 +1240,20 @@ class QuotationResource extends Resource
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
+                    ->selectablePlaceholder(false)
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->required()
+                    ->dehydrated(true)
                     ->wrapOptionLabels(false)
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                     ->disableOptionWhen(function ($label, $value, $state, $component) {
                         $isDeleted = str_contains($label, ' (Deleted)');
+
+                        if ($isDeleted) {
+                            return true;
+                        }
 
                         $isDuplicate = false;
 
@@ -1261,17 +1272,9 @@ class QuotationResource extends Resource
                                 ->contains($value);
                         }
 
-                        return $isDeleted || $isDuplicate;
+                        return $isDuplicate;
                     })
-
-                    ->searchable()
-                    ->preload()
-                    ->live()
-                    ->dehydrated(true)
-                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
-                    ->required()
-                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
-                    ->selectablePlaceholder(false),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get)),
                 TextInput::make('product_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.quantity'))
                     ->required()

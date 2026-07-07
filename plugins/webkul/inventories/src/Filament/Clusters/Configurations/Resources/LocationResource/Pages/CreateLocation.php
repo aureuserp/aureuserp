@@ -13,6 +13,8 @@ class CreateLocation extends CreateRecord
 {
     protected static string $resource = LocationResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Start;

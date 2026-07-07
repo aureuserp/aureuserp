@@ -71,7 +71,7 @@ class LocationResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_locations;
+        return settings(WarehouseSettings::class)->enable_locations;
     }
 
     public static function getNavigationGroup(): string

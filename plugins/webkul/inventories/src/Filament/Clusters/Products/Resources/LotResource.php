@@ -66,7 +66,7 @@ class LotResource extends Resource
             return true;
         }
 
-        return app(TraceabilitySettings::class)->enable_lots_serial_numbers;
+        return settings(TraceabilitySettings::class)->enable_lots_serial_numbers;
     }
 
     public static function getNavigationLabel(): string
@@ -107,7 +107,7 @@ class LotResource extends Resource
                                     ->relationship(
                                         name: 'product',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->where('tracking', ProductTracking::LOT)->whereNull('is_configurable'),
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])->whereNull('is_configurable'),
                                     )
 
                                     ->getOptionLabelFromRecordUsing(function ($record): string {

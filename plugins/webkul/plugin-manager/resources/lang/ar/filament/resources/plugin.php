@@ -2,10 +2,6 @@
 
 return [
 
-    'navigation' => [
-        'group' => 'الإضافات',
-    ],
-
     'title' => 'إضافة',
 
     'table' => [

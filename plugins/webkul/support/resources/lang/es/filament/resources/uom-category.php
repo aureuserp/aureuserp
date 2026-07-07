@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Configuración',
         'title' => 'Categorías de unidad de medida',
     ],
 

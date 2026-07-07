@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Publicaciones del blog',
-        'group' => 'Sitio web',
     ],
 
     'global-search' => [

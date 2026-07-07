@@ -199,7 +199,21 @@ class OperationTypeResource extends Resource
                                                     ->default(Auth::user()->default_company_id),
                                                 Select::make('return_operation_type_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.return-type'))
-                                                    ->relationship('returnOperationType', 'name')
+                                                    ->relationship(
+                                                        'returnOperationType',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                                    )
+                                                    ->getOptionLabelFromRecordUsing(function (OperationType $record) {
+                                                        if (! $record->warehouse) {
+                                                            return $record->name;
+                                                        }
+
+                                                        return $record->warehouse->name.': '.$record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                    })
+                                                    ->disableOptionWhen(function ($label) {
+                                                        return str_contains($label, ' (Deleted)');
+                                                    })
                                                     ->searchable()
                                                     ->preload()
                                                     ->visible(fn (Get $get): bool => $get('type') != Enums\OperationType::DROPSHIP->value),

@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'التقارير',
-        'group' => 'المحاسبة',
     ],
     'common' => [
         'from-to' => ':report - من :from إلى :to',

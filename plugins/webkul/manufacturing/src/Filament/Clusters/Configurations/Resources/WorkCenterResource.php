@@ -76,7 +76,7 @@ class WorkCenterResource extends Resource
             return true;
         }
 
-        return app(OperationSettings::class)->enable_work_orders;
+        return settings(OperationSettings::class)->enable_work_orders;
     }
 
     public static function getModelLabel(): string

@@ -11,6 +11,8 @@ class CreateWarehouse extends CreateRecord
 {
     protected static string $resource = WarehouseResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Start;

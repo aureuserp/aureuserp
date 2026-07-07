@@ -199,7 +199,7 @@ class WebsitePlugin implements Plugin
     {
         $contacts = [];
 
-        $contactSettings = app(ContactSettings::class);
+        $contactSettings = $this->getContactSettings();
 
         if ($contactSettings->email) {
             $contacts['email'] = $contactSettings->email;
@@ -216,7 +216,7 @@ class WebsitePlugin implements Plugin
     {
         $socialLinks = new Collection;
 
-        $contactSettings = app(ContactSettings::class);
+        $contactSettings = $this->getContactSettings();
 
         if ($contactSettings->facebook) {
             $socialLinks->push(
@@ -309,5 +309,10 @@ class WebsitePlugin implements Plugin
         }
 
         return $socialLinks;
+    }
+
+    public function getContactSettings(): ContactSettings
+    {
+        return settings(ContactSettings::class);
     }
 }

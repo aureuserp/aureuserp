@@ -3,6 +3,7 @@
 namespace Webkul\Barcode\Filament\Pages;
 
 use Filament\Pages\Page;
+use Webkul\Support\Enums\NavigationGroup;
 
 class LaunchBarcode extends Page
 {
@@ -22,9 +23,9 @@ class LaunchBarcode extends Page
         return __('barcode::app.filament.navigation.label');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('barcode::app.filament.navigation.group');
+        return NavigationGroup::Barcode;
     }
 
     public function getTitle(): string

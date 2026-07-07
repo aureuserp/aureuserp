@@ -61,7 +61,7 @@ class ProductQuantity extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function location(): BelongsTo
@@ -400,8 +400,8 @@ class ProductQuantity extends Model
     {
         $this->scheduled_at = Carbon::create(
             now()->year,
-            app(OperationSettings::class)->annual_inventory_month,
-            app(OperationSettings::class)->annual_inventory_day,
+            settings(OperationSettings::class)->annual_inventory_month,
+            settings(OperationSettings::class)->annual_inventory_day,
             0,
             0,
             0

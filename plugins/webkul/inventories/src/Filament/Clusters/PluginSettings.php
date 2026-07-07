@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PluginSettings extends Cluster
 {
@@ -15,8 +16,8 @@ class PluginSettings extends Cluster
         return __('inventories::app.navigation.settings.label');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('inventories::filament/clusters/configurations.navigation.group');
+        return NavigationGroup::Inventory;
     }
 }

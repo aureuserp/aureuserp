@@ -61,7 +61,7 @@ class PackageResource extends Resource
             return true;
         }
 
-        return app(OperationSettings::class)->enable_packages;
+        return settings(OperationSettings::class)->enable_packages;
     }
 
     public static function getNavigationLabel(): string
