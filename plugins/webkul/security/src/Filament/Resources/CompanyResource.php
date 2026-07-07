@@ -188,7 +188,7 @@ class CompanyResource extends Resource
                                             ->relationship(
                                                 name: 'currency',
                                                 titleAttribute: 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
+                                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'),
                                             )
                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()

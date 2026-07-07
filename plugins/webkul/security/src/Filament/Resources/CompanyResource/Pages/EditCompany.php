@@ -18,6 +18,15 @@ class EditCompany extends EditRecord
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    protected function afterSave(): void
+    {
+        $currency = $this->record->currency;
+
+        if ($currency && ! $currency->active) {
+            $currency->update(['active' => true]);
+        }
+    }
+
     protected function getSavedNotification(): Notification
     {
         return Notification::make()
