@@ -10,6 +10,21 @@
     @endphp
 
     <div class="space-y-6">
+        @if ($this->hasIncompatibleComponentCostUom())
+            <x-filament::section
+                icon="heroicon-o-exclamation-triangle"
+                icon-color="warning"
+            >
+                <x-slot name="heading">
+                    {{ __('Some component costs are unavailable') }}
+                </x-slot>
+
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    {{ __('A component unit of measure does not belong to the same category as the product cost unit. Update the product or BOM component unit of measure to calculate its cost.') }}
+                </p>
+            </x-filament::section>
+        @endif
+
         <x-filament::section>
             <div class="grid gap-6 lg:grid-cols-3">
                 <div class="space-y-4 lg:col-span-2">

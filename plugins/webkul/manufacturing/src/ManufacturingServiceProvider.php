@@ -15,11 +15,13 @@ use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
 use Webkul\Manufacturing\Observers\MoveObserver;
+use Webkul\Manufacturing\Observers\ProductObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Models\Product;
 
 class ManufacturingServiceProvider extends PackageServiceProvider
 {
@@ -185,5 +187,7 @@ class ManufacturingServiceProvider extends PackageServiceProvider
         Warehouse::observe(WarehouseObserver::class);
 
         Move::observe(MoveObserver::class);
+
+        Product::observe(ProductObserver::class);
     }
 }

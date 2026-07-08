@@ -72,6 +72,7 @@ use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTab
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\UOM;
 
 class BillsOfMaterialResource extends Resource
 {
@@ -786,6 +787,8 @@ class BillsOfMaterialResource extends Resource
             ])
             ->schema([
                 Hidden::make('company_id'),
+                Hidden::make('uom_conversion_source_id')
+                    ->dehydrated(false),
                 Select::make('product_id')
                     ->relationship('product', 'name', fn (Builder $query) => $query
                         ->withTrashed()
@@ -839,6 +842,7 @@ class BillsOfMaterialResource extends Resource
                         }
 
                         $set('uom_id', $product->uom_id);
+                        $set('uom_conversion_source_id', $product->uom_id);
                         $set('company_id', $get('../../company_id'));
                     }),
                 TextInput::make('quantity')
@@ -863,6 +867,33 @@ class BillsOfMaterialResource extends Resource
                     ->default(fn (Get $get): ?int => Product::query()->withTrashed()->find($get('product_id'))?->uom_id)
                     ->searchable()
                     ->preload()
+                    ->live()
+                    ->afterStateHydrated(fn (Set $set, ?string $state) => $set('uom_conversion_source_id', $state))
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                        $sourceUomId = $get('uom_conversion_source_id');
+
+                        if (! $sourceUomId || ! $state || $sourceUomId === $state || ! filled($get('quantity'))) {
+                            $set('uom_conversion_source_id', $state);
+
+                            return;
+                        }
+
+                        $oldUom = UOM::query()->withTrashed()->find($sourceUomId);
+                        $newUom = UOM::query()->withTrashed()->find($state);
+
+                        if (! $oldUom || ! $newUom) {
+                            $set('uom_conversion_source_id', $state);
+
+                            return;
+                        }
+
+                        $set('quantity', $oldUom->computeQuantity(
+                            (float) $get('quantity'),
+                            $newUom,
+                            roundingMethod: 'HALF-UP',
+                        ));
+                        $set('uom_conversion_source_id', $state);
+                    })
                     ->required(),
                 Select::make('attributeValues')
                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.columns.apply-on-variants'))

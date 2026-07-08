@@ -16,8 +16,8 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\UOM;
 
 class Product extends Model implements Sortable
@@ -117,6 +117,40 @@ class Product extends Model implements Sortable
     public function uomPO(): BelongsTo
     {
         return $this->belongsTo(UOM::class, 'uom_po_id');
+    }
+
+    public function getCostUom(): ?UOM
+    {
+        return $this->uomPO ?? $this->uom;
+    }
+
+    public function getCostForQuantity(float $quantity, ?UOM $quantityUom = null): float
+    {
+        $costUom = $this->getCostUom();
+
+        if (! $this->isCostUomCompatible($quantityUom)) {
+            return 0.0;
+        }
+
+        if ($quantityUom && $costUom) {
+            $quantity = (float) $quantityUom->computeQuantity(
+                $quantity,
+                $costUom,
+                round: false,
+            );
+        }
+
+        return $quantity * (float) ($this->cost ?? 0);
+    }
+
+    public function isCostUomCompatible(?UOM $quantityUom): bool
+    {
+        $costUom = $this->getCostUom();
+
+        return ! $quantityUom
+            || ! $costUom
+            || $quantityUom->id === $costUom->id
+            || $quantityUom->category_id === $costUom->category_id;
     }
 
     public function category(): BelongsTo
