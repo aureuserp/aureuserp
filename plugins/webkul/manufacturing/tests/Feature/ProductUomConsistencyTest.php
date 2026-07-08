@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Validation\ValidationException;
+use Webkul\Inventory\Models\Move;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\BillOfMaterialLine;
 use Webkul\Product\Models\Product;
@@ -82,4 +83,70 @@ it('allows compatible product uom changes when the product is used on a bom line
 
     expect($product->refresh()->uom_id)->toBe($gram->id)
         ->and($product->uom_po_id)->toBe($gram->id);
+});
+
+it('keeps legacy mismatched bom costs from crashing', function () {
+    $weightCategory = UOMCategory::factory()->create(['name' => 'Weight']);
+    $unitCategory = UOMCategory::factory()->create(['name' => 'Unit']);
+    $kilogram = UOM::factory()->reference()->create([
+        'name'        => 'Kilogram',
+        'category_id' => $weightCategory->id,
+    ]);
+    $unit = UOM::factory()->reference()->create([
+        'name'        => 'Units',
+        'category_id' => $unitCategory->id,
+    ]);
+    $product = Product::factory()->create([
+        'cost'      => 100,
+        'uom_id'    => $kilogram->id,
+        'uom_po_id' => $kilogram->id,
+    ]);
+    $billOfMaterial = BillOfMaterial::factory()->create();
+
+    BillOfMaterialLine::query()->create([
+        'bill_of_material_id' => $billOfMaterial->id,
+        'product_id'          => $product->id,
+        'uom_id'              => $kilogram->id,
+        'quantity'            => 1,
+    ]);
+
+    Product::withoutEvents(fn (): bool => $product->update([
+        'uom_id'    => $unit->id,
+        'uom_po_id' => $unit->id,
+    ]));
+
+    $billOfMaterial->load(['lines.uom', 'lines.product.uom', 'lines.product.uomPO', 'lines.attributeValues', 'operations']);
+
+    expect($billOfMaterial->getUnitComponentCost())->toBe(0.0);
+});
+
+it('prevents changing a product uom after stock moves exist', function () {
+    $category = UOMCategory::factory()->create(['name' => 'Weight']);
+    $kilogram = UOM::factory()->reference()->create([
+        'name'        => 'Kilogram',
+        'category_id' => $category->id,
+    ]);
+    $gram = UOM::factory()->create([
+        'name'        => 'Gram',
+        'factor'      => 1000,
+        'category_id' => $category->id,
+    ]);
+    $product = Product::factory()->create([
+        'uom_id'    => $kilogram->id,
+        'uom_po_id' => $kilogram->id,
+    ]);
+
+    Move::factory()->create([
+        'product_id' => $product->id,
+        'uom_id'     => $kilogram->id,
+    ]);
+
+    $product->uom_id = $gram->id;
+    $product->uom_po_id = $gram->id;
+
+    expect(fn (): bool => $product->save())
+        ->toThrow(ValidationException::class, 'there are already stock moves for this product');
+
+    expect($product->refresh()->uom_id)->toBe($kilogram->id)
+        ->and($product->uom_po_id)->toBe($kilogram->id);
 });

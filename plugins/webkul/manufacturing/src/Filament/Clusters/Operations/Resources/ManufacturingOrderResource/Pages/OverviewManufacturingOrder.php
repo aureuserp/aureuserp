@@ -107,6 +107,13 @@ class OverviewManufacturingOrder extends ViewRecord
             ->values();
     }
 
+    public function hasIncompatibleComponentCostUom(): bool
+    {
+        return $this->getComponentRows()
+            ->contains(fn (Move $move): bool => (bool) $move->product
+                && ! $move->product->isCostUomCompatible($move->uom));
+    }
+
     public function getWorkOrderRows(): Collection
     {
         return $this->getRecord()->workOrders

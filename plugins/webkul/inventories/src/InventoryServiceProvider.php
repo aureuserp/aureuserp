@@ -14,6 +14,7 @@ use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
+use Webkul\Inventory\Observers\ProductObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -139,6 +140,8 @@ class InventoryServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->contributeProductSchema();
+
+        Product::observe(ProductObserver::class);
     }
 
     protected function contributeProductSchema(): void

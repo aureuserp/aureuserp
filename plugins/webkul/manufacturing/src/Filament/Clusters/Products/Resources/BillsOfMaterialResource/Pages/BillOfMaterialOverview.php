@@ -128,6 +128,14 @@ class BillOfMaterialOverview extends Page implements HasForms
         );
     }
 
+    public function hasIncompatibleComponentCostUom(): bool
+    {
+        return $this->getRecord()
+            ->getMatchedLines($this->getSelectedVariantAttributeValueIds())
+            ->contains(fn (BillOfMaterialLine $line): bool => (bool) $line->product
+                && ! $line->product->isCostUomCompatible($line->uom));
+    }
+
     public function getOperationRows(): Collection
     {
         $overviewQuantity = $this->getOverviewQuantity();
