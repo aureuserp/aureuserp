@@ -14,6 +14,8 @@ class SchemaRegistry
 
     protected static array $actions = [];
 
+    protected static array $presetViews = [];
+
     protected static array $eagerLoad = [];
 
     public static function form(string $scope, string $slot, Closure $factory, int $priority = 0): void
@@ -34,6 +36,11 @@ class SchemaRegistry
     public static function actions(string $scope, string $slot, Closure $factory, int $priority = 0): void
     {
         static::$actions[$scope][$slot][] = [$priority, $factory];
+    }
+
+    public static function presetView(string $scope, string $key, Closure $factory, int $priority = 0): void
+    {
+        static::$presetViews[$scope][] = [$priority, $key, $factory];
     }
 
     public static function eagerLoad(string $scope, array $relations): void
@@ -87,6 +94,21 @@ class SchemaRegistry
     public static function renderActions(string $scope, string $slot, mixed ...$args): array
     {
         return static::resolve(static::$actions[$scope][$slot] ?? [], $args);
+    }
+
+    public static function renderPresetViews(string $scope, mixed ...$args): array
+    {
+        $entries = static::$presetViews[$scope] ?? [];
+
+        usort($entries, fn (array $a, array $b): int => $a[0] <=> $b[0]);
+
+        $out = [];
+
+        foreach ($entries as [$priority, $key, $factory]) {
+            $out[$key] = $factory(...$args);
+        }
+
+        return $out;
     }
 
     protected static function resolve(array $entries, array $args): array

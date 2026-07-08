@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Filament\Resources\ProductResource\Pages\ListProducts as BaseListProducts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class ListProducts extends BaseListProducts
@@ -14,7 +15,7 @@ class ListProducts extends BaseListProducts
 
     public function getPresetTableViews(): array
     {
-        return [
+        return array_merge([
             'goods_products' => PresetView::make(__('invoices::filament/clusters/vendors/resources/product/pages/list-products.tabs.goods'))
                 ->icon('heroicon-s-squares-plus')
                 ->favorite()
@@ -34,6 +35,6 @@ class ListProducts extends BaseListProducts
                 ->modifyQueryUsing(function ($query) {
                     return $query->onlyTrashed();
                 }),
-        ];
+        ], ProductSchemaRegistry::renderPresetViews());
     }
 }

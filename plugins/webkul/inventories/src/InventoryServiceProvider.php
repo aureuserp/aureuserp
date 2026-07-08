@@ -3,6 +3,7 @@
 namespace Webkul\Inventory;
 
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
+use Webkul\TableViews\Filament\Components\PresetView;
 
 class InventoryServiceProvider extends PackageServiceProvider
 {
@@ -152,6 +154,14 @@ class InventoryServiceProvider extends PackageServiceProvider
         ProductSchemaRegistry::infolist('left.inventory', fn () => InventoryProductSchema::infolistSection());
 
         ProductSchemaRegistry::actions('header', fn () => UpdateQuantityAction::make());
+
+        ProductSchemaRegistry::presetView(
+            'storable_products',
+            fn () => PresetView::make(__('inventories::filament/clusters/products/resources/product/pages/list-products.tabs.inventory-management'))
+                ->icon('heroicon-s-clipboard-document-list')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_storable', true)),
+        );
 
         ProductSchemaRegistry::eagerLoad(['routes', 'responsible']);
 
