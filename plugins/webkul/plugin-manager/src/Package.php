@@ -30,6 +30,8 @@ class Package extends BasePackage
 
     public array $seederClasses = [];
 
+    public array $sampleSeederClasses = [];
+
     public ?string $icon = null;
 
     public function hasInstallCommand($callable): static
@@ -103,6 +105,23 @@ class Package extends BasePackage
     {
         $this->seederClasses = array_merge(
             $this->seederClasses,
+            collect($seederClasses)->flatten()->toArray()
+        );
+
+        return $this;
+    }
+
+    public function hasSampleSeeder(string $seederClass): static
+    {
+        $this->sampleSeederClasses[] = $seederClass;
+
+        return $this;
+    }
+
+    public function hasSampleSeeders(...$seederClasses): static
+    {
+        $this->sampleSeederClasses = array_merge(
+            $this->sampleSeederClasses,
             collect($seederClasses)->flatten()->toArray()
         );
 

@@ -27,6 +27,10 @@ class InstallCommand extends Command
 
     protected bool $askToRunSeeders = false;
 
+    protected bool $askToSeedSampleData = false;
+
+    protected ?string $sampleDataDescription = null;
+
     protected bool $installDependencies = false;
 
     protected bool $runsMigrations = false;
@@ -135,6 +139,18 @@ class InstallCommand extends Command
             $this->runSeeders();
         }
 
+        if ($this->askToSeedSampleData && ! empty($this->package->sampleSeederClasses)) {
+            $what = $this->sampleDataDescription
+                ? " ({$this->sampleDataDescription})"
+                : '';
+
+            $question = "Would you like to seed demo/sample data{$what} for the <comment>{$this->package->shortName()}</comment> plugin? (Recommended for development only)";
+
+            if ($this->confirm($question, false)) {
+                $this->runSampleSeeders();
+            }
+        }
+
         if ($this->copyServiceProviderInApp) {
             $this->comment('Publishing service provider...');
 
@@ -224,6 +240,15 @@ class InstallCommand extends Command
     public function askToRunSeeders(): self
     {
         $this->askToRunSeeders = true;
+
+        return $this;
+    }
+
+    public function askToSeedSampleData(?string $description = null): self
+    {
+        $this->askToSeedSampleData = true;
+
+        $this->sampleDataDescription = $description;
 
         return $this;
     }
@@ -341,6 +366,23 @@ class InstallCommand extends Command
         }
 
         $this->info("✅ Seeders <comment>{$this->package->shortName()}</comment> completed successfully.");
+
+        $this->newLine();
+
+        return $this;
+    }
+
+    public function runSampleSeeders(): self
+    {
+        $this->info("🌱 Seeding <comment>{$this->package->shortName()}</comment> sample data...");
+
+        foreach ($this->package->sampleSeederClasses as $seeder) {
+            $this->call('db:seed', [
+                '--class' => $seeder,
+            ]);
+        }
+
+        $this->info("✅ Sample data for <comment>{$this->package->shortName()}</comment> seeded successfully.");
 
         $this->newLine();
 

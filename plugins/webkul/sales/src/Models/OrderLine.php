@@ -177,7 +177,7 @@ class OrderLine extends Model implements Sortable
             $orderDate = now();
         }
 
-        return $orderDate->addDays($this->customer_lead ?? 0);
+        return $orderDate->addDays((int) ($this->customer_lead ?? 0));
     }
 
     protected static function boot()
