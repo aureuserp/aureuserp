@@ -46,6 +46,7 @@ class ProductServiceProvider extends PackageServiceProvider
                 '2026_04_15_044431_add_columns_in_products_product_suppliers_table',
             ])
             ->hasSeeder('Webkul\\Product\\Database\Seeders\\DatabaseSeeder')
+            ->hasSampleSeeder('Webkul\\Product\\Database\Seeders\\SampleDataSeeder')
             ->runsMigrations()
             ->hasSettings([
                 '2025_01_17_094022_create_products_product_settings',
@@ -54,7 +55,8 @@ class ProductServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->runsMigrations()
-                    ->runsSeeders();
+                    ->runsSeeders()
+                    ->askToSeedSampleData('products, product attributes & variants');
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
                 $command->endWith(function () {
