@@ -10,7 +10,7 @@ return [
 
     'dependents' => [
         'title'         => 'Dependent Plugins',
-        'description'   => 'These plugins depend on this one and will also be uninstalled.',
+        'description'   => 'These plugins depend on this one. Any installed dependents must be uninstalled first.',
         'installed'     => 'Installed',
         'not_installed' => 'Not Installed',
     ],

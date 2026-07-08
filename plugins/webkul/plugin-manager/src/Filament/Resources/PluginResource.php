@@ -218,6 +218,10 @@ class PluginResource extends Resource
                         ->modalContent(function ($record) {
                             $dependents = $record->getDependentsFromConfig();
 
+                            $installedDependents = collect($dependents)
+                                ->filter(fn ($dependent) => Package::isPluginInstalled($dependent))
+                                ->values();
+
                             $packages = collect([$record->name => $record->package])
                                 ->merge(
                                     $dependents
@@ -243,7 +247,7 @@ class PluginResource extends Resource
                                 ->unique('table')
                                 ->values();
 
-                            return view('plugin-manager::uninstall-modal', compact('record', 'dependents', 'tables'));
+                            return view('plugin-manager::uninstall-modal', compact('record', 'dependents', 'installedDependents', 'tables'));
                         })
                         ->action(fn ($record) => self::uninstallPlugin($record))
                         ->after(fn () => redirect(self::getUrl('index'))),
@@ -343,6 +347,24 @@ class PluginResource extends Resource
         $errors = [];
 
         $dependents = $record->getDependentsFromConfig();
+
+        $installedDependents = collect($dependents)
+            ->filter(fn ($dependent) => Package::isPluginInstalled($dependent))
+            ->values();
+
+        if ($installedDependents->isNotEmpty()) {
+            Notification::make()
+                ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-blocked.title'))
+                ->body(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-blocked.body', [
+                    'name'       => $record->name,
+                    'dependents' => $installedDependents->map(fn ($dependent) => ucfirst($dependent))->implode(', '),
+                ]))
+                ->danger()
+                ->persistent()
+                ->send();
+
+            return;
+        }
 
         collect($dependents)
             ->push($record->name)
