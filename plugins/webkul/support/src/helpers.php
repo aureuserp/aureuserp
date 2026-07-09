@@ -1,6 +1,14 @@
 <?php
 
 use Illuminate\Support\Number;
+use Webkul\Support\SettingsRegistry;
+
+if (! function_exists('settings')) {
+    function settings(string $settings): object
+    {
+        return app(SettingsRegistry::class)->get($settings);
+    }
+}
 
 if (! function_exists('money')) {
     function money(float|Closure $amount, string|Closure|null $currency = null, int $divideBy = 0, string|Closure|null $locale = null): string

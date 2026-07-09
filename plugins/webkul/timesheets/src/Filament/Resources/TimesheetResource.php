@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
+use Webkul\Support\Enums\NavigationGroup;
 
 class TimesheetResource extends Resource
 {
@@ -41,9 +42,9 @@ class TimesheetResource extends Resource
         return __('timesheets::filament/resources/timesheet.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('timesheets::filament/resources/timesheet.navigation.group');
+        return NavigationGroup::Project;
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable

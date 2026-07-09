@@ -292,7 +292,7 @@
                         <th>{{ __('sales::app.documents.product') }}</th>
                         <th>{{ __('sales::app.documents.quantity') }}</th>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <th>{{ __('sales::app.documents.unit') }}</th>
                         @endif
 
@@ -306,7 +306,7 @@
                         <td>{{ $item->product->name }}</td>
                         <td>{{ number_format($item->product_uom_qty) }}</td>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 

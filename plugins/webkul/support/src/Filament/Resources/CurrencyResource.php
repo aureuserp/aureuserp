@@ -37,6 +37,7 @@ use Webkul\Support\Filament\Resources\CurrencyResource\Pages\EditCurrency;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\ListCurrencies;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\ViewCurrency;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Enums\NavigationGroup;
 
 class CurrencyResource extends Resource
 {
@@ -57,9 +58,9 @@ class CurrencyResource extends Resource
         return __('support::filament/resources/currency.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('support::filament/resources/currency.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function form(Schema $schema): Schema

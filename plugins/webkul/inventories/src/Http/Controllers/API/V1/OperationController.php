@@ -16,6 +16,7 @@ use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Http\Requests\OperationRequest;
 use Webkul\Inventory\Http\Resources\V1\OperationResource;
+use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Product;
@@ -336,6 +337,8 @@ class OperationController extends Controller
                     continue;
                 }
             }
+
+            Move::$globalContext['skip_additional'] = false;
 
             $createdMove = $operation->moves()->create($this->prepareMoveData($operation, $moveData));
             $retainedMoveIds[] = $createdMove->id;

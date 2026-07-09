@@ -73,10 +73,10 @@ class AcceptInvitation extends SimplePage
             'name'               => $this->form->getState()['name'],
             'password'           => $this->form->getState()['password'],
             'email'              => $this->invitationModel->email,
-            'default_company_id' => app(UserSettings::class)->default_company_id,
+            'default_company_id' => settings(UserSettings::class)->default_company_id,
         ]);
 
-        $user->assignRole(app(UserSettings::class)->default_role_id);
+        $user->assignRole(settings(UserSettings::class)->default_role_id);
 
         $this->invitationModel->delete();
 

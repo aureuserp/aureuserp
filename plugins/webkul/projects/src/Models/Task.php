@@ -58,7 +58,6 @@ class Task extends Model implements Sortable
     ];
 
     protected $casts = [
-        'is_active'           => 'boolean',
         'deadline'            => 'datetime',
         'priority'            => 'boolean',
         'is_active'           => 'boolean',
@@ -156,6 +155,11 @@ class Task extends Model implements Sortable
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'projects_task_users');
+    }
+
+    public function chatterResponsibles(): array
+    {
+        return ['users'];
     }
 
     public function company(): BelongsTo

@@ -53,7 +53,7 @@ class ListUsers extends ListRecords
                         ->required(),
                 ])
                 ->action(function ($data) {
-                    if (! isset(app(UserSettings::class)->default_company_id)) {
+                    if (! isset(settings(UserSettings::class)->default_company_id)) {
                         Notification::make('invitedFailed')
                             ->title(__('security::filament/resources/user/pages/list-user.header-actions.invite.notification.default-company-error.title'))
                             ->body(__('security::filament/resources/user/pages/list-user.header-actions.invite.notification.default-company-error.body'))

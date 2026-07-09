@@ -50,7 +50,7 @@ class ProjectStageResource extends Resource
             return true;
         }
 
-        return app(TaskSettings::class)->enable_project_stages;
+        return settings(TaskSettings::class)->enable_project_stages;
     }
 
     public static function form(Schema $schema): Schema

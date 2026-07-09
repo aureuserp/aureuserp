@@ -5,6 +5,7 @@ namespace Webkul\Accounting\Filament\Pages;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Page;
 use Webkul\Accounting\Filament\Widgets\JournalChartsWidget;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Overview extends Page
 {
@@ -24,9 +25,9 @@ class Overview extends Page
         return __('accounting::filament/pages/overview.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('accounting::filament/pages/overview.navigation.group');
+        return NavigationGroup::Accounting;
     }
 
     protected function getHeaderWidgets(): array

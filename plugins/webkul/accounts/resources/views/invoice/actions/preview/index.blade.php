@@ -258,7 +258,7 @@
                         <th>{{ __('accounts::account-manager.documents.labels.product') }}</th>
                         <th>{{ __('accounts::account-manager.documents.labels.quantity') }}</th>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <th>{{ __('accounts::account-manager.documents.labels.unit') }}</th>
                         @endif
 
@@ -272,7 +272,7 @@
                         <td>{{ $item->product->name }}</td>
                         <td>{{ number_format($item->quantity) }}</td>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 

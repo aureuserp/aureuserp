@@ -45,6 +45,7 @@ use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ListPosts;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ViewPost;
 use Webkul\Blog\Models\Post;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PostResource extends Resource
 {
@@ -63,9 +64,9 @@ class PostResource extends Resource
         return __('blogs::filament/admin/resources/post.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('blogs::filament/admin/resources/post.navigation.group');
+        return NavigationGroup::Website;
     }
 
     public static function getGloballySearchableAttributes(): array

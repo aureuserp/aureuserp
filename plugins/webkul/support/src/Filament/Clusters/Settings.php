@@ -3,6 +3,7 @@
 namespace Webkul\Support\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Settings extends Cluster
 {
@@ -24,8 +25,8 @@ class Settings extends Cluster
         return __('support::filament/clusters/settings/pages/settings.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('support::filament/clusters/settings/pages/settings.navigation.group');
+        return NavigationGroup::Setting;
     }
 }

@@ -77,7 +77,7 @@ class OperationResource extends Resource
             return true;
         }
 
-        return app(OperationSettings::class)->enable_work_orders;
+        return settings(OperationSettings::class)->enable_work_orders;
     }
 
     public static function getModelLabel(): string
@@ -274,6 +274,7 @@ class OperationResource extends Resource
     {
         return $table
             ->reorderableColumns()
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('billOfMaterial'))
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/configurations/resources/operation.table.columns.name'))

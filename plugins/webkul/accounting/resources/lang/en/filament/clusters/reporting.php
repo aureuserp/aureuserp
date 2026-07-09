@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Reporting',
-        'group' => 'Accounting',
     ],
     'common' => [
         'from-to' => ':report - From :from to :to',

@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Settings',
         'title' => 'UOM Categories',
     ],
 

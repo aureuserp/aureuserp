@@ -3,6 +3,5 @@
 return [
     'navigation' => [
         'title' => 'Clientes',
-        'group' => 'Contabilidad',
     ],
 ];

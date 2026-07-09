@@ -64,11 +64,7 @@ class Project extends Model implements Sortable
     protected $casts = [
         'start_date'              => 'date',
         'end_date'                => 'date',
-        'is_active'               => 'boolean',
-        'allow_timesheets'        => 'boolean',
-        'allow_milestones'        => 'boolean',
-        'start_date'              => 'date',
-        'end_date'                => 'date',
+        'allocated_hours'         => 'integer',
         'is_active'               => 'boolean',
         'allow_timesheets'        => 'boolean',
         'allow_milestones'        => 'boolean',

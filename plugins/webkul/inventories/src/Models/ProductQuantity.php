@@ -268,6 +268,7 @@ class ProductQuantity extends Model
             'quantity'                => $qty,
             'product_uom_qty'         => $qty,
             'is_picked'               => true,
+            'is_inventory'            => true,
             'product_id'              => $this->product_id,
             'uom_id'                  => $this->uom->id,
             'source_location_id'      => $sourceLocation->id,
@@ -402,8 +403,8 @@ class ProductQuantity extends Model
     {
         $this->scheduled_at = Carbon::create(
             now()->year,
-            app(OperationSettings::class)->annual_inventory_month,
-            app(OperationSettings::class)->annual_inventory_day,
+            settings(OperationSettings::class)->annual_inventory_month,
+            settings(OperationSettings::class)->annual_inventory_day,
             0,
             0,
             0

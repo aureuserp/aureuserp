@@ -12,6 +12,8 @@ class EditRule extends EditRecord
 {
     protected static string $resource = RuleResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

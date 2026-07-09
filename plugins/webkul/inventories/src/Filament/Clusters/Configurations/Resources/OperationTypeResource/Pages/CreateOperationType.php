@@ -10,6 +10,8 @@ class CreateOperationType extends CreateRecord
 {
     protected static string $resource = OperationTypeResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

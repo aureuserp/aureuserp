@@ -1282,6 +1282,6 @@ class BillsOfMaterialResource extends Resource
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 }

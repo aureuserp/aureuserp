@@ -33,6 +33,10 @@ class ManageMoves extends ManageRelatedRecords
     {
         return $table
             ->columns([
+                TextColumn::make('product.name')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.product'))
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('scheduled_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.date'))
                     ->sortable()

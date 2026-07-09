@@ -323,7 +323,6 @@ class Operation extends Model
         $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT && $move->quantity);
 
         InventoryFacade::confirmMoves($movesToConfirm);
-
     }
 
     public function updateName()

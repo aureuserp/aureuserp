@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
@@ -21,6 +22,8 @@ use Webkul\Inventory\Models\ProcurementGroup;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Database\Factories\OrderFactory;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
 use Webkul\Sale\Enums\OrderState;
@@ -277,6 +280,19 @@ class Order extends Model
         static::created(function ($order) {
             $order->update(['name' => $order->name]);
         });
+    }
+
+    public function getChatterResourceUrl(): string
+    {
+        $resource = $this->state === OrderState::SALE
+            ? OrderResource::class
+            : QuotationResource::class;
+
+        try {
+            return $resource::getUrl('view', ['record' => $this->getKey()], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     public function computeWarehouseId()

@@ -46,7 +46,7 @@ class DropshipResource extends Resource
             return true;
         }
 
-        return app(LogisticSettings::class)->enable_dropshipping;
+        return settings(LogisticSettings::class)->enable_dropshipping;
     }
 
     public static function getModelLabel(): string

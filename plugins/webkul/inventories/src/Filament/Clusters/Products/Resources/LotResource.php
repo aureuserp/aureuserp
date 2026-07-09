@@ -69,7 +69,7 @@ class LotResource extends Resource
             return true;
         }
 
-        return app(TraceabilitySettings::class)->enable_lots_serial_numbers;
+        return settings(TraceabilitySettings::class)->enable_lots_serial_numbers;
     }
 
     public static function getNavigationLabel(): string

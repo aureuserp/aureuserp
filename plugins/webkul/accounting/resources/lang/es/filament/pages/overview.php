@@ -3,6 +3,5 @@
 return [
     'navigation' => [
         'title' => 'Resumen',
-        'group' => 'Contabilidad',
     ],
 ];

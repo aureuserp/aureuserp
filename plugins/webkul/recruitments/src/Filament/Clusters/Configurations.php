@@ -4,6 +4,7 @@ namespace Webkul\Recruitment\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
 use Filament\Panel;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Configurations extends Cluster
 {
@@ -19,8 +20,8 @@ class Configurations extends Cluster
         return __('recruitments::filament/clusters/configurations.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('recruitments::filament/clusters/configurations.navigation.group');
+        return NavigationGroup::Recruitment;
     }
 }

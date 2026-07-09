@@ -2291,7 +2291,7 @@ class InventoryManager
             'origin'                  => __('inventories::system.inventory-manager.return.origin', ['operation_name' => $operation->name]),
             'operation_type_id'       => $returnType?->id ?? $operation->operation_type_id,
             'source_location_id'      => $sourceLocation->id,
-            'location_destination_id' => $destinationLocation->id,
+            'destination_location_id' => $destinationLocation->id,
             'return_id'               => $operation->id,
             'user_id'                 => null,
         ];

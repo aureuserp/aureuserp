@@ -21,6 +21,8 @@ class EditLocation extends EditRecord
 
     protected static string $resource = LocationResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         try {

@@ -23,6 +23,7 @@
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
+        "league/glide": "^2.3",
         "livewire/livewire": "^4.0",
         "maatwebsite/excel": "^3.1",
         "malzariey/filament-daterangepicker-filter": "^5.0",

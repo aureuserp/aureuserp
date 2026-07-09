@@ -33,14 +33,15 @@ use Throwable;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages\ListPlugins;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('plugin-manager::filament/resources/plugin.navigation.group');
+        return NavigationGroup::Plugin;
     }
 
     public static function getModelLabel(): string

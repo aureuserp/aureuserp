@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'الحقول المخصصة',
-        'group' => 'الإعدادات',
     ],
 
     'form' => [

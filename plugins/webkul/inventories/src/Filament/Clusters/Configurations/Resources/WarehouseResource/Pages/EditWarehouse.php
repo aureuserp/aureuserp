@@ -18,6 +18,8 @@ class EditWarehouse extends EditRecord
 
     protected static string $resource = WarehouseResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         try {

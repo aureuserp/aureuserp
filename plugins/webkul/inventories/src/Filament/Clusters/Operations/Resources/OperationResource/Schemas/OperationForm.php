@@ -254,6 +254,26 @@ class OperationForm
                     'productPackaging',
                 ])
             )
+            ->mutateRelationshipDataBeforeSaveUsing(function (array $data, $record, $livewire) {
+                $data['source_location_id'] = $livewire->data['source_location_id']
+                    ?? $record->operationType?->source_location_id;
+
+                $data['destination_location_id'] = $livewire->data['destination_location_id']
+                    ?? $record->operationType?->destination_location_id;
+
+                return $data;
+            })
+            ->mutateRelationshipDataBeforeCreateUsing(function (array $data, $record, $livewire) {
+                Move::$globalContext['skip_additional'] = false;
+
+                $data['source_location_id'] = $livewire->data['source_location_id']
+                    ?? $record->operationType?->source_location_id;
+
+                $data['destination_location_id'] = $livewire->data['destination_location_id']
+                    ?? $record->operationType?->destination_location_id;
+
+                return $data;
+            })
             ->columnManagerColumns(2)
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
@@ -414,7 +434,7 @@ class OperationForm
                             'heroicon-o-exclamation-triangle',
                             null,
                             (new ComponentAttributeBag)
-                                ->color(IconComponent::class, 'danger')
+                                ->color(IconComponent::class, 'warning')
                                 ->class(['fi-text-color-600'])
                                 ->merge([
                                     'style'         => 'color: var(--text)',
@@ -634,7 +654,7 @@ class OperationForm
                                     ];
                                 }
 
-                                [$quantLocationScope] = $move->product->getLocationFilters();
+                                [$quantityLocationScope] = $move->product->getLocationFilters();
 
                                 return ProductQuantity::with(['location', 'lot', 'package'])
                                     ->where('product_id', $move->product_id)
@@ -642,8 +662,8 @@ class OperationForm
                                         $query->where('id', $move->source_location_id)
                                             ->orWhere('parent_id', $move->source_location_id);
                                     })
-                                    ->where('quantity', '>', 0)
-                                    ->where(fn (Builder $query) => $quantLocationScope($query))
+                                    // ->where('quantity', '>', 0)
+                                    ->where(fn (Builder $query) => $quantityLocationScope($query))
                                     ->get()
                                     ->mapWithKeys(function ($quantity) {
                                         $nameParts = array_filter([

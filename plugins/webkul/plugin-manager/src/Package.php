@@ -256,15 +256,19 @@ class Package extends BasePackage
 
     public static function isPluginInstalled(string $name): bool
     {
+        static $isLoaded = false; 
+
         try {
-            if (count(static::$plugins) == 0) {
+            if (! $isLoaded) {
                 DB::connection()->getPdo();
 
                 if (Schema::hasTable('plugins') === false) {
+                    $isLoaded = true;
                     return false;
                 }
 
                 static::$plugins = Plugin::all()->keyBy('name');
+                $isLoaded = true;
             }
 
             if (isset(static::$plugins[$name]) && static::$plugins[$name]->is_installed) {

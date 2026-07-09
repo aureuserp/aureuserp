@@ -96,11 +96,18 @@ class Move extends Model
 
     protected array $context = [];
 
+    public static array $globalContext = [];
+
     public function setContext(array $context)
     {
         $this->context = array_merge($this->context, $context);
 
         return $this;
+    }
+
+    public function getContext(string $key, $default = null)
+    {
+        return $this->context[$key] ?? $default;
     }
 
     public function isPurchaseReturn()
@@ -321,16 +328,29 @@ class Move extends Model
 
             $move->state ??= MoveState::DRAFT;
 
-            if (
-                $move->operation
-                && ! in_array($move->operation->state, [OperationState::DRAFT, OperationState::DONE, OperationState::CANCELED])
-            ) {
-                $move->additional = true;
+            $skipAdditional = static::$globalContext['skip_additional'] ?? true;
+
+            static::$globalContext = [];
+
+            $move->setContext(['skip_additional' => $skipAdditional]);
+
+            if ($move->operation && ! $skipAdditional) {
+                if ($move->operation->state === OperationState::DONE) {
+                    $move->state = MoveState::DONE;
+
+                    $move->additional = true;
+                } elseif (! in_array($move->operation->state, [
+                    OperationState::DRAFT,
+                    OperationState::DONE,
+                    OperationState::CANCELED
+                ])) {
+                    $move->additional = true;
+                }
             }
         });
 
         static::created(function ($move) {
-            if (! $move->additional) {
+            if ($move->getContext('skip_additional', true) || ! $move->additional) {
                 return;
             }
 

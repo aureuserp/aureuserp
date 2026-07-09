@@ -22,6 +22,7 @@ use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\CreateUOMCategor
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\EditUOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\ListUOMCategories;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\ViewUOMCategory;
+use Webkul\Support\Enums\NavigationGroup;
 
 class UOMCategoryResource extends Resource
 {
@@ -29,9 +30,9 @@ class UOMCategoryResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('support::filament/resources/uom-category.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function getNavigationLabel(): string

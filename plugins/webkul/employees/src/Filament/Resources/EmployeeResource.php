@@ -80,6 +80,7 @@ use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Enums\NavigationGroup;
 
 class EmployeeResource extends Resource
 {
@@ -103,9 +104,9 @@ class EmployeeResource extends Resource
         return __('employees::filament/resources/employee.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('employees::filament/resources/employee.navigation.group');
+        return NavigationGroup::Employee;
     }
 
     public static function getGloballySearchableAttributes(): array
