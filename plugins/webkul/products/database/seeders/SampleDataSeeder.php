@@ -3,6 +3,7 @@
 namespace Webkul\Product\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Webkul\Product\Enums\AttributeType;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Attribute;
@@ -48,11 +49,13 @@ class SampleDataSeeder extends Seeder
         $this->uomId = UOM::query()->where('name', 'Units')->value('id')
             ?? UOM::query()->value('id');
 
-        $this->seedCategories();
+        DB::transaction(function () {
+            $this->seedCategories();
 
-        $this->seedSimpleProducts();
+            $this->seedSimpleProducts();
 
-        $this->seedConfigurableProducts();
+            $this->seedConfigurableProducts();
+        });
 
         $count = Product::query()->whereNull('parent_id')->count();
         $variants = Product::query()->whereNotNull('parent_id')->count();
