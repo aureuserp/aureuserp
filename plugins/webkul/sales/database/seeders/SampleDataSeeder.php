@@ -4,6 +4,7 @@ namespace Webkul\Sale\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
 use Webkul\Sale\Models\Order;
@@ -51,61 +52,63 @@ class SampleDataSeeder extends Seeder
             return;
         }
 
-        for ($i = 0; $i < $this->count; $i++) {
-            $partnerId = Arr::random($partnerIds);
+        DB::transaction(function () use ($company, $currency, $user, $fallbackUomId, $partnerIds, $products) {
+            for ($i = 0; $i < $this->count; $i++) {
+                $partnerId = Arr::random($partnerIds);
 
-            // Confirm roughly two-thirds of the orders as actual sales, keep the rest as quotations.
-            $isSale = $i % 3 !== 0;
+                // Confirm roughly two-thirds of the orders as actual sales, keep the rest as quotations.
+                $isSale = $i % 3 !== 0;
 
-            $order = Order::factory()
-                ->state([
-                    'company_id'          => $company?->id,
-                    'currency_id'         => $currency?->id,
-                    'user_id'             => $user?->id,
-                    'creator_id'          => $user?->id,
-                    'partner_id'          => $partnerId,
-                    'partner_invoice_id'  => $partnerId,
-                    'partner_shipping_id' => $partnerId,
-                ])
-                ->when($isSale, fn ($factory) => $factory->sale(), fn ($factory) => $factory->draft())
-                ->create();
-
-            $lineCount = random_int(1, 4);
-
-            $lines = collect();
-
-            for ($j = 0; $j < $lineCount; $j++) {
-                $product = $products->random();
-
-                $line = OrderLine::factory()
-                    ->when($isSale, fn ($factory) => $factory->sale(), fn ($factory) => $factory->draft())
+                $order = Order::factory()
                     ->state([
-                        'order_id'         => $order->id,
-                        'company_id'       => $company?->id,
-                        'currency_id'      => $currency?->id,
-                        'order_partner_id' => $partnerId,
-                        'salesman_id'      => $user?->id,
-                        'creator_id'       => $user?->id,
-                        'product_id'       => $product->id,
-                        'product_uom_id'   => $product->uom_id ?? $fallbackUomId,
-                        'name'             => $product->name,
-                        'price_unit'       => $product->price ?? fake()->randomFloat(2, 10, 500),
+                        'company_id'          => $company?->id,
+                        'currency_id'         => $currency?->id,
+                        'user_id'             => $user?->id,
+                        'creator_id'          => $user?->id,
+                        'partner_id'          => $partnerId,
+                        'partner_invoice_id'  => $partnerId,
+                        'partner_shipping_id' => $partnerId,
                     ])
+                    ->when($isSale, fn ($factory) => $factory->sale(), fn ($factory) => $factory->draft())
                     ->create();
 
-                $lines->push($line);
+                $lineCount = random_int(1, 4);
+
+                $lines = collect();
+
+                for ($j = 0; $j < $lineCount; $j++) {
+                    $product = $products->random();
+
+                    $line = OrderLine::factory()
+                        ->when($isSale, fn ($factory) => $factory->sale(), fn ($factory) => $factory->draft())
+                        ->state([
+                            'order_id'         => $order->id,
+                            'company_id'       => $company?->id,
+                            'currency_id'      => $currency?->id,
+                            'order_partner_id' => $partnerId,
+                            'salesman_id'      => $user?->id,
+                            'creator_id'       => $user?->id,
+                            'product_id'       => $product->id,
+                            'product_uom_id'   => $product->uom_id ?? $fallbackUomId,
+                            'name'             => $product->name,
+                            'price_unit'       => $product->price ?? fake()->randomFloat(2, 10, 500),
+                        ])
+                        ->create();
+
+                    $lines->push($line);
+                }
+
+                // Keep the order totals consistent with the generated lines.
+                $amountUntaxed = (float) $lines->sum('price_subtotal');
+                $amountTax = (float) $lines->sum('price_tax');
+
+                $order->update([
+                    'amount_untaxed' => $amountUntaxed,
+                    'amount_tax'     => $amountTax,
+                    'amount_total'   => $amountUntaxed + $amountTax,
+                ]);
             }
-
-            // Keep the order totals consistent with the generated lines.
-            $amountUntaxed = (float) $lines->sum('price_subtotal');
-            $amountTax = (float) $lines->sum('price_tax');
-
-            $order->update([
-                'amount_untaxed' => $amountUntaxed,
-                'amount_tax'     => $amountTax,
-                'amount_total'   => $amountUntaxed + $amountTax,
-            ]);
-        }
+        });
 
         $this->command?->info("Created {$this->count} demo sale orders with lines.");
     }

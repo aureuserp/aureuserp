@@ -374,6 +374,13 @@ class InstallCommand extends Command
 
     public function runSampleSeeders(): self
     {
+
+        if (app()->isProduction()) {
+            $this->warn('⚠️  Skipping sample data: sample seeders are for development environments only.');
+
+            return $this;
+        }
+
         $this->info("🌱 Seeding <comment>{$this->package->shortName()}</comment> sample data...");
 
         foreach ($this->package->sampleSeederClasses as $seeder) {

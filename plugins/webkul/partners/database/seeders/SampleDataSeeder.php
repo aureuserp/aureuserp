@@ -4,6 +4,7 @@ namespace Webkul\Partner\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Webkul\Partner\Models\Industry;
 use Webkul\Partner\Models\Partner;
 use Webkul\Partner\Models\Title;
@@ -36,26 +37,28 @@ class SampleDataSeeder extends Seeder
 
         $industryIds = Industry::query()->pluck('id')->all();
 
-        Partner::factory()
-            ->count($this->count)
-            ->state(function () use ($companyId, $titleIds, $industryIds) {
-                $state = [];
+        DB::transaction(function () use ($companyId, $titleIds, $industryIds) {
+            Partner::factory()
+                ->count($this->count)
+                ->state(function () use ($companyId, $titleIds, $industryIds) {
+                    $state = [];
 
-                if ($companyId) {
-                    $state['company_id'] = $companyId;
-                }
+                    if ($companyId) {
+                        $state['company_id'] = $companyId;
+                    }
 
-                if (! empty($titleIds)) {
-                    $state['title_id'] = Arr::random($titleIds);
-                }
+                    if (! empty($titleIds)) {
+                        $state['title_id'] = Arr::random($titleIds);
+                    }
 
-                if (! empty($industryIds)) {
-                    $state['industry_id'] = Arr::random($industryIds);
-                }
+                    if (! empty($industryIds)) {
+                        $state['industry_id'] = Arr::random($industryIds);
+                    }
 
-                return $state;
-            })
-            ->create();
+                    return $state;
+                })
+                ->create();
+        });
 
         $this->command?->info("Created {$this->count} demo partners.");
     }
