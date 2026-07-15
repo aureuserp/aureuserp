@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Livewire\Component;
 use Throwable;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -298,7 +299,7 @@ class PayAction extends Action
                 ])
                     ->columns(2);
             })
-            ->action(function (Move $record, $data): void {
+            ->action(function (Move $record, $data, Component $livewire): void {
                 try {
                     $lineIds = $record->paymentTermLines
                         ->filter(fn ($line) => ! $line->reconciled)
@@ -316,6 +317,14 @@ class PayAction extends Action
                     $paymentRegister->save();
 
                     AccountFacade::createPayments($paymentRegister);
+
+                    $record->refresh();
+
+                    if (method_exists($livewire, 'refreshFormData')) {
+                        $livewire->refreshFormData(['state', 'payment_state', 'amount_residual']);
+                    }
+
+                    $livewire->dispatch('refreshInvoiceSummary');
                 } catch (Throwable $e) {
                     Notification::make()
                         ->danger()

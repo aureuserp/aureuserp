@@ -9,6 +9,11 @@ use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Manufacturing\Enums\BillOfMaterialConsumption;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
+use Webkul\Manufacturing\Events\OrderCanceled;
+use Webkul\Manufacturing\Events\OrderConfirmed;
+use Webkul\Manufacturing\Events\OrderDone;
+use Webkul\Manufacturing\Events\OrderPlanned;
+use Webkul\Manufacturing\Events\OrderStarted;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\Move;
 use Webkul\Manufacturing\Models\Order;
@@ -73,6 +78,8 @@ class ManufacturingManager
             $order->update(['state' => ManufacturingOrderState::CONFIRMED]);
         }
 
+        OrderConfirmed::dispatch($order);
+
         return $order;
     }
 
@@ -84,6 +91,8 @@ class ManufacturingManager
 
         $order->update(['state' => ManufacturingOrderState::PROGRESS]);
 
+        OrderStarted::dispatch($order);
+
         return $order;
     }
 
@@ -94,6 +103,8 @@ class ManufacturingManager
         }
 
         $order = $this->planWorkOrders($order);
+
+        OrderPlanned::dispatch($order);
 
         return $order;
     }
@@ -141,6 +152,8 @@ class ManufacturingManager
             'priority'    => '0',
             'finished_at' => now(),
         ]);
+
+        OrderDone::dispatch($order);
     }
 
     public function cancelManufacturingOrder(Order $order)
@@ -179,6 +192,8 @@ class ManufacturingManager
         ) {
             $order->update(['state' => ManufacturingOrderState::DONE]);
         }
+
+        OrderCanceled::dispatch($order);
 
         return $order;
     }

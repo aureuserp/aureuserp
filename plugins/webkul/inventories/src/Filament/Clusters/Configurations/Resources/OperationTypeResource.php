@@ -54,11 +54,9 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeRes
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Inventory\Settings\LogisticSettings;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
-use Webkul\PluginManager\Package;
 
 class OperationTypeResource extends Resource
 {
@@ -111,13 +109,7 @@ class OperationTypeResource extends Resource
                                                 Select::make('type')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.operator-type'))
                                                     ->required()
-                                                    ->options(function (): array {
-                                                        return collect(Enums\OperationType::cases())
-                                                            ->reject(fn (Enums\OperationType $type): bool => ($type === Enums\OperationType::DROPSHIP && ! settings(LogisticSettings::class)->enable_dropshipping)
-                                                                || ($type === Enums\OperationType::MANUFACTURE && ! Package::isPluginInstalled('manufacturing')))
-                                                            ->mapWithKeys(fn (Enums\OperationType $type): array => [$type->value => $type->getLabel()])
-                                                            ->all();
-                                                    })
+                                                    ->options(Enums\OperationType::class)
                                                     ->default(Enums\OperationType::INCOMING->value)
                                                     ->native(true)
                                                     ->live()

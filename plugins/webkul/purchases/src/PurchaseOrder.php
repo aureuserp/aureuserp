@@ -20,6 +20,11 @@ use Webkul\Inventory\Models\Receipt;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Purchase\Enums as PurchaseEnums;
+use Webkul\Purchase\Events\OrderCanceled;
+use Webkul\Purchase\Events\OrderConfirmed;
+use Webkul\Purchase\Events\OrderDrafted;
+use Webkul\Purchase\Events\OrderLocked;
+use Webkul\Purchase\Events\OrderUnlocked;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Mail\VendorPurchaseOrderMail;
 use Webkul\Purchase\Models\AccountMove;
@@ -108,7 +113,11 @@ class PurchaseOrder
 
         $this->computeReceiptStatus($record->refresh())->save();
 
-        return $record->refresh();
+        $record = $record->refresh();
+
+        OrderConfirmed::dispatch($record);
+
+        return $record;
     }
 
     public function canUserApprove($user): bool
@@ -164,6 +173,8 @@ class PurchaseOrder
 
         $this->cancelInventoryOperations($record);
 
+        OrderCanceled::dispatch($record);
+
         return $record;
     }
 
@@ -174,6 +185,8 @@ class PurchaseOrder
         ]);
 
         $record = $this->computePurchaseOrder($record);
+
+        OrderDrafted::dispatch($record);
 
         return $record;
     }
@@ -186,6 +199,8 @@ class PurchaseOrder
 
         $record = $this->computePurchaseOrder($record);
 
+        OrderLocked::dispatch($record);
+
         return $record;
     }
 
@@ -196,6 +211,8 @@ class PurchaseOrder
         ]);
 
         $record = $this->computePurchaseOrder($record);
+
+        OrderUnlocked::dispatch($record);
 
         return $record;
     }

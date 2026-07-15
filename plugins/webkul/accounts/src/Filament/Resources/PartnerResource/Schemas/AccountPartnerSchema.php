@@ -17,6 +17,7 @@ use Webkul\Account\Enums\AutoPostBills;
 use Webkul\Account\Enums\InvoiceFormat;
 use Webkul\Account\Enums\InvoiceSendingMethod;
 use Webkul\Account\Enums\PartyIdentificationScheme;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Account;
 
 class AccountPartnerSchema
@@ -32,7 +33,12 @@ class AccountPartnerSchema
                         ->searchable()
                         ->label(__('accounts::filament/resources/partner.form.tabs.sales-purchases.fieldsets.sales.fields.payment-terms')),
                     Select::make('property_inbound_payment_method_line_id')
-                        ->relationship('propertyInboundPaymentMethodLine', 'name')
+                        ->relationship(
+                            'propertyInboundPaymentMethodLine',
+                            'name',
+                            modifyQueryUsing: fn ($query) => $query->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::RECEIVE)),
+                        )
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                         ->preload()
                         ->searchable()
                         ->label(__('accounts::filament/resources/partner.form.tabs.sales-purchases.fieldsets.sales.fields.payment-method')),
@@ -54,7 +60,12 @@ class AccountPartnerSchema
                                 ->searchable()
                                 ->preload(),
                             Select::make('property_outbound_payment_method_line_id')
-                                ->relationship('propertyOutboundPaymentMethodLine', 'name')
+                                ->relationship(
+                                    'propertyOutboundPaymentMethodLine',
+                                    'name',
+                                    modifyQueryUsing: fn ($query) => $query->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::SEND)),
+                                )
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                 ->preload()
                                 ->searchable()
                                 ->label(__('accounts::filament/resources/partner.form.tabs.sales-purchases.fieldsets.purchase.fields.payment-method')),

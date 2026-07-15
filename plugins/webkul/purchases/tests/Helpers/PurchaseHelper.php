@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Tax;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
@@ -130,6 +132,42 @@ class PurchaseHelper
         static::line($order, $product, $qty, $price);
 
         return PurchaseOrderFacade::confirmPurchaseOrder($order->refresh())->load('operations.moves', 'lines');
+    }
+
+    public static function confirm(Order $order): Order
+    {
+        return PurchaseOrderFacade::confirmPurchaseOrder($order->refresh());
+    }
+
+    public static function createBill(Order $order): AccountMove
+    {
+        PurchaseOrderFacade::createPurchaseOrderBill($order->refresh());
+
+        $bill = $order->refresh()->accountMoves()->orderByDesc('id')->firstOrFail();
+
+        $bill->update(['invoice_date' => now()]);
+
+        return $bill->refresh();
+    }
+
+    public static function postBill(AccountMove $move): AccountMove
+    {
+        return AccountFacade::confirmMove($move->refresh());
+    }
+
+    public static function cancelBill(AccountMove $move): AccountMove
+    {
+        return AccountFacade::cancelMove($move->refresh());
+    }
+
+    public static function resetBillToDraft(AccountMove $move): AccountMove
+    {
+        return AccountFacade::resetToDraftMove($move->refresh());
+    }
+
+    public static function reverseBill(AccountMove $move): AccountMove
+    {
+        return AccountFacade::reverseMoves(collect([$move->refresh()]))->first();
     }
 
     public static function vendorReceipt(Order $order): ?Operation

@@ -5,6 +5,8 @@ namespace Webkul\Account;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
@@ -255,7 +257,7 @@ class TaxManager
             foreach ($taxLines as $taxLine) {
                 $taxRepartitionLine = $taxLine['taxRepartitionLine'];
 
-                $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === 'refund']);
+                $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === DocumentType::REFUND]);
 
                 if (! isset($totalPerTaxLineKey[$taxLineKey])) {
                     $totalPerTaxLineKey[$taxLineKey] = [
@@ -523,13 +525,13 @@ class TaxManager
 
             if ($taxData['is_reverse_charge']) {
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
-                    fn ($x) => $x->repartition_type === 'tax' && $x->factor < 0.0
+                    fn ($x) => $x->repartition_type === RepartitionType::TAX && $x->factor < 0.0
                 );
 
                 $taxRepartitionSign = -1.0;
             } else {
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
-                    fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
+                    fn ($x) => $x->repartition_type === RepartitionType::TAX && $x->factor >= 0.0
                 );
 
                 $taxRepartitionSign = 1.0;
@@ -951,11 +953,11 @@ class TaxManager
             'sorted_taxes'  => collect(),
         ];
 
-        $taxes = $taxes->sortBy('sequence');
+        $taxes = $taxes->sortBy('sort');
 
         foreach ($taxes as $tax) {
             if ($tax->amount_type === AmountType::GROUP) {
-                $children = $tax->childrenTaxes()->orderBy('sequence')->get();
+                $children = $tax->childrenTaxes()->orderBy('sort')->get();
 
                 $results['sorted_taxes'] = $results['sorted_taxes']->merge($children);
 

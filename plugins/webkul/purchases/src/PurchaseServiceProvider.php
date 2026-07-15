@@ -6,6 +6,10 @@ use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
+use Webkul\Account\Events\MoveCancelled;
+use Webkul\Account\Events\MoveConfirmed;
+use Webkul\Account\Events\MoveDrafted;
+use Webkul\Account\Events\MoveReversed;
 use Webkul\Inventory\Events\OperationBackOrdered;
 use Webkul\Inventory\Events\OperationDone;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -15,6 +19,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductSupplier;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Purchase\Listeners\ComputePurchaseOrderFromMoveListener;
 use Webkul\Purchase\Listeners\ComputePurchaseOrderListener;
 use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\OrderSummary;
@@ -78,7 +83,10 @@ class PurchaseServiceProvider extends PackageServiceProvider
 
         Event::listen([OperationDone::class, OperationBackOrdered::class], ComputePurchaseOrderListener::class);
 
-        // \Webkul\Account\Models\Move::observe(\Webkul\Purchase\Observers\AccountMoveObserver::class);
+        Event::listen(
+            [MoveConfirmed::class, MoveCancelled::class, MoveDrafted::class, MoveReversed::class],
+            ComputePurchaseOrderFromMoveListener::class,
+        );
 
         $this->contributeProductSchema();
     }

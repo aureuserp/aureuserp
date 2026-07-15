@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Tax;
+use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
@@ -122,6 +125,40 @@ class SaleHelper
     public static function compute(Order $order): Order
     {
         return SaleOrderFacade::computeSaleOrder($order->refresh());
+    }
+
+    public static function confirm(Order $order): Order
+    {
+        return SaleOrderFacade::confirmSaleOrder($order->refresh());
+    }
+
+    public static function createInvoice(Order $order): Move
+    {
+        SaleOrderFacade::createInvoice($order->refresh(), [
+            'advance_payment_method' => AdvancedPayment::DELIVERED->value,
+        ]);
+
+        return $order->refresh()->accountMoves()->orderByDesc('id')->firstOrFail();
+    }
+
+    public static function postInvoice(Move $move): Move
+    {
+        return AccountFacade::confirmMove($move->refresh());
+    }
+
+    public static function cancelInvoice(Move $move): Move
+    {
+        return AccountFacade::cancelMove($move->refresh());
+    }
+
+    public static function resetInvoiceToDraft(Move $move): Move
+    {
+        return AccountFacade::resetToDraftMove($move->refresh());
+    }
+
+    public static function reverseInvoice(Move $move): Move
+    {
+        return AccountFacade::reverseMoves(collect([$move->refresh()]))->first();
     }
 
     public static function setLineQty(OrderLine $line, float $qty): void

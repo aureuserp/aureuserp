@@ -24,6 +24,8 @@ use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Sale\Events\OrderCanceled;
 use Webkul\Sale\Events\OrderConfirmed;
 use Webkul\Sale\Events\OrderDrafted;
+use Webkul\Sale\Events\OrderLocked;
+use Webkul\Sale\Events\OrderUnlocked;
 use Webkul\Sale\Mail\SaleOrderCancelQuotation;
 use Webkul\Sale\Mail\SaleOrderQuotation;
 use Webkul\Sale\Models\AdvancedPaymentInvoice;
@@ -56,6 +58,12 @@ class SaleManager
         $record->update(['locked' => ! $record->locked]);
 
         $record = $this->computeSaleOrder($record);
+
+        if ($record->locked) {
+            OrderLocked::dispatch($record);
+        } else {
+            OrderUnlocked::dispatch($record);
+        }
 
         return $record;
     }

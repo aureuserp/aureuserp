@@ -12,6 +12,7 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\TaxFactory;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Settings\TaxesSettings;
@@ -99,6 +100,14 @@ class Tax extends Model implements Sortable
     {
         return $this->hasMany(TaxPartition::class, 'tax_id')
             ->where('document_type', DocumentType::REFUND);
+    }
+
+    public function getHasNegativeFactorAttribute(): bool
+    {
+        return $this->invoiceRepartitionLines()
+            ->where('repartition_type', RepartitionType::TAX)
+            ->where('factor_percent', '<', 0)
+            ->exists();
     }
 
     public function getPriceIncludeAttribute()
