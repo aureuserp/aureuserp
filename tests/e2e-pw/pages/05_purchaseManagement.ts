@@ -342,8 +342,8 @@ export class PurchaseFlowPage {
             await l.purchaseQuotationAddProductButton.click();
             await this.selectBySearch(l.purchaseQuotationProductSelect.nth(index), line.productName);
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
-            await l.purchaseQuotationQuantityInput.nth(index).fill(line.quantity);
-            await l.purchaseQuotationUnitPriceInput.nth(index).fill(line.unitPrice);
+            await this.fillLineValue(l.purchaseQuotationQuantityInput.nth(index), line.quantity);
+            await this.fillLineValue(l.purchaseQuotationUnitPriceInput.nth(index), line.unitPrice);
 
             await this.blurAndSettle();
 
@@ -567,7 +567,7 @@ export class PurchaseFlowPage {
      * Retype a line's ordered quantity. The field recomputes on blur, so the click away
      * is what triggers the Livewire round-trip.
      */
-    async updateLineQuantityAndSave(orderRef: string, lineIndex: number, quantity: string) {
+    async updateLineQuantityAndSave(orderRef: { id: string }, lineIndex: number, quantity: string) {
         for (let attempt = 0; attempt < 3; attempt++) {
             await this.gotoOrderEdit(orderRef);
             await this.updateLineQuantity(lineIndex, quantity);
@@ -607,10 +607,29 @@ export class PurchaseFlowPage {
         await l.purchaseQuotationAddProductButton.click();
         await this.selectBySearch(l.purchaseQuotationProductSelect.nth(existingLines), productName);
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await l.purchaseQuotationQuantityInput.nth(existingLines).fill(quantity);
-        await l.purchaseQuotationUnitPriceInput.nth(existingLines).fill(unitPrice);
+        await this.fillLineValue(l.purchaseQuotationQuantityInput.nth(existingLines), quantity);
+        await this.fillLineValue(l.purchaseQuotationUnitPriceInput.nth(existingLines), unitPrice);
 
         await this.blurAndSettle();
+    }
+
+    /**
+     * Fill a purchase line's numeric field and make sure the value sticks. Picking the product
+     * is a live field: it re-renders the row and seeds the quantity with the product default
+     * (1), so a value typed before that re-render settles is silently discarded and the line
+     * keeps its default. Read it back and refill until it holds.
+     */
+    private async fillLineValue(input: ReturnType<Page["locator"]>, value: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await input.fill(value);
+            await this.page.waitForTimeout(400);
+
+            if ((await input.inputValue().catch(() => "")) === value) {
+                return;
+            }
+        }
+
+        await expect(input).toHaveValue(value);
     }
 
     async saveOrder() {
@@ -921,8 +940,24 @@ export class PurchaseFlowPage {
         await this.erpLocators.purchaseAgreementQuantityInput.first().fill(agreement.quantity);
         await this.erpLocators.purchaseAgreementUnitPriceInput.first().fill(agreement.unitPrice);
 
-        await this.erpLocators.purchaseAgreementSaveButton.click();
+        // A single blind Save click can be swallowed while Livewire is busy — the agreement is
+        // then never created, the page stays on /create, and the following confirm step finds
+        // no Confirm button at all. Retry until the create page is left.
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.erpLocators.purchaseAgreementSaveButton.click().catch(() => undefined);
+
+            const left = await this.page
+                .waitForURL((url) => !/purchase-agreements\/create/.test(url.toString()), { timeout: 30000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (left) {
+                break;
+            }
+        }
+
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/purchase-agreements\/create/);
         await this.page.waitForTimeout(1000);
     }
 
@@ -970,17 +1005,21 @@ export class PurchaseFlowPage {
         const confirm = this.erpLocators.purchaseAgreementConfirmButton;
         const confirmed = this.erpLocators.purchaseAgreementConfirmedRadio;
 
-        await confirm.waitFor({ state: "visible", timeout: 60000 });
-
-        for (let attempt = 0; attempt < 3; attempt++) {
-            await expect(confirm).toBeEnabled({ timeout: 60000 });
-            await confirm.click().catch(() => undefined);
-            await this.page.waitForLoadState("networkidle").catch(() => undefined);
-
+        for (let attempt = 0; attempt < 4; attempt++) {
+            // Check the confirmed state FIRST. A successful Confirm makes the button disappear,
+            // so once it has worked the button is gone — and the old code, which waited for the
+            // button to be enabled at the top of the loop, then blocked 60s on a vanished button
+            // whenever the state read raced behind the re-render (the agreement was already
+            // confirmed, but nothing here noticed). Reading the radio first avoids that trap.
             if (await confirmed.isChecked().catch(() => false)) {
                 return;
             }
 
+            if (await confirm.isVisible().catch(() => false)) {
+                await confirm.click().catch(() => undefined);
+            }
+
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await this.page.waitForTimeout(1500);
         }
 
@@ -1023,16 +1062,39 @@ export class PurchaseFlowPage {
     }
 
     async selectBySearch(trigger: ReturnType<Page["locator"]>, value: string) {
-        await trigger.click();
-
         const option = this.erpLocators.salesSelectOption
             .filter({ hasText: new RegExp(this.escapeRegExp(value), "i") })
             .first();
+        const search = this.erpLocators.salesSelectSearchInput;
 
-        await expect(this.erpLocators.salesSelectSearchInput).toBeVisible();
-        await this.erpLocators.salesSelectSearchInput.fill(value);
-        await expect(option).toBeVisible();
-        await option.click();
+        const openSearchAndPick = async () => {
+            await trigger.waitFor({ state: "visible", timeout: 30000 });
+            await trigger.scrollIntoViewIfNeeded().catch(() => undefined);
+            await trigger.click({ timeout: 15000 });
+
+            await expect(search).toBeVisible({ timeout: 10000 });
+            await search.fill(value);
+            await expect(option).toBeVisible({ timeout: 15000 });
+            await option.click();
+        };
+
+        // The select trigger lives inside a Livewire repeater that re-renders whenever a row is
+        // added or a live field updates. A click can therefore land on a button that is being
+        // detached ("element was detached from the DOM"), or in the busy window where it is
+        // swallowed and the panel never opens (the option is then never visible). Retry the
+        // whole open -> search -> pick as one unit; the last attempt is left to throw so a
+        // genuine failure still reports.
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await openSearchAndPick();
+                return;
+            } catch {
+                await this.page.keyboard.press("Escape").catch(() => undefined);
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await openSearchAndPick();
     }
 
     private escapeRegExp(value: string): string {

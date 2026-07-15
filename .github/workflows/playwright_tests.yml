@@ -137,6 +137,15 @@ jobs:
             --admin-email="admin@example.com" \
             --admin-password="admin123"
 
+      - name: Install ERP Plugins
+        run: |
+          for plugin in invoices payments products contacts employees accounts accounting \
+                        barcode full-calendar maintenance manufacturing projects recruitments \
+                        time-off timesheets sales purchases inventories website blogs; do
+            echo "→ installing: ${plugin}"
+            php artisan "${plugin}:install" --no-interaction
+          done
+
       - name: Start Laravel server
         env:
           PHP_CLI_SERVER_WORKERS: 8
@@ -153,7 +162,7 @@ jobs:
         working-directory: tests/e2e-pw
 
       - name: Run Exclusive Tests
-        if: ${{ matrix.shard_index == matrix.shard_total }}
+        if: ${{ !cancelled() && matrix.shard_index == matrix.shard_total }}
         env:
           BASE_URL: "http://127.0.0.1:8000"
         run: |

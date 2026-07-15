@@ -1016,8 +1016,29 @@ export class InventoriesManagementPage {
      * Products
      */
 
+    private async safeGoto(url: string) {
+        await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
+
+        // Under a loaded parallel server a goto can be torn down mid-flight — the browser
+        // reports net::ERR_ABORTED (a pending Livewire navigation cut in, or the response never
+        // arrived). It is transient, so the navigation is retried rather than failing the test.
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await this.page.goto(url);
+                return;
+            } catch (error) {
+                if (!/ERR_ABORTED|interrupted by another navigation/.test((error as Error).message)) {
+                    throw error;
+                }
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await this.page.goto(url);
+    }
+
     async gotoProductsPage() {
-        await this.page.goto("/admin/inventory/products/products");
+        await this.safeGoto("/admin/inventory/products/products");
         await expect(this.page).toHaveURL(/inventory\/products\/products/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryProductTable.first()).toBeVisible();
@@ -1346,7 +1367,7 @@ export class InventoriesManagementPage {
         for (let attempt = 0; attempt < 3; attempt++) {
             const input = rowFor().locator(l.inventoryProductQuantityOnHandInlineInputs).first();
             const matched = await expect(input)
-                .toHaveValue(expected, { timeout: 30000 })
+                .toHaveValue(expected, { timeout: 15000 })
                 .then(() => true)
                 .catch(() => false);
 
@@ -1358,7 +1379,9 @@ export class InventoriesManagementPage {
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
         }
 
-        await expect(rowFor().locator(l.inventoryProductQuantityOnHandInlineInputs).first()).toHaveValue(expected);
+        await expect(rowFor().locator(l.inventoryProductQuantityOnHandInlineInputs).first()).toHaveValue(expected, {
+            timeout: 20000,
+        });
     }
 
     /**
@@ -1714,19 +1737,32 @@ export class InventoriesManagementPage {
      */
     async expectExistingSerialOption(serial: string) {
         const modal = this.page.locator(".fi-modal-window:visible").last();
-        const trigger = modal.locator("table tbody tr").first().locator("button.fi-select-input-btn").first();
-        await trigger.click();
+        const optionFor = () =>
+            this.erpLocators.inventorySelectPanel.last().locator('[role="option"]').filter({ hasText: serial }).first();
 
-        const panel = this.erpLocators.inventorySelectPanel.last();
-        await expect(panel).toBeVisible();
-        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
-        if (await search.isVisible().catch(() => false)) {
-            await search.fill(serial);
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const trigger = modal.locator("table tbody tr").first().locator("button.fi-select-input-btn").first();
+            await trigger.click().catch(() => undefined);
+
+            const panel = this.erpLocators.inventorySelectPanel.last();
+            await expect(panel).toBeVisible({ timeout: 15000 }).catch(() => undefined);
+
+            const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+            if (await search.isVisible().catch(() => false)) {
+                await search.fill(serial);
+                await this.page.waitForTimeout(600);
+            }
+
+            if (await optionFor().isVisible().catch(() => false)) {
+                await this.page.keyboard.press("Escape").catch(() => undefined);
+                return;
+            }
+
+            await this.page.keyboard.press("Escape").catch(() => undefined);
             await this.page.waitForTimeout(500);
         }
-        await expect(
-            panel.locator('[role="option"]').filter({ hasText: serial }).first(),
-        ).toBeVisible({ timeout: 8000 });
+
+        await expect(optionFor()).toBeVisible({ timeout: 15000 });
         await this.page.keyboard.press("Escape").catch(() => undefined);
     }
 
@@ -2680,17 +2716,33 @@ export class InventoriesManagementPage {
     }
 
     async selectBySearch(trigger: Locator, value: string) {
-        await trigger.click();
-
-        await expect(this.erpLocators.inventorySelectSearchInput).toBeVisible();
-        await this.erpLocators.inventorySelectSearchInput.fill(value);
-
+        const search = this.erpLocators.inventorySelectSearchInput;
         const option = this.erpLocators.inventorySelectOption
             .filter({ hasText: new RegExp(this.escapeRegExp(value), "i") })
             .first();
 
-        await expect(option).toBeVisible();
-        await option.click();
+        const openSearchAndPick = async () => {
+            await trigger.waitFor({ state: "visible", timeout: 30000 });
+            await trigger.scrollIntoViewIfNeeded().catch(() => undefined);
+            await trigger.click({ timeout: 15000 });
+
+            await expect(search).toBeVisible({ timeout: 10000 });
+            await search.fill(value);
+            await expect(option).toBeVisible({ timeout: 15000 });
+            await option.click();
+        };
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await openSearchAndPick();
+                return;
+            } catch {
+                await this.page.keyboard.press("Escape").catch(() => undefined);
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await openSearchAndPick();
     }
 
     /**
@@ -2707,8 +2759,11 @@ export class InventoriesManagementPage {
 
         for (let i = 0; i < lines.length; i++) {
             if ((await productSelects.count()) < i + 1) {
-                await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
-                await this.erpLocators.inventoryOperationAddMoveButton.click();
+                for (let attempt = 0; attempt < 3 && (await productSelects.count()) < i + 1; attempt++) {
+                    await this.erpLocators.inventoryOperationAddMoveButton.scrollIntoViewIfNeeded();
+                    await this.erpLocators.inventoryOperationAddMoveButton.click().catch(() => undefined);
+                    await productSelects.nth(i).waitFor({ state: "visible", timeout: 15000 }).catch(() => undefined);
+                }
                 await expect(productSelects.nth(i)).toBeVisible();
             }
             await this.selectBySearch(productSelects.nth(i), lines[i].productName);
