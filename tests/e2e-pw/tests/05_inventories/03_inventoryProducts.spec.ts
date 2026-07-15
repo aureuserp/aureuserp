@@ -1,10 +1,11 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.ensureInventoriesPluginInstalled();
         // Locations + multi-step routes must be on for the location-based
         // on-hand quantity selectors and the moves tab to render.
         await inventoryPage.enableManageWarehousesToggles();
@@ -21,7 +22,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Create Storable Product - Valid Inputs", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await inventoryPage.createInventoryProduct({
             name: `E2E Inv Product ${key}`,
@@ -31,7 +32,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Create Lot-Tracked Product - Valid Inputs", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await inventoryPage.createInventoryProduct({
             name: `E2E Lot Product ${key}`,
@@ -42,7 +43,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Create Serial-Tracked Product - Valid Inputs", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await inventoryPage.createInventoryProduct({
             name: `E2E Serial Product ${key}`,
@@ -53,7 +54,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Delete Product - Removes Record", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Inv Delete ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -66,7 +67,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Product Quantities Tab - Loads For Storable Product", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Qty Tab ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -79,7 +80,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Product In/Out Moves Tab - Loads For Storable Product", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Moves Tab ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -92,7 +93,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("Add On-Hand Quantity At Default Stock Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E On-Hand ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -106,7 +107,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
 
     test("New Warehouse - Add On-Hand Quantity At Its Stock Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH Qty ${key}`;
         const warehouseCode = `WQ${key}`.slice(-5);
         const productName = `E2E WH Qty ${key}`;
@@ -142,7 +143,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
      */
     test("Package holds product quantity", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const packageName = `E2E Package ${key}`;
         const productName = `E2E Pkg Product ${key}`;
 
@@ -161,7 +162,7 @@ test.describe("Inventory Products - CRUD, Quantities & In/Out Tab", () => {
      */
     test("Delete package - removes record", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const packageName = `E2E Package Delete ${key}`;
 
         // The packages list only shows packages at an internal location.

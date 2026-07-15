@@ -138,8 +138,10 @@ jobs:
             --admin-password="admin123"
 
       - name: Start Laravel server
+        env:
+          PHP_CLI_SERVER_WORKERS: 8
         run: |
-          php artisan serve --host=0.0.0.0 --port=8000 > server.log 2>&1 &
+          php artisan serve --no-reload --host=0.0.0.0 --port=8000 > server.log 2>&1 &
           echo "Waiting for server to start..."
           timeout 30 bash -c 'until curl -s http://127.0.0.1:8000 > /dev/null; do sleep 1; done'
 
@@ -147,7 +149,16 @@ jobs:
         env:
           BASE_URL: "http://127.0.0.1:8000"
         run: |
-          npx playwright test --config=playwright.config.ts --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }}
+          npx playwright test --config=playwright.config.ts --project=chromium --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }}
+        working-directory: tests/e2e-pw
+
+      - name: Run Exclusive Tests
+        if: ${{ matrix.shard_index == matrix.shard_total }}
+        env:
+          BASE_URL: "http://127.0.0.1:8000"
+        run: |
+          npx playwright test --config=playwright.config.ts --project=exclusive-settings --no-deps --workers=1
+          npx playwright test --config=playwright.config.ts --project=exclusive-plugins --no-deps --workers=1
         working-directory: tests/e2e-pw
 
       - name: Upload Blob Report

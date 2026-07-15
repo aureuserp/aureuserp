@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { PurchaseFlowPage } from "../../pages/05_purchaseManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Purchase Agreements E2E", () => {
     test.beforeAll(async ({ adminPage }) => {
@@ -21,7 +22,7 @@ test.describe("Purchase Agreements E2E", () => {
 
     test("Create Purchase Agreement - Valid Inputs", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Agreement Vendor ${key}`;
         const productName = `E2E Agreement Product ${key}`;
 
@@ -51,7 +52,7 @@ test.describe("Purchase Agreements E2E", () => {
 
     test("Edit Purchase Agreement - Update Reference", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Agreement Vendor ${key}`;
         const productName = `E2E Agreement Product ${key}`;
         const reference = `E2E-AGR-${key}`;
@@ -84,7 +85,7 @@ test.describe("Purchase Agreements E2E", () => {
 
     test("Delete Purchase Agreement - Removes Draft", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Agreement Vendor ${key}`;
         const productName = `E2E Agreement Product ${key}`;
         const reference = `E2E-AGR-${key}`;
@@ -112,7 +113,7 @@ test.describe("Purchase Agreements E2E", () => {
 
     test("Confirm Purchase Agreement - Moves To Confirmed", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Agreement Vendor ${key}`;
         const productName = `E2E Agreement Product ${key}`;
 

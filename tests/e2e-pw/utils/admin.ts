@@ -20,7 +20,7 @@ export async function loginAsAdmin(page:any) {
      * for a second navigation that never comes, and the run hangs on the login page.
      */
     await Promise.all([
-        page.waitForURL((url: URL) => !url.toString().includes("/admin/login"), { timeout: 60000 }),
+        page.waitForURL((url: URL) => !url.toString().includes("/admin/login"), { timeout: 120000 }),
         page.press('input[type="password"]', "Enter"),
     ]);
     await page.waitForLoadState("networkidle").catch(() => undefined);

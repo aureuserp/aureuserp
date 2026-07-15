@@ -32,8 +32,8 @@ export default defineConfig({
 
     outputDir: "./test-results",
 
-    fullyParallel: !!process.env.CI,
-    workers: 1,
+    fullyParallel: true,
+    workers: process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : 4,
 
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 1 : 0,
@@ -50,9 +50,41 @@ export default defineConfig({
         trace: "on-first-retry",
     },
 
+    /**
+     * Three phases, because two kinds of work cannot share the application with anybody:
+     *
+     *  provision — installs every plugin once. 
+     *  chromium  — the suite, fully parallel. Its tests create their own records, keyed by a
+     *              worker-unique id, so they do not collide.
+     *  exclusive — tests that flip a *global* switch (uninstalling all plugins, turning
+     *              dropshipping off)
+     */
     projects: [
         {
+            name: "provision",
+            testMatch: /00_setup\/.*\.setup\.ts/,
+            use: { ...devices["Desktop Chrome"] },
+        },
+        {
             name: "chromium",
+            testIgnore: [/00_setup\//, /01_plugins\//],
+            grepInvert: /@exclusive/,
+            dependencies: ["provision"],
+            use: { ...devices["Desktop Chrome"] },
+        },
+        {
+            name: "exclusive-settings",
+            testIgnore: [/00_setup\//, /01_plugins\//],
+            grep: /@exclusive/,
+            fullyParallel: false,
+            dependencies: ["chromium"],
+            use: { ...devices["Desktop Chrome"] },
+        },
+        {
+            name: "exclusive-plugins",
+            testMatch: /01_plugins\/.*\.spec\.ts/,
+            fullyParallel: false,
+            dependencies: ["exclusive-settings"],
             use: { ...devices["Desktop Chrome"] },
         },
     ],

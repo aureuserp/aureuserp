@@ -1,5 +1,6 @@
 import { test, expect } from "../../setup";
 import { CompanyManagementPage, type CompanyData } from "../../pages/02_companyManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Companies Module E2E", () => {
     test.beforeEach(async ({ adminPage }) => {
@@ -12,11 +13,15 @@ test.describe("Companies Module E2E", () => {
         await companyPage.gotoCompaniesPage();
     });
 
+    /**
+     * The company is asserted by name, not by the listing's total: with tests running in
+     * parallel other workers are creating and deleting companies of their own, so the count
+     * says nothing about this one.
+     */
     test("Create Company - Valid Inputs", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         await companyPage.gotoCompaniesPage();
-        const initialCount = await companyPage.refreshCompanyCount();
-        const key = Date.now();
+        const key = uniqueKey();
         const companyData: CompanyData = {
             name: `E2E Company ${key}`,
             email: `company+${key}@example.com`,
@@ -26,13 +31,12 @@ test.describe("Companies Module E2E", () => {
 
         await companyPage.createCompany(companyData);
         await companyPage.gotoCompaniesPage();
-        const updatedCount = await companyPage.refreshCompanyCount();
-        expect(updatedCount).toBe(initialCount + 1);
+        await companyPage.assertCompanyVisible(companyData.name);
     });
 
     test("Create Company - Inactive Status", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyData: CompanyData = {
             name: `E2E Company ${key}`,
             email: `company+${key}@example.com`,
@@ -47,7 +51,7 @@ test.describe("Companies Module E2E", () => {
 
     test("Edit Company - Updates Name In Listing", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalName = `E2E Edit Company ${key}`;
         const updatedName = `E2E Edited Company ${key}`;
 
@@ -60,7 +64,7 @@ test.describe("Companies Module E2E", () => {
 
     test("Delete Company - Removes Record", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const name = `E2E Delete Company ${key}`;
 
         await companyPage.createCompany({ name, email: `delete+${key}@example.com` });
@@ -70,7 +74,7 @@ test.describe("Companies Module E2E", () => {
 
     test("Bulk Delete Companies - Removes Records", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyNames = [`E2E Bulk Delete Company 1 ${key}`, `E2E Bulk Delete Company 2 ${key}`];
 
         for (const name of companyNames) {

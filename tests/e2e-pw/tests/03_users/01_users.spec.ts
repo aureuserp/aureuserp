@@ -1,6 +1,14 @@
 import { test, expect } from "../../setup";
 import { CompanyManagementPage } from "../../pages/02_companyManagement";
 import { UserManagementPage, type UserData } from "../../pages/03_userManagement";
+import { uniqueKey } from "../../utils/unique";
+
+/**
+ * Serial within this file: creating a user syncs its roles and permissions, and two of those
+ * running at once fight over the same permission rows in the database — the save then waits on
+ * a lock until it is too late to matter. Other files still run in parallel beside this one.
+ */
+test.describe.configure({ mode: "serial" });
 
 test.describe("Users Module E2E", () => {
     const defaultRole = "Admin";
@@ -18,7 +26,7 @@ test.describe("Users Module E2E", () => {
     test("Create User - Valid Inputs", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E User Company ${key}`;
 
         // Precondition: Users requires an existing company.
@@ -34,17 +42,16 @@ test.describe("Users Module E2E", () => {
         };
 
         await userPage.gotoUsersPage();
-        const initialCount = await userPage.refreshUserCount();
         await userPage.createUser(userData);
         await userPage.gotoUsersPage();
-        const updatedCount = await userPage.refreshUserCount();
-        expect(updatedCount).toBe(initialCount + 1);
+
+        await userPage.expectUserListed(userData.name);
     });
 
     test("Create User - Duplicate Email Validation", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Duplicate User Company ${key}`;
 
         await companyPage.gotoCompaniesPage();
@@ -63,7 +70,7 @@ test.describe("Users Module E2E", () => {
     test("Create User - Role Required Validation", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Role Required Company ${key}`;
 
         await companyPage.gotoCompaniesPage();
@@ -80,7 +87,7 @@ test.describe("Users Module E2E", () => {
 
     test("Create User - Company Required Validation", async ({ adminPage }) => {
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await userPage.createUserWithoutCompany(
             `E2E Company Required User ${key}`,
@@ -92,7 +99,7 @@ test.describe("Users Module E2E", () => {
 
     test("Create User - Inactive/Invalid Company Validation", async ({ adminPage }) => {
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await userPage.createUserWithInvalidCompany(
             `E2E Invalid Company User ${key}`,
@@ -106,7 +113,7 @@ test.describe("Users Module E2E", () => {
     test("Edit User - Updates Name", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Edit User Company ${key}`;
         const originalName = `E2E Editable User ${key}`;
         const updatedName = `E2E Edited User ${key}`;
@@ -133,7 +140,7 @@ test.describe("Users Module E2E", () => {
     // test("Inactive User - Cannot Login To Admin Panel", async ({ adminPage }) => {
     //     const companyPage = new CompanyManagementPage(adminPage);
     //     const userPage = new UserManagementPage(adminPage);
-    //     const key = Date.now();
+    //     const key = uniqueKey();
     //     const companyName = `E2E Inactive User Company ${key}`;
     //     const email = `inactive.user+${key}@example.com`;
     //     const password = "Test@12345";
@@ -159,7 +166,7 @@ test.describe("Users Module E2E", () => {
     test("Reset User Password Configuration - Inabled/Disabled setting,", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Reset Config Company ${key}`;
         const email = `reset.config.user+${key}@example.com`;
 
@@ -190,7 +197,7 @@ test.describe("Users Module E2E", () => {
     test("Reset User Password - Success", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Reset User Company ${key}`;
         const email = `reset.user+${key}@example.com`;
 
@@ -213,7 +220,7 @@ test.describe("Users Module E2E", () => {
     test("Delete User - Removes Record From Listing", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Delete User Company ${key}`;
         const email = `delete.user+${key}@example.com`;
 
@@ -236,7 +243,7 @@ test.describe("Users Module E2E", () => {
     test("Bulk Delete Users - Removes Records", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const companyName = `E2E Bulk Delete User Company ${key}`;
         const bulkKey = `bulk.delete.${key}`;
         const users = [
@@ -254,7 +261,6 @@ test.describe("Users Module E2E", () => {
         await companyPage.createCompany({ name: companyName, email: `bulk-delete-users-company+${key}@example.com` });
 
         await userPage.gotoUsersPage();
-        const initialCount = await userPage.refreshUserCount();
 
         for (const user of users) {
             await userPage.gotoUsersPage();
@@ -268,10 +274,7 @@ test.describe("Users Module E2E", () => {
         }
 
         await userPage.gotoUsersPage();
-        await userPage.bulkDeleteUsers(bulkKey);
-        await userPage.gotoUsersPage();
-        const finalCount = await userPage.refreshUserCount();
-        expect(finalCount).toBe(initialCount);
+        await userPage.bulkDeleteUsers(bulkKey, users.map((user) => user.name));
     });
 
     test("User Invitation - Inabled/Disabled setting", async ({ adminPage }) => {

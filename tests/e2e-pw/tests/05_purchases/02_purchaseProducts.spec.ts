@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { PurchaseFlowPage } from "../../pages/05_purchaseManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Purchase Products E2E", () => {
     test.beforeAll(async ({ adminPage }) => {
@@ -14,7 +15,7 @@ test.describe("Purchase Products E2E", () => {
 
     test("Create Product - Valid Inputs", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await purchasePage.createProduct({
             name: `E2E Purchase Product ${key}`,
@@ -24,7 +25,7 @@ test.describe("Purchase Products E2E", () => {
 
     test("Edit Product - Updates Name", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalName = `E2E Purchase Product ${key}`;
         const updatedName = `E2E Purchase Product Updated ${key}`;
 
@@ -41,7 +42,7 @@ test.describe("Purchase Products E2E", () => {
 
     test("Delete Product - Removes Record", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Purchase Product ${key}`;
 
         await purchasePage.createProduct({

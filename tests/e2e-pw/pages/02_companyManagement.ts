@@ -1,5 +1,6 @@
-import { Page, expect } from "@playwright/test";
+import { type Locator, Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
+import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type CompanyData = {
     name: string;
@@ -64,17 +65,52 @@ export class CompanyManagementPage {
             await toggle.click();
         }
 
-        await this.erpLocators.companiesSaveButton.click();
-        await this.expectSuccessFeedback();
+        await this.refillIfEmptied(this.erpLocators.companiesNameInput, companyData.name);
+        if (companyData.email) {
+            await this.refillIfEmptied(this.erpLocators.companiesEmailInput, companyData.email);
+        }
+
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await expect(this.erpLocators.companiesSaveButton).toBeEnabled({ timeout: 60000 });
+            await this.erpLocators.companiesSaveButton.click().catch(() => undefined);
+
+            const left = await this.page
+                .waitForURL((url) => !/companies\/create/.test(url.toString()), { timeout: 60000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (left) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                return;
+            }
+        }
+
+        await expect(this.page).not.toHaveURL(/companies\/create/);
+    }
+
+    /**
+     * Type a value back into a field that a re-render has emptied.
+     */
+    private async refillIfEmptied(input: Locator, value: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if ((await input.inputValue().catch(() => "")) === value) {
+                return;
+            }
+
+            await input.fill(value);
+            await this.page.waitForTimeout(300);
+        }
+
+        await expect(input).toHaveValue(value);
     }
 
     /**
      * Search company using listing search input
      */
     async searchCompany(keyword: string) {
-        const searchInput = this.erpLocators.companiesSearchInput;
-        await searchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
+        await filterListBySearch(this.page, this.erpLocators.companiesSearchInput, keyword);
     }
 
     /**
@@ -90,15 +126,21 @@ export class CompanyManagementPage {
      */
     async editCompany(searchKey: string, updates: Partial<CompanyData>) {
         await this.searchCompany(searchKey);
-        await this.erpLocators.companiesRowActionsButton.first().click();
-        await this.erpLocators.companiesEditButton.first().click();
+
+        // Inside the row that holds this company: the search can legitimately leave other
+        // records listed, and with parallel workers the row on top is somebody else's.
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
 
         if (updates.name) await this.erpLocators.companiesNameInput.fill(updates.name);
         if (updates.email) await this.erpLocators.companiesEmailInput.fill(updates.email);
         if (updates.phone) await this.erpLocators.companiesPhoneInput.fill(updates.phone);
 
         await this.erpLocators.companiesSaveButton.click();
-        await this.expectSuccessFeedback();
+
+        // The test that follows asserts the new name is listed; a toast here would only tell
+        // us that *somebody's* save succeeded, which with several workers is not this one's.
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     /**
@@ -106,30 +148,43 @@ export class CompanyManagementPage {
      */
     async deleteCompany(searchKey: string) {
         await this.searchCompany(searchKey);
-        await this.erpLocators.companiesRowActionsButton.first().click();
-        await this.erpLocators.companiesDeleteButton.first().click();
+
+        await clickRowAction(rowByText(this.page, searchKey), "Delete");
         await this.erpLocators.companiesConfirmDeleteButton.click();
-        await this.expectSuccessFeedback();
+
+        await this.expectCompanyAbsent(searchKey);
+    }
+
+    async expectCompanyAbsent(name: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.gotoCompaniesPage();
+        await this.searchCompany(name);
+        await expect(this.page.getByText(name, { exact: true })).toHaveCount(0);
     }
 
     /**
      * Bulk delete companies from list
      */
     async bulkDeleteCompanies(companyNames: string[]) {
-        await this.searchCompany(companyNames[0]);
-        await this.erpLocators.selectAllCompaniesButton.click();
+
+        const sharedKey = companyNames[0].split(" ").pop() ?? companyNames[0];
+        await this.searchCompany(sharedKey);
+
+        for (const name of companyNames) {
+            await rowByText(this.page, name).locator('input[type="checkbox"]').first().check();
+        }
+
         await this.erpLocators.bulkActionsButton.click();
         await this.erpLocators.forceDeleteButton.click();
         await this.erpLocators.companiesConfirmDeleteButton.click();
-        await this.expectSuccessFeedback();
+
+        for (const name of companyNames) {
+            await this.expectCompanyAbsent(name);
+        }
     }
 
 
     /**
      * Reusable assertion for success toast/notification
      */
-    private async expectSuccessFeedback() {
-        await this.page.waitForLoadState("networkidle");
-        await expect(this.erpLocators.companiesSuccessToast).toBeVisible();
-    }
 }

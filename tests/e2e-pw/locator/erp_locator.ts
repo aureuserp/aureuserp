@@ -585,7 +585,9 @@ export class ErpLocators {
         this.usersPasswordConfirmationInput = page.locator('input[id="form.password_confirmation"]');
         this.usersRoleSelect = page.locator('div.fi-select-input-value-ctn').nth(0);
         this.usersCompanySelect = page.locator('div.fi-select-input-value-ctn').nth(5);
-        this.usersCompanySearchInput = page.locator('input[type="search"], input[placeholder*="Search"], input[placeholder*="search"]');
+        // Every select on the form keeps its own search box in the DOM; only the open panel's
+        // is on screen, so the visible one is the one being typed into.
+        this.usersCompanySearchInput = page.locator('input[placeholder="Start typing to search..."]:visible, input[type="search"]:visible');
         this.usersRoleOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
         this.usersCompanyOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
         this.usersSaveButton = page.locator('button[x-data="filamentFormButton"]');
@@ -607,8 +609,10 @@ export class ErpLocators {
         this.logoutButton = page.getByRole('textbox', { name: 'Confirm New Password' });
         this.usersSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.usersErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
-        this.userFeildValidationMessage = page.locator(".fi-fo-field-wrp-error-message", { hasText: /The email has already been taken./ });
-        this.usersValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+        // A refused field is marked with .fi-invalid on its wrapper; the error-message class
+        // below it belongs to an older Filament and matches nothing here.
+        this.userFeildValidationMessage = page.locator('.fi-invalid:has(input[id="form.email"])');
+        this.usersValidationMessage = page.locator(".fi-invalid, .fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
         this.manageUsersEnableResetCard = page
             .locator("div,section,li,fieldset")
             .filter({ hasText: /Enable Reset Password|Allow users to reset their password/i })

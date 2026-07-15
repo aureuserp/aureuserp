@@ -1,7 +1,8 @@
-import { Page, expect } from "@playwright/test";
+import { type Locator, Page, expect } from "@playwright/test";
 import fs from "fs";
 import { ErpLocators } from "../locator/erp_locator";
 import { ADMIN_AUTH_STATE_PATH } from "../playwright.config";
+import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type UserData = {
     name: string;
@@ -69,8 +70,121 @@ export class UserManagementPage {
         await this.selectCompany(userData.company);
         await this.setCreateFormStatus(userData.Status);
 
-        await this.erpLocators.usersSaveButton.click();
-        await this.expectSuccessFeedback();
+        await this.ensureSelected(this.erpLocators.usersRoleSelect, userData.role, () => this.selectRole(userData.role));
+        await this.ensureSelected(this.erpLocators.usersCompanySelect, userData.company, () => this.selectCompany(userData.company));
+
+        await this.refillIfEmptied(this.erpLocators.usersNameInput, userData.name);
+        await this.refillIfEmptied(this.erpLocators.usersEmailInput, userData.email);
+        await this.refillIfEmptied(this.erpLocators.usersPasswordInput, userData.password);
+        await this.refillIfEmptied(this.erpLocators.usersPasswordConfirmationInput, userData.password);
+
+        await this.submitUserForm();
+
+        // Saving redirects off the create form and the redirect takes the toast with it. A
+        // toast is not proof anyway: with several workers, the one on screen may be another
+        // test's.
+        await expect(this.page).not.toHaveURL(/users\/create/);
+    }
+
+
+    /**
+     * Submit the user form once the field it recomputed has settled. 
+     */
+    private async ensureSelected(select: Locator, value: string, pick: () => Promise<void>) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const shown = await select.first().innerText().catch(() => "");
+
+            if (shown.includes(value)) {
+                return;
+            }
+
+            await pick();
+        }
+
+        await expect(select.first()).toContainText(value);
+    }
+
+    /**
+     * Type a value back into a field that a re-render has emptied.
+     */
+    private async refillIfEmptied(input: Locator, value: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if ((await input.inputValue().catch(() => "")) === value) {
+                return;
+            }
+
+            await input.fill(value);
+            await this.page.waitForTimeout(300);
+        }
+
+        await expect(input).toHaveValue(value);
+    }
+
+    private async submitUserForm(expectLeavingCreate = true) {
+        const button = this.erpLocators.usersSaveButton;
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await button.waitFor({ state: "visible", timeout: 15000 });
+        await expect(button).toBeEnabled({ timeout: 60000 });
+
+        if (!expectLeavingCreate) {
+            const refused = this.erpLocators.usersValidationMessage.first();
+
+            for (let attempt = 0; attempt < 3; attempt++) {
+                await button.click({ force: attempt > 0 }).catch(() => undefined);
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                const settled = await Promise.race([
+                    refused.waitFor({ state: "visible", timeout: 30000 }).then(() => true).catch(() => false),
+                    this.page
+                        .waitForURL((url) => !/users\/create/.test(url.toString()), { timeout: 30000 })
+                        .then(() => true)
+                        .catch(() => false),
+                ]);
+
+                if (settled) {
+                    return;
+                }
+
+                await expect(button).toBeEnabled({ timeout: 60000 });
+            }
+
+            return;
+        }
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+            await button.click({ force: attempt > 0 }).catch(() => undefined);
+
+            const left = await this.page
+                .waitForURL((url) => !/users\/create/.test(url.toString()), { timeout: 150000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (left) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                return;
+            }
+
+            if (await this.erpLocators.usersValidationMessage.first().isVisible().catch(() => false)) {
+                return;
+            }
+
+            await expect(button).toBeEnabled({ timeout: 60000 });
+        }
+
+        await expect(this.page).not.toHaveURL(/users\/create/);
+    }
+
+
+    /**
+     * Type the plain fields back in if a re-render has emptied them. 
+     */
+    private async ensurePlainFields(name: string, email: string, password: string) {
+        await this.refillIfEmptied(this.erpLocators.usersNameInput, name);
+        await this.refillIfEmptied(this.erpLocators.usersEmailInput, email);
+        await this.refillIfEmptied(this.erpLocators.usersPasswordInput, password);
+        await this.refillIfEmptied(this.erpLocators.usersPasswordConfirmationInput, password);
     }
 
     /**
@@ -86,7 +200,10 @@ export class UserManagementPage {
         await this.erpLocators.usersPasswordConfirmationInput.fill(userData.password);
         await this.selectRole(userData.role);
         await this.selectCompany(userData.company);
-        await this.erpLocators.usersSaveButton.click();
+        await this.ensurePlainFields(userData.name, userData.email, userData.password);
+        await this.submitUserForm(false);
+
+        await expect(this.page).toHaveURL(/users\/create/);
         await expect(this.erpLocators.userFeildValidationMessage.or(this.erpLocators.usersValidationMessage.first())).toBeVisible();
     }
 
@@ -100,7 +217,10 @@ export class UserManagementPage {
         await this.erpLocators.usersPasswordInput.fill(password);
         await this.erpLocators.usersPasswordConfirmationInput.fill(password);
         await this.selectCompany(company);
-        await this.erpLocators.usersSaveButton.click();
+        await this.ensurePlainFields(name, email, password);
+        await this.submitUserForm(false);
+
+        await expect(this.page).toHaveURL(/users\/create/);
         await expect(this.erpLocators.usersValidationMessage.first()).toBeVisible();
     }
 
@@ -114,7 +234,10 @@ export class UserManagementPage {
         await this.erpLocators.usersPasswordInput.fill(password);
         await this.erpLocators.usersPasswordConfirmationInput.fill(password);
         await this.selectRole(role);
-        await this.erpLocators.usersSaveButton.click();
+        await this.ensurePlainFields(name, email, password);
+        await this.submitUserForm(false);
+
+        await expect(this.page).toHaveURL(/users\/create/);
         await expect(this.erpLocators.usersValidationMessage.first()).toBeVisible();
     }
 
@@ -129,7 +252,9 @@ export class UserManagementPage {
         await this.erpLocators.usersPasswordConfirmationInput.fill(password);
         await this.selectRole(role);
         await this.selectCompany(company, true);
-        await this.erpLocators.usersSaveButton.click();
+        await this.ensurePlainFields(name, email, password);
+        await this.submitUserForm(false);
+
         await expect(this.erpLocators.usersErrorToast.or(this.erpLocators.usersValidationMessage.first())).toBeVisible();
     }
 
@@ -137,8 +262,7 @@ export class UserManagementPage {
      * Search users in listing table
      */
     async searchUser(keyword: string) {
-        await this.erpLocators.usersSearchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
+        await filterListBySearch(this.page, this.erpLocators.usersSearchInput, keyword);
     }
 
     /**
@@ -154,11 +278,12 @@ export class UserManagementPage {
      */
     async editUserName(searchKey: string, newName: string) {
         await this.searchUser(searchKey);
-        await this.erpLocators.usersRowActionsButton.first().click();
-        await this.erpLocators.usersEditButton.click();
+
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
         await this.erpLocators.usersNameInput.fill(newName);
-        await this.erpLocators.usersSaveButton.click();
-        await this.expectSuccessFeedback();
+
+        await this.submitUserForm(false);
+        await this.page.waitForTimeout(1500);
     }
 
     /**
@@ -166,13 +291,32 @@ export class UserManagementPage {
      */
     async resetUserPassword(searchKey: string, newPassword: string) {
         await this.searchUser(searchKey);
-        await this.erpLocators.usersRowActionsButton.click();
-        await this.erpLocators.usersEditButton.click();
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
         await this.erpLocators.usersResetPasswordButton.click();
-        await this.erpLocators.usersChangePasswordInput.fill(newPassword);
-        await this.erpLocators.usersChangePasswordConfirmationInput.fill(newPassword);
-        await this.erpLocators.usersChangePasswordSaveButton.click();
-        await this.expectSuccessFeedback();
+
+        const save = this.erpLocators.usersChangePasswordSaveButton;
+        await expect(this.erpLocators.usersChangePasswordInput).toBeVisible({ timeout: 15000 });
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.erpLocators.usersChangePasswordInput.fill(newPassword);
+            await this.erpLocators.usersChangePasswordConfirmationInput.fill(newPassword);
+
+            await expect(save).toBeEnabled({ timeout: 30000 });
+            await save.click().catch(() => undefined);
+
+            const closed = await save
+                .waitFor({ state: "hidden", timeout: 60000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (closed) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                return;
+            }
+        }
+
+        await expect(save).toBeHidden();
     }
 
     /**
@@ -180,22 +324,45 @@ export class UserManagementPage {
      */
     async deleteUser(searchKey: string) {
         await this.searchUser(searchKey);
-        await this.erpLocators.usersRowActionsButton.first().click();
-        await this.erpLocators.usersDeleteButton.click();
+        await clickRowAction(rowByText(this.page, searchKey), "Delete");
         await this.erpLocators.usersConfirmDeleteButton.click();
-        await this.expectSuccessFeedback();
+
+        await this.expectUserAbsent(searchKey);
+    }
+
+    async expectUserListed(name: string) {
+        await this.searchUser(name);
+        await expect(rowByText(this.page, name)).toBeVisible();
+    }
+
+    async expectUserAbsent(searchKey: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.gotoUsersPage();
+        await this.searchUser(searchKey);
+        await expect(rowByText(this.page, searchKey)).toHaveCount(0);
     }
 
     /**
      * Bulk delete users from listing
      */
-    async bulkDeleteUsers(searchKey: string) {
+    async bulkDeleteUsers(searchKey: string, userNames: string[] = []) {
         await this.searchUser(searchKey);
-        await this.erpLocators.selectAllUsersButton.click();
+
+        if (userNames.length > 0) {
+            for (const name of userNames) {
+                await rowByText(this.page, name).locator('input[type="checkbox"]').first().check();
+            }
+        } else {
+            await this.erpLocators.selectAllUsersButton.click();
+        }
+
         await this.erpLocators.usersBulkActionsButton.click();
         await this.erpLocators.usersForceDeleteButton.click();
         await this.erpLocators.usersConfirmDeleteButton.click();
-        await this.expectSuccessFeedback();
+
+        for (const name of userNames) {
+            await this.expectUserAbsent(name);
+        }
     }
 
     /**
@@ -318,14 +485,42 @@ export class UserManagementPage {
      */
     private async selectRole(role: string) {
         const roleSelect = this.erpLocators.usersRoleSelect;
-        if (await roleSelect.count()) {
-            if (await roleSelect.first().evaluate((el) => el.tagName.toLowerCase() === "select")) {
-                await roleSelect.selectOption({ label: role });
+
+        if (!(await roleSelect.count())) {
+            return;
+        }
+
+        if (await roleSelect.first().evaluate((el) => el.tagName.toLowerCase() === "select")) {
+            await roleSelect.selectOption({ label: role });
+            return;
+        }
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await roleSelect.click();
+
+            const option = this.page.getByRole("option", { name: role }).first();
+            const appeared = await option
+                .waitFor({ state: "visible", timeout: 10000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (!appeared) {
+                continue;
+            }
+
+            await option.click();
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            if (await roleSelect.first().locator(`button:has-text("${role}")`).count()) {
                 return;
             }
-            await roleSelect.click();
-            await this.page.getByRole("option", { name: role }).first().click();
+
+            if ((await roleSelect.first().innerText()).includes(role)) {
+                return;
+            }
         }
+
+        await expect(roleSelect.first()).toContainText(role);
     }
 
     /**
@@ -338,20 +533,43 @@ export class UserManagementPage {
                 await companySelect.selectOption({ label: company });
                 return;
             }
-            await companySelect.click();
-            const companySearchInput = this.erpLocators.usersCompanySearchInput.last();
-            if (await companySearchInput.isVisible()) {
-                await companySearchInput.fill(company);
-            }
-            const option = this.page.getByRole("option", { name: company }).first();
-            if (allowMissing) {
-                if (await option.isVisible()) {
-                    await option.click();
+            for (let attempt = 0; attempt < 3; attempt++) {
+                await companySelect.click();
+                const companySearchInput = this.erpLocators.usersCompanySearchInput.last();
+                await companySearchInput.waitFor({ state: "visible", timeout: 10000 }).catch(() => undefined);
+
+                if (await companySearchInput.isVisible().catch(() => false)) {
+                    await companySearchInput.fill(company);
+                    await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                    await this.page.waitForTimeout(800);
                 }
-                return;
+
+                const option = this.page.getByRole("option", { name: company }).first();
+                const appeared = await option
+                    .waitFor({ state: "visible", timeout: 10000 })
+                    .then(() => true)
+                    .catch(() => false);
+
+                if (!appeared) {
+                    if (allowMissing) {
+                        await this.page.keyboard.press("Escape");
+                        return;
+                    }
+
+                    continue;
+                }
+
+                await option.click();
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                if ((await companySelect.first().innerText()).includes(company)) {
+                    return;
+                }
             }
-            await option.waitFor({ state: "visible" });
-            await option.click();
+
+            if (!allowMissing) {
+                await expect(companySelect.first()).toContainText(company);
+            }
         }
     }
 

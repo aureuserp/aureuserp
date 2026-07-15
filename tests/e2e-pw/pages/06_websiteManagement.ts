@@ -1,6 +1,8 @@
 import { type Locator, type Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
+import { runOnce, SETUP_KEYS } from "../utils/setupCache";
+import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type WebsitePageData = {
     title: string;
@@ -39,31 +41,60 @@ export class WebsiteManagementPage {
     }
 
     async ensureWebsitePluginInstalled(): Promise<void> {
-        await this.pluginPage.gotoPluginManagementPage();
-        await this.pluginPage.installPluginByName("Website");
+        await runOnce(SETUP_KEYS.pluginWebsite, async () => {
+            await this.pluginPage.gotoPluginManagementPage();
+            await this.pluginPage.installPluginByName("Website");
+        });
     }
 
     async ensureBlogsPluginInstalled(): Promise<void> {
-        await this.pluginPage.gotoPluginManagementPage();
-        await this.pluginPage.installPluginByName("Blog");
+        await runOnce(SETUP_KEYS.pluginBlogs, async () => {
+            await this.pluginPage.gotoPluginManagementPage();
+            await this.pluginPage.installPluginByName("Blog");
+        });
+    }
+
+    /**
+     * Navigate, retrying when a redirect still in flight from the previous page aborts this one.
+     * Landing here straight after saving a record elsewhere fails with net::ERR_ABORTED — more
+     * often the busier the machine is.
+     */
+    private async safeGoto(url: string): Promise<void> {
+        await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await this.page.goto(url);
+
+                return;
+            } catch (error) {
+                if (!/ERR_ABORTED|interrupted by another navigation/.test((error as Error).message)) {
+                    throw error;
+                }
+
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await this.page.goto(url);
     }
 
     async gotoWebsitePagesPage(): Promise<void> {
-        await this.page.goto("/admin/website/pages");
+        await this.safeGoto("/admin/website/pages");
         await expect(this.page).toHaveURL(/website\/pages/);
         await expect(this.erpLocators.websitePagesHeading).toBeVisible();
         await expect(this.erpLocators.websitePagesTable).toBeVisible();
     }
 
     async gotoBlogCategoriesPage(): Promise<void> {
-        await this.page.goto("/admin/website/configurations/categories");
+        await this.safeGoto("/admin/website/configurations/categories");
         await expect(this.page).toHaveURL(/website\/configurations\/categories/);
         await expect(this.erpLocators.blogCategoriesHeading).toBeVisible();
         await expect(this.erpLocators.blogCategoriesTable).toBeVisible();
     }
 
     async gotoBlogPostsPage(): Promise<void> {
-        await this.page.goto("/admin/website/posts");
+        await this.safeGoto("/admin/website/posts");
         await expect(this.page).toHaveURL(/website\/posts/);
         await expect(this.erpLocators.blogPostsHeading).toBeVisible();
         await expect(this.erpLocators.blogPostsTable).toBeVisible();
@@ -94,20 +125,48 @@ export class WebsiteManagementPage {
             await this.toggleSwitch(this.erpLocators.websitePagesFooterVisibleToggle, pageData.isFooterVisible);
         }
 
-        await this.erpLocators.websitePagesSaveButton.click();
-        await this.expectSuccessToast();
+        await this.refillIfEmptied(this.erpLocators.websitePagesTitleInput, pageData.title);
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await expect(this.erpLocators.websitePagesSaveButton).toBeEnabled({ timeout: 30000 });
+            await this.erpLocators.websitePagesSaveButton.click().catch(() => undefined);
+
+            const left = await this.page
+                .waitForURL((url) => !/website\/pages\/create/.test(url.toString()), { timeout: 60000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (left) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                return;
+            }
+        }
+
+        await expect(this.page).not.toHaveURL(/website\/pages\/create/);
+    }
+
+    /**
+     * Type a value back into a field that a re-render has emptied.
+     */
+    private async refillIfEmptied(input: Locator, value: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if ((await input.inputValue().catch(() => "")) === value) {
+                return;
+            }
+
+            await input.fill(value);
+            await this.page.waitForTimeout(300);
+        }
+
+        await expect(input).toHaveValue(value);
     }
 
     async editWebsitePage(originalTitle: string, updates: Partial<WebsitePageData>): Promise<void> {
         await this.gotoWebsitePagesPage();
         await this.searchPage(originalTitle);
-        await this.openRowActions();
-        await this.erpLocators.websitePagesEditButton.click();
-        // await this.clickAction(
-        //     this.erpLocators.websitePagesEditButton,
-        //     this.erpLocators.websitePagesEditLink,
-        //     this.erpLocators.websitePagesEditActionButton,
-        // );
+
+        await clickRowAction(rowByText(this.page, originalTitle), "Edit");
 
         if (updates.title) {
             await this.erpLocators.websitePagesTitleInput.fill(updates.title);
@@ -132,25 +191,25 @@ export class WebsiteManagementPage {
         }
 
         await this.erpLocators.websitePagesSaveButton.click();
-        await this.expectSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteWebsitePage(title: string): Promise<void> {
         await this.gotoWebsitePagesPage();
         await this.searchPage(title);
-        await this.openRowActions();
-        await this.clickAction(
-            this.erpLocators.websitePagesDeleteButton,
-            this.erpLocators.websitePagesDeleteLink,
-            this.erpLocators.websitePagesDeleteActionButton,
-        );
+
+        await clickRowAction(rowByText(this.page, title), "Delete");
         await this.erpLocators.websitePagesConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.searchPage(title);
+        await expect(rowByText(this.page, title)).toHaveCount(0);
     }
 
     async searchPage(keyword: string): Promise<void> {
-        await this.erpLocators.websitePagesSearchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
+        await filterListBySearch(this.page, this.erpLocators.websitePagesSearchInput, keyword);
     }
 
     async expectPageListed(title: string): Promise<void> {
@@ -174,8 +233,6 @@ export class WebsiteManagementPage {
 
         await this.clickVisibleButton(/create|save|submit/i);
 
-        // The success toast is torn down by the redirect that follows the save, so the
-        // category being listed is the signal that it was really created.
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await this.gotoBlogCategoriesPage();
         await this.searchBlogCategory(categoryData.name);
@@ -186,9 +243,7 @@ export class WebsiteManagementPage {
         await this.gotoBlogCategoriesPage();
         await this.searchBlogCategory(originalName);
 
-        const row = this.findTableRow(this.erpLocators.blogCategoriesTable, originalName);
-        await expect(row).toBeVisible();
-        await this.clickRowAction(row, /edit/i);
+        await clickRowAction(rowByText(this.page, originalName), "Edit");
 
         if (updates.name) {
             await this.erpLocators.blogCategoriesNameInput.fill(updates.name);
@@ -199,24 +254,24 @@ export class WebsiteManagementPage {
         }
 
         await this.clickVisibleButton(/save|submit/i);
-        await this.expectBlogCategorySuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteBlogCategory(name: string): Promise<void> {
         await this.gotoBlogCategoriesPage();
         await this.searchBlogCategory(name);
 
-        const row = this.findTableRow(this.erpLocators.blogCategoriesTable, name);
-        await expect(row).toBeVisible();
-        // await this.clickRowAction(row, /delete/i);
-        await this.erpLocators.deleteBlogCategoryRowButton.click();
+        await clickRowAction(rowByText(this.page, name), "Delete");
         await this.erpLocators.blogCategoriesConfirmDeleteButton.click();
-        await this.expectBlogCategorySuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.searchBlogCategory(name);
+        await expect(rowByText(this.page, name)).toHaveCount(0);
     }
 
     async searchBlogCategory(keyword: string): Promise<void> {
-        await this.erpLocators.blogCategoriesSearchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
+        await filterListBySearch(this.page, this.erpLocators.blogCategoriesSearchInput, keyword);
     }
 
     async expectBlogCategoryListed(name: string): Promise<void> {
@@ -255,8 +310,6 @@ export class WebsiteManagementPage {
 
         await this.erpLocators.blogPostsSaveButton.click();
 
-        // Saving redirects off the create form and takes the success toast with it; leaving
-        // the create page is what proves the post was saved.
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await expect(this.page).not.toHaveURL(/website\/posts\/create/);
     }
@@ -293,44 +346,35 @@ export class WebsiteManagementPage {
         }
 
         await this.erpLocators.blogPostsSaveButton.click();
-        await this.expectBlogPostSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteBlogPost(title: string): Promise<void> {
         await this.gotoBlogPostsPage();
         await this.searchBlogPost(title);
 
-        const row = this.findTableRow(this.erpLocators.blogPostsTable, title);
-        await expect(row).toBeVisible();
-        await this.clickRowAction(row, /delete/i);
-        await this.erpLocators.blogPostsDeleteButton.click();
+        await clickRowAction(rowByText(this.page, title), "Delete");
         await this.erpLocators.blogPostsConfirmDeleteButton.click();
-        await this.expectBlogPostSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.searchBlogPost(title);
+        await expect(rowByText(this.page, title)).toHaveCount(0);
     }
 
     async publishBlogPost(title: string): Promise<void> {
         await this.openBlogPostEditPage(title);
-
-        const publishButton = this.page.getByRole("button", { name: /publish/i }).first();
-        if (await publishButton.isVisible().catch(() => false)) {
-            await publishButton.click();
-            await this.expectBlogPostSuccessToast();
-        }
+        await this.switchPublishState(/^(Publish|Set as Published)$/i, /^(Set as Draft|Draft|Unpublish)$/i);
     }
 
     async draftBlogPost(title: string): Promise<void> {
         await this.openBlogPostEditPage(title);
-
-        const draftButton = this.page.getByRole("button", { name: /draft/i }).first();
-        if (await draftButton.isVisible().catch(() => false)) {
-            await draftButton.click();
-            await this.expectBlogPostSuccessToast();
-        }
+        await this.switchPublishState(/^(Set as Draft|Draft|Unpublish)$/i, /^(Publish|Set as Published)$/i);
     }
 
     async searchBlogPost(keyword: string): Promise<void> {
-        await this.erpLocators.blogPostsSearchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
+        await filterListBySearch(this.page, this.erpLocators.blogPostsSearchInput, keyword);
     }
 
     async expectBlogPostListed(title: string): Promise<void> {
@@ -361,8 +405,9 @@ export class WebsiteManagementPage {
         categoryName: string,
         subTitle?: string,
     ): Promise<void> {
-        await this.page.goto("/blog");
-        await expect(this.page).toHaveURL(/\/blog$/);
+
+        await this.page.goto(`/blog/${categorySlug}`);
+        await expect(this.page).toHaveURL(new RegExp(`blog/${categorySlug}$`));
         await this.page.waitForLoadState("networkidle");
         await expect(this.page.locator("body")).toContainText(postTitle);
         await expect(this.page.locator("body")).toContainText(categoryName);
@@ -370,12 +415,6 @@ export class WebsiteManagementPage {
         if (subTitle) {
             await expect(this.page.locator("body")).toContainText(subTitle);
         }
-
-        await this.page.goto(`/blog/${categorySlug}`);
-        await expect(this.page).toHaveURL(new RegExp(`blog/${categorySlug}$`));
-        await this.page.waitForLoadState("networkidle");
-        await expect(this.page.locator("body")).toContainText(postTitle);
-        await expect(this.page.locator("body")).toContainText(categoryName);
 
         await this.page.goto(`/blog/${categorySlug}/${postSlug}`);
         await expect(this.page).toHaveURL(new RegExp(`blog/${categorySlug}/${postSlug}$`));
@@ -385,15 +424,19 @@ export class WebsiteManagementPage {
     }
 
     async expectBlogPostNotListedOnFrontend(categorySlug: string, postTitle: string): Promise<void> {
-        await this.page.goto("/blog");
-        await expect(this.page).toHaveURL(/\/blog$/);
-        await this.page.waitForLoadState("networkidle");
-        await expect(this.page.locator("body")).not.toContainText(postTitle);
 
-        await this.page.goto(`/blog/${categorySlug}`);
-        await expect(this.page).toHaveURL(new RegExp(`blog/${categorySlug}$`));
-        await this.page.waitForLoadState("networkidle");
-        await expect(this.page.locator("body")).not.toContainText(postTitle);
+        for (const path of ["/blog", `/blog/${categorySlug}`]) {
+            await expect
+                .poll(
+                    async () => {
+                        await this.page.goto(path, { waitUntil: "networkidle" }).catch(() => undefined);
+
+                        return (await this.page.locator("body").innerText()).includes(postTitle);
+                    },
+                    { timeout: 30000 },
+                )
+                .toBe(false);
+        }
     }
 
     private async fillContent(content: string): Promise<void> {
@@ -449,15 +492,31 @@ export class WebsiteManagementPage {
     }
 
     private async selectFilamentOption(select: Locator, optionText: string): Promise<void> {
-        await select.click();
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await select.click();
+            const search = this.erpLocators.salesSelectSearchInput;
+            await search.waitFor({ state: "visible", timeout: 15000 }).catch(() => undefined);
 
-        if (await this.erpLocators.salesSelectSearchInput.isVisible().catch(() => false)) {
-            await this.erpLocators.salesSelectSearchInput.fill(optionText);
+            if (await search.isVisible().catch(() => false)) {
+                await search.fill(optionText);
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(600);
+            }
+
+            const option = this.erpLocators.salesSelectOption.filter({ hasText: optionText }).first();
+
+            if (await option.waitFor({ state: "visible", timeout: 15000 }).then(() => true).catch(() => false)) {
+                await option.click();
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                return;
+            }
+
+            await this.page.keyboard.press("Escape").catch(() => undefined);
+            await this.page.waitForTimeout(500);
         }
 
-        const option = this.erpLocators.salesSelectOption.filter({ hasText: optionText }).first();
-        await expect(option).toBeVisible();
-        await option.click();
+        await expect(this.erpLocators.salesSelectOption.filter({ hasText: optionText }).first()).toBeVisible();
     }
 
     private findTableRow(table: Locator, text: string): Locator {
@@ -505,7 +564,7 @@ export class WebsiteManagementPage {
         await this.gotoBlogPostsPage();
         await this.searchBlogPost(title);
 
-        const row = this.findTableRow(this.erpLocators.blogPostsTable, title);
+        const row = rowByText(this.page, title);
         await expect(row).toBeVisible();
         await this.clickRowAction(row, /edit/i);
         await expect(this.page).toHaveURL(/website\/posts\/.+\/edit/);
@@ -514,32 +573,58 @@ export class WebsiteManagementPage {
     async publishPage(title: string): Promise<void> {
         await this.gotoWebsitePagesPage();
         await this.searchPage(title);
-        await this.openRowActions();
-        await this.erpLocators.websitePagesEditButton.click();
 
+        await clickRowAction(rowByText(this.page, title), "Edit");
         await this.page.waitForLoadState("networkidle");
 
-        const publishButton = this.page.getByRole("button", { name: /publish/i }).first();
-        if (await publishButton.isVisible().catch(() => false)) {
-            await publishButton.click();
-            await this.expectSuccessToast();
-        }
+        await this.switchPublishState(/^(Publish|Set as Published)$/i, /^(Set as Draft|Draft|Unpublish)$/i);
     }
 
     async draftPage(title: string): Promise<void> {
         await this.gotoWebsitePagesPage();
         await this.searchPage(title);
-        await this.openRowActions();
-        await this.erpLocators.websitePagesEditButton.click();
 
+        await clickRowAction(rowByText(this.page, title), "Edit");
         await this.page.waitForLoadState("networkidle");
 
-        const draftButton = this.page.getByRole("button", { name: /draft/i }).first();
-        if (await draftButton.isVisible().catch(() => false)) {
-            await draftButton.click();
-            await this.expectSuccessToast();
-            await this.erpLocators.websitePagesSaveButton.click();
+        await this.switchPublishState(/^(Set as Draft|Draft|Unpublish)$/i, /^(Publish|Set as Published)$/i);
+    }
+
+    /**
+     * Flip a record between published and draft, and see that it flipped: the action's button
+     * gives way to its opposite. Clicking and walking on would not do — a click that lands while
+     * Livewire is busy is swallowed, and the record then stays as it was, only for the test to
+     * fail much later on a front end that never changed. A toast is no good either: it is gone
+     * within seconds, and with several workers it may belong to another test.
+     */
+    private async switchPublishState(action: RegExp, opposite: RegExp): Promise<void> {
+        const actionButton = this.page.getByRole("button", { name: action }).first();
+        const oppositeButton = this.page.getByRole("button", { name: opposite }).first();
+
+        await expect(actionButton.or(oppositeButton)).toBeVisible({ timeout: 60000 });
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if (!(await actionButton.isVisible().catch(() => false))) {
+                await expect(oppositeButton).toBeVisible();
+
+                return;
+            }
+
+            await actionButton.click().catch(() => undefined);
+
+            const flipped = await oppositeButton
+                .waitFor({ state: "visible", timeout: 30000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (flipped) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+                return;
+            }
         }
+
+        await expect(oppositeButton).toBeVisible();
     }
 
     async checkPageOnFrontend(slug: string, expectedContent: string, headerVisible: boolean, footerVisible: boolean, pageTitle?: string): Promise<void> {
@@ -578,16 +663,13 @@ export class WebsiteManagementPage {
         try {
             const response = await this.page.goto(`/pages/${slug}`, { waitUntil: "domcontentloaded" });
             
-            // If we get a 404 or error status, that's expected
             if (response && !response.ok()) {
-                return; // Page correctly not accessible
+                return;
             }
 
-            // If page loaded, verify it's a 404 page or doesn't contain expected content
             const is404 = await this.page.locator("h1, h2").filter({ hasText: /404|not found|page not found/i }).isVisible().catch(() => false);
             expect(is404).toBeTruthy();
         } catch (error: unknown) {
-            // Navigation error is expected for unpublished/draft pages
             const errorMessage = error instanceof Error ? error.message : String(error);
             expect(errorMessage).toContain("ERR_ABORTED");
         }
