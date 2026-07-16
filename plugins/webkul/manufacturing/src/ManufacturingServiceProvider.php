@@ -6,9 +6,12 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
+use Webkul\Inventory\Models\MoveLine;
+use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
@@ -145,19 +148,48 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                 });
 
                 $command->endWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds) {
-                    // Delete operation types created by manufacturing.
-                    if (! empty($operationTypeIds)) {
-                        OperationType::withTrashed()
-                            ->whereIn('id', $operationTypeIds)
-                            ->forceDelete();
+                    if (empty($operationTypeIds) && empty($locationIds)) {
+                        return;
                     }
 
-                    // Delete locations created by manufacturing.
-                    if (! empty($locationIds)) {
-                        Location::withTrashed()
-                            ->whereIn('id', $locationIds)
-                            ->forceDelete();
-                    }
+                    DB::transaction(function () use ($operationTypeIds, $locationIds) {
+                        if (! empty($locationIds)) {
+                            MoveLine::query()
+                                ->whereIn('source_location_id', $locationIds)
+                                ->orWhereIn('destination_location_id', $locationIds)
+                                ->delete();
+
+                            Move::query()
+                                ->whereIn('source_location_id', $locationIds)
+                                ->orWhereIn('destination_location_id', $locationIds)
+                                ->delete();
+                        }
+
+                        Operation::query()
+                            ->where(function ($query) use ($operationTypeIds, $locationIds) {
+                                if (! empty($operationTypeIds)) {
+                                    $query->whereIn('operation_type_id', $operationTypeIds);
+                                }
+
+                                if (! empty($locationIds)) {
+                                    $query->orWhereIn('source_location_id', $locationIds)
+                                        ->orWhereIn('destination_location_id', $locationIds);
+                                }
+                            })
+                            ->delete();
+
+                        if (! empty($operationTypeIds)) {
+                            OperationType::withTrashed()
+                                ->whereIn('id', $operationTypeIds)
+                                ->forceDelete();
+                        }
+                        
+                        if (! empty($locationIds)) {
+                            Location::withTrashed()
+                                ->whereIn('id', $locationIds)
+                                ->forceDelete();
+                        }
+                    });
                 });
             })
             ->icon('manufacturing');

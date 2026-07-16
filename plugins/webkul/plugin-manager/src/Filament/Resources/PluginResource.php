@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages\ListPlugins;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
@@ -356,6 +357,12 @@ class PluginResource extends Resource
                         throw new Exception("Package for '{$pluginName}' not found.");
                     }
 
+                    $uninstallCommand = static::resolveUninstallCommand($plugin->package);
+
+                    if ($uninstallCommand?->startWith) {
+                        ($uninstallCommand->startWith)($uninstallCommand);
+                    }
+
                     collect(array_reverse($plugin->package->migrationFileNames))
                         ->each(function ($migration) use ($plugin) {
                             $fullPath = $plugin->package->basePath("database/migrations/{$migration}.php");
@@ -371,6 +378,10 @@ class PluginResource extends Resource
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
+
+                    if ($uninstallCommand?->endWith) {
+                        ($uninstallCommand->endWith)($uninstallCommand);
+                    }
                 } catch (Throwable $e) {
                     $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
                 }
@@ -392,6 +403,12 @@ class PluginResource extends Resource
                 ->persistent()
                 ->send();
         }
+    }
+
+    protected static function resolveUninstallCommand(Package $package): ?UninstallCommand
+    {
+        return collect($package->consoleCommands ?? [])
+            ->first(fn ($command) => $command instanceof UninstallCommand);
     }
 
     protected static function downMigration(string $fullPath, string $migration): void
