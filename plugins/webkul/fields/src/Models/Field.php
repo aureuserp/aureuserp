@@ -15,9 +15,6 @@ class Field extends Model implements Sortable
     /**
      * Resolved custom fields, keyed by customizable model class.
      *
-     * Models load their custom fields on every hydration, so without this the
-     * listing of N records would issue N queries against this table.
-     *
      * @var array<class-string, Collection>
      */
     protected static array $customizableCache = [];
@@ -69,8 +66,7 @@ class Field extends Model implements Sortable
     ];
 
     /**
-     * Flush the resolved custom fields whenever the underlying rows change, so
-     * long-lived processes (queue workers, Octane) don't serve a stale schema.
+     * Boot the model.
      */
     protected static function booted(): void
     {
@@ -82,8 +78,7 @@ class Field extends Model implements Sortable
     }
 
     /**
-     * Get the custom fields applying to the given model, resolving them once
-     * per class for the lifetime of the process.
+     * Get the custom fields applying to the given model.
      */
     public static function forCustomizable(string $model): Collection
     {
@@ -93,7 +88,7 @@ class Field extends Model implements Sortable
     }
 
     /**
-     * Forget the resolved custom fields for one model, or for all of them.
+     * Forget the resolved custom fields.
      */
     public static function flushCustomizableCache(?string $model = null): void
     {

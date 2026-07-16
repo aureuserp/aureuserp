@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,7 +46,19 @@ class OperationResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return OperationForm::configure($schema);
+        $schema = OperationForm::configure($schema);
+
+        $components = $schema->getComponents();
+
+        $components[] = Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.additional-fields.title'))
+            ->visible(! empty($customFormFields = static::getCustomFormFields()))
+            ->schema($customFormFields)
+            ->columns(2)
+            ->columnSpanFull();
+
+        $schema->components($components);
+
+        return $schema;
     }
 
     public static function mergeTableConstraints(array $baseConstraints, array $include = [], array $exclude = []): array
@@ -55,12 +68,31 @@ class OperationResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return OperationsTable::configure($table);
+        $table = OperationsTable::configure($table);
+
+        return $table
+            ->pushColumns(static::getCustomTableColumns())
+            ->pushFilters(static::getCustomTableFilters());
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return OperationInfolist::configure($schema);
+        $schema = OperationInfolist::configure($schema);
+
+        $customInfolistEntries = static::getCustomInfolistEntries();
+
+        if (! empty($customInfolistEntries)) {
+            $components = $schema->getComponents();
+
+            $components[] = Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.additional-fields.title'))
+                ->schema($customInfolistEntries)
+                ->columns(2)
+                ->columnSpanFull();
+
+            $schema->components($components);
+        }
+
+        return $schema;
     }
 
     public static function getUrl(?string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null, bool $shouldGuessMissingParameters = false, ?string $configuration = null): string

@@ -41,8 +41,6 @@ trait HasCustomFields
 
             $this->mergeCasts($customFields);
         } catch (Exception) {
-            // The custom_fields table may not exist yet, e.g. while migrating
-            // onto a fresh database. Models are simply left un-extended.
         }
     }
 

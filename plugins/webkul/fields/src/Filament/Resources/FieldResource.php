@@ -36,6 +36,7 @@ use Webkul\Field\FieldsColumnManager;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\CreateField;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\EditField;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\ListFields;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Models\Field;
 use Webkul\Support\Enums\NavigationGroup;
 
@@ -182,7 +183,7 @@ class FieldResource extends Resource
                             ->schema([
                                 Select::make('plugin')
                                     ->label(__('fields::filament/resources/field.form.sections.resource.fields.plugin'))
-                                    ->required()
+                                    ->required(fn (string $operation): bool => $operation === 'create')
                                     ->searchable()
                                     ->native(false)
                                     ->live()
@@ -352,9 +353,10 @@ class FieldResource extends Resource
 
     protected static function isCustomizableResource(string $resource): bool
     {
-        return get_parent_class($resource) === Resource::class
+        return is_subclass_of($resource, Resource::class)
+            && in_array(HasCustomFields::class, class_uses_recursive($resource), true)
             && static::resourcePluginIsAvailable($resource)
-            && static::resourceHasForm($resource);
+            && static::resourceRendersCustomFields($resource);
     }
 
     protected static function resourcePluginIsAvailable(string $resource): bool
@@ -385,10 +387,40 @@ class FieldResource extends Resource
         return $cache[$resource];
     }
 
-    protected static function resourceHasForm(string $resource): bool
+    /**
+     * Whether the form() this resource actually runs appends its own custom fields.
+     *
+     * A resource whose form() hands off to another resource's form() renders that
+     * resource's model, so fields registered against this one never show up.
+     */
+    protected static function resourceRendersCustomFields(string $resource): bool
     {
-        return method_exists($resource, 'form')
-            && (new \ReflectionMethod($resource, 'form'))->getDeclaringClass()->getName() !== Resource::class;
+        static $cache = [];
+
+        if (array_key_exists($resource, $cache)) {
+            return $cache[$resource];
+        }
+
+        if (! method_exists($resource, 'form')) {
+            return $cache[$resource] = false;
+        }
+
+        $method = new \ReflectionMethod($resource, 'form');
+
+        $file = $method->getFileName();
+
+        if ($file === false || ! is_readable($file)) {
+            return $cache[$resource] = false;
+        }
+
+        $body = implode('', array_slice(
+            file($file),
+            $method->getStartLine() - 1,
+            $method->getEndLine() - $method->getStartLine() + 1,
+        ));
+
+        return $cache[$resource] = str_contains($body, 'getCustomFormFields')
+            || str_contains($body, 'mergeCustomFormFields');
     }
 
     protected static function resourceLabel(string $resource): string
