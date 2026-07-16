@@ -37,19 +37,21 @@ trait HasCustomFields
         try {
             $customFields = $this->getCustomFields();
 
-            $this->mergeFillable($customFields->pluck('code')->toArray());
+            $this->mergeFillable($customFields->pluck('code')->all());
 
-            $this->mergeCasts($customFields->select('code', 'type', 'is_multiselect')->get());
+            $this->mergeCasts($customFields);
         } catch (Exception) {
+            // The custom_fields table may not exist yet, e.g. while migrating
+            // onto a fresh database. Models are simply left un-extended.
         }
     }
 
     /**
-     * Get all custom field codes for this model
+     * Get all custom fields for this model.
      */
     protected function getCustomFields()
     {
-        return Field::whereIn('customizable_type', Field::customizableTypes(static::class));
+        return Field::forCustomizable(static::class);
     }
 
     /**
