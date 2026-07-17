@@ -70,6 +70,11 @@ class BillOfMaterialByproduct extends Model
         return $this->belongsToMany(ProductAttributeValue::class, 'manufacturing_bill_of_material_byproduct_attribute_values', 'byproduct_id', 'product_attribute_value_id');
     }
 
+    public function skipByproductLine($product)
+    {
+        return false;
+    }
+
     protected static function boot(): void
     {
         parent::boot();

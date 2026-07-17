@@ -11,6 +11,8 @@ class CreateRoute extends CreateRecord
 {
     protected static string $resource = RouteResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Start;

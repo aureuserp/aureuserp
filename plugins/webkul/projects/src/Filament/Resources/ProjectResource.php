@@ -68,6 +68,7 @@ use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
+use Webkul\Support\Enums\NavigationGroup;
 
 class ProjectResource extends Resource
 {
@@ -86,9 +87,9 @@ class ProjectResource extends Resource
         return __('projects::filament/resources/project.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('projects::filament/resources/project.navigation.group');
+        return NavigationGroup::Project;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -664,12 +665,12 @@ class ProjectResource extends Resource
 
     public static function getTaskSettings(): TaskSettings
     {
-        return once(fn () => app(TaskSettings::class));
+        return settings(TaskSettings::class);
     }
 
     public static function getTimeSettings(): TimeSettings
     {
-        return once(fn () => app(TimeSettings::class));
+        return settings(TimeSettings::class);
     }
 
     public static function getRecordSubNavigation(Page $page): array

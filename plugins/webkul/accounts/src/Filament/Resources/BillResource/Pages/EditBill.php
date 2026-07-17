@@ -57,6 +57,7 @@ class EditBill extends EditRecord
             BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\ReverseAction::make()
+                ->setResource(static::getReverseResource())
                 ->label(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),

@@ -109,6 +109,12 @@ return [
             'flag'   => 'sa',
             'rtl'    => true,
         ],
+        'es' => [
+            'label'  => 'Spanish',
+            'native' => 'Español',
+            'flag'   => 'es',
+            'rtl'    => false,
+        ],
     ],
 
     /*

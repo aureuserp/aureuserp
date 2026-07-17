@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Maintenance',
         'title' => 'Equipment',
     ],
 

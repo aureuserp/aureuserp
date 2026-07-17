@@ -160,11 +160,11 @@ class EditApplicant extends EditRecord
                             ->live()
                             ->default(true)
                             ->visible(fn (Get $get) => $get('refuse_reason_id'))
-                            ->label('Notify'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.form.fields.notify')),
                         TextInput::make('email')
                             ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
-                            ->label('Email To'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.form.fields.email-to')),
                     ]);
                 })
                 ->action(function (array $data, Applicant $record) {

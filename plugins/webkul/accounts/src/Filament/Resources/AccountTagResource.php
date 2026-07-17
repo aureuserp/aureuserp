@@ -125,14 +125,14 @@ class AccountTagResource extends Resource
                 EditAction::make()
                     ->successNotification(
                         Notification::make()
-                            ->title('accounts::filament/clusters/configurations/resources/account-tag.table.actions.edit.notification.title')
-                            ->body('accounts::filament/clusters/configurations/resources/account-tag.table.actions.edit.notification.body')
+                            ->title(__('accounts::filament/resources/account-tag.table.actions.edit.notification.title'))
+                            ->body(__('accounts::filament/resources/account-tag.table.actions.edit.notification.body'))
                     ),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()
-                            ->title('accounts::filament/clusters/configurations/resources/account-tag.table.actions.delete.notification.title')
-                            ->body('accounts::filament/clusters/configurations/resources/account-tag.table.actions.delete.notification.body')
+                            ->title(__('accounts::filament/resources/account-tag.table.actions.delete.notification.title'))
+                            ->body(__('accounts::filament/resources/account-tag.table.actions.delete.notification.body'))
                     ),
             ])
             ->toolbarActions([
@@ -140,8 +140,8 @@ class AccountTagResource extends Resource
                     DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
-                                ->title('accounts::filament/clusters/configurations/resources/account-tag.table.bulk-actions.delete.notification.title')
-                                ->body('accounts::filament/clusters/configurations/resources/account-tag.table.bulk-actions.delete.notification.body')
+                                ->title(__('accounts::filament/resources/account-tag.table.bulk-actions.delete.notification.title'))
+                                ->body(__('accounts::filament/resources/account-tag.table.bulk-actions.delete.notification.body'))
                         ),
                 ]),
             ]);

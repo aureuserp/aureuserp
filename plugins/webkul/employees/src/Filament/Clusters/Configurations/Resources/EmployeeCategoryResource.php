@@ -59,7 +59,7 @@ class EmployeeCategoryResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.name'))
                     ->required()
                     ->unique(ignoreRecord: true)
-                    ->placeholder('Enter the name of the tag'),
+                    ->placeholder(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.name-placeholder')),
                 ColorPicker::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color'))
                     ->hexColor(),
@@ -125,7 +125,6 @@ class EmployeeCategoryResource extends Resource
             ])
             ->groups([
                 Group::make('name')
-                    ->label('Job Position')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.groups.job-position'))
                     ->collapsible(),
                 Group::make('color')

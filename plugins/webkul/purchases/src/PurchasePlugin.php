@@ -3,10 +3,8 @@
 namespace Webkul\Purchase;
 
 use Filament\Contracts\Plugin;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\PluginManager\Package;
-use Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageProducts;
 
 class PurchasePlugin implements Plugin
 {
@@ -63,15 +61,7 @@ class PurchasePlugin implements Plugin
                     ->discoverWidgets(
                         in: __DIR__.'/Filament/Admin/Widgets',
                         for: 'Webkul\\Purchase\\Filament\\Admin\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('purchases::app.navigation.settings.label'))
-                            ->url(fn () => ManageProducts::getUrl())
-                            ->group('Purchase')
-                            ->sort(4)
-                            ->visible(fn () => ManageProducts::canAccess()),
-                    ]);
+                    );
             });
     }
 

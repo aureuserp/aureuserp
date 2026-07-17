@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'سجلات الوقت',
-        'group' => 'المشروع',
     ],
 
     'global-search' => [

@@ -6,13 +6,18 @@ use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
+use Webkul\Account\Events\MoveCancelled;
+use Webkul\Account\Events\MoveConfirmed;
+use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MovePaid;
+use Webkul\Account\Events\MoveReversed;
 use Webkul\Inventory\Events\OperationDone;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
+use Webkul\Sale\Listeners\ComputeSaleOrderFromMoveListener;
 use Webkul\Sale\Listeners\ComputeSaleOrderListener;
 use Webkul\Sale\Listeners\SendSMSNotificationListener;
 use Webkul\Sale\Livewire\QuotationSummary;
@@ -85,6 +90,11 @@ class SaleServiceProvider extends PackageServiceProvider
         Event::listen(OperationDone::class, ComputeSaleOrderListener::class);
 
         Event::listen(MovePaid::class, SendSMSNotificationListener::class);
+
+        Event::listen(
+            [MoveConfirmed::class, MoveCancelled::class, MoveDrafted::class, MoveReversed::class],
+            ComputeSaleOrderFromMoveListener::class,
+        );
     }
 
     public function packageRegistered(): void

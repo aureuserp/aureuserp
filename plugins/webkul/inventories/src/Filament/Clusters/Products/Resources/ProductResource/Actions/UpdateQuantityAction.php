@@ -15,6 +15,7 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Models\Product as BaseProduct;
 
 class UpdateQuantityAction extends Action
 {
@@ -30,7 +31,7 @@ class UpdateQuantityAction extends Action
         $this->label(__('inventories::filament/clusters/products/resources/product/actions/update-quantity.label'))
             ->modalHeading(__('inventories::filament/clusters/products/resources/product/actions/update-quantity.modal-heading'))
             ->url(function (
-                Product $record,
+                BaseProduct $record,
                 OperationSettings $operationSettings,
                 TraceabilitySettings $traceabilitySettings,
                 WarehouseSettings $warehouseSettings,
@@ -48,7 +49,7 @@ class UpdateQuantityAction extends Action
 
                 return null;
             })
-            ->schema(fn (Product $record): array => [
+            ->schema(fn (BaseProduct $record): array => [
                 Select::make('product_id')
                     ->label(__('inventories::filament/clusters/products/resources/product/actions/update-quantity.form.fields.product'))
                     ->required()
@@ -68,14 +69,14 @@ class UpdateQuantityAction extends Action
                     ->required()
                     ->live()
                     ->suffix($record->uom->name)
-                    ->default(fn (): int|float => ! $record->is_configurable ? $record->available_qty : 0),
+                    ->default(fn (): int|float => ! $record->is_configurable ? (Product::find($record->getKey())?->available_qty ?? 0) : 0),
             ])
             ->modalSubmitActionLabel(__('inventories::filament/clusters/products/resources/product/actions/update-quantity.modal-submit-action-label'))
-            ->visible(fn (Product $record): bool => (bool) $record->is_storable)
-            ->action(function (Product $record, array $data): void {
-                if (isset($data['product_id'])) {
-                    $record = Product::find($data['product_id']);
-                }
+            ->visible(fn (BaseProduct $record): bool => (bool) $record->is_storable)
+            ->action(function (BaseProduct $record, array $data): void {
+                $record = isset($data['product_id'])
+                    ? Product::find($data['product_id'])
+                    : Product::find($record->getKey());
 
                 $previousQuantity = $record->available_qty;
 

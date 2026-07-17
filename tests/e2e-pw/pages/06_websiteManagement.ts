@@ -173,7 +173,13 @@ export class WebsiteManagementPage {
         }
 
         await this.clickVisibleButton(/create|save|submit/i);
-        await this.expectBlogCategorySuccessToast();
+
+        // The success toast is torn down by the redirect that follows the save, so the
+        // category being listed is the signal that it was really created.
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.gotoBlogCategoriesPage();
+        await this.searchBlogCategory(categoryData.name);
+        await this.expectBlogCategoryListed(categoryData.name);
     }
 
     async editBlogCategory(originalName: string, updates: Partial<BlogCategoryData>): Promise<void> {
@@ -248,7 +254,11 @@ export class WebsiteManagementPage {
         }
 
         await this.erpLocators.blogPostsSaveButton.click();
-        await this.expectBlogPostSuccessToast();
+
+        // Saving redirects off the create form and takes the success toast with it; leaving
+        // the create page is what proves the post was saved.
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/website\/posts\/create/);
     }
 
     async editBlogPost(originalTitle: string, updates: Partial<BlogPostData>): Promise<void> {

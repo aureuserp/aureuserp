@@ -20,6 +20,7 @@ use Webkul\Project\Filament\Widgets\TopProjectsWidget;
 use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Tag;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Dashboard extends BaseDashboard
 {
@@ -38,9 +39,9 @@ class Dashboard extends BaseDashboard
         return __('projects::filament/pages/dashboard.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('projects::filament/pages/dashboard.navigation.group');
+        return NavigationGroup::Dashboard;
     }
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null

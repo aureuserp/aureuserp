@@ -25,6 +25,13 @@ class QuotationInvoiceResource extends BaseInvoiceResource
 
     protected static ?string $cluster = Orders::class;
 
+    public static function canAccess(): bool
+    {
+        $parentResource = static::$parentResource;
+
+        return $parentResource::canAccess();
+    }
+
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
     {
         return QuotationResource::asParent()

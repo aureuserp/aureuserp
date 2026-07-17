@@ -15,6 +15,8 @@ class CreateInternal extends CreateRecord
 {
     protected static string $resource = InternalResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Settings',
         'title' => 'UOM Categories',
     ],
 
@@ -37,7 +36,7 @@ return [
     'table' => [
         'columns' => [
             'name'       => 'Name',
-            'uoms-count' => 'Units',
+            'uoms'       => 'UOMs',
             'created-at' => 'Created At',
             'updated-at' => 'Updated At',
         ],

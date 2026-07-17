@@ -173,6 +173,10 @@ class InstallCommand extends Command
 
         $this->regenerateAdminPanelPermissions();
 
+        $this->info('⚙️ Refreshing application caches so the plugin navigation is reflected...');
+
+        Package::refreshPluginCaches();
+
         $this->info("🎉 Package <comment>{$this->package->shortName()}</comment> has been installed!");
     }
 
@@ -470,39 +474,7 @@ class InstallCommand extends Command
 
     protected function getPhpExecutablePath(): string
     {
-        $phpPath = trim(shell_exec('which php 2>/dev/null') ?: '');
-
-        if (
-            $phpPath
-            && file_exists($phpPath)
-        ) {
-            return $phpPath;
-        }
-
-        $phpPath = PHP_BINARY;
-
-        if (strpos($phpPath, 'fpm') !== false) {
-            $phpPath = str_replace('fpm', '', $phpPath);
-        }
-
-        if (file_exists($phpPath)) {
-            return $phpPath;
-        }
-
-        $commonPaths = [
-            '/usr/local/bin/php',
-            '/usr/bin/php',
-            '/opt/homebrew/bin/php',
-            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
-        ];
-
-        foreach ($commonPaths as $path) {
-            if (file_exists($path)) {
-                return $path;
-            }
-        }
-
-        return 'php';
+        return Package::phpBinaryPath();
     }
 
     protected function buildTimeoutCommand(int $seconds, string $command): string

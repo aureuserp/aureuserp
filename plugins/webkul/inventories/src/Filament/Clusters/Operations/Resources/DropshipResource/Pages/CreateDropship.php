@@ -13,6 +13,8 @@ class CreateDropship extends CreateRecord
 {
     protected static string $resource = DropshipResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

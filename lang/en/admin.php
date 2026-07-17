@@ -19,5 +19,6 @@ return [
         'plugin'        => 'Plugins',
         'setting'       => 'Settings',
         'help'          => 'Help',
+        'barcode'       => 'Barcode',
     ],
 ];

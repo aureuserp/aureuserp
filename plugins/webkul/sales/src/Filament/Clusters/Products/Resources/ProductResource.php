@@ -6,12 +6,16 @@ use Filament\Resources\Pages\Page;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\ProductResource as BaseProductResource;
+use Webkul\PluginManager\Package;
 use Webkul\Sale\Filament\Clusters\Products;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\EditProduct;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ListProducts;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Sale\Models\Product;
 
@@ -27,12 +31,23 @@ class ProductResource extends BaseProductResource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
+        $items = [
             ViewProduct::class,
             EditProduct::class,
             ManageAttributes::class,
             ManageVariants::class,
-        ]);
+        ];
+
+        if (Package::isPluginInstalled('purchases')) {
+            $items[] = ManageVendors::class;
+        }
+
+        if (Package::isPluginInstalled('inventories')) {
+            $items[] = ManageQuantities::class;
+            $items[] = ManageMoves::class;
+        }
+
+        return $page->generateNavigationItems($items);
     }
 
     public static function table(Table $table): Table
@@ -53,7 +68,7 @@ class ProductResource extends BaseProductResource
 
     public static function getPages(): array
     {
-        return [
+        $pages = [
             'index'      => ListProducts::route('/'),
             'create'     => CreateProduct::route('/create'),
             'view'       => ViewProduct::route('/{record}'),
@@ -61,5 +76,16 @@ class ProductResource extends BaseProductResource
             'attributes' => ManageAttributes::route('/{record}/attributes'),
             'variants'   => ManageVariants::route('/{record}/variants'),
         ];
+
+        if (Package::isPluginInstalled('purchases')) {
+            $pages['vendors'] = ManageVendors::route('/{record}/vendors');
+        }
+
+        if (Package::isPluginInstalled('inventories')) {
+            $pages['quantities'] = ManageQuantities::route('/{record}/quantities');
+            $pages['moves'] = ManageMoves::route('/{record}/moves');
+        }
+
+        return $pages;
     }
 }

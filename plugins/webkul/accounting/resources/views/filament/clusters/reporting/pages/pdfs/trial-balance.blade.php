@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Trial Balance</title>
+    <title>{{ __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title') }}</title>
     <style>
         @page {
             margin: 1.5cm 1.5cm;
@@ -107,28 +107,28 @@
 </head>
 <body>
     <div class="header">
-        <h2>Trial Balance</h2>
+        <h2>{{ __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title') }}</h2>
         <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</p>
     </div>
 
     @if($data['accounts']->isEmpty())
-        <div class="no-data">No accounts with transactions in this period</div>
+        <div class="no-data">{{ __('accounting::filament/clusters/reporting.common.no-accounts-transactions') }}</div>
     @else
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2" class="text-left">Account</th>
-                    <th colspan="2" class="text-center group-header">Initial Balance</th>
+                    <th rowspan="2" class="text-left">{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
+                    <th colspan="2" class="text-center group-header">{{ __('accounting::filament/clusters/reporting.common.initial-balance') }}</th>
                     <th colspan="2" class="text-center group-header">{{ \Carbon\Carbon::parse($data['date_from'])->format('d M Y') }} - {{ \Carbon\Carbon::parse($data['date_to'])->format('d M Y') }}</th>
-                    <th colspan="2" class="text-center group-header">End Balance</th>
+                    <th colspan="2" class="text-center group-header">{{ __('accounting::filament/clusters/reporting.common.end-balance') }}</th>
                 </tr>
                 <tr>
-                    <th class="text-right">Debit</th>
-                    <th class="text-right">Credit</th>
-                    <th class="text-right">Debit</th>
-                    <th class="text-right">Credit</th>
-                    <th class="text-right">Debit</th>
-                    <th class="text-right">Credit</th>
+                    <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
+                    <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
+                    <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
+                    <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
+                    <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
+                    <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,7 +145,7 @@
                 @endforeach
 
                 <tr class="total-row">
-                    <td>Total</td>
+                    <td>{{ __('accounting::filament/clusters/reporting.common.total') }}</td>
                     <td class="text-right">{{ number_format($data['totals']['initial_debit'], 2) }}</td>
                     <td class="text-right">{{ number_format($data['totals']['initial_credit'], 2) }}</td>
                     <td class="text-right">{{ number_format($data['totals']['period_debit'], 2) }}</td>

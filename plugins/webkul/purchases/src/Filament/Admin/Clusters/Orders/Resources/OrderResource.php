@@ -52,6 +52,8 @@ use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Inventory\Enums as InventoryEnums;
+use Webkul\Inventory\Models\OperationType;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
@@ -224,6 +226,34 @@ class OrderResource extends Resource
                                     ->hint('Test')
                                     ->hint(fn ($record): string => $record && $record->mail_reminder_confirmed ? __('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.confirmed-by-vendor') : '')
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
+                                Select::make('operation_type_id')
+                                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.deliver-to'))
+                                    ->relationship(
+                                        name: 'operationType',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->whereIn('type', [
+                                                InventoryEnums\OperationType::INCOMING,
+                                                InventoryEnums\OperationType::DROPSHIP
+                                            ])
+                                            ->where(function (Builder $query) use ($get) {
+                                                $query->whereNull('warehouse_id')
+                                                    ->orWhereHas('warehouse', fn (Builder $q) => $q->where('company_id', $get('company_id') ?? Auth::user()->default_company_id));
+                                            }),
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function (OperationType $record) {
+                                        if (! $record->warehouse) {
+                                            return $record->name;
+                                        }
+
+                                        return $record->warehouse->name.': '.$record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->visible(fn (): bool => static::canUseInventoryWarehouses())
+                                    ->default(fn (Get $get) => static::getInventoryOperationTypeId($get('company_id') ?? Auth::user()->default_company_id))
+                                    ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                             ]),
                     ])
                     ->columns(2),
@@ -273,6 +303,7 @@ class OrderResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->required()
+                                            ->live()
                                             ->default(Auth::user()->default_company_id)
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                                         TextInput::make('origin')
@@ -387,7 +418,13 @@ class OrderResource extends Resource
                     ->sortable()
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('receipt_status')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.receipt-status'))
+                    ->sortable()
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ]))
+            ->columnManagerColumns(3)
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.groups.vendor')),
@@ -928,15 +965,20 @@ class OrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->where('type', ProductType::GOODS)->withTrashed()->whereNull('is_configurable'),
+                        fn ($query) => $query
+                            ->withTrashed()
+                            ->where('type', ProductType::GOODS)
+                            ->whereNull('is_configurable'),
                     )
-                    ->searchable()
-                    ->preload()
-                    ->live()
-                    ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->required()
+                    ->wrapOptionLabels(false)
+                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED]))
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
                         if (str_contains($label, ' (Deleted)')) {
                             return true;
@@ -961,10 +1003,7 @@ class OrderResource extends Resource
                     })
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductUpdated($set, $get);
-                    })
-                    ->required()
-                    ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
-
+                    }),
                 DateTimePicker::make('planned_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.expected-arrival'))
                     ->native(false)
@@ -990,21 +1029,16 @@ class OrderResource extends Resource
                     ->numeric()
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, Get $get, $state, $record) {
-                        $qtyReceived = $record?->qty_received ?? 0;
+                    ->rule(function (Get $get): \Closure {
+                        return function (string $attribute, $value, \Closure $fail) use ($get): void {
+                            $qtyReceived = (float) ($get('qty_received') ?? 0);
 
-                        if ($qtyReceived > 0 && floatval($state) < $qtyReceived) {
-                            $set('product_qty', $qtyReceived);
-
-                            Notification::make()
-                                ->danger()
-                                ->title(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.title'))
-                                ->body(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.body', ['qty' => $qtyReceived]))
-                                ->send();
-
-                            return;
-                        }
-
+                            if ($qtyReceived > 0 && (float) $value < $qtyReceived) {
+                                $fail(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.notifications.quantity-below-received.body', ['qty' => $qtyReceived]));
+                            }
+                        };
+                    })
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductQtyUpdated($set, $get);
                     })
                     ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
@@ -1168,7 +1202,7 @@ class OrderResource extends Resource
                 return $data;
             })->extraItemActions([
                 Action::make('openProduct')
-                    ->tooltip('Open product')
+                    ->tooltip(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.actions.open-product.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(function (array $arguments, Get $get): ?string {
                         $productId = $get("products.{$arguments['item']}.product_id");
@@ -1402,25 +1436,31 @@ class OrderResource extends Resource
 
         $quantity = floatval($get($prefix.'product_qty') ?? 1);
 
-        $subTotal = $priceUnit * $quantity;
-
         $discountValue = floatval($get($prefix.'discount') ?? 0);
 
-        if ($discountValue > 0) {
-            $discountAmount = $subTotal * ($discountValue / 100);
-
-            $subTotal = $subTotal - $discountAmount;
-        }
+        $discountedUnit = $discountValue > 0 ? $priceUnit * (1 - ($discountValue / 100)) : $priceUnit;
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        [$subTotal, $taxAmount] = TaxFacade::collect($taxIds, $subTotal, $quantity);
+        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
 
-        $set($prefix.'price_subtotal', round($subTotal, 4));
+        if ($taxes->isEmpty()) {
+            $subTotal = round($discountedUnit * $quantity, 4);
 
-        $set($prefix.'price_tax', $taxAmount);
+            $set($prefix.'price_subtotal', $subTotal);
 
-        $set($prefix.'price_total', $subTotal + $taxAmount);
+            $set($prefix.'price_tax', 0);
+
+            $set($prefix.'price_total', $subTotal);
+        } else {
+            $taxResult = TaxFacade::computeAll($taxes, $discountedUnit, null, $quantity);
+
+            $set($prefix.'price_subtotal', round($taxResult['total_excluded'], 4));
+
+            $set($prefix.'price_tax', round($taxResult['total_included'] - $taxResult['total_excluded'], 4));
+
+            $set($prefix.'price_total', round($taxResult['total_included'], 4));
+        }
     }
 
     private static function calculateOrderTotals(Get $get, $livewire): array
@@ -1462,22 +1502,6 @@ class OrderResource extends Resource
         $livewire->dispatch('itemUpdated', $totals);
 
         return $totals;
-    }
-
-    public static function getOrderSettings(): OrderSettings
-    {
-        return once(fn () => app(OrderSettings::class));
-    }
-
-    public static function getProductSettings(): ProductSettings
-    {
-        return once(fn () => app(ProductSettings::class));
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 
     private static function handleVendorChange($state, Set $set, Get $get): void
@@ -1616,9 +1640,6 @@ class OrderResource extends Resource
         }
     }
 
-    /**
-     * Check if the product quantity exceeds the blanket order limit and show warning if needed.
-     */
     private static function checkBlanketOrderQtyLimit(Get $get, ?string $prefix = ''): void
     {
         $requisitionId = $get('../../requisition_id');
@@ -1666,5 +1687,47 @@ class OrderResource extends Resource
                 ]))
                 ->send();
         }
+    }
+
+    private static function getInventoryOperationTypeId(?int $companyId): ?int
+    {
+        if (! $companyId || ! static::canUseInventoryWarehouses()) {
+            return null;
+        }
+
+        $operationType = OperationType::where('type', InventoryEnums\OperationType::INCOMING)
+            ->whereHas('warehouse', function ($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            })
+            ->first();
+
+        if (! $operationType) {
+            $operationType = OperationType::where('type', InventoryEnums\OperationType::INCOMING)
+                ->whereDoesntHave('warehouse')
+                ->first();
+        }
+
+        return $operationType?->id;
+    }
+
+    private static function canUseInventoryWarehouses(): bool
+    {
+        return Package::isPluginInstalled('inventories');
+    }
+
+    public static function getOrderSettings(): OrderSettings
+    {
+        return settings(OrderSettings::class);
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return settings(ProductSettings::class);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

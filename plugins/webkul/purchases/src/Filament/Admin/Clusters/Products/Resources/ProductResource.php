@@ -8,11 +8,14 @@ use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\PluginManager\Package;
 use Webkul\Purchase\Filament\Admin\Clusters\Products;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\EditProduct;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ListProducts;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
@@ -81,18 +84,25 @@ class ProductResource extends BaseProductResource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
+        $items = [
             ViewProduct::class,
             EditProduct::class,
             ManageAttributes::class,
             ManageVariants::class,
             ManageVendors::class,
-        ]);
+        ];
+
+        if (Package::isPluginInstalled('inventories')) {
+            $items[] = ManageQuantities::class;
+            $items[] = ManageMoves::class;
+        }
+
+        return $page->generateNavigationItems($items);
     }
 
     public static function getPages(): array
     {
-        return [
+        $pages = [
             'index'      => ListProducts::route('/'),
             'create'     => CreateProduct::route('/create'),
             'view'       => ViewProduct::route('/{record}'),
@@ -101,5 +111,12 @@ class ProductResource extends BaseProductResource
             'variants'   => ManageVariants::route('/{record}/variants'),
             'vendors'    => ManageVendors::route('/{record}/vendors'),
         ];
+
+        if (Package::isPluginInstalled('inventories')) {
+            $pages['quantities'] = ManageQuantities::route('/{record}/quantities');
+            $pages['moves'] = ManageMoves::route('/{record}/moves');
+        }
+
+        return $pages;
     }
 }

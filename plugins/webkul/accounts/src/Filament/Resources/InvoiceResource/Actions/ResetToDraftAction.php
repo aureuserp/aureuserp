@@ -39,6 +39,8 @@ class ResetToDraftAction extends Action
                     $record->save();
 
                     $livewire->refreshFormData(['state', 'parent_state']);
+
+                    $livewire->dispatch('refreshInvoiceSummary');
                 } catch (Throwable $e) {
                     Notification::make()
                         ->warning()

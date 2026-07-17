@@ -10,6 +10,17 @@ return [
         ],
     ],
 
+    'products' => [
+        'columns' => [
+            'product'    => 'Product',
+            'quantity'   => 'Quantity',
+            'unit-price' => 'Unit Price',
+            'taxes'      => 'Taxes',
+            'discount'   => 'Discount %',
+            'amount'     => 'Amount',
+        ],
+    ],
+
     'infolist' => [
         'settings' => [
             'entries' => [

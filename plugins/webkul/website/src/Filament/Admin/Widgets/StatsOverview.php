@@ -6,6 +6,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Webkul\Blog\Models\Post;
+use Webkul\PluginManager\Package;
 use Webkul\Website\Models\Page;
 
 class StatsOverview extends BaseWidget
@@ -46,9 +47,9 @@ class StatsOverview extends BaseWidget
             'totalPublishPageCount'  => $this->TotalPagesPublishCount(clone $pageQuery),
             'totalDraftPageCount'    => $this->TotalPagesDraftCount(clone $pageQuery),
             'blogs'                  => [
-                'totalBlogs'          => $this->getTotalBlog(clone $blogQuery),
-                'totalPublishedBlogs' => $this->getTotalPublishedBlog(clone $blogQuery),
-                'totalDraftBlogs'     => $this->getTotalDraftBlog(clone $blogQuery),
+                'totalBlogs'          => Package::isPluginInstalled('blogs') ? $this->getTotalBlog(clone $blogQuery) : 0,
+                'totalPublishedBlogs' => Package::isPluginInstalled('blogs') ? $this->getTotalPublishedBlog(clone $blogQuery) : 0,
+                'totalDraftBlogs'     => Package::isPluginInstalled('blogs') ? $this->getTotalDraftBlog(clone $blogQuery) : 0,
             ],
         ];
     }
@@ -70,17 +71,17 @@ class StatsOverview extends BaseWidget
 
     protected function getTotalBlog($query)
     {
-        return $query->count();
+        return $query->count() ?? 0;
     }
 
     protected function getTotalPublishedBlog($query)
     {
-        return $query->where('is_published', true)->count();
+        return $query->where('is_published', true)->count() ?? 0;
     }
 
     protected function getTotalDraftBlog($query)
     {
-        return $query->where('is_published', false)->count();
+        return $query->where('is_published', false)->count() ?? 0;
     }
 
     protected function getStats(): array
@@ -97,14 +98,17 @@ class StatsOverview extends BaseWidget
             Stat::make(__('website::filament/admin/widgets/stats-overview.total-pages-draft.title'), $data['totalDraftPageCount'])
                 ->description(__('website::filament/admin/widgets/stats-overview.total-pages-draft.description')),
 
-            Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs.title'), $data['blogs']['totalBlogs'])
-                ->description(__('website::filament/admin/widgets/stats-overview.total-blogs.description')),
+            ...(Package::isPluginInstalled('blogs') ? [
+                Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs.title'), $data['blogs']['totalBlogs'])
+                    ->description(__('website::filament/admin/widgets/stats-overview.total-blogs.description')),
 
-            Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs-publish.title'), $data['blogs']['totalPublishedBlogs'])
-                ->description(__('website::filament/admin/widgets/stats-overview.total-blogs-publish.description')),
+                Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs-publish.title'), $data['blogs']['totalPublishedBlogs'])
+                    ->description(__('website::filament/admin/widgets/stats-overview.total-blogs-publish.description')),
 
-            Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs-draft.title'), $data['blogs']['totalDraftBlogs'])
-                ->description(__('website::filament/admin/widgets/stats-overview.total-blogs-draft.description')),
+                Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs-draft.title'), $data['blogs']['totalDraftBlogs'])
+                    ->description(__('website::filament/admin/widgets/stats-overview.total-blogs-draft.description')),
+            ] : []
+            ),
         ];
     }
 }

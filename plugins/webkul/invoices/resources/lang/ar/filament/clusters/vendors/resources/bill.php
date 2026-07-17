@@ -13,4 +13,10 @@ return [
         'payment-reference' => 'مرجع الدفع',
         'date'              => 'التاريخ',
     ],
+
+    'actions' => [
+        'open-product' => [
+            'tooltip' => 'فتح المنتج',
+        ],
+    ],
 ];

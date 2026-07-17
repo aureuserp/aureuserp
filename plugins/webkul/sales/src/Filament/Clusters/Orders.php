@@ -3,6 +3,7 @@
 namespace Webkul\Sale\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Orders extends Cluster
 {
@@ -13,8 +14,8 @@ class Orders extends Cluster
         return __('sales::filament/clusters/orders.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('sales::filament/clusters/orders.navigation.group');
+        return NavigationGroup::Sale;
     }
 }

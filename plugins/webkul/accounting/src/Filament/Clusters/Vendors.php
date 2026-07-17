@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Vendors extends Cluster
 {
@@ -15,8 +16,8 @@ class Vendors extends Cluster
         return __('accounting::filament/clusters/vendors.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('accounting::filament/clusters/vendors.navigation.group');
+        return NavigationGroup::Accounting;
     }
 }

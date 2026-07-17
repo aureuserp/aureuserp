@@ -20,6 +20,8 @@ class EditInternal extends EditRecord
 
     protected static string $resource = InternalResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);

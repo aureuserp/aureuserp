@@ -70,6 +70,10 @@ class UninstallCommand extends Command
         if ($this->endWith) {
             ($this->endWith)($this);
         }
+
+        $this->info('⚙️ Refreshing application caches so the plugin navigation is updated...');
+
+        Package::refreshPluginCaches();
     }
 
     protected function dropTables(): void

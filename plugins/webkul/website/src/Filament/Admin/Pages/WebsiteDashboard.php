@@ -11,6 +11,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
+use Webkul\PluginManager\Package;
 use Webkul\Website\Filament\Admin\Widgets\BlogAuthorsChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogStatusPieChart;
@@ -18,6 +19,7 @@ use Webkul\Website\Filament\Admin\Widgets\CategoriesPieChart;
 use Webkul\Website\Filament\Admin\Widgets\RecentBlogsTable;
 use Webkul\Website\Filament\Admin\Widgets\StatsOverview;
 use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
+use Webkul\Support\Enums\NavigationGroup;
 
 class WebsiteDashboard extends BaseDashboard
 {
@@ -37,9 +39,9 @@ class WebsiteDashboard extends BaseDashboard
         return 'Website';
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return 'Dashboard';
+        return NavigationGroup::Dashboard;
     }
 
     public function filtersForm(Schema $form): Schema
@@ -72,14 +74,16 @@ class WebsiteDashboard extends BaseDashboard
      */
     public function getWidgets(): array
     {
-        return [
+        return array_filter([
             StatsOverview::class,
-            BlogChart::class,
-            CategoriesPieChart::class,
-            BlogAuthorsChart::class,
-            BlogStatusPieChart::class,
-            TopCategoriesTable::class,
-            RecentBlogsTable::class,
-        ];
+            ...(Package::isPluginInstalled('blogs') ? [
+                BlogChart::class,
+                CategoriesPieChart::class,
+                BlogAuthorsChart::class,
+                BlogStatusPieChart::class,
+                TopCategoriesTable::class,
+                RecentBlogsTable::class,
+            ] : []),
+        ]);
     }
 }

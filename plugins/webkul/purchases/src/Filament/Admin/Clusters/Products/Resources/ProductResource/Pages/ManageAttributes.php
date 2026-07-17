@@ -21,6 +21,6 @@ class ManageAttributes extends BaseManageAttributes
             return false;
         }
 
-        return app(ProductSettings::class)->enable_variants;
+        return settings(ProductSettings::class)->enable_variants;
     }
 }

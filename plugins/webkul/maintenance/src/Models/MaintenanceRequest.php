@@ -75,6 +75,15 @@ class MaintenanceRequest extends Model
         return __('maintenance::models/maintenance-request.title');
     }
 
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'requested_at' => __('maintenance::models/maintenance-request.log-attributes.requested-at'),
+            'user.name'    => __('maintenance::models/maintenance-request.log-attributes.responsible'),
+            'stage.name'   => __('maintenance::models/maintenance-request.log-attributes.stage'),
+        ];
+    }
+
     public function equipment(): BelongsTo
     {
         return $this->belongsTo(Equipment::class, 'equipment_id')->withTrashed();

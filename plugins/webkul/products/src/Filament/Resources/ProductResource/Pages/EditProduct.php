@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditProduct extends EditRecord
@@ -34,7 +35,7 @@ class EditProduct extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
+        return array_merge(ProductSchemaRegistry::renderActions('header', $this), [
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
@@ -86,6 +87,6 @@ class EditProduct extends EditRecord
                         ->title(__('products::filament/resources/product/pages/edit-product.header-actions.delete.notification.title'))
                         ->body(__('products::filament/resources/product/pages/edit-product.header-actions.delete.notification.body')),
                 ),
-        ];
+        ]);
     }
 }

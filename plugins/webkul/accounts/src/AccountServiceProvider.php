@@ -7,13 +7,25 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
+use Webkul\Account\Filament\Resources\PartnerResource\Schemas\AccountPartnerSchema;
+use Webkul\Account\Filament\Resources\ProductResource\Schemas\AccountProductSchema;
 use Webkul\Account\Livewire\InvoiceSummary;
+use Webkul\Account\Models\Account;
+use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\PaymentMethodLine;
+use Webkul\Account\Models\PaymentTerm;
+use Webkul\Account\Models\Tax;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
+use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
+use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Product;
 
 class AccountServiceProvider extends PackageServiceProvider
 {
@@ -118,6 +130,128 @@ class AccountServiceProvider extends PackageServiceProvider
         Livewire::component('invoice-summary', InvoiceSummary::class);
 
         $this->registerCustomCss();
+
+        $this->contributeProductSchema();
+
+        $this->contributePartnerSchema();
+    }
+
+    protected function contributePartnerSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        PartnerSchemaRegistry::form('sales.fields', fn () => AccountPartnerSchema::salesFields());
+        PartnerSchemaRegistry::form('salesPurchase.append', fn () => AccountPartnerSchema::salesPurchaseAppend());
+        PartnerSchemaRegistry::form('tabs.append', fn () => AccountPartnerSchema::invoicingTab(), 10);
+        PartnerSchemaRegistry::form('tabs.append', fn () => AccountPartnerSchema::internalNotesTab(), 20);
+
+        PartnerSchemaRegistry::infolist('sales.fields', fn () => AccountPartnerSchema::salesEntries());
+        PartnerSchemaRegistry::infolist('salesPurchase.append', fn () => AccountPartnerSchema::salesPurchaseAppendInfolist());
+        PartnerSchemaRegistry::infolist('tabs.append', fn () => AccountPartnerSchema::invoicingTabInfolist(), 10);
+        PartnerSchemaRegistry::infolist('tabs.append', fn () => AccountPartnerSchema::internalNotesTabInfolist(), 20);
+
+        Partner::contributeFillable([
+            'message_bounce',
+            'supplier_rank',
+            'customer_rank',
+            'invoice_warning',
+            'autopost_bills',
+            'credit_limit',
+            'ignore_abnormal_invoice_date',
+            'ignore_abnormal_invoice_amount',
+            'invoice_sending_method',
+            'invoice_edi_format_store',
+            'trust',
+            'invoice_warn_msg',
+            'debit_limit',
+            'peppol_endpoint',
+            'peppol_eas',
+            'sale_warn',
+            'comment',
+            'sale_warn_msg',
+            'property_account_payable_id',
+            'property_account_receivable_id',
+            'property_account_position_id',
+            'property_payment_term_id',
+            'property_supplier_payment_term_id',
+            'property_outbound_payment_method_line_id',
+            'property_inbound_payment_method_line_id',
+        ]);
+
+        Partner::resolveRelationUsing('propertyAccountPayable', fn (Partner $partner) => $partner->belongsTo(Account::class, 'property_account_payable_id'));
+        Partner::resolveRelationUsing('propertyAccountReceivable', fn (Partner $partner) => $partner->belongsTo(Account::class, 'property_account_receivable_id'));
+        Partner::resolveRelationUsing('propertyAccountPosition', fn (Partner $partner) => $partner->belongsTo(FiscalPosition::class, 'property_account_position_id'));
+        Partner::resolveRelationUsing('propertyPaymentTerm', fn (Partner $partner) => $partner->belongsTo(PaymentTerm::class, 'property_payment_term_id'));
+        Partner::resolveRelationUsing('propertySupplierPaymentTerm', fn (Partner $partner) => $partner->belongsTo(PaymentTerm::class, 'property_supplier_payment_term_id'));
+        Partner::resolveRelationUsing('propertyOutboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_outbound_payment_method_line_id'));
+        Partner::resolveRelationUsing('propertyInboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_inbound_payment_method_line_id'));
+    }
+
+    protected function contributeProductSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductSchemaRegistry::form('right.pricing.fields', fn () => AccountProductSchema::taxFields());
+        ProductSchemaRegistry::form('left.append', fn () => AccountProductSchema::policySection());
+        ProductSchemaRegistry::form('hidden', fn () => AccountProductSchema::hiddenFields());
+        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes']);
+
+        Product::contributeFillable([
+            'property_account_income_id',
+            'property_account_expense_id',
+            'image',
+            'service_type',
+            'sale_line_warn',
+            'expense_policy',
+            'invoice_policy',
+            'sale_line_warn_msg',
+            'sales_ok',
+            'purchase_ok',
+        ]);
+
+        Product::resolveRelationUsing('productTaxes', fn (Product $product) => $product->belongsToMany(
+            Tax::class,
+            'accounts_product_taxes',
+            'product_id',
+            'tax_id',
+        ));
+
+        Product::resolveRelationUsing('supplierTaxes', fn (Product $product) => $product->belongsToMany(
+            Tax::class,
+            'accounts_product_supplier_taxes',
+            'product_id',
+            'tax_id',
+        ));
+
+        Product::resolveRelationUsing('propertyAccountIncome', fn (Product $product) => $product->belongsTo(
+            Account::class,
+            'property_account_income_id',
+        )
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ]));
+
+        Product::resolveRelationUsing('propertyAccountExpense', fn (Product $product) => $product->belongsTo(
+            Account::class,
+            'property_account_expense_id',
+        )
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ]));
     }
 
     public function registerCustomCss(): void

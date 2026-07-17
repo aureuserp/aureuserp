@@ -18,6 +18,7 @@ use Webkul\Recruitment\Filament\Widgets\ApplicantChartWidget;
 use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\Recruitment\Models\Stage;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Recruitments extends BaseDashboard
 {
@@ -36,9 +37,9 @@ class Recruitments extends BaseDashboard
         return __('recruitments::filament/pages/recruitment.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('recruitments::filament/pages/recruitment.navigation.group');
+        return NavigationGroup::Dashboard;
     }
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null

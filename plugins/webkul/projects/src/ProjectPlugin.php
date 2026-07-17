@@ -3,10 +3,8 @@
 namespace Webkul\Project;
 
 use Filament\Contracts\Plugin;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\PluginManager\Package;
-use Webkul\Project\Filament\Clusters\Settings\Pages\ManageTasks;
 
 class ProjectPlugin implements Plugin
 {
@@ -44,15 +42,7 @@ class ProjectPlugin implements Plugin
                     ->discoverWidgets(
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Project\\Filament\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('projects::app.navigation.settings.label'))
-                            ->url(fn () => ManageTasks::getUrl())
-                            ->group('Project')
-                            ->sort(3)
-                            ->visible(fn () => ManageTasks::canAccess()),
-                    ]);
+                    );
             });
     }
 

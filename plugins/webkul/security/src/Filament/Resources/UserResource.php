@@ -50,6 +50,7 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Enums\NavigationGroup;
 
 class UserResource extends Resource
 {
@@ -66,9 +67,9 @@ class UserResource extends Resource
         return __('security::filament/resources/user.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('security::filament/resources/user.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -572,7 +573,7 @@ class UserResource extends Resource
 
     protected static function getProtectedAdminRoleIds(): array
     {
-        $defaultRoleId = app(UserSettings::class)->default_role_id;
+        $defaultRoleId = settings(UserSettings::class)->default_role_id;
 
         $candidateNames = array_values(array_filter([
             config('filament-shield.panel_user.name'),

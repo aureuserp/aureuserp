@@ -38,7 +38,7 @@
         {{ \Filament\Support\generate_href_html($href, $target === '_blank', $spaMode) }}
     @endif
     x-data="{ loading: false }"
-    x-on:click="loading = true"
+    x-on:click="loading = {{ $hasAlpineActiveClasses ? '! ('.$alpineActive.')' : 'true' }}"
     @if ($hasAlpineActiveClasses)
         x-effect="if ({{ $alpineActive }}) { loading = false }"
     @endif

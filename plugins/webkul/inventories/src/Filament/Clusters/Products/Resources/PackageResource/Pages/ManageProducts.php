@@ -36,6 +36,7 @@ class ManageProducts extends ManageRelatedRecords
                 TextColumn::make('product.uom.name')
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/manage-products.table.columns.unit-of-measure')),
             ])
-            ->paginated(false);
+            ->paginated(false)
+            ->modifyQueryUsing(fn ($query) => $query->where('location_id', $this->getOwnerRecord()->location_id));
     }
 }

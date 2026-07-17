@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,10 +12,12 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Database\Factories\MoveLineFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -219,7 +222,7 @@ class MoveLine extends Model implements Sortable
             $isRefund = true;
         } elseif ($this->move->move_type == MoveType::ENTRY) {
             if ($this->taxRepartitionLine) {
-                $isRefund = $this->taxRepartitionLine->document_type == 'refund';
+                $isRefund = $this->taxRepartitionLine->document_type === DocumentType::REFUND;
             } else {
                 $tax = $this->taxes->first();
                 $taxType = $tax?->type_tax_use;
@@ -616,5 +619,10 @@ class MoveLine extends Model implements Sortable
 
         $this->reconciled = $companyCurrency->isZero($this->amount_residual)
             && $foreignCurrency->isZero($this->amount_residual_currency);
+    }
+
+    protected static function newFactory(): Factory
+    {
+        return MoveLineFactory::new();
     }
 }
