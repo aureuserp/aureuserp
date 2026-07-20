@@ -2,10 +2,10 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages;
 
-use Webkul\Account\Filament\Resources\ProductResource\Pages\ListProducts as BaseListProducts;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource;
+use Webkul\Manufacturing\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageBillsOfMaterials as BaseManageBillsOfMaterials;
 
-class ListProducts extends BaseListProducts
+class ManageBillsOfMaterials extends BaseManageBillsOfMaterials
 {
     protected static string $resource = ProductResource::class;
 }
