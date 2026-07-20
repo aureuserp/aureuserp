@@ -13,8 +13,10 @@ use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
+use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
 use Webkul\Manufacturing\Observers\MoveObserver;
@@ -185,6 +187,18 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                         }
                         
                         if (! empty($locationIds)) {
+                            // Multi-step warehouses keep the Pre/Post-Production locations active, so
+                            // they accumulate scraps and on-hand quantities. Both reference the location
+                            // with `restrictOnDelete()`, so they must be cleared before the locations.
+                            Scrap::query()
+                                ->whereIn('source_location_id', $locationIds)
+                                ->orWhereIn('destination_location_id', $locationIds)
+                                ->delete();
+
+                            ProductQuantity::query()
+                                ->whereIn('location_id', $locationIds)
+                                ->delete();
+
                             Location::withTrashed()
                                 ->whereIn('id', $locationIds)
                                 ->forceDelete();
