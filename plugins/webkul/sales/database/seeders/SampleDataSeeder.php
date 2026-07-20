@@ -5,7 +5,9 @@ namespace Webkul\Sale\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Webkul\Partner\Models\Industry;
 use Webkul\Partner\Models\Partner;
+use Webkul\Partner\Models\Title;
 use Webkul\Product\Models\Product;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
@@ -118,10 +120,12 @@ class SampleDataSeeder extends Seeder
      */
     protected function ensureDependencies(): void
     {
-        if (! Partner::query()->exists()) {
-            $this->command?->info('No partners found — seeding partner demo data first.');
+        // Fill partner demo data alongside sales whenever the table is essentially
+        // empty. Skips automatically once more than two records already exist.
+        if (Partner::query()->count() <= 2) {
+            $this->command?->info('Seeding partner demo data first.');
 
-            $this->call(\Webkul\Partner\Database\Seeders\SampleDataSeeder::class);
+            $this->seedPartners();
         }
 
         if (! Product::query()->exists()) {
@@ -129,5 +133,56 @@ class SampleDataSeeder extends Seeder
 
             $this->call(\Webkul\Product\Database\Seeders\SampleDataSeeder::class);
         }
+    }
+
+    /**
+     * Seed demo partners (customers and vendors) the sale orders can reference.
+     *
+     * Reuses the existing company, titles and industries so the demo records stay
+     * consistent, and alternates the sub_type so both customer and supplier ranks
+     * get sample data.
+     */
+    protected function seedPartners(int $count = 15): void
+    {
+        $companyId = Company::query()->value('id');
+
+        $titleIds = Title::query()->pluck('id')->all();
+
+        $industryIds = Industry::query()->pluck('id')->all();
+
+        DB::transaction(function () use ($count, $companyId, $titleIds, $industryIds) {
+            for ($i = 0; $i < $count; $i++) {
+                // Alternate between customers and vendors so both ranks get sample data.
+                $isCustomer = $i % 2 === 0;
+
+                $state = [
+                    'sub_type' => $isCustomer ? 'customer' : 'partner',
+                ];
+
+                if ($companyId) {
+                    $state['company_id'] = $companyId;
+                }
+
+                if (! empty($titleIds)) {
+                    $state['title_id'] = Arr::random($titleIds);
+                }
+
+                if (! empty($industryIds)) {
+                    $state['industry_id'] = Arr::random($industryIds);
+                }
+
+                // supplier_rank / customer_rank live on the accounts Partner model, so
+                // they are not mass-assignable here — set them explicitly after creation.
+                Partner::factory()
+                    ->create($state)
+                    ->forceFill([
+                        'supplier_rank' => $isCustomer ? 0 : 1,
+                        'customer_rank' => $isCustomer ? 1 : 0,
+                    ])
+                    ->saveQuietly();
+            }
+        });
+
+        $this->command?->info("Created {$count} demo partners.");
     }
 }

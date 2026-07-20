@@ -3,7 +3,6 @@
 namespace Webkul\Partner;
 
 use Filament\Panel;
-use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 
@@ -26,13 +25,7 @@ class PartnerServiceProvider extends PackageServiceProvider
                 '2024_12_11_111929_create_partners_partner_tag_table',
                 '2025_03_28_115218_add_address_columns_in_partners_partners_table',
             ])
-            ->runsMigrations()
-            ->hasSampleSeeder('Webkul\\Partner\\Database\Seeders\\SampleDataSeeder')
-            ->hasInstallCommand(function (InstallCommand $command) {
-                $command
-                    ->runsMigrations()
-                    ->askToSeedSampleData('partners');
-            });
+            ->runsMigrations();
     }
 
     public function packageBooted(): void

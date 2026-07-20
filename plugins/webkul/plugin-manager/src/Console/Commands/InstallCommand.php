@@ -374,9 +374,8 @@ class InstallCommand extends Command
 
     public function runSampleSeeders(): self
     {
-
-        if (app()->isProduction()) {
-            $this->warn('⚠️  Skipping sample data: sample seeders are for development environments only.');
+        if (! class_exists(\Faker\Factory::class)) {
+            $this->warn('⚠️  Skipping sample data: dev dependencies (fakerphp/faker) are not installed.');
 
             return $this;
         }
