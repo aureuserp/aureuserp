@@ -150,23 +150,38 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                 });
 
                 $command->endWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds) {
+                    $operationTypeIds = array_values(array_unique($operationTypeIds));
+                    $locationIds = array_values(array_unique($locationIds));
+
                     if (empty($operationTypeIds) && empty($locationIds)) {
                         return;
                     }
 
                     DB::transaction(function () use ($operationTypeIds, $locationIds) {
-                        if (! empty($locationIds)) {
-                            MoveLine::query()
-                                ->whereIn('source_location_id', $locationIds)
-                                ->orWhereIn('destination_location_id', $locationIds)
-                                ->delete();
+                        // The manufacturing locations are referenced with `restrictOnDelete()` by
+                        // these tables, keyed by the columns that hold the reference. Every listed
+                        // table must be cleared before the locations can be force-deleted.
+                        $locationRestrictors = [
+                            MoveLine::class        => ['source_location_id', 'destination_location_id'],
+                            Move::class            => ['source_location_id', 'destination_location_id'],
+                            Scrap::class           => ['source_location_id', 'destination_location_id'],
+                            ProductQuantity::class => ['location_id'],
+                        ];
 
-                            Move::query()
-                                ->whereIn('source_location_id', $locationIds)
-                                ->orWhereIn('destination_location_id', $locationIds)
-                                ->delete();
+                        if (! empty($locationIds)) {
+                            foreach ($locationRestrictors as $model => $columns) {
+                                $model::query()
+                                    ->where(function ($query) use ($columns, $locationIds) {
+                                        foreach ($columns as $column) {
+                                            $query->orWhereIn($column, $locationIds);
+                                        }
+                                    })
+                                    ->delete();
+                            }
                         }
 
+                        // Operations are the remaining restrictor: each references a manufacturing
+                        // operation type and/or one of the locations, so clear them too.
                         Operation::query()
                             ->where(function ($query) use ($operationTypeIds, $locationIds) {
                                 if (! empty($operationTypeIds)) {
@@ -174,31 +189,22 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                                 }
 
                                 if (! empty($locationIds)) {
-                                    $query->orWhereIn('source_location_id', $locationIds)
-                                        ->orWhereIn('destination_location_id', $locationIds);
+                                    $query->orWhere(fn ($subQuery) => $subQuery
+                                        ->whereIn('source_location_id', $locationIds)
+                                        ->orWhereIn('destination_location_id', $locationIds));
                                 }
                             })
                             ->delete();
 
+                        // With every restricting child gone (and the manufacturing tables dropped by
+                        // `dropTables()`), the operation types and locations can be force-deleted.
                         if (! empty($operationTypeIds)) {
                             OperationType::withTrashed()
                                 ->whereIn('id', $operationTypeIds)
                                 ->forceDelete();
                         }
-                        
+
                         if (! empty($locationIds)) {
-                            // Multi-step warehouses keep the Pre/Post-Production locations active, so
-                            // they accumulate scraps and on-hand quantities. Both reference the location
-                            // with `restrictOnDelete()`, so they must be cleared before the locations.
-                            Scrap::query()
-                                ->whereIn('source_location_id', $locationIds)
-                                ->orWhereIn('destination_location_id', $locationIds)
-                                ->delete();
-
-                            ProductQuantity::query()
-                                ->whereIn('location_id', $locationIds)
-                                ->delete();
-
                             Location::withTrashed()
                                 ->whereIn('id', $locationIds)
                                 ->forceDelete();
