@@ -8,9 +8,4 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationReceiptRes
 class EditReceipt extends BaseEditReceipt
 {
     protected static string $resource = QuotationReceiptResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()], shouldGuessMissingParameters: true);
-    }
 }

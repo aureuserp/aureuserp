@@ -71,6 +71,7 @@ class QuantityResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->default(fn (): ?int => Warehouse::first()?->lot_stock_location_id)
                     ->visible(static::getWarehouseSettings()->enable_locations),
                 Select::make('product_id')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.form.fields.product'))

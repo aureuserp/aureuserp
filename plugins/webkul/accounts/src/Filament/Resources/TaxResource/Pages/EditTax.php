@@ -26,11 +26,6 @@ class EditTax extends EditRecord
             ->body(__('accounts::filament/resources/tax/pages/edit-tax.notification.body'));
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getHeaderActions(): array
     {
         return [

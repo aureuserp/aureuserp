@@ -122,6 +122,7 @@ return [
                             'actions' => [
                                 'tooltip' => [
                                     'add-order-line' => 'Añadir línea de pedido',
+                                    'already-added' => 'Ya añadido al pedido',
                                 ],
 
                                 'notifications' => [

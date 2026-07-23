@@ -145,6 +145,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'نوع العملية',
             'name'                 => 'الاسم',
             'state'                => 'الحالة',
             'partner'              => 'الشريك',

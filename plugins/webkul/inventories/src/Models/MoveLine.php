@@ -242,15 +242,27 @@ class MoveLine extends Model
                         $newReservedQty = $moveLine->uom_qty;
                     }
 
-                    $location = $moveLine->sourceLocation;
+                    $originalLocation = Location::find($moveLine->getOriginal('source_location_id')) ?? $moveLine->sourceLocation;
 
-                    if (array_key_exists('source_location_id', $updates)) {
-                        $location = Location::find($updates['source_location_id']);
-                    }
+                    $originalLot = Lot::find($moveLine->getOriginal('lot_id'));
+
+                    $originalPackage = Package::find($moveLine->getOriginal('package_id'));
 
                     if (! float_is_zero($moveLine->getOriginal('uom_qty'), precisionRounding: $moveLine->product->uom->rounding)) {
-                        $moveLine->synchronizeQuantity(-$moveLine->getOriginal('uom_qty'), $location, action: 'reserved');
+                        $moveLine->synchronizeQuantity(
+                            -$moveLine->getOriginal('uom_qty'),
+                            $originalLocation,
+                            action: 'reserved',
+                            values: [
+                                'lot'     => $originalLot,
+                                'package' => $originalPackage,
+                            ]
+                        );
                     }
+
+                    $location = array_key_exists('source_location_id', $updates)
+                        ? Location::find($updates['source_location_id'])
+                        : $originalLocation;
 
                     if (! $moveLine->move->shouldBypassReservation($location)) {
                         $moveLine->synchronizeQuantity(
@@ -258,8 +270,12 @@ class MoveLine extends Model
                             $location,
                             action: 'reserved',
                             values: [
-                                'lot'     => $moveLine->lot,
-                                'package' => $moveLine->package,
+                                'lot' => array_key_exists('lot_id', $updates)
+                                    ? Lot::find($updates['lot_id'])
+                                    : $originalLot,
+                                'package' => array_key_exists('package_id', $updates)
+                                    ? Package::find($updates['package_id'])
+                                    : $originalPackage,
                             ]
                         );
                     }
@@ -279,7 +295,7 @@ class MoveLine extends Model
 
         static::deleted(function ($moveLine) {
             if (
-                ! float_is_zero($moveLine->uom_qty, precisionRounding: 2)
+                ! float_is_zero($moveLine->uom_qty, precisionRounding: $moveLine->product->uom->rounding)
                 && $moveLine->move_id
                 && ! $moveLine->move->shouldBypassReservation($moveLine->location)
             ) {

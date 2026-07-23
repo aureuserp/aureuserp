@@ -12,19 +12,16 @@ use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditScrap extends EditRecord
 {
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
     
     protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = ScrapResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {

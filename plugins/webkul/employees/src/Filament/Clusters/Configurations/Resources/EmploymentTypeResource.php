@@ -204,7 +204,7 @@ class EmploymentTypeResource extends Resource
                     )
                     ->icon('heroicon-o-plus-circle'),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc');
     }
 

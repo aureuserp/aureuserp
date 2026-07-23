@@ -54,9 +54,11 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeRes
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Inventory\Settings\LogisticSettings;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\PluginManager\Package;
 
 class OperationTypeResource extends Resource
 {
@@ -110,6 +112,8 @@ class OperationTypeResource extends Resource
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.operator-type'))
                                                     ->required()
                                                     ->options(Enums\OperationType::class)
+                                                    ->disableOptionWhen(fn (string $value): bool => ($value === Enums\OperationType::DROPSHIP->value && ! settings(LogisticSettings::class)->enable_dropshipping)
+                                                        || ($value === Enums\OperationType::MANUFACTURE->value && ! Package::isPluginInstalled('manufacturing')))
                                                     ->default(Enums\OperationType::INCOMING->value)
                                                     ->native(true)
                                                     ->live()

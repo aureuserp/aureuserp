@@ -310,7 +310,7 @@ class ProjectResource extends Resource
                     ->label(__('projects::filament/resources/project.table.groups.created-at'))
                     ->date(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->filters([
                 QueryBuilder::make()

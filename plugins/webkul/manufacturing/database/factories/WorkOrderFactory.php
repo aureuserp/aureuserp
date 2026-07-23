@@ -42,4 +42,29 @@ class WorkOrderFactory extends Factory
             'creator_id'             => User::query()->value('id') ?? User::factory(),
         ];
     }
+
+    public function pending(): static
+    {
+        return $this->state(fn () => ['state' => WorkOrderState::PENDING]);
+    }
+
+    public function ready(): static
+    {
+        return $this->state(fn () => ['state' => WorkOrderState::READY]);
+    }
+
+    public function progress(): static
+    {
+        return $this->state(fn () => ['state' => WorkOrderState::PROGRESS]);
+    }
+
+    public function done(): static
+    {
+        return $this->state(fn () => ['state' => WorkOrderState::DONE]);
+    }
+
+    public function expectedDuration(float $minutes): static
+    {
+        return $this->state(fn () => ['expected_duration' => $minutes]);
+    }
 }

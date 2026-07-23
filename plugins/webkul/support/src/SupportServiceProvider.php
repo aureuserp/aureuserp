@@ -12,6 +12,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
+use Webkul\Support\Livewire\QuickNavigation;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
@@ -65,6 +66,8 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2026_04_02_000001_create_calendars_table',
                 '2026_04_29_065935_add_resource_columns_in_calendar_leaves_table',
                 '2026_05_01_065935_add_resource_columns_in_calendar_attendances_table',
+                '2026_07_10_000000_fix_unit_of_measures_factor_precision',
+                '2026_07_16_000001_create_quick_navigation_favorites_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -77,6 +80,8 @@ class SupportServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Livewire::component('accept-invitation', AcceptInvitation::class);
+
+        Livewire::component('quick-navigation', QuickNavigation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
 

@@ -16,6 +16,7 @@ return [
         'quantity' => 'Cantidad',
         'unit' => 'Unidad',
         'unit-price' => 'Precio unitario',
+        'options' => 'Opciones',
         'subtotal' => 'Subtotal',
         'tax' => 'Impuesto',
         'discount' => 'Descuento',
