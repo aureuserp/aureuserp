@@ -74,6 +74,11 @@ class OperationInfolist
                         Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.title'))
                             ->schema([
                                 RepeatableEntry::make('moves')
+                                    ->state(function ($record) {
+                                        $record->loadMissing(['moves.product', 'moves.lines.lot']);
+
+                                        return $record->moves;
+                                    })
                                     ->columnManager()
                                     ->columnManagerColumns(2)
                                     ->table([
@@ -160,13 +165,7 @@ class OperationInfolist
                                             ->placeholder('—')
                                             ->visible(OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers)
                                             ->state(function (?Move $record): string {
-                                                if (! $record?->product_id) {
-                                                    return '—';
-                                                }
-
-                                                $record->loadMissing(['product', 'lines.lot']);
-
-                                                if (! in_array($record->product?->tracking, [ProductTracking::LOT, ProductTracking::SERIAL], true)) {
+                                                if (! in_array($record?->product?->tracking, [ProductTracking::LOT, ProductTracking::SERIAL], true)) {
                                                     return '—';
                                                 }
 

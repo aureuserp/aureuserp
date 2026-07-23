@@ -254,7 +254,7 @@ class OperationForm
                     'uom',
                     'productPackaging',
                     'operationType',
-                    'lines' => fn ($q) => $q->with('lot'),
+                    'lines.lot',
                 ])
             )
             ->columnManagerColumns(2)
