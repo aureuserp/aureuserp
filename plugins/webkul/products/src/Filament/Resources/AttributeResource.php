@@ -3,6 +3,8 @@
 namespace Webkul\Product\Filament\Resources;
 
 use BackedEnum;
+use Closure;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -30,8 +32,10 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Throwable;
 use Webkul\Product\Enums\AttributeType;
 use Webkul\Product\Models\Attribute;
+use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductAttribute;
 
 class AttributeResource extends Resource
@@ -143,24 +147,11 @@ class AttributeResource extends Resource
                             ->body(__('products::filament/resources/attribute.table.actions.restore.notification.body')),
                     ),
                 DeleteAction::make()
-                    ->before(function (DeleteAction $action, Attribute $record) {
-                        if ($record->productAttributes()->exists()) {
-                            Notification::make()
-                                ->danger()
-                                ->title(__('products::filament/resources/attribute.table.actions.delete.notification.error.title'))
-                                ->body(__('products::filament/resources/attribute.table.actions.delete.notification.error.body', [
-                                    'products' => self::blockingProductNames($record),
-                                ]))
-                                ->send();
-
-                            $action->halt();
-                        }
-                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('products::filament/resources/attribute.table.actions.delete.notification.success.title'))
-                            ->body(__('products::filament/resources/attribute.table.actions.delete.notification.success.body')),
+                            ->title(__('products::filament/resources/attribute.table.actions.delete.notification.title'))
+                            ->body(__('products::filament/resources/attribute.table.actions.delete.notification.body')),
                     ),
                 ForceDeleteAction::make()
                     ->before(function (ForceDeleteAction $action, Attribute $record) {
@@ -193,23 +184,20 @@ class AttributeResource extends Resource
                                 ->body(__('products::filament/resources/attribute.table.bulk-actions.restore.notification.body')),
                         ),
                     DeleteBulkAction::make()
-                        ->successNotification(null)
-                        ->action(function (Collection $records) {
-                            [$blocked, $deletable, $blockingNames] = self::partitionByUsage($records);
-
-                            $deletable->each->delete();
-
-                            self::notifyBulkDeletion($deletable, $blocked, $blockingNames, 'products::filament/resources/attribute.table.bulk-actions.delete.notification');
-                        }),
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.title'))
+                                ->body(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.body')),
+                        ),
                     ForceDeleteBulkAction::make()
                         ->successNotification(null)
-                        ->action(function (Collection $records) {
-                            [$blocked, $deletable, $blockingNames] = self::partitionByUsage($records);
-
-                            $deletable->each->forceDelete();
-
-                            self::notifyBulkDeletion($deletable, $blocked, $blockingNames, 'products::filament/resources/attribute.table.bulk-actions.force-delete.notification');
-                        }),
+                        ->using(fn (BulkAction $action, Collection $records) => self::processBulkDeletion(
+                            $action,
+                            $records,
+                            fn (Attribute $record): bool => (bool) $record->forceDelete(),
+                            'products::filament/resources/attribute.table.bulk-actions.force-delete.notification',
+                        )),
                 ]),
             ])
             ->emptyStateActions([
@@ -218,14 +206,41 @@ class AttributeResource extends Resource
             ]);
     }
 
-    public static function blockingProductNames(Attribute $record): string
+    protected const BLOCKING_PRODUCTS_SHOWN = 3;
+
+    protected static function blockingProductNames(Attribute $record): string
     {
-        return self::formatProductNames(
-            $record->productAttributes()
-                ->with(['product' => fn ($query) => $query->withTrashed()->select('id', 'name')])
-                ->get()
-                ->pluck('product.name')
-        );
+        return self::describeBlockingProducts([$record->getKey()]);
+    }
+
+    protected static function describeBlockingProducts(array $attributeIds): string
+    {
+        if (empty($attributeIds)) {
+            return '';
+        }
+
+        $productIds = ProductAttribute::query()
+            ->whereIn('attribute_id', $attributeIds)
+            ->select('product_id');
+
+        $names = Product::withTrashed()
+            ->whereIn('id', $productIds)
+            ->orderBy('id')
+            ->limit(self::BLOCKING_PRODUCTS_SHOWN)
+            ->pluck('name')
+            ->filter()
+            ->values();
+
+        $total = Product::withTrashed()->whereIn('id', $productIds)->count();
+
+        $remaining = $total - $names->count();
+
+        return $names->implode(', ')
+            .($remaining > 0
+                ? ' '.__('products::filament/resources/attribute.table.actions.force-delete.notification.error.more', [
+                    'count' => $remaining,
+                ])
+                : '');
     }
 
     protected static function partitionByUsage(Collection $records): array
@@ -236,34 +251,41 @@ class AttributeResource extends Resource
             ->pluck('attribute_id')
             ->flip();
 
-        [$blocked, $deletable] = $records
+        return $records
             ->partition(fn (Attribute $record) => $usedIds->has($record->getKey()))
             ->all();
-
-        // Names are only needed for the blocked attributes.
-        $blockingNames = $blocked->isEmpty()
-            ? collect()
-            : ProductAttribute::whereIn('attribute_id', $blocked->modelKeys())
-                ->with(['product' => fn ($query) => $query->withTrashed()->select('id', 'name')])
-                ->get()
-                ->pluck('product.name');
-
-        return [$blocked, $deletable, $blockingNames];
     }
 
-    protected static function formatProductNames(\Illuminate\Support\Collection $names): string
+    protected static function processBulkDeletion(BulkAction $action, Collection $records, Closure $delete, string $key): void
     {
-        $names = $names->filter()->unique()->values();
+        [$blocked, $deletable] = self::partitionByUsage($records);
 
-        return $names->take(3)->implode(', ')
-            .($names->count() > 3
-                ? ' '.__('products::filament/resources/attribute.table.actions.delete.notification.error.more', [
-                    'count' => $names->count() - 3,
-                ])
-                : '');
+        $deleted = new Collection;
+
+        $hasReportedException = false;
+
+        foreach ($deletable as $record) {
+            try {
+                if ($delete($record)) {
+                    $deleted->push($record);
+                } else {
+                    $action->reportBulkProcessingFailure();
+                }
+            } catch (Throwable $exception) {
+                $action->reportBulkProcessingFailure();
+
+                if (! $hasReportedException) {
+                    report($exception);
+
+                    $hasReportedException = true;
+                }
+            }
+        }
+
+        self::notifyBulkDeletion($deleted, $blocked, $key);
     }
 
-    protected static function notifyBulkDeletion(Collection $deleted, Collection $blocked, \Illuminate\Support\Collection $blockingNames, string $key): void
+    protected static function notifyBulkDeletion(Collection $deleted, Collection $blocked, string $key): void
     {
         if ($blocked->isNotEmpty()) {
             Notification::make()
@@ -271,7 +293,7 @@ class AttributeResource extends Resource
                 ->title(__("{$key}.partial.title"))
                 ->body(__("{$key}.partial.body", [
                     'attributes' => $blocked->pluck('name')->implode(', '),
-                    'products'   => self::formatProductNames($blockingNames),
+                    'products'   => self::describeBlockingProducts($blocked->modelKeys()),
                 ]))
                 ->send();
         }

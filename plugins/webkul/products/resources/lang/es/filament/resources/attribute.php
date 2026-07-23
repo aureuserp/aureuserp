@@ -53,16 +53,8 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'success' => [
-                        'title' => 'Atributo eliminado',
-                        'body'  => 'El atributo ha sido eliminado correctamente.',
-                    ],
-
-                    'error' => [
-                        'title' => 'No se pudo eliminar el atributo',
-                        'body'  => 'El atributo no puede eliminarse porque está en uso por el producto: :products',
-                        'more'  => '... +:count más',
-                    ],
+                    'title' => 'Atributo eliminado',
+                    'body'  => 'El atributo ha sido eliminado correctamente.',
                 ],
             ],
 
@@ -76,6 +68,7 @@ return [
                     'error' => [
                         'title' => 'No se pudo eliminar el atributo',
                         'body'  => 'El atributo no puede eliminarse porque está en uso por el producto: :products',
+                        'more'  => '... +:count más',
                     ],
                 ],
             ],
@@ -91,15 +84,8 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'success' => [
-                        'title' => 'Atributos eliminados',
-                        'body'  => 'Los atributos han sido eliminados correctamente.',
-                    ],
-
-                    'partial' => [
-                        'title' => 'No se pudieron eliminar algunos atributos',
-                        'body'  => 'El atributo ":attributes" no puede eliminarse porque está en uso por el producto: :products',
-                    ],
+                    'title' => 'Atributos eliminados',
+                    'body'  => 'Los atributos han sido eliminados correctamente.',
                 ],
             ],
 

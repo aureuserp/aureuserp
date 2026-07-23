@@ -7,7 +7,6 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Product\Filament\Resources\AttributeResource;
-use Webkul\Product\Models\Attribute;
 
 class ViewAttribute extends ViewRecord
 {
@@ -18,24 +17,11 @@ class ViewAttribute extends ViewRecord
         return [
             EditAction::make(),
             DeleteAction::make()
-                ->before(function (DeleteAction $action, Attribute $record) {
-                    if ($record->productAttributes()->exists()) {
-                        Notification::make()
-                            ->danger()
-                            ->title(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.error.title'))
-                            ->body(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.error.body', [
-                                'products' => AttributeResource::blockingProductNames($record),
-                            ]))
-                            ->send();
-
-                        $action->halt();
-                    }
-                })
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.success.title'))
-                        ->body(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.success.body')),
+                        ->title(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.title'))
+                        ->body(__('products::filament/resources/attribute/pages/view-attribute.header-actions.delete.notification.body')),
                 ),
         ];
     }

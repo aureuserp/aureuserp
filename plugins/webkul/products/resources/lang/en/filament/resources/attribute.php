@@ -53,16 +53,8 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'success' => [
-                        'title' => 'Attribute deleted',
-                        'body'  => 'The attribute has been deleted successfully.',
-                    ],
-
-                    'error' => [
-                        'title' => 'Attribute could not be deleted',
-                        'body'  => 'The attribute cannot be deleted because it is currently in use by Product : :products',
-                        'more'  => '... +:count more',
-                    ],
+                    'title' => 'Attribute deleted',
+                    'body'  => 'The attribute has been deleted successfully.',
                 ],
             ],
 
@@ -76,6 +68,7 @@ return [
                     'error' => [
                         'title' => 'Attribute could not be deleted',
                         'body'  => 'The attribute cannot be deleted because it is currently in use by Product : :products',
+                        'more'  => '... +:count more',
                     ],
                 ],
             ],
@@ -91,15 +84,8 @@ return [
 
             'delete' => [
                 'notification' => [
-                    'success' => [
-                        'title' => 'Attributes deleted',
-                        'body'  => 'The attributes has been deleted successfully.',
-                    ],
-
-                    'partial' => [
-                        'title' => 'Some attributes could not be deleted',
-                        'body'  => 'The attribute ":attributes" cannot be deleted because they are currently in use by Product : :products',
-                    ],
+                    'title' => 'Attributes deleted',
+                    'body'  => 'The attributes has been deleted successfully.',
                 ],
             ],
 
