@@ -164,6 +164,8 @@ class OperationInfolist
                                                     return '—';
                                                 }
 
+                                                $record->loadMissing(['product', 'lines.lot']);
+
                                                 if (! in_array($record->product?->tracking, [ProductTracking::LOT, ProductTracking::SERIAL], true)) {
                                                     return '—';
                                                 }
