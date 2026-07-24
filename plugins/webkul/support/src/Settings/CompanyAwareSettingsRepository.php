@@ -86,21 +86,17 @@ class CompanyAwareSettingsRepository extends DatabaseSettingsRepository
 
     public function updatePropertiesPayload(string $group, array $properties): void
     {
-        if (! $this->hasCompanyColumn()) {
-            parent::updatePropertiesPayload($group, $properties);
+        $hasCompanyColumn = $this->hasCompanyColumn();
 
-            return;
-        }
-
-        $companyId = $this->isCompanyScoped($group) ? $this->currentCompanyId() : null;
+        $companyId = $hasCompanyColumn && $this->isCompanyScoped($group)
+            ? $this->currentCompanyId()
+            : null;
 
         foreach ($properties as $name => $payload) {
             $match = ['group' => $group, 'name' => $name];
 
-            if ($this->isCompanyScoped($group)) {
+            if ($hasCompanyColumn) {
                 $match['company_id'] = $companyId;
-            } else {
-                $match['company_id'] = null;
             }
 
             $this->getBuilder()->updateOrInsert($match, ['payload' => $this->encode($payload)]);
@@ -171,7 +167,11 @@ class CompanyAwareSettingsRepository extends DatabaseSettingsRepository
 
     protected function hasCompanyColumn(): bool
     {
-        return self::$hasCompanyColumn ??= Schema::hasColumn('settings', 'company_id');
+        if (self::$hasCompanyColumn) {
+            return true;
+        }
+
+        return self::$hasCompanyColumn = Schema::hasColumn('settings', 'company_id');
     }
 
     protected function currentCompanyId(): ?int
