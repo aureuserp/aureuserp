@@ -745,7 +745,7 @@ class Order extends Model
                 $byproduct->uom_id,
                 $byproduct->operation_id,
                 $byproduct->id,
-                $byproduct->cost_share
+                $byproduct->cost_share ?? 0
             );
         }
 

@@ -747,7 +747,7 @@ class WorkOrder extends Model implements Sortable
         $this->endAll(collect([$this]));
 
         $vals = [
-            'quantity_produced' => $this->quantity_produced ?: ($this->quantity_producing ?: $this->quantity_production),
+            'quantity_produced' => (float) $this->quantity_produced ?: ((float) $this->quantity_producing ?: (float) $this->quantity_production),
             'state'             => WorkOrderState::DONE,
             'finished_at'       => $dateFinished,
             'costs_per_hour'    => $this->workCenter->costs_per_hour,

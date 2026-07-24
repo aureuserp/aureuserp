@@ -20,8 +20,8 @@ class WarehouseFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'            => fake()->company(),
-            'code'            => strtoupper(fake()->lexify('WH???')),
+            'name'            => fake()->unique()->company(),
+            'code'            => strtoupper(fake()->unique()->lexify('WH???')),
             'sort'            => 1,
             'reception_steps' => ReceptionStep::ONE_STEP,
             'delivery_steps'  => DeliveryStep::ONE_STEP,

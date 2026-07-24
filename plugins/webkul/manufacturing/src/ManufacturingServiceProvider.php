@@ -8,6 +8,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
@@ -19,6 +20,7 @@ use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
+use Webkul\Manufacturing\Models\Order;
 use Webkul\Manufacturing\Observers\MoveObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -153,63 +155,67 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     $operationTypeIds = array_values(array_unique($operationTypeIds));
                     $locationIds = array_values(array_unique($locationIds));
 
-                    if (empty($operationTypeIds) && empty($locationIds)) {
-                        return;
+                    if (! empty($operationTypeIds) || ! empty($locationIds)) {
+                        DB::transaction(function () use ($operationTypeIds, $locationIds) {
+                            // The manufacturing locations are referenced with `restrictOnDelete()` by
+                            // these tables, keyed by the columns that hold the reference. Every listed
+                            // table must be cleared before the locations can be force-deleted.
+                            $locationRestrictors = [
+                                MoveLine::class        => ['source_location_id', 'destination_location_id'],
+                                Move::class            => ['source_location_id', 'destination_location_id'],
+                                Scrap::class           => ['source_location_id', 'destination_location_id'],
+                                ProductQuantity::class => ['location_id'],
+                            ];
+
+                            if (! empty($locationIds)) {
+                                foreach ($locationRestrictors as $model => $columns) {
+                                    $model::query()
+                                        ->where(function ($query) use ($columns, $locationIds) {
+                                            foreach ($columns as $column) {
+                                                $query->orWhereIn($column, $locationIds);
+                                            }
+                                        })
+                                        ->delete();
+                                }
+                            }
+
+                            // Operations are the remaining restrictor: each references a manufacturing
+                            // operation type and/or one of the locations, so clear them too.
+                            Operation::query()
+                                ->where(function ($query) use ($operationTypeIds, $locationIds) {
+                                    if (! empty($operationTypeIds)) {
+                                        $query->whereIn('operation_type_id', $operationTypeIds);
+                                    }
+
+                                    if (! empty($locationIds)) {
+                                        $query->orWhere(fn ($subQuery) => $subQuery
+                                            ->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds));
+                                    }
+                                })
+                                ->delete();
+
+                            // With every restricting child gone (and the manufacturing tables dropped by
+                            // `dropTables()`), the operation types and locations can be force-deleted.
+                            if (! empty($operationTypeIds)) {
+                                OperationType::withTrashed()
+                                    ->whereIn('id', $operationTypeIds)
+                                    ->forceDelete();
+                            }
+
+                            if (! empty($locationIds)) {
+                                Location::withTrashed()
+                                    ->whereIn('id', $locationIds)
+                                    ->forceDelete();
+                            }
+                        });
                     }
 
-                    DB::transaction(function () use ($operationTypeIds, $locationIds) {
-                        // The manufacturing locations are referenced with `restrictOnDelete()` by
-                        // these tables, keyed by the columns that hold the reference. Every listed
-                        // table must be cleared before the locations can be force-deleted.
-                        $locationRestrictors = [
-                            MoveLine::class        => ['source_location_id', 'destination_location_id'],
-                            Move::class            => ['source_location_id', 'destination_location_id'],
-                            Scrap::class           => ['source_location_id', 'destination_location_id'],
-                            ProductQuantity::class => ['location_id'],
-                        ];
-
-                        if (! empty($locationIds)) {
-                            foreach ($locationRestrictors as $model => $columns) {
-                                $model::query()
-                                    ->where(function ($query) use ($columns, $locationIds) {
-                                        foreach ($columns as $column) {
-                                            $query->orWhereIn($column, $locationIds);
-                                        }
-                                    })
-                                    ->delete();
-                            }
-                        }
-
-                        // Operations are the remaining restrictor: each references a manufacturing
-                        // operation type and/or one of the locations, so clear them too.
-                        Operation::query()
-                            ->where(function ($query) use ($operationTypeIds, $locationIds) {
-                                if (! empty($operationTypeIds)) {
-                                    $query->whereIn('operation_type_id', $operationTypeIds);
-                                }
-
-                                if (! empty($locationIds)) {
-                                    $query->orWhere(fn ($subQuery) => $subQuery
-                                        ->whereIn('source_location_id', $locationIds)
-                                        ->orWhereIn('destination_location_id', $locationIds));
-                                }
-                            })
-                            ->delete();
-
-                        // With every restricting child gone (and the manufacturing tables dropped by
-                        // `dropTables()`), the operation types and locations can be force-deleted.
-                        if (! empty($operationTypeIds)) {
-                            OperationType::withTrashed()
-                                ->whereIn('id', $operationTypeIds)
-                                ->forceDelete();
-                        }
-
-                        if (! empty($locationIds)) {
-                            Location::withTrashed()
-                                ->whereIn('id', $locationIds)
-                                ->forceDelete();
-                        }
-                    });
+                    // `endWith()` stores a single closure, so the chatter purge has to live here
+                    // rather than in a second `endWith()` call — a second registration would
+                    // silently overwrite this one and skip the cleanup above entirely. It runs
+                    // unconditionally, even when this warehouse had nothing to clean up.
+                    ChatterCleanupService::purgeForModels([Order::class]);
                 });
             })
             ->icon('manufacturing');

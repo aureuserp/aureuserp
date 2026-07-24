@@ -122,6 +122,7 @@ return [
                             'actions' => [
                                 'tooltip' => [
                                     'add-order-line' => 'Add Order Line',
+                                    'already-added'  => 'Already Added To Order',
                                 ],
 
                                 'notifications' => [

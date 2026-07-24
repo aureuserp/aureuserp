@@ -22,7 +22,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Webkul\Manufacturing\ManufacturingPlugin;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\GlobalSearchProvider;
@@ -59,7 +58,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups(NavigationGroup::class)
             ->plugins([
-                ManufacturingPlugin::make(),
                 FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 1,

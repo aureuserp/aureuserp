@@ -501,7 +501,7 @@ class WorkCenterResource extends Resource
                 CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc');
     }
 

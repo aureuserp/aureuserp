@@ -21,8 +21,8 @@ jobs:
       matrix:
         php-versions: [8.3]
         node-version: ["22.13.1"]
-        shard_index: [1, 2, 3, 4]
-        shard_total: [4]
+        shard_index: [1, 2, 3, 4, 5, 6]
+        shard_total: [6]
 
     name: Shard ${{ matrix.shard_index }} of ${{ matrix.shard_total }}
 
@@ -51,6 +51,12 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Cache Composer Vendor
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -72,6 +78,12 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('tests/e2e-pw/package-lock.json') }}
           restore-keys: ${{ runner.os }}-playwright-
+
+      - name: Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: tests/e2e-pw/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('tests/e2e-pw/package-lock.json') }}
 
       - name: Install Node.js Dependencies
         run: npm ci

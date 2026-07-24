@@ -32,6 +32,7 @@ class StorageCategory extends Model implements Sortable
 
     protected $casts = [
         'allow_new_products' => AllowNewProduct::class,
+        'max_weight'         => 'float',
     ];
 
     public $sortable = [

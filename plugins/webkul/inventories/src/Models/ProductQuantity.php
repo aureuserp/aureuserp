@@ -14,6 +14,7 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Partner\Models\Partner;
+use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
@@ -266,6 +267,7 @@ class ProductQuantity extends Model
             'quantity'                => $qty,
             'product_uom_qty'         => $qty,
             'is_picked'               => true,
+            'is_inventory'            => true,
             'product_id'              => $this->product_id,
             'uom_id'                  => $this->uom->id,
             'source_location_id'      => $sourceLocation->id,
@@ -440,21 +442,26 @@ class ProductQuantity extends Model
 
     public static function getRemovalStrategy(Product $product, Location $location): string
     {
-        if ($product->category?->removal_strategy) {
-            return $product->category->removal_strategy;
+        if ($strategy = $product->category?->removal_strategy) {
+            return static::normalizeRemovalStrategy($strategy);
         }
 
         $loc = $location;
 
         while ($loc) {
             if ($loc->removal_strategy) {
-                return $loc->removal_strategy;
+                return static::normalizeRemovalStrategy($loc->removal_strategy);
             }
 
             $loc = $loc->parent;
         }
 
-        return 'fifo';
+        return ProductRemoval::FIFO->value;
+    }
+
+    protected static function normalizeRemovalStrategy(ProductRemoval|string $strategy): string
+    {
+        return $strategy instanceof ProductRemoval ? $strategy->value : $strategy;
     }
 
     public static function getRemovalStrategyOrder(string $removalStrategy): ?string

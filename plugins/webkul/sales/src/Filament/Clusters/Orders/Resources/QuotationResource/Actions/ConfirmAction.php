@@ -27,7 +27,7 @@ class ConfirmAction extends Action
         $this
             ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'gray' : 'primary')
             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/confirm.title'))
-            ->hidden(fn ($record) => $record->state == OrderState::SALE)
+            ->hidden(fn ($record) => in_array($record->state, [OrderState::SALE, OrderState::CANCEL]))
             ->action(function ($record, $livewire) {
                 try {
                     $record = SaleOrder::confirmSaleOrder($record);

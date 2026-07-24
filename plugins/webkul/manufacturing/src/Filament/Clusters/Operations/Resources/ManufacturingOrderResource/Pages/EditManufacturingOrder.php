@@ -17,10 +17,12 @@ use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\UnplanAction;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\ManufacturingOrderResource;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditManufacturingOrder extends EditRecord
 {
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected ?bool $hasDatabaseTransactions = true;
 
@@ -78,5 +80,7 @@ class EditManufacturingOrder extends EditRecord
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

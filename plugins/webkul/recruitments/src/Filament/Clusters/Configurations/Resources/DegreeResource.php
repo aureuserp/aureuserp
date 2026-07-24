@@ -120,7 +120,8 @@ class DegreeResource extends Resource
                         ),
                 ]),
             ])
-            ->reorderable('sort', 'desc');
+            ->reorderable('sort', direction: 'desc')
+            ->defaultSort('sort', 'desc');
     }
 
     public static function infolist(Schema $schema): Schema

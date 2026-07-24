@@ -40,7 +40,7 @@ class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Plugin;
     }

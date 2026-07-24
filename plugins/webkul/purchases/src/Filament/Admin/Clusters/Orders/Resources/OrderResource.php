@@ -424,6 +424,7 @@ class OrderResource extends Resource
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]))
+            ->columnManagerColumns(3)
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.groups.vendor')),
@@ -1435,25 +1436,31 @@ class OrderResource extends Resource
 
         $quantity = floatval($get($prefix.'product_qty') ?? 1);
 
-        $subTotal = $priceUnit * $quantity;
-
         $discountValue = floatval($get($prefix.'discount') ?? 0);
 
-        if ($discountValue > 0) {
-            $discountAmount = $subTotal * ($discountValue / 100);
-
-            $subTotal = $subTotal - $discountAmount;
-        }
+        $discountedUnit = $discountValue > 0 ? $priceUnit * (1 - ($discountValue / 100)) : $priceUnit;
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        [$subTotal, $taxAmount] = TaxFacade::collect($taxIds, $subTotal, $quantity);
+        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
 
-        $set($prefix.'price_subtotal', round($subTotal, 4));
+        if ($taxes->isEmpty()) {
+            $subTotal = round($discountedUnit * $quantity, 4);
 
-        $set($prefix.'price_tax', $taxAmount);
+            $set($prefix.'price_subtotal', $subTotal);
 
-        $set($prefix.'price_total', $subTotal + $taxAmount);
+            $set($prefix.'price_tax', 0);
+
+            $set($prefix.'price_total', $subTotal);
+        } else {
+            $taxResult = TaxFacade::computeAll($taxes, $discountedUnit, null, $quantity);
+
+            $set($prefix.'price_subtotal', round($taxResult['total_excluded'], 4));
+
+            $set($prefix.'price_tax', round($taxResult['total_included'] - $taxResult['total_excluded'], 4));
+
+            $set($prefix.'price_total', round($taxResult['total_included'], 4));
+        }
     }
 
     private static function calculateOrderTotals(Get $get, $livewire): array

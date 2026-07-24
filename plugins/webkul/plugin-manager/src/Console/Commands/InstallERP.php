@@ -241,6 +241,8 @@ class InstallERP extends Command
 
         $adminUser = $userModel::updateOrCreate(['email' => $adminData['email']], $adminData);
 
+        $adminUser->allowedCompanies()->syncWithoutDetaching([$defaultCompany->id]);
+
         $defaultCompany->update(['creator_id' => $adminUser->id]);
 
         $adminRoleName = $this->getAdminRoleName();

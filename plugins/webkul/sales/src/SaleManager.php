@@ -24,6 +24,8 @@ use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Sale\Events\OrderCanceled;
 use Webkul\Sale\Events\OrderConfirmed;
 use Webkul\Sale\Events\OrderDrafted;
+use Webkul\Sale\Events\OrderLocked;
+use Webkul\Sale\Events\OrderUnlocked;
 use Webkul\Sale\Mail\SaleOrderCancelQuotation;
 use Webkul\Sale\Mail\SaleOrderQuotation;
 use Webkul\Sale\Models\AdvancedPaymentInvoice;
@@ -56,6 +58,12 @@ class SaleManager
         $record->update(['locked' => ! $record->locked]);
 
         $record = $this->computeSaleOrder($record);
+
+        if ($record->locked) {
+            OrderLocked::dispatch($record);
+        } else {
+            OrderUnlocked::dispatch($record);
+        }
 
         return $record;
     }
@@ -178,25 +186,34 @@ class SaleManager
 
         $line = $this->computeQtyToInvoice($line);
 
-        $subTotal = $line->price_unit * $line->product_qty;
+        $priceUnit = $line->discount > 0
+            ? $line->price_unit * (1 - ($line->discount / 100))
+            : $line->price_unit;
 
-        $discountAmount = 0;
+        if ($line->taxes->isEmpty()) {
+            $subTotal = $priceUnit * $line->product_qty;
 
-        if ($line->discount > 0) {
-            $discountAmount = $subTotal * ($line->discount / 100);
+            $line->price_subtotal = round($subTotal, 4);
 
-            $subTotal = $subTotal - $discountAmount;
+            $line->price_tax = 0;
+
+            $line->price_total = round($subTotal, 4);
+        } else {
+            $taxResult = Tax::computeAll(
+                $line->taxes,
+                $priceUnit,
+                $line->order->currency,
+                $line->product_qty,
+                $line->product,
+                $line->order->partner,
+            );
+
+            $line->price_subtotal = round($taxResult['total_excluded'], 4);
+
+            $line->price_tax = round($taxResult['total_included'] - $taxResult['total_excluded'], 4);
+
+            $line->price_total = round($taxResult['total_included'], 4);
         }
-
-        $taxIds = $line->taxes->pluck('id')->toArray();
-
-        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $line->product_qty);
-
-        $line->price_subtotal = round($subTotal, 4);
-
-        $line->price_tax = $taxAmount;
-
-        $line->price_total = $subTotal + $taxAmount;
 
         $line->sort = $line->sort ?? OrderLine::max('sort') + 1;
 
@@ -313,10 +330,13 @@ class SaleManager
             return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
         })) {
             $order->delivery_status = OrderDeliveryStatus::FULL;
-        } elseif ($order->operations->contains(function ($receipt) {
-            return $receipt->state == InventoryEnums\OperationState::DONE;
-        })) {
+        } elseif (
+            $order->operations->contains(fn ($receipt) => $receipt->state == InventoryEnums\OperationState::DONE)
+            && $order->lines->contains(fn ($line) => (float) $line->qty_delivered > 0)
+        ) {
             $order->delivery_status = OrderDeliveryStatus::PARTIAL;
+        } elseif ($order->operations->contains(fn ($receipt) => $receipt->state == InventoryEnums\OperationState::DONE)) {
+            $order->delivery_status = OrderDeliveryStatus::STARTED;
         } else {
             $order->delivery_status = OrderDeliveryStatus::PENDING;
         }
@@ -709,12 +729,12 @@ class SaleManager
                     ! $move->origin_returned_move_id
                     || (
                         $move->origin_returned_move_id
-                        && $move->to_refund
+                        && $move->is_refund
                     )
                 ) {
                     $outgoingMoveIds[] = $move->id;
                 }
-            } elseif ($move->sourceLocation == InventoryEnums\LocationType::CUSTOMER && $move->is_refund) {
+            } elseif ($move->sourceLocation->type == InventoryEnums\LocationType::CUSTOMER && $move->is_refund) {
                 $incomingMoveIds[] = $move->id;
             }
         }
@@ -796,6 +816,11 @@ class SaleManager
             return;
         }
 
-        $record->operations->each(fn ($operation) => InventoryFacade::cancelTransfer($operation));
+        $record->operations
+            ->filter(fn ($operation) => ! in_array($operation->state, [
+                InventoryEnums\OperationState::DONE,
+                InventoryEnums\OperationState::CANCELED,
+            ]))
+            ->each(fn ($operation) => InventoryFacade::cancelTransfer($operation));
     }
 }

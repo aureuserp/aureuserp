@@ -11,9 +11,4 @@ class EditDelivery extends BaseEditDelivery
     use ReplacesNextTransferAction;
 
     protected static string $resource = QuotationDeliveryResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()], shouldGuessMissingParameters: true);
-    }
 }

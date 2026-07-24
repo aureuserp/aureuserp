@@ -105,7 +105,7 @@ class OperationInfolist
                                             ->width(150)
                                             ->toggleable()
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.packaging')),
-                                        InfolistTableColumn::make('product_qty')
+                                        InfolistTableColumn::make('product_uom_qty')
                                             ->alignStart()
                                             ->width(100)
                                             ->toggleable()
@@ -142,7 +142,7 @@ class OperationInfolist
                                         TextEntry::make('productPackaging.name')
                                             ->visible(OperationResource::getProductSettings()->enable_packagings)
                                             ->placeholder('—'),
-                                        TextEntry::make('product_qty'),
+                                        TextEntry::make('product_uom_qty'),
                                         TextEntry::make('quantity')
                                             ->placeholder('—'),
                                         TextEntry::make('uom.name')
