@@ -192,7 +192,7 @@ class RouteResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
