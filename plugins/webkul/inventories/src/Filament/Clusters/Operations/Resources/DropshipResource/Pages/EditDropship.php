@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages;
 
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
@@ -12,15 +11,16 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
+use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\Dropship;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditDropship extends EditRecord
 {
     use HandlesCrossCompanyTransferException;
-
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 
     protected static string $resource = DropshipResource::class;

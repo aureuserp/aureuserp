@@ -14,11 +14,12 @@ use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\Print\PrintMOActio
 use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\StartAction;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Actions\UnplanAction;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\ManufacturingOrderResource;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewManufacturingOrder extends ViewRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
 
     protected static string $resource = ManufacturingOrderResource::class;
 

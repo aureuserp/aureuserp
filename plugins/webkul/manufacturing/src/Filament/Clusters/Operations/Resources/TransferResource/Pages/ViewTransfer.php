@@ -12,11 +12,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewTransfer extends ViewRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
 
     protected static string $resource = TransferResource::class;
 

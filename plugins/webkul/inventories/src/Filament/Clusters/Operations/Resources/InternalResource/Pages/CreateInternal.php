@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource\Pages;
 
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
@@ -10,11 +9,14 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
+use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateInternal extends CreateRecord
 {
     use HandlesCrossCompanyTransferException;
+    use HasRepeaterColumnManager;
 
     protected static string $resource = InternalResource::class;
 
