@@ -11,21 +11,17 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DegreeResource\Pages\ListDegrees;
 use Webkul\Recruitment\Models\Degree;
 
 class DegreeResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Degree::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
@@ -56,16 +52,13 @@ class DegreeResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/degree.form.fields.name-placeholder')),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/degree.table.columns.id'))
                     ->searchable()
@@ -89,8 +82,8 @@ class DegreeResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -98,7 +91,7 @@ class DegreeResource extends Resource
                             ->label(__('recruitments::filament/clusters/configurations/resources/degree.table.filters.name'))
                             ->icon('heroicon-o-user'),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -139,9 +132,6 @@ class DegreeResource extends Resource
                     ->placeholder('—')
                     ->icon('heroicon-o-briefcase')
                     ->label(__('recruitments::filament/clusters/configurations/resources/degree.infolist.name')),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 

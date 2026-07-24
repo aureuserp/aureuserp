@@ -38,12 +38,9 @@ use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\P
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
 use Webkul\Sale\Models\ActivityPlan;
 use Webkul\Security\Filament\Resources\CompanyResource;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class ActivityPlanResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = ActivityPlan::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
@@ -84,9 +81,6 @@ class ActivityPlanResource extends Resource
                             ->default(true)
                             ->inline(false),
                     ])->columns(2),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -95,7 +89,7 @@ class ActivityPlanResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
                     ->searchable(),
@@ -126,8 +120,8 @@ class ActivityPlanResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 TernaryFilter::make('is_active')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.filters.is-active')),
                 QueryBuilder::make()
@@ -180,7 +174,7 @@ class ActivityPlanResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->groups([
                 Group::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
@@ -295,9 +289,6 @@ class ActivityPlanResource extends Resource
                             ->label(__('sales::filament/clusters/configurations/resources/activity-plan.infolist.sections.general.entries.status'))
                             ->boolean(),
                     ])
-                    ->columns(2),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
                     ->columns(2),
             ])
             ->columns(1);

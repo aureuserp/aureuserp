@@ -36,7 +36,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\CreateRoute;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\EditRoute;
@@ -51,8 +50,6 @@ use Webkul\Product\Settings\ProductSettings;
 
 class RouteResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Route::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
@@ -153,17 +150,13 @@ class RouteResource extends Resource
                             ->hiddenOn(ManageRoutes::class),
                     ])
                     ->columns(2),
-
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.columns.route'))
                     ->searchable(),
@@ -185,14 +178,14 @@ class RouteResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 SelectFilter::make('company_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.filters.company'))
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
@@ -297,7 +290,6 @@ class RouteResource extends Resource
                                 TextEntry::make('company.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.general.entries.company'))
                                     ->icon('heroicon-o-building-office'),
-                                ...static::getCustomInfolistEntries(),
                             ]),
 
                         Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.title'))

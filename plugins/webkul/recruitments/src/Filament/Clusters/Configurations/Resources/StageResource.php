@@ -36,12 +36,9 @@ use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages\ListStages;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages\ViewStages;
 use Webkul\Recruitment\Models\Stage;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class StageResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Stage::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
@@ -123,7 +120,6 @@ class StageResource extends Resource
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.fields.hired-stage')),
                                     Toggle::make('is_default')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.fields.default-stage')),
-                                    ...static::getCustomFormFields(),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 1]),
@@ -138,7 +134,7 @@ class StageResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.id'))
                     ->sortable()
@@ -175,8 +171,8 @@ class StageResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -226,7 +222,7 @@ class StageResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->filtersFormColumns(2)
             ->groups([
                 Tables\Grouping\Group::make('name')
@@ -339,7 +335,6 @@ class StageResource extends Resource
                                         IconEntry::make('is_default')
                                             ->boolean()
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.entries.default-stage')),
-                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ])->columnSpan(2),
                         Group::make([

@@ -38,7 +38,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Filament\Resources\CalendarResource\Pages\CreateCalendar;
 use Webkul\Support\Filament\Resources\CalendarResource\Pages\EditCalendar;
 use Webkul\Support\Filament\Resources\CalendarResource\Pages\ListCalendars;
@@ -49,8 +48,6 @@ use Webkul\Support\Enums\NavigationGroup;
 
 class CalendarResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Calendar::class;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -146,9 +143,6 @@ class CalendarResource extends Resource
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -158,7 +152,7 @@ class CalendarResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('support::filament/resources/calendar.table.columns.id'))
                     ->searchable()
@@ -202,7 +196,7 @@ class CalendarResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('support::filament/resources/calendar.table.groups.name'))
@@ -228,7 +222,7 @@ class CalendarResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('company')
                     ->relationship('company', 'name')
                     ->label(__('support::filament/resources/calendar.table.filters.company')),
@@ -292,7 +286,7 @@ class CalendarResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('support::filament/resources/calendar.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -386,7 +380,6 @@ class CalendarResource extends Resource
                                             ->label(__('support::filament/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours'))
                                             ->suffix(__('support::filament/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours-suffix'))
                                             ->icon('heroicon-o-clock'),
-                                        ...static::getCustomInfolistEntries(),
                                     ])->columns(2),
                             ])->columnSpan(2),
                         Group::make([

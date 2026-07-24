@@ -12,7 +12,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -20,13 +19,10 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMSourceResource\Pages\ListUTMSources;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Recruitment\Models\UTMSource;
 
 class UTMSourceResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = UTMSource::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-globe-americas';
@@ -57,16 +53,13 @@ class UTMSourceResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/utm-source.form.fields.name-placeholder')),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-source.table.columns.id'))
                     ->searchable()
@@ -90,8 +83,8 @@ class UTMSourceResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -99,7 +92,7 @@ class UTMSourceResource extends Resource
                             ->label(__('recruitments::filament/clusters/configurations/resources/utm-source.table.filters.name'))
                             ->icon('heroicon-o-user'),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -138,9 +131,6 @@ class UTMSourceResource extends Resource
                     ->placeholder('—')
                     ->icon('heroicon-o-briefcase')
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-source.infolist.name')),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 

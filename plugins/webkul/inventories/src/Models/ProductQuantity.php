@@ -13,7 +13,6 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\OperationSettings;
-use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
@@ -22,7 +21,6 @@ use Webkul\Support\Models\UOM;
 
 class ProductQuantity extends Model
 {
-    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'inventories_product_quantities';

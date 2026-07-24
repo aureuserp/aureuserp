@@ -43,7 +43,6 @@ use Webkul\Account\Filament\Resources\JournalResource\Pages\EditJournal;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ViewJournal;
 use Webkul\Account\Models\Journal;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -52,8 +51,6 @@ use Webkul\Support\Models\Company;
 
 class JournalResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Journal::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
@@ -374,7 +371,6 @@ class JournalResource extends Resource
                                                     ->default(Auth::user()->default_company_id)
                                                     ->required(),
                                             ]),
-                                        ...static::getCustomFormFields(),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 1]),
@@ -387,7 +383,7 @@ class JournalResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
@@ -408,8 +404,7 @@ class JournalResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label(__('accounts::filament/resources/journal.table.columns.created-by')),
-            ]))
-            ->filters(static::mergeCustomTableFilters([]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -648,7 +643,6 @@ class JournalResource extends Resource
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/journal.infolist.general.entries.company'))
                                             ->icon('heroicon-o-building-office'),
-                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ])->columnSpan(1),
                     ])->columnSpanFull(),

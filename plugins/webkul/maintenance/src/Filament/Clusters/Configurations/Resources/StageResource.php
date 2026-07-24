@@ -18,15 +18,12 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Maintenance\Filament\Clusters\Configurations;
 use Webkul\Maintenance\Filament\Clusters\Configurations\Resources\StageResource\Pages\ManageStages;
 use Webkul\Maintenance\Models\Stage;
 
 class StageResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Stage::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
@@ -60,11 +57,6 @@ class StageResource extends Resource
 
                 Toggle::make('done')
                     ->label(__('maintenance::filament/clusters/configurations/resources/stage.form.fields.done')),
-
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2)
-                    ->visible(fn () => filled(static::getCustomFormFields())),
             ])
             ->columns(1);
     }
@@ -72,7 +64,7 @@ class StageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('maintenance::filament/clusters/configurations/resources/stage.table.columns.name'))
                     ->searchable()
@@ -88,8 +80,7 @@ class StageResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([]))
+            ])
             ->groups([
                 Group::make('done')
                     ->label(__('maintenance::filament/clusters/configurations/resources/stage.table.groups.done')),
@@ -140,8 +131,6 @@ class StageResource extends Resource
                         IconEntry::make('done')
                             ->label(__('maintenance::filament/clusters/configurations/resources/stage.infolist.sections.general.entries.done'))
                             ->boolean(),
-
-                        ...static::getCustomInfolistEntries(),
                     ])
                     ->columns(2),
             ]);

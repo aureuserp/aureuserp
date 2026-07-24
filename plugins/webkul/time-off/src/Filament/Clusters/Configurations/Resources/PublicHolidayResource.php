@@ -26,15 +26,12 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\PublicHolidayResource\Pages\ListPublicHolidays;
 use Webkul\TimeOff\Models\CalendarLeave;
 
 class PublicHolidayResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = CalendarLeave::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lifebuoy';
@@ -106,16 +103,13 @@ class PublicHolidayResource extends Resource
                         ->preload()
                         ->relationship('calendar', 'name'),
                 ])->columnSpanFull(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
@@ -129,7 +123,7 @@ class PublicHolidayResource extends Resource
                 TextColumn::make('calendar.name')
                     ->sortable()
                     ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.table.columns.calendar')),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('date_from')
                     ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.table.groups.date-from'))
@@ -141,7 +135,7 @@ class PublicHolidayResource extends Resource
                     ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.table.groups.company-name'))
                     ->collapsible(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('company_id')
                     ->relationship('company', 'name')
                     ->searchable()
@@ -169,7 +163,7 @@ class PublicHolidayResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -220,9 +214,6 @@ class PublicHolidayResource extends Resource
                     ->placeholder('-')
                     ->icon('heroicon-o-calendar')
                     ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.infolist.entries.date-to')),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 

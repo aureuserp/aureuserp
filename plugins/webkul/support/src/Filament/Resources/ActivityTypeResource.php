@@ -36,7 +36,6 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Guava\IconPicker\Forms\Components\IconPicker;
 use Illuminate\Database\QueryException;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Enums\ActivityChainingType;
 use Webkul\Support\Enums\ActivityDecorationType;
@@ -52,8 +51,6 @@ use Webkul\Support\Models\ActivityType;
 
 class ActivityTypeResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = ActivityType::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
@@ -173,9 +170,6 @@ class ActivityTypeResource extends Resource
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -185,7 +179,7 @@ class ActivityTypeResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->label(__('support::filament/resources/activity-type.table.columns.name'))
@@ -224,7 +218,7 @@ class ActivityTypeResource extends Resource
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('support::filament/resources/activity-type.table.groups.name'))
@@ -262,7 +256,7 @@ class ActivityTypeResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('category')
                     ->multiple()
                     ->label(__('support::filament/resources/activity-type.table.filters.action'))
@@ -272,7 +266,7 @@ class ActivityTypeResource extends Resource
                 Filter::make('has_delay')
                     ->label(__('support::filament/resources/activity-type.table.filters.has-delay'))
                     ->query(fn ($query) => $query->whereNotNull('delay_count')),
-            ]))
+            ])
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -426,7 +420,6 @@ class ActivityTypeResource extends Resource
                                             ->icon('heroicon-o-forward')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.advanced-information.entries.trigger')),
-                                        ...static::getCustomInfolistEntries(),
                                     ]),
                                 Section::make(__('support::filament/resources/activity-type.infolist.sections.status-and-configuration-information.title'))
                                     ->schema([

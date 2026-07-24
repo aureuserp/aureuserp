@@ -28,7 +28,6 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -42,8 +41,6 @@ use Webkul\Support\Models\Currency;
 
 class CurrencyResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Currency::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
@@ -194,9 +191,6 @@ class CurrencyResource extends Resource
                                     ->default(1.000000),
                             ]),
                     ]),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -205,7 +199,7 @@ class CurrencyResource extends Resource
     {
         return $table
             ->defaultSort(fn ($query) => $query->orderBy('active', 'desc')->orderBy('name', 'asc'))
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->label(__('support::filament/resources/currency.table.columns.name'))
@@ -255,7 +249,7 @@ class CurrencyResource extends Resource
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('support::filament/resources/currency.table.groups.name'))
@@ -267,10 +261,10 @@ class CurrencyResource extends Resource
                     ->label(__('support::filament/resources/currency.table.groups.decimal-places'))
                     ->collapsible(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 TernaryFilter::make('active')
                     ->label(__('support::filament/resources/currency.table.filters.status')),
-            ]))
+            ])
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -397,10 +391,6 @@ class CurrencyResource extends Resource
                                     }),
                             ]),
                     ]),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columnSpanFull()
-                    ->columns(2),
             ])
             ->columns(1);
     }

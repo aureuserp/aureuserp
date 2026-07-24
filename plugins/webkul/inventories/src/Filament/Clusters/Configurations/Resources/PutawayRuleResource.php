@@ -15,7 +15,6 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -26,7 +25,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PutawayRuleResource\Pages\ManagePutawayRules;
@@ -36,8 +34,6 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 
 class PutawayRuleResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = PutawayRule::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrows-pointing-in';
@@ -183,9 +179,6 @@ class PutawayRuleResource extends Resource
                     ->default(SubLocation::NO)
                     ->native(false)
                     ->required(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(2);
     }
@@ -193,7 +186,7 @@ class PutawayRuleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('inLocation.full_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/putaway-rule.table.columns.in-location'))
                     ->searchable()
@@ -240,7 +233,7 @@ class PutawayRuleResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->recordActions([
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())

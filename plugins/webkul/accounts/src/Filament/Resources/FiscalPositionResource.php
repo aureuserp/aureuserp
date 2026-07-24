@@ -32,7 +32,6 @@ use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ListFiscalPos
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ManageFiscalPositionTax;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ViewFiscalPosition;
 use Webkul\Account\Models\FiscalPosition;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -40,8 +39,6 @@ use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as Infolis
 
 class FiscalPositionResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = FiscalPosition::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-left';
@@ -93,7 +90,6 @@ class FiscalPositionResource extends Resource
                             ])->columns(2),
                         RichEditor::make('notes')
                             ->label(__('accounts::filament/resources/fiscal-position.form.fields.notes')),
-                        ...static::getCustomFormFields(),
                     ])->columnSpanFull(),
                 Tabs::make('Mappings')
                     ->tabs([
@@ -177,7 +173,7 @@ class FiscalPositionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
@@ -216,7 +212,7 @@ class FiscalPositionResource extends Resource
                     ->sortable()
                     ->label(__('Detect Automatically'))
                     ->label(__('accounts::filament/resources/fiscal-position.table.columns.detect-automatically')),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -284,7 +280,6 @@ class FiscalPositionResource extends Resource
                             ->label(__('accounts::filament/resources/fiscal-position.infolist.entries.notes'))
                             ->placeholder('-')
                             ->markdown(),
-                        ...static::getCustomInfolistEntries(),
                     ])->columnSpanFull(),
                 Tabs::make('Mappings')
                     ->tabs([

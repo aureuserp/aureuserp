@@ -12,21 +12,17 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\RefuseReasonResource\Pages\ListRefuseReasons;
 use Webkul\Recruitment\Models\RefuseReason;
 
 class RefuseReasonResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = RefuseReason::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-left';
@@ -64,16 +60,13 @@ class RefuseReasonResource extends Resource
                         'applicant-not-interested' => __('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.template.applicant-not-interested'),
                     ])
                     ->required(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.id'))
                     ->searchable()
@@ -101,8 +94,8 @@ class RefuseReasonResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -110,7 +103,7 @@ class RefuseReasonResource extends Resource
                             ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.filters.name'))
                             ->icon('heroicon-o-user'),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -155,9 +148,6 @@ class RefuseReasonResource extends Resource
                     ->placeholder('—')
                     ->icon('heroicon-o-briefcase')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.infolist.template')),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 

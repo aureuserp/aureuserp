@@ -9,7 +9,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -20,7 +19,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
@@ -38,8 +36,6 @@ use Webkul\Product\Settings\ProductSettings;
 
 class QuantityResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = ProductQuantity::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-scale';
@@ -133,9 +129,6 @@ class QuantityResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -160,7 +153,7 @@ class QuantityResource extends Resource
                 Group::make('company.name')
                     ->label(__('inventories::filament/clusters/reporting.quantities.groups.company')),
             ])
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.columns.product'))
                     ->searchable()
@@ -220,8 +213,8 @@ class QuantityResource extends Resource
                     ->sortable()
                     ->placeholder('—')
                     ->visible(static::getProductSettings()->enable_uom),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 SelectFilter::make('warehouse')
                     ->label(__('inventories::filament/clusters/reporting.quantities.filters.warehouse'))
                     ->options(fn () => Warehouse::query()->orderBy('name')->pluck('name', 'id'))
@@ -279,7 +272,7 @@ class QuantityResource extends Resource
                     ->searchable()
                     ->preload()
                     ->visible(static::getTraceabilitySettings()->enable_lots_serial_numbers),
-            ]))
+            ])
             ->headerActions([
                 CreateAction::make()
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.label'))

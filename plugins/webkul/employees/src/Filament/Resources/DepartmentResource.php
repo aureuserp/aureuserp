@@ -45,28 +45,22 @@ use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ListDepartments;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ManageEmployee;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Models\Department;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Enums\NavigationGroup;
 
 class DepartmentResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Department::class;
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?int $navigationSort = 2;
-
-
     public static function getNavigationLabel(): string
     {
         return __('employees::filament/resources/department.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Employee;
     }
@@ -84,6 +78,7 @@ class DepartmentResource extends Resource
         ];
     }
 
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
@@ -141,10 +136,6 @@ class DepartmentResource extends Resource
                                             ->hexColor(),
                                     ])
                                     ->columns(2)->columnSpanFull(),
-                                Section::make(__('employees::filament/resources/department.form.sections.additional.title'))
-                                    ->visible(! empty($customFormFields = static::getCustomFormFields()))
-                                    ->description(__('employees::filament/resources/department.form.sections.additional.description'))
-                                    ->schema($customFormFields),
                             ]),
                     ]),
             ])
@@ -154,7 +145,7 @@ class DepartmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 Stack::make([
                     ImageColumn::make('manager.partner.avatar')
                         ->imageHeight(35)
@@ -184,7 +175,7 @@ class DepartmentResource extends Resource
                             ->visible(fn ($record) => filled($record?->company?->name)),
                     ])->space(1),
                 ])->space(4),
-            ]))
+            ])
             ->contentGrid([
                 'md' => 2,
                 'xl' => 4,
@@ -208,7 +199,7 @@ class DepartmentResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -244,7 +235,7 @@ class DepartmentResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/resources/department.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -332,7 +323,6 @@ class DepartmentResource extends Resource
                                                     ->html()
                                                     ->state(fn (Department $record): string => static::buildHierarchyTree($record)),
                                             ])->columnSpan('full'),
-                                        ...static::getCustomInfolistEntries(),
                                     ])
                                     ->columns(2)->columnSpanFull(),
                             ]),

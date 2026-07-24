@@ -13,20 +13,16 @@ use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource\Pages\ListTags;
 use Webkul\Sale\Models\Tag;
 
 class TagResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Tag::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
@@ -61,16 +57,13 @@ class TagResource extends Resource
                 ColorPicker::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.form.fields.color'))
                     ->hexColor(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
@@ -79,8 +72,7 @@ class TagResource extends Resource
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.color')),
                 TextColumn::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.created-by')),
-            ]))
-            ->filters(static::mergeCustomTableFilters([]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -127,9 +119,6 @@ class TagResource extends Resource
                     ->placeholder('-'),
                 ColorEntry::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.infolist.entries.color')),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 }

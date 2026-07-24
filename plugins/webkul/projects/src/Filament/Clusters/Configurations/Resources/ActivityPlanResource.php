@@ -25,7 +25,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
@@ -35,8 +34,6 @@ use Webkul\Project\Models\ActivityPlan;
 
 class ActivityPlanResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = ActivityPlan::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
@@ -65,16 +62,13 @@ class ActivityPlanResource extends Resource
                             ->default(true)
                             ->inline(false),
                     ])->columnSpanFull(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
                     ->searchable()
@@ -93,7 +87,7 @@ class ActivityPlanResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Group::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
@@ -196,9 +190,6 @@ class ActivityPlanResource extends Resource
                             ->boolean(),
                     ])
                     ->columns(2)->columnSpanFull(),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 

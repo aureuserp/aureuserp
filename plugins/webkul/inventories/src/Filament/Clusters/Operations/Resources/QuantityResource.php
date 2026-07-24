@@ -9,7 +9,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -24,7 +23,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Operations;
@@ -41,8 +39,6 @@ use Webkul\Product\Settings\ProductSettings;
 
 class QuantityResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = ProductQuantity::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-up-down';
@@ -140,9 +136,6 @@ class QuantityResource extends Resource
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.form.fields.scheduled-at'))
                     ->native(false)
                     ->default(now()->setDay(static::getOperationSettings()->annual_inventory_day)->setMonth(static::getOperationSettings()->annual_inventory_month)),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -153,7 +146,7 @@ class QuantityResource extends Resource
             ->reorderableColumns()
             ->columnManagerColumns(2)
             ->recordTitleAttribute('name')
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('location.full_name')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.location'))
                     ->searchable()
@@ -239,7 +232,7 @@ class QuantityResource extends Resource
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups(
                 collect([
                     Group::make('product.name')
@@ -265,7 +258,7 @@ class QuantityResource extends Resource
                     };
                 })->all()
             )
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 QueryBuilder::make()
                     ->constraints(collect([
                         static::getWarehouseSettings()->enable_locations
@@ -404,7 +397,7 @@ class QuantityResource extends Resource
                             )
                             ->icon('heroicon-o-user'),
                     ])->filter()->values()->all()),
-            ]), layout: FiltersLayout::Modal)
+            ], layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->slideOver(),

@@ -48,7 +48,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\OperationType;
 use Webkul\Manufacturing\Enums\BillOfMaterialConsumption;
 use Webkul\Manufacturing\Enums\BillOfMaterialReadyToProduce;
@@ -76,8 +75,6 @@ use Webkul\Support\Models\Company;
 
 class BillsOfMaterialResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = BillOfMaterial::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
@@ -318,7 +315,6 @@ class BillsOfMaterialResource extends Resource
                                     ->suffix(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.sections.miscellaneous.fields.days-suffix'))
                                     ->required()
                                     ->columnSpanFull(),
-                                ...static::getCustomFormFields(),
                             ])
                             ->columns(1),
                     ])
@@ -332,7 +328,7 @@ class BillsOfMaterialResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('code')
                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.table.columns.reference'))
                     ->searchable()
@@ -366,8 +362,8 @@ class BillsOfMaterialResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
-            ->filters(static::mergeCustomTableFilters([
+            ])
+            ->filters([
                 SelectFilter::make('product_id')
                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.table.filters.product'))
                     ->relationship('product', 'name')
@@ -381,7 +377,7 @@ class BillsOfMaterialResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make()
                     ->hidden(fn (BillOfMaterial $record): bool => $record->trashed()),
@@ -667,7 +663,6 @@ class BillsOfMaterialResource extends Resource
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-to-prepare-manufacturing-order'))
                                     ->suffix(' '.__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.tabs.miscellaneous.entries.days-suffix'))
                                     ->columnSpanFull(),
-                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(1),
                         Section::make(__('manufacturing::filament/clusters/products/resources/bill-of-material.infolist.sections.record-information.title'))

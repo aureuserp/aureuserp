@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\CreateVendorPrice;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\EditVendorPrice;
@@ -39,8 +38,6 @@ use Webkul\Purchase\Models\ProductSupplier;
 
 class VendorPriceResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = ProductSupplier::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
@@ -153,10 +150,6 @@ class VendorPriceResource extends Resource
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columnSpanFull()
-                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -166,7 +159,7 @@ class VendorPriceResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.vendor'))
                     ->searchable(),
@@ -216,7 +209,7 @@ class VendorPriceResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.groups.vendor')),
@@ -521,10 +514,6 @@ class VendorPriceResource extends Resource
 
                     ])
                     ->columnSpan(['lg' => 1]),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columnSpanFull()
-                    ->columns(2),
             ])
             ->columns(3);
     }

@@ -31,7 +31,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackageTypeResource;
 use Webkul\Inventory\Filament\Clusters\Products;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages\CreatePackage;
@@ -46,8 +45,6 @@ use Webkul\Inventory\Settings\OperationSettings;
 
 class PackageResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Package::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
@@ -119,16 +116,13 @@ class PackageResource extends Resource
                             ])
                             ->columns(2),
                     ])->columnSpanFull(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/products/resources/package.table.columns.name'))
                     ->searchable()
@@ -144,7 +138,7 @@ class PackageResource extends Resource
                 TextColumn::make('company.name')
                     ->label(__('inventories::filament/clusters/products/resources/package.table.columns.company'))
                     ->sortable(),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('packageType.name')
                     ->label(__('inventories::filament/clusters/products/resources/package.table.groups.package-type')),
@@ -154,7 +148,7 @@ class PackageResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/package.table.groups.created-at'))
                     ->date(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('package_type_id')
                     ->label(__('inventories::filament/clusters/products/resources/package.table.filters.package-type'))
                     ->relationship('packageType', 'name')
@@ -176,7 +170,7 @@ class PackageResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -291,8 +285,6 @@ class PackageResource extends Resource
                                             ->label(__('inventories::filament/clusters/products/resources/package.infolist.sections.general.entries.company'))
                                             ->icon('heroicon-o-building-office'),
                                     ]),
-
-                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),

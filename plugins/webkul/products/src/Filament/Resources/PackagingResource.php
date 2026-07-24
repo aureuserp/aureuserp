@@ -27,13 +27,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Models\Packaging;
 
 class PackagingResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Packaging::class;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -79,16 +76,13 @@ class PackagingResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('products::filament/resources/packaging.table.columns.name'))
                     ->searchable(),
@@ -118,7 +112,7 @@ class PackagingResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Group::make('product.name')
                     ->label(__('products::filament/resources/packaging.table.groups.product'))
@@ -131,13 +125,13 @@ class PackagingResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('product')
                     ->label(__('products::filament/resources/packaging.table.filters.product'))
                     ->relationship('product', 'name')
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -270,10 +264,6 @@ class PackagingResource extends Resource
                             ->placeholder('—'),
                     ])
                     ->collapsible()
-                    ->columns(2),
-
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
                     ->columns(2),
             ]);
     }

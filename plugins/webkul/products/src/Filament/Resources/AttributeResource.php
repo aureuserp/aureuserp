@@ -32,14 +32,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Enums\AttributeType;
 use Webkul\Product\Models\Attribute;
 
 class AttributeResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Attribute::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
@@ -91,17 +88,13 @@ class AttributeResource extends Resource
                             ])
                             ->columns(3),
                     ]),
-
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('products::filament/resources/attribute.table.columns.name'))
                     ->searchable(),
@@ -118,7 +111,7 @@ class AttributeResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Group::make('type')
                     ->label(__('products::filament/resources/attribute.table.groups.type'))
@@ -131,13 +124,13 @@ class AttributeResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('type')
                     ->label(__('products::filament/resources/attribute.table.filters.type'))
                     ->options(AttributeType::class)
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
@@ -263,11 +256,6 @@ class AttributeResource extends Resource
                             ->collapsible(),
                     ])
                     ->columnSpan(['lg' => 1]),
-
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columnSpanFull()
-                    ->columns(2),
             ])
             ->columns(3);
     }

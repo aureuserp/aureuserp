@@ -26,14 +26,11 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\Applicability;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Account\Filament\Resources\AccountTagResource\Pages\ListAccountTags;
 use Webkul\Account\Models\Tag;
 
 class AccountTagResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Tag::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
@@ -71,16 +68,13 @@ class AccountTagResource extends Resource
                                     ->required(),
                             ]),
                     ])->columns(2),
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 ColorColumn::make('color')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.color'))
                     ->searchable(),
@@ -111,7 +105,7 @@ class AccountTagResource extends Resource
                     ->label(__('accounts::filament/resources/account-tag.table.columns.updated-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('country.name')
                     ->label(__('accounts::filament/resources/account-tag.table.groups.country'))
@@ -178,9 +172,6 @@ class AccountTagResource extends Resource
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.tax-negate'))
                             ->boolean(),
                     ]),
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columns(2),
             ]);
     }
 

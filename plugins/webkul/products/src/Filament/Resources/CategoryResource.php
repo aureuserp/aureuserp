@@ -25,13 +25,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Models\Category;
 
 class CategoryResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Category::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-folder';
@@ -70,10 +67,6 @@ class CategoryResource extends Resource
                 Group::make()
                     ->schema([])
                     ->columnSpan(['lg' => 1]),
-
-                Section::make()
-                    ->schema(static::getCustomFormFields())
-                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -82,7 +75,7 @@ class CategoryResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns(static::mergeCustomTableColumns([
+            ->columns([
                 TextColumn::make('name')
                     ->label(__('products::filament/resources/category.table.columns.name'))
                     ->searchable(),
@@ -113,7 +106,7 @@ class CategoryResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]))
+            ])
             ->groups([
                 Tables\Grouping\Group::make('parent.full_name')
                     ->label(__('products::filament/resources/category.table.groups.parent'))
@@ -129,7 +122,7 @@ class CategoryResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 SelectFilter::make('parent_id')
                     ->label(__('products::filament/resources/category.table.filters.parent'))
                     ->relationship('parent', 'full_name')
@@ -140,7 +133,7 @@ class CategoryResource extends Resource
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -246,11 +239,6 @@ class CategoryResource extends Resource
                             ->collapsible(),
                     ])
                     ->columnSpan(['lg' => 1]),
-
-                Section::make()
-                    ->schema(static::getCustomInfolistEntries())
-                    ->columnSpanFull()
-                    ->columns(2),
             ])
             ->columns(3);
     }
