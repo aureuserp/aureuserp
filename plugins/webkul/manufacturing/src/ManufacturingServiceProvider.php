@@ -8,6 +8,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Schema;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\OperationType;
@@ -17,6 +18,7 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\BillOfMaterialLine;
+use Webkul\Manufacturing\Models\Order;
 use Webkul\Manufacturing\Observers\MoveObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -154,6 +156,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                                 ->forceDelete();
                         }
                     }
+                });
+
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class]);
                 });
             })
             ->icon('manufacturing');

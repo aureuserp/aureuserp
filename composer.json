@@ -14,7 +14,7 @@
         "barryvdh/laravel-debugbar": "^4.0",
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-language-switch": "^4.3",
-        "bezhansalleh/filament-shield": "^4.0",
+        "bezhansalleh/filament-shield": "4.2.0",
         "filament/filament": "^5.0",
         "filament/spatie-laravel-settings-plugin": "^5.0",
         "flowframe/laravel-trend": "^0.5",

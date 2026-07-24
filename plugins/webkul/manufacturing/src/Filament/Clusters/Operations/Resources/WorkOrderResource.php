@@ -288,7 +288,7 @@ class WorkOrderResource extends Resource
                 ->orderBy('started_at')
                 ->orderBy('id'))
             ->columns([
-                TextColumn::make('operation.name')
+                TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.table.columns.operation'))
                     ->searchable(),
                 TextColumn::make('workCenter.name')

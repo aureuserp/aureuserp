@@ -78,6 +78,7 @@ class QuantityResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->default(fn (): ?int => Warehouse::first()?->lot_stock_location_id)
                     ->live()
                     ->afterStateUpdated(function (Set $set) {
                         $set('package_id', null);

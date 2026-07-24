@@ -14,11 +14,6 @@ class EditPost extends EditRecord
 {
     protected static string $resource = PostResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['last_editor_id'] = Auth::id();

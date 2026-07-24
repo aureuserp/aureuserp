@@ -290,7 +290,8 @@ class StageResource extends Resource
                         ),
                 ]),
             ])
-            ->reorderable('sort', 'Desc');
+            ->reorderable('sort', direction: 'desc')
+            ->defaultSort('sort', 'desc');
     }
 
     public static function infolist(Schema $schema): Schema

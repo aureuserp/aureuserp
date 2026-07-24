@@ -11,6 +11,7 @@ return [
         'tags'       => 'Etiquetas',
         'customer'   => 'Cliente',
         'start-date' => 'Fecha de inicio',
+        'date-range' => 'Rango de fechas',
         'end-date'   => 'Fecha de fin',
     ],
 ];

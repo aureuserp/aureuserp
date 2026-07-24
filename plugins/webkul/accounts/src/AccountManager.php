@@ -57,6 +57,22 @@ class AccountManager
     {
         $this->isConfirmAllowedForMove($record);
 
+        $record->state = MoveState::POSTED;
+
+        $record->posted_before = true;
+
+        $record->save();
+
+        $record = $this->computeAccountMove($record);
+
+        $record->refresh();
+
+        foreach ($record->lines as $line) {
+            $line->update(['parent_state' => MoveState::POSTED]);
+        }
+
+        $record->refresh();
+
         if ($record->reversedEntry?->state == MoveState::POSTED) {
             $this->reconcileReversedMoves(collect([$record->reversedEntry]), [$record]);
 
@@ -89,20 +105,6 @@ class AccountManager
                     $this->reconcile($groupLines);
                 }
             }
-        }
-
-        $record->state = MoveState::POSTED;
-
-        $record->posted_before = true;
-
-        $record->save();
-
-        $record = $this->computeAccountMove($record);
-
-        $record->refresh();
-
-        foreach ($record->lines as $line) {
-            $line->update(['parent_state' => MoveState::POSTED]);
         }
 
         if ($record->isSaleDocument()) {
@@ -458,6 +460,8 @@ class AccountManager
             return;
         }
 
+        $move->load('lines');
+
         $computeCashRounding = function ($move, $totalAmountCurrency) {
             $difference = $move->invoiceCashRounding->computeDifference($move->currency, $totalAmountCurrency);
 
@@ -563,7 +567,8 @@ class AccountManager
         }
 
         $othersLines = $move->lines->filter(function ($line) {
-            return ! in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+            return $line->account
+                && ! in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
         if ($existingCashRoundingLine) {
@@ -685,6 +690,7 @@ class AccountManager
 
         $taxLines = $move->lines
             ->whereNotNull('tax_repartition_line_id')
+            ->where('display_type', DisplayType::TAX)
             ->map(fn ($line) => TaxFacade::prepareTaxLineForTaxesComputation($line, sign: $move->direction_sign))
             ->all();
 
@@ -713,6 +719,7 @@ class AccountManager
             rate: $rate,
             sign: $isInvoice ? $line->move->direction_sign : 1,
             specialMode: $isInvoice ? false : 'total_excluded',
+            is_refund: in_array($line->move->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND], true),
         );
     }
 
@@ -737,16 +744,28 @@ class AccountManager
 
             $taxResults = TaxFacade::prepareTaxLines($baseLines, $move->company);
 
-            foreach ($taxResults['base_lines_to_update'] as $baseLine) {
-                $untaxedAmountCurrency += $sign * abs($baseLine['amount_currency']);
+            $directionSign = $move->direction_sign;
 
-                $untaxedAmount += $sign * abs($baseLine['balance']);
+            foreach ($taxResults['base_lines_to_update'] as $baseLine) {
+                $untaxedAmountCurrency += $sign * $directionSign * $baseLine['amount_currency'];
+
+                $untaxedAmount += $sign * $directionSign * $baseLine['balance'];
             }
 
             foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
-                $taxAmountCurrency += $sign * abs($taxLineVals['amount_currency']);
+                $taxAmountCurrency += $sign * $directionSign * $taxLineVals['amount_currency'];
 
-                $taxAmount += $sign * abs($taxLineVals['balance']);
+                $taxAmount += $sign * $directionSign * $taxLineVals['balance'];
+            }
+
+            $biggestTaxRoundingLines = $move->lines
+                ->where('display_type', DisplayType::ROUNDING)
+                ->whereNotNull('tax_repartition_line_id');
+
+            foreach ($biggestTaxRoundingLines as $roundingLine) {
+                $taxAmountCurrency += $sign * $directionSign * $roundingLine->amount_currency;
+
+                $taxAmount += $sign * $directionSign * $roundingLine->balance;
             }
 
             if ($move->invoice_payment_term_id) {
@@ -1122,6 +1141,16 @@ class AccountManager
             foreach ($values['to_reconcile'] as $line) {
                 $line->move->matchedPayments()->attach($payment->id);
             }
+
+            AccountMove::whereIn('id', $values['to_reconcile']->pluck('move_id')->unique())
+                ->get()
+                ->each(function ($move) {
+                    $move->refresh();
+
+                    $move->computePaymentState();
+
+                    $move->save();
+                });
         }
     }
 
@@ -1670,11 +1699,11 @@ class AccountManager
 
         $defaultAccountsSettings = new DefaultAccountSettings;
 
-        if (
-            ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
-                || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
-                    || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
-        ) {
+        $journalId = $defaultAccountsSettings->currency_exchange_journal_id;
+        $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id;
+        $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id;
+
+        if (! $journalId || ! $expenseAccountId || ! $incomeAccountId) {
             throw new Exception('Exchange difference journal and accounts must be configured');
         }
 
@@ -1861,7 +1890,7 @@ class AccountManager
 
                 $exchangeLine = $exchangeMove->lines[$exchangeLineSequence];
 
-                $this->reconcilePlan([$sourceLine->id, $exchangeLine->id]);
+                $this->reconcilePlan([MoveLine::whereIn('id', [$sourceLine->id, $exchangeLine->id])->get()]);
             }
 
             $exchangeMoves[] = $exchangeMove;
@@ -1968,6 +1997,9 @@ class AccountManager
 
             $reverseMove = $move->replicate();
             $reverseMove->fill($defaultValues);
+            $reverseMove->state = MoveState::DRAFT;
+            $reverseMove->posted_before = false;
+            $reverseMove->name = null;
             $reverseMove->save();
 
             foreach ($move->lines as $line) {
@@ -2039,7 +2071,7 @@ class AccountManager
             throw new Exception(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
-        if ($record->lines->some(fn ($line) => $line->account->deprecated)) {
+        if ($record->lines->some(fn ($line) => $line->account && $line->account->deprecated)) {
             throw new Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 

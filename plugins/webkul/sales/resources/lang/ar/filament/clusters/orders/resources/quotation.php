@@ -122,6 +122,7 @@ return [
                             'actions' => [
                                 'tooltip' => [
                                     'add-order-line' => 'إضافة بند طلب',
+                                    'already-added' => 'تمت الإضافة إلى الطلب',
                                 ],
 
                                 'notifications' => [

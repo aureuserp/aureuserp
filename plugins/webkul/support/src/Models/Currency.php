@@ -38,6 +38,16 @@ class Currency extends Model
         return $this->hasMany(CurrencyRate::class);
     }
 
+    public function companies(): HasMany
+    {
+        return $this->hasMany(Company::class);
+    }
+
+    public function isInUse(): bool
+    {
+        return $this->companies()->exists();
+    }
+
     public function convert(float|int $fromAmount, Currency $toCurrency, ?Company $company = null, $date = null, bool $round = true): float
     {
         $base = $this ?? $toCurrency;

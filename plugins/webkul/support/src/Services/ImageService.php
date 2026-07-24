@@ -15,8 +15,10 @@ class ImageService
 
     public function url(string $path, array $params): string
     {
-        return UrlBuilderFactory::create('/'.self::BASE_PATH, config('app.key'))
+        $signed = UrlBuilderFactory::create('/'.self::BASE_PATH, config('app.key'))
             ->getUrl($path, $params);
+
+        return url($signed);
     }
 
     public function validate(string $path, array $params): void

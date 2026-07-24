@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages\ListPlugins;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
@@ -39,7 +40,7 @@ class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Plugin;
     }
@@ -371,6 +372,13 @@ class PluginResource extends Resource
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
+
+                    $uninstallCommand = collect($plugin->package->consoleCommands)
+                        ->first(fn ($command) => $command instanceof UninstallCommand);
+
+                    if ($uninstallCommand?->endWith) {
+                        ($uninstallCommand->endWith)($uninstallCommand);
+                    }
                 } catch (Throwable $e) {
                     $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
                 }

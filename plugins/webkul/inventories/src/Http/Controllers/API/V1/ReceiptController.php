@@ -100,7 +100,7 @@ class ReceiptController extends OperationController
     #[Endpoint('Check receipt availability', 'Compute and refresh receipt availability')]
     #[UrlParam('id', 'integer', 'The receipt ID', required: true, example: 1)]
     #[ResponseFromApiResource(ReceiptResource::class, Receipt::class, additional: ['message' => 'Receipt availability checked successfully.'])]
-    #[Response(status: 422, description: 'Only confirmed or assigned operations can check availability.')]
+    #[Response(status: 422, description: 'Only waiting, confirmed or assigned operations can check availability.')]
     #[Response(status: 404, description: 'Receipt not found')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function checkAvailability(string $id)

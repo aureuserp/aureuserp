@@ -186,7 +186,7 @@ class RouteResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
                 ViewAction::make()

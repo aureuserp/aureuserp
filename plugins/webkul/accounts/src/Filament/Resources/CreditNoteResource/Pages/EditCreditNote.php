@@ -12,11 +12,6 @@ class EditCreditNote extends EditRecord
 {
     protected static string $resource = CreditNoteResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -52,5 +47,7 @@ class EditCreditNote extends EditRecord
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+
+        $this->refreshRecordState();
     }
 }

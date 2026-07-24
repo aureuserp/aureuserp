@@ -13,11 +13,6 @@ class EditQuotationTemplate extends EditRecord
 {
     protected static string $resource = QuotationTemplateResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Top;
