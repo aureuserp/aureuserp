@@ -38,4 +38,24 @@ class BillOfMaterialFactory extends Factory
             'creator_id'                   => User::query()->value('id') ?? User::factory(),
         ];
     }
+
+    public function strict(): static
+    {
+        return $this->state(fn () => ['consumption' => BillOfMaterialConsumption::STRICT]);
+    }
+
+    public function warning(): static
+    {
+        return $this->state(fn () => ['consumption' => BillOfMaterialConsumption::WARNING]);
+    }
+
+    public function flexible(): static
+    {
+        return $this->state(fn () => ['consumption' => BillOfMaterialConsumption::FLEXIBLE]);
+    }
+
+    public function phantom(): static
+    {
+        return $this->state(fn () => ['type' => BillOfMaterialType::PHANTOM]);
+    }
 }

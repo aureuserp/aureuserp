@@ -4,11 +4,9 @@ namespace Webkul\Recruitment\Filament\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
 use Illuminate\Contracts\Support\Htmlable;
@@ -19,6 +17,7 @@ use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\Recruitment\Models\Stage;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 
 class Recruitments extends BaseDashboard
 {
@@ -92,17 +91,9 @@ class Recruitments extends BaseDashboard
                             ])
                             ->default('all')
                             ->reactive(),
-                        DatePicker::make('startDate')
-                            ->label(__('recruitments::filament/pages/recruitment.filters-form.start-date'))
-                            ->maxDate(fn (Get $get) => $get('endDate') ?: now())
-                            ->default(now()->subMonth()->format('Y-m-d'))
-                            ->native(false),
-                        DatePicker::make('endDate')
-                            ->label(__('recruitments::filament/pages/recruitment.filters-form.end-date'))
-                            ->minDate(fn (Get $get) => $get('startDate') ?: now())
-                            ->maxDate(now())
-                            ->default(now())
-                            ->native(false),
+                        ...DashboardDateRange::make(
+                            __('recruitments::filament/pages/recruitment.filters-form.date-range'),
+                        ),
                     ])
                     ->columnSpanFull()
                     ->columns([

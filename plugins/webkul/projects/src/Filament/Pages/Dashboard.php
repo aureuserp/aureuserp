@@ -4,11 +4,9 @@ namespace Webkul\Project\Filament\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Partner\Models\Partner;
@@ -21,6 +19,7 @@ use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Tag;
 use Webkul\Security\Models\User;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 
 class Dashboard extends BaseDashboard
 {
@@ -91,17 +90,9 @@ class Dashboard extends BaseDashboard
                             ->preload()
                             ->options(fn () => Partner::pluck('name', 'id'))
                             ->reactive(),
-                        DatePicker::make('startDate')
-                            ->label(__('projects::filament/pages/dashboard.filters-form.start-date'))
-                            ->maxDate(fn (Get $get) => $get('endDate') ?: now())
-                            ->default(now()->subMonth()->format('Y-m-d'))
-                            ->native(false),
-                        DatePicker::make('endDate')
-                            ->label(__('projects::filament/pages/dashboard.filters-form.end-date'))
-                            ->minDate(fn (Get $get) => $get('startDate') ?: now())
-                            ->maxDate(now())
-                            ->default(now())
-                            ->native(false),
+                        ...DashboardDateRange::make(
+                            __('projects::filament/pages/dashboard.filters-form.date-range'),
+                        ),
                     ])->columnSpanFull(),
 
             ]);

@@ -454,7 +454,7 @@ class TaskResource extends Resource
                     ->label(__('projects::filament/resources/task.table.groups.created-at'))
                     ->date(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->filters([
                 QueryBuilder::make()

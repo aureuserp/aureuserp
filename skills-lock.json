@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "aureuserp-test-case-builder": {
+      "source": "aureuserp/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/aureuserp-test-case-builder/SKILL.md",
+      "computedHash": "dc0746ea18f04f2cff2ee8091d9f090b22c376d8684a7af013a7ddebb8e089ec"
+    },
     "cavecrew": {
       "source": "JuliusBrussee/caveman",
       "sourceType": "github",

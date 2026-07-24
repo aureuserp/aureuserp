@@ -114,7 +114,10 @@ class Order extends Model
 
     public function getModelTitle(): string
     {
-        return __('sales::models/order.title');
+        return match ($this->state) {
+            OrderState::SALE => __('sales::models/order.titles.sales-order'),
+            default          => __('sales::models/order.titles.quotation'),
+        };
     }
 
     public function company()

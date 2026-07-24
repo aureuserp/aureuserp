@@ -43,7 +43,10 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
 
     public $reconciledPayments = null;
 
-    protected $listeners = ['itemUpdated' => 'refreshSummary'];
+    protected $listeners = [
+        'itemUpdated'          => 'refreshSummary',
+        'refreshInvoiceSummary' => 'refreshFromRecord',
+    ];
 
     public function refreshSummary($totals)
     {
@@ -52,6 +55,11 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
         $this->grandTotal = $totals['grandTotal'];
         $this->amountTax = $totals['totalTax'];
         $this->rounding = $totals['rounding'];
+    }
+
+    public function refreshFromRecord()
+    {
+        $this->record?->refresh();
     }
 
     public function reconcileAction(): Action

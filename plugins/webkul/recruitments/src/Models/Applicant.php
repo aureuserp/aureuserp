@@ -76,6 +76,10 @@ class Applicant extends Model
         'application_status',
     ];
 
+    public array $notificationData = [];
+
+    public array $interviewerChanges = [];
+
     public function getModelTitle(): string
     {
         return __('recruitments::models/applicant.title');

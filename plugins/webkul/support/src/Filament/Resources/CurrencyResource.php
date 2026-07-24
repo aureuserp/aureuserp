@@ -3,6 +3,7 @@
 namespace Webkul\Support\Filament\Resources;
 
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -28,6 +29,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -37,7 +39,6 @@ use Webkul\Support\Filament\Resources\CurrencyResource\Pages\EditCurrency;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\ListCurrencies;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\ViewCurrency;
 use Webkul\Support\Models\Currency;
-use Webkul\Support\Enums\NavigationGroup;
 
 class CurrencyResource extends Resource
 {
@@ -58,7 +59,7 @@ class CurrencyResource extends Resource
         return __('support::filament/resources/currency.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }
@@ -117,7 +118,12 @@ class CurrencyResource extends Resource
                                     ->schema([
                                         Toggle::make('active')
                                             ->label(__('support::filament/resources/currency.form.sections.status-and-configuration-information.fields.status'))
-                                            ->default(true),
+                                            ->default(true)
+                                            ->rule(static fn (?Currency $record): Closure => static function (string $attribute, $value, Closure $fail) use ($record): void {
+                                                if ($record && ! $value && $record->isInUse()) {
+                                                    $fail(__('support::filament/resources/currency.table.actions.deactivate.notification.body'));
+                                                }
+                                            }),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 1]),
@@ -198,6 +204,7 @@ class CurrencyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort(fn ($query) => $query->orderBy('active', 'desc')->orderBy('name', 'asc'))
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->searchable()
@@ -223,6 +230,20 @@ class CurrencyResource extends Resource
                     ->sortable(),
                 ToggleColumn::make('active')
                     ->label(__('support::filament/resources/currency.table.columns.status'))
+                    ->rules(static fn (Currency $record): array => [
+                        'boolean',
+                        static function (string $attribute, $value, Closure $fail) use ($record): void {
+                            if (! $value && $record->isInUse()) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('support::filament/resources/currency.table.actions.deactivate.notification.title'))
+                                    ->body(__('support::filament/resources/currency.table.actions.deactivate.notification.body'))
+                                    ->send();
+
+                                $fail(__('support::filament/resources/currency.table.actions.deactivate.notification.body'));
+                            }
+                        },
+                    ])
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('support::filament/resources/currency.table.columns.created-at'))

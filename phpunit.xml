@@ -17,6 +17,9 @@
         <testsuite name="InventoryFeature">
             <directory>plugins/webkul/inventories/tests/Feature</directory>
         </testsuite>
+        <testsuite name="ManufacturingFeature">
+            <directory>plugins/webkul/manufacturing/tests/Feature</directory>
+        </testsuite>
         <testsuite name="SaleFeature">
             <directory>plugins/webkul/sales/tests/Feature</directory>
         </testsuite>

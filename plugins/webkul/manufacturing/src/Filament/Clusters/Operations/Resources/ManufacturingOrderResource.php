@@ -1129,8 +1129,8 @@ class ManufacturingOrderResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->visible(fn ($record): bool => $record instanceof Move && $record->id && $record->state !== MoveState::DRAFT)
-                    ->disabled(fn ($record): bool => $record instanceof Move && in_array($record->state, [MoveState::DONE, MoveState::CANCELED])),
+                    ->visible(fn (Get $get): bool => $get('../../state') !== ManufacturingOrderState::DRAFT->value)
+                    ->disabled(fn ($record): bool => ! ($record instanceof Move && $record->id) || in_array($record->state, [MoveState::DONE, MoveState::CANCELED])),
                 // ->suffixAction(fn (Move $record) => static::getMoveLinesAction($record)),
                 Select::make('uom_id')
                     ->hiddenLabel()

@@ -34,4 +34,17 @@ class OperationFactory extends Factory
             'creator_id'                 => User::query()->value('id') ?? User::factory(),
         ];
     }
+
+    public function manualCycle(float $minutes): static
+    {
+        return $this->state(fn () => [
+            'time_mode'         => OperationTimeMode::MANUAL,
+            'manual_cycle_time' => $minutes,
+        ]);
+    }
+
+    public function auto(): static
+    {
+        return $this->state(fn () => ['time_mode' => OperationTimeMode::AUTO]);
+    }
 }

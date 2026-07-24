@@ -6,14 +6,20 @@ use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Livewire;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Actions\UpdateQuantityAction;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\QuantityResolver;
+use Webkul\Inventory\Filament\Widgets\OperationTypeCardWidget;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
+use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
+use Webkul\Inventory\Models\Scrap;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -132,6 +138,10 @@ class InventoryServiceProvider extends PackageServiceProvider
                         DB::table($table)->delete();
                     }
                 });
+
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Operation::class, Scrap::class]);
+                });
             })
             ->icon('inventories');
     }
@@ -139,6 +149,13 @@ class InventoryServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->contributeProductSchema();
+
+        $this->registerLivewireComponents();
+    }
+
+    public function registerLivewireComponents(): void
+    {
+        Livewire::component('inventories-operation-type-card', OperationTypeCardWidget::class);
     }
 
     protected function contributeProductSchema(): void
@@ -150,6 +167,10 @@ class InventoryServiceProvider extends PackageServiceProvider
         ProductSchemaRegistry::form('left.inventory', fn () => InventoryProductSchema::formSection());
 
         ProductSchemaRegistry::infolist('left.inventory', fn () => InventoryProductSchema::infolistSection());
+
+        ProductSchemaRegistry::table('columns', fn () => InventoryProductSchema::onHandColumn());
+
+        ProductSchemaRegistry::table('columns', fn () => InventoryProductSchema::forecastedColumn());
 
         ProductSchemaRegistry::actions('header', fn () => UpdateQuantityAction::make());
 
@@ -215,5 +236,7 @@ class InventoryServiceProvider extends PackageServiceProvider
         $loader->alias('inventory', InventoryFacade::class);
 
         $this->app->singleton('inventory', InventoryManager::class);
+
+        $this->app->scoped(QuantityResolver::class);
     }
 }

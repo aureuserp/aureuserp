@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Models\OperationType;
 
 class OperationsTable
 {
@@ -115,6 +116,22 @@ class OperationsTable
                     ->constraints(collect(OperationResource::mergeTableConstraints([
                         TextConstraint::make('name')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.name')),
+                        RelationshipConstraint::make('operationType')
+                            ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.operation-type'))
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->getOptionLabelFromRecordUsing(
+                                        fn (OperationType $record): string => $record->warehouse
+                                            ? $record->warehouse->name.': '.$record->name
+                                            : $record->name,
+                                    )
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            )
+                            ->icon('heroicon-o-arrows-right-left'),
                         SelectConstraint::make('state')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.state'))
                             ->multiple()

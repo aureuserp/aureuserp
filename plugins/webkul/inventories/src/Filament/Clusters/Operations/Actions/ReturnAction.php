@@ -8,8 +8,11 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\View\Components\InputComponent\WrapperComponent\IconComponent;
 use Illuminate\Support\Collection;
+use Illuminate\View\ComponentAttributeBag;
 use Livewire\Component;
 use Throwable;
 use Webkul\Inventory\Enums\MoveState;
@@ -52,10 +55,11 @@ class ReturnAction extends Action
 
                 $form->fill([
                     'return_moves' => $returnableMoves->map(fn ($move) => [
-                        'move_id'      => $move->id,
-                        'product_name' => $move->product?->name ?? '—',
-                        'qty'          => $move->product_uom_qty,
-                        'uom_name'     => $move->uom?->name ?? '—',
+                        'move_id'       => $move->id,
+                        'move_quantity' => (float) $move->quantity,
+                        'product_name'  => $move->product?->name ?? '—',
+                        'qty'           => $move->product_uom_qty,
+                        'uom_name'      => $move->uom?->name ?? '—',
                     ])->values()->all(),
                 ]);
             })
@@ -65,6 +69,7 @@ class ReturnAction extends Action
                     ->deletable(true)
                     ->addable(false)
                     ->reorderable(false)
+                    ->compact()
                     ->table([
                         RepeaterTableColumn::make('product_name')
                             ->label(__('inventories::filament/clusters/operations/actions/return.modal.form.columns.product')),
@@ -75,12 +80,31 @@ class ReturnAction extends Action
                     ])
                     ->schema([
                         Hidden::make('move_id'),
+                        Hidden::make('move_quantity'),
                         TextEntry::make('product_name')->hiddenLabel(),
                         TextInput::make('qty')
                             ->hiddenLabel()
                             ->numeric()
                             ->minValue(0)
-                            ->required(),
+                            ->required()
+                            ->live(onBlur: true)
+                            ->suffix(function (Get $get): mixed {
+                                if ((float) ($get('qty') ?? 0) <= (float) ($get('move_quantity') ?? 0)) {
+                                    return null;
+                                }
+
+                                return \Filament\Support\generate_icon_html(
+                                    'heroicon-o-exclamation-triangle',
+                                    null,
+                                    (new ComponentAttributeBag)
+                                        ->color(IconComponent::class, 'warning')
+                                        ->class(['fi-text-color-600'])
+                                        ->merge([
+                                            'style'         => 'color: var(--text)',
+                                            'x-tooltip.raw' => __('inventories::filament/clusters/operations/actions/return.modal.form.columns.excess-quantity-tooltip'),
+                                        ], escape: false),
+                                );
+                            }),
                         TextEntry::make('uom_name')->hiddenLabel(),
                     ]),
             ])
