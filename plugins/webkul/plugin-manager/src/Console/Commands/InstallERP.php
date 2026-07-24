@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
@@ -192,6 +193,8 @@ class InstallERP extends Command
         $this->info('⚙️ Running database seeders...');
 
         Artisan::call('db:seed', [], $this->getOutput());
+
+        Package::syncPostgresSequences();
 
         $this->info('✅ Seeders completed successfully.');
     }

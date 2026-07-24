@@ -5,13 +5,18 @@ namespace Webkul\Support;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use RuntimeException;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
+use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Database\Dialects\MySqlDialect;
+use Webkul\Support\Database\Dialects\PostgresDialect;
 use Webkul\Support\Livewire\QuickNavigation;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
@@ -102,6 +107,19 @@ class SupportServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->scoped(SettingsRegistry::class);
+
+        $this->app->singleton(DatabaseDialect::class, function () {
+            $driver = DB::connection()->getDriverName();
+
+            return match ($driver) {
+                'pgsql' => new PostgresDialect,
+                'mysql', 'mariadb' => new MySqlDialect,
+                default => throw new RuntimeException(
+                    "No DatabaseDialect implementation is registered for the [{$driver}] database driver. ".
+                    'Supported drivers: mysql, mariadb, pgsql.'
+                ),
+            };
+        });
 
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(SupportPlugin::make());

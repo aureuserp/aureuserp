@@ -11,10 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveFactory;
-use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -226,7 +226,7 @@ class Move extends Model
 
     public function lines(): HasMany
     {
-        return $this->hasMany(MoveLine::class);
+        return $this->hasMany(MoveLine::class)->orderBy('id');
     }
 
     public function moveOrigins(): BelongsToMany
@@ -343,7 +343,7 @@ class Move extends Model
                 } elseif (! in_array($move->operation->state, [
                     OperationState::DRAFT,
                     OperationState::DONE,
-                    OperationState::CANCELED
+                    OperationState::CANCELED,
                 ])) {
                     $move->additional = true;
                 }
@@ -1422,7 +1422,7 @@ class Move extends Model
             ->whereIn('location_id', $locationIds)
             ->whereIn('lot_id', $this->lines->pluck('lot_id')->unique()->filter()->all())
             ->get();
-        
+
         $serialNumberQuantities = $quantities->filter(
             fn ($quantity) => $quantity->product->tracking === ProductTracking::SERIAL
                 && $quantity->location->type !== LocationType::INVENTORY

@@ -605,21 +605,12 @@ class Move extends Model implements Sortable
     public function computePaymentState()
     {
         $debitResults = DB::table('accounts_partial_reconciles as partial_reconciles')
-            ->select(
+            ->select([
                 'source_line.id as source_line_id',
                 'source_line.move_id as source_move_id',
                 'account.account_type as source_line_account_type',
-                DB::raw('JSON_ARRAYAGG(opposite_move.move_type) as opposite_move_types'),
-                DB::raw('
-                    CASE
-                        WHEN SUM(opposite_move.origin_payment_id IS NOT NULL) = 0
-                            THEN TRUE
-                        ELSE MIN(COALESCE(payment.is_matched, 0))
-                    END AS all_payments_matched
-                '),
-                DB::raw('MAX(payment.id IS NOT NULL) as has_payment'),
-                DB::raw('MAX(opposite_move.statement_line_id IS NOT NULL) as has_statement_line')
-            )
+                ...$this->reconciliationAggregateSelects(),
+            ])
             ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.debit_move_id')
             ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
             ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.credit_move_id')
@@ -631,21 +622,12 @@ class Move extends Model implements Sortable
             ->get();
 
         $creditResults = DB::table('accounts_partial_reconciles as partial_reconciles')
-            ->select(
+            ->select([
                 'source_line.id as source_line_id',
                 'source_line.move_id as source_move_id',
                 'account.account_type as source_line_account_type',
-                DB::raw('JSON_ARRAYAGG(opposite_move.move_type) as opposite_move_types'),
-                DB::raw('
-                    CASE
-                        WHEN SUM(opposite_move.origin_payment_id IS NOT NULL) = 0
-                            THEN TRUE
-                        ELSE MIN(COALESCE(payment.is_matched, 0))
-                    END AS all_payments_matched
-                '),
-                DB::raw('MAX(payment.id IS NOT NULL) as has_payment'),
-                DB::raw('MAX(opposite_move.statement_line_id IS NOT NULL) as has_statement_line')
-            )
+                ...$this->reconciliationAggregateSelects(),
+            ])
             ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.credit_move_id')
             ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
             ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.debit_move_id')
@@ -664,9 +646,7 @@ class Move extends Model implements Sortable
             $oppositeMoveTypes = $row->opposite_move_types;
 
             if (is_string($oppositeMoveTypes)) {
-                $oppositeMoveTypes = str_replace(['["', '"]'], '', $oppositeMoveTypes);
-
-                $oppositeMoveTypes = $oppositeMoveTypes ? explode(',', $oppositeMoveTypes) : [];
+                $oppositeMoveTypes = json_decode($oppositeMoveTypes, true) ?? [];
             }
 
             $paymentData[] = [
@@ -782,6 +762,31 @@ class Move extends Model implements Sortable
         }
 
         $this->payment_state = $newPaymentState;
+    }
+
+    /**
+     * Shared aggregate SELECT expressions for the debit/credit reconciliation
+     * queries in computePaymentState(). Aggregate functions over boolean
+     * expressions (SUM/COALESCE) are MySQL-lenient but rejected by PostgreSQL's
+     * stricter type system, so every aggregate is normalized to a plain integer
+     * (0/1) here so PHP can cast it to bool consistently regardless of driver.
+     * The JSON array aggregation itself goes through db_dialect() since MySQL's
+     * JSON_ARRAYAGG has no direct PostgreSQL equivalent (json_agg).
+     */
+    private function reconciliationAggregateSelects(): array
+    {
+        return [
+            DB::raw(db_dialect()->jsonArrayAgg('opposite_move.move_type').' as opposite_move_types'),
+            DB::raw('
+                CASE
+                    WHEN SUM(CASE WHEN opposite_move.origin_payment_id IS NOT NULL THEN 1 ELSE 0 END) = 0
+                        THEN 1
+                    ELSE MIN(CASE WHEN COALESCE(payment.is_matched, false) THEN 1 ELSE 0 END)
+                END AS all_payments_matched
+            '),
+            DB::raw('MAX(CASE WHEN payment.id IS NOT NULL THEN 1 ELSE 0 END) as has_payment'),
+            DB::raw('MAX(CASE WHEN opposite_move.statement_line_id IS NOT NULL THEN 1 ELSE 0 END) as has_statement_line'),
+        ];
     }
 
     public function getInstallmentsData($lines, $paymentDate = null, $nextPaymentDate = null)

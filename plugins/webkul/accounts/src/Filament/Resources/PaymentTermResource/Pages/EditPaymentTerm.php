@@ -7,11 +7,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditPaymentTerm extends EditRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
 
     protected static string $resource = PaymentTermResource::class;
 

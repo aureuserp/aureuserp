@@ -307,8 +307,8 @@ class WorkOrderResource extends Resource
                     ->formatStateUsing(fn (mixed $state, WorkOrder $record): string => static::getManufacturingOrderLabel($record->manufacturingOrder))
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('manufacturingOrder', function (Builder $relationQuery) use ($search): void {
-                            $relationQuery->where('name', 'like', "%{$search}%")
-                                ->orWhere('reference', 'like', "%{$search}%");
+                            $relationQuery->whereLike('name', "%{$search}%")
+                                ->orWhereLike('reference', "%{$search}%");
                         });
                     }),
                 TextColumn::make('product.name')

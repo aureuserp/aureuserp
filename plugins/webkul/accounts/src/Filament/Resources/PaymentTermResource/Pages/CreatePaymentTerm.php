@@ -7,9 +7,12 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreatePaymentTerm extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = PaymentTermResource::class;
 
     public function getSubNavigation(): array

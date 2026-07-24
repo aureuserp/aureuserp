@@ -5,6 +5,7 @@ use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\CurrencyRes
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\PackagingResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\ProductAttributeResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\ProductCategoryResource;
+use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\UOMCategoryResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
@@ -36,6 +37,7 @@ return [
             ProductAttributeResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             PackagingResource::class            => [...$basic, ...$delete, ...$reorder],
             CurrencyResource::class             => [...$basic, ...$delete],
+            UOMCategoryResource::class          => [...$basic, ...$delete],
             ProductResource::class              => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             AccountOrderResource::class         => [...$basic, ...$delete],
             AccountPurchaseOrderResource::class => [...$basic, ...$delete],
