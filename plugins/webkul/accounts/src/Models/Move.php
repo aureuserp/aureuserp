@@ -41,7 +41,13 @@ class Move extends Model implements Sortable
 
     public function getModelTitle(): string
     {
-        return __('accounts::models/move.title');
+        return match ($this->move_type) {
+            MoveType::OUT_INVOICE => __('accounts::models/move.titles.invoice'),
+            MoveType::OUT_REFUND  => __('accounts::models/move.titles.credit-note'),
+            MoveType::IN_INVOICE  => __('accounts::models/move.titles.bill'),
+            MoveType::IN_REFUND   => __('accounts::models/move.titles.refund'),
+            default               => __('accounts::models/move.title'),
+        };
     }
 
     protected $fillable = [

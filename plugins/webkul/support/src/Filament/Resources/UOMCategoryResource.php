@@ -2,6 +2,8 @@
 
 namespace Webkul\Support\Filament\Resources;
 
+use BackedEnum;
+use Closure;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -11,12 +13,15 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Webkul\Support\Enums\UOMType;
 use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Models\UOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\CreateUOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\EditUOMCategory;
@@ -28,6 +33,8 @@ class UOMCategoryResource extends Resource
 {
     protected static ?string $model = UOMCategory::class;
 
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-scale';
+
     protected static bool $shouldRegisterNavigation = false;
 
     public static function getNavigationGroup(): string | \UnitEnum
@@ -38,6 +45,32 @@ class UOMCategoryResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('support::filament/resources/uom-category.navigation.title');
+    }
+
+    /**
+     * The reference unit of a category is highlighted, the same way Odoo emphasises it.
+     *
+     * An inline style is used instead of a utility class because the compiled theme only
+     * ships the classes present at build time.
+     */
+    public static function getReferenceRowAttributes(Get $get): array
+    {
+        return static::isReferenceType($get('type'))
+            ? ['style' => 'font-weight: 700;']
+            : [];
+    }
+
+    /**
+     * The state is an enum instance once hydrated, but a plain string when it comes back
+     * from the browser, so both shapes have to be accepted.
+     */
+    public static function isReferenceType(mixed $type): bool
+    {
+        if (! $type instanceof UOMType) {
+            $type = UOMType::tryFrom((string) $type);
+        }
+
+        return $type === UOMType::REFERENCE;
     }
 
     public static function form(Schema $schema): Schema
@@ -55,39 +88,86 @@ class UOMCategoryResource extends Resource
                 Section::make(__('support::filament/resources/uom-category.form.sections.uoms.title'))
                     ->schema([
                         Repeater::make('uoms')
-                            ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.uoms'))
+                            ->hiddenLabel()
                             ->relationship('uoms')
-                            ->schema([
-                                Select::make('type')
+                            ->compact()
+                            ->table([
+                                TableColumn::make('name')
+                                    ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.name'))
+                                    ->resizable(),
+                                TableColumn::make('type')
                                     ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.type'))
-                                    ->options(UOMType::class)
-                                    ->required()
-                                    ->native(false),
+                                    ->resizable(),
+                                TableColumn::make('ratio')
+                                    ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.ratio'))
+                                    ->resizable(),
+                                TableColumn::make('rounding')
+                                    ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.rounding'))
+                                    ->resizable(),
+                            ])
+                            ->schema([
                                 TextInput::make('name')
                                     ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.name'))
                                     ->maxLength(255)
-                                    ->required(),
-                                TextInput::make('factor')
-                                    ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.factor'))
+                                    ->required()
+                                    ->extraInputAttributes(static::getReferenceRowAttributes(...)),
+                                Select::make('type')
+                                    ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.type'))
+                                    ->options(UOMType::class)
+                                    ->default(UOMType::REFERENCE->value)
+                                    ->required()
+                                    ->native(false)
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, Set $set): void {
+                                        if (static::isReferenceType($state)) {
+                                            $set('ratio', 1);
+                                        }
+                                    })
+                                    ->extraAttributes(static::getReferenceRowAttributes(...)),
+                                TextInput::make('ratio')
+                                    ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.ratio'))
                                     ->numeric()
                                     ->default(1)
                                     ->required()
-                                    ->step(0.0001)
-                                    ->minValue(0),
+                                    ->step(0.000001)
+                                    ->disabled(fn (Get $get): bool => static::isReferenceType($get('type')))
+                                    ->dehydrated()
+                                    ->rule('gt:0')
+                                    ->validationMessages([
+                                        'gt' => __('support::filament/resources/uom-category.form.sections.uoms.validations.ratio-greater-than-zero'),
+                                    ])
+                                    ->extraInputAttributes(static::getReferenceRowAttributes(...)),
                                 TextInput::make('rounding')
                                     ->label(__('support::filament/resources/uom-category.form.sections.uoms.fields.rounding'))
                                     ->numeric()
                                     ->default(0.01)
                                     ->required()
                                     ->step(0.0001)
-                                    ->minValue(0),
+                                    ->rule('gt:0')
+                                    ->validationMessages([
+                                        'gt' => __('support::filament/resources/uom-category.form.sections.uoms.validations.rounding-greater-than-zero'),
+                                    ])
+                                    ->extraInputAttributes(static::getReferenceRowAttributes(...)),
                             ])
-                            ->columns(4)
                             ->defaultItems(1)
+                            ->minItems(1)
                             ->addActionLabel(__('support::filament/resources/uom-category.form.sections.uoms.actions.add'))
                             ->reorderable(false)
-                            ->collapsible()
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
+                            ->rules([
+                                fn (): Closure => function (string $attribute, $value, Closure $fail): void {
+                                    $references = collect($value)
+                                        ->filter(fn ($uom): bool => static::isReferenceType($uom['type'] ?? null))
+                                        ->count();
+
+                                    if ($references === 0) {
+                                        $fail(__('support::filament/resources/uom-category.form.sections.uoms.validations.missing-reference'));
+                                    }
+
+                                    if ($references > 1) {
+                                        $fail(__('support::filament/resources/uom-category.form.sections.uoms.validations.multiple-references'));
+                                    }
+                                },
+                            ]),
                     ]),
             ]);
     }

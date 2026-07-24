@@ -3,6 +3,13 @@
 return [
     'title'          => 'Movimiento',
 
+    'titles'         => [
+        'invoice'     => 'Factura',
+        'credit-note' => 'Nota de crédito',
+        'bill'        => 'Factura de proveedor',
+        'refund'      => 'Reembolso',
+    ],
+
     'log-attributes' => [
         'name'                  => 'Referencia de factura',
         'reference'             => 'Referencia',

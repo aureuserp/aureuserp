@@ -146,7 +146,7 @@
 
                                     <div class="flex items-start gap-2">
                                         <!-- Icon -->
-                                        <div class="flex-shrink-0 w-5 h-5 mt-0.5">
+                                        <div class="flex-shrink-0 w-5 h-5">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 {!! $icon !!}
                                             </svg>

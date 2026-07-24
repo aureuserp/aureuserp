@@ -21,6 +21,8 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Scrap;
+use Webkul\Inventory\Observers\ProductObserver;
+use Webkul\Inventory\Observers\UOMObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -29,6 +31,7 @@ use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegis
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
 use Webkul\TableViews\Filament\Components\PresetView;
+use Webkul\Support\Models\UOM;
 
 class InventoryServiceProvider extends PackageServiceProvider
 {
@@ -150,6 +153,8 @@ class InventoryServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->registerObservers();
+
         $this->contributeProductSchema();
 
         $this->registerLivewireComponents();
@@ -158,6 +163,13 @@ class InventoryServiceProvider extends PackageServiceProvider
     public function registerLivewireComponents(): void
     {
         Livewire::component('inventories-operation-type-card', OperationTypeCardWidget::class);
+    }
+
+    protected function registerObservers(): void
+    {
+        UOM::observe(UOMObserver::class);
+
+        Product::observe(ProductObserver::class);
     }
 
     protected function contributeProductSchema(): void
