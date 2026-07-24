@@ -28,7 +28,7 @@ use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ManageProducts extends ManageRelatedRecords
 {
-    use HasTableViews, HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasTableViews;
 
     protected static string $resource = LocationResource::class;
 
@@ -133,21 +133,10 @@ class ManageProducts extends ManageRelatedRecords
                     ->sortable(),
                 TextColumn::make('quantity')
                     ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.columns.on-hand'))
-                    ->state(function ($record) {
-                        $templateProduct = $this->getTemplateProduct($record);
-                        $templateProduct->setContext(['location_id' => $record->location_id]);
-
-                        return $templateProduct->available_qty;
-                    })
-                    ->sortable(),
+                    ->state(fn ($record) => $this->formatQuantity($this->getQuantities($record)['available_qty'] ?? 0.0)),
                 TextColumn::make('forecast')
                     ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.columns.forecast'))
-                    ->state(function ($record) {
-                        $templateProduct = $this->getTemplateProduct($record);
-                        $templateProduct->setContext(['location_id' => $record->location_id]);
-
-                        return $templateProduct->virtual_available_qty;
-                    }),
+                    ->state(fn ($record) => $this->formatQuantity($this->getQuantities($record)['virtual_available_qty'] ?? 0.0)),
                 TextColumn::make('uom_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location/pages/manage-products.table.columns.unit-of-measure'))
                     ->state(fn ($record) => ($record->product->parent ?? $record->product)->uom?->name)
@@ -184,11 +173,34 @@ class ManageProducts extends ManageRelatedRecords
             ]);
     }
 
+    /**
+     * Cache of computed quantities per table row so "On Hand" and "Forecast"
+     * columns don't each trigger a fresh (and expensive) recomputation.
+     *
+     * @var array<int, array<string, float>>
+     */
+    protected array $quantitiesCache = [];
+
     protected function getTemplateProduct(ProductQuantity $record): Product
     {
-        return $record->product->parent_id
-            ? Product::withTrashed()->find($record->product->parent_id)
-            : $record->product;
+        return $record->product->parent ?? $record->product;
+    }
+
+    /**
+     * @return array<string, float>
+     */
+    protected function getQuantities(ProductQuantity $record): array
+    {
+        return $this->quantitiesCache[$record->id] ??= $this->getTemplateProduct($record)
+            ->setContext(['location_id' => $record->location_id])
+            ->computeQuantities();
+    }
+
+    protected function formatQuantity(float $value): string
+    {
+        return $value == (int) $value
+            ? (string) (int) $value
+            : number_format($value, 2);
     }
 
     public function getVariantsInfolist(ProductQuantity $record): array
@@ -209,8 +221,8 @@ class ManageProducts extends ManageRelatedRecords
                         'name'     => $variant->name,
                         'price'    => $variant->price,
                         'cost'     => $variant->cost,
-                        'on_hand'  => ($onHand == (int) $onHand) ? (int) $onHand : number_format($onHand, 2),
-                        'forecast' => ($forecast == (int) $forecast) ? (int) $forecast : number_format($forecast, 2),
+                        'on_hand'  => $this->formatQuantity($onHand),
+                        'forecast' => $this->formatQuantity($forecast),
                         'unit'     => $variant->uom?->name ?? '—',
                     ];
                 })->toArray())

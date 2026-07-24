@@ -19,21 +19,11 @@ return [
             'category'      => 'Categoría',
             'uncategorized' => 'Sin categoría',
         ],
-
-        'filters' => [
-            'type'           => 'Tipo de producto',
-            'favorite'       => 'Favorito',
-            'favorite-true'  => 'Favorito',
-            'favorite-false' => 'No favorito',
-            'favorite-all'   => 'Todos',
-            'archived'       => 'Archivados',
-        ],
     ],
 
     'tabs' => [
         'default'  => 'Predeterminado',
         'goods'    => 'Bienes',
-        'services' => 'Servicios',
         'favorite' => 'Favorito',
         'archived' => 'Archivados',
     ],

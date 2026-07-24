@@ -68,6 +68,11 @@ class Product extends BaseProduct
         return $this->belongsToMany(Route::class, 'inventories_product_routes', 'product_id', 'route_id');
     }
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class);
+    }
+
     public function variants(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
@@ -349,6 +354,14 @@ class Product extends BaseProduct
             $companyIds = array_filter([Auth::user()?->default_company_id]);
         }
 
+        static $locationFiltersCache = [];
+
+        $cacheKey = json_encode([$locationId, $warehouseId, array_values($companyIds), $strict]);
+
+        if (isset($locationFiltersCache[$cacheKey])) {
+            return $locationFiltersCache[$cacheKey];
+        }
+
         $searchIds = function (string $modelClass, array $values): array {
             $ids = [];
             $names = [];
@@ -439,7 +452,7 @@ class Product extends BaseProduct
                 ->toArray();
         }
 
-        return $this->getLocationFiltersNew($resolvedLocationIds, $strict);
+        return $locationFiltersCache[$cacheKey] = $this->getLocationFiltersNew($resolvedLocationIds, $strict);
     }
 
     protected function getLocationFiltersNew(array $locationIds, bool $strict = false): array

@@ -19,21 +19,11 @@ return [
             'category'      => 'الفئة',
             'uncategorized' => 'غير مصنف',
         ],
-
-        'filters' => [
-            'type'           => 'نوع المنتج',
-            'favorite'       => 'المفضلة',
-            'favorite-true'  => 'المفضلة',
-            'favorite-false' => 'غير مفضلة',
-            'favorite-all'   => 'الكل',
-            'archived'       => 'المؤرشفة',
-        ],
     ],
 
     'tabs' => [
         'default'  => 'الافتراضي',
         'goods'    => 'السلع',
-        'services' => 'الخدمات',
         'favorite' => 'المفضلة',
         'archived' => 'المؤرشفة',
     ],
