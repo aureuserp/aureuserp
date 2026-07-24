@@ -3,10 +3,15 @@
 namespace Webkul\Product;
 
 use Filament\Panel;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Models\Category;
+use Webkul\Product\Models\Product;
+use Webkul\Product\Observers\UOMObserver;
+use Webkul\Support\Models\UOM;
 
 class ProductServiceProvider extends PackageServiceProvider
 {
@@ -49,12 +54,16 @@ class ProductServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Category::class, Product::class]);
+                });
+            });
     }
 
     public function packageBooted(): void
     {
-        //
+        UOM::observe(UOMObserver::class);
     }
 
     public function packageRegistered(): void

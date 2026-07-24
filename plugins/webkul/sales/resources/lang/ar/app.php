@@ -16,6 +16,7 @@ return [
         'quantity' => 'الكمية',
         'unit' => 'الوحدة',
         'unit-price' => 'سعر الوحدة',
+        'options' => 'الخيارات',
         'subtotal' => 'المجموع الفرعي',
         'tax' => 'الضريبة',
         'discount' => 'الخصم',

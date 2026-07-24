@@ -10,6 +10,8 @@ use Illuminate\Validation\ValidationException;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\TaxPartitionFactory;
+use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
@@ -31,10 +33,20 @@ class TaxPartition extends Model implements Sortable
         'creator_id',
     ];
 
+    protected $casts = [
+        'document_type'    => DocumentType::class,
+        'repartition_type' => RepartitionType::class,
+    ];
+
     public $sortable = [
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    public function getFactorAttribute(): float
+    {
+        return (float) ($this->factor_percent ?? 0) / 100.0;
+    }
 
     public function creator(): BelongsTo
     {
@@ -58,12 +70,12 @@ class TaxPartition extends Model implements Sortable
 
     public static function validateRepartitionLines($taxId): void
     {
-        $invoices = self::where('document_type', 'invoice')
+        $invoices = self::where('document_type', DocumentType::INVOICE)
             ->where('tax_id', $taxId)
             ->orderBy('sort')
             ->get();
 
-        $refunds = self::where('document_type', 'refund')
+        $refunds = self::where('document_type', DocumentType::REFUND)
             ->where('tax_id', $taxId)
             ->orderBy('sort')
             ->get();
@@ -75,8 +87,8 @@ class TaxPartition extends Model implements Sortable
         }
 
         if (
-            $invoices->where('repartition_type', 'base')->count() !== 1 ||
-            $refunds->where('repartition_type', 'base')->count() !== 1
+            $invoices->where('repartition_type', RepartitionType::BASE)->count() !== 1 ||
+            $refunds->where('repartition_type', RepartitionType::BASE)->count() !== 1
         ) {
             throw ValidationException::withMessages([
                 'invoice_repartition_lines' => 'Invoice must contain exactly one BASE repartition line.',
@@ -85,8 +97,8 @@ class TaxPartition extends Model implements Sortable
         }
 
         if (
-            $invoices->where('repartition_type', 'tax')->isEmpty() ||
-            $refunds->where('repartition_type', 'tax')->isEmpty()
+            $invoices->where('repartition_type', RepartitionType::TAX)->isEmpty() ||
+            $refunds->where('repartition_type', RepartitionType::TAX)->isEmpty()
         ) {
             throw ValidationException::withMessages([
                 'invoice_repartition_lines' => 'Invoice must contain at least one TAX repartition line.',

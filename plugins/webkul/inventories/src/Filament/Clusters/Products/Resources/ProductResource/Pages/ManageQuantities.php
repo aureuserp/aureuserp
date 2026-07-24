@@ -138,6 +138,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->default(fn (): ?int => Warehouse::first()?->lot_stock_location_id)
                     ->live()
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         $set('package_id', null);

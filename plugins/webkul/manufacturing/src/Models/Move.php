@@ -5,6 +5,8 @@ namespace Webkul\Manufacturing\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move as BaseMove;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
@@ -193,8 +195,26 @@ class Move extends BaseMove
 
         static::saving(function ($move) {
             $move->warehouse_id = $move->operationType?->warehouse_id;
-            
+
             $move->mo_operation_id = $move->bomLine?->operation_id;
+        });
+
+        static::created(function ($move) {
+            $order = $move->rawMaterialOrder ?? $move->order;
+
+            if (
+                ! $order
+                || in_array($order->state, [ManufacturingOrderState::DRAFT, ManufacturingOrderState::DONE, ManufacturingOrderState::CANCEL])
+                || in_array($move->state, [MoveState::DONE, MoveState::CANCELED])
+            ) {
+                return;
+            }
+
+            if ($move->raw_material_order_id) {
+                $move->adjustProcureMethod();
+            }
+
+            InventoryFacade::confirmMoves(collect([$move]));
         });
     }
 

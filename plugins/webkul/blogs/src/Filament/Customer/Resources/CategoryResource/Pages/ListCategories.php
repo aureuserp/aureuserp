@@ -35,12 +35,12 @@ class ListCategories extends ListRecords
     protected function getPosts(): Paginator
     {
         $query = Post::with(['category', 'creator', 'tags'])
-            ->where('is_published', 1);
+            ->where('is_published', true);
 
         if (request()->has('search') && $search = request()->input('search')) {
             $query->where(function (Builder $query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('content', 'like', "%{$search}%");
+                $query->whereLike('title', "%{$search}%")
+                    ->orWhereLike('content', "%{$search}%");
             });
         }
 

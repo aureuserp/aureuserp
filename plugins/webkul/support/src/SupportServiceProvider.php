@@ -5,13 +5,19 @@ namespace Webkul\Support;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use RuntimeException;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
+use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Database\Dialects\MySqlDialect;
+use Webkul\Support\Database\Dialects\PostgresDialect;
+use Webkul\Support\Livewire\QuickNavigation;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
@@ -65,6 +71,8 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2026_04_02_000001_create_calendars_table',
                 '2026_04_29_065935_add_resource_columns_in_calendar_leaves_table',
                 '2026_05_01_065935_add_resource_columns_in_calendar_attendances_table',
+                '2026_07_10_000000_fix_unit_of_measures_factor_precision',
+                '2026_07_16_000001_create_quick_navigation_favorites_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -77,6 +85,8 @@ class SupportServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Livewire::component('accept-invitation', AcceptInvitation::class);
+
+        Livewire::component('quick-navigation', QuickNavigation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
 
@@ -97,6 +107,19 @@ class SupportServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->scoped(SettingsRegistry::class);
+
+        $this->app->singleton(DatabaseDialect::class, function () {
+            $driver = DB::connection()->getDriverName();
+
+            return match ($driver) {
+                'pgsql' => new PostgresDialect,
+                'mysql', 'mariadb' => new MySqlDialect,
+                default => throw new RuntimeException(
+                    "No DatabaseDialect implementation is registered for the [{$driver}] database driver. ".
+                    'Supported drivers: mysql, mariadb, pgsql.'
+                ),
+            };
+        });
 
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(SupportPlugin::make());

@@ -12,11 +12,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewInternal extends ViewRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
 
     protected static string $resource = InternalResource::class;
 

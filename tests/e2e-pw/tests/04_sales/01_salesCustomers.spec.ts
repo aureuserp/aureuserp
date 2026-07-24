@@ -1,5 +1,5 @@
 import { test, withAdminPage } from "../../setup";
-import { SalesFlowPage } from "../../pages/04_salesFlow";
+import { SalesFlowPage } from "../../pages/04_salesManagement";
 
 
 test.describe("Sales Customers E2E", () => {

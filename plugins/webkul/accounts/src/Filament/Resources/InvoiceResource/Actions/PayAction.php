@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Livewire\Component;
 use Throwable;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -44,9 +45,9 @@ class PayAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
             ->schema(function (Schema $schema) {
-                try {
-                    $paymentRegister = (new PaymentRegister);
+                $paymentRegister = new PaymentRegister;
 
+                try {
                     $paymentRegister->lines = $this->getRecord()->lines;
                     $paymentRegister->company = $this->getRecord()->company;
                     $paymentRegister->currency = $this->getRecord()->currency;
@@ -122,6 +123,7 @@ class PayAction extends Action
                                         $query->whereIn('id', $paymentMethodLineIds);
                                     }
                                 )
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                 ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
                                     $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
@@ -297,7 +299,7 @@ class PayAction extends Action
                 ])
                     ->columns(2);
             })
-            ->action(function (Move $record, $data): void {
+            ->action(function (Move $record, $data, Component $livewire): void {
                 try {
                     $lineIds = $record->paymentTermLines
                         ->filter(fn ($line) => ! $line->reconciled)
@@ -315,6 +317,14 @@ class PayAction extends Action
                     $paymentRegister->save();
 
                     AccountFacade::createPayments($paymentRegister);
+
+                    $record->refresh();
+
+                    if (method_exists($livewire, 'refreshFormData')) {
+                        $livewire->refreshFormData(['state', 'payment_state', 'amount_residual']);
+                    }
+
+                    $livewire->dispatch('refreshInvoiceSummary');
                 } catch (Throwable $e) {
                     Notification::make()
                         ->danger()

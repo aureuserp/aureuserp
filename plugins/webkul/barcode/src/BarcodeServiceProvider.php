@@ -6,7 +6,6 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
-use Illuminate\Support\Facades\Vite;
 use Livewire\Livewire;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Dashboard;

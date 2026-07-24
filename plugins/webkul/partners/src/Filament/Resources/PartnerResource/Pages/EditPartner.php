@@ -22,11 +22,6 @@ class EditPartner extends EditRecord
         return __('partners::filament/resources/partner/pages/edit-partner.title');
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): Notification
     {
         return Notification::make()

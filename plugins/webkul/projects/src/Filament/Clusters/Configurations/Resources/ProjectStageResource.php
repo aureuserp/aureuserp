@@ -76,7 +76,7 @@ class ProjectStageResource extends Resource
                     ->label(__('projects::filament/clusters/configurations/resources/project-stage.table.columns.created-at'))
                     ->date(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
                 EditAction::make()

@@ -145,7 +145,7 @@ class OperationType extends Model implements Sortable
         static::creating(function ($operationType) {
             $operationType->creator_id ??= Auth::id();
 
-            $operationType->reservation_method = ReservationMethod::AT_CONFIRM;
+            $operationType->reservation_method ??= ReservationMethod::AT_CONFIRM;
         });
     }
 }

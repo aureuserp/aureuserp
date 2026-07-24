@@ -218,30 +218,30 @@ class Transfers extends Component
     private function findProduct(string $barcode): ?Product
     {
         return Product::query()
-            ->where('barcode', $barcode)
-            ->orWhere('reference', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
+            ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
     }
 
     private function findPackaging(string $barcode): ?Packaging
     {
         return Packaging::query()
-            ->where('barcode', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
             ->first();
     }
 
     private function findLot(string $barcode): ?Lot
     {
         return Lot::query()
-            ->where('name', $barcode)
-            ->orWhere('reference', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$barcode])
+            ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
     }
 
     private function findPackage(string $barcode): ?Package
     {
         return Package::query()
-            ->where('name', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$barcode])
             ->first();
     }
 

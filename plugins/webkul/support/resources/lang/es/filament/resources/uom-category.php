@@ -21,9 +21,16 @@ return [
                 'fields' => [
                     'uoms'     => 'Unidades',
                     'type'     => 'Tipo',
-                    'name'     => 'Nombre',
-                    'factor'   => 'Factor',
+                    'name'     => 'Unidad de medida',
+                    'ratio'    => 'Ratio',
                     'rounding' => 'Precisión de redondeo',
+                ],
+
+                'validations' => [
+                    'missing-reference'          => 'Esta categoría debe tener una unidad de medida de referencia.',
+                    'multiple-references'        => 'Esta categoría solo debe tener una unidad de medida de referencia.',
+                    'ratio-greater-than-zero'    => 'El ratio de conversión de una unidad de medida no puede ser cero.',
+                    'rounding-greater-than-zero' => 'La precisión de redondeo debe ser estrictamente positiva.',
                 ],
 
                 'actions' => [

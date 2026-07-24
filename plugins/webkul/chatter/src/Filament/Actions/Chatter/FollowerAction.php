@@ -78,8 +78,8 @@ class FollowerAction extends Action
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search) {
                                 return Partner::query()
-                                    ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%")
-                                        ->orWhere('email', 'like', "%{$search}%"))
+                                    ->when($search, fn ($q) => $q->whereLike('name', "%{$search}%")
+                                        ->orWhereLike('email', "%{$search}%"))
                                     ->limit(50)
                                     ->pluck('name', 'id')
                                     ->toArray();

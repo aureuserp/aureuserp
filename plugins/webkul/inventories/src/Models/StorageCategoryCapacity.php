@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,8 @@ use Webkul\Security\Models\User;
 
 class StorageCategoryCapacity extends Model
 {
+    use HasFactory;
+
     protected $table = 'inventories_storage_category_capacities';
 
     protected $fillable = [

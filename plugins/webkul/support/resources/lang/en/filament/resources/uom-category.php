@@ -21,9 +21,16 @@ return [
                 'fields' => [
                     'uoms'     => 'Units',
                     'type'     => 'Type',
-                    'name'     => 'Name',
-                    'factor'   => 'Factor',
+                    'name'     => 'Unit of Measure',
+                    'ratio'    => 'Ratio',
                     'rounding' => 'Rounding Precision',
+                ],
+
+                'validations' => [
+                    'missing-reference'          => 'This category should have a reference unit of measure.',
+                    'multiple-references'        => 'This category should only have one reference unit of measure.',
+                    'ratio-greater-than-zero'    => 'The conversion ratio for a unit of measure cannot be zero.',
+                    'rounding-greater-than-zero' => 'The rounding precision must be strictly positive.',
                 ],
 
                 'actions' => [

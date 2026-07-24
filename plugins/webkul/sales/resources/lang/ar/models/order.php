@@ -3,6 +3,11 @@
 return [
     'title'          => 'الطلب',
 
+    'titles'         => [
+        'quotation'   => 'اقتباس',
+        'sales-order' => 'الطلب',
+    ],
+
     'log-attributes' => [
         'state'           => 'حالة الطلب',
         'locked'          => 'مقفل',

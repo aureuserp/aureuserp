@@ -235,7 +235,11 @@
                     <tbody>
                         @foreach ($record->moveLines as $item)
                             <tr>
-                                <td>{{ $item->product->name }}</td>
+                                <td>
+                                    {{ $item->product->name }}
+                                    </br>
+                                    {{ $item->picking_description }}
+                                </td>
 
                                 @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
                                     <td>{{ $item->lot?->name }}</td>

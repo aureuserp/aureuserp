@@ -15,19 +15,16 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actio
 use Webkul\Purchase\Models\Order;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditOrder extends EditRecord
 {
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = OrderResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -109,6 +106,8 @@ class EditOrder extends EditRecord
     {
         try {
             PurchaseOrder::computePurchaseOrder($this->getRecord());
+
+            $this->refreshRecordState();
         } catch (\Exception $e) {
             Notification::make()
                 ->danger()
@@ -122,5 +121,7 @@ class EditOrder extends EditRecord
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

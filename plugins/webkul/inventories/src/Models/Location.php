@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Inventory\Database\Factories\LocationFactory;
@@ -273,27 +274,46 @@ class Location extends Model
     }
 
     public function getPutawayStrategy(
-        Product $product,
+        ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         ?Packaging $packaging = null,
         ?array $additionalQty = null,
-        array $excludeMoveLineIds = []
+        array $excludeMoveLineIds = [],
+        ?Collection $products = null
     ): Location {
         $packageType = $package?->packageType ?? $packaging?->packageType;
 
+        $productSet = collect();
+
+        if ($product) {
+            $productSet->push($product);
+        }
+
+        if ($products) {
+            $productSet = $productSet->merge($products);
+        }
+
+        $productSet = $productSet->filter()->unique('id')->values();
+
+        $productIds = $productSet->pluck('id');
+
         $categoryIds = collect();
 
-        $current = Category::find($product->category_id);
+        $distinctCategoryIds = $productSet->pluck('category_id')->filter()->unique();
 
-        while ($current) {
-            $categoryIds->push($current->id);
-            
-            $current = $current->parent_id ? $current->parent : null;
+        if ($distinctCategoryIds->count() === 1) {
+            $current = Category::find($distinctCategoryIds->first());
+
+            while ($current) {
+                $categoryIds->push($current->id);
+
+                $current = $current->parent_id ? $current->parent : null;
+            }
         }
 
         $putawayRules = $this->putawayRules
-            ->filter(fn ($rule) => (! $rule->product_id || $rule->product_id === $product->id)
+            ->filter(fn ($rule) => (! $rule->product_id || $productIds->contains($rule->product_id))
                 && (! $rule->category_id || $categoryIds->contains($rule->category_id))
                 && (! $rule->packageTypes->isNotEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id)))
             )
@@ -331,7 +351,7 @@ class Location extends Model
                     foreach ($packageQuantities as $locationId => $count) {
                         $qtyByLocation[$locationId] = ($qtyByLocation[$locationId] ?? 0) + $count;
                     }
-                } else {
+                } elseif ($product) {
                     $qtyByLocation = ProductQuantity::where('product_id', $product->id)
                         ->whereIn('location_id', $locations->pluck('id'))
                         ->groupBy('location_id')
@@ -366,7 +386,7 @@ class Location extends Model
 
     public function getPutawayLocation(
         mixed $putawayRules,
-        Product $product,
+        ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         ?Packaging $packaging = null,
@@ -381,7 +401,7 @@ class Location extends Model
 
             if ($putawayRule->sub_location === SubLocation::LAST_USED) {
                 $lastUsedLocation = MoveLine::where('state', MoveState::DONE)
-                    ->where('product_id', $product->id)
+                    ->when($product, fn ($query) => $query->where('product_id', $product->id))
                     ->whereHas('destinationLocation', fn ($q) => $q->where('id', $this->locationOut->id)
                         ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%'])
                     )
@@ -430,7 +450,7 @@ class Location extends Model
 
                         $checkedLocations->push($location);
                     }
-                } elseif (float_compare($qtyByLocation[$location->id] ?? 0, 0, precisionRounding: $product->uom->rounding) > 0) {
+                } elseif (float_compare($qtyByLocation[$location->id] ?? 0, 0, precisionRounding: $product?->uom->rounding ?? 0.01) > 0) {
                     if ($location->canBeUsed($product, $quantity, locationQty: $qtyByLocation[$location->id] ?? 0)) {
                         return $location;
                     }
@@ -456,7 +476,7 @@ class Location extends Model
     }
 
     public function canBeUsed(
-        Product $product,
+        ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         float $locationQty = 0,
@@ -495,12 +515,12 @@ class Location extends Model
                 return false;
             }
         } else {
-            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + ($product->weight ?? 0) * $quantity) {
+            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + ($product?->weight ?? 0) * $quantity) {
                 return false;
             }
 
             $productCapacity = $this->storageCategory->storageCategoryCapacitiesByProduct
-                ->first(fn ($pc) => $pc->product_id === $product->id);
+                ->first(fn ($pc) => $pc->product_id === $product?->id);
 
             if ($productCapacity && $locationQty >= $productCapacity->qty) {
                 return false;

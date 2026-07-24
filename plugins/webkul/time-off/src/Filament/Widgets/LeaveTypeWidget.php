@@ -48,14 +48,14 @@ class LeaveTypeWidget extends ChartWidget
             $query->where('request_date_to', '<=', Carbon::parse($this->pageFilters['endDate'])->endOfDay());
         }
 
-        $stats = $query->selectRaw('
+        $stats = $query->selectRaw("
             COUNT(*) as total,
-            SUM(CASE WHEN state = "draft" THEN 1 ELSE 0 END) as draft,
-            SUM(CASE WHEN state = "confirm" THEN 1 ELSE 0 END) as confirmed,
-            SUM(CASE WHEN state = "validate" THEN 1 ELSE 0 END) as validated,
-            SUM(CASE WHEN state = "refuse" THEN 1 ELSE 0 END) as refused,
-            SUM(CASE WHEN state = "cancel" THEN 1 ELSE 0 END) as cancelled
-        ')->first();
+            SUM(CASE WHEN state = 'draft' THEN 1 ELSE 0 END) as draft,
+            SUM(CASE WHEN state = 'confirm' THEN 1 ELSE 0 END) as confirmed,
+            SUM(CASE WHEN state = 'validate' THEN 1 ELSE 0 END) as validated,
+            SUM(CASE WHEN state = 'refuse' THEN 1 ELSE 0 END) as refused,
+            SUM(CASE WHEN state = 'cancel' THEN 1 ELSE 0 END) as cancelled
+        ")->first();
 
         $data = match ($this->pageFilters['status'] ?? 'all') {
             'draft'     => ['Draft' => $stats->draft ?? 0],
