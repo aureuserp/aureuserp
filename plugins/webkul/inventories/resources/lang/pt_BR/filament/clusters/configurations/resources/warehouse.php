@@ -17,6 +17,7 @@ return [
                     'code-placeholder' => 'ex.: AC',
                     'code-hint-tooltip' => 'O nome curto serve como identificador do armazém.',
                     'company' => 'Empresa',
+                    'multi-warehouse-warning' => 'Criar um novo armazém ativará automaticamente a configuração de Locais de armazenamento.',
                     'address' => 'Endereço',
                 ],
             ],

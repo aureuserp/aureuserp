@@ -49,6 +49,7 @@ return [
                     'barcode' => 'Código de barras',
                     'category' => 'Categoria',
                     'company' => 'Empresa',
+                    'company-placeholder' => 'Todas as empresas',
                 ],
             ],
 
@@ -80,6 +81,7 @@ return [
             'barcode' => 'Código de barras',
             'category' => 'Categoria',
             'company' => 'Empresa',
+            'company-placeholder' => 'Todas as empresas',
             'price' => 'Preço',
             'cost' => 'Custo',
             'on-hand' => 'Em estoque',
