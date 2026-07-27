@@ -952,7 +952,7 @@ class InventoryManager
         foreach ($moveLineIdsToCheck as $key => $moveLineIds) {
             [$productId, $companyId] = explode('_', $key);
 
-            $lines = MoveLine::whereIn('id', $moveLineIds)->get();
+            $lines = MoveLine::whereIn('id', $moveLineIds)->orderBy('id')->get();
 
             $lotNames = $lines->pluck('lot_name')->filter()->all();
 
@@ -990,7 +990,7 @@ class InventoryManager
         }
 
         if ($moveLineIdsToCreateLot->isNotEmpty()) {
-            MoveLine::whereIn('id', $moveLineIdsToCreateLot)->get()->each->createAndAssignProductionLot();
+            MoveLine::whereIn('id', $moveLineIdsToCreateLot)->orderBy('id')->get()->each->createAndAssignProductionLot();
         }
 
         MoveLine::whereIn('id', $moveLineIdsToDelete)->get()->each(fn ($moveLine) => $moveLine->delete());
