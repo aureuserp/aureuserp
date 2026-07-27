@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Configurações',
+        'title' => 'Visão geral',
     ],
 ];

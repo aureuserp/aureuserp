@@ -3,6 +3,11 @@
 return [
     'title' => 'Pedido de venda',
 
+    'titles' => [
+        'quotation' => 'Orçamento',
+        'sales-order' => 'Pedido de venda',
+    ],
+
     'log-attributes' => [
         'state' => 'Status do pedido',
         'locked' => 'Bloqueado',

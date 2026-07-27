@@ -16,7 +16,7 @@ return [
 
     'summary' => [
         'free-to-use' => 'Livre para usar',
-        'on-hand'     => 'Em mãos',
+        'on-hand'     => 'Em estoque',
         'total-cost'  => 'Custo total',
     ],
 

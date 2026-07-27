@@ -3,6 +3,13 @@
 return [
     'title' => 'Lançamento',
 
+    'titles' => [
+        'invoice' => 'Fatura',
+        'credit-note' => 'Nota de crédito',
+        'bill' => 'Fatura de fornecedor',
+        'refund' => 'Reembolso',
+    ],
+
     'log-attributes' => [
         'name' => 'Referência da fatura',
         'reference' => 'Referência',

@@ -3,6 +3,11 @@
 return [
     'title' => 'Pedido',
 
+    'titles' => [
+        'quotation' => 'Solicitação de cotação',
+        'purchase-order' => 'Pedido de compra',
+    ],
+
     'log-attributes' => [
         'state' => 'Status',
         'untaxed-amount' => 'Valor sem impostos',
