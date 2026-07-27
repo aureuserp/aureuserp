@@ -560,7 +560,7 @@ class MoveLine extends Model
 
         if ($this->product->tracking === ProductTracking::LOT) {
             $existingLot = Lot::where('product_id', $this->product_id)
-                ->where('name', $this->lot_name)
+                ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$this->lot_name])
                 ->first();
 
             if ($existingLot) {

@@ -172,7 +172,7 @@ class ProductQuantity extends Model
 
         $package->location_id = null;
 
-        $package->company_id  = null;
+        $package->company_id = null;
 
         $quantities = $package->quantities->filter(
             fn ($quantity) => float_compare($quantity->quantity, 0, precisionRounding: $quantity->uom->rounding) > 0
@@ -345,6 +345,7 @@ class ProductQuantity extends Model
         if ($quants->isNotEmpty()) {
             $quant = self::whereIn('id', $quants->pluck('id'))
                 ->orderBy('lot_id')
+                ->orderBy('id')
                 ->lockForUpdate()
                 ->first();
         }
@@ -727,6 +728,7 @@ class ProductQuantity extends Model
                 }
             })
             ->orderBy('lot_id')
+            ->orderBy('id')
             ->get()
             ->groupBy(fn ($quant) => implode('_', [
                 $quant->product_id,

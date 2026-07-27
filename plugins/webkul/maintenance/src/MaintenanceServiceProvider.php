@@ -3,6 +3,8 @@
 namespace Webkul\Maintenance;
 
 use Filament\Panel;
+use Webkul\Chatter\Services\ChatterCleanupService;
+use Webkul\Maintenance\Models\MaintenanceRequest;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -34,7 +36,11 @@ class MaintenanceServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([MaintenanceRequest::class]);
+                });
+            })
             ->icon('maintenance');
     }
 

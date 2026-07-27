@@ -119,14 +119,7 @@ class BillResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if (
-                            $record
-                            && $record->state != MoveState::CANCEL->value
-                        ) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -407,6 +400,7 @@ class BillResource extends Resource
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/bill.table.columns.state'))
                     ->sortable()
+                    ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')
                     ->label(__('accounts::filament/resources/bill.table.columns.customer'))
@@ -719,11 +713,7 @@ class BillResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if ($record->state != MoveState::CANCEL->value) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 

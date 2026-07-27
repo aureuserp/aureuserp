@@ -17,6 +17,7 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Partner\Models\Partner;
@@ -85,7 +86,13 @@ class Operation extends Model
 
     public function getModelTitle(): string
     {
-        return __('inventories::models/operation.title');
+        return match ($this->operationType?->type) {
+            OperationTypeEnum::INCOMING => __('inventories::models/operation.titles.incoming'),
+            OperationTypeEnum::OUTGOING => __('inventories::models/operation.titles.outgoing'),
+            OperationTypeEnum::INTERNAL => __('inventories::models/operation.titles.internal'),
+            OperationTypeEnum::DROPSHIP => __('inventories::models/operation.titles.dropship'),
+            default                     => __('inventories::models/operation.title'),
+        };
     }
 
     public function getChatterResourceUrl(): string

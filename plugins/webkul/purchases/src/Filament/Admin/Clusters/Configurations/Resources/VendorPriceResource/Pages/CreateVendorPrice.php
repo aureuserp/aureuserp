@@ -16,11 +16,6 @@ class CreateVendorPrice extends CreateRecord
         return __('purchases::filament/admin/clusters/configurations/resources/vendor-price/pages/create-vendor-price.navigation.title');
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getCreatedNotification(): Notification
     {
         return Notification::make()

@@ -8,9 +8,12 @@ use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateDropship extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = DropshipResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;

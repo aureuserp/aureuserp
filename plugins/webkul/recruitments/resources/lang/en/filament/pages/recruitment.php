@@ -22,6 +22,7 @@ return [
         ],
 
         'start-date' => 'Start Date',
+        'date-range' => 'Date Range',
         'end-date'   => 'End Date',
     ],
 ];

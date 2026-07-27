@@ -282,8 +282,8 @@ class OperationResource extends Resource
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('billOfMaterial', function (Builder $billOfMaterialQuery) use ($search): void {
                             $billOfMaterialQuery
-                                ->where('code', 'like', "%{$search}%")
-                                ->orWhereHas('product', fn (Builder $productQuery) => $productQuery->where('name', 'like', "%{$search}%"));
+                                ->whereLike('code', "%{$search}%")
+                                ->orWhereHas('product', fn (Builder $productQuery) => $productQuery->whereLike('name', "%{$search}%"));
                         });
                     }),
                 TextColumn::make('workCenter.name')

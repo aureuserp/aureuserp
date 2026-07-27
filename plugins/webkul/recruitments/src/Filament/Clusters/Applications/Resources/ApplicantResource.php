@@ -253,7 +253,7 @@ class ApplicantResource extends Resource
                                             ->reactive()
                                             ->afterStateHydrated(function (Set $set, Get $get, $state) {
                                                 if (! $get('stage_id') && $state) {
-                                                    $set('stage_id', RecruitmentStage::where('is_default', 1)->first()->id ?? null);
+                                                    $set('stage_id', RecruitmentStage::where('is_default', true)->first()->id ?? null);
                                                 }
                                             })
                                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old) {
@@ -264,7 +264,7 @@ class ApplicantResource extends Resource
                                                 }
 
                                                 if (is_null($old) && $state) {
-                                                    $set('stage_id', RecruitmentStage::where('is_default', 1)->first()->id ?? null);
+                                                    $set('stage_id', RecruitmentStage::where('is_default', true)->first()->id ?? null);
                                                 }
 
                                                 if (! is_null($old) && ! is_null($state)) {

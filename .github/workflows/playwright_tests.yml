@@ -23,19 +23,41 @@ jobs:
         node-version: ["22.13.1"]
         shard_index: [1, 2, 3, 4, 5, 6]
         shard_total: [6]
+        db: [mysql, pgsql]
+        include:
+          - db: mysql
+            db-label: MySQL
+            db-image: mysql:8.0
+            db-port: 3306
+            db-user: root
+            db-password: root
+            db-health: mysqladmin ping -h localhost -proot
+            php-db-ext: pdo_mysql
 
-    name: Shard ${{ matrix.shard_index }} of ${{ matrix.shard_total }}
+          - db: pgsql
+            db-label: PostgreSQL
+            db-image: postgres:16
+            db-port: 5432
+            db-user: postgres
+            db-password: postgres
+            db-health: pg_isready
+            php-db-ext: pdo_pgsql
+
+    name: ${{ matrix.db-label }} | Shard ${{ matrix.shard_index }} of ${{ matrix.shard_total }}
 
     services:
-      mysql:
-        image: mysql:8.0
+      database:
+        image: ${{ matrix.db-image }}
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: ${{ matrix.db-password }}
           MYSQL_DATABASE: aureuserp
+          POSTGRES_USER: ${{ matrix.db-user }}
+          POSTGRES_PASSWORD: ${{ matrix.db-password }}
+          POSTGRES_DB: aureuserp
         ports:
-          - 3306
+          - ${{ matrix.db-port }}:${{ matrix.db-port }}
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -proot"
+          --health-cmd="${{ matrix.db-health }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
@@ -61,7 +83,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: curl, fileinfo, gd, intl, mbstring, openssl, pdo, pdo_mysql, tokenizer, zip
+          extensions: curl, fileinfo, gd, intl, mbstring, openssl, pdo, ${{ matrix.php-db-ext }}, tokenizer, zip
           ini-values: error_reporting=E_ALL
           tools: composer:v2
 
@@ -95,15 +117,15 @@ jobs:
           npx playwright install --with-deps chromium
         working-directory: tests/e2e-pw
 
-      - name: Setting Environment mysql
+      - name: Setting Environment
         run: |
           cp .env.example .env
-          sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
-          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports[3306] }}|" .env
+          sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1${{ matrix.db }}|" .env
+          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ matrix.db-port }}|" .env
           sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=127.0.0.1|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
-          sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
-          sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=root|" .env
+          sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=${{ matrix.db-user }}|" .env
+          sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=${{ matrix.db-password }}|" .env
           sed -i "s|^\(APP_DEBUG=\s*\).*$|\1false|" .env
           sed -i "s|^\(APP_URL=\s*\).*$|\1http://127.0.0.1:8000|" .env
           echo "=== Final .env configuration ==="
@@ -115,17 +137,29 @@ jobs:
       - name: Generate APP_KEY (fast, non-Laravel)
         run: php artisan key:generate
 
-      - name: Wait for MySQL to be ready
+      - name: Wait for Database to be ready
         run: |
-          MYSQL_PORT=${{ job.services.mysql.ports[3306] }}
-          echo "Waiting for MySQL service on 127.0.0.1:${MYSQL_PORT}..."
+          DB_PORT=${{ matrix.db-port }}
+          echo "Waiting for ${{ matrix.db-label }} service on 127.0.0.1:${DB_PORT}..."
           for i in {1..30}; do
-            if mysqladmin ping -h 127.0.0.1 -P ${MYSQL_PORT} -u root -proot --silent 2>/dev/null; then
-              echo "✅ MySQL is up on port ${MYSQL_PORT}!"
-              php -r "new PDO('mysql:host=127.0.0.1;port=${MYSQL_PORT};dbname=aureuserp', 'root', 'root');" && echo "✅ PHP can connect!" || echo "❌ PHP cannot connect"
+            if [ "${{ matrix.db }}" = "mysql" ]; then
+              mysqladmin ping -h 127.0.0.1 -P ${DB_PORT} -u root -proot --silent 2>/dev/null && READY=1 || READY=0
+              DSN="mysql:host=127.0.0.1;port=${DB_PORT};dbname=aureuserp"
+              PHP_USER="root"
+              PHP_PASS="root"
+            else
+              PGPASSWORD=${{ matrix.db-password }} pg_isready -h 127.0.0.1 -p ${DB_PORT} -U ${{ matrix.db-user }} >/dev/null 2>&1 && READY=1 || READY=0
+              DSN="pgsql:host=127.0.0.1;port=${DB_PORT};dbname=aureuserp"
+              PHP_USER="${{ matrix.db-user }}"
+              PHP_PASS="${{ matrix.db-password }}"
+            fi
+
+            if [ "$READY" = "1" ]; then
+              echo "✅ ${{ matrix.db-label }} is up on port ${DB_PORT}!"
+              php -r "new PDO('${DSN}', '${PHP_USER}', '${PHP_PASS}');" && echo "✅ PHP can connect!" || echo "❌ PHP cannot connect"
               break
             fi
-            echo "⏳ MySQL not ready yet... ($i/30)"
+            echo "⏳ ${{ matrix.db-label }} not ready yet... ($i/30)"
             sleep 3
           done
 
@@ -154,7 +188,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: blob-report-${{ matrix.shard_index }}
+          name: blob-report-${{ matrix.db }}-${{ matrix.shard_index }}
           path: tests/e2e-pw/blob-report
           retention-days: 1
 
@@ -162,7 +196,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-failures-${{ matrix.shard_index }}-${{ github.run_id }}-${{ github.run_number }}
+          name: playwright-failures-${{ matrix.db }}-${{ matrix.shard_index }}-${{ github.run_id }}-${{ github.run_number }}
           path: |
             tests/e2e-pw/test-results
             storage/logs/laravel.log
@@ -173,7 +207,13 @@ jobs:
     needs:
       - aureus_playwright_test
     runs-on: ubuntu-latest
-    name: report
+
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [mysql, pgsql]
+
+    name: report (${{ matrix.db }})
 
     steps:
       - name: Checkout
@@ -182,7 +222,7 @@ jobs:
       - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "22.13.1"
           cache: npm
           cache-dependency-path: tests/e2e-pw/package-lock.json
 
@@ -194,7 +234,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: tests/e2e-pw/all-blob-reports
-          pattern: blob-report-*
+          pattern: blob-report-${{ matrix.db }}-*
           merge-multiple: true
 
       - name: Merge Playwright Reports
@@ -204,7 +244,7 @@ jobs:
       - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ github.run_id }}-${{ github.run_number }}
+          name: playwright-report-${{ matrix.db }}-${{ github.run_id }}-${{ github.run_number }}
           path: tests/e2e-pw/playwright-report
           retention-days: 1
 

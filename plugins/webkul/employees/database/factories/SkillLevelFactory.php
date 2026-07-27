@@ -26,7 +26,7 @@ class SkillLevelFactory extends Factory
             'name'          => fake()->name,
             'skill_type_id' => SkillType::factory(),
             'level'         => fake()->numberBetween(5, 100),
-            'default_level' => 0,
+            'default_level' => false,
         ];
     }
 }

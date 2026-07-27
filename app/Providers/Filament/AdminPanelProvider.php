@@ -10,6 +10,7 @@ use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup as FilamentNavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -22,7 +23,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Webkul\Manufacturing\ManufacturingPlugin;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\GlobalSearchProvider;
@@ -57,9 +57,16 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => Auth::user()?->name)
                     ->url(fn (): string => Profile::getUrl()),
             ])
-            ->navigationGroups(NavigationGroup::class)
+            ->navigationGroups(
+                collect(NavigationGroup::cases())->mapWithKeys(
+                    fn (NavigationGroup $case) => [
+                        $case->name => FilamentNavigationGroup::make()
+                            ->label(fn () => $case->getLabel())
+                            ->icon(fn () => $case->getIcon()),
+                    ]
+                )->all()
+            )
             ->plugins([
-                ManufacturingPlugin::make(),
                 FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 1,

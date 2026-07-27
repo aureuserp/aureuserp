@@ -69,8 +69,8 @@ class ManageBillsOfMaterials extends ManageRelatedRecords
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notification.success.title'))
-                            ->body(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notification.success.body')),
+                            ->title(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notifications.success.title'))
+                            ->body(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notifications.success.body')),
                     ),
             ]);
     }

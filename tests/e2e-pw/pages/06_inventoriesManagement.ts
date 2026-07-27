@@ -594,15 +594,16 @@ export class InventoriesManagementPage {
     }
 
     /**
-     * Assert the type select does not offer the given option value. Waits for the
-     * select itself first so a not-yet-rendered form can't pass falsely, then uses
-     * a short timeout since a present option won't disappear.
+     * Assert whether the type select offers the given option as selectable. The
+     * form gates options with Filament's disableOptionWhen, which keeps the
+     * option in the DOM and marks it disabled, so assert on that rather than on
+     * the option's presence.
      */
-    async expectOperationTypeOptionAbsent(value: string) {
+    async expectOperationTypeOptionDisabled(value: string, disabled = true) {
         await expect(this.erpLocators.inventoryOperationTypeTypeSelect).toBeVisible();
-        await expect(
-            this.erpLocators.inventoryOperationTypeTypeSelect.locator(`option[value="${value}"]`)
-        ).toHaveCount(0, { timeout: 5000 });
+        const option = this.erpLocators.inventoryOperationTypeTypeSelect.locator(`option[value="${value}"]`);
+        await expect(option).toHaveCount(1);
+        await (disabled ? expect(option).toBeDisabled() : expect(option).toBeEnabled());
     }
 
     /**

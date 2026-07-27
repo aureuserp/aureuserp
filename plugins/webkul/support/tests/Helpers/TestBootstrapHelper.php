@@ -10,19 +10,34 @@ class TestBootstrapHelper
 
     private static array $installedPlugins = [];
 
+    private static array $pluginTables = [
+        'projects'      => 'projects_projects',
+        'sales'         => 'sales_orders',
+        'purchases'     => 'purchases_orders',
+        'inventories'   => 'inventories_operations',
+        'accounts'      => 'accounts_account_moves',
+        'products'      => 'products_products',
+        'manufacturing' => 'manufacturing_orders',
+    ];
+
+    /**
+     * Install the core ERP system plus every plugin the test suite installs on demand.
+     *
+     * Must run before the per-test DB transaction (DatabaseTransactions) begins: on
+     * PostgreSQL, DDL is transactional, so migrate:fresh/plugin:install run inside that
+     * transaction would be rolled back at the end of the first test, wiping the schema
+     * for every test after it. See Tests\TestCase::setUp().
+     */
+    public static function ensureAllPluginsInstalled(): void
+    {
+        foreach (array_keys(static::$pluginTables) as $pluginName) {
+            static::ensurePluginInstalled($pluginName);
+        }
+    }
+
     public static function ensurePluginInstalled(string $pluginName): void
     {
-        $pluginTables = [
-            'projects'      => 'projects_projects',
-            'sales'         => 'sales_orders',
-            'purchases'     => 'purchases_orders',
-            'inventories'   => 'inventories_operations',
-            'accounts'      => 'accounts_account_moves',
-            'products'      => 'products_products',
-            'manufacturing' => 'manufacturing_orders',
-        ];
-
-        $table = $pluginTables[$pluginName] ?? null;
+        $table = static::$pluginTables[$pluginName] ?? null;
 
         if (! $table) {
             throw new InvalidArgumentException("Unknown plugin: {$pluginName}");

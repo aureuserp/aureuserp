@@ -13,19 +13,16 @@ use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditTransfer extends EditRecord
 {
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
 
     protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = TransferResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()], shouldGuessMissingParameters: true);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -86,5 +83,7 @@ class EditTransfer extends EditRecord
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }
