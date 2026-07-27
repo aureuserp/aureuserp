@@ -31,6 +31,7 @@ export class ErpLocators {
     readonly pluginInstallSuccessNotification: Locator;
     readonly pluginUninstallSuccessNotification: Locator;
     readonly pluginActionFailedNotification: Locator;
+    readonly pluginUninstallDependencyWarning: Locator;
     readonly pluginUninstallModalReady: Locator;
     readonly pluginsPerPageSelect: Locator;
     readonly inventoryMoveProductSelectButton: Locator;
@@ -543,9 +544,13 @@ export class ErpLocators {
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
         this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Installed Successfully' }).first();
         this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Uninstalled Successfully' }).first();
-        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed/ }).first();
-        // The uninstall confirmation heading is rendered for every plugin, even
-        // when the submit button is hidden, so it marks the modal as ready.
+        // "Cannot Uninstall Plugin" is included here too: the confirm button is always rendered
+        // even when dependents are installed, so submitting a blocked plugin the dependency
+        // warning check below missed would otherwise never match a failure/success outcome.
+        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed|Cannot Uninstall Plugin/ }).first();
+        // The modal renders this block up front whenever the plugin still has installed
+        // dependents, so a blocked uninstall can be detected without ever submitting.
+        this.pluginUninstallDependencyWarning = anyDialog(page).getByText('Action Required').first();
         this.pluginUninstallModalReady = anyDialog(page).getByText('Uninstall Confirmation').first();
         this.pluginsPerPageSelect = page.locator('.fi-pagination-records-per-page-select-ctn select:visible');
         // The selected product of a move row. A row's own text also contains every option of

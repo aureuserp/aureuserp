@@ -88,8 +88,6 @@ export class PluginManagementPage {
 
     /**
      * Install/uninstall every plugin on the matching tab.
-     * Installs are independent: installing a plugin pulls in its dependencies,
-     * Uninstalls are dependency-ordered: a plugin whose dependents are still installed cannot be removed
      */
     private async processAllPlugins(action: PluginAction) {
         const tab = action === 'install' ? 'not_installed' : 'installed';
@@ -144,19 +142,22 @@ export class PluginManagementPage {
      * Uninstall the first plugin on the tab that has no installed dependents.
      */
     private async uninstallFirstAvailablePlugin(): Promise<boolean> {
-        const count = await this.erpLocators.pluginName.count();
+        await this.gotoPluginTab('installed');
 
-        for (let i = 0; i < count; i++) {
-            const pluginTitle = (await this.erpLocators.pluginName.nth(i).innerText()).trim();
+        const names = (await this.erpLocators.pluginName.allInnerTexts()).map(name => name.trim());
+
+        for (let i = 0; i < names.length; i++) {
+            const pluginTitle = names[i];
 
             await this.erpLocators.pluginActionsButton.nth(i).click();
             await expect(this.erpLocators.pluginUninstallOption).toBeVisible();
             await this.erpLocators.pluginUninstallOption.click();
             await expect(this.erpLocators.pluginUninstallModalReady).toBeVisible();
 
-            if (!await this.erpLocators.pluginUninstallConfirmButton.isVisible()) {
+            if (await this.erpLocators.pluginUninstallDependencyWarning.isVisible()) {
                 console.log(`Skipping "${pluginTitle}" - dependent plugins still installed`);
-                await this.closeOpenModal();
+                await this.page.keyboard.press('Escape');
+                await expect(this.erpLocators.pluginUninstallModalReady).toBeHidden();
                 continue;
             }
 
@@ -167,14 +168,6 @@ export class PluginManagementPage {
         }
 
         return false;
-    }
-
-    /**
-     * Dismiss the open modal and wait for it to disappear
-     */
-    private async closeOpenModal() {
-        await this.page.keyboard.press('Escape');
-        await expect(this.erpLocators.pluginUninstallModalReady).toBeHidden();
     }
 
     /**
