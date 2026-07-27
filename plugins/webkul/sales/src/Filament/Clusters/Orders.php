@@ -14,7 +14,12 @@ class Orders extends Cluster
         return __('sales::filament/clusters/orders.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getClusterBreadcrumb(): ?string
+    {
+        return __('sales::filament/clusters/orders.navigation.title');
+    }
+
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Sale;
     }
