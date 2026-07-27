@@ -13,9 +13,11 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Partner\Models\Partner;
@@ -24,6 +26,7 @@ use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
+use Throwable;
 
 class Operation extends Model
 {
@@ -83,7 +86,22 @@ class Operation extends Model
 
     public function getModelTitle(): string
     {
-        return __('inventories::models/operation.title');
+        return match ($this->operationType?->type) {
+            OperationTypeEnum::INCOMING => __('inventories::models/operation.titles.incoming'),
+            OperationTypeEnum::OUTGOING => __('inventories::models/operation.titles.outgoing'),
+            OperationTypeEnum::INTERNAL => __('inventories::models/operation.titles.internal'),
+            OperationTypeEnum::DROPSHIP => __('inventories::models/operation.titles.dropship'),
+            default                     => __('inventories::models/operation.title'),
+        };
+    }
+
+    public function getChatterResourceUrl(): string
+    {
+        try {
+            return OperationResource::getUrl('view', ['record' => $this], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     protected function getLogAttributeLabels(): array
@@ -263,16 +281,44 @@ class Operation extends Model
             $operation->update(['name' => $operation->name]);
         });
 
+        static::updating(function ($operation) {
+            $originalOperationTypeId = $operation->getOriginal('operation_type_id');
+
+            if (
+                $originalOperationTypeId === null
+                || $originalOperationTypeId === $operation->operation_type_id
+            ) {
+                return;
+            }
+
+            $operationType = OperationType::withTrashed()->find($operation->operation_type_id);
+
+            $operation->source_location_id = $operationType?->source_location_id;
+
+            $operation->destination_location_id = $operationType?->destination_location_id;
+        });
+
         static::updated(function ($operation) {
             if ($operation->wasChanged('operation_type_id')) {
                 $operation->updateChildrenNames();
+            }
+
+            if (
+                $operation->wasChanged('source_location_id')
+                || $operation->wasChanged('destination_location_id')
+            ) {
+                $operation->moves()->where('is_scraped', false)->get()->each(function($move) use ($operation) {
+                    $move->source_location_id = $operation->source_location_id ?? $operation->operationType?->source_location_id;
+
+                    $move->destination_location_id = $operation->destination_location_id ?? $operation->operationType?->destination_location_id;
+
+                    $move->save();
+                });
             }
         });
 
         static::saving(function ($operation) {
             $operation->updateName();
-
-            $operation->autoConfirm();
         });
 
         static::saved(function ($operation) {
@@ -294,7 +340,11 @@ class Operation extends Model
             return;
         }
 
-        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT);
+        if ($this->moves->some(fn ($move) => $move->additional)) {
+            InventoryFacade::confirmTransfer($this);
+        }
+
+        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT && $move->quantity);
 
         InventoryFacade::confirmMoves($movesToConfirm);
     }

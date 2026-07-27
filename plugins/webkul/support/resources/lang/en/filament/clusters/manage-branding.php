@@ -37,4 +37,10 @@ return [
             'warning-color'      => 'Warning',
         ],
     ],
+
+    'actions' => [
+        'reset' => [
+            'label' => 'Reset to default',
+        ],
+    ],
 ];

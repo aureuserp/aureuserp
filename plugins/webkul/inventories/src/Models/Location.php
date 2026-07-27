@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Inventory\Database\Factories\LocationFactory;
@@ -14,6 +15,7 @@ use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\SubLocation;
+use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -116,28 +118,202 @@ class Location extends Model
             ->get();
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($category) {
+            $category->creator_id ??= Auth::id();
+
+            if ($category->parent_id) {
+                $parentLocation = Location::find($category->parent_id);
+                $category->warehouse_id = $parentLocation?->warehouse_id;
+            } else {
+                $category->warehouse_id = null;
+            }
+
+            if (! empty($category->cyclic_inventory_frequency)) {
+                $category->next_inventory_date = now()->addDays(
+                    (int) $category->cyclic_inventory_frequency
+                );
+            } else {
+                $category->next_inventory_date = null;
+            }
+        });
+
+        static::created(function ($category) {
+            $category->updateParentPath();
+
+            $category->updateFullName();
+
+            $category->saveQuietly();
+        });
+
+        static::saving(function ($category) {
+            if (! empty($category->cyclic_inventory_frequency)) {
+                $category->next_inventory_date = now()->addDays((int) $category->cyclic_inventory_frequency);
+            } else {
+                $category->next_inventory_date = null;
+            }
+
+            $category->updateParentPath();
+
+            $category->updateFullName();
+        });
+
+        static::updating(function (Location $location) {
+            if ($location->isDirty('is_replenish') && $location->is_replenish) {
+                $exists = static::query()
+                    ->where('id', '!=', $location->id)
+                    ->where('is_replenish', true)
+                    ->where(fn ($q) => $q
+                        ->whereIn('id', $location->ancestorIds())
+                        ->orWhereIn('parent_id', [$location->id]))
+                    ->first();
+                if ($exists) {
+                    throw new \Exception("Another parent/sub replenish location {$exists->name} exists, if you wish to change it, uncheck it first");
+                }
+            }
+
+            if ($location->isDirty('is_scrap') && $location->is_scrap) {
+                $usedByMrp = OperationType::where('type', OperationTypeEnum::MANUFACTURE)
+                    ->where('destination_location_id', $location->id)->exists();
+
+                if ($usedByMrp) {
+                    throw new \Exception("You cannot set a location as a scrap location when it is assigned as a destination location for a manufacturing type operation.");
+                }
+            }
+
+            if ($location->isDirty('company_id')) {
+                throw new \Exception("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one.");
+            }
+
+            if (
+                $location->isDirty('type')
+                && $location->type === LocationType::VIEW
+                && $location->quantities()->where('quantity', '!=', 0)->exists()
+            ) {
+                throw new \Exception("This location's type can not be changed to view as it contains products.");
+            }
+
+            if (
+                (
+                    $location->isDirty('type')
+                    || $location->isDirty('is_scrap')
+                )
+                && $location->quantities()->where(fn ($q) => $q->where('quantity', '!=', 0)->orWhere('reserved_quantity', '!=', 0))->exists()
+            ) {
+                throw new \Exception("Internal locations having stock can't be converted");
+            }
+        });
+
+        static::updated(function ($category) {
+            $category->updateChildrenParentPaths();
+
+            if ($category->wasChanged('full_name')) {
+                $category->updateChildrenFullNames();
+            }
+        });
+
+        static::deleting(function (Location $location) {
+            $warehouse = Warehouse::where(function ($q) use ($location) {
+                    $q->where('lot_stock_location_id', $location->id)
+                        ->orWhere('view_location_id', $location->id);
+                })
+                ->first();
+
+            if ($warehouse) {
+                throw new \Exception(__('You cannot archive location :location because it is used by warehouse :warehouse', [
+                    'location'  => $location->name,
+                    'warehouse' => $warehouse->name,
+                ]));
+            }
+
+            $childrenLocations = Location::withTrashed()
+                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
+                ->where('id', '!=', $location->id)
+                ->get();
+
+            $internalChildrenLocationIds = $childrenLocations->filter(
+                fn ($childLocation) => $childLocation->type === LocationType::INTERNAL
+            )->pluck('id')->push($location->id)->all();
+
+            $childrenQuantities = ProductQuantity::where(function ($q) {
+                    $q->where('quantity', '!=', 0)
+                        ->orWhere('reserved_quantity', '!=', 0);
+                })
+                ->whereIn('location_id', $internalChildrenLocationIds)
+                ->get();
+
+            if ($childrenQuantities->isNotEmpty()) {
+                $locationNames = $childrenQuantities->pluck('location.name')->unique()->implode(', ');
+
+                throw new \Exception(__("You can't disable locations :locations because they still contain products.", [
+                    'locations' => $locationNames,
+                ]));
+            }
+
+            $childrenLocations->each(fn ($childLocation) => $childLocation->delete());
+        });
+
+        static::forceDeleting(function (Location $location) {
+            Location::withTrashed()
+                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
+                ->where('id', '!=', $location->id)
+                ->get()
+                ->each(fn ($childLocation) => $childLocation->forceDelete());
+        });
+
+        static::restored(function (Location $location) {
+            Location::withTrashed()
+                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
+                ->where('id', '!=', $location->id)
+                ->get()
+                ->each(fn ($childLocation) => $childLocation->restore());
+        });
+    }
+
     public function getPutawayStrategy(
-        Product $product,
+        ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         ?Packaging $packaging = null,
         ?array $additionalQty = null,
-        array $excludeMoveLineIds = []
+        array $excludeMoveLineIds = [],
+        ?Collection $products = null
     ): Location {
         $packageType = $package?->packageType ?? $packaging?->packageType;
 
+        $productSet = collect();
+
+        if ($product) {
+            $productSet->push($product);
+        }
+
+        if ($products) {
+            $productSet = $productSet->merge($products);
+        }
+
+        $productSet = $productSet->filter()->unique('id')->values();
+
+        $productIds = $productSet->pluck('id');
+
         $categoryIds = collect();
 
-        $current = Category::find($product->category_id);
+        $distinctCategoryIds = $productSet->pluck('category_id')->filter()->unique();
 
-        while ($current) {
-            $categoryIds->push($current->id);
-            
-            $current = $current->parent_id ? $current->parent : null;
+        if ($distinctCategoryIds->count() === 1) {
+            $current = Category::find($distinctCategoryIds->first());
+
+            while ($current) {
+                $categoryIds->push($current->id);
+
+                $current = $current->parent_id ? $current->parent : null;
+            }
         }
 
         $putawayRules = $this->putawayRules
-            ->filter(fn ($rule) => (! $rule->product_id || $rule->product_id === $product->id)
+            ->filter(fn ($rule) => (! $rule->product_id || $productIds->contains($rule->product_id))
                 && (! $rule->category_id || $categoryIds->contains($rule->category_id))
                 && (! $rule->packageTypes->isNotEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id)))
             )
@@ -175,7 +351,7 @@ class Location extends Model
                     foreach ($packageQuantities as $locationId => $count) {
                         $qtyByLocation[$locationId] = ($qtyByLocation[$locationId] ?? 0) + $count;
                     }
-                } else {
+                } elseif ($product) {
                     $qtyByLocation = ProductQuantity::where('product_id', $product->id)
                         ->whereIn('location_id', $locations->pluck('id'))
                         ->groupBy('location_id')
@@ -210,7 +386,7 @@ class Location extends Model
 
     public function getPutawayLocation(
         mixed $putawayRules,
-        Product $product,
+        ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         ?Packaging $packaging = null,
@@ -225,7 +401,7 @@ class Location extends Model
 
             if ($putawayRule->sub_location === SubLocation::LAST_USED) {
                 $lastUsedLocation = MoveLine::where('state', MoveState::DONE)
-                    ->where('product_id', $product->id)
+                    ->when($product, fn ($query) => $query->where('product_id', $product->id))
                     ->whereHas('destinationLocation', fn ($q) => $q->where('id', $this->locationOut->id)
                         ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%'])
                     )
@@ -274,7 +450,7 @@ class Location extends Model
 
                         $checkedLocations->push($location);
                     }
-                } elseif (float_compare($qtyByLocation[$location->id] ?? 0, 0, precisionRounding: $product->uom->rounding) > 0) {
+                } elseif (float_compare($qtyByLocation[$location->id] ?? 0, 0, precisionRounding: $product?->uom->rounding ?? 0.01) > 0) {
                     if ($location->canBeUsed($product, $quantity, locationQty: $qtyByLocation[$location->id] ?? 0)) {
                         return $location;
                     }
@@ -300,7 +476,7 @@ class Location extends Model
     }
 
     public function canBeUsed(
-        Product $product,
+        ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         float $locationQty = 0,
@@ -339,12 +515,12 @@ class Location extends Model
                 return false;
             }
         } else {
-            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + ($product->weight ?? 0) * $quantity) {
+            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + ($product?->weight ?? 0) * $quantity) {
                 return false;
             }
 
             $productCapacity = $this->storageCategory->storageCategoryCapacitiesByProduct
-                ->first(fn ($pc) => $pc->product_id === $product->id);
+                ->first(fn ($pc) => $pc->product_id === $product?->id);
 
             if ($productCapacity && $locationQty >= $productCapacity->qty) {
                 return false;
@@ -413,6 +589,15 @@ class Location extends Model
         }
     }
 
+    public function ancestorIds(): array
+    {
+        return collect(explode('/', (string) $this->parent_path))
+            ->filter(fn ($id) => $id !== '' && (int) $id !== (int) $this->id)
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
+    }
+
     public function updateParentPath()
     {
         if ($this->type === LocationType::VIEW) {
@@ -457,57 +642,5 @@ class Location extends Model
     protected static function newFactory(): LocationFactory
     {
         return LocationFactory::new();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($category) {
-            $category->creator_id ??= Auth::id();
-
-            if ($category->parent_id) {
-                $parentLocation = Location::find($category->parent_id);
-                $category->warehouse_id = $parentLocation?->warehouse_id;
-            } else {
-                $category->warehouse_id = null;
-            }
-
-            if (! empty($category->cyclic_inventory_frequency)) {
-                $category->next_inventory_date = now()->addDays(
-                    (int) $category->cyclic_inventory_frequency
-                );
-            } else {
-                $category->next_inventory_date = null;
-            }
-        });
-
-        static::created(function ($category) {
-            $category->updateParentPath();
-
-            $category->updateFullName();
-
-            $category->saveQuietly();
-        });
-
-        static::saving(function ($category) {
-            if (! empty($category->cyclic_inventory_frequency)) {
-                $category->next_inventory_date = now()->addDays((int) $category->cyclic_inventory_frequency);
-            } else {
-                $category->next_inventory_date = null;
-            }
-
-            $category->updateParentPath();
-
-            $category->updateFullName();
-        });
-
-        static::updated(function ($category) {
-            $category->updateChildrenParentPaths();
-
-            if ($category->wasChanged('full_name')) {
-                $category->updateChildrenFullNames();
-            }
-        });
     }
 }

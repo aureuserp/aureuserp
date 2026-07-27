@@ -17,6 +17,7 @@ use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ReceptionStep;
@@ -80,7 +81,7 @@ class Warehouse extends Model implements Sortable
 
     public function locations(): HasMany
     {
-        return $this->hasMany(Location::class, 'parent_id');
+        return $this->hasMany(Location::class, 'warehouse_id');
     }
 
     public function company(): BelongsTo
@@ -178,6 +179,11 @@ class Warehouse extends Model implements Sortable
         return $this->belongsTo(OperationType::class, 'xdock_type_id');
     }
 
+    public function operationTypes(): HasMany
+    {
+        return $this->hasMany(OperationType::class, 'warehouse_id');
+    }
+
     public function crossdockRoute(): BelongsTo
     {
         return $this->belongsTo(Route::class, 'crossdock_route_id');
@@ -235,6 +241,86 @@ class Warehouse extends Model implements Sortable
                 $warehouse->viewLocation->update(['name' => $warehouse->code]);
             }
 
+            $warehouse->syncWarehouseConfiguration();
+        });
+
+        static::deleted(function (Warehouse $warehouse) {
+            if ($warehouse->isForceDeleting()) {
+                return;
+            }
+
+            $operationTypes = $warehouse->operationTypes;
+
+            $moves = Move::whereIn('operation_type_id', $operationTypes->pluck('id')->all())
+                ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
+                ->get();
+
+            if ($moves->isNotEmpty()) {
+                throw new \Exception("You still have ongoing operations for operation types {$operationTypes->implode(', ')} in warehouse {$warehouse->name}");
+            } else {
+                $operationTypes->each(fn ($operationType) => $operationType->delete());
+            }
+
+            $childLocationIds = Location::query()
+                ->whereRaw('parent_path LIKE ?', [$warehouse->viewLocation->parent_path . '%'])
+                ->where('id', '!=', $warehouse->viewLocation->id)
+                ->pluck('id');
+
+            $blocking = OperationType::query()
+                ->whereDoesntHave('warehouse', fn ($q) => $q->whereKey($warehouse->id))
+                ->where(fn ($q) => $q
+                    ->whereIn('source_location_id', $childLocationIds)
+                    ->orWhereIn('destination_location_id', $childLocationIds))
+                ->where('deleted_at', null)
+                ->pluck('id');
+
+            $blocking = OperationType::where(
+                    fn ($q) => $q
+                        ->whereIn('source_location_id', $childLocationIds)
+                        ->orWhereIn('destination_location_id', $childLocationIds)
+                )
+                ->whereNotIn('id', $operationTypes->pluck('id')->all())
+                ->get()
+                ->pluck('id');
+
+            if ($blocking->isNotEmpty()) {
+                throw new \Exception("{$blocking->implode(', ')} have default source or destination locations within warehouse {$warehouse->name}, therefore you cannot archive it.");
+            }
+
+            $warehouse->viewLocation->delete();
+
+            $rules = Rule::where('warehouse_id', $warehouse->id)->get();
+
+            $routes = $warehouse->routes
+                ->filter(fn ($route) => $route->warehouses()->withTrashed()->count() === 1);
+
+            $routes->each(fn ($route) => $route->delete());
+
+            $rules->each(fn ($rule) => $rule->delete());
+        });
+
+        static::forceDeleted(function (Warehouse $warehouse) {
+            $warehouse->viewLocation()->withTrashed()->first()?->forceDelete();
+        });
+
+        static::restoring(function (Warehouse $warehouse) {
+            $warehouse->viewLocation()->withTrashed()->first()->restore();
+
+            $rules = Rule::withTrashed()
+                ->where('warehouse_id', $warehouse->id)
+                ->get();
+
+            $routes = $warehouse->routes()
+                ->withTrashed()
+                ->get()
+                ->filter(fn ($route) => $route->warehouses()->withTrashed()->count() === 1);
+
+            $routes->each(fn ($route) => $route->restore());
+
+            $rules->each(fn ($rule) => $rule->restore());
+        });
+
+        static::restored(function (Warehouse $warehouse) {
             $warehouse->syncWarehouseConfiguration();
         });
     }
@@ -508,7 +594,7 @@ class Warehouse extends Model implements Sortable
             'destination_location_id' => $this->lot_stock_location_id,
             'company_id'              => $this->company_id,
             'creator_id'              => $this->creator_id,
-            'deleted_at'              => app(WarehouseSettings::class)->enable_locations ? null : now(),
+            'deleted_at'              => settings(WarehouseSettings::class)->enable_locations ? null : now(),
         ])->id;
 
         $this->xdock_type_id = OperationType::create([
@@ -792,7 +878,7 @@ class Warehouse extends Model implements Sortable
             'operation_type_id'        => $this->store_type_id,
             'creator_id'               => $this->creator_id,
             'company_id'               => $this->company_id,
-            'deleted_at'               => $this->delivery_steps === ReceptionStep::TWO_STEPS ? null : now(),
+            'deleted_at'               => $this->reception_steps === ReceptionStep::TWO_STEPS ? null : now(),
         ])->id;
 
         $this->ruleIds[] = Rule::create([
@@ -1130,11 +1216,19 @@ class Warehouse extends Model implements Sortable
         $actions = $steps[$currentStep];
 
         if (isset($actions['archive'])) {
-            Location::withTrashed()->whereIn('id', $actions['archive'])->update(['deleted_at' => now()]);
+            Location::withTrashed()
+                ->whereIn('id', $actions['archive'])
+                ->whereNull('deleted_at')
+                ->get()
+                ->each(fn (Location $location) => $location->delete());
         }
 
         if (isset($actions['restore'])) {
-            Location::withTrashed()->whereIn('id', $actions['restore'])->update(['deleted_at' => null]);
+            Location::withTrashed()
+                ->whereIn('id', $actions['restore'])
+                ->whereNotNull('deleted_at')
+                ->get()
+                ->each(fn (Location $location) => $location->restore());
         }
     }
 

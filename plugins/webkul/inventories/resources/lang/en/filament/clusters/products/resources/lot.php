@@ -92,7 +92,7 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Lot Details',
+                'title' => 'Lot/Serial Number Details',
 
                 'entries' => [
                     'name'        => 'Lot Name',

@@ -6,6 +6,7 @@ use Filament\Infolists\Components\ViewEntry;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Help extends Page
 {
@@ -20,9 +21,9 @@ class Help extends Page
         return __('support::filament/pages/help.navigation.label');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('admin.navigation.help');
+        return NavigationGroup::Help;
     }
 
     public function getTitle(): string

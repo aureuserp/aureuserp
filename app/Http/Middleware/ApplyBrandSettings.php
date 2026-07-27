@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Support\Colors\Color;
+use Filament\Support\Colors\ColorManager;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,20 +15,8 @@ use Webkul\Support\Settings\BrandSettings;
 
 class ApplyBrandSettings
 {
-    /**
-     * The shade whose lightness/chroma a picked color is anchored to, so the
-     * resting button background (Filament's `--primary-600`) matches the
-     * exact hex the admin chose.
-     */
     protected const ANCHOR_SHADE = 600;
 
-    /**
-     * Filament's reference lightness per shade (see Color::generatePalette).
-     * Used as the ramp's shape; remapped so the anchor shade hits the picked
-     * color's own lightness instead of Filament's fixed value.
-     *
-     * @var array<int, float>
-     */
     protected const LIGHTNESS = [
         50  => 0.97718,
         100 => 0.95035,
@@ -42,12 +31,6 @@ class ApplyBrandSettings
         950 => 0.27788,
     ];
 
-    /**
-     * Filament's reference chroma per shade. Scaled by the picked color's
-     * chroma so the saturation taper across the ramp is preserved.
-     *
-     * @var array<int, float>
-     */
     protected const CHROMA = [
         50  => 0.01395,
         100 => 0.03273,
@@ -62,16 +45,6 @@ class ApplyBrandSettings
         950 => 0.07136,
     ];
 
-    /**
-     * Override the current panel's branding (colors, logos, favicon and logo
-     * height) from the BrandSettings, for every panel this middleware is
-     * attached to. Any value left empty falls back to the panel's default.
-     *
-     * Runs after Filament's `SetUpPanel` middleware, so the panel's default
-     * colors are already registered and the values applied here take priority.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $panel = Filament::getCurrentPanel();
@@ -81,24 +54,31 @@ class ApplyBrandSettings
         }
 
         try {
-            $brand = app(BrandSettings::class);
+            $brand = settings(BrandSettings::class);
 
-            $panelDefaultColors = $panel->getColors();
+            $panelDefaultColors = array_merge(
+                ColorManager::DEFAULT_COLORS,
+                $panel->getColors(),
+            );
 
             $colorKeys = ['primary', 'success', 'danger', 'warning', 'info', 'gray'];
 
             $brandColors = [];
 
             foreach ($colorKeys as $colorKey) {
-                $hexColor = $brand->{$colorKey.'_color'};
+                $brandValue = $brand->{$colorKey.'_color'};
 
-                if (! $hexColor) {
-                    $hexColor = $panelDefaultColors[$colorKey][600] ?? null;
+                if (empty($brandValue)) {
+                    continue;
                 }
 
-                if ($hexColor) {
-                    $brandColors[$colorKey] = $this->paletteFromHex($hexColor);
+                $default = $panelDefaultColors[$colorKey][600] ?? null;
+
+                if ($default !== null && $this->isSameColor($brandValue, $default)) {
+                    continue;
                 }
+
+                $brandColors[$colorKey] = $this->paletteFromHex($brandValue);
             }
 
             if ($brandColors !== []) {
@@ -106,41 +86,47 @@ class ApplyBrandSettings
             }
 
             if (! empty($brand->light_logo)) {
-                $panel->brandLogo(Storage::disk('public')->url($brand->light_logo));
+                $panel->brandLogo($this->assetUrl($brand->light_logo));
             }
 
             if (! empty($brand->dark_logo)) {
-                $panel->darkModeBrandLogo(Storage::disk('public')->url($brand->dark_logo));
+                $panel->darkModeBrandLogo($this->assetUrl($brand->dark_logo));
             }
 
             if (! empty($brand->favicon)) {
-                $panel->favicon(Storage::disk('public')->url($brand->favicon));
+                $panel->favicon($this->assetUrl($brand->favicon));
             }
 
             if (! empty($brand->logo_height)) {
                 $panel->brandLogoHeight($brand->logo_height);
             }
         } catch (Throwable) {
-            // Settings not migrated yet or repository unavailable — keep defaults.
         }
 
         return $next($request);
     }
 
-    /**
-     * Build a full 50–950 OKLCH palette from a single hex, anchoring the
-     * picked color at ANCHOR_SHADE so the resting button matches it exactly.
-     *
-     * Lightness is remapped with two linear segments — [anchor..white] above
-     * the anchor and [black..anchor] below — preserving shade ordering for any
-     * input, including pure black or white. Chroma keeps Filament's taper,
-     * scaled to the picked color's saturation; neutral picks stay achromatic.
-     *
-     * @return array<int, string>
-     */
-    protected function paletteFromHex(string $hex): array
+    protected function assetUrl(string $path): string
     {
-        [$lightness, $chroma, $hue] = sscanf(Color::convertToOklch($hex), 'oklch(%f %f %f)');
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
+            return $path;
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        return asset($path);
+    }
+
+    protected function isSameColor(string $a, string $b): bool
+    {
+        return Color::convertToHex($a) === Color::convertToHex($b);
+    }
+
+    protected function paletteFromHex(string $seed): array
+    {
+        [$lightness, $chroma, $hue] = sscanf(Color::convertToOklch($seed), 'oklch(%f %f %f)');
 
         $anchorLightness = self::LIGHTNESS[self::ANCHOR_SHADE];
         $anchorChroma = self::CHROMA[self::ANCHOR_SHADE];

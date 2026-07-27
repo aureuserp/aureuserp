@@ -23,4 +23,13 @@ class FiscalPositionTaxFactory extends Factory
             'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }
+
+    public function mapping(int $sourceId, int $destinationId): static
+    {
+        return $this->state(fn () => [
+            'tax_source_id'      => $sourceId,
+            'tax_destination_id' => $destinationId,
+        ]);
+    }
 }
+

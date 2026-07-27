@@ -64,7 +64,7 @@ class PartnersTable
                                 ->icon('heroicon-m-briefcase')
                                 ->searchable()
                                 ->sortable()
-                                ->label('Job Title'),
+                                ->label(__('partners::filament/resources/partner.table.groups.job-title')),
                         ])
                             ->visible(fn ($record) => filled($record->job_title)),
                         Stack::make([
@@ -72,7 +72,7 @@ class PartnersTable
                                 ->icon('heroicon-o-envelope')
                                 ->searchable()
                                 ->sortable()
-                                ->label('Work Email')
+                                ->label(__('partners::filament/resources/partner.table.columns.work-email'))
                                 ->color('gray')
                                 ->limit(20),
                         ])
@@ -81,7 +81,7 @@ class PartnersTable
                             TextColumn::make('phone')
                                 ->icon('heroicon-o-phone')
                                 ->searchable()
-                                ->label('Work Phone')
+                                ->label(__('partners::filament/resources/partner.table.columns.work-phone'))
                                 ->color('gray')
                                 ->limit(30)
                                 ->sortable(),

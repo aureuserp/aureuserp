@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Recruitment',
-        'group' => 'Dashboard',
     ],
 
     'filters-form' => [
@@ -23,6 +22,7 @@ return [
         ],
 
         'start-date' => 'Start Date',
+        'date-range' => 'Date Range',
         'end-date'   => 'End Date',
     ],
 ];

@@ -45,6 +45,12 @@ return [
                     'picked'                     => 'Picked',
                 ],
 
+                'actions' => [
+                    'open-product' => [
+                        'tooltip' => 'Open product',
+                    ],
+                ],
+
                 'fields' => [
                     'product'        => 'Product',
                     'final-location' => 'Final Location',
@@ -59,15 +65,27 @@ return [
 
                     'lines' => [
                         'modal-heading' => 'Manage Stock Moves',
+                        'modal-submit-action-label' => 'Save',
                         'add-line'      => 'Add Line',
 
+                        'actions' => [
+                            'generate' => 'Generate Serials/Lots',
+                            'import'   => 'Import Serials/Lots',
+                        ],
+
                         'fields' => [
-                            'lot'       => 'Lot/Serial Number',
-                            'pick-from' => 'Pick From',
-                            'location'  => 'Store To',
-                            'package'   => 'Destination Package',
-                            'quantity'  => 'Quantity',
-                            'uom'       => 'Unit of Measure',
+                            'lot'                => 'Lot/Serial Number',
+                            'pick-from'          => 'Pick From',
+                            'location'           => 'Store To',
+                            'package'            => 'Destination Package',
+                            'quantity'           => 'Quantity',
+                            'uom'                => 'Unit of Measure',
+                            'first-lot'          => 'First Lot Number',
+                            'quantity-per-lot'   => 'Quantity per Lot',
+                            'quantity-received'  => 'Quantity Received',
+                            'keep-current-lines' => 'Keep current lines',
+                            'serials'            => 'Lot/Serial Numbers',
+                            'serials-helper'     => 'One lot/serial number per line.',
                         ],
                     ],
                 ],
@@ -126,6 +144,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'Operation Type',
             'name'                 => 'Name',
             'state'                => 'State',
             'partner'              => 'Partner',

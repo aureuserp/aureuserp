@@ -5,12 +5,12 @@ namespace Webkul\Website\Filament\Admin\Pages;
 use App\Models\User;
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
+use Webkul\PluginManager\Package;
 use Webkul\Website\Filament\Admin\Widgets\BlogAuthorsChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogStatusPieChart;
@@ -18,6 +18,8 @@ use Webkul\Website\Filament\Admin\Widgets\CategoriesPieChart;
 use Webkul\Website\Filament\Admin\Widgets\RecentBlogsTable;
 use Webkul\Website\Filament\Admin\Widgets\StatsOverview;
 use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 
 class WebsiteDashboard extends BaseDashboard
 {
@@ -37,26 +39,20 @@ class WebsiteDashboard extends BaseDashboard
         return 'Website';
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return 'Dashboard';
+        return NavigationGroup::Dashboard;
     }
 
     public function filtersForm(Schema $form): Schema
     {
         return $form
             ->schema([
-                DatePicker::make('from_date')
-                    ->label(__('website::filament/admin/pages/dashboard.from-date'))
-                    ->native(false)
-                    ->closeOnDateSelection()
-                    ->default(now()->subMonth()),
-
-                DatePicker::make('to_date')
-                    ->label(__('website::filament/admin/pages/dashboard.to-date'))
-                    ->native(false)
-                    ->closeOnDateSelection()
-                    ->default(now()),
+                ...DashboardDateRange::make(
+                    label: __('website::filament/admin/pages/dashboard.date-range'),
+                    startKey: 'from_date',
+                    endKey: 'to_date',
+                ),
 
                 Select::make('author_id')
                     ->label(__('website::filament/admin/pages/dashboard.author'))
@@ -72,14 +68,16 @@ class WebsiteDashboard extends BaseDashboard
      */
     public function getWidgets(): array
     {
-        return [
+        return array_filter([
             StatsOverview::class,
-            BlogChart::class,
-            CategoriesPieChart::class,
-            BlogAuthorsChart::class,
-            BlogStatusPieChart::class,
-            TopCategoriesTable::class,
-            RecentBlogsTable::class,
-        ];
+            ...(Package::isPluginInstalled('blogs') ? [
+                BlogChart::class,
+                CategoriesPieChart::class,
+                BlogAuthorsChart::class,
+                BlogStatusPieChart::class,
+                TopCategoriesTable::class,
+                RecentBlogsTable::class,
+            ] : []),
+        ]);
     }
 }

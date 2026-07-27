@@ -67,6 +67,15 @@ return [
             'has-delay'       => 'Has Delay',
         ],
 
+        'header-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'Activity plan template created',
+                    'body'  => 'The activity plan template has been created successfully.',
+                ],
+            ],
+        ],
+
         'actions' => [
             'edit' => [
                 'notification' => [

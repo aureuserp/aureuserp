@@ -49,6 +49,7 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Filament\Resources\PartnerResource;
+use Webkul\PluginManager\Package;
 
 class RuleResource extends Resource
 {
@@ -70,7 +71,7 @@ class RuleResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_multi_steps_routes;
+        return settings(WarehouseSettings::class)->enable_multi_steps_routes;
     }
 
     public static function getNavigationGroup(): string
@@ -105,6 +106,7 @@ class RuleResource extends Resource
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.action'))
                                                     ->required()
                                                     ->options(RuleAction::class)
+                                                    ->disableOptionWhen(fn (string $value): bool => $value === RuleAction::MANUFACTURE->value && ! Package::isPluginInstalled('manufacturing'))
                                                     ->default(RuleAction::PULL)
                                                     ->selectablePlaceholder(false)
                                                     ->live(),

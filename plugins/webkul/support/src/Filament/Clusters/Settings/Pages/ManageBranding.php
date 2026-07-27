@@ -3,12 +3,15 @@
 namespace Webkul\Support\Filament\Clusters\Settings\Pages;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Webkul\Support\Filament\Clusters\Settings;
 use Webkul\Support\Settings\BrandSettings;
 
@@ -88,6 +91,19 @@ class ManageBranding extends SettingsPage
                 Section::make(__('support::filament/clusters/manage-branding.form.sections.colors.title'))
                     ->description(__('support::filament/clusters/manage-branding.form.sections.colors.description'))
                     ->columns(3)
+                    ->headerActions([
+                        Action::make('reset')
+                            ->label(__('support::filament/clusters/manage-branding.actions.reset.label'))
+                            ->icon('heroicon-o-arrow-path')
+                            ->color('gray')
+                            ->link()
+                            ->requiresConfirmation()
+                            ->action(function (Set $set): void {
+                                foreach ($this->getDefaultColors() as $field => $hex) {
+                                    $set($field, $hex);
+                                }
+                            }),
+                    ])
                     ->schema([
                         ColorPicker::make('primary_color')
                             ->label(__('support::filament/clusters/manage-branding.form.fields.primary-color'))
@@ -109,5 +125,17 @@ class ManageBranding extends SettingsPage
                             ->hexColor(),
                     ]),
             ]);
+    }
+
+    private function getDefaultColors(): array
+    {
+        return [
+            'primary_color' => Color::convertToHex(Color::Blue[600]),
+            'gray_color'    => Color::convertToHex(Color::Zinc[600]),
+            'danger_color'  => Color::convertToHex(Color::Red[600]),
+            'info_color'    => Color::convertToHex(Color::Blue[600]),
+            'success_color' => Color::convertToHex(Color::Green[600]),
+            'warning_color' => Color::convertToHex(Color::Amber[600]),
+        ];
     }
 }

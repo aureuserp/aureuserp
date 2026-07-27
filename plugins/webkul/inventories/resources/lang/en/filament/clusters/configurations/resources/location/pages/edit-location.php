@@ -4,6 +4,10 @@ return [
     'notification' => [
         'title' => 'Location updated',
         'body'  => 'The location has been updated successfully.',
+
+        'error' => [
+            'title' => 'Location could not be updated',
+        ],
     ],
 
     'header-actions' => [

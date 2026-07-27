@@ -5,7 +5,7 @@
                 <a href="{{ $record->category ? self::getResource()::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug]) : self::getResource()::getUrl('index')}}">
                     <div class="md:shrink-0">
                         @if ($record->image_url)
-                            <img class="object-cover w-full h-48 md:h-full md:w-48" src="{{$record->image_url}}" alt="Blog post featured image" style="aspect-ratio: 2 / 1" />
+                            <img class="object-cover w-full h-48 md:h-full md:w-48" src="{{$record->image_thumb_url}}" alt="Blog post featured image" loading="lazy" decoding="async" width="600" height="300" style="aspect-ratio: 2 / 1" />
                         @else
                             <div class="object-cover w-full h-48 rounded-md bg-primary-500 md:h-full md:w-48" style="aspect-ratio: 2 / 1"></div>
                         @endif

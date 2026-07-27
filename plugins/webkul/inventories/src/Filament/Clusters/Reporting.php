@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Reporting extends Cluster
 {
@@ -15,8 +16,8 @@ class Reporting extends Cluster
         return __('inventories::filament/clusters/reporting.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('inventories::filament/clusters/reporting.navigation.group');
+        return NavigationGroup::Inventory;
     }
 }

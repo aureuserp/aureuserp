@@ -346,13 +346,13 @@ class WorkOrder extends Model implements Sortable
         $this->duration_per_unit = round($this->duration / max($this->quantity_produced, 1), 2);
 
         if ($this->expected_duration) {
-            $this->duration_percent = max(
+            $this->duration_percent = (int) round(max(
                 -2147483648,
                 min(
                     2147483647,
                     100 * ($this->expected_duration - $this->duration) / $this->expected_duration
                 )
-            );
+            ));
         } else {
             $this->duration_percent = 0;
         }
@@ -747,7 +747,7 @@ class WorkOrder extends Model implements Sortable
         $this->endAll(collect([$this]));
 
         $vals = [
-            'quantity_produced' => $this->quantity_produced ?: ($this->quantity_producing ?: $this->quantity_production),
+            'quantity_produced' => (float) $this->quantity_produced ?: ((float) $this->quantity_producing ?: (float) $this->quantity_production),
             'state'             => WorkOrderState::DONE,
             'finished_at'       => $dateFinished,
             'costs_per_hour'    => $this->workCenter->costs_per_hour,

@@ -14,6 +14,7 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Partner\Models\Partner;
+use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
@@ -61,7 +62,7 @@ class ProductQuantity extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function location(): BelongsTo
@@ -160,6 +161,8 @@ class ProductQuantity extends Model
 
                 $productQuantity->computePackageLocationCompany();
             }
+
+            static::deleteZeroQuantities();
         });
     }
 
@@ -169,7 +172,7 @@ class ProductQuantity extends Model
 
         $package->location_id = null;
 
-        $package->company_id  = null;
+        $package->company_id = null;
 
         $quantities = $package->quantities->filter(
             fn ($quantity) => float_compare($quantity->quantity, 0, precisionRounding: $quantity->uom->rounding) > 0
@@ -264,6 +267,7 @@ class ProductQuantity extends Model
             'quantity'                => $qty,
             'product_uom_qty'         => $qty,
             'is_picked'               => true,
+            'is_inventory'            => true,
             'product_id'              => $this->product_id,
             'uom_id'                  => $this->uom->id,
             'source_location_id'      => $sourceLocation->id,
@@ -341,6 +345,7 @@ class ProductQuantity extends Model
         if ($quants->isNotEmpty()) {
             $quant = self::whereIn('id', $quants->pluck('id'))
                 ->orderBy('lot_id')
+                ->orderBy('id')
                 ->lockForUpdate()
                 ->first();
         }
@@ -398,8 +403,8 @@ class ProductQuantity extends Model
     {
         $this->scheduled_at = Carbon::create(
             now()->year,
-            app(OperationSettings::class)->annual_inventory_month,
-            app(OperationSettings::class)->annual_inventory_day,
+            settings(OperationSettings::class)->annual_inventory_month,
+            settings(OperationSettings::class)->annual_inventory_day,
             0,
             0,
             0
@@ -438,21 +443,26 @@ class ProductQuantity extends Model
 
     public static function getRemovalStrategy(Product $product, Location $location): string
     {
-        if ($product->category?->removal_strategy) {
-            return $product->category->removal_strategy;
+        if ($strategy = $product->category?->removal_strategy) {
+            return static::normalizeRemovalStrategy($strategy);
         }
 
         $loc = $location;
 
         while ($loc) {
             if ($loc->removal_strategy) {
-                return $loc->removal_strategy;
+                return static::normalizeRemovalStrategy($loc->removal_strategy);
             }
 
             $loc = $loc->parent;
         }
 
-        return 'fifo';
+        return ProductRemoval::FIFO->value;
+    }
+
+    protected static function normalizeRemovalStrategy(ProductRemoval|string $strategy): string
+    {
+        return $strategy instanceof ProductRemoval ? $strategy->value : $strategy;
     }
 
     public static function getRemovalStrategyOrder(string $removalStrategy): ?string
@@ -718,6 +728,7 @@ class ProductQuantity extends Model
                 }
             })
             ->orderBy('lot_id')
+            ->orderBy('id')
             ->get()
             ->groupBy(fn ($quant) => implode('_', [
                 $quant->product_id,

@@ -116,7 +116,7 @@ return [
                     'package'              => 'الطرد',
                     'owner'                => 'المالك',
                     'source-location'      => 'موقع المصدر',
-                    'destination-location' => 'موقع الوجهة',
+                    'destination-location' => 'موقع الخردة',
                     'source-document'      => 'المستند المصدر',
                     'company'              => 'الشركة',
                 ],

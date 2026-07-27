@@ -15,6 +15,8 @@
                 width: 100%;
                 padding-bottom: calc(var(--spacing)*6);
                 position: sticky;
+                top: 0;
+                z-index: 11;
             }
 
             :where(.dark) .chatter-panel > .fi-modal-header {

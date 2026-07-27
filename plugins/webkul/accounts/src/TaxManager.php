@@ -5,6 +5,8 @@ namespace Webkul\Account;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
@@ -17,79 +19,6 @@ use Webkul\Support\Models\Currency;
 
 class TaxManager
 {
-    public static function collect($taxIds, $subTotal, $quantity)
-    {
-        if (empty($taxIds)) {
-            return [$subTotal, 0, []];
-        }
-
-        $taxes = Tax::whereIn('id', $taxIds)
-            ->orderBy('sort')
-            ->get();
-
-        $taxesComputed = [];
-
-        $totalTaxAmount = 0;
-
-        $adjustedSubTotal = $subTotal;
-
-        foreach ($taxes as $tax) {
-            $amount = floatval($tax->amount);
-
-            if (! $tax->price_include_override) {
-                $tax->price_include_override = app(TaxesSettings::class)->account_price_include ?? TaxIncludeOverride::TAX_INCLUDED;
-            }
-
-            $currentTaxBase = $adjustedSubTotal;
-
-            if ($tax->is_base_affected) {
-                foreach ($taxesComputed as $prevTax) {
-                    if ($prevTax['include_base_amount']) {
-                        $currentTaxBase += $prevTax['tax_amount'];
-                    }
-                }
-            }
-
-            $currentTaxAmount = 0;
-
-            if ($tax->price_include_override == TaxIncludeOverride::TAX_INCLUDED) {
-                if ($tax->amount_type == AmountType::PERCENT) {
-                    $taxFactor = $amount / 100;
-
-                    $currentTaxAmount = $currentTaxBase - ($currentTaxBase / (1 + $taxFactor));
-                } else {
-                    $currentTaxAmount = $amount * $quantity;
-
-                    if ($currentTaxAmount > $adjustedSubTotal) {
-                        $currentTaxAmount = $adjustedSubTotal;
-                    }
-                }
-
-                $adjustedSubTotal -= $currentTaxAmount;
-            } else {
-                if ($tax->amount_type == AmountType::PERCENT) {
-                    $currentTaxAmount = $currentTaxBase * $amount / 100;
-                } else {
-                    $currentTaxAmount = $amount * $quantity;
-                }
-            }
-
-            $taxesComputed[] = [
-                'tax_id'              => $tax->id,
-                'tax_amount'          => $currentTaxAmount,
-                'include_base_amount' => $tax->include_base_amount,
-            ];
-
-            $totalTaxAmount += $currentTaxAmount;
-        }
-
-        return [
-            round($adjustedSubTotal, 4),
-            round($totalTaxAmount, 4),
-            $taxesComputed,
-        ];
-    }
-
     public function prepareBaseLineForTaxesComputation(mixed $record, ...$args)
     {
         $getValue = function (string $field, mixed $fallback) use ($record, $args) {
@@ -328,7 +257,7 @@ class TaxManager
             foreach ($taxLines as $taxLine) {
                 $taxRepartitionLine = $taxLine['taxRepartitionLine'];
 
-                $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === 'refund']);
+                $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === DocumentType::REFUND]);
 
                 if (! isset($totalPerTaxLineKey[$taxLineKey])) {
                     $totalPerTaxLineKey[$taxLineKey] = [
@@ -596,13 +525,13 @@ class TaxManager
 
             if ($taxData['is_reverse_charge']) {
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
-                    fn ($x) => $x->repartition_type === 'tax' && $x->factor < 0.0
+                    fn ($x) => $x->repartition_type === RepartitionType::TAX && $x->factor < 0.0
                 );
 
                 $taxRepartitionSign = -1.0;
             } else {
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
-                    fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
+                    fn ($x) => $x->repartition_type === RepartitionType::TAX && $x->factor >= 0.0
                 );
 
                 $taxRepartitionSign = 1.0;
@@ -1024,11 +953,11 @@ class TaxManager
             'sorted_taxes'  => collect(),
         ];
 
-        $taxes = $taxes->sortBy('sequence');
+        $taxes = $taxes->sortBy('sort');
 
         foreach ($taxes as $tax) {
             if ($tax->amount_type === AmountType::GROUP) {
-                $children = $tax->childrenTaxes()->orderBy('sequence')->get();
+                $children = $tax->childrenTaxes()->orderBy('sort')->get();
 
                 $results['sorted_taxes'] = $results['sorted_taxes']->merge($children);
 

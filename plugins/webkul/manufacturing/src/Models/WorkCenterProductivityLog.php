@@ -3,14 +3,18 @@
 namespace Webkul\Manufacturing\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Manufacturing\Database\Factories\WorkCenterProductivityLogFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class WorkCenterProductivityLog extends Model
 {
+    use HasFactory;
+
     protected $table = 'manufacturing_work_center_productivity_logs';
 
     protected $fillable = [
@@ -32,6 +36,11 @@ class WorkCenterProductivityLog extends Model
         'finished_at' => 'datetime',
         'duration'    => 'decimal:4',
     ];
+
+    protected static function newFactory(): WorkCenterProductivityLogFactory
+    {
+        return WorkCenterProductivityLogFactory::new();
+    }
 
     public function getModelTitle(): string
     {

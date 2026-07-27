@@ -9,11 +9,6 @@ class CreatePartner extends BaseCreatePartner
 {
     protected static string $resource = PartnerResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     public function getBreadcrumbs(): array
     {
         $resource = static::getResource();

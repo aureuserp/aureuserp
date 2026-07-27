@@ -4,6 +4,10 @@ return [
     'notification' => [
         'title' => 'تم تحديث الموقع',
         'body'  => 'تم تحديث الموقع بنجاح.',
+
+        'error' => [
+            'title' => 'تعذر تحديث الموقع',
+        ],
     ],
 
     'header-actions' => [

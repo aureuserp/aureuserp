@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'Order Deadline',
                     'expected-arrival'         => 'Expected Arrival',
                     'confirmed-by-vendor'      => 'Confirmed by Vendor',
+                    'deliver-to'               => 'Deliver To',
                 ],
             ],
         ],
@@ -81,6 +82,12 @@ return [
                             'error' => [
                                 'title' => 'Cannot Delete Product',
                                 'body'  => 'Products cannot be deleted from a confirmed purchase order.',
+                            ],
+                        ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Open product',
                             ],
                         ],
                     ],
@@ -195,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'Tax',
     ],
 
     'infolist' => [

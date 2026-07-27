@@ -12,6 +12,7 @@ use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\Creat
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\EditProduct;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ListProducts;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageBillsOfMaterials;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
@@ -37,6 +38,10 @@ class ProductResource extends BaseProductResource
             ManageAttributes::class,
             ManageVariants::class,
         ];
+
+        if (Package::isPluginInstalled('manufacturing')) {
+            $items[] = ManageBillsOfMaterials::class;
+        }
 
         if (Package::isPluginInstalled('purchases')) {
             $items[] = ManageVendors::class;
@@ -76,6 +81,10 @@ class ProductResource extends BaseProductResource
             'attributes' => ManageAttributes::route('/{record}/attributes'),
             'variants'   => ManageVariants::route('/{record}/variants'),
         ];
+
+        if (Package::isPluginInstalled('manufacturing')) {
+            $pages['boms'] = ManageBillsOfMaterials::route('/{record}/boms');
+        }
 
         if (Package::isPluginInstalled('purchases')) {
             $pages['vendors'] = ManageVendors::route('/{record}/vendors');
