@@ -1,8 +1,10 @@
 <?php
 
+use ArPHP\I18N\Arabic;
 use Illuminate\Support\Number;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
 use Webkul\Support\SettingsRegistry;
+use Webkul\Support\SupportServiceProvider;
 
 if (! function_exists('settings')) {
     function settings(string $settings): object
@@ -29,6 +31,19 @@ if (! function_exists('money')) {
 
         if ($divideBy > 0) {
             $amount /= $divideBy;
+        }
+
+        // In RTL locales (e.g. Arabic) format the amount with the currency
+        // first and Latin digits (e.g. "$100.00") instead of the localized
+        // "\u200F100.00 US$", so amounts read cleanly in the document.
+        if (SupportServiceProvider::isRtl()) {
+            return Number::currency($amount, $currency, 'en');
+        }
+
+        // Force Latin (Western) digits while keeping each locale's currency
+        // format.
+        if (! str_contains($locale, '-u-nu-')) {
+            $locale .= '-u-nu-latn';
         }
 
         return Number::currency($amount, $currency, $locale);
@@ -72,6 +87,73 @@ if (! function_exists('money')) {
                 ),
             };
         }
+    }
+}
+
+if (! function_exists('prepare_rtl_html')) {
+    /**
+     * Prepare rendered HTML so DomPDF displays it correctly right-to-left.
+     *
+     * DomPDF has no real RTL engine, so two things are done here that a
+     * browser would otherwise handle automatically:
+     *
+     *  1. Table columns are reversed cell-by-cell, because DomPDF keeps
+     *     source column order instead of mirroring it for RTL.
+     *  2. Arabic runs are reshaped into their connected presentation forms
+     *     via ar-php, because DomPDF cannot join Arabic letters.
+     *
+     * Only text nodes are reshaped — tags, attributes, inline styles, numbers
+     * and Latin text stay untouched (digits stay Latin via $hindo = false).
+     *
+     * @param  string  $html  Rendered HTML to process.
+     * @return string Returns the HTML prepared for RTL PDF output.
+     */
+    function prepare_rtl_html(string $html): string
+    {
+        $arabic = new Arabic;
+
+        $dom = new DOMDocument('1.0', 'UTF-8');
+
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
+        libxml_clear_errors();
+
+        $xpath = new DOMXPath($dom);
+
+        // 1) Mirror table columns (DomPDF does not reverse them for RTL).
+        foreach ($xpath->query('//tr') as $row) {
+            $cells = [];
+
+            foreach ($row->childNodes as $child) {
+                if (! $child instanceof DOMElement || ! in_array(strtolower($child->nodeName), ['td', 'th'], true)) {
+                    continue;
+                }
+
+                // Spanned cells can't be safely reversed, so leave such rows as-is.
+                if ($child->hasAttribute('colspan') || $child->hasAttribute('rowspan')) {
+                    continue 2;
+                }
+
+                $cells[] = $child;
+            }
+
+            for ($i = count($cells) - 1; $i > 0; $i--) {
+                $row->insertBefore($cells[$i], $cells[0]);
+            }
+        }
+
+        // 2) Reshape Arabic runs into connected glyphs.
+        foreach ($xpath->query('//text()[not(ancestor::style) and not(ancestor::script)]') as $node) {
+            if (trim($node->nodeValue) === '' || ! preg_match('/\p{Arabic}/u', $node->nodeValue)) {
+                continue;
+            }
+
+            // PHP_INT_MAX disables ar-php's line wrapping (that is the browser's
+            // job); $hindo = false keeps digits Latin (e.g. "300.00", not "٣٠٠٫٠٠").
+            $node->nodeValue = $arabic->utf8Glyphs($node->nodeValue, PHP_INT_MAX, false);
+        }
+
+        return preg_replace('/<\?xml[^>]*>\s*/', '', $dom->saveHTML());
     }
 }
 
