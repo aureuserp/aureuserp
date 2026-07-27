@@ -321,7 +321,7 @@ class PluginResource extends Resource
             ->schema([
                 TextEntry::make('name')
                     ->label(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.name'))
-                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->formatStateUsing(fn ($state) => self::localize('names', $state, ucfirst($state)))
                     ->badge()
                     ->color($color),
 

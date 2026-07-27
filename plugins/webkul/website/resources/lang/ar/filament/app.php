@@ -61,6 +61,7 @@ return [
         'about-us'         => 'من نحن',
         'privacy-policy'   => 'سياسة الخصوصية',
         'terms-conditions' => 'الشروط والأحكام',
+        'news-announcements' => 'الأخبار والإعلانات',
         'blog'             => 'المدونة',
         'blogs'            => 'المدونات',
         'contact'          => 'اتصل بنا',

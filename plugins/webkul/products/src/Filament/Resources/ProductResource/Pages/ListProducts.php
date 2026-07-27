@@ -8,6 +8,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -27,7 +28,7 @@ class ListProducts extends ListRecords
 
     public function getPresetTableViews(): array
     {
-        return [
+        return array_merge([
             'goods_products' => PresetView::make(__('products::filament/resources/product/pages/list-products.tabs.goods'))
                 ->icon('heroicon-s-squares-plus')
                 ->favorite()
@@ -50,7 +51,7 @@ class ListProducts extends ListRecords
                 ->modifyQueryUsing(function ($query) {
                     return $query->onlyTrashed();
                 }),
-        ];
+        ], ProductSchemaRegistry::renderPresetViews());
     }
 
     protected function getHeaderActions(): array
