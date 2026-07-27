@@ -5,6 +5,7 @@ namespace Webkul\Manufacturing;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Chatter\Services\ChatterCleanupService;
@@ -15,6 +16,8 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
+use Webkul\Manufacturing\Models\BillOfMaterial;
+use Webkul\Manufacturing\Models\BillOfMaterialLine;
 use Webkul\Manufacturing\Models\Order;
 use Webkul\Manufacturing\Observers\MoveObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
@@ -22,6 +25,9 @@ use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Product;
+use Webkul\TableViews\Filament\Components\PresetView;
 
 class ManufacturingServiceProvider extends PackageServiceProvider
 {
@@ -164,6 +170,33 @@ class ManufacturingServiceProvider extends PackageServiceProvider
         $this->registerCustomCss();
 
         $this->registerModelObservers();
+
+        $this->contributeProductSchema();
+    }
+
+    protected function contributeProductSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Product::resolveRelationUsing('billsOfMaterials', fn (Product $product) => $product->hasMany(
+            BillOfMaterial::class,
+            'product_id',
+        ));
+
+        Product::resolveRelationUsing('billOfMaterialLines', fn (Product $product) => $product->hasMany(
+            BillOfMaterialLine::class,
+            'product_id',
+        ));
+
+        ProductSchemaRegistry::presetView(
+            'components',
+            fn () => PresetView::make(__('manufacturing::filament/clusters/products/resources/product/pages/list-products.tabs.components'))
+                ->icon('heroicon-s-puzzle-piece')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('billOfMaterialLines')),
+        );
     }
 
     public function packageRegistered(): void

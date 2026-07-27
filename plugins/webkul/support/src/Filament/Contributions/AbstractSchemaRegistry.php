@@ -28,6 +28,16 @@ abstract class AbstractSchemaRegistry
         SchemaRegistry::actions(static::scope(), $slot, $factory, $priority);
     }
 
+    public static function presetView(string $key, Closure $factory, int $priority = 0): void
+    {
+        SchemaRegistry::presetView(static::scope(), $key, $factory, $priority);
+    }
+
+    public static function renderPresetViews(mixed ...$args): array
+    {
+        return SchemaRegistry::renderPresetViews(static::scope(), ...$args);
+    }
+
     public static function eagerLoad(array $relations): void
     {
         SchemaRegistry::eagerLoad(static::scope(), $relations);
