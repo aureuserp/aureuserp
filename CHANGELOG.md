@@ -5,6 +5,21 @@
 * #1215 Added Maintenance module
 * #1214 Added Putaway Rules for inventory operations
 * #1224 Added Time-off dashboard widget
+* #1419 Added Inventory dashboard widgets
+* #1411 Added quick "next transfer" navigation across chained inventory operations
+* #1322 Added native barcode scanning support (Barcode plugin)
+* #1392 Added PostgreSQL database support
+* #1302 Added Inventory Reporting cluster and UOM Category resource
+* #1343 Added Activity notifications
+* #1284 Unified Settings pages across plugins
+* #1273 Unified Product resource across plugins
+* #1272 Implemented nested order resources (Deliveries, Invoices, Receipts, Bills under Orders)
+* #1339 Added bulk lot/serial number generation
+* #1254 Added consolidated Spanish (es) locale
+* #1357 Added Brazilian Portuguese (pt-BR) locale
+* #1327 Added Arabic localization for the Plugins resource
+* #1303 Added branding settings and middleware for dynamic panel customization
+* #1429 Added dashboard date-range filter widget
 
 ### ✨ Improvements
 
@@ -16,6 +31,50 @@
 * #1207 Updated README
 * #1162 Removed redundant Arabic translation file
 * #1211 Untracked `.codex` directory
+* #1439 General code refactor
+* #1436 Added picking description to inventory operation moves
+* #1433 Added reusable column-manager traits for repeaters
+* #1432 Hardened `WarehouseFactory` to ensure unique warehouse names/codes
+* #1430 Updated default company seeding and admin user setup on install
+* #1431 Fixed failing test suite
+* #1428 Enhanced availability check to include the WAITING state
+* #1427 Dashboard date filters now default to the start of the year
+* #1425 Removed a redundant redirect
+* #1423 Upgraded Filament to v5.7.3
+* #1422 Upgraded Filament to v5.7.1
+* #1420 Added on-hand and forecasted quantity columns to the products table
+* #1418 Added an excess-quantity tooltip to the return action form
+* #1416 Added more test coverage
+* #1414 Updated `IN_PROCESS` payment status color for consistency
+* #1405 Added unit test coverage for the Accounting plugin
+* #1398 Added unit test cases
+* #1379 Refactored plugin navigation system
+* #1372 Refactored settings retrieval into a centralized function
+* #1371 Fixed duplicate DB queries in the plugin manager's `isPluginInstalled` check
+* #1369 General performance optimization
+* #1367 Removed stray comments
+* #1341 Localized hardcoded UI strings in plugin resources and reports
+* #1325 Refactored code and related fixes
+* #1313 Refresh caches on plugin install/uninstall
+* #1310 Updated README
+* #1308 Updated branding
+* #1306 Refactored `ApplyBrandSettings` middleware
+* #1304 Refactored branding asset URL handling
+* #1293 Updated delivery and receipt status handling
+* #1292 Made "next transfer" nested
+* #1289 Added UOM suffix to the quantity field
+* #1287 Removed unnecessary theme
+* #1278 Added Help section
+* #1277 Updated README
+* #1271 Refactored quantity field handling, added insufficient-stock tooltip
+* #1270 Added "next transfer" button
+* #1269 Refactored product repeater disabled condition
+* #1264 Added view-page actions to match edit pages
+* #1262 Added create-option form for customer selection in quotations
+* #1247 Normalized path separators in `translations:check` for Windows
+* #1210 Added component availability status for Manufacturing Orders and MO readiness
+* #1201 Added Playwright tests for the Inventory plugin
+* #1166 Fixed missing `timeout` command handling on macOS/Windows
 
 ### 🐛 Fixes
 
@@ -26,6 +85,80 @@
 * #1220 [fixed] - Linked purchase order receipts to their order operations
 * #1219 [fixed] - Navigation group labels now update correctly on locale switch
 * #1216 [fixed] - Removed duplicate Auth import in LeaveAccrualLevel model
+* #1440 [fixed] - Fixed missing translations across the app
+* #1437 [fixed] - Fixed a translation issue
+* #1435 [fixed] - Issue #839 resolved
+* #1434 [fixed] - Fixed chatter message issues
+* #1426 [fixed] - Fixed chained inventory operations issue
+* #1424 [fixed] - Fixed duplicate notification issue
+* #1421 [fixed] - Fixed work order's custom operation name issue
+* #1417 [fixed] - Fixed "Destination to Scrap Location" Playwright test
+* #1413 [fixed] - Fixed product table reorder saving in inverted order
+* #1412 [fixed] - Fixed create-button grouping issue
+* #1410 [fixed] - Corrected scrap view label to "Scrap Location"
+* #1408 [fixed] - Re-fixed issue #1397
+* #1407 [fixed] - Fixed refund redirect to 404 page
+* #1403 [fixed] - Fixed miscellaneous issues
+* #1402 [fixed] - Purged orphaned chatter records on plugin uninstall
+* #1401 [fixed] - Issue #1400 resolved
+* #1395 [fixed] - Fixed a location issue
+* #1394 [fixed] - Fixed a backorder issue
+* #1391 [fixed] - Issue #1348 resolved
+* #1390 [fixed] - Issue #1353 resolved
+* #1389 [fixed] - Issue #1329 resolved
+* #1384 [fixed] - Issue #1330 resolved
+* #1383 [fixed] - Fixed broken blog image resizing issue
+* #1382 [fixed] - [Security] Prevented unauthorized viewing/editing of chatter messages (IDOR)
+* #1378 [fixed] - Fixed chatter issues
+* #1376 [fixed] - Issue #1374 resolved
+* #1375 [fixed] - Issue #1373 resolved
+* #1366 [fixed] - Fixed a receipt issue
+* #1365 [fixed] - Fixed an issue
+* #1362 [fixed] - Issue #1353 resolved
+* #1361 [fixed] - Issue #1326 resolved
+* #1360 [fixed] - Issue #1333 resolved
+* #1359 [fixed] - Issue #1335 resolved
+* #1358 [fixed] - Issue #1347 resolved
+* #1356 [fixed] - Issue #1350 resolved
+* #1355 [fixed] - Issues #1348 and #1346 resolved
+* #1344 [fixed] - Fixed an operation update issue
+* #1342 [fixed] - Fixed a chatter UI issue
+* #1340 [fixed] - Hid "Pick from" field when inventory is not tracked
+* #1337 [fixed] - Fixed package selection issues in quantity creation
+* #1324 [fixed] - Fixed an issue
+* #1323 [fixed] - Fixed a customer authentication issue
+* #1321 [fixed] - Fixed chatter issues
+* #1320 [fixed] - Fixed location validation issues
+* #1319 [fixed] - Issue #1235 resolved
+* #1314 [fixed] - Issue #1233 resolved
+* #1311 [fixed] - Issue #1236 resolved
+* #1300 [fixed] - Issue #1230 resolved
+* #1299 [fixed] - Fixed a package issue
+* #1298 [fixed] - Fixed a package location issue
+* #1297 [fixed] - Fixed an invoice policy issue
+* #1295 [fixed] - Issue #1294 resolved
+* #1291 [fixed] - Fixed chatter issues
+* #1290 [fixed] - Fixed quotation messaging issues
+* #1288 [fixed] - Fixed inventory warning issue when changing warehouse
+* #1283 [fixed] - Fixed purchase order issues
+* #1282 [fixed] - Fixed an issue
+* #1281 [fixed] - Fixed validation issues
+* #1280 [fixed] - Fixed sale order issues
+* #1279 [fixed] - Fixed non-tracking product issues
+* #1276 [fixed] - Fixed nested resource issues
+* #1268 [fixed] - Fixed an inventory rule issue
+* #1266 [fixed] - Fixed issues
+* #1265 [fixed] - Fixed dropship print issue
+* #1263 [fixed] - Validated BOM component product
+* #1261 [fixed] - Fixed issues
+* #1260 [fixed] - Fixed backorder settings issue
+* #1259 [fixed] - Fixed issues
+* #1258 [fixed] - Fixed backorder issues
+* #1257 [fixed] - Fixed a backorder issue
+* #1256 [fixed] - Fixed issues
+* #1255 [fixed] - Fixed sale order warehouse selection
+* #1252 [fixed] - Fixed inventory document creation issue when confirming sale order
+* #1186 [fixed] - Issue #1170 resolved
 
 # 🚀 CHANGELOG — v1.4.0
 
