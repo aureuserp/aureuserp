@@ -63,6 +63,8 @@ return [
     'table' => [
         'columns' => [
             'parent'     => 'Parent',
+            'work-email' => 'Work Email',
+            'work-phone' => 'Work Phone',
         ],
 
         'groups' => [

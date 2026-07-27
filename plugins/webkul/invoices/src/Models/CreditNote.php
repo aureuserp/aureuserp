@@ -4,10 +4,4 @@ namespace Webkul\Invoice\Models;
 
 use Webkul\Account\Models\Move as BaseMove;
 
-class CreditNote extends BaseMove
-{
-    public function getModelTitle(): string
-    {
-        return __('invoices::models/credit-note.title');
-    }
-}
+class CreditNote extends BaseMove {}

@@ -68,7 +68,7 @@ class RouteResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_multi_steps_routes;
+        return settings(WarehouseSettings::class)->enable_multi_steps_routes;
     }
 
     public static function getNavigationGroup(): string
@@ -186,7 +186,7 @@ class RouteResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
                 ViewAction::make()

@@ -3,6 +3,7 @@
 namespace Webkul\Manufacturing\Filament\Clusters\Products\Resources;
 
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -713,6 +714,31 @@ class BillsOfMaterialResource extends Resource
         ]);
     }
 
+    protected static function getSelectedBillOfMaterialProductId(Get $get): mixed
+    {
+        return $get('../../product_variant_id') ?: $get('../../product_id');
+    }
+
+    protected static function isSelectedBillOfMaterialProduct(Get $get, mixed $productId): bool
+    {
+        $billOfMaterialProductId = static::getSelectedBillOfMaterialProductId($get);
+
+        return filled($productId)
+            && filled($billOfMaterialProductId)
+            && (string) $productId === (string) $billOfMaterialProductId;
+    }
+
+    protected static function notBillOfMaterialProductRule(Get $get): Closure
+    {
+        return function (string $attribute, mixed $value, Closure $fail) use ($get): void {
+            if (static::isSelectedBillOfMaterialProduct($get, $value)) {
+                $fail(__(
+                    'manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.validation.component-different-from-product',
+                ));
+            }
+        };
+    }
+
     public static function normalizeProductVariantData(array $data): array
     {
         if (! empty($data['product_variant_id'])) {
@@ -778,7 +804,7 @@ class BillsOfMaterialResource extends Resource
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
-                    ->disableOptionWhen(function ($label, $value, $state, $component) {
+                    ->disableOptionWhen(function ($label, $value, $state, $component, Get $get) {
                         $isDeleted = str_contains($label, ' (Deleted)');
 
                         $isDuplicate = false;
@@ -798,8 +824,13 @@ class BillsOfMaterialResource extends Resource
                                 ->contains($value);
                         }
 
-                        return $isDeleted || $isDuplicate;
+                        return $isDeleted
+                            || $isDuplicate
+                            || static::isSelectedBillOfMaterialProduct($get, $value);
                     })
+                    ->rules([
+                        fn (Get $get): Closure => static::notBillOfMaterialProductRule($get),
+                    ])
                     ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
                         $product = Product::query()->find($state);
 
@@ -1246,6 +1277,6 @@ class BillsOfMaterialResource extends Resource
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 }

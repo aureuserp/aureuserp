@@ -206,21 +206,21 @@
                 <tr>
                     @if ($record->ends_at)
                         <td width="33%">
-                            <strong>Agreement Validity</strong><br>
+                            <strong>{{ __('purchases::app.documents.agreement-validity') }}</strong><br>
                             {{ $record->ends_at }}
                         </td>
                     @endif
 
                     @if ($record->user_id)
                         <td width="33%">
-                            <strong>Contact</strong><br>
+                            <strong>{{ __('purchases::app.documents.contact') }}</strong><br>
                             {{ $record->user->name }}
                         </td>
                     @endif
 
                     @if ($record->reference)
                         <td width="33%">
-                            <strong>Reference</strong><br>
+                            <strong>{{ __('purchases::app.documents.reference') }}</strong><br>
                             {{ $record->reference }}
                         </td>
                     @endif
@@ -232,14 +232,14 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Product</th>
-                            <th>Quantity</th>
+                            <th>{{ __('purchases::app.documents.product') }}</th>
+                            <th>{{ __('purchases::app.documents.quantity') }}</th>
 
-                            @if (app(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
-                                <th>Unit</th>
+                            @if (settings(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
+                                <th>{{ __('purchases::app.documents.unit') }}</th>
                             @endif
                             
-                            <th>Unit Price</th>
+                            <th>{{ __('purchases::app.documents.unit-price') }}</th>
                         </tr>
                     </thead>
                     
@@ -249,7 +249,7 @@
                             <td>{{ $item->product->name }}</td>
                             <td>{{ number_format($item->qty) }}</td>
 
-                            @if (app(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
+                            @if (settings(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
                                 <td>{{ $item->product->uom->name }}</td>
                             @endif
 
@@ -262,18 +262,18 @@
 
             <!-- Terms Section -->
             <div class="terms-section">
-                <strong>Terms & Conditions:</strong><br>
+                <strong>{{ __('purchases::app.documents.terms-and-conditions') }}</strong><br>
                 
                 @if ($record->payment_term_id)
                     <div style="margin-top: 10px;">
-                        <strong>Payment Terms:</strong><br>
+                        <strong>{{ __('purchases::app.documents.payment-terms') }}</strong><br>
                         {{ $record->paymentTerm->name }}
                     </div>
                 @endif
 
                 @if ($record->notes)
                     <div style="margin-top: 10px;">
-                        <strong>Additional Terms:</strong><br>
+                        <strong>{{ __('purchases::app.documents.additional-terms') }}</strong><br>
                         {{ $record->notes }}
                     </div>
                 @endif

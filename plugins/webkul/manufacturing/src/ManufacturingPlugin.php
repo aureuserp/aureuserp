@@ -3,9 +3,7 @@
 namespace Webkul\Manufacturing;
 
 use Filament\Contracts\Plugin;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Manufacturing\Filament\Clusters\Settings\Pages\ManageOperations;
 use Webkul\PluginManager\Package;
 
 class ManufacturingPlugin implements Plugin
@@ -44,15 +42,7 @@ class ManufacturingPlugin implements Plugin
                     ->discoverWidgets(
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Manufacturing\\Filament\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('manufacturing::app.navigation.settings.label'))
-                            ->url(fn () => ManageOperations::getUrl())
-                            ->group('Manufacturing')
-                            ->sort(4)
-                            ->visible(fn () => ManageOperations::canAccess()),
-                    ]);
+                    );
             });
     }
 

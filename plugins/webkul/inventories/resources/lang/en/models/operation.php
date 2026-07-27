@@ -3,6 +3,13 @@
 return [
     'title'          => 'Operation',
 
+    'titles'         => [
+        'incoming' => 'Receipt',
+        'outgoing' => 'Delivery',
+        'internal' => 'Internal Transfer',
+        'dropship' => 'Dropship',
+    ],
+
     'log-attributes' => [
         'name'                         => 'Name',
         'origin'                       => 'Origin',

@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,14 @@ class UOMCategory extends Model
 
         static::creating(function ($uomCategory) {
             $uomCategory->creator_id ??= Auth::id();
+        });
+
+        static::deleting(function (self $uomCategory) {
+            if ($uomCategory->uoms()->withTrashed()->exists()) {
+                throw new Exception(__('support::models/uom.category-has-uoms', [
+                    'category' => $uomCategory->name,
+                ]));
+            }
         });
     }
 }

@@ -20,6 +20,7 @@ return [
                     'responsible'            => 'المسؤول',
                     'to-produce'             => 'للإنتاج',
                     'to-produce-placeholder' => 'معاينة الصورة',
+                    'uom-placeholder'        => 'وحدة القياس',
                 ],
             ],
         ],
@@ -54,6 +55,15 @@ return [
                     'real-duration'      => 'المدة الفعلية',
                     'status'             => 'الحالة',
                     'lot-serial'         => 'رقم الدفعة/التسلسل',
+                ],
+                'actions'      => [
+                    'open-work-order' => [
+                        'tooltip' => 'فتح أمر العمل',
+                    ],
+
+                    'done' => [
+                        'label' => 'تم',
+                    ],
                 ],
             ],
             'by-products' => [

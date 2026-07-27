@@ -12,18 +12,18 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditInternal extends EditRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = InternalResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected function getSavedNotification(): Notification
     {
@@ -77,11 +77,14 @@ class EditInternal extends EditRecord
                         ->title(__('inventories::filament/clusters/operations/resources/internal/pages/edit-internal.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/internal/pages/edit-internal.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
     }
 
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

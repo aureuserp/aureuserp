@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
@@ -19,10 +20,12 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProcurementGroup;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Database\Factories\OrderFactory;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Enums\InvoiceStatus;
+use Webkul\Sale\Enums\OrderDeliveryStatus;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
@@ -82,14 +85,16 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'state'          => OrderState::class,
-        'invoice_status' => InvoiceStatus::class,
-        'amount_tax'     => 'decimal:4',
-        'amount_total'   => 'decimal:4',
-        'amount_untaxed' => 'decimal:4',
-        'validity_date'  => 'date',
-        'date_order'     => 'date',
-        'signed_on'      => 'date',
+        'state'           => OrderState::class,
+        'invoice_status'  => InvoiceStatus::class,
+        'delivery_status' => OrderDeliveryStatus::class,
+        'amount_tax'      => 'decimal:4',
+        'amount_total'    => 'decimal:4',
+        'amount_untaxed'  => 'decimal:4',
+        'validity_date'   => 'date',
+        'date_order'      => 'date',
+        'signed_on'       => 'date',
+        'locked'          => 'boolean',
     ];
 
     public function getLogAttributeLabels(): array
@@ -109,7 +114,10 @@ class Order extends Model
 
     public function getModelTitle(): string
     {
-        return __('sales::models/order.title');
+        return match ($this->state) {
+            OrderState::SALE => __('sales::models/order.titles.sales-order'),
+            default          => __('sales::models/order.titles.quotation'),
+        };
     }
 
     public function company()
@@ -140,6 +148,11 @@ class Order extends Model
     public function accountMoves(): BelongsToMany
     {
         return $this->belongsToMany(Move::class, 'sales_order_invoices', 'order_id', 'move_id');
+    }
+
+    public function invoices(): BelongsToMany
+    {
+        return $this->belongsToMany(Invoice::class, 'sales_order_invoices', 'order_id', 'move_id');
     }
 
     public function partnerInvoice()
@@ -263,11 +276,26 @@ class Order extends Model
 
         static::saving(function ($order) {
             $order->updateName();
+
+            $order->lines->each->update(['state' => $order->state]);
         });
 
         static::created(function ($order) {
             $order->update(['name' => $order->name]);
         });
+    }
+
+    public function getChatterResourceUrl(): string
+    {
+        $resource = $this->state === OrderState::SALE
+            ? OrderResource::class
+            : QuotationResource::class;
+
+        try {
+            return $resource::getUrl('view', ['record' => $this->getKey()], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     public function computeWarehouseId()
@@ -276,7 +304,7 @@ class Order extends Model
             return;
         }
 
-        $this->warehouse_id = Warehouse::where('company_id', $this->company_id)->first()?->id;
+        $this->warehouse_id ??= Warehouse::where('company_id', $this->company_id)->first()?->id;
     }
 
     protected static function newFactory(): OrderFactory

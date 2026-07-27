@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'الأقسام',
-        'group' => 'الموظفون',
     ],
 
     'global-search' => [

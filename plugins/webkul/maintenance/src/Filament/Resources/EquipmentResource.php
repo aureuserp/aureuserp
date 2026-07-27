@@ -39,6 +39,7 @@ use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ViewEquipment;
 use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\EquipmentCategory;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
+use Webkul\Support\Enums\NavigationGroup;
 
 class EquipmentResource extends Resource
 {
@@ -57,9 +58,9 @@ class EquipmentResource extends Resource
         return __('maintenance::models/equipment.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('maintenance::filament/resources/equipment.navigation.group');
+        return NavigationGroup::Maintenance;
     }
 
     public static function getNavigationLabel(): string

@@ -71,6 +71,7 @@ class QuantityResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
+                    ->default(fn (): ?int => Warehouse::first()?->lot_stock_location_id)
                     ->visible(static::getWarehouseSettings()->enable_locations),
                 Select::make('product_id')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.form.fields.product'))
@@ -192,7 +193,7 @@ class QuantityResource extends Resource
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: false)
-                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                    ->visible(static::getProductSettings()->enable_uom),
                 TextInputColumn::make('counted_quantity')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.counted'))
                     ->sortable()
@@ -497,22 +498,22 @@ class QuantityResource extends Resource
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 
     public static function getProductSettings(): ProductSettings
     {
-        return once(fn () => app(ProductSettings::class));
+        return settings(ProductSettings::class);
     }
 
     public static function getTraceabilitySettings(): TraceabilitySettings
     {
-        return once(fn () => app(TraceabilitySettings::class));
+        return settings(TraceabilitySettings::class);
     }
 
     public static function getWarehouseSettings(): WarehouseSettings
     {
-        return once(fn () => app(WarehouseSettings::class));
+        return settings(WarehouseSettings::class);
     }
 
     public static function getPages(): array

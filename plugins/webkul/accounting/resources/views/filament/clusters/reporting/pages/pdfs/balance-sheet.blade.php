@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Balance Sheet - {{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') }}</title>
+    <title>{{ __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title') }} - {{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') }}</title>
     <style>
         @page {
             margin: 1.5cm 1.5cm;
@@ -127,15 +127,15 @@
 </head>
 <body>
     <div class="header">
-        <h1>Balance Sheet</h1>
+        <h1>{{ __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title') }}</h1>
         <p>As of {{ \Carbon\Carbon::parse($data['date'])->format('F j, Y') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Account</th>
-                <th class="text-right">Balance</th>
+                <th>{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
+                <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.balance') }}</th>
             </tr>
         </thead>
         <tbody>

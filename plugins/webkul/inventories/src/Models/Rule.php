@@ -174,6 +174,10 @@ class Rule extends Model implements Sortable
             $rule->creator_id ??= $authUser->id;
 
             $rule->company_id ??= $authUser?->default_company_id;
+
+            $rule->warehouse_id ??= $rule->operationType?->warehouse_id;
+
+            $rule->group_propagation_option ??= GroupPropagation::PROPAGATE;
         });
     }
 }

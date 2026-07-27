@@ -77,7 +77,7 @@ class SkillTypeResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(255)
-                        ->placeholder('Enter skill type name'),
+                        ->placeholder(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.name-placeholder')),
                     Select::make('color')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.color'))
                         ->options(function () {

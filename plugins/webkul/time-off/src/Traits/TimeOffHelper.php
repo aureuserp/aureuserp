@@ -101,7 +101,7 @@ trait TimeOffHelper
 
                             DatePicker::make('request_date_to')
                                 ->native(false)
-                                ->label('To Date')
+                                ->label(__('time-off::traits/leave-accrual-plan.form.fields.to-date'))
                                 ->hidden(fn (Get $get) => $get('request_unit_half'))
                                 ->required(fn (Get $get) => ! $get('request_unit_half'))
                                 ->live()

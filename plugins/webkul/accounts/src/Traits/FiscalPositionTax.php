@@ -45,7 +45,6 @@ trait FiscalPositionTax
                 TextColumn::make('taxDestination.name')
                     ->searchable()
                     ->sortable()
-                    ->label('Tax Destination')
                     ->label(__('accounts::traits/fiscal-position-tax.table.columns.tax-destination')),
             ])
             ->recordActions([

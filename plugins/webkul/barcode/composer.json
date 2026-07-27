@@ -1,0 +1,32 @@
+{
+    "name": "webkul/barcode",
+    "description": "Barcode operations app for inventory and manufacturing",
+    "type": "nativephp-plugin",
+    "authors": [
+        {
+            "name": "Jitendra Singh",
+            "email": "jitendra@webkul.in"
+        }
+    ],
+    "extra": {
+        "nativephp": {
+            "manifest": "nativephp.json"
+        },
+        "laravel": {
+            "providers": [
+                "Webkul\\Barcode\\BarcodeServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Barcode\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Barcode\\Tests\\": "tests/"
+        }
+    }
+}

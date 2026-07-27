@@ -10,21 +10,44 @@ jobs:
     runs-on: ${{ matrix.operating-systems }}
 
     strategy:
+      fail-fast: false
       matrix:
         operating-systems: [ubuntu-latest]
         php-versions: ['8.3']
+        db: [mysql, pgsql]
+        include:
+          - db: mysql
+            db-label: MySQL
+            db-image: mysql:8.0
+            db-port: 3306
+            db-user: root
+            db-password: root
+            db-health: mysqladmin ping
+            php-db-ext: pdo_mysql
 
-    name: PHP ${{ matrix.php-versions }} test on ${{ matrix.operating-systems }}
+          - db: pgsql
+            db-label: PostgreSQL
+            db-image: postgres:16
+            db-port: 5432
+            db-user: postgres
+            db-password: postgres
+            db-health: pg_isready
+            php-db-ext: pdo_pgsql
+
+    name: PHP ${{ matrix.php-versions }} | ${{ matrix.db-label }} test on ${{ matrix.operating-systems }}
 
     services:
-      mysql:
-        image: mysql:8.0
+      database:
+        image: ${{ matrix.db-image }}
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: ${{ matrix.db-password }}
           MYSQL_DATABASE: aureuserp
+          POSTGRES_USER: ${{ matrix.db-user }}
+          POSTGRES_PASSWORD: ${{ matrix.db-password }}
+          POSTGRES_DB: aureuserp
         ports:
-          - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+          - ${{ matrix.db-port }}:${{ matrix.db-port }}
+        options: --health-cmd="${{ matrix.db-health }}" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout
@@ -34,7 +57,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: curl, fileinfo, gd, intl, mbstring, openssl, pdo, pdo_mysql, tokenizer, zip
+          extensions: curl, fileinfo, gd, intl, mbstring, openssl, pdo, ${{ matrix.php-db-ext }}, tokenizer, zip
           ini-values: error_reporting=E_ALL
           tools: composer:v2
 
@@ -45,12 +68,12 @@ jobs:
         run: |
           cp .env.example .env
           sed -i "s|^\(APP_ENV=\s*\).*$|\1testing|" .env
-          sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
+          sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1${{ matrix.db }}|" .env
           sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=127.0.0.1|" .env
-          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports[3306] }}|" .env
+          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ matrix.db-port }}|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
-          sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
-          sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=root|" .env
+          sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=${{ matrix.db-user }}|" .env
+          sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=${{ matrix.db-password }}|" .env
           echo "=== Final .env configuration ==="
           cat .env
 

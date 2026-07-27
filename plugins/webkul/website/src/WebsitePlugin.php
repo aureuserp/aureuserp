@@ -10,7 +10,6 @@ use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
-use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
@@ -99,15 +98,7 @@ class WebsitePlugin implements Plugin
                     ->discoverClusters(
                         in: __DIR__.'/Filament/Admin/Widgets',
                         for: 'Webkul\\Website\\Filament\\Admin\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('website::filament/app.navigation.settings.label'))
-                            ->url(fn () => ManageContacts::getUrl())
-                            ->group(fn () => __('website::filament/app.navigation.settings.group'))
-                            ->sort(5)
-                            ->visible(fn () => ManageContacts::canAccess()),
-                    ]);
+                    );
             });
     }
 
@@ -208,7 +199,7 @@ class WebsitePlugin implements Plugin
     {
         $contacts = [];
 
-        $contactSettings = app(ContactSettings::class);
+        $contactSettings = $this->getContactSettings();
 
         if ($contactSettings->email) {
             $contacts['email'] = $contactSettings->email;
@@ -225,7 +216,7 @@ class WebsitePlugin implements Plugin
     {
         $socialLinks = new Collection;
 
-        $contactSettings = app(ContactSettings::class);
+        $contactSettings = $this->getContactSettings();
 
         if ($contactSettings->facebook) {
             $socialLinks->push(
@@ -318,5 +309,10 @@ class WebsitePlugin implements Plugin
         }
 
         return $socialLinks;
+    }
+
+    public function getContactSettings(): ContactSettings
+    {
+        return settings(ContactSettings::class);
     }
 }

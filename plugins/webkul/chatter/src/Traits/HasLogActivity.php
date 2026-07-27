@@ -8,9 +8,12 @@ use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 trait HasLogActivity
 {
+    use HasChatter;
+
     abstract public function getModelTitle();
 
     /**
@@ -49,12 +52,14 @@ trait HasLogActivity
                 return null;
             }
 
+            $owner = $this->resolveChatterMessageOwner();
+
             return $this->addMessage([
                 'type'             => 'notification',
                 'log_name'         => 'default',
                 'body'             => $this->generateActivityDescription($event),
-                'messageable_type' => $this->getMorphClass(),
-                'messageable_id'   => $this->getKey(),
+                'messageable_type' => $owner->getMorphClass(),
+                'messageable_id'   => $owner->getKey(),
                 'causer_type'      => $user?->getMorphClass(),
                 'causer_id'        => $user?->id,
                 'event'            => $event,
@@ -220,65 +225,28 @@ trait HasLogActivity
         $logAttributes = $this->getLogAttributes();
         $attributes = [];
 
-        foreach ($logAttributes as $key) {
-            if ($parsed = $this->parseRelationAttribute($key)) {
-                [$relation, $attribute] = $parsed;
-                $foreignKey = $this->$relation()->getForeignKeyName();
-                $value = $this->getRelatedValue($relation, $this->$foreignKey, $attribute);
-                $attributes[$key] = $value;
-            } else {
-                $value = $this->getAttribute($key);
-                $attributes[$key] = $this->formatAttributeValue($key, $value);
+        foreach ($logAttributes as $key => $title) {
+            try {
+                if ($parsed = $this->parseRelationAttribute($key)) {
+                    [$relation, $attribute] = $parsed;
+
+                    if (! method_exists($this, $relation)) {
+                        continue;
+                    }
+
+                    $foreignKey = $this->$relation()->getForeignKeyName();
+                    $attributes[$title] = $this->getRelatedValue($relation, $this->$foreignKey, $attribute);
+                } else {
+                    $attributes[$title] = $this->formatAttributeValue($key, $this->getAttribute($key));
+                }
+            } catch (Throwable $e) {
+                Log::error("Error logging attribute {$key}: ".$e->getMessage());
+
+                continue;
             }
         }
 
         return $attributes;
-    }
-
-    /**
-     * Get updated attributes
-     */
-    protected function getUpdatedAttributes(): array
-    {
-        $original = $this->getOriginal();
-        $current = $this->getDirty();
-        $logAttributes = $this->getLogAttributes();
-        $changes = [];
-
-        foreach ($logAttributes as $key) {
-            if ($parsed = $this->parseRelationAttribute($key)) {
-                [$relation, $attribute] = $parsed;
-                $foreignKey = $this->$relation()->getForeignKeyName();
-
-                if (array_key_exists($foreignKey, $current)) {
-                    $oldValue = $this->getRelatedValue($relation, $original[$foreignKey] ?? null, $attribute);
-                    $newValue = $this->getRelatedValue($relation, $current[$foreignKey], $attribute);
-
-                    if ($oldValue !== $newValue) {
-                        $changes[$key] = [
-                            'type'      => is_null($oldValue) ? 'added' : 'modified',
-                            'old_value' => $oldValue,
-                            'new_value' => $newValue,
-                        ];
-                    }
-                }
-            } else {
-                if (array_key_exists($key, $current)) {
-                    $oldValue = $this->formatAttributeValue($key, $original[$key] ?? null);
-                    $newValue = $this->formatAttributeValue($key, $current[$key]);
-
-                    if ($oldValue !== $newValue) {
-                        $changes[$key] = [
-                            'type'      => array_key_exists($key, $original) ? 'modified' : 'added',
-                            'old_value' => $oldValue,
-                            'new_value' => $newValue,
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $changes;
     }
 
     /**

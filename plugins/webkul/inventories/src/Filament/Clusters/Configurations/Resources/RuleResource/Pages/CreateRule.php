@@ -10,6 +10,8 @@ class CreateRule extends CreateRecord
 {
     protected static string $resource = RuleResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -17,11 +19,6 @@ class CreateRule extends CreateRecord
         }
 
         return [];
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getCreatedNotification(): Notification

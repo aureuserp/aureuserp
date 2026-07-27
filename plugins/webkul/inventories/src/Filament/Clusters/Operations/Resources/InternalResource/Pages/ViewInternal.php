@@ -12,11 +12,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewInternal extends ViewRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
 
     protected static string $resource = InternalResource::class;
 
@@ -26,6 +27,11 @@ class ViewInternal extends ViewRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
+            OperationActions\TodoAction::make(),
+            OperationActions\CheckAvailabilityAction::make(),
+            OperationActions\ValidateAction::make(),
+            OperationActions\CancelAction::make(),
+            OperationActions\ReturnAction::make(),
             ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),
@@ -59,6 +65,12 @@ class ViewInternal extends ViewRecord
                         ->title(__('inventories::filament/clusters/operations/resources/internal/pages/view-internal.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/internal/pages/view-internal.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
+    }
+
+    public function updateForm(): void
+    {
+        $this->fillForm();
     }
 }

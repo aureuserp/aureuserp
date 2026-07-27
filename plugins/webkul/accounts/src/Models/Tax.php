@@ -12,6 +12,7 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\TaxFactory;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Settings\TaxesSettings;
@@ -101,6 +102,14 @@ class Tax extends Model implements Sortable
             ->where('document_type', DocumentType::REFUND);
     }
 
+    public function getHasNegativeFactorAttribute(): bool
+    {
+        return $this->invoiceRepartitionLines()
+            ->where('repartition_type', RepartitionType::TAX)
+            ->where('factor_percent', '<', 0)
+            ->exists();
+    }
+
     public function getPriceIncludeAttribute()
     {
         return $this->price_include_override == TaxIncludeOverride::TAX_INCLUDED
@@ -110,7 +119,9 @@ class Tax extends Model implements Sortable
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
     {
         if ($this->amount_type === AmountType::FIXED) {
-            return $evaluationContext['quantity'] + $this->amount;
+            $sign = $evaluationContext['price_unit'] < 0.0 ? -1 : 1;
+
+            return $sign * $evaluationContext['quantity'] * $this->amount;
         }
     }
 

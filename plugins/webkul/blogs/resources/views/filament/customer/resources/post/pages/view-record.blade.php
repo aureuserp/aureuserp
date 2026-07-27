@@ -27,7 +27,7 @@
 
     @if ($record->image_url)
         <div class="md:shrink-0">
-            <img class="object-cover w-full h-48 rounded-md md:h-full md:w-48" src="{{$record->image_url}}" alt="Blog post featured image" style="aspect-ratio: 3 / 1"/>
+            <img class="object-cover w-full h-48 rounded-md md:h-full md:w-48" src="{{$record->image_banner_url}}" alt="Blog post featured image" decoding="async" width="1200" height="400" style="aspect-ratio: 3 / 1"/>
         </div>
     @endif
 

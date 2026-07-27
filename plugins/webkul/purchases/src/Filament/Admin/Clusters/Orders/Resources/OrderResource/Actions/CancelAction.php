@@ -26,29 +26,25 @@ class CancelAction extends Action
             ->color('gray')
             ->requiresConfirmation()
             ->action(function (Order $record, Component $livewire): void {
-                $record->lines->each(function ($move) {
-                    if ($move->qty_received > 0) {
-                        Notification::make()
-                            ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.receipts.title'))
-                            ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.receipts.body'))
-                            ->warning()
-                            ->send();
+                if ($record->lines->contains(fn ($move) => $move->qty_received > 0)) {
+                    Notification::make()
+                        ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.receipts.title'))
+                        ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.receipts.body'))
+                        ->warning()
+                        ->send();
 
-                        return;
-                    }
-                });
+                    $this->cancel();
+                }
 
-                $record->accountMoves->each(function ($move) {
-                    if ($move->state !== MoveState::CANCEL) {
-                        Notification::make()
-                            ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.bills.title'))
-                            ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.bills.body'))
-                            ->warning()
-                            ->send();
+                if ($record->accountMoves->contains(fn ($move) => $move->state !== MoveState::CANCEL)) {
+                    Notification::make()
+                        ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.bills.title'))
+                        ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/cancel.action.notification.warning.bills.body'))
+                        ->warning()
+                        ->send();
 
-                        return;
-                    }
-                });
+                    $this->cancel();
+                }
 
                 $record = PurchaseOrder::cancelPurchaseOrder($record);
 

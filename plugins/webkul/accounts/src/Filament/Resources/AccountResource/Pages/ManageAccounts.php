@@ -31,7 +31,7 @@ class ManageAccounts extends ManageRecords
         return parent::table($table)
             ->modifyQueryUsing(
                 fn (Builder $query) => $this->selectedCodePrefix
-                    ? $query->where('code', 'like', $this->selectedCodePrefix.'%')
+                    ? $query->whereLike('code', $this->selectedCodePrefix.'%')
                     : $query,
             )
             ->paginated(fn (): bool => $this->selectedCodePrefix !== null);

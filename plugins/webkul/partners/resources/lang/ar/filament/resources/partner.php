@@ -63,6 +63,8 @@ return [
     'table' => [
         'columns' => [
             'parent'     => 'الأصل',
+            'work-email' => 'البريد الإلكتروني للعمل',
+            'work-phone' => 'هاتف العمل',
         ],
 
         'groups' => [

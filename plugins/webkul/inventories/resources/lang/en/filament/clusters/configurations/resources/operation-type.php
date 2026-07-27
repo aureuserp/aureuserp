@@ -10,7 +10,7 @@ return [
         'sections' => [
             'general' => [
                 'fields' => [
-                    'operator-type'             => 'Operator Type',
+                    'operator-type'             => 'Operation Type',
                     'operator-type-placeholder' => 'eg. Receptions',
                 ],
             ],
@@ -29,7 +29,7 @@ return [
                 'title'  => 'General',
 
                 'fields' => [
-                    'operator-type'                      => 'Operator Type',
+                    'operator-type'                      => 'Operation Type',
                     'sequence-prefix'                    => 'Sequence Prefix',
                     'generate-shipping-labels'           => 'Generate Shipping Labels',
                     'warehouse'                          => 'Warehouse',

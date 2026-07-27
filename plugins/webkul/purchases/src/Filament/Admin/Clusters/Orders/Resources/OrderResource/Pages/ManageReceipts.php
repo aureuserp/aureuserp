@@ -2,15 +2,11 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables\Table;
 use Livewire\Livewire;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\PluginManager\Package;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationReceiptResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageReceipts extends ManageRelatedRecords
@@ -20,6 +16,8 @@ class ManageReceipts extends ManageRelatedRecords
     protected static string $resource = OrderResource::class;
 
     protected static string $relationship = 'operations';
+
+    protected static ?string $relatedResource = QuotationReceiptResource::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
 
@@ -45,21 +43,5 @@ class ManageReceipts extends ManageRelatedRecords
     public static function getNavigationBadge($parameters = []): ?string
     {
         return Livewire::current()->getRecord()->operations()->count();
-    }
-
-    public function table(Table $table): Table
-    {
-        return OperationResource::table($table)
-            ->recordActions([
-                ViewAction::make()
-                    ->url(fn ($record) => ReceiptResource::getUrl('view', ['record' => $record]))
-                    ->openUrlInNewTab(false),
-
-                EditAction::make()
-                    ->url(fn ($record) => ReceiptResource::getUrl('edit', ['record' => $record]))
-                    ->openUrlInNewTab(false),
-            ])
-            ->defaultSort('created_at', 'desc')
-            ->toolbarActions([]);
     }
 }

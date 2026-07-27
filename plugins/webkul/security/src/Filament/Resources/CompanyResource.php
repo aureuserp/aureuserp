@@ -52,6 +52,7 @@ use Webkul\Security\Settings\UserSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Enums\NavigationGroup;
 
 class CompanyResource extends Resource
 {
@@ -68,9 +69,9 @@ class CompanyResource extends Resource
         return __('security::filament/resources/company.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('security::filament/resources/company.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -630,7 +631,7 @@ class CompanyResource extends Resource
     {
         $ids = (array) $ids;
 
-        if (! in_array(app(UserSettings::class)->default_company_id, $ids)) {
+        if (! in_array(settings(UserSettings::class)->default_company_id, $ids)) {
             return;
         }
 

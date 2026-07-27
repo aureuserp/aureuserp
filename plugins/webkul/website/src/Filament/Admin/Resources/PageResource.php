@@ -40,6 +40,7 @@ use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\EditPage;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ListPages;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ViewPage;
 use Webkul\Website\Models\Page as PageModel;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PageResource extends Resource
 {
@@ -56,9 +57,9 @@ class PageResource extends Resource
         return __('website::filament/admin/resources/page.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('website::filament/admin/resources/page.navigation.group');
+        return NavigationGroup::Website;
     }
 
     public static function form(Schema $schema): Schema

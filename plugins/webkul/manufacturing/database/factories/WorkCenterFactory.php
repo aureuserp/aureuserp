@@ -36,4 +36,29 @@ class WorkCenterFactory extends Factory
             'creator_id'       => User::query()->value('id') ?? User::factory(),
         ];
     }
+
+    public function blocked(): static
+    {
+        return $this->state(fn () => ['working_state' => WorkCenterWorkingState::BLOCKED]);
+    }
+
+    public function costsPerHour(float $amount): static
+    {
+        return $this->state(fn () => ['costs_per_hour' => $amount]);
+    }
+
+    public function setupTimes(float $setup, float $cleanup): static
+    {
+        return $this->state(fn () => ['setup_time' => $setup, 'cleanup_time' => $cleanup]);
+    }
+
+    public function efficiency(float $percent): static
+    {
+        return $this->state(fn () => ['time_efficiency' => $percent]);
+    }
+
+    public function capacity(int $capacity): static
+    {
+        return $this->state(fn () => ['default_capacity' => $capacity]);
+    }
 }

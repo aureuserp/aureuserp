@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'المشاريع',
-        'group' => 'لوحة التحكم',
     ],
 
     'filters-form' => [
@@ -12,6 +11,7 @@ return [
         'tags'       => 'الوسوم',
         'customer'   => 'العميل',
         'start-date' => 'تاريخ البداية',
+        'date-range' => 'النطاق الزمني',
         'end-date'   => 'تاريخ النهاية',
     ],
 ];

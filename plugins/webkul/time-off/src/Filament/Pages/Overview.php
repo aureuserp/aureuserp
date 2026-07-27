@@ -7,6 +7,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\TimeOff\Filament\Widgets\OverviewCalendarWidget;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Overview extends BaseDashboard
 {
@@ -36,9 +37,9 @@ class Overview extends BaseDashboard
         return __('time-off::filament/pages/overview.navigation.title');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('time-off::filament/pages/overview.navigation.group');
+        return NavigationGroup::TimeOff;
     }
 
     public function getWidgets(): array

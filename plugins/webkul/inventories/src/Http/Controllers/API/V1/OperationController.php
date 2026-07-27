@@ -16,6 +16,7 @@ use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Http\Requests\OperationRequest;
 use Webkul\Inventory\Http\Resources\V1\OperationResource;
+use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Product;
@@ -150,12 +151,12 @@ class OperationController extends Controller
 
     protected function ensureCanCheckAvailability(Operation $operation): ?JsonResponse
     {
-        if (! in_array($operation->state, [OperationState::CONFIRMED, OperationState::ASSIGNED], true)) {
-            return $this->actionValidationError('Only confirmed or assigned operations can check availability.');
+        if (! in_array($operation->state, [OperationState::WAITING, OperationState::CONFIRMED, OperationState::ASSIGNED], true)) {
+            return $this->actionValidationError('Only waiting, confirmed or assigned operations can check availability.');
         }
 
         $hasEligibleMoves = $operation->moves()
-            ->whereIn('state', [MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])
+            ->whereIn('state', [MoveState::WAITING, MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])
             ->exists();
 
         if (! $hasEligibleMoves) {
@@ -336,6 +337,8 @@ class OperationController extends Controller
                     continue;
                 }
             }
+
+            Move::$globalContext['skip_additional'] = false;
 
             $createdMove = $operation->moves()->create($this->prepareMoveData($operation, $moveData));
             $retainedMoveIds[] = $createdMove->id;

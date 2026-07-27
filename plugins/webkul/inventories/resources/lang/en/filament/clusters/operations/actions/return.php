@@ -6,9 +6,10 @@ return [
     'modal' => [
         'form' => [
             'columns' => [
-                'product'  => 'Product',
-                'quantity' => 'Quantity',
-                'uom'      => 'UOM',
+                'product'                 => 'Product',
+                'quantity'                => 'Quantity',
+                'uom'                     => 'UOM',
+                'excess-quantity-tooltip' => 'The quantity to return is greater than the quantity processed in the original operation.',
             ],
         ],
     ],

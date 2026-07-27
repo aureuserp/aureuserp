@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Users',
-        'group' => 'Settings',
     ],
 
     'global-search' => [

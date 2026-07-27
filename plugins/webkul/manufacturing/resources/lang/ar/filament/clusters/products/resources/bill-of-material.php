@@ -44,6 +44,9 @@ return [
                     'quantity'              => 'الكمية',
                     'uom'                   => 'وحدة قياس المنتج',
                 ],
+                'validation' => [
+                    'component-different-from-product' => 'يجب أن يكون المكون مختلفًا عن المنتج المراد تصنيعه.',
+                ],
                 'create-form' => [
                     'fields' => [
                         'name'            => 'الاسم',
