@@ -55,6 +55,10 @@ return [
         'uninstalled-failed' => [
             'title' => 'Falha na desinstalação',
         ],
+        'uninstalled-blocked' => [
+            'title' => 'Não é possível desinstalar o plugin',
+            'body'  => "O plugin ':name' possui dependentes instalados que devem ser desinstalados primeiro: :dependents.",
+        ],
     ],
 
     'infolist' => [
