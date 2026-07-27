@@ -1112,7 +1112,9 @@ class InventoryManager
                 MoveState::DONE,
                 MoveState::CANCELED,
             ]))
-                ->diff($negQtyMoves);
+                ->diff($negQtyMoves)
+                ->sortBy('id')
+                ->values();
 
             $distinctKey = fn ($move) => collect($distinctFields)
                 ->map(fn ($field) => $move->$field instanceof \BackedEnum ? $move->$field->value : (string) $move->$field)
@@ -1207,6 +1209,8 @@ class InventoryManager
         }
 
         if ($movesToDelete->isNotEmpty()) {
+            $movesToDelete->each->unsetRelation('lines');
+
             $this->cancelMoves($movesToDelete);
 
             foreach ($movesToDelete as $move) {
