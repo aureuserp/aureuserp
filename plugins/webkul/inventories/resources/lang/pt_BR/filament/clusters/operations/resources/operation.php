@@ -144,6 +144,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'Tipo de operação',
             'name'                 => 'Nome',
             'state'                => 'Estado',
             'partner'              => 'Parceiro',

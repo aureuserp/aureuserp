@@ -82,7 +82,7 @@ return [
             'company' => 'Empresa',
             'price' => 'Preço',
             'cost' => 'Custo',
-            'on-hand' => 'Em mãos',
+            'on-hand' => 'Em estoque',
             'tags' => 'Tags',
             'deleted-at' => 'Excluído em',
             'created-at' => 'Criado em',

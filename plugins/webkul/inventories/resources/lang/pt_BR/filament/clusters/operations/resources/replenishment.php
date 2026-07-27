@@ -18,7 +18,7 @@ return [
             'route' => 'Rota',
             'vendor' => 'Fornecedor',
             'trigger' => 'Disparar',
-            'on-hand' => 'Em mãos',
+            'on-hand' => 'Em estoque',
             'min' => 'Mín.',
             'max' => 'Máx.',
             'multiple-quantity' => 'Quantidade múltipla',

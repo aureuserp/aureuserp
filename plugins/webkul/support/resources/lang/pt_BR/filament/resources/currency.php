@@ -97,6 +97,13 @@ return [
                     ],
                 ],
             ],
+
+            'deactivate' => [
+                'notification' => [
+                    'title' => 'A moeda não pode ser desativada',
+                    'body'  => 'Esta moeda está em uso por uma ou mais empresas e não pode ser desativada.',
+                ],
+            ],
         ],
 
         'bulk-actions' => [

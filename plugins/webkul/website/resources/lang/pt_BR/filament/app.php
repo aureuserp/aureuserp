@@ -61,6 +61,7 @@ return [
         'about-us' => 'Sobre nós',
         'privacy-policy' => 'Política de Privacidade',
         'terms-conditions' => 'Termos e condições',
+        'news-announcements' => 'Notícias e Anúncios',
         'blog' => 'Blog',
         'blogs' => 'Blogs',
         'contact' => 'Contato',

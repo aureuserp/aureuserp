@@ -22,8 +22,15 @@ return [
                     'uoms' => 'Unidades',
                     'type' => 'Tipo',
                     'name' => 'Nome',
-                    'factor' => 'Fator',
+                    'ratio' => 'Fator',
                     'rounding' => 'Precisão de arredondamento',
+                ],
+
+                'validations' => [
+                    'missing-reference' => 'Esta categoria deve ter uma unidade de medida de referência.',
+                    'multiple-references' => 'Esta categoria deve ter apenas uma unidade de medida de referência.',
+                    'ratio-greater-than-zero' => 'O fator de conversão de uma unidade de medida não pode ser zero.',
+                    'rounding-greater-than-zero' => 'A precisão de arredondamento deve ser estritamente positiva.',
                 ],
 
                 'actions' => [

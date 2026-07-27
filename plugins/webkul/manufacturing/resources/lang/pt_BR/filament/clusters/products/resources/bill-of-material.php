@@ -106,14 +106,14 @@ return [
             'product' => 'Produto',
             'quantity' => 'Quantidade',
             'uom' => 'Unidade de medida',
-            'type' => 'Tipo de BOM',
+            'type' => 'Tipo de lista de materiais',
             'company' => 'Empresa',
             'deleted-at' => 'Excluído em',
             'updated-at' => 'Atualizado em',
         ],
         'filters' => [
             'product' => 'Produto',
-            'type' => 'Tipo de BOM',
+            'type' => 'Tipo de lista de materiais',
             'company' => 'Empresa',
         ],
         'actions' => [
