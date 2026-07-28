@@ -24,7 +24,7 @@ class TimesheetsRelationManager extends RelationManager
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        if (! app(TimeSettings::class)->enable_timesheets) {
+        if (! settings(TimeSettings::class)->enable_timesheets) {
             return false;
         }
 

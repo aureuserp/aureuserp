@@ -2,7 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'الإعدادات',
         'title' => 'فئات وحدات القياس',
     ],
 
@@ -22,9 +21,16 @@ return [
                 'fields' => [
                     'uoms'     => 'الوحدات',
                     'type'     => 'النوع',
-                    'name'     => 'الاسم',
-                    'factor'   => 'معامل التحويل',
+                    'name'     => 'وحدة القياس',
+                    'ratio'    => 'النسبة',
                     'rounding' => 'دقة التقريب',
+                ],
+
+                'validations' => [
+                    'missing-reference'          => 'يجب أن تحتوي هذه الفئة على وحدة قياس مرجعية.',
+                    'multiple-references'        => 'يجب أن تحتوي هذه الفئة على وحدة قياس مرجعية واحدة فقط.',
+                    'ratio-greater-than-zero'    => 'لا يمكن أن تكون نسبة التحويل لوحدة القياس صفرًا.',
+                    'rounding-greater-than-zero' => 'يجب أن تكون دقة التقريب أكبر من صفر.',
                 ],
 
                 'actions' => [
@@ -37,7 +43,7 @@ return [
     'table' => [
         'columns' => [
             'name'       => 'الاسم',
-            'uoms-count' => 'الوحدات',
+            'uoms'       => 'الوحدات',
             'created-at' => 'تاريخ الإنشاء',
             'updated-at' => 'تاريخ التحديث',
         ],

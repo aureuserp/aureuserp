@@ -260,9 +260,7 @@ class ActivityPlanResource extends Resource
                             ->body(__('sales::filament/clusters/configurations/resources/activity-plan.table.empty-state.create.notification.body')),
                     ),
             ])
-            ->modifyQueryUsing(function ($query) {
-                $query->where('plugin', 'sales');
-            });
+            ->modifyQueryUsing(fn ($query) => $query->sales());
     }
 
     public static function infolist(Schema $schema): Schema

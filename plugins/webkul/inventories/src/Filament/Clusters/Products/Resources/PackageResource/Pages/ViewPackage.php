@@ -27,7 +27,7 @@ class ViewPackage extends ViewRecord
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/view-package.header-actions.print.actions.without-content.label'))
                     ->color('gray')
                     ->action(function (Package $record) {
-                        $pdf = PDF::loadView('inventories::filament.clusters.products.packages.actions.print-without-content', [
+                        $pdf = Pdf::loadView('inventories::filament.clusters.products.packages.actions.print-without-content', [
                             'records' => collect([$record]),
                         ]);
 
@@ -41,7 +41,7 @@ class ViewPackage extends ViewRecord
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/view-package.header-actions.print.actions.with-content.label'))
                     ->color('gray')
                     ->action(function (Package $record) {
-                        $pdf = PDF::loadView('inventories::filament.clusters.products.packages.actions.print-with-content', [
+                        $pdf = Pdf::loadView('inventories::filament.clusters.products.packages.actions.print-with-content', [
                             'records' => collect([$record]),
                         ]);
 

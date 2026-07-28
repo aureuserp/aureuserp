@@ -12,17 +12,14 @@ use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditRefund extends EditRecord
 {
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
 
     protected static string $resource = RefundResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): ?Notification
     {
@@ -36,7 +33,8 @@ class EditRefund extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\PreviewAction::make()
                 ->setTemplate('accounts::refund/actions/preview.index'),
             BaseActions\PayAction::make(),
@@ -58,5 +56,14 @@ class EditRefund extends EditRecord
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+
+        $this->refreshRecordState();
+    }
+
+    public function refreshFormData(array $statePaths): void
+    {
+        parent::refreshFormData($statePaths);
+
+        $this->rememberData();
     }
 }

@@ -18,12 +18,9 @@ class Candidate extends Model
 {
     use HasChatter, HasLogActivity, SoftDeletes;
 
-    protected $table = 'recruitments_candidates';
+    public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 
-    public function getModelTitle(): string
-    {
-        return __('recruitments::models/candidate.title');
-    }
+    protected $table = 'recruitments_candidates';
 
     protected $fillable = [
         'message_bounced',
@@ -42,6 +39,11 @@ class Candidate extends Model
         'availability_date',
         'candidate_properties',
         'is_active',
+    ];
+
+    protected $casts = [
+        'candidate_properties' => 'array',
+        'is_active'            => 'boolean',
     ];
 
     public function getLogAttributeLabels(): array
@@ -65,10 +67,10 @@ class Candidate extends Model
         ];
     }
 
-    protected $casts = [
-        'candidate_properties' => 'array',
-        'is_active'            => 'boolean',
-    ];
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/candidate.title');
+    }
 
     public function company()
     {

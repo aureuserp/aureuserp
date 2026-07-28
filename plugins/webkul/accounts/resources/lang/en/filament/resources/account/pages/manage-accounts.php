@@ -19,4 +19,8 @@ return [
         'income'     => 'Income',
         'expenses'   => 'Expenses',
     ],
+
+    'tree' => [
+        'all' => 'All',
+    ],
 ];

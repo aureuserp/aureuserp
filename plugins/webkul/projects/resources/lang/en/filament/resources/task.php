@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Tasks',
-        'group' => 'Project',
     ],
 
     'global-search' => [
@@ -113,6 +112,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Update Task State',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Task restored',

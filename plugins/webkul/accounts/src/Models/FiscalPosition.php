@@ -79,7 +79,7 @@ class FiscalPosition extends Model implements Sortable
             ? Account::find($mapping->account_destination_id)
             : $account;
     }
-    
+
     protected static function boot()
     {
         parent::boot();

@@ -56,7 +56,7 @@ function productRoute(string $action, mixed $product = null): string
 
 function productPayload(array $overrides = []): array
 {
-    $uom      = UOM::factory()->create();
+    $uom = UOM::factory()->create();
     $category = Category::factory()->create();
 
     return array_replace_recursive([
@@ -146,7 +146,7 @@ it('creates a product', function () {
 it('creates a product with account-specific income and expense accounts', function () {
     actingWithProductPermissions(['create_account_product']);
 
-    $incomeAccount  = Account::factory()->create();
+    $incomeAccount = Account::factory()->create();
     $expenseAccount = Account::factory()->create();
 
     $payload = productPayload([
@@ -226,7 +226,7 @@ it('returns 404 for a non-existent product', function () {
 it('shows account-specific fields on a product', function () {
     actingWithProductPermissions(['view_account_product']);
 
-    $incomeAccount  = Account::factory()->create();
+    $incomeAccount = Account::factory()->create();
     $expenseAccount = Account::factory()->create();
 
     $product = Product::factory()->create([
@@ -275,8 +275,8 @@ it('updates a product name', function () {
 it('updates account-specific fields on a product', function () {
     actingWithProductPermissions(['update_account_product']);
 
-    $product        = Product::factory()->create();
-    $incomeAccount  = Account::factory()->create();
+    $product = Product::factory()->create();
+    $incomeAccount = Account::factory()->create();
     $expenseAccount = Account::factory()->create();
 
     $this->patchJson(productRoute('update', $product), [

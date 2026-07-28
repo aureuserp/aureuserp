@@ -83,10 +83,6 @@ function salesOrderPayload(int $lineCount = 2, array $overrides = []): array
         ])
         ->toArray();
 
-    $order['date_order'] = $order['date_order']?->format('Y-m-d');
-
-    $order['validity_date'] = $order['validity_date']?->format('Y-m-d');
-
     $order['lines'] = collect(range(1, $lineCount))
         ->map(fn () => makeLinePayload([
             'company_id'  => $order['company_id'],

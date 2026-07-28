@@ -26,7 +26,7 @@ class PackagingResource extends BasePackagingResource
             return true;
         }
 
-        return app(ProductSettings::class)->enable_packagings;
+        return settings(ProductSettings::class)->enable_packagings;
     }
 
     public static function getNavigationGroup(): string

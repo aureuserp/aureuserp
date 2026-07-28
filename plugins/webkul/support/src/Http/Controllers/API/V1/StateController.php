@@ -37,16 +37,16 @@ class StateController extends Controller
         Gate::authorize('viewAny', State::class);
 
         $states = QueryBuilder::for(State::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('code'),
                 AllowedFilter::exact('country_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'code', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'code', 'created_at')
+            ->allowedIncludes(
                 'country',
-            ])
+            )
             ->paginate();
 
         return StateResource::collection($states);
@@ -77,9 +77,9 @@ class StateController extends Controller
     public function show(string $id)
     {
         $state = QueryBuilder::for(State::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'country',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $state);

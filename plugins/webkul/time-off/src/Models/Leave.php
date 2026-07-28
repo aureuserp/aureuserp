@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
-use Webkul\Support\Models\Calendar;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
@@ -19,6 +19,8 @@ use Webkul\TimeOff\Enums\State;
 class Leave extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'time-off';
 
     protected $table = 'time_off_leaves';
 

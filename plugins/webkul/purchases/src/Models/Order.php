@@ -8,20 +8,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Incoterm;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\PaymentTerm;
-use Webkul\Chatter\Models\Message;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
-use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\ProcurementGroup;
+use Webkul\Inventory\Models\Receipt;
 use Webkul\Purchase\Database\Factories\OrderFactory;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
@@ -30,6 +33,8 @@ use Webkul\Support\Models\Currency;
 class Order extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
     protected $table = 'purchases_orders';
 
@@ -69,6 +74,8 @@ class Order extends Model
         'company_id',
         'creator_id',
         'operation_type_id',
+        'destination_address_id',
+        'procurement_group_id',
     ];
 
     protected $casts = [
@@ -89,7 +96,10 @@ class Order extends Model
 
     public function getModelTitle(): string
     {
-        return __('purchases::models/order.title');
+        return match ($this->state) {
+            OrderState::PURCHASE, OrderState::DONE => __('purchases::models/order.titles.purchase-order'),
+            default                                => __('purchases::models/order.titles.quotation'),
+        };
     }
 
     public function getLogAttributeLabels(): array
@@ -161,14 +171,24 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function destinationAddress(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class, 'destination_address_id');
+    }
+
     public function lines(): HasMany
     {
-        return $this->hasMany(OrderLine::class, 'order_id');
+        return $this->hasMany(OrderLine::class, 'order_id')->orderBy('id');
     }
 
     public function accountMoves(): BelongsToMany
     {
         return $this->belongsToMany(AccountMove::class, 'purchases_order_account_moves', 'order_id', 'move_id');
+    }
+
+    public function bills(): BelongsToMany
+    {
+        return $this->belongsToMany(Bill::class, 'purchases_order_account_moves', 'order_id', 'move_id');
     }
 
     public function operationType(): BelongsTo
@@ -178,26 +198,25 @@ class Order extends Model
 
     public function operations(): BelongsToMany
     {
-        return $this->belongsToMany(Operation::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
+        return $this->belongsToMany(Receipt::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
     }
 
-    public function addMessage(array $data): Message
+    public function procurementGroup(): BelongsTo
     {
-        $message = new Message;
+        return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
+    }
 
-        $user = Auth::user();
+    public function getChatterResourceUrl(): string
+    {
+        $resource = in_array($this->state, [OrderState::PURCHASE, OrderState::DONE])
+            ? PurchaseOrderResource::class
+            : QuotationResource::class;
 
-        $message->fill(array_merge([
-            'creator_id'       => $user?->id,
-            'date_deadline'    => $data['date_deadline'] ?? now(),
-            'company_id'       => $data['company_id'] ?? ($user->defaultCompany?->id ?? null),
-            'messageable_type' => Order::class,
-            'messageable_id'   => $this->id,
-        ], $data));
-
-        $message->save();
-
-        return $message;
+        try {
+            return $resource::getUrl('view', ['record' => $this->getKey()], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     protected static function boot()

@@ -11,7 +11,7 @@ use Webkul\Support\Database\Factories\CountryFactory;
 class Country extends Model
 {
     use HasFactory;
-    
+
     /**
      * The attributes that are mass assignable.
      *

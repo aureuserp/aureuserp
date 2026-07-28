@@ -4,6 +4,7 @@ namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
+use Webkul\Account\Filament\Resources\VendorResource as BaseVendorResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\CreateVendor;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\EditVendor;
@@ -14,7 +15,6 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\M
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers\BankAccountsRelationManager;
 use Webkul\Accounting\Models\Vendor;
-use Webkul\Account\Filament\Resources\VendorResource as BaseVendorResource;
 
 class VendorResource extends BaseVendorResource
 {

@@ -18,11 +18,6 @@ class EditCandidate extends EditRecord
 
     protected static string $resource = CandidateResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -53,7 +48,8 @@ class EditCandidate extends EditRecord
                     return redirect(EmployeeResource::getUrl('edit', ['record' => $employee]));
                 }),
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

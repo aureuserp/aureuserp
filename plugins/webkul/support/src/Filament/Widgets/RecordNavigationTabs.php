@@ -3,6 +3,7 @@
 namespace Webkul\Support\Filament\Widgets;
 
 use Filament\Widgets\Widget;
+use Livewire\Attributes\Reactive;
 
 class RecordNavigationTabs extends Widget
 {
@@ -12,6 +13,7 @@ class RecordNavigationTabs extends Widget
 
     protected int|string|array $columnSpan = 'full';
 
+    #[Reactive]
     public array $navigationItems = [];
 
     public function mount(array $navigationItems = []): void

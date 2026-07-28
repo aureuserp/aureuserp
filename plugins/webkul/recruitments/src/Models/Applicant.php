@@ -5,8 +5,8 @@ namespace Webkul\Recruitment\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
@@ -22,12 +22,9 @@ class Applicant extends Model
 {
     use HasApplicationStatus, HasChatter, HasLogActivity, SoftDeletes;
 
-    protected $table = 'recruitments_applicants';
+    public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 
-    public function getModelTitle(): string
-    {
-        return __('recruitments::models/applicant.title');
-    }
+    protected $table = 'recruitments_applicants';
 
     protected $fillable = [
         'source_id',
@@ -77,6 +74,15 @@ class Applicant extends Model
     protected $appends = [
         'application_status',
     ];
+
+    public array $notificationData = [];
+
+    public array $interviewerChanges = [];
+
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/applicant.title');
+    }
 
     public function source(): BelongsTo
     {

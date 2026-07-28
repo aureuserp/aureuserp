@@ -35,15 +35,15 @@ class UOMCategoryController extends Controller
         Gate::authorize('viewAny', UOMCategory::class);
 
         $uomCategories = QueryBuilder::for(UOMCategory::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
-            ])
-            ->allowedSorts(['id', 'name', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'created_at')
+            ->allowedIncludes(
                 'uoms',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return UOMCategoryResource::collection($uomCategories);
@@ -76,10 +76,10 @@ class UOMCategoryController extends Controller
     public function show(string $id)
     {
         $uomCategory = QueryBuilder::for(UOMCategory::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'uoms',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $uomCategory);

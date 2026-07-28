@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages;
 
-use Filament\Tables\Table;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ManageInvoices as BaseManageInvoices;
 
@@ -10,8 +10,5 @@ class ManageInvoices extends BaseManageInvoices
 {
     protected static string $resource = OrderResource::class;
 
-    public function table(Table $table): Table
-    {
-        return parent::table($table);
-    }
+    protected static ?string $relatedResource = OrderInvoiceResource::class;
 }

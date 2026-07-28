@@ -21,9 +21,10 @@
                 $tabKey = strval($tabKey);
             @endphp
 
-            <x-filament::tabs.item
+            <x-table-views::tabs.item
                 class="whitespace-nowrap"
                 :active="$activeTableView === $tabKey"
+                :alpine-active="'$wire.activeTableView === \'' . $tabKey . '\''"
                 :badge="$tab->getBadge()"
                 :badge-color="$tab->getBadgeColor()"
                 :badge-icon="$tab->getBadgeIcon()"
@@ -34,7 +35,7 @@
                 :attributes="$tab->getExtraAttributeBag()"
             >
                 {{ $tab->getLabel() ?? $this->generateTabLabel($tabKey) }}
-            </x-filament::tabs.item>
+            </x-table-views::tabs.item>
         @endforeach
 
         <div class="flex items-center">

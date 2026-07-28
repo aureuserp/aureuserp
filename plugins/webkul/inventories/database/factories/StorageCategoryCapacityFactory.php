@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Models\StorageCategoryCapacity;
+use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
 
 /**
@@ -39,7 +40,7 @@ class StorageCategoryCapacityFactory extends Factory
     public function forProduct(): static
     {
         return $this->state(fn (array $attributes) => [
-            'product_id' => \Webkul\Product\Models\Product::factory(),
+            'product_id' => Product::factory(),
         ]);
     }
 

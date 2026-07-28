@@ -3,7 +3,8 @@
 return [
     'stats-overview' => 'Stats Overview',
 
-    'from-date' => 'From Date',
+    'from-date'  => 'From Date',
+    'date-range' => 'Date Range',
 
     'to-date' => 'To Date',
 

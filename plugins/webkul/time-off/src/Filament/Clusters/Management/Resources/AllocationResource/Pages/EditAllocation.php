@@ -23,11 +23,6 @@ class EditAllocation extends EditRecord
         return [];
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -40,7 +35,8 @@ class EditAllocation extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             Action::make('approved')
                 ->label(__('time-off::filament/clusters/management/resources/allocation/pages/edit-allocation.header-actions.approved.title'))
                 ->color('gray')
@@ -94,5 +90,12 @@ class EditAllocation extends EditRecord
                         ->body(__('time-off::filament/clusters/management/resources/allocation/pages/edit-allocation.header-actions.delete.notification.body'))
                 ),
         ];
+    }
+
+    public function refreshFormData(array $statePaths): void
+    {
+        parent::refreshFormData($statePaths);
+
+        $this->rememberData();
     }
 }

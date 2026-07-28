@@ -167,7 +167,7 @@
 
                 @if ($address)
                     <div class="left-info">
-                        <div style="font-weight: bold; margin-bottom: 15px;">Warehouse Address</div>
+                        <div style="font-weight: bold; margin-bottom: 15px;">{{ __('inventories::app.documents.warehouse-address') }}</div>
                         
                         <div style="margin-top: 15px;">
                             <div>
@@ -214,7 +214,7 @@
                     
                 @if($record->partner)
                     <div class="right-info">
-                        <div style="font-weight: bold; margin-bottom: 15px;">Vendor Address</div>
+                        <div style="font-weight: bold; margin-bottom: 15px;">{{ __('inventories::app.documents.vendor-address') }}</div>
                         
                         <div style="margin-top: 15px;">
                             <div>{{ $record->partner->name }}</div>
@@ -265,7 +265,7 @@
 
             <!-- Slip Title -->
             <div class="slip-title">
-                <span>Packing Slip #{{ $record->name }}</span>
+                <span>{{ __('inventories::app.documents.packing-slip-title', ['name' => $record->name]) }}</span>
                 
                 <div class="barcode-container">
                     {!! DNS1D::getBarcodeHTML($record->name, 'C128', 2, 44) !!}
@@ -276,12 +276,12 @@
             <table class="details-table">
                 <tr>
                     <td width="50%">
-                        <strong>Status:</strong><br>
+                        <strong>{{ __('inventories::app.documents.status') }}</strong><br>
                         {{ $record->state->name }}
                     </td>
                     
                     <td width="50%" style="text-align: right;">
-                        <strong>Scheduled At:</strong><br>
+                        <strong>{{ __('inventories::app.documents.scheduled-at') }}</strong><br>
                         {{ $record->scheduled_at }}
                     </td>
                 </tr>
@@ -292,15 +292,15 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>To</th>
+                            <th>{{ __('inventories::app.documents.product') }}</th>
+                            <th>{{ __('inventories::app.documents.quantity') }}</th>
+                            <th>{{ __('inventories::app.documents.to') }}</th>
                             
-                            @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
-                                <th>Lot/Serial Number</th>
+                            @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
+                                <th>{{ __('inventories::app.documents.lot-serial-number') }}</th>
                             @endif
                             
-                            <th>Product Barcode</th>
+                            <th>{{ __('inventories::app.documents.product-barcode') }}</th>
                         </tr>
                     </thead>
 
@@ -317,7 +317,7 @@
                                     @endif
                                 </td>
 
-                                @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
+                                @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
                                     <td>
                                         @if ($item->lot)
                                         <div class="barcode-container">

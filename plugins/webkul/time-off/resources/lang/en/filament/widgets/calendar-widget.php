@@ -36,6 +36,18 @@ return [
         'description' => 'View Time Off Request',
     ],
 
+    'notifications' => [
+        'employee-not-found' => [
+            'title' => 'Employee Not Found',
+            'body'  => 'Please add an employee to your profile before requesting time off.',
+        ],
+
+        'error' => [
+            'title' => 'Something went wrong',
+            'body'  => 'We could not process your time off request. Please try again.',
+        ],
+    ],
+
     'header-actions' => [
         'create' => [
             'title'       => 'New Time Off',

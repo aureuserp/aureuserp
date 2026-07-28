@@ -15,11 +15,8 @@ class Product extends BaseProduct
 {
     use HasChatter, HasCustomFields, HasLogActivity;
 
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
+    public const ACTIVITY_PLAN_PLUGIN = 'accounts';
+
     public function __construct(array $attributes = [])
     {
         $this->mergeFillable([
@@ -90,8 +87,8 @@ class Product extends BaseProduct
     public function getAccounts(): array
     {
         return [
-            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome ?? Account::find(app(DefaultAccountSettings::class)->income_account_id),
-            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense ?? Account::find(app(DefaultAccountSettings::class)->expense_account_id),
+            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome ?? Account::find(settings(DefaultAccountSettings::class)->income_account_id),
+            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense ?? Account::find(settings(DefaultAccountSettings::class)->expense_account_id),
         ];
     }
 

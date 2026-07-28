@@ -3,5 +3,5 @@
 return [
     'draft'  => 'Draft',
     'posted' => 'Posted',
-    'cancel' => 'Cancel',
+    'cancel' => 'Cancelled',
 ];

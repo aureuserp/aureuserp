@@ -3,8 +3,6 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Webkul\Inventory\Enums\ScrapState;
 
 class ScrapRequest extends FormRequest
 {

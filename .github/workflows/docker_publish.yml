@@ -1,0 +1,116 @@
+name: Publish Docker Image
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      app_ref:
+        description: 'AureusERP branch or tag to build'
+        required: false
+        default: 'master'
+      image_tag:
+        description: 'Docker image tag to publish'
+        required: false
+        default: 'manual'
+
+env:
+  IMAGE_NAME: webkul/aureuserp
+  BUILD_CONTEXT: docker/production
+
+jobs:
+  publish:
+    name: Build & publish (amd64 + arm64)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version and tags
+        id: meta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            APP_REF="${GITHUB_REF_NAME}"
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            APP_REF="${{ inputs.app_ref }}"
+            VERSION="${{ inputs.image_tag }}"
+          fi
+          echo "app_ref=${APP_REF}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+          TAGS="${IMAGE_NAME}:${VERSION}"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            IS_PRERELEASE="false"
+            if echo "${APP_REF}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-'; then
+              IS_PRERELEASE="true"
+            fi
+
+            DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+            COMPARE=$(gh api "repos/${{ github.repository }}/compare/${DEFAULT_BRANCH}...${{ github.sha }}" \
+              --jq '.status' 2>/dev/null || echo "unknown")
+
+            ON_DEFAULT_BRANCH="false"
+            case "$COMPARE" in
+              identical|behind) ON_DEFAULT_BRANCH="true" ;;
+            esac
+
+            if [ "$IS_PRERELEASE" = "false" ] && [ "$ON_DEFAULT_BRANCH" = "true" ]; then
+              TAGS="${TAGS},${IMAGE_NAME}:latest"
+            fi
+            echo "prerelease=${IS_PRERELEASE} compare=${COMPARE} on_default=${ON_DEFAULT_BRANCH}"
+          fi
+
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+          echo "Resolved ref=${APP_REF}, tags=${TAGS}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.BUILD_CONTEXT }}
+          file: ${{ env.BUILD_CONTEXT }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            APP_REF=${{ steps.meta.outputs.app_ref }}
+            REPO_URL=https://github.com/${{ github.repository }}.git
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+          labels: |
+            org.opencontainers.image.title=AureusERP
+            org.opencontainers.image.description=AureusERP production image — Nginx + PHP-FPM + MySQL + Supervisor
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.meta.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Summary
+        run: |
+          {
+            echo "### ✅ Docker image published"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Tags | \`${{ steps.meta.outputs.tags }}\` |"
+            echo "| Platforms | linux/amd64, linux/arm64 |"
+            echo "| Source ref | \`${{ steps.meta.outputs.app_ref }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -2,11 +2,11 @@
 
 namespace Webkul\Support\Filament\Resources\CompanyResource\Pages;
 
-use Webkul\Security\Models\User;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Webkul\Security\Models\User;
 use Webkul\Support\Filament\Resources\CompanyResource;
 
 class ViewCompany extends ViewRecord

@@ -39,7 +39,7 @@ class CashRoundingResource extends Resource
             return true;
         }
 
-        return app(CustomerInvoiceSettings::class)->group_cash_rounding;
+        return settings(CustomerInvoiceSettings::class)->group_cash_rounding;
     }
 
     public static function form(Schema $schema): Schema

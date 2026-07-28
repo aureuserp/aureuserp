@@ -21,7 +21,7 @@ class PackageAction extends Action
             ->action(function ($record) {
                 $packages = $record->packages()->distinct()->get();
 
-                $pdf = PDF::loadView('inventories::filament.clusters.products.packages.actions.print-with-content', [
+                $pdf = Pdf::loadView('inventories::filament.clusters.products.packages.actions.print-with-content', [
                     'records'  => $packages,
                 ]);
 

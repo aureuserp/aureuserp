@@ -64,13 +64,13 @@ class PurchaseOrderBillController extends Controller
         Gate::authorize('view', $purchaseOrderModel);
 
         $bills = QueryBuilder::for($purchaseOrderModel->accountMoves()->where('move_type', MoveType::IN_INVOICE))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('payment_state'),
-            ])
-            ->allowedSorts(['id', 'name', 'date', 'amount_total', 'state', 'payment_state', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'date', 'amount_total', 'state', 'payment_state', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return MoveResource::collection($bills);

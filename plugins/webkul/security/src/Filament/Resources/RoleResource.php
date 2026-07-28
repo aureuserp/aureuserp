@@ -10,12 +10,12 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
-use Filament\Notifications\Notification;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
@@ -36,12 +36,18 @@ use Webkul\Security\Filament\Resources\RoleResource\Pages\EditRole;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\ListRoles;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\ViewRole;
 use Webkul\Security\Models\Role;
+use Webkul\Support\Enums\NavigationGroup;
 
 class RoleResource extends RolesRoleResource
 {
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): string | \UnitEnum
+    {
+        return NavigationGroup::Setting;
+    }
 
     protected static bool $isGloballySearchable = false;
 
@@ -266,13 +272,10 @@ JS,
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->badge()
                     ->label(__('filament-shield::filament-shield.column.name'))
                     ->formatStateUsing(fn ($state): string => Str::headline($state))
-                    ->colors(['primary'])
                     ->searchable(),
                 TextColumn::make('guard_name')
-                    ->badge()
                     ->label(__('filament-shield::filament-shield.column.guard_name')),
                 TextColumn::make('permissions_count')
                     ->badge()
@@ -577,6 +580,7 @@ JS,
             ->hiddenLabel()
             ->options(fn (): array => $options)
             ->searchable($searchable)
+            ->bulkToggleable()
             ->afterStateHydrated(function (Component $component, string $operation, ?Model $record) use ($options): void {
                 static::setPermissionStateForRecordPermissions(
                     component: $component,

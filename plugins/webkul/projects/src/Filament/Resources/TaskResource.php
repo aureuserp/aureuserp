@@ -52,6 +52,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -74,6 +75,7 @@ use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
+use Webkul\Support\Enums\NavigationGroup;
 
 class TaskResource extends Resource
 {
@@ -83,7 +85,7 @@ class TaskResource extends Resource
 
     protected static ?string $slug = 'project/tasks';
 
-    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -92,9 +94,9 @@ class TaskResource extends Resource
         return __('projects::filament/resources/task.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('projects::filament/resources/task.navigation.group');
+        return NavigationGroup::Project;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -293,7 +295,7 @@ class TaskResource extends Resource
                     ->tooltip(fn (TaskState $state): string => $state->getLabel())
                     ->action(
                         Action::make('updateState')
-                            ->modalHeading('Update Task State')
+                            ->modalHeading(__('projects::filament/resources/task.table.actions.update-state.modal-heading'))
                             ->schema(fn (Task $record): array => [
                                 ToggleButtons::make('state')
                                     ->label(__('projects::filament/resources/task.table.columns.new-state'))
@@ -452,7 +454,7 @@ class TaskResource extends Resource
                     ->label(__('projects::filament/resources/task.table.groups.created-at'))
                     ->date(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->filters([
                 QueryBuilder::make()
@@ -599,6 +601,8 @@ class TaskResource extends Resource
             )
             ->filtersFormColumns(2)
             ->recordActions([
+                ActivityTableAction::make()
+                    ->hidden(fn ($record) => $record->trashed()),
                 ActionGroup::make([
                     ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
@@ -853,12 +857,12 @@ class TaskResource extends Resource
 
     private static function getTimeSettings(): TimeSettings
     {
-        return once(fn () => app(TimeSettings::class));
+        return settings(TimeSettings::class);
     }
 
     private static function getTaskSettings(): TaskSettings
     {
-        return once(fn () => app(TaskSettings::class));
+        return settings(TaskSettings::class);
     }
 
     public static function getRecordSubNavigation(Page $page): array

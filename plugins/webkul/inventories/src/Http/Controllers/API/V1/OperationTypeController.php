@@ -46,15 +46,15 @@ class OperationTypeController extends Controller
         Gate::authorize('viewAny', OperationType::class);
 
         $operationTypes = QueryBuilder::for(OperationType::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('type'),
                 AllowedFilter::exact('warehouse_id'),
                 AllowedFilter::exact('company_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'type', 'sort', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'type', 'sort', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return OperationTypeResource::collection($operationTypes);
@@ -85,7 +85,7 @@ class OperationTypeController extends Controller
     public function show(string $id)
     {
         $operationType = QueryBuilder::for(OperationType::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $operationType);

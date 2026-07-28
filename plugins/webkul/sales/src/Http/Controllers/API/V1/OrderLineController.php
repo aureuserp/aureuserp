@@ -52,12 +52,12 @@ class OrderLineController extends Controller
         Gate::authorize('view', $orderModel);
 
         $lines = QueryBuilder::for(OrderLine::where('order_id', $orderModel->id))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('product_id'),
-            ])
-            ->allowedSorts(['id', 'sort', 'name', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'sort', 'name', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return OrderLineResource::collection($lines);
@@ -77,7 +77,7 @@ class OrderLineController extends Controller
         Gate::authorize('view', $orderModel);
 
         $orderLine = QueryBuilder::for(OrderLine::where('order_id', $orderModel->id)->where('id', $line))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         return new OrderLineResource($orderLine);

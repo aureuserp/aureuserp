@@ -10,10 +10,15 @@ use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateInternal extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = InternalResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     public function getSubNavigation(): array
     {

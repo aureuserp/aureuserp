@@ -30,6 +30,8 @@ return [
                     'incoming-shipments-hint-tooltip'  => 'Default incoming route to follow',
                     'outgoing-shipments'               => 'Outgoing Shipments',
                     'outgoing-shipments-hint-tooltip'  => 'Default outgoing route to follow',
+                    'manufacture'                      => 'Manufacturing',
+                    'manufacture-hint-tooltip'         => 'Default manufacturing route to follow',
                     'resupply-management'              => 'Resupply Management',
                     'resupply-management-hint-tooltip' => 'Routes will be automatically generated to resupply this warehouse from the selected warehouses.',
                     'resupply-from'                    => 'Resupply From',

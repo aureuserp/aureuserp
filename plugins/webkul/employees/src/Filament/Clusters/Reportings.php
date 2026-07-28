@@ -4,6 +4,7 @@ namespace Webkul\Employee\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
 use Filament\Panel;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Reportings extends Cluster
 {
@@ -19,8 +20,8 @@ class Reportings extends Cluster
         return __('employees::filament/clusters/reportings.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('employees::filament/clusters/reportings.navigation.group');
+        return NavigationGroup::Employee;
     }
 }

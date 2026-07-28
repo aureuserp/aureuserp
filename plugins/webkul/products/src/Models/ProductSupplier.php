@@ -13,6 +13,7 @@ use Webkul\Product\Database\Factories\ProductSupplierFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Models\UOM;
 
 class ProductSupplier extends Model implements Sortable
 {
@@ -30,12 +31,14 @@ class ProductSupplier extends Model implements Sortable
         'ends_at',
         'min_qty',
         'price',
+        'price_discounted',
         'discount',
         'product_id',
         'partner_id',
         'currency_id',
         'company_id',
         'creator_id',
+        'uom_id',
     ];
 
     protected $casts = [
@@ -61,6 +64,11 @@ class ProductSupplier extends Model implements Sortable
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
+    }
+
+    public function uom(): BelongsTo
+    {
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 
     public function creator(): BelongsTo

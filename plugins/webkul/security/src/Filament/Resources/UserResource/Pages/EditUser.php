@@ -21,11 +21,6 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): Notification
     {
         return Notification::make()
@@ -39,7 +34,7 @@ class EditUser extends EditRecord
         return [
             Action::make('changePassword')
                 ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.label'))
-                ->visible(fn(UserSettings $userSettings) => $userSettings->enable_reset_password)
+                ->visible(fn (UserSettings $userSettings) => $userSettings->enable_reset_password)
                 ->action(function (User $record, array $data): void {
                     $record->update([
                         'password' => Hash::make($data['new_password']),
@@ -60,7 +55,7 @@ class EditUser extends EditRecord
                     TextInput::make('new_password_confirmation')
                         ->password()
                         ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.form.confirm-new-password'))
-                        ->rule('required', fn($get) => (bool) $get('new_password'))
+                        ->rule('required', fn ($get) => (bool) $get('new_password'))
                         ->same('new_password'),
                 ])
                 ->icon('heroicon-o-key'),

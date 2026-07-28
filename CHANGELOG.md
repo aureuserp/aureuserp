@@ -1,3 +1,44 @@
+# 🚀 CHANGELOG — v1.4.0
+
+### 🧩 Features
+
+* Added Manufacturing module with Bill of Materials (BOM), Manufacturing Orders, Work Orders, Work Centers, and Operations sub-navigation
+* Added Sharding and Reporting support 
+* #1175 Multi-language support with user preferences and session-based locale switching
+* #1160 Calendar management functionality refinements
+* #1198 Enhanced Package Type form with new fields for barcode, dimensions, and weight
+* #1178 Added parent-child relationship support for accounts
+* #1179 Added grouping for Chart of Accounts
+* #1194 Enhanced Activity Plans integration across multiple resources
+* Added support for Partial Return in inventory operations
+
+### ✨ Improvements
+
+* #1203 Upgraded framework and dependencies to Laravel 13
+* #1155 Added Playwright tests for Purchases plugin
+* #1150 Added translations consistency check command and CI workflow
+* #1149 Removed unused Arabic translation setup script
+* #1159 Refactored column manager component for improved readability and maintainability
+* #1164 Enhanced location model to update full name and parent path on creation and saving
+* #1200 Simplified top bar item button styling
+* #1176 Refactored message pinning logic and updated SVG icons in chatter
+* #1195 Updated chatter panel styles for improved header visibility in dark mode
+* #1177 Updated activity types URL and adjusted resource slug and cluster
+* #1174 Removed duplicate/unused Auth facade imports
+* Removed `phpunit` from `composer.json` (now managed via Laravel dev requirements)
+* Applied settings-driven values in place of hardcoded ones
+* Refactored `freeReservation` to use `update` instead of `decrement` for quantity adjustment
+
+### 🐛 Fixes
+
+* #1167 [fixed] - Issue #1167 resolved
+* #1188 [fixed] - Issue #1188 resolved
+* #1191 [fixed] - Issue #1191 resolved
+* #1192 [fixed] - Issue #1192 resolved
+* [fixed] - Sub-location issue in inventory
+* [fixed] - Sale order to inventory operation linking issue
+* [fixed] - Quantity availability and print package issues
+
 # 🚀 CHANGELOG — v1.3.1
 
 ### ✨ Improvements

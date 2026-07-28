@@ -203,7 +203,7 @@ class Journal extends Model implements Sortable
             ];
         })->toArray();
     }
-    
+
     protected static function boot()
     {
         parent::boot();

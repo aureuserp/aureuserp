@@ -12,6 +12,8 @@ class CreateOrder extends CreateRecord
 {
     use HasRepeaterColumnManager;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = OrderResource::class;
 
     public function getSubNavigation(): array
@@ -38,6 +40,15 @@ class CreateOrder extends CreateRecord
 
     protected function afterCreate(): void
     {
-        PurchaseOrder::computePurchaseOrder($this->getRecord());
+        try {
+            PurchaseOrder::computePurchaseOrder($this->getRecord());
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->body($e->getMessage())
+                ->send();
+
+            $this->halt(shouldRollbackDatabaseTransaction: true);
+        }
     }
 }

@@ -15,6 +15,7 @@ use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\ManageAddresse
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\ManageContacts;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\ViewPartner;
 use Webkul\Website\Models\Partner;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PartnerResource extends BasePartnerResource
 {
@@ -24,16 +25,16 @@ class PartnerResource extends BasePartnerResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
         return __('website::filament/admin/resources/partner.navigation.title');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('website::filament/admin/resources/partner.navigation.group');
+        return NavigationGroup::Website;
     }
 
     public static function getRecordSubNavigation(Page $page): array

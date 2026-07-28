@@ -168,7 +168,7 @@ class DepartureReasonResource extends Resource
                             ->body(__('employees::filament/clusters/configurations/resources/departure-reason.table.empty-state-action.create.notification.body')),
                     ),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc');
     }
 

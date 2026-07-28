@@ -16,6 +16,7 @@ use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Http\Requests\OperationRequest;
 use Webkul\Inventory\Http\Resources\V1\OperationResource;
+use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Product;
@@ -48,7 +49,7 @@ class OperationController extends Controller
     {
         $operations = QueryBuilder::for($this->modelClass()::query())
             ->whereHas('operationType', fn ($query) => $query->where('type', $this->operationType()))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('state'),
@@ -57,8 +58,8 @@ class OperationController extends Controller
                 AllowedFilter::exact('user_id'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('operation_type_id'),
-            ])
-            ->allowedSorts([
+            )
+            ->allowedSorts(
                 'id',
                 'name',
                 'state',
@@ -66,8 +67,8 @@ class OperationController extends Controller
                 'deadline',
                 'created_at',
                 'updated_at',
-            ])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return $this->resourceClass()::collection($operations);
@@ -76,7 +77,7 @@ class OperationController extends Controller
     protected function findOperationForShow(string $id): Operation
     {
         $operation = QueryBuilder::for($this->modelClass()::query()->where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         $this->ensureOperationTypeMatches($operation);
@@ -92,6 +93,7 @@ class OperationController extends Controller
     protected function findOperationById(string $id): Operation
     {
         $operation = $this->modelClass()::query()->findOrFail($id);
+
         $this->ensureOperationTypeMatches($operation);
 
         return $operation;
@@ -110,7 +112,7 @@ class OperationController extends Controller
     protected function checkAvailabilityById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $operation = Inventory::checkTransferAvailability($operation);
+        $operation = Inventory::assignTransfer($operation);
 
         return $operation->refresh()->load($this->allowedIncludes);
     }
@@ -118,7 +120,7 @@ class OperationController extends Controller
     protected function todoById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $operation = Inventory::todoTransfer($operation);
+        $operation = Inventory::confirmTransfer($operation);
 
         return $operation->refresh()->load($this->allowedIncludes);
     }
@@ -126,7 +128,7 @@ class OperationController extends Controller
     protected function validateById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $operation = Inventory::validateTransfer($operation);
+        $operation = Inventory::doneTransfer($operation);
 
         return $operation->refresh()->load($this->allowedIncludes);
     }
@@ -149,12 +151,12 @@ class OperationController extends Controller
 
     protected function ensureCanCheckAvailability(Operation $operation): ?JsonResponse
     {
-        if (! in_array($operation->state, [OperationState::CONFIRMED, OperationState::ASSIGNED], true)) {
-            return $this->actionValidationError('Only confirmed or assigned operations can check availability.');
+        if (! in_array($operation->state, [OperationState::WAITING, OperationState::CONFIRMED, OperationState::ASSIGNED], true)) {
+            return $this->actionValidationError('Only waiting, confirmed or assigned operations can check availability.');
         }
 
         $hasEligibleMoves = $operation->moves()
-            ->whereIn('state', [MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])
+            ->whereIn('state', [MoveState::WAITING, MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])
             ->exists();
 
         if (! $hasEligibleMoves) {
@@ -335,6 +337,8 @@ class OperationController extends Controller
                     continue;
                 }
             }
+
+            Move::$globalContext['skip_additional'] = false;
 
             $createdMove = $operation->moves()->create($this->prepareMoveData($operation, $moveData));
             $retainedMoveIds[] = $createdMove->id;

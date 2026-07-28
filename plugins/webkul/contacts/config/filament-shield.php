@@ -18,13 +18,13 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            PartnerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TagResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TitleResource::class => [...$basic, ...$delete],
-            IndustryResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PartnerResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TagResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TitleResource::class       => [...$basic, ...$delete],
+            IndustryResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             BankAccountResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            BankResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            AddressResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            BankResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            AddressResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
         ],
         'exclude' => [],
     ],

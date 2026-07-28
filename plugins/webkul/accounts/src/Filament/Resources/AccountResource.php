@@ -18,6 +18,7 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -28,8 +29,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\Journal;
 
 class AccountResource extends Resource
 {
@@ -82,6 +85,45 @@ class AccountResource extends Resource
                                     ->required()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.account-type'))
                                     ->live()
+                                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                        $existing = $get('invoices_account_journals');
+
+                                        if (! empty($existing)) {
+                                            return;
+                                        }
+
+                                        $journalIds = self::suggestJournalIdsForAccountType($state);
+
+                                        if (! empty($journalIds)) {
+                                            $set('invoices_account_journals', $journalIds);
+                                        }
+                                    })
+                                    ->searchable(),
+                                Select::make('parent_id')
+                                    ->relationship(
+                                        name: 'parent',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: function (Builder $query, ?Account $record) {
+                                            if ($record) {
+                                                $excludedIds = [
+                                                    $record->id,
+                                                    ...$record->getDescendantIds(),
+                                                ];
+
+                                                $query->whereNotIn('id', $excludedIds);
+                                            }
+                                        },
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function (Account $record) {
+                                        if ($record->code) {
+                                            return "{$record->code} - {$record->name}";
+                                        }
+
+                                        return $record->name;
+                                    })
+                                    ->label(__('accounts::filament/resources/account.form.sections.fields.parent-account'))
+                                    ->helperText(__('accounts::filament/resources/account.form.sections.fields.parent-account-helper'))
+                                    ->preload()
                                     ->searchable(),
                                 Select::make('invoices_account_tax')
                                     ->relationship('taxes', 'name')
@@ -100,6 +142,7 @@ class AccountResource extends Resource
                                     ->relationship('journals', 'name')
                                     ->multiple()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.journals'))
+                                    ->helperText(__('accounts::filament/resources/account.form.sections.fields.journals-helper'))
                                     ->preload()
                                     ->searchable(),
                                 Select::make('currency_id')
@@ -149,6 +192,12 @@ class AccountResource extends Resource
                     ->label(__('accounts::filament/resources/account.table.columns.account-type'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('parent.name')
+                    ->label(__('accounts::filament/resources/account.table.columns.parent-account'))
+                    ->placeholder('-')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 IconColumn::make('reconcile')
                     ->label(__('accounts::filament/resources/account.table.columns.reconcile'))
                     ->boolean()
@@ -164,6 +213,11 @@ class AccountResource extends Resource
                 SelectFilter::make('account_type')
                     ->options(AccountType::groupedOptions())
                     ->label(__('accounts::filament/resources/account.table.filters.account-type')),
+                SelectFilter::make('parent_id')
+                    ->relationship('parent', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label(__('accounts::filament/resources/account.table.filters.parent-account')),
                 SelectFilter::make('journals')
                     ->relationship('journals', 'name')
                     ->searchable()
@@ -270,6 +324,22 @@ class AccountResource extends Resource
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.account-type'))
                                     ->placeholder('-')
                                     ->icon('heroicon-o-tag'),
+                                TextEntry::make('parent.name')
+                                    ->label(__('accounts::filament/resources/account.infolist.sections.entries.parent-account'))
+                                    ->placeholder('-')
+                                    ->icon('heroicon-o-arrow-up-circle')
+                                    ->formatStateUsing(function ($record) {
+                                        return $record->parent
+                                            ? ($record->parent->code ? "{$record->parent->code} - {$record->parent->name}" : $record->parent->name)
+                                            : '-';
+                                    }),
+                                TextEntry::make('children.name')
+                                    ->label(__('accounts::filament/resources/account.infolist.sections.entries.sub-accounts'))
+                                    ->listWithLineBreaks()
+                                    ->bulleted()
+                                    ->placeholder('-')
+                                    ->icon('heroicon-o-arrow-down-circle')
+                                    ->visible(fn ($record) => $record->children()->exists()),
                                 TextEntry::make('taxes.name')
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.default-taxes'))
                                     ->visible(fn ($record) => $record->account_type !== AccountType::OFF_BALANCE->value)
@@ -314,5 +384,34 @@ class AccountResource extends Resource
         return [
             'index' => ManageAccounts::route('/'),
         ];
+    }
+
+    protected static function suggestJournalIdsForAccountType(?string $accountType): array
+    {
+        if (! $accountType) {
+            return [];
+        }
+
+        $journalType = match ($accountType) {
+            AccountType::INCOME->value,
+            AccountType::INCOME_OTHER->value,
+            AccountType::ASSET_RECEIVABLE->value       => JournalType::SALE,
+            AccountType::EXPENSE->value,
+            AccountType::EXPENSE_DEPRECIATION->value,
+            AccountType::EXPENSE_DIRECT_COST->value,
+            AccountType::LIABILITY_PAYABLE->value      => JournalType::PURCHASE,
+            AccountType::ASSET_CASH->value             => JournalType::CASH,
+            AccountType::LIABILITY_CREDIT_CARD->value  => JournalType::CREDIT_CARD,
+            default                                    => null,
+        };
+
+        if (! $journalType) {
+            return [];
+        }
+
+        return Journal::query()
+            ->where('type', $journalType->value)
+            ->pluck('id')
+            ->all();
     }
 }

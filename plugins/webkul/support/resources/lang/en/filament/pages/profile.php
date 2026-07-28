@@ -28,9 +28,11 @@ return [
     ],
 
     'fields' => [
-        'avatar' => 'Profile Photo',
-        'name'   => 'Name',
-        'email'  => 'Email',
+        'avatar'          => 'Profile Photo',
+        'name'            => 'Name',
+        'email'           => 'Email',
+        'language'        => 'Preferred Language',
+        'language_helper' => 'The admin interface will be shown in this language.',
     ],
 
     'password' => [

@@ -37,7 +37,7 @@ class ProjectFactory extends Factory
             'sort'                    => fake()->randomNumber(),
             'start_date'              => fake()->date(),
             'end_date'                => fake()->date(),
-            'allocated_hours'         => fake()->randomNumber(),
+            'allocated_hours'         => fake()->numberBetween(1, 999999),
             'allow_timesheets'        => true,
             'allow_milestones'        => false,
             'allow_task_dependencies' => false,

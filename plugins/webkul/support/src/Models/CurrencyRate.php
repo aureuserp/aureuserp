@@ -3,11 +3,11 @@
 namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Webkul\Support\Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
+use Webkul\Support\Database\Factories\CurrencyRateFactory;
 
 class CurrencyRate extends Model
 {

@@ -14,6 +14,8 @@ class EditRoute extends EditRecord
 
     protected static string $resource = RouteResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function getSavedNotification(): Notification
     {
         return Notification::make()

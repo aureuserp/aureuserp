@@ -3,11 +3,11 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Webkul\Account\Database\Factories\IncotermFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Database\Factories\IncotermFactory;
 use Webkul\Security\Models\User;
 
 class Incoterm extends Model

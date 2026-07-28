@@ -37,18 +37,18 @@ class TaxGroupController extends Controller
         Gate::authorize('viewAny', TaxGroup::class);
 
         $taxGroups = QueryBuilder::for(TaxGroup::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('country_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at')
+            ->allowedIncludes(
                 'company',
                 'country',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return TaxGroupResource::collection($taxGroups);
@@ -81,11 +81,11 @@ class TaxGroupController extends Controller
     public function show(string $id)
     {
         $taxGroup = QueryBuilder::for(TaxGroup::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'company',
                 'country',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $taxGroup);

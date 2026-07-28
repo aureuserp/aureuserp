@@ -20,7 +20,10 @@
             "Webkul\\Support\\": "src/",
             "Webkul\\Support\\Database\\Factories\\": "database/factories/",
             "Webkul\\Support\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

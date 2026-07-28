@@ -60,13 +60,13 @@ class PurchaseOrderReceiptController extends Controller
         }
 
         $receipts = QueryBuilder::for($purchaseOrderModel->operations())
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('move_type'),
-            ])
-            ->allowedSorts(['id', 'name', 'state', 'scheduled_at', 'closed_at', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'state', 'scheduled_at', 'closed_at', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return OperationResource::collection($receipts);

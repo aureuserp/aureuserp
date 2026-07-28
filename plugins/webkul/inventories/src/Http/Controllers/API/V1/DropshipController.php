@@ -100,7 +100,7 @@ class DropshipController extends OperationController
     #[Endpoint('Check dropship availability', 'Compute and refresh dropship availability')]
     #[UrlParam('id', 'integer', 'The dropship ID', required: true, example: 1)]
     #[ResponseFromApiResource(DropshipResource::class, Dropship::class, additional: ['message' => 'Dropship availability checked successfully.'])]
-    #[Response(status: 422, description: 'Only confirmed or assigned operations can check availability.')]
+    #[Response(status: 422, description: 'Only waiting, confirmed or assigned operations can check availability.')]
     #[Response(status: 404, description: 'Dropship not found')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function checkAvailability(string $id)

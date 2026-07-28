@@ -6,7 +6,7 @@ use Filament\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\HtmlString;
-use Webkul\Support\Models\CalendarLeaves;
+use Webkul\Support\Models\CalendarLeave;
 use Webkul\TimeOff\Models\LeaveMandatoryDay;
 
 class HolidayAction extends Action
@@ -29,7 +29,7 @@ class HolidayAction extends Action
                 TextEntry::make('public_holiday')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.public-holiday'))
                     ->state(function () {
-                        $publicHolidays = CalendarLeaves::with('company')->get();
+                        $publicHolidays = CalendarLeave::with('company')->get();
 
                         if ($publicHolidays->isEmpty()) {
                             return new HtmlString('<p class="text-gray-500 dark:text-gray-400">No public holidays found.</p>');

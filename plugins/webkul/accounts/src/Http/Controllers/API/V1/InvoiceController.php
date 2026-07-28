@@ -52,7 +52,7 @@ class InvoiceController extends Controller
 
         $invoices = QueryBuilder::for(Invoice::class)
             ->where('move_type', MoveType::OUT_INVOICE)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('partner_id'),
@@ -61,9 +61,9 @@ class InvoiceController extends Controller
                 AllowedFilter::exact('invoice_user_id'),
                 AllowedFilter::exact('journal_id'),
                 AllowedFilter::exact('currency_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'invoice_date', 'invoice_date_due', 'amount_total', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'invoice_date', 'invoice_date_due', 'amount_total', 'created_at')
+            ->allowedIncludes(
                 'partner',
                 'currency',
                 'journal',
@@ -95,7 +95,7 @@ class InvoiceController extends Controller
                 'invoiceLines.taxGroup',
                 'invoiceLines.payment',
                 'invoiceLines.taxRepartitionLine',
-            ])
+            )
             ->paginate();
 
         return MoveResource::collection($invoices);
@@ -151,7 +151,7 @@ class InvoiceController extends Controller
     public function show(string $id)
     {
         $invoice = QueryBuilder::for(Invoice::where('id', $id)->where('move_type', MoveType::OUT_INVOICE))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'partner',
                 'currency',
                 'journal',
@@ -183,7 +183,7 @@ class InvoiceController extends Controller
                 'invoiceLines.taxGroup',
                 'invoiceLines.payment',
                 'invoiceLines.taxRepartitionLine',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $invoice);
@@ -421,7 +421,7 @@ class InvoiceController extends Controller
                 'invoice_date'      => $invoice->isInvoice(true) ? $moveReversal->date : null,
                 'journal_id'        => $moveReversal->journal_id,
                 'invoice_user_id'   => $invoice->invoice_user_id,
-                'auto_post'         => 0,
+                'auto_post'         => false,
             ];
 
             $isCancelNeeded = ! $defaultValues['auto_post'] && $invoice->move_type == MoveType::ENTRY;

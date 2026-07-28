@@ -12,7 +12,7 @@ test.describe('Plugin Installation', () => {
      * All plugins installation test
      */
     test('All Plugins Installation Test', async ({ adminPage }) => {
-        test.setTimeout(400000);
+        // test.setTimeout(400000);
         const pluginManagementPage = new PluginManagementPage(adminPage);
         await pluginManagementPage.installAllPlugins();
     });

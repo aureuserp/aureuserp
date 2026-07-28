@@ -2,24 +2,12 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages;
 
-use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Exceptions\Halt;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
-use Webkul\Inventory\Models\Location;
-use Webkul\Inventory\Models\Product;
-use Webkul\Inventory\Models\ProductQuantity;
-use Webkul\Inventory\Models\Warehouse;
-use Webkul\Inventory\Settings\OperationSettings;
-use Webkul\Inventory\Settings\TraceabilitySettings;
-use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Filament\Resources\ProductResource\Pages\EditProduct as BaseEditProduct;
 
 class EditProduct extends BaseEditProduct
@@ -29,10 +17,22 @@ class EditProduct extends BaseEditProduct
     protected function beforeSave(): void
     {
         $record = $this->getRecord();
+
         $data = $this->form->getState();
 
+        if (isset($data['is_storable']) && ! $data['is_storable'] && $record->orderPoints()->exists()) {
+            Notification::make()
+                ->danger()
+                ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.reordering-rules.title'))
+                ->body(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.reordering-rules.body'))
+                ->persistent()
+                ->send();
+
+            throw new Halt;
+        }
+
         if (isset($data['is_storable']) && $data['is_storable'] != $record->is_storable) {
-            if ($record->moveLines()->exists()) {
+            if ($record->moveLines()->where('state', MoveState::DONE)->exists()) {
                 Notification::make()
                     ->danger()
                     ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.tracking-update.title'))
@@ -42,150 +42,61 @@ class EditProduct extends BaseEditProduct
 
                 throw new Halt;
             }
+
+            if ($record->moveLines()->whereIn('state', [MoveState::PARTIALLY_ASSIGNED, MoveState::ASSIGNED])->exists()) {
+                Notification::make()
+                    ->danger()
+                    ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.reserved.title'))
+                    ->body(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.reserved.body'))
+                    ->persistent()
+                    ->send();
+
+                throw new Halt;
+            }
+        }
+
+        if (isset($data['is_storable']) && ! $data['is_storable'] && ! float_is_zero($record->available_qty, precisionRounding: $record->uom->rounding)) {
+            Notification::make()
+                ->danger()
+                ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.available-quantity.title'))
+                ->body(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.available-quantity.body'))
+                ->persistent()
+                ->send();
+
+            throw new Halt;
         }
 
         if (isset($data['tracking']) && $data['tracking'] != $record->tracking) {
-            if ($record->moveLines()->exists()) {
-                $oldTracking = $record->tracking;
-                $newTracking = is_string($data['tracking']) ? ProductTracking::from($data['tracking']) : $data['tracking'];
+            $oldTracking = $record->tracking;
+            $newTracking = is_string($data['tracking']) ? ProductTracking::from($data['tracking']) : $data['tracking'];
 
-                if (
-                    $oldTracking == ProductTracking::QTY
-                    && (
-                        $newTracking == ProductTracking::LOT
-                        || $newTracking == ProductTracking::SERIAL
-                    )
-                ) {
+            if (
+                $oldTracking == ProductTracking::QTY
+                && (
+                    $newTracking == ProductTracking::LOT
+                    || $newTracking == ProductTracking::SERIAL
+                )
+            ) {
+                $hasStockWithoutLot = $record->quantities()
+                    ->whereHas('location', function ($query) {
+                        $query->where('type', LocationType::INTERNAL);
+                    })
+                    ->where('quantity', '>', 0)
+                    ->whereNull('lot_id')
+                    ->exists();
 
-                    $hasStockWithoutLot = $record->quantities()
-                        ->whereHas('location', function ($query) {
-                            $query->where('type', LocationType::INTERNAL);
-                        })
-                        ->where('quantity', '>', 0)
-                        ->whereNull('lot_id')
-                        ->exists();
+                if ($hasStockWithoutLot) {
+                    Notification::make()
+                        ->danger()
+                        ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.track-by-update.title'))
+                        ->body(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.track-by-update.body'))
+                        ->persistent()
+                        ->send();
 
-                    if ($hasStockWithoutLot) {
-                        Notification::make()
-                            ->danger()
-                            ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.track-by-update.title'))
-                            ->body(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.track-by-update.body'))
-                            ->persistent()
-                            ->send();
-
-                        throw new Halt;
-                    }
+                    throw new Halt;
                 }
-
-                Notification::make()
-                    ->danger()
-                    ->title(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.tracking-update.title'))
-                    ->body(__('inventories::filament/clusters/products/resources/product/pages/edit-product.before-save.notification.error.tracking-update.body'))
-                    ->persistent()
-                    ->send();
-
-                throw new Halt;
             }
         }
     }
 
-    protected function getHeaderActions(): array
-    {
-        return array_merge([
-            Action::make('updateQuantity')
-                ->label(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.label'))
-                ->modalHeading(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.modal-heading'))
-                ->schema(fn (Product $record): array => [
-                    Select::make('product_id')
-                        ->label(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.form.fields.product'))
-                        ->required()
-                        ->options($record->variants->pluck('name', 'id'))
-                        ->searchable()
-                        ->live()
-                        ->afterStateUpdated(function (Get $get, Set $set) {
-                            $product = Product::find($get('product_id'));
-
-                            $set('quantity', $product?->on_hand_quantity ?? 0);
-                        })
-                        ->visible((bool) $record->is_configurable),
-                    TextInput::make('quantity')
-                        ->label(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.form.fields.on-hand-qty'))
-                        ->numeric()
-                        ->maxValue(99999999999)
-                        ->required()
-                        ->live()
-                        ->default(fn () => ! $record->is_configurable ? $record->on_hand_quantity : 0),
-                ])
-                ->modalSubmitActionLabel(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.modal-submit-action-label'))
-                ->visible($this->getRecord()->is_storable)
-                ->beforeFormFilled(function (
-                    OperationSettings $operationSettings,
-                    TraceabilitySettings $traceabilitySettings,
-                    WarehouseSettings $warehouseSettings,
-                    Product $record
-                ) {
-                    if (
-                        $operationSettings->enable_packages
-                        || $warehouseSettings->enable_locations
-                        || (
-                            $traceabilitySettings->enable_lots_serial_numbers
-                            && $record->tracking != ProductTracking::QTY
-                        )
-                    ) {
-                        return redirect()->to(ProductResource::getUrl('quantities', ['record' => $record]));
-                    }
-                })
-                ->action(function (Product $record, array $data): void {
-                    if (isset($data['product_id'])) {
-                        $record = Product::find($data['product_id']);
-                    }
-
-                    $previousQuantity = $record->on_hand_quantity;
-
-                    if ($previousQuantity == $data['quantity']) {
-                        return;
-                    }
-
-                    $warehouse = Warehouse::first();
-
-                    $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
-                        ->where('is_scrap', false)
-                        ->first();
-
-                    $currentQuantity = $data['quantity'] - $previousQuantity;
-
-                    if ($currentQuantity < 0) {
-                        $sourceLocationId = $data['location_id'] ?? $warehouse->lot_stock_location_id;
-
-                        $destinationLocationId = $adjustmentLocation->id;
-                    } else {
-                        $sourceLocationId = $data['location_id'] ?? $adjustmentLocation->id;
-
-                        $destinationLocationId = $warehouse->lot_stock_location_id;
-                    }
-
-                    $productQuantity = ProductQuantity::where('product_id', $record->id)
-                        ->where('location_id', $data['location_id'] ?? $warehouse->lot_stock_location_id)
-                        ->first();
-
-                    if ($productQuantity) {
-                        $productQuantity->update(['quantity' => $data['quantity']]);
-                    } else {
-                        $productQuantity = ProductQuantity::create([
-                            'product_id'        => $record->id,
-                            'company_id'        => $record->company_id,
-                            'location_id'       => $data['location_id'] ?? $warehouse->lot_stock_location_id,
-                            'package_id'        => $data['package_id'] ?? null,
-                            'lot_id'            => $data['lot_id'] ?? null,
-                            'quantity'          => $data['quantity'],
-                            'reserved_quantity' => 0,
-                            'incoming_at'       => now(),
-                            'creator_id'        => Auth::id(),
-                        ]);
-                    }
-
-                    ProductResource::createMove($productQuantity, $currentQuantity, $sourceLocationId, $destinationLocationId);
-                }),
-        ], parent::getHeaderActions());
-    }
 }

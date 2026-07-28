@@ -2,10 +2,6 @@
 
 return [
 
-    'navigation' => [
-        'group' => 'Plugins',
-    ],
-
     'title' => 'Plugin',
 
     'table' => [
@@ -67,6 +63,7 @@ return [
             'dependencies' => 'Dependencies',
         ],
         'name'         => 'Plugin Name',
+        'author'       => 'Author',
         'version'      => 'Version',
         'dependencies' => 'Required Plugins',
         'dependents'   => 'Plugins That Depend On This',
@@ -88,6 +85,68 @@ return [
             'placeholder'  => 'No dependents',
         ],
 
+    ],
+
+    'names' => [
+        'accounting'     => 'Accounting',
+        'accounts'       => 'Accounts',
+        'analytics'      => 'Analytics',
+        'barcode'        => 'Barcode',
+        'blogs'          => 'Blogs',
+        'chatter'        => 'Chatter',
+        'contacts'       => 'Contacts',
+        'employees'      => 'Employees',
+        'fields'         => 'Custom Fields',
+        'full-calendar'  => 'Calendar',
+        'inventories'    => 'Inventory',
+        'invoices'       => 'Invoices',
+        'maintenance'    => 'Maintenance',
+        'manufacturing'  => 'Manufacturing',
+        'partners'       => 'Partners',
+        'payments'       => 'Payments',
+        'plugin-manager' => 'Plugin Manager',
+        'products'       => 'Products',
+        'projects'       => 'Projects',
+        'purchases'      => 'Purchases',
+        'recruitments'   => 'Recruitment',
+        'sales'          => 'Sales',
+        'security'       => 'Security',
+        'support'        => 'Support',
+        'table-views'    => 'Table Views',
+        'time-off'       => 'Time Off',
+        'timesheets'     => 'Timesheets',
+        'website'        => 'Website',
+    ],
+
+    'summaries' => [
+        'accounting'     => 'Manage chart of accounts, journals, and financial entries',
+        'accounts'       => 'Core account management and financial settings',
+        'analytics'      => 'Reports and dashboards for business insights',
+        'barcode'        => 'Barcode operations app for inventory and manufacturing',
+        'blogs'          => 'Manage blogs',
+        'chatter'        => 'Activity log, messaging, and follow-ups on records',
+        'contacts'       => 'Contact management for customers and vendors',
+        'employees'      => 'Employees management',
+        'fields'         => 'Add custom fields to resources',
+        'full-calendar'  => 'Calendar views and event scheduling',
+        'inventories'    => 'Inventory and warehouse management',
+        'invoices'       => 'Invoice generation and management',
+        'maintenance'    => 'Maintenance management',
+        'manufacturing'  => 'Manufacturing and production management',
+        'partners'       => 'Manage business partners',
+        'payments'       => 'Manage payments and transactions',
+        'plugin-manager' => 'Plugin Manager for Aureus ERP',
+        'products'       => 'Product catalog and variant management',
+        'projects'       => 'Project planning and management',
+        'purchases'      => 'Procurement and purchase order management',
+        'recruitments'   => 'Applicant tracking and hiring',
+        'sales'          => 'Sales pipeline and opportunity management',
+        'security'       => 'Roles, permissions, and access control',
+        'support'        => 'Customer support and ticketing',
+        'table-views'    => 'Saved and customizable table views',
+        'time-off'       => 'Leave management and tracking',
+        'timesheets'     => 'Employee work hour tracking',
+        'website'        => 'Website for customers',
     ],
 
 ];

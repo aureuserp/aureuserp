@@ -35,14 +35,14 @@ class TitleController extends Controller
         Gate::authorize('viewAny', Title::class);
 
         $titles = QueryBuilder::for(Title::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
-            ])
-            ->allowedSorts(['id', 'name', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'created_at')
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->paginate();
 
         return TitleResource::collection($titles);
@@ -73,9 +73,9 @@ class TitleController extends Controller
     public function show(string $id)
     {
         $title = QueryBuilder::for(Title::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $title);

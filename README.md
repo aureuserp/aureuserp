@@ -1,9 +1,9 @@
 <p align="center">
   <a href="https://aureuserp.com">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/aureuserp/temp-media/master/aureus-logo-dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/aureuserp/temp-media/master/aureus-logo-light.png">
-      <img src="https://raw.githubusercontent.com/aureuserp/temp-media/master/aureus-logo-light.png" alt="AureusERP logo">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/aureuserp/temp-media/main/aureus-logo-dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/aureuserp/temp-media/main/aureus-logo-light.png">
+      <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/aureus-logo-light.png" alt="AureusERP logo">
     </picture>
   </a>  
 </p>
@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  Built with Laravel 11 • Powered by FilamentPHP 5 • PHP 8.3+
+  Built with Laravel 13 • Powered by FilamentPHP 5 • PHP 8.3+
 </p>
 
 ---
@@ -43,9 +43,13 @@
 
 ---
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/introduction.png" alt="AureusERP Introduction" width="100%">
+</p>
+
 ## 🚀 Introduction
 
-Aureus ERP is a comprehensive, open-source Enterprise Resource Planning (ERP) solution designed for Small and Medium Enterprises (SMEs) and large-scale organizations. Built on **[Laravel 11](https://laravel.com)**, the most popular PHP framework, and **[FilamentPHP 5](https://filamentphp.com)**, a cutting-edge admin panel framework, Aureus ERP offers an extensible and developer-friendly platform for managing every aspect of your business operations.
+Aureus ERP is a comprehensive, open-source Enterprise Resource Planning (ERP) solution designed for Small and Medium Enterprises (SMEs) and large-scale organizations. Built on **[Laravel 13](https://laravel.com)**, the most popular PHP framework, and **[FilamentPHP 5](https://filamentphp.com)**, a cutting-edge admin panel framework, Aureus ERP offers an extensible and developer-friendly platform for managing every aspect of your business operations.
 
 Whether you're managing accounting, inventory, HR, CRM, or projects, Aureus ERP provides a modular approach that grows with your business.
 
@@ -53,15 +57,68 @@ Whether you're managing accounting, inventory, HR, CRM, or projects, Aureus ERP 
 
 ## ✨ Key Features
 
--   🏗️ **Modern Architecture**: Built with Laravel 11 and FilamentPHP 5 for maximum performance and developer experience
--   🧩 **Modular Plugin System**: Install only the features you need - from accounting to project management
--   🎨 **Beautiful UI/UX**: Responsive design with TailwindCSS 4, optimized for desktop and mobile
--   🔐 **Advanced Security**: Role-based access control with Filament Shield integration
--   📊 **Business Intelligence**: Built-in analytics and reporting tools
--   🌐 **Multi-Language Support**: Easily translate and localize for global businesses
--   ⚡ **High Performance**: Optimized database queries and caching strategies
--    🔧 **Developer-Friendly**: Clean code, comprehensive documentation, and extensive APIs
--   🔄 **Real-Time Updates**: LiveWire 4 integration for dynamic interfaces
+  ### 🏗️ Modern Architecture
+  Built with Laravel 13 and FilamentPHP 5 for maximum performance and developer experience.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/mordern-architecture.png" alt="Modern Architecture" width="100%">
+  </p>
+
+  ### 🧩 Modular Plugin System
+  Install only the features you need - from accounting to project management.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/modular-plugin-system.png" alt="Modular Plugin System" width="100%">
+  </p>
+
+  ### 🎨 Beautiful UI/UX
+  Responsive design with TailwindCSS 4, optimized for desktop and mobile.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/mordern-ui-responsive-design.png" alt="Beautiful UI/UX" width="100%">
+  </p>
+
+  ### 🔐 Advanced Security
+  Role-based access control with Filament Shield integration.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/advanced-security.png" alt="Advanced Security" width="100%">
+  </p>
+
+  ### 📊 Business Intelligence
+  Built-in analytics and reporting tools.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/business-intelligence.png" alt="Business Intelligence" width="100%">
+  </p>
+
+  ### 🌐 Multi-Language Support
+  Easily translate and localize for global businesses.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/multi-language-support.png" alt="Multi-Language Support" width="100%">
+  </p>
+
+  ### ⚡ High Performance
+  Optimized database queries and caching strategies.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/high-performance.png" alt="High Performance" width="100%">
+  </p>
+
+  ### 🔧 Developer-Friendly
+  Clean code, comprehensive documentation, and extensive APIs.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/developer-friendly.png" alt="Developer-Friendly" width="100%">
+  </p>
+
+  ### 🔄 Real-Time Updates
+  LiveWire 4 integration for dynamic interfaces.
+
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/real-time-updates.png" alt="Real-Time Updates" width="100%">
+  </p>
 
 ---
 
@@ -93,7 +150,7 @@ Ensure your development environment meets the following requirements:
 -   **NPM/Yarn**: Latest stable version
 
 ### Framework Versions
--   **Laravel**: 11.x
+-   **Laravel**: 13.x
 -   **FilamentPHP**: 5.x
 -   **Livewire**: 4.x
 -   **TailwindCSS**: 4.x
@@ -141,6 +198,19 @@ Visit `http://localhost:8000` and log in with your admin credentials!
 
 ---
 
+## ☁️ AureusERP Cloud Hosting
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aureuserp/temp-media/main/cloud-hosting.png" alt="AureusERP Cloud Hosting" width="100%">
+</p>
+
+[AureusERP Cloud Hosting](https://aureuserp.com/cloud-hosting/) is a fully managed hosting solution where our team sets up, secures, and configures your AureusERP on reliable infrastructure.
+
+Get a ready-to-use ERP on your own domain, without manual installation or infrastructure complexity, and focus on growing your business while we handle the technology.
+
+
+---
+
 ## 🧩 Plugin System
 
 AureusERP features a powerful modular plugin system that allows you to customize your ERP installation based on your business needs. Choose only the modules you need to keep your system lean and efficient.
@@ -171,12 +241,13 @@ These plugins can be installed as needed to extend system functionality:
 | Payments   | Payment processing and tracking       |
 
 #### 📦 Operations
-| Module      | Description                               |
-| ----------- | ----------------------------------------- |
-| Inventories | Inventory and warehouse management        |
-| Products    | Product catalog and management            |
-| Purchases   | Procurement and purchase order management |
-| Sales       | Sales pipeline and opportunity management |
+| Module        | Description                                                                     |
+| ------------- | ------------------------------------------------------------------------------- |
+| Inventories   | Inventory and warehouse management                                              |
+| Manufacturing | Bill of Materials (BOM), Manufacturing Orders, Work Orders, Work Centers & Operations |
+| Products      | Product catalog and management                                                  |
+| Purchases     | Procurement and purchase order management                                       |
+| Sales         | Sales pipeline and opportunity management                                       |
 
 #### 👥 Human Resources
 | Module       | Description                       |

@@ -23,7 +23,12 @@ yarn-error.log
 /.vscode
 /.agents
 /.zed
+/.codex
 boost.json
 opencode.json
 /playwright-report
 /test-results
+/nativephp
+
+# Credential files (keystores, private keys, etc.)
+/credentials/

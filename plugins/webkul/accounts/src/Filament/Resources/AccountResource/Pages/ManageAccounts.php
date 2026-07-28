@@ -5,9 +5,13 @@ namespace Webkul\Account\Filament\Resources\AccountResource\Pages;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Url;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Filament\Resources\AccountResource;
+use Webkul\Account\Models\Account;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -16,6 +20,45 @@ class ManageAccounts extends ManageRecords
     use HasTableViews;
 
     protected static string $resource = AccountResource::class;
+
+    protected string $view = 'accounts::filament.resources.account-resource.pages.manage-accounts';
+
+    #[Url(as: 'prefix')]
+    public ?string $selectedCodePrefix = null;
+
+    public function table(Table $table): Table
+    {
+        return parent::table($table)
+            ->modifyQueryUsing(
+                fn (Builder $query) => $this->selectedCodePrefix
+                    ? $query->whereLike('code', $this->selectedCodePrefix.'%')
+                    : $query,
+            )
+            ->paginated(fn (): bool => $this->selectedCodePrefix !== null);
+    }
+
+    public function selectPrefix(?string $prefix): void
+    {
+        $this->selectedCodePrefix = $prefix !== null && $prefix !== '' ? $prefix : null;
+
+        $this->resetTable();
+    }
+
+    /** @return array<string, array<int, string>> */
+    public function getCodeTreeProperty(): array
+    {
+        return Account::query()
+            ->whereNotNull('code')
+            ->where('code', '!=', '')
+            ->select(DB::raw('SUBSTR(code, 1, 1) as d1'), DB::raw('SUBSTR(code, 1, 2) as d2'))
+            ->distinct()
+            ->orderBy('d1')
+            ->orderBy('d2')
+            ->get()
+            ->groupBy('d1')
+            ->map(fn ($rows) => $rows->pluck('d2')->unique()->values()->all())
+            ->all();
+    }
 
     protected function getHeaderActions(): array
     {

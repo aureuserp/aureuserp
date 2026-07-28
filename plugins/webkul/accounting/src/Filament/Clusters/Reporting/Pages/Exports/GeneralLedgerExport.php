@@ -119,10 +119,10 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         return collect(range('A', 'G'))
             ->mapWithKeys(fn ($col) => [
                 $col => match ($col) {
-                    'A' => 35,
-                    'B' => 15,
+                    'A'      => 35,
+                    'B'      => 15,
                     'C', 'D' => 25,
-                    default => 15,
+                    default  => 15,
                 },
             ])
             ->all();

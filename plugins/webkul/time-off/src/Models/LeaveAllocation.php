@@ -18,6 +18,8 @@ class LeaveAllocation extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
+    public const ACTIVITY_PLAN_PLUGIN = 'time-off';
+
     protected $table = 'time_off_leave_allocations';
 
     public function getModelTitle(): string

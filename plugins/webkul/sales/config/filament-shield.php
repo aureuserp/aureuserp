@@ -9,6 +9,7 @@ use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResour
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\UOMCategoryResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
@@ -28,20 +29,21 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            QuotationResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            OrderResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            OrderToInvoiceResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            OrderToUpsellResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            CustomerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            ActivityPlanResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            ActivityTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            TeamResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            ProductCategoryResource::class => [...$basic, ...$delete],
+            QuotationResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OrderResource::class            => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OrderToInvoiceResource::class   => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OrderToUpsellResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            CustomerResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ProductResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ActivityPlanResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityTypeResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TeamResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProductCategoryResource::class  => [...$basic, ...$delete],
             ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            TagResource::class => [...$basic, ...$delete],
-            PackagingResource::class => [...$basic, ...$delete, ...$reorder],
-            CurrencyResource::class => [...$basic, ...$delete],
+            TagResource::class              => [...$basic, ...$delete],
+            PackagingResource::class        => [...$basic, ...$delete, ...$reorder],
+            CurrencyResource::class         => [...$basic, ...$delete],
+            UOMCategoryResource::class      => [...$basic, ...$delete],
         ],
         'exclude' => [],
     ],

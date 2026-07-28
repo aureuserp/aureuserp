@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Webkul\Blog\Database\Factories\PostFactory;
 use Webkul\Security\Models\User;
+use Webkul\Support\Services\ImageService;
 
 class Post extends Model
 {
@@ -49,6 +50,24 @@ class Post extends Model
         }
 
         return Storage::url($this->image);
+    }
+
+    public function getImageThumbUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        return app(ImageService::class)->url($this->image, ['w' => 600, 'h' => 300, 'fit' => 'crop']);
+    }
+
+    public function getImageBannerUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        return app(ImageService::class)->url($this->image, ['w' => 1200, 'h' => 400, 'fit' => 'crop']);
     }
 
     public function getReadingTimeAttribute()

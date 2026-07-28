@@ -2,8 +2,8 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages;
 
-use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\EditVendor as BaseEditVendor;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource;
 
 class EditVendor extends BaseEditVendor
 {

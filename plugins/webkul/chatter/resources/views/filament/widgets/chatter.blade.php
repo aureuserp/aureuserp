@@ -6,8 +6,8 @@
     :is-message-action-visible="$isMessageActionVisible"
     :is-log-action-visible="$isLogActionVisible"
     :is-activity-action-visible="$isActivityActionVisible"
-    :is-follower-action-visible="$isFileActionVisible"
-    :is-file-action-visible="$isFollowerActionVisible"
+    :is-follower-action-visible="$isFollowerActionVisible"
+    :is-file-action-visible="$isFileActionVisible"
     :activity-plans="$activityPlans"
     lazy
 />

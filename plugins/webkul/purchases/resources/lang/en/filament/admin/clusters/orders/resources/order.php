@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'Order Deadline',
                     'expected-arrival'         => 'Expected Arrival',
                     'confirmed-by-vendor'      => 'Confirmed by Vendor',
+                    'deliver-to'               => 'Deliver To',
                 ],
             ],
         ],
@@ -83,6 +84,12 @@ return [
                                 'body'  => 'Products cannot be deleted from a confirmed purchase order.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Open product',
+                            ],
+                        ],
                     ],
 
                     'section' => [
@@ -135,6 +142,7 @@ return [
             'total-amount'     => 'Total Amount',
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
+            'receipt-status'   => 'Receipt Status',
             'currency'         => 'Currency',
         ],
 
@@ -194,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'Tax',
     ],
 
     'infolist' => [

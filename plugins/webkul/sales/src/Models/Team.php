@@ -19,12 +19,9 @@ class Team extends Model implements Sortable
 {
     use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
-    protected $table = 'sales_teams';
+    public const ACTIVITY_PLAN_PLUGIN = 'sales';
 
-    public function getModelTitle(): string
-    {
-        return __('sales::models/team.title');
-    }
+    protected $table = 'sales_teams';
 
     protected $fillable = [
         'sort',
@@ -52,6 +49,11 @@ class Team extends Model implements Sortable
             'is_active'          => __('sales::models/team.log-attributes.status'),
             'invoiced_target'    => __('sales::models/team.log-attributes.invoiced_target'),
         ];
+    }
+
+    public function getModelTitle(): string
+    {
+        return __('sales::models/team.title');
     }
 
     public function company()

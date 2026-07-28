@@ -40,16 +40,16 @@ class CurrencyRateController extends Controller
         Gate::authorize('view', $currencyModel);
 
         $currencyRates = QueryBuilder::for(CurrencyRate::where('currency_id', $currency))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('name'),
-            ])
-            ->allowedSorts(['id', 'name', 'rate', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'rate', 'created_at')
+            ->allowedIncludes(
                 'company',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return CurrencyRateResource::collection($currencyRates);
@@ -91,10 +91,10 @@ class CurrencyRateController extends Controller
         Gate::authorize('view', $currencyModel);
 
         $currencyRate = QueryBuilder::for(CurrencyRate::where('id', $rate)->where('currency_id', $currency))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'company',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         return new CurrencyRateResource($currencyRate);

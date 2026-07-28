@@ -15,11 +15,11 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            CategoryResource::class => [...$basic, ...$delete],
+            CategoryResource::class  => [...$basic, ...$delete],
             AttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             PackagingResource::class => [...$basic, ...$delete, ...$reorder],
             PriceListResource::class => [...$basic, ...$delete, ...$reorder],
-            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProductResource::class   => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
     ],
 ];

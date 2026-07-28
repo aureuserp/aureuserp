@@ -148,7 +148,7 @@ class ListApplicants extends ListRecords
                                 ->required()
                                 ->searchable()
                                 ->preload()
-                                ->label('Candidate')
+                                ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/list-applicant.header-actions.create-applicant.form.fields.candidate'))
                                 ->createOptionForm(fn (Schema $schema) => CandidateResource::form($schema))
                                 ->createOptionAction(function (Action $action) {
                                     return $action

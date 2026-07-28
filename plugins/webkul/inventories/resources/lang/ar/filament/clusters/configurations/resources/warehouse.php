@@ -30,6 +30,8 @@ return [
                     'incoming-shipments-hint-tooltip'  => 'مسار الوارد الافتراضي للاتباع',
                     'outgoing-shipments'               => 'الشحنات الصادرة',
                     'outgoing-shipments-hint-tooltip'  => 'مسار الصادر الافتراضي للاتباع',
+                    'manufacture'                      => 'التصنيع',
+                    'manufacture-hint-tooltip'         => 'مسار التصنيع الافتراضي للاتباع',
                     'resupply-management'              => 'إدارة إعادة التوريد',
                     'resupply-management-hint-tooltip' => 'سيتم إنشاء المسارات تلقائياً لإعادة تموين هذا المستودع من المستودعات المحددة.',
                     'resupply-from'                    => 'إعادة التوريد من',

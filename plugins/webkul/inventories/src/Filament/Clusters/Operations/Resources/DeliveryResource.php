@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType;
 use Webkul\Inventory\Filament\Clusters\Operations;
@@ -85,6 +86,7 @@ class DeliveryResource extends Resource
     {
         return OperationResource::table($table)
             ->recordActions([
+                ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
@@ -159,11 +161,5 @@ class DeliveryResource extends Resource
             'edit'   => EditDelivery::route('/{record}/edit'),
             'moves'  => ManageMoves::route('/{record}/moves'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

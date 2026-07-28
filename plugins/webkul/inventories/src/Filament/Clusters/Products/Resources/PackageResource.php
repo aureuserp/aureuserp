@@ -61,7 +61,7 @@ class PackageResource extends Resource
             return true;
         }
 
-        return app(OperationSettings::class)->enable_packages;
+        return settings(OperationSettings::class)->enable_packages;
     }
 
     public static function getNavigationLabel(): string
@@ -201,7 +201,7 @@ class PackageResource extends Resource
                         ->label(__('inventories::filament/clusters/products/resources/package.table.bulk-actions.print-without-content.label'))
                         ->icon('heroicon-o-printer')
                         ->action(function ($records) {
-                            $pdf = PDF::loadView('inventories::filament.clusters.products.packages.actions.print-without-content', [
+                            $pdf = Pdf::loadView('inventories::filament.clusters.products.packages.actions.print-without-content', [
                                 'records' => $records,
                             ]);
 
@@ -215,7 +215,7 @@ class PackageResource extends Resource
                         ->label(__('inventories::filament/clusters/products/resources/package.table.bulk-actions.print-with-content.label'))
                         ->icon('heroicon-o-printer')
                         ->action(function ($records) {
-                            $pdf = PDF::loadView('inventories::filament.clusters.products.packages.actions.print-with-content', [
+                            $pdf = Pdf::loadView('inventories::filament.clusters.products.packages.actions.print-with-content', [
                                 'records' => $records,
                             ]);
 

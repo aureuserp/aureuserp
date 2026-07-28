@@ -49,7 +49,7 @@ class RefundController extends Controller
 
         $refunds = QueryBuilder::for(Refund::class)
             ->where('move_type', MoveType::IN_REFUND)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('partner_id'),
@@ -58,9 +58,9 @@ class RefundController extends Controller
                 AllowedFilter::exact('invoice_user_id'),
                 AllowedFilter::exact('journal_id'),
                 AllowedFilter::exact('currency_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'invoice_date', 'invoice_date_due', 'amount_total', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'invoice_date', 'invoice_date_due', 'amount_total', 'created_at')
+            ->allowedIncludes(
                 'partner',
                 'currency',
                 'journal',
@@ -92,7 +92,7 @@ class RefundController extends Controller
                 'invoiceLines.taxGroup',
                 'invoiceLines.payment',
                 'invoiceLines.taxRepartitionLine',
-            ])
+            )
             ->paginate();
 
         return MoveResource::collection($refunds);
@@ -148,7 +148,7 @@ class RefundController extends Controller
     public function show(string $id)
     {
         $refund = QueryBuilder::for(Refund::where('id', $id)->where('move_type', MoveType::IN_REFUND))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'partner',
                 'currency',
                 'journal',
@@ -180,7 +180,7 @@ class RefundController extends Controller
                 'invoiceLines.taxGroup',
                 'invoiceLines.payment',
                 'invoiceLines.taxRepartitionLine',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $refund);

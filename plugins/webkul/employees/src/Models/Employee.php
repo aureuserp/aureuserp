@@ -23,6 +23,8 @@ class Employee extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
 
+    public const ACTIVITY_PLAN_PLUGIN = 'employees';
+
     protected $table = 'employees_employees';
 
     protected $fillable = [

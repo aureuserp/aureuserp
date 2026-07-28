@@ -83,12 +83,12 @@ class CustomColumns extends Component
     {
         $columnClass = match ($field->type) {
             'text', 'textarea', 'select', 'radio' => TextColumn::class,
-            'checkbox', 'toggle' => IconColumn::class,
-            'checkbox_list' => TextColumn::class,
-            'datetime'      => TextColumn::class,
-            'editor', 'markdown' => TextColumn::class,
-            'color' => ColorColumn::class,
-            default => TextColumn::class,
+            'checkbox', 'toggle'                  => IconColumn::class,
+            'checkbox_list'                       => TextColumn::class,
+            'datetime'                            => TextColumn::class,
+            'editor', 'markdown'                  => TextColumn::class,
+            'color'                               => ColorColumn::class,
+            default                               => TextColumn::class,
         };
 
         $column = $columnClass::make($field->code)

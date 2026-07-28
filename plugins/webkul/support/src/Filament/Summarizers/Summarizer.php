@@ -5,6 +5,8 @@ namespace Webkul\Support\Filament\Summarizers;
 use Closure;
 use Filament\Schemas\Components\Component;
 use Filament\Support\Concerns\HasAlignment;
+use Filament\Tables\Columns\Column;
+use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
 abstract class Summarizer extends Component
@@ -12,6 +14,8 @@ abstract class Summarizer extends Component
     use HasAlignment;
 
     protected string $evaluationIdentifier = 'summarizer';
+
+    protected Column $column;
 
     protected ?Closure $using = null;
 
@@ -73,6 +77,23 @@ abstract class Summarizer extends Component
     }
 
     abstract public function getDefaultLabel(): ?string;
+
+    public function column(Column $column): static
+    {
+        $this->column = $column;
+
+        return $this;
+    }
+
+    public function getColumn(): Column
+    {
+        return $this->column;
+    }
+
+    public function getTable(): Table
+    {
+        return $this->getColumn()->getTable();
+    }
 
     public function summarize(Collection $items, string $columnName): int|float|string|null
     {

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Inventory\Database\Factories\ScrapFactory;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
@@ -21,6 +22,8 @@ use Webkul\Support\Models\UOM;
 class Scrap extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
     protected $table = 'inventories_scraps';
 
@@ -163,5 +166,89 @@ class Scrap extends Model
         static::saving(function ($scrap) {
             $scrap->updateName();
         });
+    }
+
+    public function validate()
+    {
+        $baseQty = $this->uom && $this->product?->uom
+            ? $this->uom->computeQuantity($this->qty, $this->product->uom, false)
+            : $this->qty;
+
+        $locationQuantity = ProductQuantity::where('location_id', $this->source_location_id)
+            ->where('product_id', $this->product_id)
+            ->where('package_id', $this->package_id ?? null)
+            ->where('lot_id', $this->lot_id ?? null)
+            ->first();
+
+        if (! $locationQuantity || $locationQuantity->quantity < $baseQty) {
+            return false;
+        }
+
+        $locationQuantity->update([
+            'quantity' => $locationQuantity->quantity - $baseQty,
+        ]);
+
+        $destinationQuantity = ProductQuantity::where('product_id', $this->product_id)
+            ->where('location_id', $this->destination_location_id)
+            ->first();
+
+        if ($destinationQuantity) {
+            $destinationQuantity->update([
+                'quantity' => $destinationQuantity->quantity + $baseQty,
+            ]);
+        } else {
+            ProductQuantity::create([
+                'product_id'  => $this->product_id,
+                'location_id' => $this->destination_location_id,
+                'quantity'    => $baseQty,
+                'company_id'  => $this->destinationLocation->company_id,
+            ]);
+        }
+
+        $this->update([
+            'state'     => ScrapState::DONE,
+            'closed_at' => now(),
+        ]);
+
+        $moveValues = $this->getInventoryMoveValues();
+
+        $move = Move::create($moveValues);
+
+        foreach ($moveValues['lines'] as $lineValues) {
+            MoveLine::create(array_merge($lineValues, [
+                'move_id' => $move->id,
+            ]));
+        }
+
+        return true;
+    }
+
+    public function getInventoryMoveValues()
+    {
+        return [
+            'name'                    => $this->name,
+            'state'                   => MoveState::DONE,
+            'quantity'                => $this->qty,
+            'product_uom_qty'         => $this->uom->computeQuantity($this->qty, $this->product->uom),
+            'is_picked'               => true,
+            'product_id'              => $this->product_id,
+            'uom_id'                  => $this->uom_id,
+            'source_location_id'      => $this->source_location_id,
+            'destination_location_id' => $this->destination_location_id,
+            'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
+            'scrap_id'                => $this->id,
+            'lines'                   => [[
+                'reference'               => $this->name,
+                'qty'                     => $this->qty,
+                'uom_qty'                 => $this->uom->computeQuantity($this->qty, $this->product->uom),
+                'product_id'              => $this->product_id,
+                'uom_id'                  => $this->uom_id,
+                'source_location_id'      => $this->source_location_id,
+                'destination_location_id' => $this->destination_location_id,
+                'lot_id'                  => $this->lot_id,
+                'package_id'              => $this->package_id,
+                'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
+            ]],
+        ];
     }
 }

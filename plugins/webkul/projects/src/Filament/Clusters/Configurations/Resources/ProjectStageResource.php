@@ -46,7 +46,7 @@ class ProjectStageResource extends Resource
             return true;
         }
 
-        return app(TaskSettings::class)->enable_project_stages;
+        return settings(TaskSettings::class)->enable_project_stages;
     }
 
     public static function form(Schema $schema): Schema
@@ -76,7 +76,7 @@ class ProjectStageResource extends Resource
                     ->label(__('projects::filament/clusters/configurations/resources/project-stage.table.columns.created-at'))
                     ->date(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
                 EditAction::make()

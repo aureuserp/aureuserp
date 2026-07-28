@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\OperationTypeFactory;
-use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\MoveType;
+use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -62,7 +63,7 @@ class OperationType extends Model implements Sortable
     ];
 
     protected $casts = [
-        'type'                               => Enums\OperationType::class,
+        'type'                               => OperationTypeEnum::class,
         'reservation_method'                 => ReservationMethod::class,
         'create_backorder'                   => CreateBackorder::class,
         'move_type'                          => MoveType::class,
@@ -112,6 +113,11 @@ class OperationType extends Model implements Sortable
         return $this->belongsTo(Warehouse::class)->withTrashed();
     }
 
+    public function moves(): HasMany
+    {
+        return $this->hasMany(Move::class);
+    }
+
     public function storageCategoryCapacities(): BelongsToMany
     {
         return $this->belongsToMany(StorageCategoryCapacity::class, 'inventories_storage_category_capacities', 'storage_category_id', 'package_type_id');
@@ -139,7 +145,7 @@ class OperationType extends Model implements Sortable
         static::creating(function ($operationType) {
             $operationType->creator_id ??= Auth::id();
 
-            $operationType->reservation_method = ReservationMethod::AT_CONFIRM;
+            $operationType->reservation_method ??= ReservationMethod::AT_CONFIRM;
         });
     }
 }

@@ -41,16 +41,16 @@ class JournalController extends Controller
         Gate::authorize('viewAny', Journal::class);
 
         $journals = QueryBuilder::for(Journal::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('code'),
                 AllowedFilter::exact('type'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('show_on_dashboard'),
-            ])
-            ->allowedSorts(['id', 'name', 'code', 'type', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'code', 'type', 'sort', 'created_at')
+            ->allowedIncludes(
                 'company',
                 'currency',
                 'defaultAccount',
@@ -61,7 +61,7 @@ class JournalController extends Controller
                 'creator',
                 'inboundPaymentMethodLines',
                 'outboundPaymentMethodLines',
-            ])
+            )
             ->paginate();
 
         return JournalResource::collection($journals);
@@ -120,7 +120,7 @@ class JournalController extends Controller
     public function show(string $id)
     {
         $journal = QueryBuilder::for(Journal::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'company',
                 'currency',
                 'defaultAccount',
@@ -131,7 +131,7 @@ class JournalController extends Controller
                 'creator',
                 'inboundPaymentMethodLines',
                 'outboundPaymentMethodLines',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $journal);

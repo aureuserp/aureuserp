@@ -3,20 +3,21 @@
 namespace Webkul\Inventory\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Configurations extends Cluster
 {
     protected static ?string $slug = 'inventory/configurations';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function getNavigationLabel(): string
     {
         return __('inventories::filament/clusters/configurations.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('inventories::filament/clusters/configurations.navigation.group');
+        return NavigationGroup::Inventory;
     }
 }

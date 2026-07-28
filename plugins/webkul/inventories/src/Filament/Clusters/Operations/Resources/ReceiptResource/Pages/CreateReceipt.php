@@ -18,6 +18,8 @@ class CreateReceipt extends CreateRecord
 
     protected static string $resource = ReceiptResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

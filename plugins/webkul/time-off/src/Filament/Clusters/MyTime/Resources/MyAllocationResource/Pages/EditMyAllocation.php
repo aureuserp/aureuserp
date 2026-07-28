@@ -17,11 +17,6 @@ class EditMyAllocation extends EditRecord
 
     protected static string $resource = MyAllocationResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -34,7 +29,8 @@ class EditMyAllocation extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(

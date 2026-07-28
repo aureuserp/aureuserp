@@ -101,7 +101,7 @@ trait TimeOffHelper
 
                             DatePicker::make('request_date_to')
                                 ->native(false)
-                                ->label('To Date')
+                                ->label(__('time-off::traits/leave-accrual-plan.form.fields.to-date'))
                                 ->hidden(fn (Get $get) => $get('request_unit_half'))
                                 ->required(fn (Get $get) => ! $get('request_unit_half'))
                                 ->live()
@@ -219,7 +219,7 @@ trait TimeOffHelper
 
     private function handleLeaveOverlap(array &$data, ?int $excludeRecordId = null, ?Action $action = null): void
     {
-        $employee = Employee::find($data['employee_id']);
+        $employee = Employee::find($data['employee_id'] ?? null);
 
         if (! $employee) {
             Notification::make()
@@ -261,7 +261,7 @@ trait TimeOffHelper
 
     private function handleLeaveAllocation(array &$data, ?Action $action = null): void
     {
-        $employee = Employee::find($data['employee_id']);
+        $employee = Employee::find($data['employee_id'] ?? null);
 
         if (! $employee) {
             return;

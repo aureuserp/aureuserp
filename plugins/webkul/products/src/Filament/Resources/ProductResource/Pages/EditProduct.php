@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditProduct extends EditRecord
@@ -18,11 +19,6 @@ class EditProduct extends EditRecord
     use HasRecordNavigationTabs;
 
     protected static string $resource = ProductResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -34,9 +30,10 @@ class EditProduct extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
+        return array_merge(ProductSchemaRegistry::renderActions('header', $this), [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             Action::make('print')
                 ->label(__('products::filament/resources/product/pages/edit-product.header-actions.print.label'))
                 ->color('gray')
@@ -61,7 +58,7 @@ class EditProduct extends EditRecord
                         ->required(),
                 ])
                 ->action(function (array $data, $record) {
-                    $pdf = PDF::loadView('products::filament.resources.products.actions.print', [
+                    $pdf = Pdf::loadView('products::filament.resources.products.actions.print', [
                         'records'  => collect([$record]),
                         'quantity' => $data['quantity'],
                         'format'   => $data['format'],
@@ -85,6 +82,6 @@ class EditProduct extends EditRecord
                         ->title(__('products::filament/resources/product/pages/edit-product.header-actions.delete.notification.title'))
                         ->body(__('products::filament/resources/product/pages/edit-product.header-actions.delete.notification.body')),
                 ),
-        ];
+        ]);
     }
 }

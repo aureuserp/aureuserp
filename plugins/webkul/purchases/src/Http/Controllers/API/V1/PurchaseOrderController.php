@@ -69,7 +69,7 @@ class PurchaseOrderController extends Controller
         Gate::authorize('viewAny', PurchaseOrder::class);
 
         $orders = QueryBuilder::for(PurchaseOrder::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('partner_id'),
@@ -79,9 +79,9 @@ class PurchaseOrderController extends Controller
                 AllowedFilter::exact('requisition_id'),
                 AllowedFilter::exact('invoice_status'),
                 AllowedFilter::exact('receipt_status'),
-            ])
-            ->allowedSorts(['id', 'name', 'ordered_at', 'planned_at', 'untaxed_amount', 'total_amount', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'ordered_at', 'planned_at', 'untaxed_amount', 'total_amount', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return OrderResource::collection($orders);
@@ -123,7 +123,7 @@ class PurchaseOrderController extends Controller
     public function show(string $id)
     {
         $order = QueryBuilder::for(PurchaseOrder::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $order);
@@ -393,18 +393,22 @@ class PurchaseOrderController extends Controller
 
     protected function computeLineAmounts(float $priceUnit, float $quantity, float $discount, array $taxIds): array
     {
-        $subTotal = $priceUnit * $quantity;
+        $discountedUnit = $discount > 0 ? $priceUnit * (1 - ($discount / 100)) : $priceUnit;
 
-        if ($discount > 0) {
-            $subTotal -= ($subTotal * ($discount / 100));
+        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
+
+        if ($taxes->isEmpty()) {
+            $subTotal = round($discountedUnit * $quantity, 4);
+
+            return [$subTotal, 0.0, $subTotal];
         }
 
-        [$subTotalAfterTax, $taxAmount] = TaxFacade::collect($taxIds, $subTotal, $quantity);
+        $taxResult = TaxFacade::computeAll($taxes, $discountedUnit, null, $quantity);
 
         return [
-            round($subTotalAfterTax, 4),
-            round($taxAmount, 4),
-            round($subTotalAfterTax + $taxAmount, 4),
+            round($taxResult['total_excluded'], 4),
+            round($taxResult['total_included'] - $taxResult['total_excluded'], 4),
+            round($taxResult['total_included'], 4),
         ];
     }
 

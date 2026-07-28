@@ -9,6 +9,8 @@ enum OperationState: string implements HasColor, HasLabel
 {
     case DRAFT = 'draft';
 
+    case WAITING = 'waiting';
+
     case CONFIRMED = 'confirmed';
 
     case ASSIGNED = 'assigned';
@@ -21,6 +23,7 @@ enum OperationState: string implements HasColor, HasLabel
     {
         return [
             self::DRAFT->value     => __('inventories::enums/operation-state.draft'),
+            self::WAITING->value   => __('inventories::enums/operation-state.waiting'),
             self::CONFIRMED->value => __('inventories::enums/operation-state.confirmed'),
             self::ASSIGNED->value  => __('inventories::enums/operation-state.assigned'),
             self::DONE->value      => __('inventories::enums/operation-state.done'),
@@ -32,6 +35,7 @@ enum OperationState: string implements HasColor, HasLabel
     {
         return match ($this) {
             self::DRAFT        => __('inventories::enums/operation-state.draft'),
+            self::WAITING      => __('inventories::enums/operation-state.waiting'),
             self::CONFIRMED    => __('inventories::enums/operation-state.confirmed'),
             self::ASSIGNED     => __('inventories::enums/operation-state.assigned'),
             self::DONE         => __('inventories::enums/operation-state.done'),
@@ -43,6 +47,7 @@ enum OperationState: string implements HasColor, HasLabel
     {
         return match ($this) {
             self::DRAFT     => 'gray',
+            self::WAITING   => 'warning',
             self::CONFIRMED => 'warning',
             self::ASSIGNED  => 'primary',
             self::DONE      => 'success',

@@ -23,7 +23,7 @@ class CapacityByPackagesRelationManager extends RelationManager
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return app(OperationSettings::class)->enable_packages;
+        return settings(OperationSettings::class)->enable_packages;
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string

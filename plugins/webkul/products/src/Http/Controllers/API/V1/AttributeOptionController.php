@@ -39,14 +39,14 @@ class AttributeOptionController extends Controller
         Gate::authorize('view', $attributeModel);
 
         $options = QueryBuilder::for(AttributeOption::where('attribute_id', $attribute))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at')
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->paginate();
 
         return AttributeOptionResource::collection($options);
@@ -88,9 +88,9 @@ class AttributeOptionController extends Controller
         Gate::authorize('view', $attributeModel);
 
         $optionModel = QueryBuilder::for(AttributeOption::where('id', $option)->where('attribute_id', $attribute))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         return new AttributeOptionResource($optionModel);

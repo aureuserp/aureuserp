@@ -15,11 +15,11 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            CategoryResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TagResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            PostResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            CategoryResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TagResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            PostResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             BlogCategoryResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            BlogPostResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            BlogPostResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
         ],
         'exclude' => [],
     ],

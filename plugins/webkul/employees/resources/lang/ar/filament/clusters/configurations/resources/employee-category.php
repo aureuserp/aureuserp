@@ -17,8 +17,9 @@ return [
 
     'form' => [
         'fields' => [
-            'name'  => 'الاسم',
-            'color' => 'اللون',
+            'name'             => 'الاسم',
+            'name-placeholder' => 'أدخل اسم الوسم',
+            'color'            => 'اللون',
         ],
     ],
 

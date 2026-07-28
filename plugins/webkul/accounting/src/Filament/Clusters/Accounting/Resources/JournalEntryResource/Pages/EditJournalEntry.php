@@ -14,10 +14,12 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditJournalEntry extends EditRecord
 {
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = JournalEntryResource::class;
 
@@ -25,24 +27,17 @@ class EditJournalEntry extends EditRecord
     {
         parent::mount($record);
 
-        // Redirect to InvoiceResource for customer invoices and credit notes
         if (in_array($this->record->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_REFUND])) {
             $this->redirect(InvoiceResource::getUrl('edit', ['record' => $this->record]));
 
             return;
         }
 
-        // Redirect to BillResource for vendor bills and refunds
         if (in_array($this->record->move_type, [MoveType::IN_INVOICE, MoveType::IN_REFUND])) {
             $this->redirect(BillResource::getUrl('edit', ['record' => $this->record]));
 
             return;
         }
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getSavedNotification(): ?Notification
@@ -57,7 +52,8 @@ class EditJournalEntry extends EditRecord
     {
         return [
             ChatterActions\ChatterAction::make()
-                ->setResource($this->getResource()),
+                ->resource($this->getResource())
+                ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
             BaseActions\ReverseAction::make(),
@@ -69,5 +65,14 @@ class EditJournalEntry extends EditRecord
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+
+        $this->refreshRecordState();
+    }
+
+    public function refreshFormData(array $statePaths): void
+    {
+        parent::refreshFormData($statePaths);
+
+        $this->rememberData();
     }
 }

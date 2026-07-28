@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         if (
-            Schema::hasTable('employees_calendars') 
+            Schema::hasTable('employees_calendars')
             && ! Schema::hasTable('calendars')
         ) {
             Schema::rename('employees_calendars', 'calendars');
@@ -40,7 +40,7 @@ return new class extends Migration
         }
 
         if (
-            Schema::hasTable('employees_calendar_attendances') 
+            Schema::hasTable('employees_calendar_attendances')
             && ! Schema::hasTable('calendar_attendances')
         ) {
             Schema::rename('employees_calendar_attendances', 'calendar_attendances');
@@ -71,7 +71,7 @@ return new class extends Migration
         }
 
         if (
-            Schema::hasTable('employees_calendar_leaves') 
+            Schema::hasTable('employees_calendar_leaves')
             && ! Schema::hasTable('calendar_leaves')
         ) {
             Schema::rename('employees_calendar_leaves', 'calendar_leaves');
