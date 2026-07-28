@@ -34,7 +34,8 @@ class ViewBill extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->resource($this->getResource()),
+                ->resource($this->getResource())
+                ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\PreviewAction::make()
                 ->setTemplate('accounts::bill/actions/preview.index'),
             BaseActions\PayAction::make(),
@@ -42,6 +43,7 @@ class ViewBill extends ViewRecord
             BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\ReverseAction::make()
+                ->setResource(static::getReverseResource())
                 ->label(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),

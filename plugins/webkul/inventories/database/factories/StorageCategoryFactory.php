@@ -3,8 +3,10 @@
 namespace Webkul\Inventory\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
 
 /**
  * @extends Factory<StorageCategory>
@@ -28,11 +30,11 @@ class StorageCategoryFactory extends Factory
         return [
             'name'               => fake()->words(2, true),
             'sort'               => 0,
-            'allow_new_products' => \Webkul\Inventory\Enums\AllowNewProduct::MIXED,
+            'allow_new_products' => AllowNewProduct::MIXED,
             'max_weight'         => 0.0,
 
             // Relationships
-            'company_id' => \Webkul\Support\Models\Company::factory(),
+            'company_id' => Company::factory(),
             'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
@@ -40,14 +42,14 @@ class StorageCategoryFactory extends Factory
     public function emptyOnly(): static
     {
         return $this->state(fn (array $attributes) => [
-            'allow_new_products' => \Webkul\Inventory\Enums\AllowNewProduct::EMPTY,
+            'allow_new_products' => AllowNewProduct::EMPTY,
         ]);
     }
 
     public function sameProduct(): static
     {
         return $this->state(fn (array $attributes) => [
-            'allow_new_products' => \Webkul\Inventory\Enums\AllowNewProduct::SAME,
+            'allow_new_products' => AllowNewProduct::SAME,
         ]);
     }
 

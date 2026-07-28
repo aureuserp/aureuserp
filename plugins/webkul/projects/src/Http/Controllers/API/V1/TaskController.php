@@ -50,7 +50,7 @@ class TaskController extends Controller
         Gate::authorize('viewAny', Task::class);
 
         $tasks = QueryBuilder::for(Task::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('stage_id'),
                 AllowedFilter::exact('project_id'),
@@ -63,9 +63,9 @@ class TaskController extends Controller
                 AllowedFilter::exact('is_active'),
                 AllowedFilter::exact('is_recurring'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'title', 'state', 'priority', 'sort', 'deadline', 'allocated_hours', 'total_hours_spent', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'title', 'state', 'priority', 'sort', 'deadline', 'allocated_hours', 'total_hours_spent', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return TaskResource::collection($tasks);
@@ -125,7 +125,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = QueryBuilder::for(Task::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $task);

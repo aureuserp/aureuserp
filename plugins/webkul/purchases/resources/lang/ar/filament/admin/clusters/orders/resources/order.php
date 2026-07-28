@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'الموعد النهائي للطلب',
                     'expected-arrival'         => 'تاريخ الوصول المتوقع',
                     'confirmed-by-vendor'      => 'مؤكد من المورد',
+                    'deliver-to'               => 'تسليم إلى',
                 ],
             ],
         ],
@@ -83,6 +84,12 @@ return [
                                 'body'  => 'لا يمكن حذف المنتجات من أمر شراء مؤكد.',
                             ],
                         ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'فتح المنتج',
+                            ],
+                        ],
                     ],
 
                     'section' => [
@@ -135,6 +142,7 @@ return [
             'total-amount'     => 'المبلغ الإجمالي',
             'status'           => 'الحالة',
             'billing-status'   => 'حالة الفوترة',
+            'receipt-status'   => 'حالة الاستلام',
             'currency'         => 'العملة',
         ],
 
@@ -194,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'الضريبة',
     ],
 
     'infolist' => [

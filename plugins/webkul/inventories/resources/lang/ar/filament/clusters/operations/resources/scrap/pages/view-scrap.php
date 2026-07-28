@@ -2,6 +2,22 @@
 
 return [
     'header-actions' => [
+        'validate' => [
+            'label' => 'تحقق',
+
+            'notification' => [
+                'warning' => [
+                    'title' => 'مخزون غير كافٍ',
+                    'body'  => 'الخردة لا تملك مخزوناً كافياً للتحقق.',
+                ],
+
+                'success' => [
+                    'title' => 'تم تعليم الخردة كمنجزة',
+                    'body'  => 'تم تعليم الخردة كمنجزة بنجاح.',
+                ],
+            ],
+        ],
+
         'delete' => [
             'notification' => [
                 'success' => [

@@ -23,12 +23,9 @@ class Requisition extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
 
-    protected $table = 'purchases_requisitions';
+    public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
-    public function getModelTitle(): string
-    {
-        return __('purchases::models/requisition.title');
-    }
+    protected $table = 'purchases_requisitions';
 
     protected $fillable = [
         'name',
@@ -60,6 +57,11 @@ class Requisition extends Model
             'partner.name' => trans('purchases::models/requisition.log-attributes.partner'),
             'user.name'    => trans('purchases::models/requisition.log-attributes.buyer'),
         ];
+    }
+
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/requisition.title');
     }
 
     public function partner(): BelongsTo

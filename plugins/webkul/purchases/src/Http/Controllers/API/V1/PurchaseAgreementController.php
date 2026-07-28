@@ -56,7 +56,7 @@ class PurchaseAgreementController extends Controller
         Gate::authorize('viewAny', Requisition::class);
 
         $agreements = QueryBuilder::for(Requisition::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('type'),
@@ -65,9 +65,9 @@ class PurchaseAgreementController extends Controller
                 AllowedFilter::exact('user_id'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'type', 'state', 'starts_at', 'ends_at', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'type', 'state', 'starts_at', 'ends_at', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return RequisitionResource::collection($agreements);
@@ -109,7 +109,7 @@ class PurchaseAgreementController extends Controller
     public function show(string $id)
     {
         $agreement = QueryBuilder::for(Requisition::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $agreement);

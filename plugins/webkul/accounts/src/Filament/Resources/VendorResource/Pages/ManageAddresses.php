@@ -2,8 +2,8 @@
 
 namespace Webkul\Account\Filament\Resources\VendorResource\Pages;
 
-use Webkul\Account\Filament\Resources\VendorResource;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\ManageAddresses as BaseManageAddresses;
+use Webkul\Account\Filament\Resources\VendorResource;
 
 class ManageAddresses extends BaseManageAddresses
 {

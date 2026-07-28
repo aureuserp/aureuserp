@@ -3,10 +3,15 @@
 namespace Webkul\Product;
 
 use Filament\Panel;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Models\Category;
+use Webkul\Product\Models\Product;
+use Webkul\Product\Observers\UOMObserver;
+use Webkul\Support\Models\UOM;
 
 class ProductServiceProvider extends PackageServiceProvider
 {
@@ -36,6 +41,7 @@ class ProductServiceProvider extends PackageServiceProvider
                 '2025_02_18_112837_create_products_product_price_lists_table',
                 '2025_02_21_053249 _create_products_product_combinations_table',
                 '2025_07_28_080116_alter_products_products_table',
+                '2026_04_15_044431_add_columns_in_products_product_suppliers_table',
             ])
             ->hasSeeder('Webkul\\Product\\Database\Seeders\\DatabaseSeeder')
             ->runsMigrations()
@@ -48,12 +54,16 @@ class ProductServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Category::class, Product::class]);
+                });
+            });
     }
 
     public function packageBooted(): void
     {
-        //
+        UOM::observe(UOMObserver::class);
     }
 
     public function packageRegistered(): void

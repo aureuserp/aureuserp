@@ -4,14 +4,28 @@ namespace Webkul\Purchase;
 
 use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
+use Webkul\Account\Events\MoveCancelled;
+use Webkul\Account\Events\MoveConfirmed;
+use Webkul\Account\Events\MoveDrafted;
+use Webkul\Account\Events\MoveReversed;
+use Webkul\Chatter\Services\ChatterCleanupService;
+use Webkul\Inventory\Events\OperationBackOrdered;
+use Webkul\Inventory\Events\OperationDone;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Models\Product;
+use Webkul\Product\Models\ProductSupplier;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Purchase\Listeners\ComputePurchaseOrderFromMoveListener;
+use Webkul\Purchase\Listeners\ComputePurchaseOrderListener;
 use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\OrderSummary;
+use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\Requisition;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -40,7 +54,11 @@ class PurchaseServiceProvider extends PackageServiceProvider
                 '2025_03_17_111610_add_purchases_columns_to_inventories_moves_table_from_purchases',
                 '2025_03_17_115707_create_purchases_order_operations_table_from_purchases',
                 '2026_03_11_103115_alter_purchases_order_lines_table',
-                '2026_03_13_181105_alter_purchases_orders_table'
+                '2026_03_13_181105_alter_purchases_orders_table',
+                '2026_04_15_044345_add_destination_address_id_in_purchases_orders_table',
+                '2026_04_22_115707_create_purchases_order_line_moves_table_from_purchases',
+                '2026_04_23_043411_add_procurement_group_id_column_in_purchases_orders_table_from_purchases',
+                '2026_04_23_043412_add_procurement_group_id_column_in_purchases_order_lines_table_from_purchases',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -56,7 +74,11 @@ class PurchaseServiceProvider extends PackageServiceProvider
                     ->installDependencies()
                     ->runsMigrations();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class, Requisition::class]);
+                });
+            })
             ->icon('purchases');
     }
 
@@ -66,7 +88,25 @@ class PurchaseServiceProvider extends PackageServiceProvider
 
         Livewire::component('list-products', ListProducts::class);
 
-        // \Webkul\Account\Models\Move::observe(\Webkul\Purchase\Observers\AccountMoveObserver::class);
+        Event::listen([OperationDone::class, OperationBackOrdered::class], ComputePurchaseOrderListener::class);
+
+        Event::listen(
+            [MoveConfirmed::class, MoveCancelled::class, MoveDrafted::class, MoveReversed::class],
+            ComputePurchaseOrderFromMoveListener::class,
+        );
+
+        $this->contributeProductSchema();
+    }
+
+    protected function contributeProductSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Product::resolveRelationUsing('sellers', fn (Product $product) => $product->is_configurable
+            ? $product->hasMany(ProductSupplier::class)->orWhereIn('product_id', $product->variants()->pluck('id'))
+            : $product->hasMany(ProductSupplier::class));
     }
 
     public function packageRegistered(): void

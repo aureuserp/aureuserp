@@ -26,20 +26,23 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages\ListPlugins;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PluginResource extends Resource
 {
     protected static ?string $model = Plugin::class;
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string|\UnitEnum
     {
-        return __('plugin-manager::filament/resources/plugin.navigation.group');
+        return NavigationGroup::Plugin;
     }
 
     public static function getModelLabel(): string
@@ -81,7 +84,7 @@ class PluginResource extends Resource
                                 ->weight('semibold')
                                 ->searchable()
                                 ->size(TextSize::Large)
-                                ->formatStateUsing(fn (string $state) => ucfirst($state))
+                                ->formatStateUsing(fn (string $state) => self::localize('names', $state, ucfirst($state)))
                                 ->grow(false),
 
                             TextColumn::make('latest_version')
@@ -94,7 +97,8 @@ class PluginResource extends Resource
                         TextColumn::make('summary')
                             ->color('gray')
                             ->limit(80)
-                            ->wrap(),
+                            ->wrap()
+                            ->formatStateUsing(fn ($state, $record) => self::localize('summaries', $record->name, $state)),
 
                         Split::make([
                             TextColumn::make('is_installed')
@@ -148,8 +152,6 @@ class PluginResource extends Resource
                                 $artisan = escapeshellarg(base_path('artisan'));
 
                                 $commandName = escapeshellarg("{$record->name}:install");
-
-                                $cmd = "timeout 300 $php $artisan $commandName 2>&1";
 
                                 $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName 2>&1");
 
@@ -259,7 +261,7 @@ class PluginResource extends Resource
                         ->schema([
                             TextEntry::make('name')
                                 ->label(__('plugin-manager::filament/resources/plugin.infolist.name'))
-                                ->formatStateUsing(fn ($state) => ucfirst($state))
+                                ->formatStateUsing(fn ($state) => self::localize('names', $state, ucfirst($state)))
                                 ->weight('bold')
                                 ->size('lg'),
 
@@ -280,7 +282,7 @@ class PluginResource extends Resource
                                 ->falseColor('gray'),
 
                             TextEntry::make('author')
-                                ->label('Author')
+                                ->label(__('plugin-manager::filament/resources/plugin.infolist.author'))
                                 ->badge(),
                         ]),
 
@@ -292,6 +294,7 @@ class PluginResource extends Resource
 
                     TextEntry::make('summary')
                         ->label(__('plugin-manager::filament/resources/plugin.infolist.summary'))
+                        ->formatStateUsing(fn ($state, $record) => self::localize('summaries', $record->name, $state))
                         ->columnSpanFull(),
                 ]),
 
@@ -301,7 +304,7 @@ class PluginResource extends Resource
                         self::repeatableEntry('dependencies', 'warning', 'dependencies-repeater'),
                         self::repeatableEntry('dependents', 'info', 'dependents-repeater'),
                     ]),
-            ]),
+            ])->columnSpanFull(),
         ]);
     }
 
@@ -318,7 +321,7 @@ class PluginResource extends Resource
             ->schema([
                 TextEntry::make('name')
                     ->label(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.name'))
-                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->formatStateUsing(fn ($state) => self::localize('names', $state, ucfirst($state)))
                     ->badge()
                     ->color($color),
 
@@ -369,10 +372,19 @@ class PluginResource extends Resource
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
+
+                    $uninstallCommand = collect($plugin->package->consoleCommands)
+                        ->first(fn ($command) => $command instanceof UninstallCommand);
+
+                    if ($uninstallCommand?->endWith) {
+                        ($uninstallCommand->endWith)($uninstallCommand);
+                    }
                 } catch (Throwable $e) {
                     $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
                 }
             });
+
+        Package::refreshPluginCaches();
 
         if (empty($errors)) {
             Notification::make()
@@ -407,6 +419,13 @@ class PluginResource extends Resource
         }
     }
 
+    protected static function localize(string $group, string $name, ?string $fallback = null): string
+    {
+        $key = "plugin-manager::filament/resources/plugin.{$group}.{$name}";
+
+        return Lang::has($key) ? __($key) : ($fallback ?? $name);
+    }
+
     public static function getPages(): array
     {
         return [
@@ -416,44 +435,22 @@ class PluginResource extends Resource
 
     protected static function getPhpExecutablePath(): string
     {
-        $phpPath = trim(shell_exec('which php 2>/dev/null') ?: '');
-
-        if (
-            $phpPath
-            && file_exists($phpPath)
-        ) {
-            return $phpPath;
-        }
-
-        $phpPath = PHP_BINARY;
-
-        if (strpos($phpPath, 'fpm') !== false) {
-            $phpPath = str_replace('fpm', '', $phpPath);
-        }
-
-        if (file_exists($phpPath)) {
-            return $phpPath;
-        }
-
-        $commonPaths = [
-            '/usr/local/bin/php',
-            '/usr/bin/php',
-            '/opt/homebrew/bin/php',
-            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
-        ];
-
-        foreach ($commonPaths as $path) {
-            if (file_exists($path)) {
-                return $path;
-            }
-        }
-
-        return 'php';
+        return Package::phpBinaryPath();
     }
 
     protected static function buildTimeoutCommand(int $seconds, string $command): string
     {
         if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
+        }
+
+        if (PHP_OS_FAMILY === 'Darwin') {
+            $gtimeout = trim((string) shell_exec('which gtimeout 2>/dev/null'));
+
+            if ($gtimeout !== '') {
+                return "gtimeout {$seconds} {$command}";
+            }
+
             return $command;
         }
 

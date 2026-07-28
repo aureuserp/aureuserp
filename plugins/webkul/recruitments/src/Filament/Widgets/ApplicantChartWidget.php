@@ -61,11 +61,11 @@ class ApplicantChartWidget extends ChartWidget
             COUNT(*) as total,
             SUM(CASE WHEN refuse_reason_id IS NOT NULL THEN 1 ELSE 0 END) as refused,
             SUM(CASE WHEN date_closed IS NOT NULL THEN 1 ELSE 0 END) as hired,
-            SUM(CASE WHEN is_active = 0 OR deleted_at IS NOT NULL THEN 1 ELSE 0 END) as archived,
+            SUM(CASE WHEN is_active = false OR deleted_at IS NOT NULL THEN 1 ELSE 0 END) as archived,
             SUM(CASE
                 WHEN refuse_reason_id IS NULL
                 AND date_closed IS NULL
-                AND is_active = 1
+                AND is_active = true
                 AND deleted_at IS NULL THEN 1
                 ELSE 0
             END) as ongoing

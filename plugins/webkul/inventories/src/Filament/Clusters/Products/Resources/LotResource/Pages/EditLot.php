@@ -34,7 +34,7 @@ class EditLot extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->action(function (Lot $record) {
-                    $pdf = PDF::loadView('inventories::filament.clusters.products.lots.actions.print', [
+                    $pdf = Pdf::loadView('inventories::filament.clusters.products.lots.actions.print', [
                         'records' => collect([$record]),
                     ]);
 

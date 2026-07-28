@@ -1,7 +1,7 @@
 import { test, expect } from "../../setup";
 import { EmployeeManagementPage, type EmployeeData } from "../../pages/06_employeeManagement";
-import { CompanyManagementPage } from "../../pages/03_companyManagement";
-import { UserManagementPage, type UserData } from "../../pages/04_userManagement";
+import { CompanyManagementPage } from "../../pages/02_companyManagement";
+import { UserManagementPage, type UserData } from "../../pages/03_userManagement";
 
 test.describe("Employees Module E2E", () => {
     test.beforeAll(async ({ adminPage }) => {

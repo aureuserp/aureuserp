@@ -4,9 +4,9 @@ namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryR
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Journal;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
@@ -26,11 +26,6 @@ class CreateJournalEntry extends CreateRecord
     }
 
     protected static string $resource = JournalEntryResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getCreatedNotification(): ?Notification
     {

@@ -37,15 +37,15 @@ class MilestoneController extends Controller
         Gate::authorize('viewAny', Milestone::class);
 
         $milestones = QueryBuilder::for(Milestone::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('name'),
                 AllowedFilter::exact('project_id'),
                 AllowedFilter::exact('creator_id'),
                 AllowedFilter::exact('is_completed'),
-            ])
-            ->allowedSorts(['id', 'name', 'deadline', 'completed_at', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'deadline', 'completed_at', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return MilestoneResource::collection($milestones);
@@ -85,7 +85,7 @@ class MilestoneController extends Controller
     public function show(string $id)
     {
         $milestone = QueryBuilder::for(Milestone::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $milestone);

@@ -16,7 +16,6 @@ use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Inventory\Enums\LocationType;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource as ProductFilamentResource;
 use Webkul\Inventory\Http\Requests\ProductQuantityCountRequest;
 use Webkul\Inventory\Http\Requests\ProductQuantityRequest;
 use Webkul\Inventory\Http\Resources\V1\ProductQuantityResource;
@@ -58,7 +57,7 @@ class QuantityController extends Controller
         Gate::authorize('viewAny', ProductQuantity::class);
 
         $quantities = QueryBuilder::for(ProductQuantity::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('product_id'),
                 AllowedFilter::exact('location_id'),
@@ -69,8 +68,8 @@ class QuantityController extends Controller
                 AllowedFilter::exact('user_id'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('inventory_quantity_set'),
-            ])
-            ->allowedSorts([
+            )
+            ->allowedSorts(
                 'id',
                 'quantity',
                 'reserved_quantity',
@@ -81,8 +80,8 @@ class QuantityController extends Controller
                 'scheduled_at',
                 'created_at',
                 'updated_at',
-            ])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return ProductQuantityResource::collection($quantities);
@@ -130,7 +129,7 @@ class QuantityController extends Controller
         Gate::authorize('viewAny', ProductQuantity::class);
 
         $quantity = QueryBuilder::for(ProductQuantity::query()->where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         return new ProductQuantityResource($quantity);
@@ -188,34 +187,12 @@ class QuantityController extends Controller
             }
 
             $countedQuantity = $record->counted_quantity;
-            $diffQuantity = $record->inventory_diff_quantity;
 
             $record->update([
-                'quantity'                => $countedQuantity,
-                'counted_quantity'        => 0,
-                'inventory_diff_quantity' => 0,
-                'inventory_quantity_set'  => false,
+                'quantity'               => $countedQuantity,
+                'counted_quantity'       => 0,
+                'inventory_quantity_set' => false,
             ]);
-
-            ProductQuantity::updateOrCreate(
-                [
-                    'location_id' => $adjustmentLocation->id,
-                    'product_id'  => $record->product_id,
-                    'lot_id'      => $record->lot_id,
-                ],
-                [
-                    'quantity'               => -$record->product->on_hand_quantity,
-                    'company_id'             => $record->company_id,
-                    'creator_id'             => Auth::id(),
-                    'incoming_at'            => now(),
-                    'inventory_quantity_set' => false,
-                ]
-            );
-
-            $sourceLocationId = $diffQuantity < 0 ? $record->location_id : $adjustmentLocation->id;
-            $destinationLocationId = $diffQuantity < 0 ? $adjustmentLocation->id : $record->location_id;
-
-            ProductFilamentResource::createMove($record, abs($diffQuantity), $sourceLocationId, $destinationLocationId);
 
             return (new ProductQuantityResource($record->fresh()->load($this->allowedIncludes)))
                 ->additional(['message' => 'Quantity applied successfully.']);

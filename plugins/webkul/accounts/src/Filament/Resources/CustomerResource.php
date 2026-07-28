@@ -6,13 +6,12 @@ use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\CustomerResource\Pages\CreateCustomer;
 use Webkul\Account\Filament\Resources\CustomerResource\Pages\EditCustomer;
-use Webkul\Account\Filament\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\Account\Filament\Resources\CustomerResource\Pages\ListCustomers;
 use Webkul\Account\Filament\Resources\CustomerResource\Pages\ManageAddresses;
 use Webkul\Account\Filament\Resources\CustomerResource\Pages\ManageBankAccounts;
 use Webkul\Account\Filament\Resources\CustomerResource\Pages\ManageContacts;
+use Webkul\Account\Filament\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\Account\Models\Customer;
-use Webkul\Account\Filament\Resources\PartnerResource;
 
 class CustomerResource extends PartnerResource
 {

@@ -98,7 +98,7 @@ class TaskStageResource extends Resource
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.groups.created-at'))
                     ->date(),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc')
             ->recordActions([
                 EditAction::make()

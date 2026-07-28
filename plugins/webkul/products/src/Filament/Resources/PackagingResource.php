@@ -27,7 +27,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Models\Packaging;
 
 class PackagingResource extends Resource
@@ -167,7 +166,7 @@ class PackagingResource extends Resource
                         ->label(__('products::filament/resources/packaging.table.bulk-actions.print.label'))
                         ->icon('heroicon-o-printer')
                         ->action(function ($records) {
-                            $pdf = PDF::loadView('products::filament.resources.packagings.actions.print', [
+                            $pdf = Pdf::loadView('products::filament.resources.packagings.actions.print', [
                                 'records' => $records,
                             ]);
 

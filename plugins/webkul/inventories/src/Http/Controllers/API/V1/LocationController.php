@@ -50,7 +50,7 @@ class LocationController extends Controller
         Gate::authorize('viewAny', Location::class);
 
         $locations = QueryBuilder::for(Location::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('full_name'),
@@ -63,9 +63,9 @@ class LocationController extends Controller
                 AllowedFilter::exact('is_scrap'),
                 AllowedFilter::exact('is_replenish'),
                 AllowedFilter::exact('is_dock'),
-            ])
-            ->allowedSorts(['id', 'name', 'full_name', 'type', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'full_name', 'type', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return LocationResource::collection($locations);
@@ -96,7 +96,7 @@ class LocationController extends Controller
     public function show(string $id)
     {
         $location = QueryBuilder::for(Location::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $location);

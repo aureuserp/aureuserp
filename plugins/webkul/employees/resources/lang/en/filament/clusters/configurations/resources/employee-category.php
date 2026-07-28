@@ -17,8 +17,9 @@ return [
 
     'form' => [
         'fields' => [
-            'name'  => 'Name',
-            'color' => 'Color',
+            'name'             => 'Name',
+            'name-placeholder' => 'Enter the name of the tag',
+            'color'            => 'Color',
         ],
     ],
 

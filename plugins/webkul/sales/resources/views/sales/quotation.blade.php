@@ -109,6 +109,15 @@
             background: #1e1e1e;
         }
 
+        .options-title {
+            clear: both;
+            font-size: 18px;
+            color: #1a4587;
+            margin-top: 30px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1a4587;
+        }
+
         .summary {
             width: 100%;
             display: inline-block;
@@ -259,9 +268,9 @@
             @endphp
 
             @if ($record->state == \Webkul\Sale\Enums\OrderState::SALE)
-                {{ $title }} ID #{{ $record->name }}
+                {{ __('sales::app.documents.title', ['document' => $title, 'name' => $record->name]) }}
             @else
-                {{ $title }} ID #{{ $record->name }}
+                {{ __('sales::app.documents.title', ['document' => $title, 'name' => $record->name]) }}
             @endif
         </div>
 
@@ -270,14 +279,14 @@
             <tr>
                 @if ($record->date_order)
                     <td width="33%">
-                        <strong>{{ $title }} Date</strong><br>
+                        <strong>{{ __('sales::app.documents.date', ['document' => $title]) }}</strong><br>
                         {{ $record->date_order }}
                     </td>
                 @endif
 
                 @if ($record->validity_date)
                     <td width="33%">
-                        <strong>Expiration Date</strong><br>
+                        <strong>{{ __('sales::app.documents.expiration-date') }}</strong><br>
                         {{ $record->validity_date }}
                     </td>
                 @endif
@@ -289,14 +298,14 @@
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
+                        <th>{{ __('sales::app.documents.product') }}</th>
+                        <th>{{ __('sales::app.documents.quantity') }}</th>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
-                            <th>Unit</th>
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                            <th>{{ __('sales::app.documents.unit') }}</th>
                         @endif
 
-                        <th>Unit Price</th>
+                        <th>{{ __('sales::app.documents.unit-price') }}</th>
                     </tr>
                 </thead>
 
@@ -306,7 +315,7 @@
                         <td>{{ $item->product->name }}</td>
                         <td>{{ number_format($item->product_uom_qty) }}</td>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 
@@ -317,27 +326,62 @@
             </table>
         @endif
 
+        <!-- Optional Products Table -->
+        @if (in_array($record->state, [\Webkul\Sale\Enums\OrderState::DRAFT, \Webkul\Sale\Enums\OrderState::SENT]) && ! $record->optionalLines->isEmpty())
+            <div class="options-title">{{ __('sales::app.documents.options') }}</div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('sales::app.documents.product') }}</th>
+                        <th>{{ __('sales::app.documents.quantity') }}</th>
+
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                            <th>{{ __('sales::app.documents.unit') }}</th>
+                        @endif
+
+                        <th>{{ __('sales::app.documents.unit-price') }}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($record->optionalLines as $option)
+                        <tr>
+                            <td>{{ filled($option->name) ? $option->name : $option->product->name }}</td>
+                            <td>{{ number_format($option->quantity) }}</td>
+
+                            @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                                <td>{{ $option->uom?->name ?? $option->product->uom->name }}</td>
+                            @endif
+
+                            <td>{{ number_format($option->price_unit, 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
         <div class="summary">
             <table class="ltr">
                 <tbody>
                     <tr>
-                        <td>Subtotal</td>
+                        <td>{{ __('sales::app.documents.subtotal') }}</td>
                         <td>-</td>
                         <td>{{ $record->currency->symbol }} {{ number_format($record->amount_untaxed, 2) }}</td>
                     </tr>
                     <tr>
-                        <td>Tax</td>
+                        <td>{{ __('sales::app.documents.tax') }}</td>
                         <td>-</td>
                         <td>{{ $record->currency->symbol }} {{ number_format($record->amount_tax, 2) }}</td>
                     </tr>
                     <tr>
-                        <td>Discount</td>
+                        <td>{{ __('sales::app.documents.discount') }}</td>
                         <td>-</td>
                         <td>-{{ $record->currency->symbol }} {{ number_format($record->total_discount, 2) }}</td>
                     </tr>
                     <tr>
                         <td style="border-top: 1px solid #FFFFFF;">
-                            <b>Grand Total</b>
+                            <b>{{ __('sales::app.documents.grand-total') }}</b>
                         </td>
                         <td style="border-top: 1px solid #FFFFFF;">-</td>
                         <td style="border-top: 1px solid #FFFFFF;">
@@ -351,12 +395,12 @@
         <!-- Payment Information Section -->
         @if ($record->name)
             <div class="payment-info">
-                <div class="payment-info-title">Payment Information</div>
+                <div class="payment-info-title">{{ __('sales::app.documents.payment-information') }}</div>
                 <div>
-                    Payment Communication: {{ $record->name }}
+                    {{ __('sales::app.documents.payment-communication') }}: {{ $record->name }}
                     @if ($record?->partnerBank?->bank?->name || $record?->partnerBank?->account_number)
                         <br>
-                        <span class="payment-info-details">on this account details:</span>
+                        <span class="payment-info-details">{{ __('sales::app.documents.account-details') }}</span>
                         {{ $record?->partnerBank?->bank?->name ?? 'N/A' }}
                         ({{ $record?->partnerBank?->account_number ?? 'N/A' }})
                     @endif

@@ -46,7 +46,7 @@ class DropshipResource extends Resource
             return true;
         }
 
-        return app(LogisticSettings::class)->enable_dropshipping;
+        return settings(LogisticSettings::class)->enable_dropshipping;
     }
 
     public static function getModelLabel(): string
@@ -167,11 +167,5 @@ class DropshipResource extends Resource
             'view'   => ViewDropship::route('/{record}/view'),
             'moves'  => ManageMoves::route('/{record}/moves'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

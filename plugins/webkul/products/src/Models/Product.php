@@ -16,12 +16,15 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 
 class Product extends Model implements Sortable
 {
-    use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'products';
 
     protected $table = 'products_products';
 
@@ -166,7 +169,7 @@ class Product extends Model implements Sortable
         return $this->name;
     }
 
-    public function supplierInformation(): HasMany
+    public function sellers(): HasMany
     {
         if ($this->is_configurable) {
             return $this->hasMany(ProductSupplier::class)
@@ -280,6 +283,131 @@ class Product extends Model implements Sortable
             });
 
         $this->update(['is_configurable' => true]);
+    }
+
+    public function getSeller($partner = null, $quantity = 0, $date = null, $uom = null, $company = null, $orderedBy = 'price_discounted', $params = null)
+    {
+        $sortKey = ['price_discounted', 'sort', 'id'];
+
+        if ($orderedBy !== 'price_discounted') {
+            $sortKey = [$orderedBy, 'price_discounted', 'sort', 'id'];
+        }
+
+        $sortFunction = function ($record) use ($sortKey, $date) {
+            $vals = [
+                'price_discounted' => $record->currency->convert(
+                    $record->price_discounted,
+                    $record->company->currency,
+                    $record->company,
+                    $date ?? now()->format('Y-m-d'),
+                    false,
+                ),
+            ];
+
+            return array_map(fn ($key) => $vals[$key] ?? $record[$key], $sortKey);
+        };
+
+        $sellers = $this->getFilteredSellers(
+            partner: $partner,
+            quantity: $quantity,
+            date: $date,
+            uom: $uom,
+            company: $company,
+            params: $params
+        );
+
+        $result = collect();
+
+        foreach ($sellers as $seller) {
+            if ($result->isEmpty() || $result->first()->partner_id === $seller->partner_id) {
+                $result->push($seller);
+            }
+        }
+
+        return $result->isNotEmpty()
+            ? $result->sortBy($sortFunction)->first()
+            : null;
+    }
+
+    public function getFilteredSellers($partner = null, $quantity = 0, $date = null, $uom = null, $company = null, $params = null)
+    {
+        if (! $date) {
+            $date = today();
+        }
+
+        $sellersFiltered = $this->prepareSellers($company, $params);
+
+        $sellers = collect();
+
+        foreach ($sellersFiltered as $seller) {
+            $sellerUOMQuantity = $quantity;
+
+            if (
+                $sellerUOMQuantity
+                && $uom
+                && $uom->id !== ($seller->uom_id ?: $seller->product->uom_id)
+            ) {
+                $sellerUOMQuantity = $uom->computeQuantity(
+                    $sellerUOMQuantity,
+                    $seller->uom ?: $seller->product->uom
+                );
+            }
+
+            if ($seller->starts_at && $seller->starts_at > $date) {
+                continue;
+            }
+
+            if ($seller->ends_at && $seller->ends_at < $date) {
+                continue;
+            }
+
+            if (
+                $params
+                && ($params['force_uom'] ?? false)
+                && $seller->uom_id !== $uom->id
+                && $seller->uom_id !== $this->uom_id
+            ) {
+                continue;
+            }
+
+            if (
+                $partner
+                && ! in_array($seller->partner_id, [$partner->id, $partner->parent_id])
+            ) {
+                continue;
+            }
+
+            if (
+                $quantity !== null
+                && float_compare($sellerUOMQuantity, $seller->min_qty, precisionDigits: 2) === -1
+            ) {
+                continue;
+            }
+
+            if ($seller->product_id && $seller->product_id !== $this->id) {
+                continue;
+            }
+
+            $sellers->push($seller);
+        }
+
+        return $sellers;
+    }
+
+    public function prepareSellers($company, $params = null)
+    {
+        $sellers = $this->sellers
+            ->filter(
+                fn ($supplier) => (! $supplier->company_id || $supplier->company_id === $company->id)
+                    && (! $supplier->product_id || $supplier->product_id === $this->id)
+            );
+
+        return $sellers->sortBy([
+            fn ($a, $b) => $a->sort <=> $b->sort,
+            fn ($a, $b) => $b->min_qty <=> $a->min_qty,
+            fn ($a, $b) => $a->price <=> $b->price,
+            fn ($a, $b) => $a->id <=> $b->id,
+        ]);
     }
 
     protected static function boot()

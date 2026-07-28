@@ -2,6 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
+use Closure;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -16,6 +18,8 @@ use Webkul\Sale\Models\Order;
 
 class CancelQuotationAction extends Action
 {
+    protected bool|Closure $hasDatabaseTransactions = true;
+
     public static function getDefaultName(): ?string
     {
         return 'orders.sales.cancel';
@@ -41,7 +45,19 @@ class CancelQuotationAction extends Action
                         ->body(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.cancel.notification.cancelled.body'))
                         ->send();
                 } else {
-                    SaleManagerFacade::cancelSaleOrder($record, $data ?? []);
+
+                    try {
+                        SaleManagerFacade::cancelSaleOrder($record, $data ?? []);
+                    } catch (Exception $e) {
+                        Notification::make()
+                            ->danger()
+                            ->body($e->getMessage())
+                            ->send();
+
+                        $this->halt(shouldRollBackDatabaseTransaction: true);
+
+                        return;
+                    }
 
                     Notification::make()
                         ->success()
@@ -49,6 +65,7 @@ class CancelQuotationAction extends Action
                         ->body(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.send-and-cancel.notification.cancelled.body'))
                         ->send();
                 }
+
                 $livewire->refreshFormData(['state']);
             })
             ->extraModalFooterActions(fn (Action $action): array => [

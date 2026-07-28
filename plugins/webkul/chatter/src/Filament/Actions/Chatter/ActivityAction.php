@@ -7,7 +7,6 @@ use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,13 +16,17 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Support\ChatterMentions;
 use Illuminate\Support\HtmlString;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\ActivityPlan;
 use Webkul\Support\Models\ActivityType;
 
 class ActivityAction extends Action
 {
-    protected mixed $activityPlans;
+    protected mixed $activityPlans = null;
 
     public static function getDefaultName(): ?string
     {
@@ -37,9 +40,31 @@ class ActivityAction extends Action
         return $this;
     }
 
-    public function getActivityPlans(): mixed
+    public function getActivityPlans(): Collection
     {
-        return $this->activityPlans;
+        if ($this->activityPlans instanceof Collection) {
+            return $this->activityPlans;
+        }
+
+        if (is_array($this->activityPlans)) {
+            return collect($this->activityPlans);
+        }
+
+        $record = $this->getRecord();
+
+        if (($record instanceof Model) && method_exists($record, 'activityPlans')) {
+            $plans = $record->activityPlans();
+
+            if ($plans instanceof Collection) {
+                return $plans;
+            }
+
+            if (is_array($plans)) {
+                return collect($plans);
+            }
+        }
+
+        return collect();
     }
 
     protected function setUp(): void
@@ -59,7 +84,7 @@ class ActivityAction extends Action
                                         ->label(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.activity-plan'))
                                         ->options($this->getActivityPlans())
                                         ->searchable()
-                                        ->hidden($this->getActivityPlans()->isEmpty())
+                                        ->hidden(fn (): bool => $this->getActivityPlans()->isEmpty())
                                         ->preload()
                                         ->live(),
                                     DatePicker::make('date_deadline')
@@ -121,6 +146,7 @@ class ActivityAction extends Action
                                 ])->columns(2),
                             RichEditor::make('body')
                                 ->hiddenLabel()
+                                ->mentions([ChatterMentions::provider()])
                                 ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))->category == 'meeting' : false)
                                 ->visible(fn (Get $get) => ! $get('activity_plan_id'))
                                 ->placeholder(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.log-note'))
@@ -168,7 +194,6 @@ class ActivityAction extends Action
 
                         $record->addMessage($data, $user->id);
                     } else {
-                        $data['content'] = $activityPlanTemplate['note'] ?? null;
                         $data['causer_type'] = $user?->getMorphClass();
                         $data['causer_id'] = $user->id;
 

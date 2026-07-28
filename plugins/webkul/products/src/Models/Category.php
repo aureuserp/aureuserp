@@ -17,6 +17,8 @@ class Category extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
+    public const ACTIVITY_PLAN_PLUGIN = 'products';
+
     protected $table = 'products_categories';
 
     public function getModelTitle(): string

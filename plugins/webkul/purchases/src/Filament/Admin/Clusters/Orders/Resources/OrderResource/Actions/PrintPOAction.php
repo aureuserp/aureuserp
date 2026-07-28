@@ -21,7 +21,7 @@ class PrintPOAction extends Action
         $this
             ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/print-po.label'))
             ->action(function (Order $record) {
-                $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
+                $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
                     'records'  => [$record],
                 ]);
 

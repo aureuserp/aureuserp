@@ -2,13 +2,16 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Str;
+use Throwable;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
@@ -20,6 +23,8 @@ use Webkul\Support\Traits\PDFHandler;
 class ReverseAction extends Action
 {
     use PDFHandler;
+
+    protected bool|Closure $hasDatabaseTransactions = true;
 
     protected static string $resource = CreditNoteResource::class;
 
@@ -80,31 +85,40 @@ class ReverseAction extends Action
         );
 
         $this->action(function (Move $record, array $data, $livewire) {
-            $moveReversal = MoveReversal::create([
-                'journal_id' => $data['journal_id'],
-                'date'       => $data['date'],
-                'reason'     => $data['reason'],
-            ]);
+            try {
+                $moveReversal = MoveReversal::create([
+                    'journal_id' => $data['journal_id'],
+                    'date'       => $data['date'],
+                    'reason'     => $data['reason'],
+                ]);
 
-            $moveReversal->moves()->attach($record);
+                $moveReversal->moves()->attach($record);
 
-            $defaultValues = $this->prepareMoveValues($record, $moveReversal);
+                $defaultValues = $this->prepareMoveValues($record, $moveReversal);
 
-            $isCancelNeeded = ! $defaultValues['auto_post'] && $record->move_type == MoveType::ENTRY;
+                $isCancelNeeded = ! $defaultValues['auto_post'] && $record->move_type == MoveType::ENTRY;
 
-            $reversedMoves = AccountFacade::reverseMoves(
-                collect([$record]),
-                $defaultValues,
-                $isCancelNeeded
-            )->each(function (Move $move) use ($moveReversal) {
-                $moveReversal->newMoves()->attach($move->id);
-            });
+                $reversedMoves = AccountFacade::reverseMoves(
+                    collect([$record]),
+                    $defaultValues,
+                    $isCancelNeeded
+                )->each(function (Move $move) use ($moveReversal) {
+                    $moveReversal->newMoves()->attach($move->id);
+                });
 
-            AccountFacade::computeAccountMove($record);
+                AccountFacade::computeAccountMove($record);
 
-            $redirectUrl = static::getResource()::getUrl('edit', ['record' => $reversedMoves->first()->id]);
+                $redirectUrl = static::getResource()::getUrl('edit', ['record' => $reversedMoves->first()->id]);
 
-            $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
+                $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
+            } catch (Throwable $e) {
+                Notification::make()
+                    ->warning()
+                    ->body($e->getMessage())
+                    ->send();
+
+                $this->halt(shouldRollBackDatabaseTransaction: true);
+            }
         });
     }
 
@@ -120,7 +134,7 @@ class ReverseAction extends Action
             'invoice_date'      => $move->isInvoice(true) ? $moveReversal->date : null,
             'journal_id'        => $moveReversal->journal_id,
             'invoice_user_id'   => $move->invoice_user_id,
-            'auto_post'         => 0,
+            'auto_post'         => false,
         ];
     }
 }

@@ -18,7 +18,7 @@ class StageJobFactory extends Factory
     {
         return [
             'stage_id' => Stage::factory(),
-            'job_id' => JobPosition::factory(),
+            'job_id'   => JobPosition::factory(),
         ];
     }
 }

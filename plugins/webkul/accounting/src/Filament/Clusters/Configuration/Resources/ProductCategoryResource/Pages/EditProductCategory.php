@@ -18,7 +18,8 @@ class EditProductCategory extends EditCategory
         return [
 
             ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             ...parent::getHeaderActions(),
         ];
     }

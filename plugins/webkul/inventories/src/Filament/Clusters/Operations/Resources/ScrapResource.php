@@ -334,7 +334,7 @@ class ScrapResource extends Resource
                 ])->filter(function ($group) {
                     return match ($group->getId()) {
                         'sourceLocation.full_name', 'destinationLocation.full_name' => static::getWarehouseSettings()->enable_locations,
-                        default => true
+                        default                                                     => true
                     };
                 })->all()
             )
@@ -628,22 +628,22 @@ class ScrapResource extends Resource
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 
     public static function getProductSettings(): ProductSettings
     {
-        return once(fn () => app(ProductSettings::class));
+        return settings(ProductSettings::class);
     }
 
     public static function getTraceabilitySettings(): TraceabilitySettings
     {
-        return once(fn () => app(TraceabilitySettings::class));
+        return settings(TraceabilitySettings::class);
     }
 
     public static function getWarehouseSettings(): WarehouseSettings
     {
-        return once(fn () => app(WarehouseSettings::class));
+        return settings(WarehouseSettings::class);
     }
 
     public static function getRecordSubNavigation(Page $page): array

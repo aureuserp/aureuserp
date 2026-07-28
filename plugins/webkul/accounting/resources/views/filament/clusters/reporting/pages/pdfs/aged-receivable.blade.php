@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Aged Receivable - {{ $asOfDate }}</title>
+    <title>{{ __('accounting::filament/clusters/reporting.pages.aged-receivable.navigation.title') }} - {{ $asOfDate }}</title>
     <style>
         @page {
             margin: 1cm 1cm;
@@ -95,12 +95,12 @@
 </head>
 <body>
     <div class="header">
-        <h1>Aged Receivable</h1>
+        <h1>{{ __('accounting::filament/clusters/reporting.pages.aged-receivable.navigation.title') }}</h1>
         <p>As of {{ \Carbon\Carbon::parse($asOfDate)->format('F j, Y') }}</p>
     </div>
 
     @if(empty($partners))
-        <div class="no-data">No data available</div>
+        <div class="no-data">{{ __('accounting::filament/clusters/reporting.common.no-data') }}</div>
     @else
         @php
             $totalAtDate = 0;
@@ -115,14 +115,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>Partner</th>
-                    <th>Not due</th>
+                    <th>{{ __('accounting::filament/clusters/reporting.common.partner') }}</th>
+                    <th>{{ __('accounting::filament/clusters/reporting.common.not-due') }}</th>
                     <th>1-{{ $period }}</th>
                     <th>{{ $period + 1 }}-{{ $period * 2 }}</th>
                     <th>{{ ($period * 2) + 1 }}-{{ $period * 3 }}</th>
                     <th>{{ ($period * 3) + 1 }}-{{ $period * 4 }}</th>
                     <th>{{ $period * 4 }}+</th>
-                    <th>Total</th>
+                    <th>{{ __('accounting::filament/clusters/reporting.common.total') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -164,7 +164,7 @@
                 @endforeach
 
                 <tr class="total-row">
-                    <td>Total</td>
+                    <td>{{ __('accounting::filament/clusters/reporting.common.total') }}</td>
                     <td>{{ number_format($totalAtDate, 2) }}</td>
                     <td>{{ number_format($totalPeriod1, 2) }}</td>
                     <td>{{ number_format($totalPeriod2, 2) }}</td>

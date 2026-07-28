@@ -2,16 +2,20 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions;
 
+use Closure;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Throwable;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Models\Order;
 
 class ConfirmAction extends Action
 {
+    protected bool|Closure $hasDatabaseTransactions = true;
+
     public static function getDefaultName(): ?string
     {
         return 'purchases.orders.confirm';
@@ -26,13 +30,24 @@ class ConfirmAction extends Action
             ->requiresConfirmation()
             ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'gray' : 'primary')
             ->action(function (Order $record, Component $livewire): void {
-                $record = PurchaseOrder::confirmPurchaseOrder($record);
-                $livewire->updateForm();
-                Notification::make()
-                    ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/confirm.action.notification.success.title'))
-                    ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/confirm.action.notification.success.body'))
-                    ->success()
-                    ->send();
+                try {
+                    $record = PurchaseOrder::confirmPurchaseOrder($record);
+
+                    $livewire->updateForm();
+
+                    Notification::make()
+                        ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/confirm.action.notification.success.title'))
+                        ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/confirm.action.notification.success.body'))
+                        ->success()
+                        ->send();
+                } catch (Throwable $e) {
+                    Notification::make()
+                        ->danger()
+                        ->body($e->getMessage())
+                        ->send();
+
+                    $this->halt(shouldRollBackDatabaseTransaction: true);
+                }
             })
             ->visible(function () {
                 $record = $this->getRecord();

@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater as BaseRepeater;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Table\Concerns\HasColumnManager;
+use Illuminate\Support\Arr;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
 class Repeater extends BaseRepeater
@@ -14,6 +15,16 @@ class Repeater extends BaseRepeater
     use HasColumnManager;
 
     protected ?string $columnManagerSessionKey = null;
+
+    /**
+     * @var array<Action | Closure>
+     */
+    protected array $footerActions = [];
+
+    /**
+     * @var array<Action> | null
+     */
+    protected ?array $cachedFooterActions = null;
 
     protected bool|Closure|null $isRepeaterHasTableView = false;
 
@@ -43,6 +54,48 @@ class Repeater extends BaseRepeater
     public function hasTableView(): bool
     {
         return $this->evaluate($this->isRepeaterHasTableView) || filled($this->getTableColumns());
+    }
+
+    /**
+     * @param  array<Action | Closure>  $actions
+     */
+    public function footerActions(array $actions): static
+    {
+        $this->footerActions = [
+            ...$this->footerActions,
+            ...$actions,
+        ];
+
+        $this->registerActions($actions);
+
+        return $this;
+    }
+
+    /**
+     * @return array<Action>
+     */
+    public function getFooterActions(): array
+    {
+        return $this->cachedFooterActions ??= $this->cacheFooterActions();
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function cacheFooterActions(): array
+    {
+        $this->cachedFooterActions = [];
+
+        foreach ($this->footerActions as $footerAction) {
+            foreach (Arr::wrap($this->evaluate($footerAction)) as $action) {
+                $this->cachedFooterActions[$action->getName()] = $this->getAction($action->getName())
+                    ?? $this->prepareAction(
+                        $action->defaultColor('gray')->defaultSize(Size::Small),
+                    );
+            }
+        }
+
+        return $this->cachedFooterActions;
     }
 
     public function getColumnManagerSessionKey(): string

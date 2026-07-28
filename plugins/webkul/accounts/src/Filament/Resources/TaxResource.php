@@ -57,7 +57,7 @@ class TaxResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     public static function form(Schema $schema): Schema
     {
@@ -409,7 +409,8 @@ class TaxResource extends Resource
                         ),
                 ]),
             ])
-            ->reorderable('sort', 'desc');
+            ->reorderable('sort', direction: 'desc')
+            ->defaultSort('sort', 'desc');
     }
 
     public static function infolist(Schema $schema): Schema

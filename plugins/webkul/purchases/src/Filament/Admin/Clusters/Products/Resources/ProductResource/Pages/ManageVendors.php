@@ -21,7 +21,7 @@ class ManageVendors extends ManageRelatedRecords
 
     protected static string $resource = ProductResource::class;
 
-    protected static string $relationship = 'supplierInformation';
+    protected static string $relationship = 'sellers';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
@@ -83,7 +83,7 @@ class ManageVendors extends ManageRelatedRecords
                         } else {
                             $data['product_id'] = $this->getOwnerRecord()->id;
 
-                            $this->getOwnerRecord()->supplierInformation()->create($data);
+                            $this->getOwnerRecord()->sellers()->create($data);
                         }
                     })
                     ->successNotification(

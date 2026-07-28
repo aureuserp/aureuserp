@@ -31,7 +31,7 @@ class ViewEmployee extends ViewRecord
 
     private function getActivityPlans(): mixed
     {
-        return ActivityPlan::where('plugin', 'employees')->pluck('name', 'id');
+        return ActivityPlan::employees()->pluck('name', 'id');
     }
 
     protected function mutateFormDataBeforeFill(array $data): array

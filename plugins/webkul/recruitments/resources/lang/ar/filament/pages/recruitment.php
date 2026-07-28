@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'التوظيف',
-        'group' => 'لوحة التحكم',
     ],
 
     'filters-form' => [
@@ -23,6 +22,7 @@ return [
         ],
 
         'start-date' => 'تاريخ البداية',
+        'date-range' => 'النطاق الزمني',
         'end-date'   => 'تاريخ النهاية',
     ],
 ];

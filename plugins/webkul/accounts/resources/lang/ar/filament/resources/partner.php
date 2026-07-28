@@ -68,11 +68,11 @@ return [
                         'title' => 'الأتمتة',
 
                         'fields' => [
-                            'auto-post-bills' => 'نشر الفواتير تلقائياً',
+                            'auto-post-bills'                => 'نشر الفواتير تلقائياً',
                             'ignore-abnormal-invoice-amount' => 'تجاهل مبلغ الفاتورة غير العادي',
-                            'ignore-abnormal-invoice-date' => 'تجاهل تاريخ الفاتورة غير العادي',
+                            'ignore-abnormal-invoice-date'   => 'تجاهل تاريخ الفاتورة غير العادي',
                         ],
-                    ]
+                    ],
                 ],
             ],
 
@@ -83,7 +83,7 @@ return [
     ],
 
     'infolist' => [
-        
+
         'tabs' => [
             'sales-purchases' => [
                 'fieldsets' => [
@@ -144,11 +144,11 @@ return [
                         'title' => 'الأتمتة',
 
                         'entries' => [
-                            'auto-post-bills' => 'نشر الفواتير تلقائياً',
+                            'auto-post-bills'                => 'نشر الفواتير تلقائياً',
                             'ignore-abnormal-invoice-amount' => 'تجاهل مبلغ الفاتورة غير العادي',
-                            'ignore-abnormal-invoice-date' => 'تجاهل تاريخ الفاتورة غير العادي',
+                            'ignore-abnormal-invoice-date'   => 'تجاهل تاريخ الفاتورة غير العادي',
                         ],
-                    ]
+                    ],
                 ],
             ],
 

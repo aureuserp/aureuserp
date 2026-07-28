@@ -166,8 +166,10 @@
                             @if ($isAdminPanel)
                                 {{-- Admin panel: show active group name as a plain bold heading --}}
                                 <li class="fi-topbar-item">
-                                    <span class="fi-topbar-item-btn cursor-default px-3 py-2 text-xl font-bold">
-                                        {{ $groupLabel }}
+                                    <span class="px-3 py-2 text-xl font-bold">
+                                        <a {{ \Filament\Support\generate_href_html($group->getItems()->first()->getUrl()) }}>
+                                            {{ $groupLabel }}
+                                        </a>
                                     </span>
                                 </li>
 

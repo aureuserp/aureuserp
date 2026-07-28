@@ -47,7 +47,7 @@ class MilestoneResource extends Resource
             return true;
         }
 
-        return app(TaskSettings::class)->enable_milestones;
+        return settings(TaskSettings::class)->enable_milestones;
     }
 
     public static function form(Schema $schema): Schema

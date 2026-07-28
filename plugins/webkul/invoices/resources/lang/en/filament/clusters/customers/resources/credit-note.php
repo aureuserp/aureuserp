@@ -6,4 +6,10 @@ return [
     'navigation' => [
         'title' => 'Credit Notes',
     ],
+
+    'actions' => [
+        'open-product' => [
+            'tooltip' => 'Open product',
+        ],
+    ],
 ];

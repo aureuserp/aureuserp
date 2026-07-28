@@ -12,15 +12,24 @@ return [
     ],
 
     'notification' => [
+        'error' => [
+            'title' => 'فشل التحقق',
+        ],
+
         'warning' => [
             'lines-missing' => [
                 'title' => 'لا توجد كميات محجوزة',
                 'body'  => 'لا توجد كميات محجوزة للتحويل.',
             ],
 
+            'no-quantities-reserved' => [
+                'title' => 'No quantities are reserved',
+                'body'  => 'No quantities are reserved for the transfer.',
+            ],
+
             'lot-missing' => [
                 'title' => 'أدخل الدفعة/الرقم التسلسلي',
-                'body'  => 'تحتاج إلى إدخال رقم الدفعة/التسلسلي للمنتجات',
+                'body'  => 'تحتاج إلى إدخال رقم الدفعة/التسلسلي للمنتجات  :products',
             ],
 
             'serial-qty' => [

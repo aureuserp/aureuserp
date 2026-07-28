@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Inventory\Models\PackageType;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
 
 /**
  * @extends Factory<PackageType>
@@ -33,7 +34,7 @@ class PackageTypeFactory extends Factory
             'package_carrier_type' => null,
 
             // Relationships
-            'company_id' => \Webkul\Support\Models\Company::factory(),
+            'company_id' => Company::factory(),
             'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }

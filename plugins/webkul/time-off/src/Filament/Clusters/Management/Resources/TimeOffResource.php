@@ -22,6 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\CreateTimeOff;
@@ -127,6 +128,7 @@ class TimeOffResource extends Resource
                     ->collapsible(),
             ])
             ->recordActions([
+                ActivityTableAction::make(),
                 ActionGroup::make([
                     Action::make('approve')
                         ->icon('heroicon-o-check-circle')

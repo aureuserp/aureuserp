@@ -43,7 +43,10 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
 
     public $reconciledPayments = null;
 
-    protected $listeners = ['itemUpdated' => 'refreshSummary'];
+    protected $listeners = [
+        'itemUpdated'          => 'refreshSummary',
+        'refreshInvoiceSummary' => 'refreshFromRecord',
+    ];
 
     public function refreshSummary($totals)
     {
@@ -54,10 +57,15 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
         $this->rounding = $totals['rounding'];
     }
 
+    public function refreshFromRecord()
+    {
+        $this->record?->refresh();
+    }
+
     public function reconcileAction(): Action
     {
         return Action::make('reconcile')
-            ->label('Add')
+            ->label(__('accounts::filament/resources/invoice.summary.actions.reconcile.label'))
             ->icon('heroicon-o-check-circle')
             ->size('xs')
             ->requiresConfirmation()
@@ -75,7 +83,7 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
     public function unReconcileAction(): Action
     {
         return Action::make('unReconcile')
-            ->label('Unlink')
+            ->label(__('accounts::filament/resources/invoice.summary.actions.unreconcile.label'))
             ->icon('heroicon-o-x-circle')
             ->size('xs')
             ->requiresConfirmation()

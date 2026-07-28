@@ -13,7 +13,7 @@ trait PDFHandler
      * Generate a PDF from HTML content.
      *
      * @param  string  $html  HTML content to convert to PDF.
-     * @return PDF Returns the generated PDF instance.
+     * @return Pdf Returns the generated PDF instance.
      */
     protected function generatePDF(string $html)
     {

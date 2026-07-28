@@ -12,6 +12,8 @@ class Category extends BaseCategory
 {
     use HasChatter;
 
+    public const ACTIVITY_PLAN_PLUGIN = 'invoices';
+
     public function __construct(array $attributes = [])
     {
         $this->mergeFillable([

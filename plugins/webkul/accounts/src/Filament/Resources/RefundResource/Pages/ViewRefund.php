@@ -22,7 +22,8 @@ class ViewRefund extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\PreviewAction::make()
                 ->setTemplate('accounts::refund/actions/preview.index'),
             BaseActions\PayAction::make(),

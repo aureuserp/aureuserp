@@ -26,6 +26,7 @@ class ViewPartner extends ViewRecord
     {
         return [
             ChatterAction::make()
+                ->activityPlans($this->getRecord()->activityPlans())
                 ->resource(static::$resource),
             EditAction::make(),
             DeleteAction::make()

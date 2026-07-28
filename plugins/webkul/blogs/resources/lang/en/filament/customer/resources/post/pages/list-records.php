@@ -6,7 +6,7 @@ return [
     ],
 
     'empty' => [
-        'title' => 'No blog posts found',
+        'title'       => 'No blog posts found',
         'description' => 'Check back later for new content.',
     ],
 ];

@@ -37,16 +37,16 @@ class CurrencyController extends Controller
         Gate::authorize('viewAny', Currency::class);
 
         $currencies = QueryBuilder::for(Currency::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('symbol'),
                 AllowedFilter::exact('active'),
-            ])
-            ->allowedSorts(['id', 'name', 'symbol', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'symbol', 'created_at')
+            ->allowedIncludes(
                 'rates',
-            ])
+            )
             ->paginate();
 
         return CurrencyResource::collection($currencies);
@@ -77,9 +77,9 @@ class CurrencyController extends Controller
     public function show(string $id)
     {
         $currency = QueryBuilder::for(Currency::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'rates',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $currency);

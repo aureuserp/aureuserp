@@ -48,7 +48,7 @@ class VendorPriceListController extends Controller
         Gate::authorize('viewAny', ProductSupplier::class);
 
         $vendorPriceLists = QueryBuilder::for(ProductSupplier::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('partner_id'),
                 AllowedFilter::exact('product_id'),
@@ -56,9 +56,9 @@ class VendorPriceListController extends Controller
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::partial('product_name'),
                 AllowedFilter::partial('product_code'),
-            ])
-            ->allowedSorts(['id', 'price', 'min_qty', 'delay', 'starts_at', 'ends_at', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'price', 'min_qty', 'delay', 'starts_at', 'ends_at', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return VendorPriceListResource::collection($vendorPriceLists);
@@ -89,7 +89,7 @@ class VendorPriceListController extends Controller
     public function show(string $id)
     {
         $vendorPriceList = QueryBuilder::for(ProductSupplier::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $vendorPriceList);

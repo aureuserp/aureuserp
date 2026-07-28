@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Webkul\Product\Http\Requests\ProductRequest as BaseProductRequest;
 
 class ProductRequest extends BaseProductRequest
@@ -9,7 +10,7 @@ class ProductRequest extends BaseProductRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

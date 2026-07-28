@@ -95,15 +95,15 @@ class FieldsColumnManager
     protected static function getColumnType(Field $field): string
     {
         return match ($field->type) {
-            'text' => static::getTextColumnType($field),
+            'text'                           => static::getTextColumnType($field),
             'textarea', 'editor', 'markdown' => 'text',
-            'radio'  => 'string',
-            'select' => $field->is_multiselect ? 'json' : 'string',
-            'checkbox', 'toggle' => 'boolean',
-            'checkbox_list' => 'json',
-            'datetime'      => 'datetime',
-            'color'         => 'string',
-            default         => 'string'
+            'radio'                          => 'string',
+            'select'                         => $field->is_multiselect ? 'json' : 'string',
+            'checkbox', 'toggle'             => 'boolean',
+            'checkbox_list'                  => 'json',
+            'datetime'                       => 'datetime',
+            'color'                          => 'string',
+            default                          => 'string'
         };
     }
 

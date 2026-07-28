@@ -12,7 +12,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
@@ -56,7 +55,7 @@ class StorageCategoryResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_locations;
+        return settings(WarehouseSettings::class)->enable_locations;
     }
 
     public static function getNavigationGroup(): string
@@ -216,23 +215,6 @@ class StorageCategoryResource extends Resource
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
-    }
-
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        $route = request()->route()?->getName() ?? session('current_route');
-
-        if ($route && $route != 'livewire.update') {
-            session(['current_route' => $route]);
-        } else {
-            $route = session('current_route');
-        }
-
-        if ($route === self::getRouteBaseName().'.index') {
-            return SubNavigationPosition::Start;
-        }
-
-        return SubNavigationPosition::Top;
     }
 
     public static function getRecordSubNavigation(Page $page): array

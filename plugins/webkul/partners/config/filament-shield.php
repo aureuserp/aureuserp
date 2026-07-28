@@ -18,12 +18,12 @@ return [
     'resources' => [
         'manage' => [
             BankAccountResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            AddressResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            BankResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            IndustryResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            PartnerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TagResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TitleResource::class => [...$basic, ...$delete],
+            AddressResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            BankResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            IndustryResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PartnerResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TagResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TitleResource::class       => [...$basic, ...$delete],
         ],
         'exclude' => [],
     ],

@@ -23,7 +23,7 @@ class PrintRFQAction extends Action
         $this
             ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/print-rfq.label'))
             ->action(function (Order $record, Component $livewire) {
-                $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
+                $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
                     'records'  => [$record],
                 ]);
 

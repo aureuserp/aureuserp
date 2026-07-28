@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\TestCase;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 */
 
 pest()
-    ->extend(Tests\TestCase::class)
+    ->extend(TestCase::class)
     ->use(DatabaseTransactions::class)
     ->in('Feature', '../plugins/*/*/tests/Feature');
 

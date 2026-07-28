@@ -36,20 +36,20 @@ class CategoryController extends Controller
         Gate::authorize('viewAny', Category::class);
 
         $categories = QueryBuilder::for(Category::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('parent_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'created_at')
+            ->allowedIncludes(
                 'parent',
                 'children',
                 'creator',
                 'propertyAccountIncome',
                 'propertyAccountExpense',
                 'propertyAccountDownPayment',
-            ])
+            )
             ->paginate();
 
         return CategoryResource::collection($categories);
@@ -80,14 +80,14 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         $category = QueryBuilder::for(Category::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'parent',
                 'children',
                 'creator',
                 'propertyAccountIncome',
                 'propertyAccountExpense',
                 'propertyAccountDownPayment',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $category);

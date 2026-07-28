@@ -1,10 +1,13 @@
-import { test } from "../../setup";
-import { SalesFlowPage } from "../../pages/05_salesFlow";
+import { test, withAdminPage } from "../../setup";
+import { SalesFlowPage } from "../../pages/04_salesManagement";
+
 
 test.describe("Sales Customers E2E", () => {
-    test.beforeAll(async ({ adminPage }) => {
-        const salesPage = new SalesFlowPage(adminPage);
-        await salesPage.ensureSalesPluginInstalled();
+    test.beforeAll(async ({ browser }) => {
+        await withAdminPage(browser, async (adminPage) => {
+            const salesPage = new SalesFlowPage(adminPage);
+            await salesPage.ensureSalesPluginInstalled();
+        });
     });
 
     test("Customers Listing - Loads Table", async ({ adminPage }) => {

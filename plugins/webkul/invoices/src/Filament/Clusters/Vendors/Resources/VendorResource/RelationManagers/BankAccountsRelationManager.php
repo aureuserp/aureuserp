@@ -4,6 +4,4 @@ namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Rela
 
 use Webkul\Account\Filament\Resources\VendorResource\RelationManagers\BankAccountsRelationManager as BaseBankAccountsRelationManager;
 
-class BankAccountsRelationManager extends BaseBankAccountsRelationManager
-{
-}
+class BankAccountsRelationManager extends BaseBankAccountsRelationManager {}

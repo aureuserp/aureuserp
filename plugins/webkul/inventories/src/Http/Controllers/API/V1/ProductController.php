@@ -59,7 +59,7 @@ class ProductController extends Controller
         Gate::authorize('viewAny', Product::class);
 
         $products = QueryBuilder::for(Product::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('type'),
@@ -70,9 +70,9 @@ class ProductController extends Controller
                 AllowedFilter::exact('is_storable'),
                 AllowedFilter::exact('responsible_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'price', 'cost', 'created_at', 'sort'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'price', 'cost', 'created_at', 'sort')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return ProductResource::collection($products);
@@ -116,7 +116,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $product = QueryBuilder::for(Product::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $product);

@@ -10,9 +10,12 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Exceptions\Cancel;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\FullCalendar\Filament\Actions\CreateAction;
 use Webkul\FullCalendar\Filament\Actions\DeleteAction;
 use Webkul\FullCalendar\Filament\Actions\EditAction;
@@ -117,17 +120,46 @@ class CalendarWidget extends FullCalendarWidget
                 ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.title'))
                 ->icon('heroicon-o-pencil-square')
                 ->color('warning')
-                ->action(function ($data, $record, EditAction $action) {
-                    $data = $this->mutateTimeOffData($data, $this->record?->id, $action);
+                ->action(function (array $data, $record, EditAction $action) {
+                    try {
+                        $employee = Auth::user()?->employee;
 
-                    $record->update($data);
+                        if (! $employee) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('time-off::filament/widgets/calendar-widget.notifications.employee-not-found.title'))
+                                ->body(__('time-off::filament/widgets/calendar-widget.notifications.employee-not-found.body'))
+                                ->send();
 
-                    Notification::make()
-                        ->success()
-                        ->title(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.title'))
-                        ->body(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.body'))
-                        ->send();
-                    $action->cancel();
+                            $action->cancel();
+                        }
+
+                        $data['employee_id'] = $employee?->id;
+
+                        $data = $this->mutateTimeOffData($data, $this->record?->id, $action);
+
+                        $record->update($data);
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.title'))
+                            ->body(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.body'))
+                            ->send();
+
+                        $action->cancel();
+                    } catch (Halt | Cancel $exception) {
+                        throw $exception;
+                    } catch (Throwable $exception) {
+                        report($exception);
+
+                        Notification::make()
+                            ->danger()
+                            ->title(__('time-off::filament/widgets/calendar-widget.notifications.error.title'))
+                            ->body(__('time-off::filament/widgets/calendar-widget.notifications.error.body'))
+                            ->send();
+
+                        $action->cancel();
+                    }
                 })
                 ->mountUsing(
                     function (Schema $schema, array $arguments, $livewire) {
@@ -170,18 +202,46 @@ class CalendarWidget extends FullCalendarWidget
                 ->label(__('time-off::filament/widgets/calendar-widget.header-actions.create.title'))
                 ->modalDescription(__('time-off::filament/widgets/calendar-widget.header-actions.create.description'))
                 ->color('success')
-                ->action(function ($data, CreateAction $action) {
-                    $data = $this->mutateTimeOffData($data, $this->record?->id, $action);
+                ->action(function (array $data, CreateAction $action) {
+                    try {
+                        $employee = Auth::user()?->employee;
 
-                    Leave::create($data);
+                        if (! $employee) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('time-off::filament/widgets/calendar-widget.notifications.employee-not-found.title'))
+                                ->body(__('time-off::filament/widgets/calendar-widget.notifications.employee-not-found.body'))
+                                ->send();
 
-                    Notification::make()
-                        ->success()
-                        ->title(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.title'))
-                        ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.body'))
-                        ->send();
+                            $action->cancel();
+                        }
 
-                    $action->cancel();
+                        $data['employee_id'] = $employee?->id;
+
+                        $data = $this->mutateTimeOffData($data, $this->record?->id, $action);
+
+                        Leave::create($data);
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.title'))
+                            ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.body'))
+                            ->send();
+
+                        $action->cancel();
+                    } catch (Halt | Cancel $exception) {
+                        throw $exception;
+                    } catch (Throwable $exception) {
+                        report($exception);
+
+                        Notification::make()
+                            ->danger()
+                            ->title(__('time-off::filament/widgets/calendar-widget.notifications.error.title'))
+                            ->body(__('time-off::filament/widgets/calendar-widget.notifications.error.body'))
+                            ->send();
+
+                        $action->cancel();
+                    }
                 })
                 ->mountUsing(fn (Schema $schema, array $arguments) => $schema->fill($arguments)),
         ];

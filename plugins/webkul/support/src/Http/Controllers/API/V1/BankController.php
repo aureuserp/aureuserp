@@ -40,7 +40,7 @@ class BankController extends Controller
         Gate::authorize('viewAny', Bank::class);
 
         $banks = QueryBuilder::for(Bank::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('code'),
@@ -48,13 +48,13 @@ class BankController extends Controller
                 AllowedFilter::exact('country_id'),
                 AllowedFilter::exact('state_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'code', 'city', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'code', 'city', 'created_at')
+            ->allowedIncludes(
                 'country',
                 'state',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return BankResource::collection($banks);
@@ -87,11 +87,11 @@ class BankController extends Controller
     public function show(string $id)
     {
         $bank = QueryBuilder::for(Bank::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'country',
                 'state',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $bank);

@@ -3,8 +3,8 @@
 namespace Webkul\Account\Filament\Resources\VendorResource\Pages;
 
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Account\Filament\Resources\VendorResource;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\EditPartner;
+use Webkul\Account\Filament\Resources\VendorResource;
 
 class EditVendor extends EditPartner
 {

@@ -18,7 +18,8 @@ class ViewProductCategory extends ViewCategory
         return [
 
             ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             ...parent::getHeaderActions(),
         ];
     }

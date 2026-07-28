@@ -28,6 +28,8 @@ class Payment extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
+    public const ACTIVITY_PLAN_PLUGIN = 'accounts';
+
     protected $table = 'accounts_account_payments';
 
     public function getModelTitle(): string

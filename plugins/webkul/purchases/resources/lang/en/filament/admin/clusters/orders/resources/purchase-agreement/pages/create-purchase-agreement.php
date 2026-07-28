@@ -9,7 +9,7 @@ return [
     ],
 
     'confirmation' => [
-        'heading' => 'Similar confirmed agreement exists',
+        'heading'     => 'Similar confirmed agreement exists',
         'description' => 'This vendor already has a confirmed purchase agreement that is not closed or canceled. Do you want to continue creating this purchase agreement?',
     ],
 ];

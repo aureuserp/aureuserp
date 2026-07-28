@@ -64,13 +64,13 @@ class OrderInvoiceController extends Controller
         Gate::authorize('view', $orderModel);
 
         $invoices = QueryBuilder::for($orderModel->accountMoves()->where('move_type', MoveType::OUT_INVOICE))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('payment_state'),
-            ])
-            ->allowedSorts(['id', 'name', 'date', 'amount_total', 'state', 'payment_state', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'date', 'amount_total', 'state', 'payment_state', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return MoveResource::collection($invoices);

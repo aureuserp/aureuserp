@@ -38,11 +38,6 @@ class EditApplicant extends EditRecord
 
     protected array $interviewerChanges = [];
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -113,7 +108,8 @@ class EditApplicant extends EditRecord
                     return redirect(EmployeeResource::getUrl('view', ['record' => $employee]));
                 }),
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             Action::make('createEmployee')
                 ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.create-employee'))
                 ->hidden(fn ($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)
@@ -159,11 +155,11 @@ class EditApplicant extends EditRecord
                             ->live()
                             ->default(true)
                             ->visible(fn (Get $get) => $get('refuse_reason_id'))
-                            ->label('Notify'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.form.fields.notify')),
                         TextInput::make('email')
                             ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
-                            ->label('Email To'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.form.fields.email-to')),
                     ]);
                 })
                 ->action(function (array $data, Applicant $record) {

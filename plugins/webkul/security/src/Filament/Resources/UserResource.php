@@ -50,6 +50,7 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Enums\NavigationGroup;
 
 class UserResource extends Resource
 {
@@ -66,9 +67,9 @@ class UserResource extends Resource
         return __('security::filament/resources/user.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('security::filament/resources/user.navigation.group');
+        return NavigationGroup::Setting;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -196,9 +197,15 @@ class UserResource extends Resource
                                     ->schema([
                                         Select::make('language')
                                             ->label(__('security::filament/resources/user.form.sections.lang-and-status.fields.language'))
-                                            ->options([
-                                                'en' => __('English'),
-                                            ])
+                                            ->options(
+                                                collect(config('app.supported_locales', []))
+                                                    ->mapWithKeys(fn ($meta, $code) => [
+                                                        $code => ($meta['native'] ?? $code).' ('.($meta['label'] ?? $code).')',
+                                                    ])
+                                                    ->all()
+                                            )
+                                            ->default(config('app.locale'))
+                                            ->native(false)
                                             ->searchable(),
                                         Toggle::make('is_active')
                                             ->label(__('security::filament/resources/user.form.sections.lang-and-status.fields.status'))
@@ -566,7 +573,7 @@ class UserResource extends Resource
 
     protected static function getProtectedAdminRoleIds(): array
     {
-        $defaultRoleId = app(UserSettings::class)->default_role_id;
+        $defaultRoleId = settings(UserSettings::class)->default_role_id;
 
         $candidateNames = array_values(array_filter([
             config('filament-shield.panel_user.name'),

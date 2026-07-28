@@ -26,7 +26,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Experienced Developer',
                 'work_email'     => 'paul@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'America/New_York',
@@ -35,7 +35,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Junior Developer',
                 'work_email'     => 'john@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'Europe/London',
@@ -44,7 +44,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Project Manager',
                 'work_email'     => 'jane@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'Asia/Kolkata',
@@ -53,7 +53,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Team Lead',
                 'work_email'     => 'ravi@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'Australia/Sydney',
@@ -62,7 +62,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'QA Engineer',
                 'work_email'     => 'emily@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'America/Los_Angeles',
@@ -71,7 +71,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'UX Designer',
                 'work_email'     => 'michael@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'Asia/Tokyo',
@@ -80,7 +80,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Backend Developer',
                 'work_email'     => 'hiro@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'Africa/Johannesburg',
@@ -89,7 +89,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'HR Manager',
                 'work_email'     => 'linda@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'Europe/Berlin',
@@ -98,7 +98,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Frontend Developer',
                 'work_email'     => 'hans@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
             [
                 'time_zone'      => 'America/Chicago',
@@ -107,7 +107,7 @@ class EmployeeSeeder extends Seeder
                 'job_title'      => 'Data Scientist',
                 'work_email'     => 'grace@example.com',
                 'employee_type'  => 'employee',
-                'is_active'      => 1,
+                'is_active'      => true,
             ],
         ];
 

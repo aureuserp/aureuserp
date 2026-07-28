@@ -16,7 +16,7 @@ class Product extends BaseProduct
         parent::__construct($attributes);
     }
 
-    public function supplierInformation(): HasMany
+    public function sellers(): HasMany
     {
         if ($this->is_configurable) {
             return $this->hasMany(ProductSupplier::class)

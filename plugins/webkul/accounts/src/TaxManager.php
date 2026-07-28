@@ -3,12 +3,14 @@
 namespace Webkul\Account;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Models\TaxPartition;
 use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Partner\Models\Partner;
@@ -17,79 +19,6 @@ use Webkul\Support\Models\Currency;
 
 class TaxManager
 {
-    public static function collect($taxIds, $subTotal, $quantity)
-    {
-        if (empty($taxIds)) {
-            return [$subTotal, 0, []];
-        }
-
-        $taxes = Tax::whereIn('id', $taxIds)
-            ->orderBy('sort')
-            ->get();
-
-        $taxesComputed = [];
-
-        $totalTaxAmount = 0;
-
-        $adjustedSubTotal = $subTotal;
-
-        foreach ($taxes as $tax) {
-            $amount = floatval($tax->amount);
-
-            if (! $tax->price_include_override) {
-                $tax->price_include_override = app(TaxesSettings::class)->account_price_include ?? TaxIncludeOverride::TAX_INCLUDED;
-            }
-
-            $currentTaxBase = $adjustedSubTotal;
-
-            if ($tax->is_base_affected) {
-                foreach ($taxesComputed as $prevTax) {
-                    if ($prevTax['include_base_amount']) {
-                        $currentTaxBase += $prevTax['tax_amount'];
-                    }
-                }
-            }
-
-            $currentTaxAmount = 0;
-
-            if ($tax->price_include_override == TaxIncludeOverride::TAX_INCLUDED) {
-                if ($tax->amount_type == AmountType::PERCENT) {
-                    $taxFactor = $amount / 100;
-
-                    $currentTaxAmount = $currentTaxBase - ($currentTaxBase / (1 + $taxFactor));
-                } else {
-                    $currentTaxAmount = $amount * $quantity;
-
-                    if ($currentTaxAmount > $adjustedSubTotal) {
-                        $currentTaxAmount = $adjustedSubTotal;
-                    }
-                }
-
-                $adjustedSubTotal -= $currentTaxAmount;
-            } else {
-                if ($tax->amount_type == AmountType::PERCENT) {
-                    $currentTaxAmount = $currentTaxBase * $amount / 100;
-                } else {
-                    $currentTaxAmount = $amount * $quantity;
-                }
-            }
-
-            $taxesComputed[] = [
-                'tax_id'              => $tax->id,
-                'tax_amount'          => $currentTaxAmount,
-                'include_base_amount' => $tax->include_base_amount,
-            ];
-
-            $totalTaxAmount += $currentTaxAmount;
-        }
-
-        return [
-            round($adjustedSubTotal, 4),
-            round($totalTaxAmount, 4),
-            $taxesComputed,
-        ];
-    }
-
     public function prepareBaseLineForTaxesComputation(mixed $record, ...$args)
     {
         $getValue = function (string $field, mixed $fallback) use ($record, $args) {
@@ -328,7 +257,7 @@ class TaxManager
             foreach ($taxLines as $taxLine) {
                 $taxRepartitionLine = $taxLine['taxRepartitionLine'];
 
-                $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === 'refund']);
+                $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === DocumentType::REFUND]);
 
                 if (! isset($totalPerTaxLineKey[$taxLineKey])) {
                     $totalPerTaxLineKey[$taxLineKey] = [
@@ -579,7 +508,7 @@ class TaxManager
         return $baseLine;
     }
 
-    public function addAccountingDataToBaseLineTaxDetails($baseLine, $company)
+    public function addAccountingDataToBaseLineTaxDetails($baseLine, $company, $computeAllUseRawBaseLines = false)
     {
         $companyCurrency = $company->currency;
 
@@ -596,13 +525,13 @@ class TaxManager
 
             if ($taxData['is_reverse_charge']) {
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
-                    fn ($x) => $x->repartition_type === 'tax' && $x->factor < 0.0
+                    fn ($x) => $x->repartition_type === RepartitionType::TAX && $x->factor < 0.0
                 );
 
                 $taxRepartitionSign = -1.0;
             } else {
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
-                    fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
+                    fn ($x) => $x->repartition_type === RepartitionType::TAX && $x->factor >= 0.0
                 );
 
                 $taxRepartitionSign = 1.0;
@@ -616,7 +545,7 @@ class TaxManager
             $taxRepartitionsData = [];
 
             foreach ($taxRepartitions as $taxRepartition) {
-                $taxAmountCurrency = config('compute_all_use_raw_base_lines', false)
+                $taxAmountCurrency = $computeAllUseRawBaseLines
                     ? ($taxData['raw_tax_amount_currency'] ?? 0.0)
                     : ($taxData['tax_amount_currency'] ?? 0.0);
 
@@ -648,7 +577,7 @@ class TaxManager
                 ['tax_amount_currency', $currency],
                 ['tax_amount', $companyCurrency],
             ] as [$field, $fieldCurrency]) {
-                $taxAmount = config('compute_all_use_raw_base_lines', false)
+                $taxAmount = $computeAllUseRawBaseLines
                     ? ($taxData["raw_{$field}"] ?? 0.0)
                     : ($taxData[$field] ?? 0.0);
 
@@ -1024,11 +953,11 @@ class TaxManager
             'sorted_taxes'  => collect(),
         ];
 
-        $taxes = $taxes->sortBy('sequence');
+        $taxes = $taxes->sortBy('sort');
 
         foreach ($taxes as $tax) {
             if ($tax->amount_type === AmountType::GROUP) {
-                $children = $tax->childrenTaxes()->orderBy('sequence')->get();
+                $children = $tax->childrenTaxes()->orderBy('sort')->get();
 
                 $results['sorted_taxes'] = $results['sorted_taxes']->merge($children);
 
@@ -1203,5 +1132,121 @@ class TaxManager
         if ($taxAmount !== null) {
             $addTaxAmountToResults($tax, $taxAmount);
         }
+    }
+
+    public function computeAll(
+        mixed $taxes,
+        float $priceUnit,
+        $currency = null,
+        float $quantity = 1,
+        $product = null,
+        $partner = null,
+        bool $isRefund = false,
+        bool $handlePriceInclude = true,
+        bool $forcePriceInclude = false,
+        $roundingMethod = null,
+        bool $roundBase = false
+    ) {
+        if ($taxes->isEmpty()) {
+            $company = Auth::user()->defaultCompany;
+        } else {
+            $company = $taxes->first()->company;
+        }
+
+        $currency = $currency ?: $company->currency;
+
+        if ($forcePriceInclude) {
+            $specialMode = 'total_included';
+        } elseif (! $handlePriceInclude) {
+            $specialMode = 'total_excluded';
+        } else {
+            $specialMode = false;
+        }
+
+        $baseLine = $this->prepareBaseLineForTaxesComputation(
+            null,
+            partner: $partner,
+            currency: $currency,
+            product: $product,
+            taxes: $taxes,
+            priceUnit: $priceUnit,
+            quantity: $quantity,
+            isRefund: $isRefund,
+            specialMode: $specialMode
+        );
+
+        $baseLine = $this->addTaxDetailsInBaseLine($baseLine, $company, roundingMethod: $roundingMethod);
+
+        $baseLines = $this->addAccountingDataInBaseLinesTaxDetails([$baseLine], $company, true);
+
+        $baseLine = $baseLines[0];
+
+        $taxDetails = $baseLine['tax_details'];
+
+        $totalVoid = $totalExcluded = $taxDetails['raw_total_excluded_currency'];
+
+        $totalIncluded = $taxDetails['raw_total_included_currency'];
+
+        $calculatedTaxes = [];
+
+        foreach ($taxDetails['taxes_data'] as $taxData) {
+            $tax = $taxData['tax'];
+
+            foreach ($taxData['tax_reps_data'] as $taxRepData) {
+                $repLine = $taxRepData['tax_rep'];
+
+                $calculatedTaxes[] = [
+                    'id'                      => $tax->id,
+                    'name'                    => $tax->name,
+                    'amount'                  => $taxRepData['tax_amount_currency'],
+                    'base'                    => $taxData['raw_base_amount_currency'],
+                    'sort'                    => $tax->sort,
+                    'account_id'              => $taxRepData['account']->id,
+                    'analytic'                => $tax->analytic,
+                    'price_include'           => $tax->price_include,
+                    'tax_exigibility'         => $tax->tax_exigibility,
+                    'tax_repartition_line_id' => $repLine->id,
+                    'group'                   => $taxData['group'],
+                    'tax_ids'                 => $taxRepData['taxes']->pluck('id')->toArray(),
+                ];
+
+                if (! $repLine->account_id) {
+                    $totalVoid += $taxRepData['tax_amount_currency'];
+                }
+            }
+        }
+
+        if ($roundBase) {
+            $totalExcluded = $currency->round($totalExcluded);
+
+            $totalIncluded = $currency->round($totalIncluded);
+        }
+
+        return [
+            'taxes'          => $calculatedTaxes,
+            'total_excluded' => $totalExcluded,
+            'total_included' => $totalIncluded,
+            'total_void'     => $totalVoid,
+        ];
+    }
+
+    public function fixTaxIncludedPrice(float $price, $prodTaxes, $lineTaxes): float
+    {
+        $inclTaxes = $prodTaxes->filter(fn ($tax) => ! $lineTaxes->contains($tax) && $tax->price_include);
+
+        if ($inclTaxes->isNotEmpty()) {
+            return $this->computeAll($inclTaxes, $price)['total_excluded'];
+        }
+
+        return $price;
+    }
+
+    public function fixTaxIncludedPriceCompany(float $price, $prodTaxes, $lineTaxes, $company): float
+    {
+        $prodTaxes = $prodTaxes->filter(fn ($tax) => $tax->company_id === $company->id);
+
+        $lineTaxes = $lineTaxes->filter(fn ($tax) => $tax->company_id === $company->id);
+
+        return $this->fixTaxIncludedPrice($price, $prodTaxes, $lineTaxes);
     }
 }

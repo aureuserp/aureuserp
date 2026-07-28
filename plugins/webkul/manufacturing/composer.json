@@ -1,0 +1,30 @@
+{
+    "name": "webkul/manufacturing",
+    "description": "Manufacturing and production management",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Manufacturing\\ManufacturingServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Manufacturing\\": "src/",
+            "Webkul\\Manufacturing\\Database\\Factories\\": "database/factories/",
+            "Webkul\\Manufacturing\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Manufacturing\\Tests\\": "tests/"
+        }
+    }
+}

@@ -2,8 +2,8 @@
 
 namespace Webkul\Account\Filament\Resources\VendorResource\Pages;
 
-use Webkul\Account\Filament\Resources\VendorResource;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\ManageBankAccounts as BaseManageBankAccounts;
+use Webkul\Account\Filament\Resources\VendorResource;
 
 class ManageBankAccounts extends BaseManageBankAccounts
 {

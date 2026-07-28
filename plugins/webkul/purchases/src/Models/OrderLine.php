@@ -10,14 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Models\Tax;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move as InventoryMove;
 use Webkul\Inventory\Models\OrderPoint;
+use Webkul\Inventory\Models\ProcurementGroup;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Database\Factories\OrderLineFactory;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
+use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -62,6 +67,7 @@ class OrderLine extends Model implements Sortable
         'creator_id',
         'final_location_id',
         'order_point_id',
+        'procurement_group_id',
     ];
 
     protected $casts = [
@@ -136,6 +142,11 @@ class OrderLine extends Model implements Sortable
         return $this->hasMany(InventoryMove::class, 'purchase_order_line_id');
     }
 
+    public function moveDestinations(): BelongsToMany
+    {
+        return $this->belongsToMany(InventoryMove::class, 'purchases_order_line_moves', 'purchase_order_line_id', 'inventory_move_id');
+    }
+
     public function finalLocation(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'final_location_id');
@@ -144,6 +155,11 @@ class OrderLine extends Model implements Sortable
     public function orderPoint(): BelongsTo
     {
         return $this->belongsTo(OrderPoint::class, 'order_point_id');
+    }
+
+    public function procurementGroup(): BelongsTo
+    {
+        return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
     }
 
     protected static function newFactory(): OrderLineFactory
@@ -158,5 +174,77 @@ class OrderLine extends Model implements Sortable
         static::creating(function ($orderLine) {
             $orderLine->creator_id ??= Auth::id();
         });
+
+        static::created(function ($orderLine) {
+            if ($orderLine->order->state === OrderState::PURCHASE) {
+                PurchaseOrderFacade::createOrUpdateInventoryOperation(collect([$orderLine]));
+            }
+        });
+
+        static::updated(function ($orderLine) {
+            if ($orderLine->order->state !== OrderState::PURCHASE) {
+                return;
+            }
+
+            if ($orderLine->wasChanged('product_packaging_id')) {
+                $orderLine->inventoryMoves
+                    ->filter(fn ($move) => ! in_array($move->state, [MoveState::CANCELED, MoveState::DONE]))
+                    ->each->update(['product_packaging_id' => $orderLine->product_packaging_id]);
+            }
+
+            $previousProductQty = $orderLine->getOriginal('product_qty');
+
+            if ($orderLine->wasChanged('price_unit')) {
+                $orderLine->inventoryMoves
+                    ->filter(fn ($move) => ! in_array($move->state, [MoveState::CANCELED, MoveState::DONE])
+                        && $move->product_id === $orderLine->product_id
+                    )
+                    ->each->update(['price_unit' => $orderLine->getInventoryMovePriceUnit()]);
+            }
+
+            if (
+                $orderLine->wasChanged('product_qty')
+                && float_compare($previousProductQty, $orderLine->product_qty, precisionRounding: $orderLine->uom->rounding) !== 0
+            ) {
+                PurchaseOrderFacade::createOrUpdateInventoryOperation(collect([$orderLine]));
+            }
+        });
+    }
+
+    public function getInventoryMovePriceUnit(): float
+    {
+        $priceUnit = $this->price_unit;
+
+        if ($this->taxes->isNotEmpty()) {
+            $qty = $this->product_qty ?: 1;
+
+            $priceUnit = TaxFacade::computeAll(
+                $this->taxes,
+                $priceUnit,
+                currency: $this->order->currency,
+                quantity: $qty,
+                product: $this->product,
+                partner: $this->order->partner,
+                roundingMethod: 'round_globally',
+            )['total_void'];
+
+            $priceUnit = $priceUnit / $qty;
+        }
+
+        if ($this->uom->id !== $this->product->uom_id) {
+            $priceUnit *= $this->uom->factor / $this->product->uom->factor;
+        }
+
+        if ($this->order->currency_id !== $this->order->company->currency_id) {
+            $priceUnit = $this->order->currency->convert(
+                $priceUnit,
+                $this->order->company->currency,
+                $this->company,
+                $this->date_order ?? now()->toDateString(),
+                round: false,
+            );
+        }
+
+        return float_round($priceUnit, precisionDigits: 2);
     }
 }

@@ -22,11 +22,6 @@ class EditPartner extends EditRecord
         return __('partners::filament/resources/partner/pages/edit-partner.title');
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): Notification
     {
         return Notification::make()
@@ -39,6 +34,7 @@ class EditPartner extends EditRecord
     {
         return [
             ChatterAction::make()
+                ->activityPlans($this->getRecord()->activityPlans())
                 ->resource(static::$resource),
             ViewAction::make(),
             DeleteAction::make()

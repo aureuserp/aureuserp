@@ -10,6 +10,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryR
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\UOMCategoryResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
 use Webkul\Inventory\Filament\Clusters\Operations;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
@@ -34,26 +35,27 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            PackagingResource::class => [...$basic, ...$delete, ...$reorder],
-            ReceiptResource::class => [...$basic, ...$delete],
-            DeliveryResource::class => [...$basic, ...$delete],
-            InternalResource::class => [...$basic, ...$delete],
-            DropshipResource::class => [...$basic, ...$delete],
-            QuantityResource::class => [...$basic, ...$delete],
-            ScrapResource::class => [...$basic, ...$delete],
-            PackageResource::class => [...$basic, ...$delete],
-            LotResource::class => [...$basic, ...$delete],
-            WarehouseResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            LocationResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            OperationTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            RuleResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            StorageCategoryResource::class => [...$basic, ...$delete, ...$reorder],
-            ProductCategoryResource::class => [...$basic, ...$delete],
+            PackagingResource::class        => [...$basic, ...$delete, ...$reorder],
+            ReceiptResource::class          => [...$basic, ...$delete],
+            DeliveryResource::class         => [...$basic, ...$delete],
+            InternalResource::class         => [...$basic, ...$delete],
+            DropshipResource::class         => [...$basic, ...$delete],
+            QuantityResource::class         => [...$basic, ...$delete],
+            ScrapResource::class            => [...$basic, ...$delete],
+            PackageResource::class          => [...$basic, ...$delete],
+            LotResource::class              => [...$basic, ...$delete],
+            WarehouseResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            LocationResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OperationTypeResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            RuleResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            StorageCategoryResource::class  => [...$basic, ...$delete, ...$reorder],
+            ProductCategoryResource::class  => [...$basic, ...$delete],
             ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            PackageTypeResource::class => [...$basic, ...$delete, ...$reorder],
-            RouteResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            ReplenishmentResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            ProductResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            PackageTypeResource::class      => [...$basic, ...$delete, ...$reorder],
+            RouteResource::class            => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ReplenishmentResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ProductResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            UOMCategoryResource::class      => [...$basic, ...$delete],
         ],
         'exclude' => [
             OperationResource::class,

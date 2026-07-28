@@ -86,6 +86,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | Single source of truth for the languages available across the admin
+    | panel, customer panel, user preferences, translation tooling and
+    | language-switcher UI. Add a new language here and it will appear
+    | everywhere automatically.
+    |
+    */
+
+    'supported_locales' => [
+        'en' => [
+            'label'  => 'English',
+            'native' => 'English',
+            'flag'   => 'us',
+            'rtl'    => false,
+        ],
+        'ar' => [
+            'label'  => 'Arabic',
+            'native' => 'العربية',
+            'flag'   => 'sa',
+            'rtl'    => true,
+        ],
+        'es' => [
+            'label'  => 'Spanish',
+            'native' => 'Español',
+            'flag'   => 'es',
+            'rtl'    => false,
+        ],
+        'pt_BR' => [
+            'label'  => 'Portuguese (Brazil)',
+            'native' => 'Português (Brasil)',
+            'flag'   => 'br',
+            'rtl'    => false,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Base Currency Code
     |--------------------------------------------------------------------------
     |

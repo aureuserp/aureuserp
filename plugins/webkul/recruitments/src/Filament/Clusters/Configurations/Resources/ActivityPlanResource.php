@@ -217,9 +217,7 @@ class ActivityPlanResource extends BaseActivityPlanResource
                             ->body(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.empty-state.create.notification.body')),
                     ),
             ])
-            ->modifyQueryUsing(function ($query) {
-                $query->where('plugin', 'recruitments');
-            });
+            ->modifyQueryUsing(fn ($query) => $query->recruitments());
     }
 
     public static function getPages(): array

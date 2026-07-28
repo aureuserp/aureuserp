@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Filament\Customer\Clusters\Account\Resources;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Http\Middleware\Authenticate;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
@@ -32,6 +33,8 @@ class OrderResource extends Resource
     protected static ?string $cluster = Account::class;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string | array $routeMiddleware = [Authenticate::class];
 
     public static function table(Table $table): Table
     {
@@ -110,7 +113,7 @@ class OrderResource extends Resource
                                             ]);
 
                                             $record->addMessage([
-                                                'body' => __('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.accept.decline.message.body'),
+                                                'body' => __('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.decline.message.body'),
                                                 'type' => 'comment',
                                             ]);
 
@@ -130,7 +133,7 @@ class OrderResource extends Resource
                                         ->icon('heroicon-o-printer')
                                         ->action(function (Order $record) {
                                             if ($record->state == OrderState::SENT) {
-                                                $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
+                                                $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
                                                     'records'  => [$record],
                                                 ]);
 
@@ -141,7 +144,7 @@ class OrderResource extends Resource
                                                 }, 'Quotation-'.str_replace('/', '_', $record->name).'.pdf');
                                             }
 
-                                            $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
+                                            $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
                                                 'records'  => [$record],
                                             ]);
 
@@ -213,7 +216,8 @@ class OrderResource extends Resource
                                             return [
                                                 'record' => $record,
                                             ];
-                                        }),
+                                        })
+                                            ->key(fn (Order $record): string => 'order-products-'.$record->getKey()),
 
                                         /**
                                          * Order totals
@@ -277,7 +281,8 @@ class OrderResource extends Resource
                                                     ],
                                                 ],
                                             ];
-                                        }),
+                                        })
+                                            ->key(fn (Order $record): string => 'order-chatter-'.$record->getKey()),
                                     ]),
                             ]),
                     ])

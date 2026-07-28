@@ -12,15 +12,24 @@ return [
     ],
 
     'notification' => [
+        'error' => [
+            'title' => 'Validation Failed',
+        ],
+
         'warning' => [
             'lines-missing' => [
                 'title' => 'No quantities are reserved',
                 'body'  => 'No quantities are reserved for the transfer.',
             ],
 
+            'no-quantities-reserved' => [
+                'title' => 'No quantities are reserved',
+                'body'  => 'No quantities are reserved for the transfer.',
+            ],
+
             'lot-missing' => [
                 'title' => 'Supply Lot/Serial Number',
-                'body'  => 'You need to supply a Lot/Serial Number for products',
+                'body'  => 'You need to supply a Lot/Serial Number for products :products.',
             ],
 
             'serial-qty' => [

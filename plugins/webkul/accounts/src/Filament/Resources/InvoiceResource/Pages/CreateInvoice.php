@@ -4,12 +4,12 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Models\Journal;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateInvoice extends CreateRecord
@@ -26,11 +26,6 @@ class CreateInvoice extends CreateRecord
     }
 
     protected static string $resource = InvoiceResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getCreatedNotification(): ?Notification
     {

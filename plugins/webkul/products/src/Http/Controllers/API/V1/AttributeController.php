@@ -38,17 +38,17 @@ class AttributeController extends Controller
         Gate::authorize('viewAny', Attribute::class);
 
         $attributes = QueryBuilder::for(Attribute::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('type'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'type', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'type', 'sort', 'created_at')
+            ->allowedIncludes(
                 'options',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return AttributeResource::collection($attributes);
@@ -79,10 +79,10 @@ class AttributeController extends Controller
     public function show(string $id)
     {
         $attribute = QueryBuilder::for(Attribute::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'options',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $attribute);

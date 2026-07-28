@@ -40,17 +40,17 @@ class ProductAttributeController extends Controller
         Gate::authorize('view', $productModel);
 
         $productAttributes = QueryBuilder::for(ProductAttribute::where('product_id', $product))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('attribute_id'),
-            ])
-            ->allowedSorts(['id', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'sort', 'created_at')
+            ->allowedIncludes(
                 'attribute',
                 'values',
                 'creator',
                 'values.attributeOption',
-            ])
+            )
             ->paginate();
 
         return ProductAttributeResource::collection($productAttributes);
@@ -107,12 +107,12 @@ class ProductAttributeController extends Controller
         Gate::authorize('view', $productModel);
 
         $productAttribute = QueryBuilder::for(ProductAttribute::where('id', $attribute)->where('product_id', $product))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'attribute',
                 'values',
                 'creator',
                 'values.attributeOption',
-            ])
+            )
             ->firstOrFail();
 
         return new ProductAttributeResource($productAttribute);

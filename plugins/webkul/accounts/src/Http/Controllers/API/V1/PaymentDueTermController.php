@@ -42,16 +42,16 @@ class PaymentDueTermController extends Controller
         Gate::authorize('view', $paymentTermModel);
 
         $paymentDueTerms = QueryBuilder::for(PaymentDueTerm::where('payment_id', $paymentTerm))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('value'),
                 AllowedFilter::exact('delay_type'),
-            ])
-            ->allowedSorts(['id', 'nb_days', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'nb_days', 'created_at')
+            ->allowedIncludes(
                 'paymentTerm',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return PaymentDueTermResource::collection($paymentDueTerms);
@@ -93,10 +93,10 @@ class PaymentDueTermController extends Controller
         Gate::authorize('view', $paymentTermModel);
 
         $paymentDueTermModel = QueryBuilder::for(PaymentDueTerm::where('id', $paymentDueTerm)->where('payment_id', $paymentTerm))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'paymentTerm',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         return new PaymentDueTermResource($paymentDueTermModel);

@@ -268,9 +268,7 @@ class ActivityPlanResource extends Resource
                             ->body(__('employees::filament/clusters/configurations/resources/activity-plan.table.empty-state.create.notification.body')),
                     ),
             ])
-            ->modifyQueryUsing(function ($query) {
-                $query->where('plugin', 'employees');
-            });
+            ->modifyQueryUsing(fn ($query) => $query->employees());
     }
 
     public static function infolist(Schema $schema): Schema

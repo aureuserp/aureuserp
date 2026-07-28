@@ -67,6 +67,15 @@ class MoveFactory extends Factory
         ];
     }
 
+    public function demand(float $quantity, ?UOM $uom = null): static
+    {
+        return $this->state(fn (array $attributes) => array_merge([
+            'product_uom_qty' => $quantity,
+            'product_qty'     => null,
+            'quantity'        => 0,
+        ], $uom ? ['uom_id' => $uom->id] : []));
+    }
+
     public function confirmed(): static
     {
         return $this->state(fn (array $attributes) => [

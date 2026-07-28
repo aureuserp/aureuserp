@@ -45,6 +45,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Recruitment\Enums\ApplicationStatus;
@@ -252,7 +253,7 @@ class ApplicantResource extends Resource
                                             ->reactive()
                                             ->afterStateHydrated(function (Set $set, Get $get, $state) {
                                                 if (! $get('stage_id') && $state) {
-                                                    $set('stage_id', RecruitmentStage::where('is_default', 1)->first()->id ?? null);
+                                                    $set('stage_id', RecruitmentStage::where('is_default', true)->first()->id ?? null);
                                                 }
                                             })
                                             ->afterStateUpdated(function (Set $set, Get $get, ?string $state, ?string $old) {
@@ -263,7 +264,7 @@ class ApplicantResource extends Resource
                                                 }
 
                                                 if (is_null($old) && $state) {
-                                                    $set('stage_id', RecruitmentStage::where('is_default', 1)->first()->id ?? null);
+                                                    $set('stage_id', RecruitmentStage::where('is_default', true)->first()->id ?? null);
                                                 }
 
                                                 if (! is_null($old) && ! is_null($state)) {
@@ -661,6 +662,7 @@ class ApplicantResource extends Resource
             ->filtersFormColumns(2)
             ->filtersLayout(FiltersLayout::Dropdown)
             ->recordActions([
+                ActivityTableAction::make(),
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
@@ -822,12 +824,12 @@ class ApplicantResource extends Resource
                                             ->formatStateUsing(fn ($state) => $state['label'])
                                             ->color(fn ($state) => Color::generateV3Palette($state['color']))
                                             ->listWithLineBreaks()
-                                            ->label('Tags'),
+                                            ->label(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.entries.tags')),
                                         TextEntry::make('interviewer.name')
                                             ->icon('heroicon-o-user')
                                             ->placeholder('—')
                                             ->badge()
-                                            ->label('Interviewers'),
+                                            ->label(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.entries.interviewer')),
                                     ])
                                     ->columns(2),
                                 Section::make()

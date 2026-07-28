@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use BackedEnum;
+use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -15,7 +16,6 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,7 +23,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Fieldset;
@@ -72,7 +71,7 @@ class LocationResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_locations;
+        return settings(WarehouseSettings::class)->enable_locations;
     }
 
     public static function getNavigationGroup(): string
@@ -122,14 +121,14 @@ class LocationResource extends Resource
                                     ->options(LocationType::class)
                                     ->selectablePlaceholder(false)
                                     ->required()
-                                    ->default(LocationType::INTERNAL->value)
+                                    ->default(LocationType::INTERNAL)
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                        if (! $get('type') === in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value])) {
+                                        if (! $get('type') === in_array($get('type'), [LocationType::INTERNAL, LocationType::INVENTORY])) {
                                             $set('is_scrap', false);
                                         }
 
-                                        if ($get('type') !== LocationType::INTERNAL->value) {
+                                        if ($get('type') !== LocationType::INTERNAL) {
                                             $set('storage_category_id', null);
 
                                             $set('is_replenish', false);
@@ -147,13 +146,13 @@ class LocationResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm(fn (Schema $schema): Schema => StorageCategoryResource::form($schema))
-                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL->value)
+                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL)
                                     ->hiddenOn(ManageLocations::class),
                                 Toggle::make('is_scrap')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-scrap'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-scrap-hint-tooltip'))
-                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value]))
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL, LocationType::INVENTORY]))
                                     ->live(),
 
                                 Toggle::make('is_dock')
@@ -165,7 +164,7 @@ class LocationResource extends Resource
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-replenish'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-replenish-hint-tooltip'))
-                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL->value),
+                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL),
 
                                 Fieldset::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.cyclic-counting'))
                                     ->schema([
@@ -173,16 +172,16 @@ class LocationResource extends Resource
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.inventory-frequency'))
                                             ->integer()
                                             ->default(0),
-                                        Placeholder::make('last_inventory_date')
+                                        TextEntry::make('last_inventory_date')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.last-inventory'))
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.last-inventory-hint-tooltip'))
-                                            ->content(fn ($record) => $record?->last_inventory_date?->toFormattedDateString() ?? '—'),
-                                        Placeholder::make('next_inventory_date')
+                                            ->state(fn ($record) => $record?->last_inventory_date?->toFormattedDateString() ?? '—'),
+                                        TextEntry::make('next_inventory_date')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.next-expected'))
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.next-expected-hint-tooltip'))
-                                            ->content(fn ($record) => $record?->next_inventory_date?->toFormattedDateString() ?? '—'),
+                                            ->state(fn ($record) => $record?->next_inventory_date?->toFormattedDateString() ?? '—'),
                                     ])
-                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::TRANSIT->value]))
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL, LocationType::TRANSIT]))
                                     ->columns(1),
                             ]),
                     ])
@@ -272,6 +271,7 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.edit.notification.body')),
                     ),
                 RestoreAction::make()
+                    ->databaseTransaction(true)
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -279,6 +279,21 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.restore.notification.body')),
                     ),
                 DeleteAction::make()
+                    ->databaseTransaction(true)
+                    ->action(function (DeleteAction $action, Location $record) {
+                        try {
+                            $record->delete();
+
+                            $action->success();
+                        } catch (Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->body($e->getMessage())
+                                ->send();
+
+                            $action->cancel(shouldRollBackDatabaseTransaction: true);
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -286,16 +301,27 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.body')),
                     ),
                 ForceDeleteAction::make()
+                    ->databaseTransaction(true)
                     ->action(function (ForceDeleteAction $action, Location $record) {
                         try {
                             $record->forceDelete();
-                        } catch (QueryException $e) {
-                            Notification::make()
-                                ->danger()
-                                ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.title'))
-                                ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.body'))
-                                ->send();
-                            $action->cancel();
+
+                            $action->success();
+                        } catch (QueryException|Exception $e) {
+                            if ($e instanceof QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->danger()
+                                    ->body($e->getMessage())
+                                    ->send();
+                            }
+
+                            $action->cancel(shouldRollBackDatabaseTransaction: true);
                         }
                     })
                     ->successNotification(
@@ -311,7 +337,7 @@ class LocationResource extends Resource
                         ->label(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.print.label'))
                         ->icon('heroicon-o-printer')
                         ->action(function ($records) {
-                            $pdf = PDF::loadView('inventories::filament.clusters.configurations.locations.actions.print', [
+                            $pdf = Pdf::loadView('inventories::filament.clusters.configurations.locations.actions.print', [
                                 'records' => $records,
                             ]);
 
@@ -322,6 +348,7 @@ class LocationResource extends Resource
                             }, 'Location-Barcode.pdf');
                         }),
                     RestoreBulkAction::make()
+                        ->databaseTransaction(true)
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -329,6 +356,19 @@ class LocationResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.restore.notification.body')),
                         ),
                     DeleteBulkAction::make()
+                        ->databaseTransaction(true)
+                        ->action(function (DeleteBulkAction $action, Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+                            } catch (Exception $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->body($e->getMessage())
+                                    ->send();
+
+                                $action->cancel(shouldRollBackDatabaseTransaction: true);
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -336,16 +376,25 @@ class LocationResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
+                        ->databaseTransaction(true)
                         ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
-                            } catch (QueryException $e) {
-                                Notification::make()
-                                    ->danger()
-                                    ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.title'))
-                                    ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.body'))
-                                    ->send();
-                                $action->cancel();
+                            } catch (QueryException|Exception $e) {
+                                if ($e instanceof QueryException) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.title'))
+                                        ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.body'))
+                                        ->send();
+                                } else {
+                                    Notification::make()
+                                        ->danger()
+                                        ->body($e->getMessage())
+                                        ->send();
+                                }
+
+                                $action->cancel(shouldRollBackDatabaseTransaction: true);
                             }
                         })
                         ->successNotification(
@@ -447,23 +496,6 @@ class LocationResource extends Resource
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
-    }
-
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        $route = request()->route()?->getName() ?? session('current_route');
-
-        if ($route && $route != 'livewire.update') {
-            session(['current_route' => $route]);
-        } else {
-            $route = session('current_route');
-        }
-
-        if ($route === self::getRouteBaseName().'.index') {
-            return SubNavigationPosition::Start;
-        }
-
-        return SubNavigationPosition::Top;
     }
 
     public static function getRecordSubNavigation(Page $page): array

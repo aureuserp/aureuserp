@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -19,6 +20,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Webkul\Support\Filament\Clusters\Settings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +32,8 @@ class Profile extends Page implements HasForms
     use InteractsWithForms;
 
     protected string $view = 'support::pages.profile';
+
+    protected static ?string $cluster = Settings::class;
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -115,6 +119,20 @@ class Profile extends Page implements HasForms
                                     ->afterStateUpdated(function ($state, Set $set) {
                                         $set('email', strtolower(trim($state)));
                                     }),
+
+                                Select::make('language')
+                                    ->label(__('support::filament/pages/profile.fields.language'))
+                                    ->options(collect(config('app.supported_locales', []))
+                                        ->mapWithKeys(fn ($meta, $code) => [
+                                            $code => ($meta['native'] ?? $code).' ('.($meta['label'] ?? $code).')',
+                                        ])
+                                        ->all())
+                                    ->default(config('app.locale'))
+                                    ->native(false)
+                                    ->searchable()
+                                    ->selectablePlaceholder(false)
+                                    ->helperText(__('support::filament/pages/profile.fields.language_helper'))
+                                    ->columnSpanFull(),
                             ]),
                     ]),
             ])
@@ -171,13 +189,15 @@ class Profile extends Page implements HasForms
             ->operation('edit');
     }
 
-    public function updateProfile(): void
+    public function updateProfile(): mixed
     {
         try {
             $this->editProfileForm->validate();
 
             $data = $this->editProfileForm->getState();
             $user = $this->getUser();
+
+            $previousLanguage = $user->language ?? app()->getLocale();
 
             if (array_key_exists('avatar', $data)) {
                 if (
@@ -191,12 +211,30 @@ class Profile extends Page implements HasForms
                 $user->partner->save();
             }
 
-            $user->fill([
+            $fill = [
                 'name'  => trim($data['name']),
                 'email' => strtolower(trim($data['email'])),
-            ]);
+            ];
+
+            if (array_key_exists('language', $data) && $data['language']) {
+                $supported = array_keys(config('app.supported_locales', []));
+
+                if (in_array($data['language'], $supported, true)) {
+                    $fill['language'] = $data['language'];
+                }
+            }
+
+            $user->fill($fill);
 
             $user->save();
+
+            $languageChanged = isset($fill['language']) && $fill['language'] !== $previousLanguage;
+
+            if ($languageChanged) {
+                app()->setLocale($fill['language']);
+                
+                session()->put('locale', $fill['language']);
+            }
 
             $this->fillProfileForm();
 
@@ -208,6 +246,10 @@ class Profile extends Page implements HasForms
                 ->success()
                 ->duration(3000)
                 ->send();
+
+            if ($languageChanged) {
+                return redirect(static::getUrl());
+            }
         } catch (ValidationException $e) {
             throw $e;
         } catch (Exception $e) {
@@ -218,6 +260,8 @@ class Profile extends Page implements HasForms
                 ->duration(5000)
                 ->send();
         }
+
+        return null;
     }
 
     public function updatePassword(): mixed
@@ -293,9 +337,13 @@ class Profile extends Page implements HasForms
     {
         $user = $this->getUser();
 
-        $userData = $user->only(['name', 'email', 'avatar']);
+        $userData = $user->only(['name', 'email', 'avatar', 'language']);
 
         $userData['avatar'] = $user->partner->avatar;
+
+        if (empty($userData['language'])) {
+            $userData['language'] = app()->getLocale();
+        }
 
         $this->editProfileForm->fill($userData);
     }
