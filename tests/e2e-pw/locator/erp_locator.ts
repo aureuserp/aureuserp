@@ -605,6 +605,157 @@ export class ErpLocators {
     readonly configurationSuccessToast: Locator;
     readonly configurationErrorToast: Locator;
     readonly configurationValidationMessage: Locator;
+    
+    /*
+    * Time Off - Generic UI helpers
+    */
+
+    readonly timeOffSearchInput: Locator;
+    readonly timeOffTable: Locator;
+    readonly timeOffTableRows: Locator;
+    readonly timeOffRowActionsButton: Locator;
+    readonly timeOffMenuViewAction: Locator;
+    readonly timeOffMenuEditAction: Locator;
+    readonly timeOffMenuDeleteAction: Locator;
+    readonly timeOffMenuApproveAction: Locator;
+    readonly timeOffMenuRefuseAction: Locator;
+    readonly timeOffRowViewAction: Locator;
+    readonly timeOffRowEditAction: Locator;
+    readonly timeOffRowDeleteAction: Locator;
+    readonly timeOffRowRestoreAction: Locator;
+    readonly timeOffConfirmDialogButton: Locator;
+    readonly timeOffCreateSubmitButton: Locator;
+    readonly timeOffEditSaveButton: Locator;
+    readonly timeOffModal: Locator;
+    readonly timeOffSelectPanel: Locator;
+    readonly timeOffArchivedTab: Locator;
+    readonly timeOffSuccessToast: Locator;
+    readonly timeOffNotificationTitle: Locator;
+    readonly timeOffNotificationBody: Locator;
+    readonly timeOffValidationMessage: Locator;
+    readonly timeOffViewsTriggerButton: Locator;
+    readonly timeOffViewsPanel: Locator;
+
+    /**
+     * Time Off - Configurations - Leave Types
+     */
+
+    readonly timeOffLeaveTypeCreateButton: Locator;
+    readonly timeOffLeaveTypeNameInput: Locator;
+    readonly timeOffLeaveTypeRequiresAllocationYesRadio: Locator;
+    readonly timeOffLeaveTypeRequiresAllocationNoRadio: Locator;
+    readonly timeOffLeaveTypeAllowsNegativeToggle: Locator;
+    readonly timeOffLeaveTypeMaxAllowedNegativeInput: Locator;
+    readonly timeOffLeaveTypeColorInput: Locator;
+    readonly timeOffLeaveTypeNotifiedOfficersSelect: Locator;
+    readonly timeOffLeaveTypeRequestUnitSelect: Locator;
+    readonly timeOffLeaveTypeTimeTypeSelect: Locator;
+    readonly timeOffLeaveTypeIncludePublicHolidaysToggle: Locator;
+    readonly timeOffLeaveTypeSupportDocumentToggle: Locator;
+    readonly timeOffLeaveTypeShowOnDashboardToggle: Locator;
+
+    /**
+     * Time Off - Configurations - Accrual Plans (+ Milestones sub-page)
+     */
+
+    readonly timeOffAccrualPlanCreateButton: Locator;
+    readonly timeOffAccrualPlanNameInput: Locator;
+    readonly timeOffAccrualPlanIsBasedOnWorkedTimeToggle: Locator;
+    readonly timeOffAccrualPlanCarryoverDaySelect: Locator;
+    readonly timeOffAccrualPlanCarryoverMonthSelect: Locator;
+    readonly timeOffAccrualPlanIsActiveToggle: Locator;
+    readonly timeOffAccrualPlanMilestonesTab: Locator;
+    readonly timeOffMilestoneCreateButton: Locator;
+    readonly timeOffMilestoneAddedValueInput: Locator;
+    readonly timeOffMilestoneAddedValueTypeSelect: Locator;
+    readonly timeOffMilestoneFrequencySelect: Locator;
+    readonly timeOffMilestoneWeekDaySelect: Locator;
+    readonly timeOffMilestoneCapAccruedTimeToggle: Locator;
+    readonly timeOffMilestoneMaximumLeaveInput: Locator;
+    readonly timeOffMilestoneModalSubmitButton: Locator;
+
+    /**
+     * Time Off - Configurations - Activity Types
+     */
+
+    readonly timeOffActivityTypeCreateButton: Locator;
+    readonly timeOffActivityTypeNameInput: Locator;
+    readonly timeOffActivityTypeCategorySelect: Locator;
+    readonly timeOffActivityTypeDelayCountInput: Locator;
+    readonly timeOffActivityTypeDelayUnitSelect: Locator;
+    readonly timeOffActivityTypeDelayFromSelect: Locator;
+    readonly timeOffActivityTypeIsActiveToggle: Locator;
+
+    /**
+     * Time Off - Configurations - Mandatory Days (modal create/edit, no dedicated routes)
+     */
+
+    readonly timeOffMandatoryDayCreateButton: Locator;
+    readonly timeOffMandatoryDayNameInput: Locator;
+    readonly timeOffMandatoryDayColorInput: Locator;
+    readonly timeOffMandatoryDayStartDateInput: Locator;
+    readonly timeOffMandatoryDayEndDateInput: Locator;
+    readonly timeOffMandatoryDayModalSubmitButton: Locator;
+
+    /**
+     * Time Off - Configurations - Public Holidays (modal create/edit, no dedicated routes)
+     */
+
+    readonly timeOffPublicHolidayCreateButton: Locator;
+    readonly timeOffPublicHolidayNameInput: Locator;
+    readonly timeOffPublicHolidayDateFromInput: Locator;
+    readonly timeOffPublicHolidayDateToInput: Locator;
+    readonly timeOffPublicHolidayCalendarSelect: Locator;
+    readonly timeOffPublicHolidayModalSubmitButton: Locator;
+
+    /**
+     * Time Off - Management - Time Off requests (also reused by MyTime -> My Time Off,
+     * whose table is literally TimeOffResource::table() re-rendered)
+     */
+
+    readonly timeOffRequestCreateButton: Locator;
+    readonly timeOffRequestEmployeeSelect: Locator;
+    readonly timeOffRequestDepartmentSelect: Locator;
+    readonly timeOffRequestLeaveTypeSelect: Locator;
+    readonly timeOffRequestDateFromInput: Locator;
+    readonly timeOffRequestDateToInput: Locator;
+    readonly timeOffRequestHalfDayToggle: Locator;
+    readonly timeOffRequestHalfDayPeriodSelect: Locator;
+    readonly timeOffRequestDurationInfo: Locator;
+    readonly timeOffRequestDescriptionInput: Locator;
+    readonly timeOffRequestStateBadge: Locator;
+
+    /**
+     * Time Off - Management - Allocations (also reused by MyTime -> My Allocations for the
+     * shared form fields; the admin Allocation Edit page additionally exposes the
+     * Approved/Refuse/Mark as Ready to Confirm header actions)
+     */
+
+    readonly timeOffAllocationCreateButton: Locator;
+    readonly timeOffAllocationNameInput: Locator;
+    readonly timeOffAllocationLeaveTypeSelect: Locator;
+    readonly timeOffAllocationEmployeeSelect: Locator;
+    readonly timeOffAllocationTypeRegularRadio: Locator;
+    readonly timeOffAllocationTypeAccrualRadio: Locator;
+    readonly timeOffAllocationDateFromInput: Locator;
+    readonly timeOffAllocationDateToInput: Locator;
+    readonly timeOffAllocationNumberOfDaysInput: Locator;
+    readonly timeOffAllocationStateBadge: Locator;
+    readonly timeOffAllocationEditApprovedHeaderButton: Locator;
+    readonly timeOffAllocationEditRefuseHeaderButton: Locator;
+    readonly timeOffAllocationEditMarkReadyHeaderButton: Locator;
+
+    /**
+     * Time Off - Reporting (By Employee / By Type) and Overview / Dashboard pages
+     */
+
+    readonly timeOffByTypeChartWidget: Locator;
+    readonly timeOffCalendarWidget: Locator;
+    readonly timeOffCalendarCreateAction: Locator;
+    readonly timeOffHolidaysAction: Locator;
+    readonly timeOffHolidaysSlideOver: Locator;
+    readonly timeOffPendingRequestsStat: Locator;
+    readonly timeOffReportGroupHeader: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -1290,5 +1441,220 @@ export class ErpLocators {
         this.configurationSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.configurationErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.configurationValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+        
+        /* 
+        * Time Off - Generic UI helpers
+        */
+
+        this.timeOffSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
+        this.timeOffTable = page.locator("table, div.fi-ta-empty-state");
+        this.timeOffTableRows = page.locator("table tbody tr");
+        // Leave/Allocation/ActivityType/MyAllocation/MyTimeOff group their row actions
+        // (including Approve/Refuse) behind a single "Actions" dropdown; open it first.
+        this.timeOffRowActionsButton = page.getByRole("button", { name: "Actions" }).first();
+        // The open dropdown's items are plain <a>/<button> elements with no menu/menuitem
+        // ARIA roles (verified against a live DOM snapshot) - they all carry Filament's
+        // fi-ac-grouped-action class regardless of tag, so match on that instead of role.
+        // Their rendered textContent also carries leading icon-driven whitespace/newlines
+        // (e.g. "\n  \n  \nEdit"), and Playwright tests hasText regexes against the RAW,
+        // non-normalized text - a strict /^Edit$/i never matches that. Anchor around
+        // optional surrounding whitespace instead so it still rejects unrelated matches
+        // like "Apply View" or "Delete selected".
+        this.timeOffMenuViewAction = page
+            .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
+            .filter({ hasText: /^\s*View\s*$/i })
+            .first();
+        this.timeOffMenuEditAction = page
+            .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
+            .filter({ hasText: /^\s*Edit\s*$/i })
+            .first();
+        this.timeOffMenuDeleteAction = page
+            .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
+            .filter({ hasText: /^\s*Delete\s*$/i })
+            .first();
+        // Label reads "Validate" when state is Second Approval, "Approve" otherwise —
+        // both branches of the click handler set state straight to Approved regardless.
+        this.timeOffMenuApproveAction = page
+            .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
+            .filter({ hasText: /^\s*(Approve|Validate)\s*$/i })
+            .first();
+        this.timeOffMenuRefuseAction = page
+            .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
+            .filter({ hasText: /^\s*Refuse\s*$/i })
+            .first();
+        // Leave Type/Accrual Plan/Mandatory Day/Public Holiday render View/Edit/Delete as
+        // direct row buttons/links (no "Actions" dropdown) — Edit opens a modal for the two
+        // resources with no dedicated edit route (Mandatory Day, Public Holiday).
+        this.timeOffRowViewAction = page.locator("a,button").filter({ hasText: /^\s*View\s*$/i }).first();
+        this.timeOffRowEditAction = page.locator("a,button").filter({ hasText: /^\s*Edit\s*$/i }).first();
+        this.timeOffRowDeleteAction = page.locator("a,button").filter({ hasText: /^\s*Delete\s*$/i }).first();
+        this.timeOffRowRestoreAction = page.locator("a,button").filter({ hasText: /^\s*Restore\s*$/i }).first();
+        this.timeOffConfirmDialogButton = anyDialog(page).getByRole("button", { name: /Delete|Confirm|Yes/i }).first();
+        // Shared across every time-off create page (Leave Type/Accrual Plan/Activity Type/
+        // Time Off/Allocation/My Time Off/My Allocation all submit via key-bindings-1) and
+        // every edit page ("Save changes"). Do not reuse key-bindings-1 once a save redirects
+        // onto the record's edit/view page — it becomes the header Delete action there.
+        this.timeOffCreateSubmitButton = page.locator('button[id="key-bindings-1"]').first();
+        this.timeOffEditSaveButton = page.getByRole("button", { name: /Save changes|^Save$/i }).first();
+        this.timeOffModal = page.locator(".fi-modal-window:visible").last();
+        this.timeOffSelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
+        // A Filament list tab's accessible name includes its count badge (e.g. "Archived 7"),
+        // so an anchored ^...$ text match against "Archived" alone never matches — use the
+        // tab role with an unanchored name match instead, same convention as the other
+        // getByRole("tab", ...) locators in this file.
+        this.timeOffArchivedTab = page.getByRole("tab", { name: /Archived/i }).first();
+        this.timeOffSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        // Generic notification title/body — used for BOTH success and danger notifications
+        // (Filament renders both through the same .fi-no-notification markup, colour only).
+        this.timeOffNotificationTitle = page.locator("h3.fi-no-notification-title");
+        this.timeOffNotificationBody = page.locator(".fi-no-notification-body");
+        this.timeOffValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+        // Table Views (webkul/table-views HasTableViews) trigger — the "Waiting For Me",
+        // "Second Approval" and "Approved" preset views are also favorited and may render as
+        // quick tabs directly; the rest are reachable only via this dropdown.
+        this.timeOffViewsTriggerButton = page.getByRole("button", { name: /^Views$/i }).first();
+        this.timeOffViewsPanel = page.locator('.fi-dropdown-panel:visible').last();
+
+        /**
+         * Time Off - Configurations - Leave Types
+         */
+
+        this.timeOffLeaveTypeCreateButton = page.locator("a,button").filter({ hasText: /New Leave Type|create/i }).first();
+        this.timeOffLeaveTypeNameInput = page.locator('input[id="form.name"]').first();
+        this.timeOffLeaveTypeRequiresAllocationYesRadio = page.getByRole("radio", { name: /^Yes$/i }).first();
+        this.timeOffLeaveTypeRequiresAllocationNoRadio = page.getByRole("radio", { name: /No Limit/i }).first();
+        this.timeOffLeaveTypeAllowsNegativeToggle = page.getByRole("switch", { name: /Negative/i }).first();
+        this.timeOffLeaveTypeMaxAllowedNegativeInput = page.locator('input[id="form.max_allowed_negative"]').first();
+        this.timeOffLeaveTypeColorInput = page.locator('input[id="form.color"]').first();
+        this.timeOffLeaveTypeNotifiedOfficersSelect = page.locator('[wire\\:key$="form.time_off_user_leave_types"] button.fi-select-input-btn').first();
+        this.timeOffLeaveTypeRequestUnitSelect = page.locator('select[id="form.request_unit"]').first();
+        this.timeOffLeaveTypeTimeTypeSelect = page.locator('select[id="form.time_type"]').first();
+        this.timeOffLeaveTypeIncludePublicHolidaysToggle = page.getByRole("switch", { name: /Public Holidays/i }).first();
+        this.timeOffLeaveTypeSupportDocumentToggle = page.getByRole("switch", { name: /Supporting Document/i }).first();
+        this.timeOffLeaveTypeShowOnDashboardToggle = page.getByRole("switch", { name: /Show on Dashboard/i }).first();
+
+        /**
+         * Time Off - Configurations - Accrual Plans (+ Milestones sub-page)
+         */
+
+        // The header action's real label is "New Accrual" (not "New Accrual Plan").
+        this.timeOffAccrualPlanCreateButton = page.locator("a,button").filter({ hasText: /New Accrual|create/i }).first();
+        this.timeOffAccrualPlanNameInput = page.locator('input[id="form.name"]').first();
+        this.timeOffAccrualPlanIsBasedOnWorkedTimeToggle = page.getByRole("switch", { name: /Based on Worked Time/i }).first();
+        this.timeOffAccrualPlanCarryoverDaySelect = page.locator('select[id="form.carryover_day"]').first();
+        this.timeOffAccrualPlanCarryoverMonthSelect = page.locator('select[id="form.carryover_month"]').first();
+        this.timeOffAccrualPlanIsActiveToggle = page.getByRole("switch", { name: /Status/i }).first();
+        // The record's sub-navigation adds a "Manage Milestones" tab alongside View/Edit.
+        // The real tab label is singular ("Manage Milestone", not "Manage Milestones").
+        this.timeOffAccrualPlanMilestonesTab = page.locator("a,button").filter({ hasText: /Milestone/i }).first();
+        // Milestone Create/Edit are RelationManager modal actions (no dedicated route). Their
+        // fields render with a Livewire-generated id like "mountedActionSchema0.added_value"
+        // (not "form.*", since this is a mounted-action schema, not a page-level form) —
+        // matched by id SUFFIX (verified live) rather than by label, since getByLabel proved
+        // unreliable here and id suffixes are stable regardless of the mountedAction index.
+        this.timeOffMilestoneCreateButton = page.locator("a,button").filter({ hasText: /^\s*(New|Create)\b.*Accrual|^\s*Create\s*$/i }).first();
+        this.timeOffMilestoneAddedValueInput = this.timeOffModal.locator('input[id$=".added_value"]').first();
+        this.timeOffMilestoneAddedValueTypeSelect = this.timeOffModal.locator('select[id$=".added_value_type"]').first();
+        this.timeOffMilestoneFrequencySelect = this.timeOffModal.locator('select[id$=".frequency"]').first();
+        this.timeOffMilestoneWeekDaySelect = this.timeOffModal.locator('select[id$=".week_day"]').first();
+        this.timeOffMilestoneCapAccruedTimeToggle = this.timeOffModal.locator('[id$=".cap_accrued_time"]').first();
+        this.timeOffMilestoneMaximumLeaveInput = this.timeOffModal.locator('input[id$=".maximum_leave"]').first();
+        this.timeOffMilestoneModalSubmitButton = this.timeOffModal.getByRole("button", { name: /^(Create|Save changes|Save|Submit)$/i }).first();
+
+        /**
+         * Time Off - Configurations - Activity Types (shared support resource, scoped to
+         * plugin=time-off; row actions are grouped behind timeOffRowActionsButton)
+         */
+
+        this.timeOffActivityTypeCreateButton = page.locator("a,button").filter({ hasText: /New Activity Type|create/i }).first();
+        this.timeOffActivityTypeNameInput = page.locator('input[id="form.name"]').first();
+        this.timeOffActivityTypeCategorySelect = page.locator('[wire\\:key$="form.category"] button.fi-select-input-btn').first();
+        this.timeOffActivityTypeDelayCountInput = page.locator('input[id="form.delay_count"]').first();
+        this.timeOffActivityTypeDelayUnitSelect = page.locator('select[id="form.delay_unit"]').first();
+        this.timeOffActivityTypeDelayFromSelect = page.locator('select[id="form.delay_from"]').first();
+        this.timeOffActivityTypeIsActiveToggle = page.getByRole("switch", { name: /Status/i }).first();
+
+        /**
+         * Time Off - Configurations - Mandatory Days (modal create/edit, no dedicated routes)
+         */
+
+        // The real header action label is "New Mandatory Day" (contains no "Create" text).
+        this.timeOffMandatoryDayCreateButton = page.locator("a,button").filter({ hasText: /New Mandatory Day|Create/i }).first();
+        // Matched by the mounted-action schema's id suffix (verified live), same reasoning as
+        // the Milestone modal fields above — more reliable here than getByLabel.
+        this.timeOffMandatoryDayNameInput = this.timeOffModal.locator('input[id$=".name"]').first();
+        this.timeOffMandatoryDayColorInput = this.timeOffModal.locator('input[id$=".color"]').first();
+        this.timeOffMandatoryDayStartDateInput = this.timeOffModal.locator('input[id$=".start_date"]').first();
+        this.timeOffMandatoryDayEndDateInput = this.timeOffModal.locator('input[id$=".end_date"]').first();
+        this.timeOffMandatoryDayModalSubmitButton = this.timeOffModal.getByRole("button", { name: /^(Create|Save changes|Save|Submit)$/i }).first();
+
+        /**
+         * Time Off - Configurations - Public Holidays (modal create/edit, no dedicated routes)
+         */
+
+        // The real header action label is "New Public Holiday" (contains no "Create" text).
+        this.timeOffPublicHolidayCreateButton = page.locator("a,button").filter({ hasText: /New Public Holiday|Create/i }).first();
+        // Matched by id suffix (see the Milestone/Mandatory Day modals above for why).
+        this.timeOffPublicHolidayNameInput = this.timeOffModal.locator('input[id$=".name"]').first();
+        this.timeOffPublicHolidayDateFromInput = this.timeOffModal.locator('input[id$=".date_from"]').first();
+        this.timeOffPublicHolidayDateToInput = this.timeOffModal.locator('input[id$=".date_to"]').first();
+        this.timeOffPublicHolidayCalendarSelect = this.timeOffModal.locator('[wire\\:key$="calendar"] button.fi-select-input-btn').first();
+        this.timeOffPublicHolidayModalSubmitButton = this.timeOffModal.getByRole("button", { name: /^(Create|Save changes|Save|Submit)$/i }).first();
+
+        /**
+         * Time Off - Management - Time Off requests (also reused by MyTime -> My Time Off,
+         * whose table is literally TimeOffResource::table() re-rendered)
+         */
+
+        this.timeOffRequestCreateButton = page.locator("a,button").filter({ hasText: /New Time ?Off|create/i }).first();
+        this.timeOffRequestEmployeeSelect = page.locator('[wire\\:key$="form.employee_id"] button.fi-select-input-btn').first();
+        this.timeOffRequestDepartmentSelect = page.locator('[wire\\:key$="form.department_id"] button.fi-select-input-btn').first();
+        // holiday_status_id has no ->searchable()/->preload() on the admin/MyTime Time Off
+        // form (unlike Allocation's), so it renders as a plain native select.
+        this.timeOffRequestLeaveTypeSelect = page.locator('select[id="form.holiday_status_id"]').first();
+        this.timeOffRequestDateFromInput = page.locator('input[id="form.request_date_from"]').first();
+        this.timeOffRequestDateToInput = page.locator('input[id="form.request_date_to"]').first();
+        this.timeOffRequestHalfDayToggle = page.getByRole("switch", { name: /Half Day/i }).first();
+        this.timeOffRequestHalfDayPeriodSelect = page.locator('select[id="form.request_date_from_period"]').first();
+        this.timeOffRequestDurationInfo = page.locator('[id="form.duration_info"], [wire\\:key$="form.duration_info"]').first();
+        this.timeOffRequestDescriptionInput = page.locator('textarea[id="form.private_name"]').first();
+        this.timeOffRequestStateBadge = page.locator(".fi-badge").first();
+
+        /**
+         * Time Off - Management - Allocations (also reused by MyTime -> My Allocations for
+         * the shared form fields; the admin Allocation Edit page additionally exposes the
+         * Approved/Refuse/Mark as Ready to Confirm header actions)
+         */
+
+        this.timeOffAllocationCreateButton = page.locator("a,button").filter({ hasText: /New Allocation|create/i }).first();
+        this.timeOffAllocationNameInput = page.locator('input[id="form.name"]').first();
+        // Unlike Time Off's holiday_status_id, Allocation's IS ->searchable()->preload().
+        this.timeOffAllocationLeaveTypeSelect = page.locator('[wire\\:key$="form.holiday_status_id"] button.fi-select-input-btn').first();
+        this.timeOffAllocationEmployeeSelect = page.locator('[wire\\:key$="form.employee_id"] button.fi-select-input-btn').first();
+        this.timeOffAllocationTypeRegularRadio = page.getByRole("radio", { name: /^Regular$/i }).first();
+        this.timeOffAllocationTypeAccrualRadio = page.getByRole("radio", { name: /^Accrual$/i }).first();
+        this.timeOffAllocationDateFromInput = page.locator('input[id="form.date_from"]').first();
+        this.timeOffAllocationDateToInput = page.locator('input[id="form.date_to"]').first();
+        this.timeOffAllocationNumberOfDaysInput = page.locator('input[id="form.number_of_days"]').first();
+        this.timeOffAllocationStateBadge = page.locator(".fi-fo-progress-stepper, .fi-progress-stepper, .fi-badge").first();
+        // Edit-page header actions (admin Allocation only — not on MyAllocation's edit page).
+        this.timeOffAllocationEditApprovedHeaderButton = page.getByRole("button", { name: /^Approved$/i }).first();
+        this.timeOffAllocationEditRefuseHeaderButton = page.getByRole("button", { name: /^Refuse$/i }).first();
+        this.timeOffAllocationEditMarkReadyHeaderButton = page.getByRole("button", { name: /Mark as Ready to Confirm/i }).first();
+
+        /**
+         * Time Off - Reporting (By Employee / By Type) and Overview / Dashboard pages
+         */
+
+        this.timeOffByTypeChartWidget = page.locator(".fi-wi-chart, canvas").first();
+        this.timeOffCalendarWidget = page.locator(".full-calendar").first();
+        // Both CalendarWidget (Dashboard) and OverviewCalendarWidget (Overview) label their
+        // header Create action "New Time Off" (see time-off::filament/widgets/*calendar-widget
+        // .header-actions.create.title) — it is never rendered with the plain text "Create".
+        this.timeOffCalendarCreateAction = page.getByRole("button", { name: /New Time Off/i }).first();
+        this.timeOffHolidaysAction = page.getByRole("button", { name: /Holidays/i }).first();
+        this.timeOffHolidaysSlideOver = page.locator(".fi-modal-window:visible").filter({ hasText: /Holiday/i }).first();
+        this.timeOffPendingRequestsStat = page.locator(".fi-wi-stats-overview-stat").filter({ hasText: /Pending Requests/i }).first();
+        this.timeOffReportGroupHeader = page.locator(".fi-ta-group-header, .fi-ta-group-header-row, .fi-ta-group-heading").first();
     }
 }
