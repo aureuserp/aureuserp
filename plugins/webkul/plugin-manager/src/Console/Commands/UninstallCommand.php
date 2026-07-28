@@ -47,16 +47,16 @@ class UninstallCommand extends Command
             return;
         }
 
-        if ($this->startWith) {
-            ($this->startWith)($this);
-        }
-
         $this->forceUninstall = $this->option('force');
 
         if (! $this->forceUninstall && ! $this->confirm('Are you sure you want to uninstall this package? This action cannot be undone!')) {
             $this->info('Uninstallation cancelled.');
 
             return;
+        }
+
+        if ($this->startWith) {
+            ($this->startWith)($this);
         }
 
         $this->dropTables();

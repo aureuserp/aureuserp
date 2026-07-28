@@ -95,24 +95,16 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                // Operation types and locations created by manufacturing are referenced by
-                // `manufacturing_orders` with `restrictOnDelete()` foreign keys, so they cannot be
-                // deleted while that table still exists. We collect their ids in `startWith` and
-                // delete them in `endWith` — after `dropTables()` has dropped the manufacturing
-                // tables (and their restricting foreign keys).
                 $operationTypeIds = [];
                 $locationIds = [];
+                $routeIds = [];
 
-                $command->startWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds) {
+                $command->startWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds, &$routeIds) {
                     if (! Schema::hasColumn('inventories_warehouses', 'pbm_route_id')) {
                         return;
                     }
 
-                    $warehouses = Models\Warehouse::all();
-
-                    foreach ($warehouses as $warehouse) {
-                        $pbmRouteId = $warehouse->pbm_route_id;
-
+                    foreach (Models\Warehouse::withTrashed()->get() as $warehouse) {
                         $operationTypeIds = array_merge($operationTypeIds, array_filter([
                             $warehouse->manu_type_id,
                             $warehouse->pbm_type_id,
@@ -122,6 +114,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                         $locationIds = array_merge($locationIds, array_filter([
                             $warehouse->pbm_loc_id,
                             $warehouse->sam_loc_id,
+                        ]));
+
+                        $routeIds = array_merge($routeIds, array_filter([
+                            $warehouse->pbm_route_id,
                         ]));
 
                         $warehouse->updateQuietly([
@@ -136,51 +132,58 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                             'pbm_loc_id'              => null,
                             'sam_loc_id'              => null,
                         ]);
-
-                        if ($pbmRouteId) {
-                            Rule::withTrashed()
-                                ->where('route_id', $pbmRouteId)
-                                ->forceDelete();
-
-                            $warehouse->routes()->detach($pbmRouteId);
-
-                            Route::withTrashed()
-                                ->where('id', $pbmRouteId)
-                                ->forceDelete();
-                        }
                     }
                 });
 
-                $command->endWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds) {
+                $command->endWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds, &$routeIds) {
                     $operationTypeIds = array_values(array_unique($operationTypeIds));
                     $locationIds = array_values(array_unique($locationIds));
+                    $routeIds = array_values(array_unique($routeIds));
 
-                    if (! empty($operationTypeIds) || ! empty($locationIds)) {
-                        DB::transaction(function () use ($operationTypeIds, $locationIds) {
-                            // The manufacturing locations are referenced with `restrictOnDelete()` by
-                            // these tables, keyed by the columns that hold the reference. Every listed
-                            // table must be cleared before the locations can be force-deleted.
-                            $locationRestrictors = [
-                                MoveLine::class        => ['source_location_id', 'destination_location_id'],
-                                Move::class            => ['source_location_id', 'destination_location_id'],
-                                Scrap::class           => ['source_location_id', 'destination_location_id'],
-                                ProductQuantity::class => ['location_id'],
-                            ];
+                    if (! empty($operationTypeIds) || ! empty($locationIds) || ! empty($routeIds)) {
+                        DB::transaction(function () use ($operationTypeIds, $locationIds, $routeIds) {
+                            if (! empty($routeIds)) {
+                                Rule::withTrashed()
+                                    ->whereIn('route_id', $routeIds)
+                                    ->forceDelete();
 
-                            if (! empty($locationIds)) {
-                                foreach ($locationRestrictors as $model => $columns) {
-                                    $model::query()
-                                        ->where(function ($query) use ($columns, $locationIds) {
-                                            foreach ($columns as $column) {
-                                                $query->orWhereIn($column, $locationIds);
-                                            }
-                                        })
-                                        ->delete();
-                                }
+                                Route::withTrashed()
+                                    ->whereIn('id', $routeIds)
+                                    ->forceDelete();
                             }
 
-                            // Operations are the remaining restrictor: each references a manufacturing
-                            // operation type and/or one of the locations, so clear them too.
+                            if (! empty($locationIds)) {
+                                $moveIds = Move::query()
+                                    ->where(function ($query) use ($locationIds) {
+                                        $query->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds);
+                                    })
+                                    ->pluck('id');
+
+                                MoveLine::query()
+                                    ->where(function ($query) use ($locationIds, $moveIds) {
+                                        $query->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds)
+                                            ->orWhereIn('move_id', $moveIds);
+                                    })
+                                    ->delete();
+
+                                Move::query()
+                                    ->whereIn('id', $moveIds)
+                                    ->delete();
+
+                                Scrap::query()
+                                    ->where(function ($query) use ($locationIds) {
+                                        $query->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds);
+                                    })
+                                    ->delete();
+
+                                ProductQuantity::query()
+                                    ->whereIn('location_id', $locationIds)
+                                    ->delete();
+                            }
+
                             Operation::query()
                                 ->where(function ($query) use ($operationTypeIds, $locationIds) {
                                     if (! empty($operationTypeIds)) {
@@ -195,8 +198,6 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                                 })
                                 ->delete();
 
-                            // With every restricting child gone (and the manufacturing tables dropped by
-                            // `dropTables()`), the operation types and locations can be force-deleted.
                             if (! empty($operationTypeIds)) {
                                 OperationType::withTrashed()
                                     ->whereIn('id', $operationTypeIds)
@@ -211,10 +212,6 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                         });
                     }
 
-                    // `endWith()` stores a single closure, so the chatter purge has to live here
-                    // rather than in a second `endWith()` call — a second registration would
-                    // silently overwrite this one and skip the cleanup above entirely. It runs
-                    // unconditionally, even when this warehouse had nothing to clean up.
                     ChatterCleanupService::purgeForModels([Order::class]);
                 });
             })
