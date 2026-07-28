@@ -609,6 +609,7 @@ class ManufacturingOrderResource extends Resource
                                     ->schema([
                                         TextEntry::make('product.name')
                                             ->hiddenLabel()
+                                            ->formatStateUsing(fn (mixed $state, Move $record): string => $record->product?->trashed() ? $state.' (Deleted)' : $state)
                                             ->placeholder('—'),
                                         TextEntry::make('sourceLocation.full_name')
                                             ->hiddenLabel()
