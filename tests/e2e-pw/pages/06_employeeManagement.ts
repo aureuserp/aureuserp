@@ -435,7 +435,7 @@ export class EmployeeManagementPage {
         if (this.hasDedicatedCreatePage(slug)) {
             await expect(this.page).toHaveURL(new RegExp(`${slug}/create`));
         } else {
-            await expect(this.page.getByRole("dialog")).toBeVisible();
+            await expect(this.erpLocators.configurationModalDialog).toBeVisible();
         }
     }
 
