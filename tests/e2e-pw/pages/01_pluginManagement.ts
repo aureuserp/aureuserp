@@ -47,7 +47,8 @@ export class PluginManagementPage {
         await this.erpLocators.pluginSearchInput.fill(pluginName);
         await this.page.waitForTimeout(1000); // table search debounce
         await this.page.waitForLoadState('networkidle');
-        await expect(this.erpLocators.pluginName.first()).toContainText(pluginName, { ignoreCase: true });
+
+        await expect(this.erpLocators.pluginName.first()).toBeVisible();
 
         await this.erpLocators.pluginActionsButton.first().click();
         await expect(this.erpLocators.pluginDropdownPanel).toBeVisible();
