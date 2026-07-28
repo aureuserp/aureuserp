@@ -1391,7 +1391,11 @@ export class ErpLocators {
 
         this.employeeSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.employeeErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
-        this.employeeValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+        // The name field carries a native HTML5 "required" attribute, so submitting it blank
+        // is blocked client-side before any Livewire request fires - no Filament error banner
+        // ever renders. input:invalid catches that native rejection; the other classes remain
+        // for server-side validation errors (e.g. uniqueness) that do round-trip.
+        this.employeeValidationMessage = page.locator("input:invalid, .fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
 
         this.departmentsTable = page.locator("div.fi-ta-content-grid, div.fi-ta-empty-state, table");
         this.departmentCreateButton = page.locator("a,button").filter({ hasText: /new department|create department|add department|create/i }).filter({ hasNotText: /view/i }).first();
@@ -1419,9 +1423,7 @@ export class ErpLocators {
          */
 
         this.configurationTable = page.locator("table, div.fi-ta-empty-state, div.fi-ta-content-grid");
-        // Excludes the "Create Table View" action from HasTableViews (hidden in the ⋮ views
-        // dropdown) which otherwise matches /create/i and outranks the real record-create button.
-        this.configurationCreateButton = page.locator("a,button").filter({ hasText: /new|create|add/i }).filter({ hasNotText: /view/i }).first();
+        this.configurationCreateButton = page.locator('button[wire\\:click="mountAction(\'create\')"], a[href$="/create"]').first();
         this.configurationNameInput = page.locator('input[id$="form.name"], input[id$=".name"]').first();
         this.configurationCodeInput = page.locator('input[id$="form.code"], input[id$=".code"]').first();
         this.configurationLocationNumberInput = page.locator('input[id$="form.location_number"], input[id$=".location_number"]').first();
@@ -1431,7 +1433,7 @@ export class ErpLocators {
         this.configurationEmploymentTypeSelect = page.locator('[wire\\:key$="form.employment_type_id"] button.fi-select-input-btn, [wire\\:key$=".form.employment_type_id"] button.fi-select-input-btn').first();
         this.configurationColorSelect = page.locator('[wire\\:key$="form.color"] button.fi-select-input-btn, [wire\\:key$=".form.color"] button.fi-select-input-btn').first();
         this.configurationLocationTypeOption = page.locator('label.fi-fo-toggle-buttons-option, button[role="radio"]').first();
-        this.configurationModalDialog = anyDialog(page);
+        this.configurationModalDialog = page.locator('[role="dialog"].fi-modal-open, [role="alertdialog"].fi-modal-open');
         this.configurationModalCreateButton = anyDialog(page).getByRole("button", { name: /^Create$/i }).first();
         this.configurationModalSaveButton = anyDialog(page).getByRole("button", { name: /^(Save|Save changes|Submit)$/i }).first();
         this.configurationCreatePageSaveButton = page.getByRole("button", { name: /^(Create|Submit)$/i }).first();
@@ -1444,7 +1446,7 @@ export class ErpLocators {
         this.configurationConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
         this.configurationSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.configurationErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
-        this.configurationValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
+        this.configurationValidationMessage = page.locator("input:invalid, .fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
         
         /* 
         * Time Off - Generic UI helpers
@@ -1453,17 +1455,7 @@ export class ErpLocators {
         this.timeOffSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
         this.timeOffTable = page.locator("table, div.fi-ta-empty-state");
         this.timeOffTableRows = page.locator("table tbody tr");
-        // Leave/Allocation/ActivityType/MyAllocation/MyTimeOff group their row actions
-        // (including Approve/Refuse) behind a single "Actions" dropdown; open it first.
         this.timeOffRowActionsButton = page.getByRole("button", { name: "Actions" }).first();
-        // The open dropdown's items are plain <a>/<button> elements with no menu/menuitem
-        // ARIA roles (verified against a live DOM snapshot) - they all carry Filament's
-        // fi-ac-grouped-action class regardless of tag, so match on that instead of role.
-        // Their rendered textContent also carries leading icon-driven whitespace/newlines
-        // (e.g. "\n  \n  \nEdit"), and Playwright tests hasText regexes against the RAW,
-        // non-normalized text - a strict /^Edit$/i never matches that. Anchor around
-        // optional surrounding whitespace instead so it still rejects unrelated matches
-        // like "Apply View" or "Delete selected".
         this.timeOffMenuViewAction = page
             .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
             .filter({ hasText: /^\s*View\s*$/i })
@@ -1476,8 +1468,6 @@ export class ErpLocators {
             .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
             .filter({ hasText: /^\s*Delete\s*$/i })
             .first();
-        // Label reads "Validate" when state is Second Approval, "Approve" otherwise —
-        // both branches of the click handler set state straight to Approved regardless.
         this.timeOffMenuApproveAction = page
             .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
             .filter({ hasText: /^\s*(Approve|Validate)\s*$/i })
@@ -1486,36 +1476,20 @@ export class ErpLocators {
             .locator("a.fi-ac-grouped-action, button.fi-ac-grouped-action")
             .filter({ hasText: /^\s*Refuse\s*$/i })
             .first();
-        // Leave Type/Accrual Plan/Mandatory Day/Public Holiday render View/Edit/Delete as
-        // direct row buttons/links (no "Actions" dropdown) — Edit opens a modal for the two
-        // resources with no dedicated edit route (Mandatory Day, Public Holiday).
         this.timeOffRowViewAction = page.locator("a,button").filter({ hasText: /^\s*View\s*$/i }).first();
         this.timeOffRowEditAction = page.locator("a,button").filter({ hasText: /^\s*Edit\s*$/i }).first();
         this.timeOffRowDeleteAction = page.locator("a,button").filter({ hasText: /^\s*Delete\s*$/i }).first();
         this.timeOffRowRestoreAction = page.locator("a,button").filter({ hasText: /^\s*Restore\s*$/i }).first();
         this.timeOffConfirmDialogButton = anyDialog(page).getByRole("button", { name: /Delete|Confirm|Yes/i }).first();
-        // Shared across every time-off create page (Leave Type/Accrual Plan/Activity Type/
-        // Time Off/Allocation/My Time Off/My Allocation all submit via key-bindings-1) and
-        // every edit page ("Save changes"). Do not reuse key-bindings-1 once a save redirects
-        // onto the record's edit/view page — it becomes the header Delete action there.
         this.timeOffCreateSubmitButton = page.locator('button[id="key-bindings-1"]').first();
         this.timeOffEditSaveButton = page.getByRole("button", { name: /Save changes|^Save$/i }).first();
         this.timeOffModal = page.locator(".fi-modal-window:visible").last();
         this.timeOffSelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
-        // A Filament list tab's accessible name includes its count badge (e.g. "Archived 7"),
-        // so an anchored ^...$ text match against "Archived" alone never matches — use the
-        // tab role with an unanchored name match instead, same convention as the other
-        // getByRole("tab", ...) locators in this file.
         this.timeOffArchivedTab = page.getByRole("tab", { name: /Archived/i }).first();
         this.timeOffSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
-        // Generic notification title/body — used for BOTH success and danger notifications
-        // (Filament renders both through the same .fi-no-notification markup, colour only).
         this.timeOffNotificationTitle = page.locator("h3.fi-no-notification-title");
         this.timeOffNotificationBody = page.locator(".fi-no-notification-body");
         this.timeOffValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
-        // Table Views (webkul/table-views HasTableViews) trigger — the "Waiting For Me",
-        // "Second Approval" and "Approved" preset views are also favorited and may render as
-        // quick tabs directly; the rest are reachable only via this dropdown.
         this.timeOffViewsTriggerButton = page.getByRole("button", { name: /^Views$/i }).first();
         this.timeOffViewsPanel = page.locator('.fi-dropdown-panel:visible').last();
 
