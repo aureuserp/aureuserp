@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OrderPointFactory;
 use Webkul\Inventory\Enums\OrderPointTrigger;
 use Webkul\Security\Models\User;
@@ -16,7 +17,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class OrderPoint extends Model
 {
     use BelongsToCompany;
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'inventories_order_points';
 

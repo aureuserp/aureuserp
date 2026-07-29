@@ -1154,7 +1154,7 @@ class Move extends Model
 
     public function forecast(): array
     {
-        if (! $this->product->is_storable) {
+        if (! $this->product?->is_storable) {
             return [$this->product_qty, false];
         }
 
@@ -1184,7 +1184,7 @@ class Move extends Model
 
     protected function forecastAt(?int $warehouseId): float
     {
-        return Product::find($this->product_id)
+        return Product::withTrashed()->find($this->product_id)
             ->withStockScope(StockScope::make()->forWarehouses($warehouseId)->asOf($this->forecastHorizon()))
             ->stockLevels()
             ->forecast;

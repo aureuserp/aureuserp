@@ -7,20 +7,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Traits\HasOwnershipScope;
+use Webkul\Field\Traits\HasCustomFields;
 
 class Team extends Model
 {
-    use HasOwnershipScope;
-
-    protected static function ownershipScopeIsGlobal(): bool
-    {
-        return false;
-    }
+    use HasCustomFields, HasOwnershipScope;
 
     protected $fillable = [
         'name',
         'creator_id',
     ];
+
+    protected static function ownershipScopeIsGlobal(): bool
+    {
+        return false;
+    }
 
     public function creator(): BelongsTo
     {

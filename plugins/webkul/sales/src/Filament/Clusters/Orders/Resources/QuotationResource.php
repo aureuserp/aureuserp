@@ -57,6 +57,7 @@ use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Support\StockScope;
@@ -89,6 +90,8 @@ use Webkul\Support\Models\UOM;
 
 class QuotationResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Order::class;
 
     protected static ?int $navigationSort = 1;
@@ -336,7 +339,8 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->reactive()
-                                            ->default(current_company()?->currency_id),
+                                            ->default(current_company()?->currency_id)
+                                        ...static::getCustomFormFields(),
                                     ]),
                             ]),
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.form.tabs.term-and-conditions.title'))
@@ -354,7 +358,7 @@ class QuotationResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.number'))
                     ->searchable()
@@ -434,12 +438,12 @@ class QuotationResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->filtersFormColumns(2)
             ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
-                    ->constraints([
+                    ->constraints(static::mergeCustomTableQueryBuilderConstraints([
                         RelationshipConstraint::make('user')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.sales-person'))
                             ->icon('heroicon-o-user')
@@ -563,7 +567,7 @@ class QuotationResource extends Resource
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.created-at')),
                         DateConstraint::make('updated_at')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.updated-at')),
-                    ]),
+                    ])),
             ])
             ->groups([
                 Tables\Grouping\Group::make('medium.name')
@@ -1074,6 +1078,7 @@ class QuotationResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+                ...static::getCustomInfolistEntries(),
             ])
             ->columns(1);
     }

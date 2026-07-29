@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Database\Factories\PartnerFactory;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Security\Models\User;
@@ -28,7 +29,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class Partner extends Authenticatable implements FilamentUser
 {
     use BelongsToCompany;
-    use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, HasOwnershipScope, Notifiable, SoftDeletes;
+    use HasChatter,HasCustomFields, HasContributedAttributes, HasFactory, HasLogActivity, HasOwnershipScope, Notifiable, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'partners';
 

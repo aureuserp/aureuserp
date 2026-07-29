@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'Ubicación de destino',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'Información adicional',
+            ],
         ],
 
         'tabs' => [

@@ -10,6 +10,7 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Scopes\CompanyScope;
@@ -19,7 +20,7 @@ use Webkul\TimeOff\Enums\AllocationType;
 class LeaveAllocation extends Model
 {
     use BelongsToCompany;
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'time-off';
 

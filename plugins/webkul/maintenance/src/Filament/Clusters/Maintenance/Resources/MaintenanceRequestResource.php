@@ -47,6 +47,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Maintenance\Enums\MaintenanceRepeatType;
 use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
@@ -63,6 +64,8 @@ use Webkul\Maintenance\Models\Team;
 
 class MaintenanceRequestResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = MaintenanceRequest::class;
 
     protected static ?string $cluster = Maintenance::class;
@@ -311,6 +314,10 @@ class MaintenanceRequestResource extends Resource
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -318,7 +325,7 @@ class MaintenanceRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.table.columns.name'))
                     ->searchable()
@@ -348,7 +355,7 @@ class MaintenanceRequestResource extends Resource
                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.table.columns.company'))
                     ->placeholder('—')
                     ->sortable(),
-            ])
+            ]))
             ->groups([
                 TableGroup::make('stage.name')
                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.table.groups.stage')),
@@ -520,6 +527,8 @@ class MaintenanceRequestResource extends Resource
                                 TextEntry::make('company.name')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.infolist.sections.settings.entries.company'))
                                     ->placeholder('—'),
+
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

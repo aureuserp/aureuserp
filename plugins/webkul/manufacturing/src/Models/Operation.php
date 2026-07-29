@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Manufacturing\Database\Factories\OperationFactory;
 use Webkul\Manufacturing\Enums\OperationTimeMode;
 use Webkul\Manufacturing\Enums\OperationWorksheetType;
@@ -21,7 +22,7 @@ use Webkul\Security\Models\User;
 
 class Operation extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'manufacturing_operations';
 

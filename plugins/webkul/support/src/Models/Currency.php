@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use InvalidArgumentException;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Support\Database\Factories\CurrencyFactory;
 
 class Currency extends Model
 {
-    use HasFactory;
+    use HasCustomFields, HasFactory;
 
     protected $fillable = [
         'name',

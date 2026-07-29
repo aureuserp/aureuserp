@@ -13,6 +13,7 @@ use Webkul\Account\Database\Factories\JournalFactory;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -22,7 +23,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class Journal extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasFactory, SortableTrait;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_journals';
 

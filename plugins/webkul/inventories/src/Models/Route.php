@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\RouteFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -19,7 +20,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class Route extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_routes';
 

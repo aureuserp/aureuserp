@@ -13,6 +13,7 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
@@ -25,7 +26,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class Product extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter, HasContributedAttributes, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 

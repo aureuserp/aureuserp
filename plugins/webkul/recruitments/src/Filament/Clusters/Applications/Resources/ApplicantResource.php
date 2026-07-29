@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Enums\RecruitmentState as RecruitmentStateEnum;
@@ -64,6 +65,8 @@ use Webkul\Security\Filament\Resources\UserResource;
 
 class ApplicantResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Applicant::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
@@ -404,6 +407,10 @@ class ApplicantResource extends Resource
                             ])->columnSpanFull(),
                     ])
                     ->columnSpan(['lg' => 1]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columnSpanFull()
+                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -411,7 +418,7 @@ class ApplicantResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('candidate.partner.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.columns.partner-name'))
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -551,7 +558,7 @@ class ApplicantResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 TableGroup::make('stage.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.groups.stage'))
@@ -579,7 +586,7 @@ class ApplicantResource extends Resource
                     ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.groups.refuse-reason'))
                     ->collapsible(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -660,7 +667,7 @@ class ApplicantResource extends Resource
                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.filters.date-closed'))
                             ->icon('heroicon-o-check-badge'),
                     ]),
-            ])
+            ]))
             ->defaultGroup('stage.name')
             ->columnManagerColumns(3)
             ->filtersFormColumns(2)
@@ -834,6 +841,7 @@ class ApplicantResource extends Resource
                                             ->placeholder('—')
                                             ->badge()
                                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.entries.interviewer')),
+                                        ...static::getCustomInfolistEntries(),
                                     ])
                                     ->columns(2),
                                 Section::make()

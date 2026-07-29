@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\PutawayRuleFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
@@ -21,7 +22,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class PutawayRule extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_putaway_rules';
 

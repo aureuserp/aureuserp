@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\TaxGroupFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
@@ -17,7 +18,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class TaxGroup extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasFactory, SortableTrait;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_tax_groups';
 

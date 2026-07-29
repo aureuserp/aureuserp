@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\PriceListFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -17,7 +18,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class PriceList extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasFactory, SortableTrait;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'products_product_price_lists';
 

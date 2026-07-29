@@ -1,9 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <title>{{ __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title') }}</title>
     <style>
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         @page {
             margin: 1.5cm 1.5cm;
             size: A4 landscape;

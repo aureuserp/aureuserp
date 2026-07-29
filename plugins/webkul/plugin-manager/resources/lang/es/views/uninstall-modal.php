@@ -10,9 +10,14 @@ return [
 
     'dependents' => [
         'title'         => 'Plugins dependientes',
-        'description'   => 'Estos plugins dependen de este y también se desinstalarán.',
+        'description'   => 'Estos plugins dependen de este. Los dependientes instalados deben desinstalarse primero.',
         'installed'     => 'Instalado',
         'not_installed' => 'No instalado',
+    ],
+
+    'dependency_warning' => [
+        'title'   => 'Acción requerida',
+        'message' => '⚠️ Desinstale primero los siguientes plugins dependientes antes de desinstalar :name.',
     ],
 
     'data_impact' => [

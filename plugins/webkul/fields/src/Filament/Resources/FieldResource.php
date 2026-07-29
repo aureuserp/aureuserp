@@ -22,6 +22,7 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\IconPosition;
@@ -29,11 +30,13 @@ use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Field\FieldsColumnManager;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\CreateField;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\EditField;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\ListFields;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Models\Field;
 use Webkul\Support\Enums\NavigationGroup;
 
@@ -178,15 +181,27 @@ class FieldResource extends Resource
 
                         Section::make(__('fields::filament/resources/field.form.sections.resource.title'))
                             ->schema([
+                                Select::make('plugin')
+                                    ->label(__('fields::filament/resources/field.form.sections.resource.fields.plugin'))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->searchable()
+                                    ->native(false)
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->disabledOn('edit')
+                                    ->options(fn () => static::getPluginOptions())
+                                    ->afterStateHydrated(fn (Set $set, $record) => $record?->customizable_type
+                                        ? $set('plugin', static::pluginForModel($record->customizable_type))
+                                        : null)
+                                    ->afterStateUpdated(fn (Set $set) => $set('customizable_type', null)),
                                 Select::make('customizable_type')
                                     ->label(__('fields::filament/resources/field.form.sections.resource.fields.resource'))
                                     ->required()
                                     ->searchable()
                                     ->native(false)
                                     ->disabledOn('edit')
-                                    ->options(fn () => collect(Filament::getResources())->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))->mapWithKeys(fn ($resource) => [
-                                        $resource::getModel() => str($resource)->afterLast('\\')->toString(),
-                                    ])),
+                                    ->visible(fn (Get $get): bool => filled($get('plugin')))
+                                    ->options(fn (Get $get): array => static::getCustomizableResourceOptions($get('plugin'))),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -235,9 +250,7 @@ class FieldResource extends Resource
                     ]),
                 SelectFilter::make('customizable_type')
                     ->label(__('fields::filament/resources/field.table.filters.resource'))
-                    ->options(fn () => collect(Filament::getResources())->filter(fn ($resource) => in_array('Webkul\Field\Filament\Traits\HasCustomFields', class_uses($resource)))->mapWithKeys(fn ($resource) => [
-                        $resource::getModel() => str($resource)->afterLast('\\')->toString(),
-                    ])),
+                    ->options(fn () => static::getCustomizableResourceOptions()),
             ])
             ->recordActions([
                 ActionGroup::make([
@@ -300,6 +313,130 @@ class FieldResource extends Resource
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    protected static function getPluginOptions(): array
+    {
+        return collect(static::customizableResources())
+            ->map(fn ($resource) => static::resourcePluginDirectory($resource))
+            ->unique()
+            ->sort()
+            ->mapWithKeys(fn ($plugin) => [$plugin => str($plugin)->headline()->toString()])
+            ->toArray();
+    }
+
+    protected static function adminPanelResources(): array
+    {
+        return Filament::getPanel('admin')->getResources();
+    }
+
+    protected static function getCustomizableResourceOptions(?string $plugin = null): array
+    {
+        return collect(static::customizableResources())
+            ->when(filled($plugin), fn ($resources) => $resources->filter(
+                fn ($resource) => static::resourcePluginDirectory($resource) === $plugin
+            ))
+            ->mapWithKeys(fn ($resource) => [$resource::getModel() => static::resourceLabel($resource)])
+            ->sort()
+            ->toArray();
+    }
+
+    protected static function customizableResources(): array
+    {
+        static $resources = null;
+
+        return $resources ??= collect(static::adminPanelResources())
+            ->filter(fn ($resource) => static::isCustomizableResource($resource))
+            ->values()
+            ->all();
+    }
+
+    protected static function isCustomizableResource(string $resource): bool
+    {
+        return is_subclass_of($resource, Resource::class)
+            && in_array(HasCustomFields::class, class_uses_recursive($resource), true)
+            && static::resourcePluginIsAvailable($resource)
+            && static::resourceRendersCustomFields($resource);
+    }
+
+    protected static function resourcePluginIsAvailable(string $resource): bool
+    {
+        return ! in_array(static::resourcePluginDirectory($resource), static::disabledPluginDirectories(), true);
+    }
+
+    protected static function disabledPluginDirectories(): array
+    {
+        static $directories = null;
+
+        return $directories ??= DB::table('plugins')
+            ->where(fn ($query) => $query->where('is_installed', false)->orWhere('is_active', false))
+            ->pluck('name')
+            ->all();
+    }
+
+    protected static function resourcePluginDirectory(string $resource): string
+    {
+        static $cache = [];
+
+        if (! array_key_exists($resource, $cache)) {
+            $file = (string) (new \ReflectionClass($resource))->getFileName();
+
+            $cache[$resource] = preg_match('#/plugins/webkul/([^/]+)/#', $file, $matches) ? $matches[1] : '';
+        }
+
+        return $cache[$resource];
+    }
+
+    /**
+     * Whether the form() this resource actually runs appends its own custom fields.
+     *
+     * A resource whose form() hands off to another resource's form() renders that
+     * resource's model, so fields registered against this one never show up.
+     */
+    protected static function resourceRendersCustomFields(string $resource): bool
+    {
+        static $cache = [];
+
+        if (array_key_exists($resource, $cache)) {
+            return $cache[$resource];
+        }
+
+        if (! method_exists($resource, 'form')) {
+            return $cache[$resource] = false;
+        }
+
+        $method = new \ReflectionMethod($resource, 'form');
+
+        $file = $method->getFileName();
+
+        if ($file === false || ! is_readable($file)) {
+            return $cache[$resource] = false;
+        }
+
+        $body = implode('', array_slice(
+            file($file),
+            $method->getStartLine() - 1,
+            $method->getEndLine() - $method->getStartLine() + 1,
+        ));
+
+        return $cache[$resource] = str_contains($body, 'getCustomFormFields')
+            || str_contains($body, 'mergeCustomFormFields');
+    }
+
+    protected static function resourceLabel(string $resource): string
+    {
+        return str(class_basename($resource))->beforeLast('Resource')->headline()->toString();
+    }
+
+    protected static function pluginForModel(string $type): ?string
+    {
+        foreach (static::customizableResources() as $resource) {
+            if ($resource::getModel() === $type) {
+                return static::resourcePluginDirectory($resource);
+            }
+        }
+
+        return null;
     }
 
     public static function getPages(): array

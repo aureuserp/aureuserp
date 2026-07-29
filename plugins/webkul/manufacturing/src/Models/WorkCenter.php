@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Manufacturing\Database\Factories\WorkCenterFactory;
 use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
 use Webkul\Security\Models\User;
@@ -24,7 +25,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class WorkCenter extends Model implements Sortable
 {
     use BelongsToCompany;
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected const SLOT_SEARCH_WINDOW_DAYS = 14;
 
