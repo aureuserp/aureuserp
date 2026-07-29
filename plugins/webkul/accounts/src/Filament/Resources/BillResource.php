@@ -1102,9 +1102,10 @@ class BillResource extends Resource
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
                             ->withTrashed()
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()
@@ -1195,7 +1196,9 @@ class BillResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('type_tax_use', TypeTaxUse::PURCHASE)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->wrapOptionLabels(false)
                     ->searchable()

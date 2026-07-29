@@ -1255,7 +1255,9 @@ class ManufacturingOrderResource extends Resource
                     ->relationship(
                         'workCenter',
                         'name',
-                        fn (Builder $query) => $query->withTrashed(),
+                        fn (Builder $query, Get $get) => $query
+                            ->withTrashed()
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()

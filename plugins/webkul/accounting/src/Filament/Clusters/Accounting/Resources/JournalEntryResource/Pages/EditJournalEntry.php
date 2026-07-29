@@ -8,16 +8,20 @@ use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
+use Webkul\Account\Models\Account;
+use Webkul\Account\Models\Tax;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditJournalEntry extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 
@@ -74,5 +78,12 @@ class EditJournalEntry extends EditRecord
         parent::refreshFormData($statePaths);
 
         $this->rememberData();
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'lines' => ['account_id' => Account::class, 'taxes' => Tax::class],
+        ];
     }
 }

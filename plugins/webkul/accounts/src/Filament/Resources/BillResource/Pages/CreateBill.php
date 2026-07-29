@@ -9,10 +9,13 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Models\Journal;
+use Webkul\Account\Models\Tax;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateBill extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected static string $resource = BillResource::class;
@@ -61,5 +64,12 @@ class CreateBill extends CreateRecord
     protected function afterCreate(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'products' => ['taxes' => Tax::class],
+        ];
     }
 }

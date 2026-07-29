@@ -10,13 +10,16 @@ use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
+use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditPurchaseAgreement extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
     use RefreshesRecordState;
@@ -119,6 +122,13 @@ class EditPurchaseAgreement extends EditRecord
                         ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.delete.notification.title'))
                         ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.delete.notification.body')),
                 ),
+        ];
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'lines' => ['product_id' => Product::class],
         ];
     }
 }

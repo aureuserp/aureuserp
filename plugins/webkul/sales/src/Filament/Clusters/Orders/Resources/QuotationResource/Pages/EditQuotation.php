@@ -5,17 +5,21 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
+use Webkul\Sale\Models\Product;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditQuotation extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
     use RefreshesRecordState;
@@ -77,5 +81,13 @@ class EditQuotation extends EditRecord
         parent::refreshFormData($statePaths);
 
         $this->rememberData();
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'products'         => ['taxes' => Tax::class],
+            'optionalProducts' => ['product_id' => Product::class],
+        ];
     }
 }

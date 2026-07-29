@@ -23,10 +23,12 @@ use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class MoveLine extends Model implements Sortable
 {
     use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasFactory, SortableTrait;
 
     protected $table = 'accounts_account_move_lines';
@@ -638,5 +640,12 @@ class MoveLine extends Model implements Sortable
     protected static function newFactory(): Factory
     {
         return MoveLineFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+        ];
     }
 }

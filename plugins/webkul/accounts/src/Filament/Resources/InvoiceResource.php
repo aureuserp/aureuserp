@@ -1156,7 +1156,10 @@ class InvoiceResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query) => $query->withTrashed()->where('is_configurable', null),
+                        fn (Builder $query, Get $get) => $query
+                            ->withTrashed()
+                            ->where('is_configurable', null)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -1248,7 +1251,9 @@ class InvoiceResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('type_tax_use', TypeTaxUse::SALE)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->wrapOptionLabels(false)
                     ->searchable()

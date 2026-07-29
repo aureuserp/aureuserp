@@ -49,6 +49,13 @@ use Webkul\Support\Models\UOM;
 
 class OperationForm
 {
+    public static function companyIdFor(Get $get, string $prefix = ''): ?int
+    {
+        return OperationType::withTrashed()
+            ->find($get($prefix.'operation_type_id'))
+            ?->company_id ?? current_company_id();
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -143,7 +150,9 @@ class OperationForm
                             ->relationship(
                                 'sourceLocation',
                                 'full_name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                    ->withTrashed()
+                                    ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -161,7 +170,9 @@ class OperationForm
                             ->relationship(
                                 'destinationLocation',
                                 'full_name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                    ->withTrashed()
+                                    ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -326,10 +337,11 @@ class OperationForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', ProductType::GOODS)
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company(static::companyIdFor($get, '../../'))),
                     )
                     ->required()
                     ->searchable()

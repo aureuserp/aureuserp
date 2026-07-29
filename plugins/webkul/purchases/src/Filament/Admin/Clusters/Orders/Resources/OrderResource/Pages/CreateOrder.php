@@ -4,12 +4,15 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Webkul\Account\Models\Tax;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateOrder extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected ?bool $hasDatabaseTransactions = true;
@@ -50,5 +53,12 @@ class CreateOrder extends CreateRecord
 
             $this->halt(shouldRollbackDatabaseTransaction: true);
         }
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'products' => ['taxes' => Tax::class],
+        ];
     }
 }

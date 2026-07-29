@@ -289,11 +289,14 @@ class PurchaseAgreementResource extends Resource
             ->schema([
                 Select::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.product'))
-                    ->relationship('product', 'name')
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->where('type', ProductType::GOODS)->withTrashed()->whereNull('is_configurable'),
+                        fn (Builder $query, Get $get) => $query
+                            ->where('type', ProductType::GOODS)
+                            ->withTrashed()
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->required()
                     ->searchable()
@@ -330,7 +333,7 @@ class PurchaseAgreementResource extends Resource
                             $set('uom_id', $product->uom_id);
                         }
                     })
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                    ->disabled(fn ($record): bool => in_array($record?->requisition?->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
                 TextInput::make('qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.quantity'))
                     ->numeric()
@@ -338,7 +341,7 @@ class PurchaseAgreementResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                    ->disabled(fn ($record): bool => in_array($record?->requisition?->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
                 TextInput::make('ordered_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.ordered'))
                     ->numeric()
@@ -357,7 +360,7 @@ class PurchaseAgreementResource extends Resource
                     ->required()
                     ->wrapOptionLabels(false)
                     ->visible(static::getProductSettings()->enable_uom)
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                    ->disabled(fn ($record): bool => in_array($record?->requisition?->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
                 TextInput::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.unit-price'))
                     ->numeric()
@@ -365,7 +368,7 @@ class PurchaseAgreementResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                    ->disabled(fn ($record): bool => in_array($record?->requisition?->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
             ])
             ->columns($columns);
     }

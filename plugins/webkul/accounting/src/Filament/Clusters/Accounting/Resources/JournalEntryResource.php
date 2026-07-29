@@ -654,7 +654,11 @@ class JournalEntryResource extends Resource
                 Hidden::make('display_type'),
                 Select::make('account_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.account'))
-                    ->relationship('account', 'name')
+                    ->relationship(
+                        'account',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                    )
                     ->searchable()
                     ->required()
                     ->preload()
@@ -702,7 +706,11 @@ class JournalEntryResource extends Resource
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Select::make('taxes')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.taxes'))
-                    ->relationship('taxes', 'name')
+                    ->relationship(
+                        'taxes',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                    )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.' ('.$record->type_tax_use->getLabel().')';
                     })

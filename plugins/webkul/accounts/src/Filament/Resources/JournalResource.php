@@ -253,7 +253,11 @@ class JournalResource extends Resource
 
                                                         Select::make('payment_account_id')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.account-number'))
-                                                            ->relationship('paymentAccount', 'name')
+                                                            ->relationship(
+                                                                'paymentAccount',
+                                                                'name',
+                                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                                            )
                                                             ->searchable()
                                                             ->preload()
                                                             ->wrapOptionLabels(false),
@@ -313,7 +317,11 @@ class JournalResource extends Resource
 
                                                         Select::make('payment_account_id')
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.account-number'))
-                                                            ->relationship('paymentAccount', 'name')
+                                                            ->relationship(
+                                                                'paymentAccount',
+                                                                'name',
+                                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                                            )
                                                             ->searchable()
                                                             ->preload()
                                                             ->wrapOptionLabels(false),

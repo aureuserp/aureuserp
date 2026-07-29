@@ -7,18 +7,21 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
+use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions as OrderActions;
 use Webkul\Purchase\Models\Order;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditOrder extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 
@@ -123,5 +126,12 @@ class EditOrder extends EditRecord
         $this->fillForm();
 
         $this->rememberData();
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'products' => ['taxes' => Tax::class],
+        ];
     }
 }

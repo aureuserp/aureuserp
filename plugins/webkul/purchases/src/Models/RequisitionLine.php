@@ -12,10 +12,12 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class RequisitionLine extends Model
 {
     use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasFactory;
 
     protected $table = 'purchases_requisition_lines';
@@ -87,4 +89,12 @@ class RequisitionLine extends Model
             $requisitionLine->creator_id ??= Auth::id();
         });
     }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+        ];
+    }
+
 }

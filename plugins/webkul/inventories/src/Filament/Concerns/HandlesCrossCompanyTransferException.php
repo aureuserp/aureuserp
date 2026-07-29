@@ -2,48 +2,35 @@
 
 namespace Webkul\Inventory\Filament\Concerns;
 
-use Filament\Notifications\Notification;
-use Webkul\Inventory\Exceptions\CrossCompanyTransferException;
+use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Support\CrossCompanyTransferGuard;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 trait HandlesCrossCompanyTransferException
 {
-    public function create(bool $another = false): void
-    {
-        try {
-            $this->assertNoCrossCompanyTransfer();
+    use HandlesCrossCompanyException;
 
-            parent::create($another);
-        } catch (CrossCompanyTransferException $exception) {
-            $this->notifyCrossCompanyTransfer($exception);
-        }
-    }
-
-    public function save(bool $shouldRedirect = true, bool $shouldSendSavedNotification = true): void
-    {
-        try {
-            $this->assertNoCrossCompanyTransfer();
-
-            parent::save($shouldRedirect, $shouldSendSavedNotification);
-        } catch (CrossCompanyTransferException $exception) {
-            $this->notifyCrossCompanyTransfer($exception);
-        }
-    }
-
-    protected function assertNoCrossCompanyTransfer(): void
+    protected function assertCrossCompany(): void
     {
         CrossCompanyTransferGuard::assert(
             $this->data['source_location_id'] ?? null,
             $this->data['destination_location_id'] ?? null,
         );
+
+        $this->assertCompanyConsistency();
     }
 
-    protected function notifyCrossCompanyTransfer(CrossCompanyTransferException $exception): void
+    protected function companyConsistencyMap(): array
     {
-        Notification::make()
-            ->danger()
-            ->title($exception->title())
-            ->body($exception->getMessage())
-            ->send();
+        return [
+            'moves' => ['product_id' => Product::class],
+        ];
+    }
+
+    protected function companyConsistencyCompanyId(): ?int
+    {
+        return $this->data['company_id']
+            ?? OperationType::withTrashed()->find($this->data['operation_type_id'] ?? null)?->company_id;
     }
 }

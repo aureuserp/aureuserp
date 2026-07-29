@@ -7,12 +7,16 @@ use Filament\Resources\Pages\CreateRecord;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
+use Webkul\Account\Models\Tax;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateJournalEntry extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     public function getSubNavigation(): array
@@ -59,5 +63,12 @@ class CreateJournalEntry extends CreateRecord
     protected function afterCreate(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'lines' => ['account_id' => Account::class, 'taxes' => Tax::class],
+        ];
     }
 }

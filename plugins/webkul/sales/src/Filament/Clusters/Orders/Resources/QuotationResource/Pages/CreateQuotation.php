@@ -4,12 +4,16 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Webkul\Account\Models\Tax;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
+use Webkul\Sale\Models\Product;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateQuotation extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected static string $resource = QuotationResource::class;
@@ -50,5 +54,13 @@ class CreateQuotation extends CreateRecord
 
             $this->halt(shouldRollbackDatabaseTransaction: true);
         }
+    }
+
+    protected function companyConsistencyMap(): array
+    {
+        return [
+            'products'         => ['taxes' => Tax::class],
+            'optionalProducts' => ['product_id' => Product::class],
+        ];
     }
 }

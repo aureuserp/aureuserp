@@ -976,10 +976,11 @@ class OrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query
+                        fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', ProductType::GOODS)
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -1148,7 +1149,9 @@ class OrderResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('type_tax_use', TypeTaxUse::PURCHASE)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->multiple()
