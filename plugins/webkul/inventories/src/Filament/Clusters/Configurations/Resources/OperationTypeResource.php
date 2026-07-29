@@ -289,8 +289,7 @@ class OperationTypeResource extends Resource
                                                 $companyId = $get('company_id') ?? current_company_id();
 
                                                 return match ($type) {
-                                                    Enums\OperationType::INCOMING => Location::where('type', LocationType::SUPPLIER->value)
-                                                        ->where('company_id', $companyId)
+                                                    Enums\OperationType::INCOMING => Location::where('type', LocationType::SUPPLIER)
                                                         ->first()?->id,
                                                     Enums\OperationType::OUTGOING => Location::where('is_replenish', true)
                                                         ->where('company_id', $companyId)
