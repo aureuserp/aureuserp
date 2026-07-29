@@ -18,7 +18,6 @@ use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends BaseInvoiceResource
 {
-
     protected static ?string $model = Invoice::class;
 
     protected static bool $shouldRegisterNavigation = true;

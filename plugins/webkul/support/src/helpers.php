@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Number;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\SettingsRegistry;
 
 if (! function_exists('settings')) {
@@ -238,29 +240,29 @@ if (! function_exists('make_aware')) {
 }
 
 if (! function_exists('current_company')) {
-    function current_company(): ?\Webkul\Support\Models\Company
+    function current_company(): ?Company
     {
-        return app(\Webkul\Support\Services\CompanyContext::class)->currentCompany();
+        return app(CompanyContext::class)->currentCompany();
     }
 }
 
 if (! function_exists('current_company_id')) {
     function current_company_id(): ?int
     {
-        return app(\Webkul\Support\Services\CompanyContext::class)->currentId();
+        return app(CompanyContext::class)->currentId();
     }
 }
 
 if (! function_exists('allowed_companies')) {
     function allowed_companies(): Collection
     {
-        return app(\Webkul\Support\Services\CompanyContext::class)->allowedCompanies();
+        return app(CompanyContext::class)->allowedCompanies();
     }
 }
 
 if (! function_exists('allowed_company_ids')) {
     function allowed_company_ids(): array
     {
-        return app(\Webkul\Support\Services\CompanyContext::class)->allowedIds();
+        return app(CompanyContext::class)->allowedIds();
     }
 }

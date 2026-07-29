@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages;
 
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
@@ -10,13 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
+use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateReceipt extends CreateRecord
 {
     use HandlesCrossCompanyTransferException;
-
     use HasRepeaterColumnManager;
 
     protected static string $resource = ReceiptResource::class;

@@ -501,7 +501,7 @@ class Payment extends Model
             'origin_payment_id' => $this->id,
         ]);
 
-        $lines = $lines ?: $this->prepareMoveLineDefaultVals($writeOffLineVals, $forceBalance);
+        $lines = $lines ?: $this->buildDefaultMoveLineAttributes($writeOffLineVals, $forceBalance);
 
         collect($lines)->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
 
@@ -513,7 +513,7 @@ class Payment extends Model
         ]);
     }
 
-    public function prepareMoveLineDefaultVals($writeOffLineVals = null, $forceBalance = null)
+    public function buildDefaultMoveLineAttributes($writeOffLineVals = null, $forceBalance = null)
     {
         if (! $this->outstanding_account_id) {
             throw new Exception(
@@ -597,7 +597,7 @@ class Payment extends Model
                 ];
             }
 
-            $lineValsList = $pay->prepareMoveLineDefaultVals($writeOffLineVals);
+            $lineValsList = $pay->buildDefaultMoveLineAttributes($writeOffLineVals);
 
             $lineIdsCommands = [
                 $liquidityLines->isNotEmpty()

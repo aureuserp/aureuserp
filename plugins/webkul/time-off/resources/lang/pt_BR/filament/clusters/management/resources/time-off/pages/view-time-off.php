@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Ausência excluída',
-                'body' => 'A ausência foi excluída com sucesso.',
+                'body'  => 'A ausência foi excluída com sucesso.',
             ],
         ],
     ],

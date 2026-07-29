@@ -8,8 +8,6 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
-use Webkul\Inventory\Observers\CompanyObserver;
-use Webkul\Support\Models\Company;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
@@ -23,6 +21,7 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Scrap;
+use Webkul\Inventory\Observers\CompanyObserver;
 use Webkul\Inventory\Observers\ProductObserver;
 use Webkul\Inventory\Observers\UOMObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -32,8 +31,9 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\TableViews\Filament\Components\PresetView;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\TableViews\Filament\Components\PresetView;
 
 class InventoryServiceProvider extends PackageServiceProvider
 {
@@ -171,7 +171,7 @@ class InventoryServiceProvider extends PackageServiceProvider
     protected function registerObservers(): void
     {
         Company::observe(CompanyObserver::class);
-        
+
         UOM::observe(UOMObserver::class);
 
         Product::observe(ProductObserver::class);

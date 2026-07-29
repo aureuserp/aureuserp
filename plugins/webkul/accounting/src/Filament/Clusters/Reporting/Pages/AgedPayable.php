@@ -12,7 +12,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Webkul\Account\Enums\AccountType;
@@ -21,15 +20,14 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
-use Webkul\Accounting\Support\CompanyRateMap;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\AgedPayableExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 use Webkul\Partner\Models\Partner;
 
 class AgedPayable extends Page implements HasForms
 {
-    use ShowsCurrencyNotice;
-
     use HasPageShield, InteractsWithForms;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.aged-payable';
 

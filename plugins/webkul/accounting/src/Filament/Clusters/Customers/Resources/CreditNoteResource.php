@@ -15,7 +15,6 @@ use Webkul\Accounting\Models\CreditNote;
 
 class CreditNoteResource extends BaseCreditNoteResource
 {
-
     protected static ?string $model = CreditNote::class;
 
     protected static bool $shouldRegisterNavigation = true;

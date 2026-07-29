@@ -2,15 +2,13 @@
 
 namespace Webkul\Purchase\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**

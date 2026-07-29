@@ -38,21 +38,21 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Security\Settings\UserSettings;
 use Webkul\Support\Enums\CompanyStatus;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Resources\CompanyResource\Pages\CreateCompany;
 use Webkul\Support\Filament\Resources\CompanyResource\Pages\EditCompany;
 use Webkul\Support\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Support\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Support\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
-use Webkul\Security\Settings\UserSettings;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
-use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 
 class CompanyResource extends Resource
 {
@@ -78,7 +78,7 @@ class CompanyResource extends Resource
         return __('support::filament/resources/company.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }

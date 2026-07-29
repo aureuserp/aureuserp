@@ -2,13 +2,11 @@
 
 namespace Webkul\Product\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Packaging>

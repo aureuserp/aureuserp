@@ -73,8 +73,8 @@ use Webkul\Project\Models\TaskStage;
 use Webkul\Project\Settings\TaskSettings;
 use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\UserResource;
-use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 
 class TaskResource extends Resource
 {
@@ -93,7 +93,7 @@ class TaskResource extends Resource
         return __('projects::filament/resources/task.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Project;
     }

@@ -2,15 +2,13 @@
 
 namespace Webkul\Inventory\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Warehouse>

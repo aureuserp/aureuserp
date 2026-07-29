@@ -17,12 +17,12 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
-use Webkul\Support\Http\Controllers\CompanyContextController;
-use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
 use Webkul\Support\Database\Dialects\MySqlDialect;
 use Webkul\Support\Database\Dialects\PostgresDialect;
+use Webkul\Support\Http\Controllers\CompanyContextController;
 use Webkul\Support\Livewire\QuickNavigation;
+use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
@@ -120,7 +120,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 ])->render();
             },
         );
-        
+
         Livewire::component('quick-navigation', QuickNavigation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
@@ -147,9 +147,9 @@ class SupportServiceProvider extends PackageServiceProvider
             $driver = DB::connection()->getDriverName();
 
             return match ($driver) {
-                'pgsql' => new PostgresDialect,
+                'pgsql'            => new PostgresDialect,
                 'mysql', 'mariadb' => new MySqlDialect,
-                default => throw new RuntimeException(
+                default            => throw new RuntimeException(
                     "No DatabaseDialect implementation is registered for the [{$driver}] database driver. ".
                     'Supported drivers: mysql, mariadb, pgsql.'
                 ),

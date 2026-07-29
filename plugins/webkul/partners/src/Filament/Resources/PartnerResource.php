@@ -15,7 +15,6 @@ use Webkul\Partner\Models\Partner;
 
 class PartnerResource extends Resource
 {
-
     protected static ?string $model = Partner::class;
 
     protected static bool $shouldRegisterNavigation = false;

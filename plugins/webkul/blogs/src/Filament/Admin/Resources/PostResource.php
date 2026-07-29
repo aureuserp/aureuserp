@@ -61,7 +61,7 @@ class PostResource extends Resource
         return __('blogs::filament/admin/resources/post.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Website;
     }

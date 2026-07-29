@@ -9,9 +9,9 @@ return [
 
     'global-search' => [
         'email-from' => 'E-mail de',
-        'phone' => 'Telefone',
-        'company' => 'Empresa',
-        'degree' => 'Grau',
+        'phone'      => 'Telefone',
+        'company'    => 'Empresa',
+        'degree'     => 'Grau',
     ],
 
     'form' => [
@@ -21,10 +21,10 @@ return [
 
                 'fields' => [
                     'full-name' => 'Nome completo',
-                    'email' => 'Endereço de e-mail',
-                    'phone' => 'Número de telefone',
-                    'linkedin' => 'Perfil do LinkedIn',
-                    'contact' => 'Contato',
+                    'email'     => 'Endereço de e-mail',
+                    'phone'     => 'Número de telefone',
+                    'linkedin'  => 'Perfil do LinkedIn',
+                    'contact'   => 'Contato',
                 ],
             ],
 
@@ -32,16 +32,16 @@ return [
                 'title' => 'Detalhes adicionais',
 
                 'fields' => [
-                    'company' => 'Empresa',
-                    'degree' => 'Grau',
-                    'tags' => 'Tags',
-                    'manager' => 'Gerente',
+                    'company'           => 'Empresa',
+                    'degree'            => 'Grau',
+                    'tags'              => 'Tags',
+                    'manager'           => 'Gerente',
                     'availability-date' => 'Data de disponibilidade',
 
                     'priority-options' => [
-                        'low' => 'Baixo',
+                        'low'    => 'Baixo',
                         'medium' => 'Médio',
-                        'high' => 'Alto',
+                        'high'   => 'Alto',
                     ],
                 ],
             ],
@@ -50,7 +50,7 @@ return [
                 'title' => 'Status',
 
                 'fields' => [
-                    'active' => 'Ativa',
+                    'active'     => 'Ativa',
                     'evaluation' => 'Avaliação',
                 ],
             ],
@@ -59,7 +59,7 @@ return [
                 'title' => 'Comunicação',
 
                 'fields' => [
-                    'cc-email' => 'E-mail CC',
+                    'cc-email'      => 'E-mail CC',
                     'email-bounced' => 'E-mail devolvido',
                 ],
             ],
@@ -68,15 +68,15 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome completo',
-            'tags' => 'Tags',
+            'name'       => 'Nome completo',
+            'tags'       => 'Tags',
             'evaluation' => 'Avaliação',
         ],
 
         'filters' => [
-            'company' => 'Empresa',
+            'company'      => 'Empresa',
             'partner-name' => 'Contato',
-            'degree' => 'Grau',
+            'degree'       => 'Grau',
             'manager-name' => 'Gerente',
         ],
 
@@ -88,7 +88,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Candidato excluído',
-                    'body' => 'Os candidatos foram excluídos com sucesso.',
+                    'body'  => 'Os candidatos foram excluídos com sucesso.',
                 ],
             ],
 
@@ -96,7 +96,7 @@ return [
                 'create' => [
                     'notification' => [
                         'title' => 'Candidato criado',
-                        'body' => 'Os candidatos foram criados com sucesso.',
+                        'body'  => 'Os candidatos foram criados com sucesso.',
                     ],
                 ],
             ],
@@ -106,7 +106,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Candidatos excluídos',
-                    'body' => 'Os candidatos foram excluídos com sucesso.',
+                    'body'  => 'Os candidatos foram excluídos com sucesso.',
                 ],
             ],
         ],
@@ -119,10 +119,10 @@ return [
 
                 'entries' => [
                     'full-name' => 'Nome completo',
-                    'email' => 'Endereço de e-mail',
-                    'phone' => 'Número de telefone',
-                    'linkedin' => 'Perfil do LinkedIn',
-                    'contact' => 'Contato',
+                    'email'     => 'Endereço de e-mail',
+                    'phone'     => 'Número de telefone',
+                    'linkedin'  => 'Perfil do LinkedIn',
+                    'contact'   => 'Contato',
                 ],
             ],
 
@@ -130,16 +130,16 @@ return [
                 'title' => 'Detalhes adicionais',
 
                 'entries' => [
-                    'company' => 'Empresa',
-                    'degree' => 'Grau',
-                    'tags' => 'Tags',
-                    'manager' => 'Gerente',
+                    'company'           => 'Empresa',
+                    'degree'            => 'Grau',
+                    'tags'              => 'Tags',
+                    'manager'           => 'Gerente',
                     'availability-date' => 'Data de disponibilidade',
 
                     'priority-options' => [
-                        'low' => 'Baixo',
+                        'low'    => 'Baixo',
                         'medium' => 'Médio',
-                        'high' => 'Alto',
+                        'high'   => 'Alto',
                     ],
                 ],
             ],
@@ -148,7 +148,7 @@ return [
                 'title' => 'Status',
 
                 'entries' => [
-                    'active' => 'Ativa',
+                    'active'     => 'Ativa',
                     'evaluation' => 'Avaliação',
                 ],
             ],
@@ -157,7 +157,7 @@ return [
                 'title' => 'Comunicação',
 
                 'entries' => [
-                    'cc-email' => 'E-mail CC',
+                    'cc-email'      => 'E-mail CC',
                     'email-bounced' => 'E-mail devolvido',
                 ],
             ],

@@ -4,7 +4,6 @@ namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryR
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;

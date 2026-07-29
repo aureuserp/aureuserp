@@ -2,12 +2,10 @@
 
 namespace Webkul\Employee\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Calendar;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class CalendarFactory extends Factory
 {

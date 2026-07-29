@@ -21,7 +21,7 @@ class Help extends Page
         return __('support::filament/pages/help.navigation.label');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Help;
     }

@@ -7,7 +7,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Categoria de UOM excluída',
-                'body' => 'A categoria de UOM foi excluída com sucesso.',
+                'body'  => 'A categoria de UOM foi excluída com sucesso.',
             ],
         ],
     ],

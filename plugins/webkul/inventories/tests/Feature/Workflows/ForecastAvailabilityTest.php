@@ -22,19 +22,19 @@ beforeEach(function () {
 it('treats an internal transfer as consuming', function () {
     $operation = InventoryHelper::internalTransfer($this->warehouse, $this->stock, $this->shelf, [[$this->product, 5]]);
 
-    expect($operation->moves->first()->isConsuming())->toBeTrue();
+    expect($operation->moves->first()->consumesStock())->toBeTrue();
 });
 
 it('treats a delivery as consuming', function () {
     $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 5]]);
 
-    expect($operation->moves->first()->isConsuming())->toBeTrue();
+    expect($operation->moves->first()->consumesStock())->toBeTrue();
 });
 
 it('does not treat a receipt as consuming', function () {
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 5]]);
 
-    expect($operation->moves->first()->isConsuming())->toBeFalse();
+    expect($operation->moves->first()->consumesStock())->toBeFalse();
 });
 
 it('computes a numeric forecast availability for a draft internal transfer', function () {

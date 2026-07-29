@@ -5,8 +5,8 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource as BaseDeliveryResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
@@ -69,8 +69,8 @@ class QuotationDeliveryResource extends BaseDeliveryResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewDelivery::route('/{record}/view'),
-            'edit' => EditDelivery::route('/{record}/edit'),
+            'view'  => ViewDelivery::route('/{record}/view'),
+            'edit'  => EditDelivery::route('/{record}/edit'),
             'moves' => ManageMoves::route('/{record}/moves'),
         ];
     }

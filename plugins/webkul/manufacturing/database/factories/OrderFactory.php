@@ -2,8 +2,6 @@
 
 namespace Webkul\Manufacturing\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Lot;
@@ -16,7 +14,7 @@ use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\Order;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**

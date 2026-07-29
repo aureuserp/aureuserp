@@ -54,7 +54,7 @@ class EquipmentResource extends Resource
         return __('maintenance::models/equipment.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Maintenance;
     }

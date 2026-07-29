@@ -14,10 +14,10 @@ use Webkul\Employee\Database\Factories\EmployeeFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
-use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\State;
 use Webkul\Support\Traits\BelongsToCompany;
 

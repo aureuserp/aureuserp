@@ -2,8 +2,6 @@
 
 namespace Webkul\Payment\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Account\Models\BankStatement;
 use Webkul\Account\Models\Journal;
@@ -11,7 +9,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**

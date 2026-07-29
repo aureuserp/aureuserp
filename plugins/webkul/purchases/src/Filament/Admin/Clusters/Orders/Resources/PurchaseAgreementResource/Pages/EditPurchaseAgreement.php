@@ -18,8 +18,8 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditPurchaseAgreement extends EditRecord
 {
     use HasRecordNavigationTabs;
-    use RefreshesRecordState;
     use HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = PurchaseAgreementResource::class;
 

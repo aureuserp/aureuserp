@@ -4,9 +4,7 @@ namespace Webkul\Support\Filament\Resources\UOMCategoryResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\Support\Filament\Resources\UOMCategoryResource;
-use Webkul\Support\Models\UOMCategory;
 
 class ListUOMCategories extends ListRecords
 {

@@ -138,7 +138,7 @@ it('offers the return action only once the receipt is done', function () {
 
     Inventory::confirmTransfer($receipt);
     InventoryHelper::pick($receipt->refresh()->moves->first(), 5);
-    Inventory::doneTransfer($receipt->refresh());
+    Inventory::completeTransfer($receipt->refresh());
 
     expect($receipt->refresh()->state)->toBe(OperationState::DONE);
 
@@ -155,7 +155,7 @@ it('hides the validate and cancel actions on a done receipt', function () {
 
     Inventory::confirmTransfer($receipt);
     InventoryHelper::pick($receipt->refresh()->moves->first(), 5);
-    Inventory::doneTransfer($receipt->refresh());
+    Inventory::completeTransfer($receipt->refresh());
 
     Livewire::test(ViewReceipt::class, ['record' => $receipt->id])
         ->assertOk()

@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Lançamento contábil excluído',
-                'body' => 'O lançamento contábil foi excluído com sucesso.',
+                'body'  => 'O lançamento contábil foi excluído com sucesso.',
             ],
         ],
     ],

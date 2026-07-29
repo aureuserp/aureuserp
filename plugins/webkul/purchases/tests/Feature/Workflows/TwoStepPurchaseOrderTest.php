@@ -56,7 +56,7 @@ it('links only the vendor receipt to the purchase order and routes it into the i
 it('marks the receipt full and writes the received quantity when the vendor receipt is validated', function () {
     $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer(PurchaseHelper::vendorReceipt($order)->refresh());
+    Inventory::completeTransfer(PurchaseHelper::vendorReceipt($order)->refresh());
 
     expect((float) $order->refresh()->lines->first()->qty_received)->toBe(10.0)
         ->and($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::FULL);
@@ -80,7 +80,7 @@ it('merges a decreased quantity into a single open receipt move', function () {
 it('creates a fresh receipt for the extra quantity after the first receipt is validated', function () {
     $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer(PurchaseHelper::vendorReceipt($order)->refresh());
+    Inventory::completeTransfer(PurchaseHelper::vendorReceipt($order)->refresh());
 
     $order->refresh()->lines->first()->update(['product_qty' => 15]);
 

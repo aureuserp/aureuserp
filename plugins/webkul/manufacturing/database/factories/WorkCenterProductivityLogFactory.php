@@ -2,14 +2,12 @@
 
 namespace Webkul\Manufacturing\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Manufacturing\Models\WorkCenter;
 use Webkul\Manufacturing\Models\WorkCenterProductivityLog;
 use Webkul\Manufacturing\Models\WorkCenterProductivityLoss;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<WorkCenterProductivityLog>

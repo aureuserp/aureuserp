@@ -210,7 +210,7 @@ it('offers the return action only once the delivery is done', function () {
         ->assertActionHidden(OperationActions\ReturnAction::class);
 
     Inventory::confirmTransfer($delivery);
-    Inventory::doneTransfer($delivery->refresh());
+    Inventory::completeTransfer($delivery->refresh());
 
     expect($delivery->refresh()->state)->toBe(OperationState::DONE);
 

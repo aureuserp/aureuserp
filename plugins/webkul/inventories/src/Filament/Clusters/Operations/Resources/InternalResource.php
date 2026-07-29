@@ -29,7 +29,6 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 
 class InternalResource extends Resource
 {
-    
     protected static ?string $model = InternalTransfer::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';

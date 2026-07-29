@@ -2,6 +2,6 @@
 
 return [
     'serial' => 'Por número de série único',
-    'lot' => 'Por lotes',
-    'qty' => 'Por quantidade',
+    'lot'    => 'Por lotes',
+    'qty'    => 'Por quantidade',
 ];

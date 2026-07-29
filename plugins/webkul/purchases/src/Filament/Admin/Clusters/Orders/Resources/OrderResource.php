@@ -48,6 +48,7 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
@@ -234,7 +235,7 @@ class OrderResource extends Resource
                                         modifyQueryUsing: fn (Builder $query, Get $get) => $query
                                             ->whereIn('type', [
                                                 InventoryEnums\OperationType::INCOMING,
-                                                InventoryEnums\OperationType::DROPSHIP
+                                                InventoryEnums\OperationType::DROPSHIP,
                                             ])
                                             ->where(function (Builder $query) use ($get) {
                                                 $query->whereNull('warehouse_id')
@@ -1440,7 +1441,7 @@ class OrderResource extends Resource
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
+        $taxes = Tax::whereIn('id', $taxIds)->get();
 
         if ($taxes->isEmpty()) {
             $subTotal = round($discountedUnit * $quantity, 4);

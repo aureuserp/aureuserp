@@ -2,8 +2,6 @@
 
 namespace Webkul\Recruitment\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Department;
 use Webkul\Recruitment\Enums\ApplicationStatus;
@@ -13,7 +11,7 @@ use Webkul\Recruitment\Models\JobPosition;
 use Webkul\Recruitment\Models\RefuseReason;
 use Webkul\Recruitment\Models\Stage;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
 

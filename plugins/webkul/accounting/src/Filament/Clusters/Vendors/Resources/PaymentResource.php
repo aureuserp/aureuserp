@@ -16,7 +16,6 @@ use Webkul\Accounting\Models\Payment;
 
 class PaymentResource extends BasePaymentResource
 {
-
     protected static ?string $model = Payment::class;
 
     protected static bool $shouldRegisterNavigation = true;

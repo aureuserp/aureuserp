@@ -2,6 +2,6 @@
 
 return [
     'percentage' => 'Percentual',
-    'formula' => 'Fórmula',
-    'fixed' => 'Fixo',
+    'formula'    => 'Fórmula',
+    'fixed'      => 'Fixo',
 ];

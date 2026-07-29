@@ -28,7 +28,7 @@ enum CompanyStatus: string implements HasColor, HasIcon, HasLabel
         };
     }
 
-    public function getIcon(): string | null
+    public function getIcon(): ?string
     {
         return match ($this) {
             self::ACTIVE   => 'heroicon-o-check-circle',

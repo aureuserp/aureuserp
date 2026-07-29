@@ -264,7 +264,7 @@ class OperationForm
                 return $data;
             })
             ->mutateRelationshipDataBeforeCreateUsing(function (array $data, $record, $livewire) {
-                Move::$globalContext['skip_additional'] = false;
+                Move::markNextAsAdditional();
 
                 $data['source_location_id'] = $livewire->data['source_location_id']
                     ?? $record->operationType?->source_location_id;
@@ -656,7 +656,7 @@ class OperationForm
                                     ];
                                 }
 
-                                [$quantityLocationScope] = $move->product->getLocationFilters();
+                                $stockScopes = $move->product->resolveStockScopes();
 
                                 return ProductQuantity::with(['location', 'lot', 'package'])
                                     ->where('product_id', $move->product_id)
@@ -665,7 +665,7 @@ class OperationForm
                                             ->orWhere('parent_id', $move->source_location_id);
                                     })
                                     // ->where('quantity', '>', 0)
-                                    ->where(fn (Builder $query) => $quantityLocationScope($query))
+                                    ->where(fn (Builder $query) => $stockScopes->quantities($query))
                                     ->get()
                                     ->mapWithKeys(function ($quantity) {
                                         $nameParts = array_filter([

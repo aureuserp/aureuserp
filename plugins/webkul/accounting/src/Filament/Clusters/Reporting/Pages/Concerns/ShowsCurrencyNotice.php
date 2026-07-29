@@ -18,10 +18,10 @@ trait ShowsCurrencyNotice
         $currency = $rateMap->presentationCurrency();
 
         return [
-            'consolidated'     => ! $rateMap->isMonoCurrency(),
-            'company_count'    => count($rateMap->companyIds()),
-            'currency'         => $currency?->name ?? $currency?->code ?? '—',
-            'missing_rates'    => $rateMap->hasMissingRates(),
+            'consolidated'      => ! $rateMap->isMonoCurrency(),
+            'company_count'     => count($rateMap->companyIds()),
+            'currency'          => $currency?->name ?? $currency?->code ?? '—',
+            'missing_rates'     => $rateMap->hasMissingRates(),
             'missing_companies' => Company::query()
                 ->whereIn('id', $rateMap->missingRateCompanyIds())
                 ->pluck('name')

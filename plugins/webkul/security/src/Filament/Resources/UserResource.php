@@ -34,7 +34,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -49,12 +48,12 @@ use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
 use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
-use Webkul\Support\Models\Company;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 
 class UserResource extends Resource
 {
-
     protected static ?string $model = User::class;
 
     protected static ?int $navigationSort = 4;
@@ -71,7 +70,7 @@ class UserResource extends Resource
         return __('security::filament/resources/user.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }
@@ -236,7 +235,7 @@ class UserResource extends Resource
                                             })
                                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
-                                            ->rule(fn (Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            ->rule(fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                                 $allowed = $get('allowed_companies') ?? [];
 
                                                 if (! empty($value) && ! in_array((string) $value, array_map('strval', (array) $allowed), true)) {

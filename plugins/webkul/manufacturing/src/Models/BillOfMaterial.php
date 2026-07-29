@@ -54,15 +54,6 @@ class BillOfMaterial extends Model
         'days_to_prepare_mo'           => 'integer',
     ];
 
-    protected array $context = [];
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
-
     public function getModelTitle(): string
     {
         return __('manufacturing::models/bill-of-material.title');
@@ -274,7 +265,7 @@ class BillOfMaterial extends Model
                 // });
             });
 
-        $resolvedCompanyId = $companyId ?? (static::$context['company_id'] ?? null);
+        $resolvedCompanyId = $companyId;
 
         if ($resolvedCompanyId) {
             $query->where(function ($q) use ($resolvedCompanyId) {

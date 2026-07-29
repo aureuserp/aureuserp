@@ -17,8 +17,8 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditQuotation extends EditRecord
 {
     use HasRecordNavigationTabs;
-    use RefreshesRecordState;
     use HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = QuotationResource::class;
 

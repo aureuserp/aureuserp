@@ -133,7 +133,7 @@ it('hides the validate and cancel actions on a done dropship', function () {
     $dropship = InventoryHelper::dropship([[$this->product, 10]]);
 
     Inventory::confirmTransfer($dropship);
-    Inventory::doneTransfer($dropship->refresh());
+    Inventory::completeTransfer($dropship->refresh());
 
     expect($dropship->refresh()->state)->toBe(OperationState::DONE);
 

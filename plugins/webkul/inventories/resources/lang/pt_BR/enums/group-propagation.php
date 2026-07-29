@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'none' => 'Deixar vazio',
+    'none'      => 'Deixar vazio',
     'propagate' => 'Propagar',
-    'fixed' => 'Fixo',
+    'fixed'     => 'Fixo',
 ];

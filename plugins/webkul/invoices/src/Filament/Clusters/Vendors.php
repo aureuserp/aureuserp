@@ -14,7 +14,7 @@ class Vendors extends Cluster
         return __('invoices::filament/clusters/vendors.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Invoice;
     }

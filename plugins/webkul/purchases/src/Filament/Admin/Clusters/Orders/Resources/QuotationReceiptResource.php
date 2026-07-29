@@ -5,8 +5,8 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource as BaseReceiptResource;
@@ -69,8 +69,8 @@ class QuotationReceiptResource extends BaseReceiptResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewReceipt::route('/{record}/view'),
-            'edit' => EditReceipt::route('/{record}/edit'),
+            'view'  => ViewReceipt::route('/{record}/view'),
+            'edit'  => EditReceipt::route('/{record}/edit'),
             'moves' => ManageMoves::route('/{record}/moves'),
         ];
     }

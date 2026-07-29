@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DisplayType;
@@ -11,8 +13,6 @@ use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\TaxPartition;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -216,7 +216,7 @@ it('records the foreign amount and company balance separately on a foreign-curre
     $currency = AccountHelper::otherCurrency();
 
     $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner, null, [
-        'currency_id'          => $currency->id,
+        'currency_id'           => $currency->id,
         'invoice_currency_rate' => 2.0,
     ]);
     AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);

@@ -28,10 +28,10 @@ use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Product\Models\Category;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Models\Category;
 use Webkul\Product\Settings\ProductSettings;
 
 class QuantityResource extends Resource

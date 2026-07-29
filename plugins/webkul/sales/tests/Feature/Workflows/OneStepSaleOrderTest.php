@@ -107,9 +107,9 @@ it('decreases the delivered quantity when a customer return is validated', funct
     $delivery = SaleHelper::customerDelivery($order);
     $deliveryMove = $delivery->refresh()->moves->first();
 
-    $return = Inventory::returnTransfer($delivery, [$deliveryMove->id => 4]);
+    $return = Inventory::createReturn($delivery, [$deliveryMove->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(6.0);
 });
@@ -225,11 +225,11 @@ it('keeps the delivered quantity when a customer return is physical only', funct
     $delivery = SaleHelper::customerDelivery($order);
     $move = $delivery->refresh()->moves->first();
 
-    $return = Inventory::returnTransfer($delivery, [
+    $return = Inventory::createReturn($delivery, [
         $move->id => ['quantity' => 4, 'to_refund' => false],
     ]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(10.0);
 });
@@ -242,7 +242,7 @@ it('links the customer return move back to the delivery move and order line', fu
     $delivery = SaleHelper::customerDelivery($order);
     $move = $delivery->refresh()->moves->first();
 
-    $return = Inventory::returnTransfer($delivery, [$move->id => 4]);
+    $return = Inventory::createReturn($delivery, [$move->id => 4]);
 
     $returnMove = $return->refresh()->moves->first();
 
@@ -257,9 +257,9 @@ it('cancels the sale order cleanly after a delivery has been returned', function
     SaleHelper::deliverChain($order);
 
     $delivery = SaleHelper::customerDelivery($order);
-    $return = Inventory::returnTransfer($delivery, [$delivery->refresh()->moves->first()->id => 4]);
+    $return = Inventory::createReturn($delivery, [$delivery->refresh()->moves->first()->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     SaleOrderFacade::cancelSaleOrder($order->refresh());
 

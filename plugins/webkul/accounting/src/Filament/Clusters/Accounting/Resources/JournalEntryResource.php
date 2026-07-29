@@ -45,7 +45,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -82,7 +81,6 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
-
     protected static ?string $model = JournalEntry::class;
 
     protected static bool $shouldRegisterNavigation = true;
@@ -836,11 +834,11 @@ class JournalEntryResource extends Resource
 
             $mockLine = self::createMockMoveLine($lineData, $mockMove, $currency, $company);
 
-            $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
+            $baseLine = AccountFacade::productBaseLine($mockLine);
 
-            $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
+            $baseLine = TaxFacade::withTaxDetails($baseLine, $company);
 
-            $baseLine = TaxFacade::addAccountingDataToBaseLineTaxDetails($baseLine, $company);
+            $baseLine = TaxFacade::withAccountingData($baseLine, $company);
 
             $baseLines[] = $baseLine;
         }

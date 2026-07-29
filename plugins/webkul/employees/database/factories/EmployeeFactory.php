@@ -2,8 +2,6 @@
 
 namespace Webkul\Employee\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\DepartureReason;
@@ -11,7 +9,7 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Employee\Models\WorkLocation;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 

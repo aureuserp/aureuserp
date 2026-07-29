@@ -12,7 +12,6 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,16 +21,15 @@ use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
-use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
-use Webkul\Accounting\Support\CompanyRateMap;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\GeneralLedgerExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 
 class GeneralLedger extends Page implements HasForms
 {
-    use ShowsCurrencyNotice;
-
     use HasFiltersForm, HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.general-ledger';
 

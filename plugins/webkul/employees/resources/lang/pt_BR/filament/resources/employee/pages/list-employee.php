@@ -2,10 +2,10 @@
 
 return [
     'tabs' => [
-        'my-team' => 'Minha equipe',
+        'my-team'       => 'Minha equipe',
         'my-department' => 'Meu departamento',
-        'archived' => 'Arquivados',
-        'newly-hired' => 'Recém-contratados',
+        'archived'      => 'Arquivados',
+        'newly-hired'   => 'Recém-contratados',
     ],
 
     'header-actions' => [

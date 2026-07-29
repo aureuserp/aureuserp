@@ -34,5 +34,4 @@ class EditFiscalPosition extends EditRecord
                 ),
         ];
     }
-
 }

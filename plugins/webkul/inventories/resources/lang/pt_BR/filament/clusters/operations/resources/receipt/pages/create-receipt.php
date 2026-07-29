@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Recebimento criado',
-        'body' => 'O recebimento foi criado com sucesso.',
+        'body'  => 'O recebimento foi criado com sucesso.',
     ],
 ];

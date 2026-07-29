@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'subject' => 'Assunto',
+    'subject'      => 'Assunto',
     'changes-made' => 'Alterações realizadas',
-    'modified' => 'O campo <b>:field</b> foi',
-    'preview' => 'Pré-visualização',
-    'download' => 'Baixar',
+    'modified'     => 'O campo <b>:field</b> foi',
+    'preview'      => 'Pré-visualização',
+    'download'     => 'Baixar',
 ];

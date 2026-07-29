@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages;
 
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
@@ -12,6 +11,7 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
+use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\Delivery;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
@@ -20,10 +20,9 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditDelivery extends EditRecord
 {
     use HandlesCrossCompanyTransferException;
-
     use HasRecordNavigationTabs;
-    use RefreshesRecordState;
     use HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = DeliveryResource::class;
 

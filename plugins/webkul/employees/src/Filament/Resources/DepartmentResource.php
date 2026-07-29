@@ -63,7 +63,7 @@ class DepartmentResource extends Resource
         return __('employees::filament/resources/department.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Employee;
     }

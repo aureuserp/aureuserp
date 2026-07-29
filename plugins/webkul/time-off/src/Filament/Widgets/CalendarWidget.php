@@ -147,7 +147,7 @@ class CalendarWidget extends FullCalendarWidget
                             ->send();
 
                         $action->cancel();
-                    } catch (Halt | Cancel $exception) {
+                    } catch (Halt|Cancel $exception) {
                         throw $exception;
                     } catch (Throwable $exception) {
                         report($exception);
@@ -229,7 +229,7 @@ class CalendarWidget extends FullCalendarWidget
                             ->send();
 
                         $action->cancel();
-                    } catch (Halt | Cancel $exception) {
+                    } catch (Halt|Cancel $exception) {
                         throw $exception;
                     } catch (Throwable $exception) {
                         report($exception);

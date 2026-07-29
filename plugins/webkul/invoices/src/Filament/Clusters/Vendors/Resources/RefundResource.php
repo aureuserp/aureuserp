@@ -15,7 +15,6 @@ use Webkul\Invoice\Models\Refund;
 
 class RefundResource extends BaseRefundResource
 {
-
     protected static ?string $model = Refund::class;
 
     protected static ?int $navigationSort = 2;

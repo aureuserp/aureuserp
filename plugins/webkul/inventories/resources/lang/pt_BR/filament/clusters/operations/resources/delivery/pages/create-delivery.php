@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Entrega criada',
-        'body' => 'A entrega foi criada com sucesso.',
+        'body'  => 'A entrega foi criada com sucesso.',
     ],
 ];

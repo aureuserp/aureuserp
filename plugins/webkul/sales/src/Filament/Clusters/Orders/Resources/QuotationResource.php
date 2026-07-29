@@ -59,6 +59,7 @@ use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressSteppe
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Inventory\Support\StockScope;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Settings\ProductSettings;
@@ -88,7 +89,6 @@ use Webkul\Support\Models\UOM;
 
 class QuotationResource extends Resource
 {
-
     protected static ?string $model = Order::class;
 
     protected static ?int $navigationSort = 1;
@@ -1314,23 +1314,15 @@ class QuotationResource extends Resource
                             return null;
                         }
 
-                        $context = [];
-
                         $warehouseId = $get('../../warehouse_id');
-
-                        if (filled($warehouseId)) {
-                            $context['warehouse_id'] = (int) $warehouseId;
-                        }
 
                         $companyId = $get('../../company_id') ?? current_company_id();
 
-                        if (filled($companyId)) {
-                            $context['company_ids'] = [(int) $companyId];
-                        }
-
-                        if ($context !== []) {
-                            $inventoryProduct->setContext($context);
-                        }
+                        $inventoryProduct->withStockScope(
+                            StockScope::make()
+                                ->forWarehouses(filled($warehouseId) ? (int) $warehouseId : null)
+                                ->forCompanies(filled($companyId) ? (int) $companyId : null)
+                        );
 
                         $freeQty = (float) $inventoryProduct->free_qty;
 

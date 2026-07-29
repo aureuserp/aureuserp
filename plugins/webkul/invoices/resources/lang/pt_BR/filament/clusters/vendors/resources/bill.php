@@ -8,10 +8,10 @@ return [
     ],
 
     'form' => [
-        'biller' => 'Emissor da fatura',
-        'reference' => 'Referência',
+        'biller'            => 'Emissor da fatura',
+        'reference'         => 'Referência',
         'payment-reference' => 'Referência de pagamento',
-        'date' => 'Data',
+        'date'              => 'Data',
     ],
 
     'actions' => [

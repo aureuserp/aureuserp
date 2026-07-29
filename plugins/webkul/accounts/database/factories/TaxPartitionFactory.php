@@ -2,8 +2,6 @@
 
 namespace Webkul\Account\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\RepartitionType;
@@ -11,7 +9,7 @@ use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Models\TaxPartition;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class TaxPartitionFactory extends Factory
 {

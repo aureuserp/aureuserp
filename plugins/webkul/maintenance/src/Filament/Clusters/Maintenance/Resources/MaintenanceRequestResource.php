@@ -63,7 +63,6 @@ use Webkul\Maintenance\Models\Team;
 
 class MaintenanceRequestResource extends Resource
 {
-
     protected static ?string $model = MaintenanceRequest::class;
 
     protected static ?string $cluster = Maintenance::class;

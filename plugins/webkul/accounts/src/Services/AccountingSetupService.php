@@ -125,8 +125,8 @@ class AccountingSetupService
         foreach (DB::table('accounts_taxes')->where('company_id', $templateId)->get() as $row) {
             $map[$row->id] = DB::table('accounts_taxes')->insertGetId(
                 $this->rowFor($row, $company, [
-                    'company_id'                      => $company->id,
-                    'tax_group_id'                    => $groupMap[$row->tax_group_id] ?? $row->tax_group_id,
+                    'company_id'                       => $company->id,
+                    'tax_group_id'                     => $groupMap[$row->tax_group_id] ?? $row->tax_group_id,
                     'cash_basis_transition_account_id' => $this->remap($row->cash_basis_transition_account_id, $accountMap),
                 ])
             );

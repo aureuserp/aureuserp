@@ -25,7 +25,6 @@ use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegis
 use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
-use Webkul\Support\Models\Company;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;

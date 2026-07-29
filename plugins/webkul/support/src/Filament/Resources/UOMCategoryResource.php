@@ -19,15 +19,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Enums\UOMType;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
-use Webkul\Support\Models\UOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\CreateUOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\EditUOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\ListUOMCategories;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\ViewUOMCategory;
-use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Models\UOMCategory;
 
 class UOMCategoryResource extends Resource
 {
@@ -37,7 +37,7 @@ class UOMCategoryResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }

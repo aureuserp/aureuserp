@@ -12,10 +12,10 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'name' => 'Nome',
+                    'name'               => 'Nome',
                     'allow-new-products' => 'Permitir novos produtos',
-                    'max-weight' => 'Peso máximo',
-                    'company' => 'Empresa',
+                    'max-weight'         => 'Peso máximo',
+                    'company'            => 'Empresa',
                 ],
             ],
         ],
@@ -23,26 +23,26 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'               => 'Nome',
             'allow-new-products' => 'Permitir novos produtos',
-            'max-weight' => 'Peso máximo',
-            'company' => 'Empresa',
-            'deleted-at' => 'Excluído em',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'max-weight'         => 'Peso máximo',
+            'company'            => 'Empresa',
+            'deleted-at'         => 'Excluído em',
+            'created-at'         => 'Criado em',
+            'updated-at'         => 'Atualizado em',
         ],
 
         'groups' => [
             'allow-new-products' => 'Permitir novos produtos',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'created-at'         => 'Criado em',
+            'updated-at'         => 'Atualizado em',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'title' => 'Categoria de armazenamento excluída',
-                    'body' => 'A categoria de armazenamento foi excluída com sucesso.',
+                    'body'  => 'A categoria de armazenamento foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -51,7 +51,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Categorias de armazenamento excluídas',
-                    'body' => 'As categorias de armazenamento foram excluídas com sucesso.',
+                    'body'  => 'As categorias de armazenamento foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -63,10 +63,10 @@ return [
                 'title' => 'Geral',
 
                 'entries' => [
-                    'name' => 'Nome',
+                    'name'               => 'Nome',
                     'allow-new-products' => 'Permitir novos produtos',
-                    'max-weight' => 'Peso máximo',
-                    'company' => 'Empresa',
+                    'max-weight'         => 'Peso máximo',
+                    'company'            => 'Empresa',
                 ],
             ],
 
@@ -74,8 +74,8 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'created-by' => 'Criado por',
-                    'created-at' => 'Criado em',
+                    'created-by'   => 'Criado por',
+                    'created-at'   => 'Criado em',
                     'last-updated' => 'Última atualização',
                 ],
             ],

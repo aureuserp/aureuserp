@@ -25,9 +25,9 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
-use Webkul\Support\Enums\NavigationGroup;
 
 class TimesheetResource extends Resource
 {
@@ -38,7 +38,7 @@ class TimesheetResource extends Resource
         return __('timesheets::filament/resources/timesheet.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Project;
     }

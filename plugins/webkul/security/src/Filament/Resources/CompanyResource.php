@@ -3,16 +3,16 @@
 namespace Webkul\Security\Filament\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\CreateCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\EditCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
-use Webkul\Support\Filament\Resources\CompanyResource as BaseCompanyResource;
 use Webkul\Security\Models\Company;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Resources\CompanyResource as BaseCompanyResource;
+use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 
 class CompanyResource extends BaseCompanyResource
 {
@@ -36,7 +36,7 @@ class CompanyResource extends BaseCompanyResource
         return __('security::filament/resources/company.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }

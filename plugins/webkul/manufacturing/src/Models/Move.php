@@ -9,6 +9,7 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move as BaseMove;
+use Webkul\Inventory\Support\ProcurementOptions;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 
 class Move extends BaseMove
@@ -113,11 +114,9 @@ class Move extends BaseMove
         return $this->belongsToMany(self::class, 'inventories_move_destinations', 'origin_move_id', 'destination_move_id');
     }
 
-    public function shouldBeAssigned()
+    public function needsOperation()
     {
-        $shouldBeAssigned = parent::shouldBeAssigned();
-
-        return $shouldBeAssigned && ! ($this->order_id or $this->raw_material_order_id);
+        return parent::needsOperation() && ! ($this->order_id or $this->raw_material_order_id);
     }
 
     public function shouldBypassSetQtyProducing(): bool
@@ -211,7 +210,7 @@ class Move extends BaseMove
             }
 
             if ($move->raw_material_order_id) {
-                $move->adjustProcureMethod();
+                $move->resolveProcureMethod();
             }
 
             InventoryFacade::confirmMoves(collect([$move]));
@@ -220,21 +219,17 @@ class Move extends BaseMove
 
     public function runProcurement() {}
 
-    public function keyAssignOperation(): array
+    public function operationGroupingKey(): array
     {
-        $keys = parent::keyAssignOperation();
+        $keys = parent::operationGroupingKey();
 
         $keys[] = $this->created_order_id;
 
         return $keys;
     }
 
-    public function prepareProcurementValues(): array
+    public function buildProcurementOptions(): ProcurementOptions
     {
-        $values = parent::prepareProcurementValues();
-
-        $values['bom_line_id'] = $this->bom_line_id;
-
-        return $values;
+        return parent::buildProcurementOptions()->linkBomLine($this->bom_line_id);
     }
 }

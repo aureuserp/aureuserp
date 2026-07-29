@@ -5,8 +5,8 @@ return [
 
     'table' => [
         'columns' => [
-            'product' => 'Produto',
-            'quantity' => 'Quantidade',
+            'product'         => 'Produto',
+            'quantity'        => 'Quantidade',
             'unit-of-measure' => 'Unidade de medida',
         ],
     ],

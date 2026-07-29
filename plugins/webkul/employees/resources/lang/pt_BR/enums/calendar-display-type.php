@@ -2,6 +2,6 @@
 
 return [
     'working' => 'Trabalhando',
-    'off' => 'Ausente',
+    'off'     => 'Ausente',
     'holiday' => 'Feriado',
 ];

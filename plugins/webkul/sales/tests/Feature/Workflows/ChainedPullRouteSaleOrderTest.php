@@ -193,7 +193,7 @@ it('creates the full three leg chain for the routed product', function () {
         ->and($byOpType[$this->deliverType->id]->destination_location_id)->toBe($this->customer->id);
 });
 
-it('produces four inventory documents in total, matching odoo', function () {
+it('produces four inventory documents in total', function () {
     expect($this->order->operations)->toHaveCount(4);
 });
 
@@ -209,12 +209,12 @@ it('auto-readies each downstream leg as the upstream leg is validated', function
     expect($moveFor($this->shineType->id)->state)->toBe(MoveState::WAITING);
     expect($moveFor($this->deliverType->id)->state)->toBe(MoveState::CONFIRMED);
 
-    Inventory::doneTransfer($sharpMove->operation->refresh());
+    Inventory::completeTransfer($sharpMove->operation->refresh());
 
     expect($moveFor($this->shineType->id)->state)->toBe(MoveState::ASSIGNED);
     expect($moveFor($this->deliverType->id)->state)->toBe(MoveState::CONFIRMED);
 
-    Inventory::doneTransfer($moveFor($this->shineType->id)->operation->refresh());
+    Inventory::completeTransfer($moveFor($this->shineType->id)->operation->refresh());
 
     expect($moveFor($this->deliverType->id)->state)->toBe(MoveState::ASSIGNED);
 });

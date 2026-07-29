@@ -2,8 +2,6 @@
 
 namespace Webkul\Account\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Account\Enums\AutoPost;
 use Webkul\Account\Enums\MoveState;
@@ -15,7 +13,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**

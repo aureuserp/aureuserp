@@ -2,8 +2,6 @@
 
 namespace Webkul\Inventory\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Inventory\Enums\OrderPointTrigger;
 use Webkul\Inventory\Models\Location;
@@ -13,7 +11,7 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<OrderPoint>

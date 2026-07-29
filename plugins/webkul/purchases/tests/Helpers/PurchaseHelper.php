@@ -100,17 +100,17 @@ class PurchaseHelper
     public static function line(Order $order, Product $product, float $qty, float $priceUnit, float $discount = 0, array $taxes = []): OrderLine
     {
         $line = OrderLine::factory()->create([
-            'order_id'     => $order->id,
-            'state'        => $order->state,
-            'product_id'   => $product->id,
-            'uom_id'       => $product->uom_id,
-            'product_qty'  => $qty,
+            'order_id'        => $order->id,
+            'state'           => $order->state,
+            'product_id'      => $product->id,
+            'uom_id'          => $product->uom_id,
+            'product_qty'     => $qty,
             'product_uom_qty' => $qty,
-            'price_unit'   => $priceUnit,
-            'discount'     => $discount,
-            'partner_id'   => $order->partner_id,
-            'currency_id'  => $order->currency_id,
-            'company_id'   => static::company()->id,
+            'price_unit'      => $priceUnit,
+            'discount'        => $discount,
+            'partner_id'      => $order->partner_id,
+            'currency_id'     => $order->currency_id,
+            'company_id'      => static::company()->id,
         ]);
 
         if ($taxes) {
@@ -191,7 +191,7 @@ class PurchaseHelper
         $leg = static::readyReceipt($order);
 
         if ($leg) {
-            Inventory::doneTransfer($leg->refresh());
+            Inventory::completeTransfer($leg->refresh());
         }
 
         return $leg;
@@ -216,7 +216,7 @@ class PurchaseHelper
 
         $leg->moves->first()->update(['quantity' => $qty]);
 
-        Inventory::doneTransfer($leg->refresh());
+        Inventory::completeTransfer($leg->refresh());
 
         return $leg->refresh();
     }

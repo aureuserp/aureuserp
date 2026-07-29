@@ -7,8 +7,8 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'name' => 'Nome',
-                    'code' => 'Código identificador do banco',
+                    'name'  => 'Nome',
+                    'code'  => 'Código identificador do banco',
                     'email' => 'E-mail',
                     'phone' => 'Telefone',
                 ],
@@ -19,11 +19,11 @@ return [
 
                 'fields' => [
                     'address' => 'Endereço',
-                    'city' => 'Cidade',
+                    'city'    => 'Cidade',
                     'street1' => 'Rua 1',
                     'street2' => 'Rua 2',
-                    'state' => 'Estado',
-                    'zip' => 'CEP',
+                    'state'   => 'Estado',
+                    'zip'     => 'CEP',
                     'country' => 'País',
                 ],
             ],
@@ -32,16 +32,16 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'code' => 'Código identificador do banco',
-            'country' => 'País',
+            'name'       => 'Nome',
+            'code'       => 'Código identificador do banco',
+            'country'    => 'País',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
             'deleted-at' => 'Excluído em',
         ],
 
         'groups' => [
-            'country' => 'País',
+            'country'    => 'País',
             'created-at' => 'Criado em',
         ],
 
@@ -49,28 +49,28 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Banco atualizado',
-                    'body' => 'O banco foi atualizado com sucesso.',
+                    'body'  => 'O banco foi atualizado com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Banco restaurado',
-                    'body' => 'O banco foi restaurado com sucesso.',
+                    'body'  => 'O banco foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Banco excluído',
-                    'body' => 'O banco foi excluído com sucesso.',
+                    'body'  => 'O banco foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Banco excluído permanentemente',
-                    'body' => 'O banco foi excluído permanentemente com sucesso.',
+                    'body'  => 'O banco foi excluído permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -79,21 +79,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Bancos restaurados',
-                    'body' => 'Os bancos foram restaurados com sucesso.',
+                    'body'  => 'Os bancos foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Bancos excluídos',
-                    'body' => 'Os bancos foram excluídos com sucesso.',
+                    'body'  => 'Os bancos foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Bancos excluídos permanentemente',
-                    'body' => 'Os bancos foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os bancos foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],

@@ -87,7 +87,7 @@ class ProjectResource extends Resource
         return __('projects::filament/resources/project.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Project;
     }

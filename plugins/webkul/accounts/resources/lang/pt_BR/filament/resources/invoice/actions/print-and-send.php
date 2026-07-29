@@ -7,10 +7,10 @@ return [
         'title' => 'Visualizar fatura',
 
         'form' => [
-            'partners' => 'Cliente',
-            'subject' => 'Assunto',
+            'partners'    => 'Cliente',
+            'subject'     => 'Assunto',
             'description' => 'Descrição',
-            'files' => 'Anexo',
+            'files'       => 'Anexo',
         ],
 
         'action' => [
@@ -22,7 +22,7 @@ return [
         'notification' => [
             'invoice-sent' => [
                 'title' => 'Fatura enviada',
-                'body' => 'A fatura foi enviada com sucesso.',
+                'body'  => 'A fatura foi enviada com sucesso.',
             ],
         ],
     ],

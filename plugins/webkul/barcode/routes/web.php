@@ -3,13 +3,13 @@
 use Filament\Http\Middleware\SetUpPanel;
 use Illuminate\Support\Facades\Route;
 use Webkul\Barcode\Http\Middleware\Authenticate;
-use Webkul\NativephpRemote\Http\Middleware\PersistNativeShell;
-use Webkul\NativephpRemote\Http\Middleware\RenderHostedNativeUi;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Auth\Login;
 use Webkul\Barcode\Livewire\Dashboard;
 use Webkul\Barcode\Livewire\Operation;
 use Webkul\Barcode\Livewire\Transfers;
+use Webkul\NativephpRemote\Http\Middleware\PersistNativeShell;
+use Webkul\NativephpRemote\Http\Middleware\RenderHostedNativeUi;
 
 Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class])->group(function (): void {
     Route::get('barcode', function () {

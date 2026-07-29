@@ -9,7 +9,7 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'manager-name' => 'Gerente',
             'company-name' => 'Empresa',
         ],

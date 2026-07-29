@@ -42,7 +42,6 @@ use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgre
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
-use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
@@ -67,11 +66,11 @@ use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\UOM;
 
 class ManufacturingOrderResource extends Resource
 {
-    
     protected static ?string $model = Order::class;
 
     protected static ?string $cluster = Operations::class;

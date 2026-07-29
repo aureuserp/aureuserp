@@ -2,8 +2,6 @@
 
 namespace Webkul\Sale\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Models\Route;
@@ -17,7 +15,7 @@ use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 

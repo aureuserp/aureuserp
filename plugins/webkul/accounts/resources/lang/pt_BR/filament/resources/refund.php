@@ -11,17 +11,17 @@ return [
     'form' => [
         'section' => [
             'general' => [
-                'title' => 'Geral',
+                'title'  => 'Geral',
                 'fields' => [
                     'vendor-credit-note' => 'Nota de crédito de fornecedor',
-                    'vendor' => 'Fornecedor',
-                    'bill-date' => 'Data da fatura de fornecedor',
-                    'bill-reference' => 'Referência da fatura de fornecedor',
-                    'accounting-date' => 'Data contábil',
-                    'payment-reference' => 'Referência de pagamento',
-                    'recipient-bank' => 'Banco do destinatário',
-                    'due-date' => 'Data de vencimento',
-                    'payment-term' => 'Condição de pagamento',
+                    'vendor'             => 'Fornecedor',
+                    'bill-date'          => 'Data da fatura de fornecedor',
+                    'bill-reference'     => 'Referência da fatura de fornecedor',
+                    'accounting-date'    => 'Data contábil',
+                    'payment-reference'  => 'Referência de pagamento',
+                    'recipient-bank'     => 'Banco do destinatário',
+                    'due-date'           => 'Data de vencimento',
+                    'payment-term'       => 'Condição de pagamento',
                 ],
             ],
         ],
@@ -32,47 +32,47 @@ return [
 
                 'repeater' => [
                     'products' => [
-                        'title' => 'Produtos',
+                        'title'       => 'Produtos',
                         'add-product' => 'Adicionar produto',
 
                         'fields' => [
-                            'product' => 'Produto',
-                            'quantity' => 'Quantidade',
-                            'unit' => 'Unidade',
-                            'taxes' => 'Impostos',
+                            'product'             => 'Produto',
+                            'quantity'            => 'Quantidade',
+                            'unit'                => 'Unidade',
+                            'taxes'               => 'Impostos',
                             'discount-percentage' => 'Percentual de desconto',
-                            'unit-price' => 'Preço unitário',
-                            'sub-total' => 'Subtotal',
+                            'unit-price'          => 'Preço unitário',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title' => 'Outras informações',
+                'title'    => 'Outras informações',
                 'fieldset' => [
                     'accounting' => [
                         'title' => 'Contabilidade',
 
                         'fields' => [
-                            'incoterm' => 'Incoterm',
+                            'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Local do Incoterm',
                         ],
                     ],
 
                     'secured' => [
-                        'title' => 'Garantido',
+                        'title'  => 'Garantido',
                         'fields' => [
                             'payment-method' => 'Método de pagamento',
-                            'auto-post' => 'Publicação automática',
-                            'checked' => 'Verificado',
+                            'auto-post'      => 'Publicação automática',
+                            'checked'        => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Informações adicionais',
+                        'title'  => 'Informações adicionais',
                         'fields' => [
-                            'company' => 'Empresa',
+                            'company'  => 'Empresa',
                             'currency' => 'Moeda',
                         ],
                     ],
@@ -88,17 +88,17 @@ return [
     'infolist' => [
         'section' => [
             'general' => [
-                'title' => 'Geral',
+                'title'   => 'Geral',
                 'entries' => [
-                    'vendor-invoice' => 'Fatura de fornecedor',
-                    'vendor' => 'Fornecedor',
-                    'bill-date' => 'Data da fatura de fornecedor',
-                    'bill-reference' => 'Referência da fatura de fornecedor',
-                    'accounting-date' => 'Data contábil',
+                    'vendor-invoice'    => 'Fatura de fornecedor',
+                    'vendor'            => 'Fornecedor',
+                    'bill-date'         => 'Data da fatura de fornecedor',
+                    'bill-reference'    => 'Referência da fatura de fornecedor',
+                    'accounting-date'   => 'Data contábil',
                     'payment-reference' => 'Referência de pagamento',
-                    'recipient-bank' => 'Banco do destinatário',
-                    'due-date' => 'Data de vencimento',
-                    'payment-term' => 'Condição de pagamento',
+                    'recipient-bank'    => 'Banco do destinatário',
+                    'due-date'          => 'Data de vencimento',
+                    'payment-term'      => 'Condição de pagamento',
                 ],
             ],
         ],
@@ -109,47 +109,47 @@ return [
 
                 'repeater' => [
                     'products' => [
-                        'title' => 'Produtos',
+                        'title'       => 'Produtos',
                         'add-product' => 'Adicionar produto',
 
                         'entries' => [
-                            'product' => 'Produto',
-                            'quantity' => 'Quantidade',
-                            'unit' => 'Unidade',
-                            'taxes' => 'Impostos',
+                            'product'             => 'Produto',
+                            'quantity'            => 'Quantidade',
+                            'unit'                => 'Unidade',
+                            'taxes'               => 'Impostos',
                             'discount-percentage' => 'Percentual de desconto',
-                            'unit-price' => 'Preço unitário',
-                            'sub-total' => 'Subtotal',
+                            'unit-price'          => 'Preço unitário',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title' => 'Outras informações',
+                'title'    => 'Outras informações',
                 'fieldset' => [
                     'accounting' => [
                         'title' => 'Contabilidade',
 
                         'entries' => [
-                            'incoterm' => 'Incoterm',
+                            'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Local do Incoterm',
                         ],
                     ],
 
                     'secured' => [
-                        'title' => 'Garantido',
+                        'title'   => 'Garantido',
                         'entries' => [
                             'payment-method' => 'Método de pagamento',
-                            'auto-post' => 'Publicação automática',
-                            'checked' => 'Verificado',
+                            'auto-post'      => 'Publicação automática',
+                            'checked'        => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Informações adicionais',
+                        'title'   => 'Informações adicionais',
                         'entries' => [
-                            'company' => 'Empresa',
+                            'company'  => 'Empresa',
                             'currency' => 'Moeda',
                         ],
                     ],

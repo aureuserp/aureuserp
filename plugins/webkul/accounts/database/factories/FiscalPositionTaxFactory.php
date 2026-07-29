@@ -2,14 +2,12 @@
 
 namespace Webkul\Account\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\FiscalPositionTax;
 use Webkul\Account\Models\Tax;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class FiscalPositionTaxFactory extends Factory
 {
@@ -35,4 +33,3 @@ class FiscalPositionTaxFactory extends Factory
         ]);
     }
 }
-

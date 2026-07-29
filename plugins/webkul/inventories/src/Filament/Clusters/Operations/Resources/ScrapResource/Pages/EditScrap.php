@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource\Pages;
 
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
@@ -11,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
+use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
@@ -18,10 +18,9 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditScrap extends EditRecord
 {
     use HandlesCrossCompanyTransferException;
-
     use HasRecordNavigationTabs;
     use RefreshesRecordState;
-    
+
     protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = ScrapResource::class;

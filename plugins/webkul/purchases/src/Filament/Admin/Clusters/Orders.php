@@ -16,7 +16,7 @@ class Orders extends Cluster
         return __('purchases::filament/admin/clusters/orders.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Purchase;
     }

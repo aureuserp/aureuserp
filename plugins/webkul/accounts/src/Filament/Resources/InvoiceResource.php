@@ -50,7 +50,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\CommunicationStandard;
 use Webkul\Account\Enums\CommunicationType;
@@ -91,7 +90,6 @@ use Webkul\Support\Models\UOM;
 
 class InvoiceResource extends Resource
 {
-
     protected static ?string $model = Invoice::class;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -1426,9 +1424,9 @@ class InvoiceResource extends Resource
         $mockMove->setRelation('currency', $currency);
         $mockMove->setRelation('company', $company);
 
-        $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
+        $baseLine = AccountFacade::productBaseLine($mockLine);
 
-        $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
+        $baseLine = TaxFacade::withTaxDetails($baseLine, $company);
 
         $subtotal = $baseLine['tax_details']['raw_total_excluded_currency'];
         $total = $baseLine['tax_details']['raw_total_included_currency'];
@@ -1521,7 +1519,7 @@ class InvoiceResource extends Resource
 
         $mockMove->setRelation('lines', $mockLines);
 
-        [$baseLines] = AccountFacade::getRoundedBaseAndTaxLines($mockMove, false);
+        [$baseLines] = AccountFacade::roundedBaseAndTaxLines($mockMove, false);
 
         $subtotal = 0;
         $grandTotal = 0;

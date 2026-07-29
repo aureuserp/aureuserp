@@ -11,7 +11,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
@@ -20,16 +19,15 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
 use Webkul\Accounting\Filament\Clusters\Reporting;
-use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
-use Webkul\Accounting\Support\CompanyRateMap;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\TrialBalanceExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 
 class TrialBalance extends Page implements HasForms
 {
-    use ShowsCurrencyNotice;
-
     use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.trial-balance';
 
@@ -155,7 +153,7 @@ class TrialBalance extends Page implements HasForms
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfMonth();
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now()->endOfMonth();
 
-        $rateMap = CompanyRateMap::make(date: $dateTo instanceof \Carbon\Carbon ? $dateTo->toDateString() : (string) $dateTo);
+        $rateMap = CompanyRateMap::make(date: $dateTo instanceof Carbon ? $dateTo->toDateString() : (string) $dateTo);
         $journalIds = $this->data['journals'] ?? [];
 
         $debit = $rateMap->weight('accounts_account_move_lines.debit');

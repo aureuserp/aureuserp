@@ -18,7 +18,6 @@ use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class BillResource extends BaseBillResource
 {
-
     protected static ?string $model = Bill::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';

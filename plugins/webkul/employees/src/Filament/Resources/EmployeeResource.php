@@ -78,9 +78,9 @@ use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Country;
-use Webkul\Support\Enums\NavigationGroup;
 
 class EmployeeResource extends Resource
 {
@@ -104,7 +104,7 @@ class EmployeeResource extends Resource
         return __('employees::filament/resources/employee.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Employee;
     }

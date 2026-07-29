@@ -2,12 +2,10 @@
 
 namespace Webkul\Chatter\Database\Factories;
 
-use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Chatter\Models\Message;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\ActivityType;
-use Webkul\Support\Models\Company;
 
 /**
  * @extends Factory<Message>
