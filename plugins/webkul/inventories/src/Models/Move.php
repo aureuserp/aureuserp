@@ -1018,6 +1018,10 @@ class Move extends Model
             $this->lines()->create($attributes);
         }
 
+        if ($newLineAttributes !== []) {
+            $this->load('lines');
+        }
+
         return $taken;
     }
 
