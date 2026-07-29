@@ -117,8 +117,11 @@ class JobPositionResource extends Resource
                                             ->relationship(name: 'company', titleAttribute: 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->default(current_company_id())
                                             ->live()
-                                            ->afterStateUpdated(fn (Set $set) => $set('department_id', null))
+                                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                'department_id' => Department::class,
+                                            ], $state))
                                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
                                                 return $action

@@ -16,6 +16,8 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Webkul\Product\Models\Packaging;
+use Webkul\Product\Models\Product;
 
 class PackagingResource extends Resource
 {
@@ -51,9 +54,10 @@ class PackagingResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', 'goods')
+                            ->where(owned_by_company($get('company_id')))
                             ->orderBy('id'),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -75,7 +79,12 @@ class PackagingResource extends Resource
                     ->label(__('products::filament/resources/packaging.form.company'))
                     ->relationship('company', 'name')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->default(current_company_id())
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                        'product_id' => Product::class,
+                    ], $state)),
             ]);
     }
 

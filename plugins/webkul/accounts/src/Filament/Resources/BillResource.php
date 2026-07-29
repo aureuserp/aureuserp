@@ -70,6 +70,7 @@ use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Bill;
 use Webkul\Account\Models\CashRounding;
+use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
@@ -237,7 +238,9 @@ class BillResource extends Resource
                                                     ->relationship(
                                                         'journal',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::PURCHASE),
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->where('type', JournalType::PURCHASE)
+                                                            ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->searchable()
                                                     ->preload()
@@ -337,7 +340,9 @@ class BillResource extends Resource
                                                     ->where('company_id', $company?->id)
                                                     ->value('id'));
 
-                                                $set('fiscal_position_id', null);
+                                                clear_foreign_company_values($set, $get, [
+                                                    'fiscal_position_id' => FiscalPosition::class,
+                                                ], $company?->id);
                                             })
                                             ->default(current_company_id()),
                                         Select::make('invoice_incoterm_id')
@@ -359,7 +364,11 @@ class BillResource extends Resource
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
                                         Select::make('fiscal_position_id')
-                                            ->relationship('fiscalPosition', 'name')
+                                            ->relationship(
+                                                'fiscalPosition',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.fiscal-position'))

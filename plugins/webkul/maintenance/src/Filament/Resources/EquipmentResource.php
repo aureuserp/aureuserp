@@ -21,6 +21,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -38,6 +39,7 @@ use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ListEquipment;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ViewEquipment;
 use Webkul\Maintenance\Models\Equipment;
 use Webkul\Maintenance\Models\EquipmentCategory;
+use Webkul\Maintenance\Models\Team;
 use Webkul\Support\Enums\NavigationGroup;
 
 class EquipmentResource extends Resource
@@ -134,7 +136,11 @@ class EquipmentResource extends Resource
                             ->schema([
                                 Select::make('category_id')
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.settings.fields.category'))
-                                    ->relationship('category', 'name')
+                                    ->relationship(
+                                        'category',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->native(false)
                                     ->searchable()
                                     ->preload()
@@ -148,7 +154,9 @@ class EquipmentResource extends Resource
                                     ->relationship(
                                         'team',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->withTrashed()
+                                            ->where(owned_by_company($get('company_id'))),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -164,7 +172,12 @@ class EquipmentResource extends Resource
                                     ->native(false)
                                     ->searchable()
                                     ->preload()
-                                    ->default(current_company_id()),
+                                    ->default(current_company_id())
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'category_id'          => EquipmentCategory::class,
+                                        'maintenance_team_id'  => Team::class,
+                                    ], $state)),
 
                                 Select::make('technician_user_id')
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.settings.fields.technician'))

@@ -49,7 +49,8 @@ class TaxGroupResource extends Resource
                             ->relationship('company', 'name')
                             ->searchable()
                             ->label(__('accounts::filament/resources/tax-group.form.sections.fields.company'))
-                            ->preload(),
+                            ->preload()
+                            ->default(current_company_id()),
                         Select::make('country_id')
                             ->relationship('country', 'name')
                             ->searchable()

@@ -85,6 +85,7 @@ class PaymentTermResource extends Resource
                                     ->placeholder(__('accounts::filament/resources/payment-term.form.sections.fields.company-placeholder'))
                                     ->searchable()
                                     ->preload()
+                                    ->default(current_company_id())
                                     ->columnSpan(1),
                             ])->columns(2),
                         Group::make()

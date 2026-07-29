@@ -69,6 +69,7 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\CashRounding;
+use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Invoice;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
@@ -217,7 +218,9 @@ class InvoiceResource extends Resource
                                                     ->relationship(
                                                         'journal',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::SALE),
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->where('type', JournalType::SALE)
+                                                            ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->searchable()
                                                     ->preload()
@@ -367,7 +370,9 @@ class InvoiceResource extends Resource
                                                     ->where('company_id', $company?->id)
                                                     ->value('id'));
 
-                                                $set('fiscal_position_id', null);
+                                                clear_foreign_company_values($set, $get, [
+                                                    'fiscal_position_id' => FiscalPosition::class,
+                                                ], $company?->id);
 
                                                 $set('partner_bank_id', null);
                                             }),
@@ -390,7 +395,11 @@ class InvoiceResource extends Resource
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
                                         Select::make('fiscal_position_id')
-                                            ->relationship('fiscalPosition', 'name')
+                                            ->relationship(
+                                                'fiscalPosition',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.fiscal-position'))

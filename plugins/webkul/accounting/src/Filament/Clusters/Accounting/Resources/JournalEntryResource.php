@@ -53,6 +53,7 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\JournalResource;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
@@ -216,15 +217,20 @@ class JournalEntryResource extends Resource
                                             $set('currency_id', $company->currency_id);
                                         }
 
-                                        $set('journal_id', null);
-
-                                        $set('fiscal_position_id', null);
+                                        clear_foreign_company_values($set, $get, [
+                                            'journal_id'         => Journal::class,
+                                            'fiscal_position_id' => FiscalPosition::class,
+                                        ], $get('company_id'));
                                     }),
                                 Toggle::make('checked')
                                     ->inline(false)
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.checked')),
                                 Select::make('fiscal_position_id')
-                                    ->relationship('fiscalPosition', 'name')
+                                    ->relationship(
+                                        'fiscalPosition',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->preload()
                                     ->searchable()
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.fiscal-position'))

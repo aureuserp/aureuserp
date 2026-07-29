@@ -73,7 +73,10 @@ use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ManageSkill;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ViewEmployee;
 use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\ResumeRelationManager;
 use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\SkillsRelationManager;
+use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
+use Webkul\Employee\Models\EmployeeJobPosition;
+use Webkul\Employee\Models\WorkLocation;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
@@ -332,12 +335,13 @@ class EmployeeResource extends Resource
                                                                     ->relationship('company', 'name')
                                                                     ->searchable()
                                                                     ->preload()
+                                                                    ->default(current_company_id())
                                                                     ->live()
-                                                                    ->afterStateUpdated(function (Set $set) {
-                                                                        $set('job_id', null);
-                                                                        $set('work_location_id', null);
-                                                                        $set('department_id', null);
-                                                                    })
+                                                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                                        'job_id'           => EmployeeJobPosition::class,
+                                                                        'work_location_id' => WorkLocation::class,
+                                                                        'department_id'    => Department::class,
+                                                                    ], $state))
                                                                     ->prefixIcon('heroicon-o-building-office')
                                                                     ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.company'))
                                                                     ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),

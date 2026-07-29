@@ -25,6 +25,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
@@ -44,6 +45,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pa
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers\RulesRelationManager;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource\Pages\ManageRoutes;
 use Webkul\Inventory\Models\Route;
+use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Settings\ProductSettings;
 
@@ -107,6 +109,9 @@ class RouteResource extends Resource
                                 fn (string $label): bool => str_contains($label, ' (Deleted)'),
                             )
                             ->live()
+                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                'warehouses' => Warehouse::class,
+                            ], $state))
                             ->searchable()
                             ->preload()
                             ->default(current_company_id()),
@@ -140,7 +145,11 @@ class RouteResource extends Resource
                                     ->live(),
                                 Select::make('warehouses')
                                     ->hiddenLabel()
-                                    ->relationship('warehouses', 'name')
+                                    ->relationship(
+                                        'warehouses',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->multiple()

@@ -144,7 +144,11 @@ class WorkCenterResource extends Resource
 
                                 Select::make('alternativeWorkCenters')
                                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.form.sections.general.fields.alternative-work-centers'))
-                                    ->relationship('alternativeWorkCenters', 'name')
+                                    ->relationship(
+                                        'alternativeWorkCenters',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->multiple()
                                     ->searchable()
                                     ->preload(),
@@ -202,7 +206,11 @@ class WorkCenterResource extends Resource
                                     ->schema([
                                         Select::make('product_id')
                                             ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.form.sections.specific-capacity.columns.product'))
-                                            ->relationship('product', 'name')
+                                            ->relationship(
+                                                'product',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->wrapOptionLabels(false)

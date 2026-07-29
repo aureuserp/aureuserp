@@ -3,7 +3,6 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use BackedEnum;
-use Closure;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -118,10 +117,13 @@ class OperationTypeResource extends Resource
                                                     ->native(true)
                                                     ->live()
                                                     ->selectablePlaceholder(false)
-                                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                                    ->afterStateUpdated(function (Set $set, $component): void {
                                                         $set('print_label', null);
 
-                                                        static::applyLocationDefaults($set, $get);
+                                                        reapply_company_defaults($component, [
+                                                            'source_location_id',
+                                                            'destination_location_id',
+                                                        ]);
                                                     }),
                                                 TextInput::make('sequence_code')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.sequence-prefix'))
@@ -138,7 +140,7 @@ class OperationTypeResource extends Resource
                                                         'name',
                                                         modifyQueryUsing: fn (Builder $query, Get $get) => $query
                                                             ->withTrashed()
-                                                            ->where(static::ownedByCompany($get('company_id'))),
+                                                            ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -171,17 +173,19 @@ class OperationTypeResource extends Resource
                                                     ->preload()
                                                     ->default(current_company_id())
                                                     ->live()
-                                                    ->afterStateUpdated(function (Set $set, Get $get, $state) {
-                                                        $set('warehouse_id', static::getDefaultWarehouseId($state));
-
-                                                        static::applyLocationDefaults($set, $get);
-                                                    }),
+                                                    ->afterStateUpdated(fn ($component) => reapply_company_defaults($component, [
+                                                        'warehouse_id',
+                                                        'source_location_id',
+                                                        'destination_location_id',
+                                                    ])),
                                                 Select::make('return_operation_type_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.return-type'))
                                                     ->relationship(
                                                         'returnOperationType',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->withTrashed()
+                                                            ->where(owned_by_company($get('company_id')))
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function (OperationType $record) {
                                                         if (! $record->warehouse) {
@@ -229,7 +233,9 @@ class OperationTypeResource extends Resource
                                             ->relationship(
                                                 'sourceLocation',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->withTrashed()
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -252,7 +258,9 @@ class OperationTypeResource extends Resource
                                             ->relationship(
                                                 'destinationLocation',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->withTrashed()
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -284,18 +292,9 @@ class OperationTypeResource extends Resource
             ]);
     }
 
-    protected static function ownedByCompany($companyId): Closure
-    {
-        $companyId = $companyId ?: current_company_id();
-
-        return fn (Builder $query) => $query
-            ->whereNull('company_id')
-            ->orWhere('company_id', $companyId);
-    }
-
     protected static function getDefaultWarehouseId($companyId): ?int
     {
-        return Warehouse::where(static::ownedByCompany($companyId))->first()?->id;
+        return Warehouse::where(owned_by_company($companyId))->first()?->id;
     }
 
     protected static function normalizeOperationType($type): ?Enums\OperationType
@@ -325,30 +324,17 @@ class OperationTypeResource extends Resource
         };
     }
 
-    protected static function applyLocationDefaults(Set $set, Get $get): void
-    {
-        $type = $get('type');
-
-        $warehouseId = $get('warehouse_id');
-
-        $companyId = $get('company_id');
-
-        $set('source_location_id', static::getDefaultSourceLocationId($type, $warehouseId, $companyId));
-
-        $set('destination_location_id', static::getDefaultDestinationLocationId($type, $warehouseId, $companyId));
-    }
-
     protected static function virtualLocationId(LocationType $type, $companyId): ?int
     {
         return Location::where('type', $type)
-            ->where(static::ownedByCompany($companyId))
+            ->where(owned_by_company($companyId))
             ->first()?->id;
     }
 
     protected static function replenishLocationId($warehouseId, $companyId): ?int
     {
         return Location::where('is_replenish', true)
-            ->where(static::ownedByCompany($companyId))
+            ->where(owned_by_company($companyId))
             ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
             ->first()?->id;
     }

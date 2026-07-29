@@ -157,10 +157,11 @@ class ManufacturingOrderResource extends Resource
                                     ->relationship(
                                         'product',
                                         'name',
-                                        fn (Builder $query) => $query
+                                        fn (Builder $query, Get $get) => $query
                                             ->withTrashed()
                                             ->where('type', ProductType::GOODS)
                                             ->whereNull('is_configurable')
+                                            ->where(owned_by_company($get('company_id')))
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Product $record): string => $record->name)
                                     ->searchable()
@@ -251,7 +252,9 @@ class ManufacturingOrderResource extends Resource
 
                                             $productIds = array_filter([$product->id, $product->parent_id]);
 
-                                            $query->withTrashed()->whereIn('product_id', $productIds);
+                                            $query->withTrashed()
+                                                ->whereIn('product_id', $productIds)
+                                                ->where(owned_by_company($get('company_id')));
                                         }
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (BillOfMaterial $record): string => static::getBillOfMaterialLabel($record))
@@ -327,9 +330,10 @@ class ManufacturingOrderResource extends Resource
                                             ->relationship(
                                                 'operationType',
                                                 'name',
-                                                fn (Builder $query) => $query
+                                                fn (Builder $query, Get $get) => $query
                                                     ->withTrashed()
                                                     ->where('type', 'manufacture')
+                                                    ->where(owned_by_company($get('company_id')))
                                             )
                                             ->getOptionLabelFromRecordUsing(fn (OperationType $record): string => static::getOperationTypeLabel($record))
                                             ->searchable()
@@ -357,7 +361,9 @@ class ManufacturingOrderResource extends Resource
                                             }),
                                         Select::make('source_location_id')
                                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.miscellaneous.fields.source'))
-                                            ->relationship('sourceLocation', 'full_name', fn (Builder $query) => $query->withTrashed())
+                                            ->relationship('sourceLocation', 'full_name', fn (Builder $query, Get $get) => $query
+                                                ->withTrashed()
+                                                ->where(owned_by_company($get('company_id'))))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -377,7 +383,9 @@ class ManufacturingOrderResource extends Resource
                                             }),
                                         Select::make('destination_location_id')
                                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.miscellaneous.fields.finished-products-location'))
-                                            ->relationship('destinationLocation', 'full_name', fn (Builder $query) => $query->withTrashed())
+                                            ->relationship('destinationLocation', 'full_name', fn (Builder $query, Get $get) => $query
+                                                ->withTrashed()
+                                                ->where(owned_by_company($get('company_id'))))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -396,7 +404,15 @@ class ManufacturingOrderResource extends Resource
                                             ->preload()
                                             ->native(false)
                                             ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
-                                            ->default(current_company_id()),
+                                            ->default(current_company_id())
+                                            ->live()
+                                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                'product_id'              => Product::class,
+                                                'bill_of_material_id'     => BillOfMaterial::class,
+                                                'operation_type_id'       => OperationType::class,
+                                                'source_location_id'      => Location::class,
+                                                'destination_location_id' => Location::class,
+                                            ], $state)),
                                         ...static::getCustomFormFields(),
                                     ]),
                             ]),
@@ -1040,10 +1056,11 @@ class ManufacturingOrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query) => $query
+                        fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', ProductType::GOODS)
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()

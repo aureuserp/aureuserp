@@ -42,6 +42,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\Department;
+use Webkul\Employee\Models\Employee;
 use Webkul\Partner\Filament\Resources\AddressResource;
 use Webkul\Partner\Filament\Resources\IndustryResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
@@ -130,7 +131,11 @@ class JobPositionResource extends Resource
                                             }),
                                         Select::make('manager_id')
                                             ->label(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.manager'))
-                                            ->relationship(name: 'manager', titleAttribute: 'name')
+                                            ->relationship(
+                                                name: 'manager',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->reactive()
@@ -140,11 +145,12 @@ class JobPositionResource extends Resource
                                             ->relationship(name: 'company', titleAttribute: 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->default(current_company_id())
                                             ->live()
-                                            ->afterStateUpdated(function (Set $set) {
-                                                $set('department_id', null);
-                                                $set('manager_id', null);
-                                            })
+                                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                'department_id' => Department::class,
+                                                'manager_id'    => Employee::class,
+                                            ], $state))
                                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
                                                 return $action

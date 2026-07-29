@@ -17,6 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -33,6 +35,7 @@ use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPrice
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\ListVendorPrices;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\ViewVendorPrice;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
+use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\ProductSupplier;
 
 class VendorPriceResource extends Resource
@@ -92,7 +95,9 @@ class VendorPriceResource extends Resource
                                     ->relationship(
                                         'product',
                                         'name',
-                                        fn ($query) => $query->where('is_configurable', null)
+                                        fn (Builder $query, Get $get) => $query
+                                            ->where('is_configurable', null)
+                                            ->where(owned_by_company($get('company_id')))
                                     )
                                     ->searchable()
                                     ->preload()
@@ -145,7 +150,11 @@ class VendorPriceResource extends Resource
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->default(current_company_id())
-                                    ->preload(),
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'product_id' => Product::class,
+                                    ], $state)),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

@@ -48,6 +48,7 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
@@ -306,7 +307,13 @@ class OrderResource extends Resource
                                             ->required()
                                             ->live()
                                             ->default(current_company_id())
-                                            ->afterStateUpdated(fn (Set $set, $state) => $set('operation_type_id', static::getInventoryOperationTypeId($state ?? current_company_id())))
+                                            ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                                $set('operation_type_id', static::getInventoryOperationTypeId($state ?? current_company_id()));
+
+                                                clear_foreign_company_values($set, $get, [
+                                                    'payment_term_id' => PaymentTerm::class,
+                                                ], $state);
+                                            })
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                                         TextInput::make('origin')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.source-document'))
@@ -329,7 +336,11 @@ class OrderResource extends Resource
                                     ->schema([
                                         Select::make('payment_term_id')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.payment-term'))
-                                            ->relationship('paymentTerm', 'name')
+                                            ->relationship(
+                                                'paymentTerm',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),

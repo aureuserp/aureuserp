@@ -201,7 +201,11 @@ class QuotationResource extends Resource
                                     ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL])),
                                 Select::make('payment_term_id')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.payment-term'))
-                                    ->relationship('paymentTerm', 'name')
+                                    ->relationship(
+                                        'paymentTerm',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -319,11 +323,15 @@ class QuotationResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->live()
-                                            ->afterStateUpdated(function (Set $set, ?int $state): void {
+                                            ->afterStateUpdated(function (Set $set, Get $get, ?int $state): void {
                                                 $companyId = $state ?? current_company_id();
 
                                                 $set('currency_id', Company::find($state)?->currency_id);
                                                 $set('warehouse_id', static::getDefaultWarehouseId($companyId));
+
+                                                clear_foreign_company_values($set, $get, [
+                                                    'payment_term_id' => PaymentTerm::class,
+                                                ], $companyId);
                                             })
                                             ->reactive()
                                             ->default(current_company_id()),

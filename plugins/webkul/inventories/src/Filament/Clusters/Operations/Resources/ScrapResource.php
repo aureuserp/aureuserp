@@ -50,6 +50,8 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Models\Location;
+use Webkul\Inventory\Models\Lot;
+use Webkul\Inventory\Models\Package;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Settings\OperationSettings;
@@ -99,11 +101,13 @@ class ScrapResource extends Resource
                                     ->schema([
                                         Select::make('product_id')
                                             ->label(__('inventories::filament/clusters/operations/resources/scrap.form.sections.general.fields.product'))
-                                            ->relationship(name: 'product', titleAttribute: 'name')
                                             ->relationship(
                                                 'product',
                                                 'name',
-                                                fn ($query) => $query->where('type', ProductType::GOODS)->whereNull('is_configurable'),
+                                                fn (Builder $query, Get $get) => $query
+                                                    ->where('type', ProductType::GOODS)
+                                                    ->whereNull('is_configurable')
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -158,7 +162,9 @@ class ScrapResource extends Resource
                                             ->relationship(
                                                 name: 'lot',
                                                 titleAttribute: 'name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id')),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->where('product_id', $get('product_id'))
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE)
                                             ->visible(function (Get $get): bool {
@@ -202,7 +208,11 @@ class ScrapResource extends Resource
                                     ->schema([
                                         Select::make('package_id')
                                             ->label(__('inventories::filament/clusters/operations/resources/scrap.form.sections.general.fields.package'))
-                                            ->relationship('package', 'name')
+                                            ->relationship(
+                                                'package',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->createOptionForm(fn (Schema $schema): Schema => PackageResource::form($schema))
@@ -217,44 +227,39 @@ class ScrapResource extends Resource
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                         Select::make('source_location_id')
                                             ->label(__('inventories::filament/clusters/operations/resources/scrap.form.sections.general.fields.source-location'))
-                                            ->relationship('sourceLocation', 'full_name')
                                             ->relationship(
                                                 'sourceLocation',
                                                 'full_name',
-                                                fn ($query) => $query->where('type', LocationType::INTERNAL)->where('is_scrap', false),
+                                                fn (Builder $query, Get $get) => $query
+                                                    ->where('type', LocationType::INTERNAL)
+                                                    ->where('is_scrap', false)
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->required()
                                             ->searchable()
                                             ->preload()
-                                            ->default(function () {
-                                                $sourceLocation = Location::where('type', LocationType::INTERNAL)
-                                                    ->where('is_scrap', false)
-                                                    ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', current_company_id()))
-                                                    ->first();
-
-                                                return $sourceLocation?->id;
-                                            })
+                                            ->default(fn (Get $get) => Location::where('type', LocationType::INTERNAL)
+                                                ->where('is_scrap', false)
+                                                ->where(owned_by_company($get('company_id')))
+                                                ->value('id'))
                                             ->visible(static::getWarehouseSettings()->enable_locations)
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                         Select::make('destination_location_id')
                                             ->label(__('inventories::filament/clusters/operations/resources/scrap.form.sections.general.fields.destination-location'))
-                                            ->relationship('destinationLocation', 'full_name')
                                             ->relationship(
                                                 'destinationLocation',
                                                 'full_name',
-                                                fn ($query) => $query->where('is_scrap', true),
+                                                fn (Builder $query, Get $get) => $query
+                                                    ->where('is_scrap', true)
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->required()
                                             ->searchable()
                                             ->preload()
-                                            ->default(function () {
-                                                $scrapLocation = Location::where('is_scrap', true)
-                                                    ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', current_company_id()))
-                                                    ->first()
-                                                    ?? Location::where('is_scrap', true)->first();
-
-                                                return $scrapLocation?->id;
-                                            })
+                                            ->default(fn (Get $get) => Location::where('is_scrap', true)
+                                                ->where(owned_by_company($get('company_id')))
+                                                ->value('id')
+                                                ?? Location::where('is_scrap', true)->value('id'))
                                             ->visible(static::getWarehouseSettings()->enable_locations)
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                         TextInput::make('origin')
@@ -267,6 +272,19 @@ class ScrapResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->default(current_company_id())
+                                            ->live()
+                                            ->afterStateUpdated(function (Set $set, Get $get, $state, $component): void {
+                                                clear_foreign_company_values($set, $get, [
+                                                    'product_id' => Product::class,
+                                                    'lot_id'     => Lot::class,
+                                                    'package_id' => Package::class,
+                                                ], $state);
+
+                                                reapply_company_defaults($component, [
+                                                    'source_location_id',
+                                                    'destination_location_id',
+                                                ]);
+                                            })
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                     ]),
                             ])
