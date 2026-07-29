@@ -424,6 +424,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Fino',
                         'extra-light' => 'Extra leve',
                         'light'       => 'Leve',
                         'normal'      => 'Normal',
@@ -431,6 +432,7 @@ return [
                         'semi-bold'   => 'Seminegrito',
                         'bold'        => 'Negrito',
                         'extra-bold'  => 'Extra negrito',
+                        'black'       => 'Preto',
                     ],
 
                     'icon-position-options' => [
@@ -520,6 +522,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Fino',
                         'extra-light' => 'Extra leve',
                         'light'       => 'Leve',
                         'normal'      => 'Normal',
@@ -527,6 +530,7 @@ return [
                         'semi-bold'   => 'Seminegrito',
                         'bold'        => 'Negrito',
                         'extra-bold'  => 'Extra negrito',
+                        'black'       => 'Preto',
                     ],
 
                     'icon-position-options' => [
@@ -666,6 +670,7 @@ return [
                 'title' => 'Recurso',
 
                 'fields' => [
+                    'plugin'   => 'Plugin',
                     'resource' => 'Recurso',
                 ],
             ],
