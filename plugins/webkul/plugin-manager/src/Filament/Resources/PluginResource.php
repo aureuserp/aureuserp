@@ -357,6 +357,12 @@ class PluginResource extends Resource
                         throw new Exception("Package for '{$pluginName}' not found.");
                     }
 
+                    $uninstallCommand = static::resolveUninstallCommand($plugin->package);
+
+                    if ($uninstallCommand?->startWith) {
+                        ($uninstallCommand->startWith)($uninstallCommand);
+                    }
+
                     collect(array_reverse($plugin->package->migrationFileNames))
                         ->each(function ($migration) use ($plugin) {
                             $fullPath = $plugin->package->basePath("database/migrations/{$migration}.php");
@@ -372,9 +378,6 @@ class PluginResource extends Resource
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
-
-                    $uninstallCommand = collect($plugin->package->consoleCommands)
-                        ->first(fn ($command) => $command instanceof UninstallCommand);
 
                     if ($uninstallCommand?->endWith) {
                         ($uninstallCommand->endWith)($uninstallCommand);
@@ -400,6 +403,12 @@ class PluginResource extends Resource
                 ->persistent()
                 ->send();
         }
+    }
+
+    protected static function resolveUninstallCommand(Package $package): ?UninstallCommand
+    {
+        return collect($package->consoleCommands ?? [])
+            ->first(fn ($command) => $command instanceof UninstallCommand);
     }
 
     protected static function downMigration(string $fullPath, string $migration): void
