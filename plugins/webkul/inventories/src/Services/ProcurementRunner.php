@@ -229,11 +229,20 @@ class ProcurementRunner
             'deadline'               => $rule->group_propagation_option === GroupPropagation::FIXED ? null : $deadline,
             'description_picking'    => $request->product->descriptionFor($rule->operationType),
             'product_packaging_id'   => $options->productPackaging()?->id,
+        ];
+
+        $optionalLinks = [
             'sale_order_line_id'     => $options->saleOrderLineId(),
             'purchase_order_line_id' => $options->purchaseOrderLineId(),
             'work_order_id'          => $options->workOrderId(),
             'bom_line_id'            => $options->bomLineId(),
         ];
+
+        foreach ($optionalLinks as $column => $value) {
+            if ($value !== null) {
+                $attributes[$column] = $value;
+            }
+        }
 
         if ($rule->location_dest_from_rule) {
             $attributes['destination_location_id'] = $rule->destination_location_id;
