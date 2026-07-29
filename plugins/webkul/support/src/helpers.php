@@ -110,8 +110,6 @@ if (! function_exists('prepare_rtl_html')) {
      */
     function prepare_rtl_html(string $html): string
     {
-        $arabic = new Arabic;
-
         $dom = new DOMDocument('1.0', 'UTF-8');
 
         libxml_use_internal_errors(true);
@@ -142,15 +140,18 @@ if (! function_exists('prepare_rtl_html')) {
             }
         }
 
-        // 2) Reshape Arabic runs into connected glyphs.
-        foreach ($xpath->query('//text()[not(ancestor::style) and not(ancestor::script)]') as $node) {
-            if (trim($node->nodeValue) === '' || ! preg_match('/\p{Arabic}/u', $node->nodeValue)) {
-                continue;
-            }
+        // 2) Reshape Arabic runs into connected glyphs. This needs ar-php; if
+        //    the package is absent, skip shaping instead of failing the PDF.
+        if (class_exists(Arabic::class)) {
+            $arabic = new Arabic;
 
-            // PHP_INT_MAX disables ar-php's line wrapping (that is the browser's
-            // job); $hindo = false keeps digits Latin (e.g. "300.00", not "٣٠٠٫٠٠").
-            $node->nodeValue = $arabic->utf8Glyphs($node->nodeValue, PHP_INT_MAX, false);
+            foreach ($xpath->query('//text()[not(ancestor::style) and not(ancestor::script)]') as $node) {
+                if (trim($node->nodeValue) === '' || ! preg_match('/\p{Arabic}/u', $node->nodeValue)) {
+                    continue;
+                }
+
+                $node->nodeValue = $arabic->utf8Glyphs($node->nodeValue, PHP_INT_MAX, false);
+            }
         }
 
         return preg_replace('/<\?xml[^>]*>\s*/', '', $dom->saveHTML());

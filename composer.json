@@ -19,6 +19,7 @@
         "filament/spatie-laravel-settings-plugin": "^5.0",
         "flowframe/laravel-trend": "^0.5",
         "guava/filament-icon-picker": "^4.0",
+        "khaled.alshamaa/ar-php": "^7.0",
         "knuckleswtf/scribe": "^5.6",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
