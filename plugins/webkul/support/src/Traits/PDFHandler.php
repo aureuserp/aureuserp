@@ -20,8 +20,6 @@ trait PDFHandler
     {
         $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
 
-        // DomPDF has no RTL engine, so mirror table columns and reshape
-        // Arabic text before rendering.
         if (SupportServiceProvider::isRtl()) {
             $html = prepare_rtl_html($html);
         }
