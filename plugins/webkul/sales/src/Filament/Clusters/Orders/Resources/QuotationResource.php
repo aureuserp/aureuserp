@@ -339,7 +339,7 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->reactive()
-                                            ->default(current_company()?->currency_id)
+                                            ->default(current_company()?->currency_id),
                                         ...static::getCustomFormFields(),
                                     ]),
                             ]),
