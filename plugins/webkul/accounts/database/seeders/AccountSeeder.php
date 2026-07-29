@@ -5,6 +5,7 @@ namespace Webkul\Account\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Security\Models\User;
+use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
@@ -23,7 +24,11 @@ class AccountSeeder extends Seeder
 
         $user = User::first();
 
-        $currency = Currency::active()->first() ?? Currency::first();
+        $defaultCurrencyId = app(CurrencySettings::class)->default_currency_id;
+
+        $currency = ($defaultCurrencyId ? Currency::find($defaultCurrencyId) : null)
+            ?? Currency::active()->first()
+            ?? Currency::first();
 
         $company = Company::first();
 
