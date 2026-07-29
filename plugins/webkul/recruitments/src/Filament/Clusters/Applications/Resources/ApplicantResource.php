@@ -252,7 +252,7 @@ class ApplicantResource extends Resource
                                             ->relationship(
                                                 name: 'job',
                                                 titleAttribute: 'name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id') ?? current_company_id()),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                             )
                                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.form.sections.general-information.fields.job-position'))
                                             ->preload()

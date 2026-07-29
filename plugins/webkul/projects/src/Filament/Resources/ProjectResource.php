@@ -117,7 +117,7 @@ class ProjectResource extends Resource
                             ->required()
                             ->visible(static::getTaskSettings()->enable_project_stages)
                             ->options(fn () => ProjectStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
-                            ->default(ProjectStage::where('company_id', current_company_id())->orderBy('sort')->first()?->id),
+                            ->default(fn () => static::getDefaultStageId(current_company_id())),
                         Section::make(__('projects::filament/resources/project.form.sections.general.title'))
                             ->schema([
                                 TextInput::make('name')
@@ -180,7 +180,7 @@ class ProjectResource extends Resource
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.company'))
                                     ->default(fn () => current_company_id())
                                     ->live()
-                                    ->afterStateUpdated(fn (Set $set) => $set('stage_id', null))
+                                    ->afterStateUpdated(fn (Set $set, $state) => $set('stage_id', static::getDefaultStageId($state)))
                                     ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),
                             ]))
                             ->columns(2),
@@ -228,6 +228,16 @@ class ProjectResource extends Resource
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
+    }
+
+    protected static function getDefaultStageId($companyId): ?int
+    {
+        $companyId = $companyId ?: current_company_id();
+
+        return ProjectStage::query()
+            ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $companyId))
+            ->orderBy('sort')
+            ->first()?->id;
     }
 
     public static function table(Table $table): Table

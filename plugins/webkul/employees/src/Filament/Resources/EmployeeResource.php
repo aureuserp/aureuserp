@@ -184,7 +184,7 @@ class EmployeeResource extends Resource
                                     ->relationship(
                                         name: 'department',
                                         titleAttribute: 'complete_name',
-                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where('company_id', $get('company_id') ?? current_company_id()),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -209,7 +209,7 @@ class EmployeeResource extends Resource
                                     ->relationship(
                                         name: 'job',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id') ?? current_company_id()),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                     )
                                     ->searchable()
                                     ->preload()
@@ -272,7 +272,7 @@ class EmployeeResource extends Resource
                                                             ->relationship(
                                                                 name: 'workLocation',
                                                                 titleAttribute: 'name',
-                                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id') ?? current_company_id()),
+                                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                                             )
                                                             ->searchable()
                                                             ->preload()

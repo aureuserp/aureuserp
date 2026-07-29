@@ -227,12 +227,12 @@ class ScrapResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->default(function () {
-                                                $scrapLocation = Location::where('type', LocationType::INTERNAL)
+                                                $sourceLocation = Location::where('type', LocationType::INTERNAL)
                                                     ->where('is_scrap', false)
-                                                    ->where('company_id', current_company_id())
+                                                    ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', current_company_id()))
                                                     ->first();
 
-                                                return $scrapLocation?->id;
+                                                return $sourceLocation?->id;
                                             })
                                             ->visible(static::getWarehouseSettings()->enable_locations)
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
@@ -249,8 +249,9 @@ class ScrapResource extends Resource
                                             ->preload()
                                             ->default(function () {
                                                 $scrapLocation = Location::where('is_scrap', true)
-                                                    ->where('company_id', current_company_id())
-                                                    ->first();
+                                                    ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', current_company_id()))
+                                                    ->first()
+                                                    ?? Location::where('is_scrap', true)->first();
 
                                                 return $scrapLocation?->id;
                                             })

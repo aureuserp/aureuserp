@@ -123,7 +123,7 @@ class TaskResource extends Resource
                             ->inline()
                             ->required()
                             ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
-                            ->default(TaskStage::where('company_id', current_company_id())->orderBy('sort')->first()?->id),
+                            ->default(fn () => static::getDefaultStageId(current_company_id())),
                         Section::make(__('projects::filament/resources/task.form.sections.general.title'))
                             ->schema([
                                 TextInput::make('title')
@@ -263,6 +263,16 @@ class TaskResource extends Resource
                     ]),
             ])
             ->columns(3);
+    }
+
+    protected static function getDefaultStageId($companyId): ?int
+    {
+        $companyId = $companyId ?: current_company_id();
+
+        return TaskStage::query()
+            ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $companyId))
+            ->orderBy('sort')
+            ->first()?->id;
     }
 
     public static function table(Table $table): Table
@@ -669,7 +679,7 @@ class TaskResource extends Resource
                             ->hiddenLabel()
                             ->inline()
                             ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
-                            ->default(fn ($record) => TaskStage::where('company_id', $record?->company_id ?? current_company_id())->orderBy('sort')->first()?->id),
+                            ->default(fn ($record) => static::getDefaultStageId($record?->company_id)),
 
                         Section::make(__('projects::filament/resources/task.infolist.sections.general.title'))
                             ->schema([

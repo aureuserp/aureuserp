@@ -100,7 +100,7 @@ class JobPositionResource extends Resource
                                             ->relationship(
                                                 name: 'department',
                                                 titleAttribute: 'name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('company_id', $get('company_id') ?? current_company_id()),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                             )
                                             ->searchable()
                                             ->preload()
