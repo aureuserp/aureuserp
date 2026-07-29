@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\LotFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -15,6 +16,7 @@ use Webkul\Support\Models\UOM;
 
 class Lot extends Model
 {
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'inventories_lots';
@@ -47,7 +49,7 @@ class Lot extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo

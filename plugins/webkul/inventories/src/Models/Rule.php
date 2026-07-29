@@ -14,13 +14,14 @@ use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\RuleAction;
 use Webkul\Inventory\Enums\RuleAuto;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class Rule extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_rules';
 
@@ -142,8 +143,8 @@ class Rule extends Model implements Sortable
                     && $rule->delay
                 ) {
                     $delayDescription[] = [
-                        __('Delay on :name', ['name' => $rule->name]),
-                        __('+ :days day(s)', ['days' => $rule->delay]),
+                        __('inventories::system.rule.delay-on', ['name' => $rule->name]),
+                        __('inventories::system.rule.days', ['days' => $rule->delay]),
                     ];
                 }
             }
@@ -151,8 +152,8 @@ class Rule extends Model implements Sortable
 
         if ($globalVisibilityDays) {
             $delayDescription[] = [
-                __('Time Horizon'),
-                __('+ :days day(s)', ['days' => $globalVisibilityDays]),
+                __('inventories::system.rule.time-horizon'),
+                __('inventories::system.rule.days', ['days' => $globalVisibilityDays]),
             ];
         }
 
@@ -174,6 +175,10 @@ class Rule extends Model implements Sortable
             $rule->creator_id ??= $authUser->id;
 
             $rule->company_id ??= $authUser?->default_company_id;
+
+            $rule->warehouse_id ??= $rule->operationType?->warehouse_id;
+
+            $rule->group_propagation_option ??= GroupPropagation::PROPAGATE;
         });
     }
 }

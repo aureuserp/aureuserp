@@ -30,7 +30,9 @@ export default function fullCalendar({
 }) {
     return {
         init() {
-            const calendar = new Calendar(this.$el, {
+            const isSelectable = Boolean(selectable || config?.selectable)
+
+            const calendarOptions = {
                 headerToolbar: {
                     'left': 'prev,next today',
                     'center': 'title',
@@ -43,10 +45,6 @@ export default function fullCalendar({
                 selectable,
                 ...config,
                 locales,
-                eventClassNames,
-                eventContent,
-                eventDidMount,
-                eventWillUnmount,
                 events: (info, successCallback, failureCallback) => {
                     this.$wire.fetchEvents({ start: info.startStr, end: info.endStr, timezone: info.timeZone })
                         .then(successCallback)
@@ -77,20 +75,56 @@ export default function fullCalendar({
                     }
                 },
                 dateClick: ({ dateStr, allDay, view, resource }) => {
-                    if (! selectable) {
+                    if (! isSelectable) {
                         return;
                     }
 
-                    this.$wire.onDateSelect(dateStr, null, allDay, view, resource)
+                    const safeView = view ? {
+                        type: view.type,
+                    } : null
+
+                    const safeResource = resource ? {
+                        id: resource.id,
+                        title: resource.title,
+                    } : null
+
+                    this.$wire.onDateSelect(dateStr, null, allDay, safeView, safeResource)
                 },
                 select: ({ startStr, endStr, allDay, view, resource }) => {
-                    if (! selectable) {
+                    if (! isSelectable) {
                         return;
                     }
 
-                    this.$wire.onDateSelect(startStr, endStr, allDay, view, resource)
+                    const safeView = view ? {
+                        type: view.type,
+                    } : null
+
+                    const safeResource = resource ? {
+                        id: resource.id,
+                        title: resource.title,
+                    } : null
+
+                    this.$wire.onDateSelect(startStr, endStr, allDay, safeView, safeResource)
                 },
-            })
+            }
+
+            if (eventClassNames !== null && eventClassNames !== undefined) {
+                calendarOptions.eventClassNames = eventClassNames
+            }
+
+            if (typeof eventContent === 'function') {
+                calendarOptions.eventContent = eventContent
+            }
+
+            if (typeof eventDidMount === 'function') {
+                calendarOptions.eventDidMount = eventDidMount
+            }
+
+            if (typeof eventWillUnmount === 'function') {
+                calendarOptions.eventWillUnmount = eventWillUnmount
+            }
+
+            const calendar = new Calendar(this.$el, calendarOptions)
 
             calendar.render()
 

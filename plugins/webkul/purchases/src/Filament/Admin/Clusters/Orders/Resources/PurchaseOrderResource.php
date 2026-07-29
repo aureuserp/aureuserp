@@ -67,7 +67,7 @@ class PurchaseOrderResource extends OrderResource
             'view'     => ViewPurchaseOrder::route('/{record}'),
             'edit'     => EditPurchaseOrder::route('/{record}/edit'),
             'bills'    => ManageBills::route('/{record}/bills'),
-            'receipts' => ManageReceipts::route('/{record}/receipts'),
+            'operations' => ManageReceipts::route('/{record}/receipts'),
         ];
     }
 }

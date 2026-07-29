@@ -12,18 +12,18 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\Dropship;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditDropship extends EditRecord
 {
-    use HasRecordNavigationTabs;
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = DropshipResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected function getSavedNotification(): Notification
     {
@@ -76,11 +76,14 @@ class EditDropship extends EditRecord
                         ->title(__('inventories::filament/clusters/operations/resources/dropship/pages/edit-dropship.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/dropship/pages/edit-dropship.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
     }
 
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

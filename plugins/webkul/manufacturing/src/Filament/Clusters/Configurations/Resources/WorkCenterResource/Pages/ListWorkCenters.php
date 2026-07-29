@@ -41,7 +41,10 @@ class ListWorkCenters extends ListRecords
     {
         return [
             'all' => Tab::make(__('manufacturing::filament/clusters/configurations/resources/work-center/pages/list-work-centers.tabs.all'))
-                ->badge(WorkCenter::count()),
+                ->badge(WorkCenter::count())
+                ->modifyQueryUsing(function ($query) {
+                    return $query->withoutTrashed();
+                }),
             'archived' => Tab::make(__('manufacturing::filament/clusters/configurations/resources/work-center/pages/list-work-centers.tabs.archived'))
                 ->badge(WorkCenter::onlyTrashed()->count())
                 ->modifyQueryUsing(function ($query) {

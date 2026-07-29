@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Traits\HasChatter;
+use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\Inventory\Enums\MoveState;
@@ -28,12 +31,13 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -78,12 +82,18 @@ class Order extends Model
         'is_locked'          => 'boolean',
         'quantity'           => 'decimal:4',
         'quantity_producing' => 'decimal:4',
+        'product_uom_qty'    => 'decimal:4',
         'deadline_at'        => 'datetime',
         'started_at'         => 'datetime',
         'finished_at'        => 'datetime',
     ];
 
     protected array $context = [];
+
+    protected function getAssignmentColumn(): ?string
+    {
+        return 'assigned_user_id';
+    }
 
     public function setContext(array $context)
     {
@@ -95,6 +105,21 @@ class Order extends Model
     public function getModelTitle(): string
     {
         return __('manufacturing::models/order.title');
+    }
+
+    public function getChatterResponsibles(): array
+    {
+        return ['assignedUser'];
+    }
+
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'quantity_producing' => __('manufacturing::models/order.log-attributes.product-qty'),
+            'state'              => __('manufacturing::models/order.log-attributes.state'),
+            'reservation_state'  => __('manufacturing::models/order.log-attributes.reservation-state'),
+            'assignedUser.name'  => __('manufacturing::models/order.log-attributes.assigned-user'),
+        ];
     }
 
     public function product(): BelongsTo
@@ -695,7 +720,7 @@ class Order extends Model
         $byproductProductIds = $this->billOfMaterial?->byproducts->pluck('product_id')->all() ?? [];
 
         if (in_array($this->product_id, $byproductProductIds)) {
-            throw new \Exception(__('You cannot have :product as the finished product and in the Byproducts', [
+            throw new \Exception(__('manufacturing::system.order.product-in-byproducts', [
                 'product' => $this->product->name,
             ]));
         }
@@ -721,7 +746,7 @@ class Order extends Model
                 $byproduct->uom_id,
                 $byproduct->operation_id,
                 $byproduct->id,
-                $byproduct->cost_share
+                $byproduct->cost_share ?? 0
             );
         }
 
@@ -783,7 +808,7 @@ class Order extends Model
             'destination_location_id' => $this->production_location_id,
             'raw_material_order_id'   => $this->id,
             'company_id'              => $this->company_id,
-            'operation_id'            => $operationId,
+            'mo_operation_id'         => $operationId,
             'procure_method'          => ProcureMethod::MAKE_TO_STOCK,
             'origin'                  => $this->getOrigin(),
             'warehouse_id'            => $this->sourceLocation->warehouse_id,
@@ -819,7 +844,7 @@ class Order extends Model
     public function linkWorkOrdersAndMoves(): void
     {
         $workOrderPerOperation = $this->workOrders
-            ->filter(fn ($wo) => $wo->operation_id)
+            ->filter(fn ($workOrder) => $workOrder->operation_id)
             ->keyBy('operation_id');
 
         $workOrderBillOfMaterials = $this->workOrders
@@ -831,7 +856,7 @@ class Order extends Model
 
         $allowWorkOrderDependencies = $this->billOfMaterial?->allow_operation_dependencies;
 
-        $workOrderOrder = fn ($wo) => [$wo->sort, $wo->id];
+        $workOrderOrder = fn ($workOrder) => [$workOrder->sort, $workOrder->id];
 
         if ($allowWorkOrderDependencies) {
             foreach ($this->workOrders->sortBy($workOrderOrder) as $workOrder) {
@@ -931,7 +956,7 @@ class Order extends Model
         }
 
         if ($missingLotIdProducts) {
-            throw new \Exception(__('You need to supply Lot/Serial Number for products and "consume" them: %(missing_products)s', [
+            throw new \Exception(__('manufacturing::system.order.missing-lot-serial-number', [
                 'missing_products' => $missingLotIdProducts,
             ]));
         }
@@ -1012,7 +1037,7 @@ class Order extends Model
             && $this->producing_lot_id
         ) {
             if ($this->isFinishedSnAlreadyProduced($this->producingLot)) {
-                throw new \Exception(__('This serial number for product :product has already been produced', [
+                throw new \Exception(__('manufacturing::system.order.serial-number-already-produced', [
                     'product' => $this->product->name,
                 ]));
             }
@@ -1032,7 +1057,7 @@ class Order extends Model
                 }
 
                 if ($this->isFinishedSnAlreadyProduced($moveLine->lot, excludedSml: $moveLine)) {
-                    throw new \Exception(__('The serial number :number used for byproduct :product has already been produced', [
+                    throw new \Exception(__('manufacturing::system.order.byproduct-serial-number-already-produced', [
                         'number'  => $moveLine->lot->name,
                         'product' => $moveLine->product->name,
                     ]));
@@ -1063,7 +1088,7 @@ class Order extends Model
 
                 $smlSn = $moveLine->lot;
 
-                $message = __('The serial number :number used for component :component has already been consumed', [
+                $message = __('manufacturing::system.order.component-serial-number-consumed', [
                     'number'    => $smlSn->name,
                     'component' => $moveLine->product->name,
                 ]);
@@ -1162,9 +1187,9 @@ class Order extends Model
         $expectedQtyByProduct = [];
 
         foreach ($expectedMoveValues as $moveValues) {
-            $moveProduct = Product::find($moveValues['product_id']);
+            $moveProduct = Product::withTrashed()->find($moveValues['product_id']);
 
-            $moveUom = UOM::find($moveValues['uom_id']);
+            $moveUom = UOM::withTrashed()->find($moveValues['uom_id']);
 
             $moveProductQty = $moveUom->computeQuantity($moveValues['product_uom_qty'], $moveProduct->uom);
 
@@ -1198,7 +1223,7 @@ class Order extends Model
         }
 
         foreach ($expectedQtyByProduct as $productId => $qtyToConsume) {
-            $product = Product::find($productId);
+            $product = Product::withTrashed()->find($productId);
 
             $quantity = $doneQtyByProduct[$productId] ?? 0.0;
 
@@ -1295,7 +1320,7 @@ class Order extends Model
 
         $componentsAvailabilityState = 'available';
 
-        $componentsAvailability = __('Available');
+        $componentsAvailability = __('manufacturing::system.order.components-availability.available');
 
         $hasUnavailable = $this->rawMaterialMoves->some(function ($move) {
             $threshold = $move->state === MoveState::DRAFT ? 0 : $move->product_qty;
@@ -1306,7 +1331,7 @@ class Order extends Model
         if ($hasUnavailable) {
             $componentsAvailabilityState = 'unavailable';
 
-            $componentsAvailability = __('Not Available');
+            $componentsAvailability = __('manufacturing::system.order.components-availability.not-available');
 
             return [
                 $componentsAvailabilityState,
@@ -1325,7 +1350,7 @@ class Order extends Model
                     : 'expected';
             }
 
-            $componentsAvailability = __('Expected :date', [
+            $componentsAvailability = __('manufacturing::system.order.components-availability.expected', [
                 'date' => Carbon::parse($forecastDate)->format('Y-m-d'),
             ]);
         }

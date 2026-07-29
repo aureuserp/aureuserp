@@ -44,9 +44,13 @@ use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\EditPost;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ListPosts;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ViewPost;
 use Webkul\Blog\Models\Post;
+use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PostResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Post::class;
 
     protected static ?string $slug = 'website/posts';
@@ -60,9 +64,9 @@ class PostResource extends Resource
         return __('blogs::filament/admin/resources/post.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('blogs::filament/admin/resources/post.navigation.group');
+        return NavigationGroup::Website;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -119,7 +123,11 @@ class PostResource extends Resource
                                     ->maxLength(255),
                                 Textarea::make('meta_description')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-description')),
+
                             ]),
+                        Section::make()
+                            ->schema(static::getCustomFormFields())
+                            ->columns(2),
                     ])
                     ->columnSpan(['lg' => 2]),
                 Group::make()
@@ -169,7 +177,7 @@ class PostResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('title')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.title'))
                     ->searchable()
@@ -200,7 +208,7 @@ class PostResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.created-at'))
                     ->sortable(),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('category.name')
                     ->label(__('blogs::filament/admin/resources/post.table.groups.category')),
@@ -210,7 +218,7 @@ class PostResource extends Resource
                     ->label(__('blogs::filament/admin/resources/post.table.groups.created-at'))
                     ->date(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 Filter::make('is_published')
                     ->label(__('blogs::filament/admin/resources/post.table.filters.is-published')),
                 SelectFilter::make('author_id')
@@ -234,7 +242,7 @@ class PostResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
@@ -328,6 +336,7 @@ class PostResource extends Resource
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-description'))
                                     ->markdown()
                                     ->placeholder('—'),
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),

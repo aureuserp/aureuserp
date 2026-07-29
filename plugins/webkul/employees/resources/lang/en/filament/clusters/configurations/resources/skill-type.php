@@ -11,9 +11,10 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'       => 'Name',
-                'color'      => 'Color',
-                'status'     => 'Status',
+                'name'             => 'Name',
+                'name-placeholder' => 'Enter skill type name',
+                'color'            => 'Color',
+                'status'           => 'Status',
             ],
         ],
     ],

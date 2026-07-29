@@ -14,6 +14,7 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Partner\Models\Partner;
+use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
@@ -61,7 +62,7 @@ class ProductQuantity extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function location(): BelongsTo
@@ -131,9 +132,10 @@ class ProductQuantity extends Model
         static::created(function ($productQuantity) {
             if ($productQuantity->package) {
                 $productQuantity->package->update([
-                    'location_id' => $productQuantity->location_id,
                     'pack_date'   => now(),
                 ]);
+
+                $productQuantity->computePackageLocationCompany();
             }
 
             if ($productQuantity->lot) {
@@ -151,7 +153,40 @@ class ProductQuantity extends Model
             if (! $productQuantity->inventory_quantity_set) {
                 $productQuantity->applyInventory();
             }
+
+            if ($productQuantity->wasChanged('location_id') || $productQuantity->wasChanged('company_id')) {
+                if (! $productQuantity->package) {
+                    return;
+                }
+
+                $productQuantity->computePackageLocationCompany();
+            }
+
+            static::deleteZeroQuantities();
         });
+    }
+
+    public function computePackageLocationCompany()
+    {
+        $package = $this->package;
+
+        $package->location_id = null;
+
+        $package->company_id = null;
+
+        $quantities = $package->quantities->filter(
+            fn ($quantity) => float_compare($quantity->quantity, 0, precisionRounding: $quantity->uom->rounding) > 0
+        );
+
+        if ($quantities->isNotEmpty()) {
+            $package->location_id = $quantities->first()->location_id;
+
+            if ($package->quantities->every(fn ($quantity) => $quantity->company_id === $quantities->first()->company_id)) {
+                $package->company_id = $quantities->first()->company_id;
+            }
+        }
+
+        $package->save();
     }
 
     public function applyInventory()
@@ -232,6 +267,7 @@ class ProductQuantity extends Model
             'quantity'                => $qty,
             'product_uom_qty'         => $qty,
             'is_picked'               => true,
+            'is_inventory'            => true,
             'product_id'              => $this->product_id,
             'uom_id'                  => $this->uom->id,
             'source_location_id'      => $sourceLocation->id,
@@ -279,7 +315,7 @@ class ProductQuantity extends Model
         ?Carbon $incomingDate = null,
     ): array {
         if (! $quantity && ! $reservedQuantity) {
-            throw new \Exception(__('Quantity or Reserved Quantity should be set.'));
+            throw new \Exception(__('inventories::system.product-quantity.quantity-not-set'));
         }
 
         $quants = static::gather($product, $location, lot: $lot, package: $package, strict: true);
@@ -309,6 +345,7 @@ class ProductQuantity extends Model
         if ($quants->isNotEmpty()) {
             $quant = self::whereIn('id', $quants->pluck('id'))
                 ->orderBy('lot_id')
+                ->orderBy('id')
                 ->lockForUpdate()
                 ->first();
         }
@@ -366,8 +403,8 @@ class ProductQuantity extends Model
     {
         $this->scheduled_at = Carbon::create(
             now()->year,
-            app(OperationSettings::class)->annual_inventory_month,
-            app(OperationSettings::class)->annual_inventory_day,
+            settings(OperationSettings::class)->annual_inventory_month,
+            settings(OperationSettings::class)->annual_inventory_day,
             0,
             0,
             0
@@ -406,21 +443,26 @@ class ProductQuantity extends Model
 
     public static function getRemovalStrategy(Product $product, Location $location): string
     {
-        if ($product->category?->removal_strategy) {
-            return $product->category->removal_strategy;
+        if ($strategy = $product->category?->removal_strategy) {
+            return static::normalizeRemovalStrategy($strategy);
         }
 
         $loc = $location;
 
         while ($loc) {
             if ($loc->removal_strategy) {
-                return $loc->removal_strategy;
+                return static::normalizeRemovalStrategy($loc->removal_strategy);
             }
 
             $loc = $loc->parent;
         }
 
-        return 'fifo';
+        return ProductRemoval::FIFO->value;
+    }
+
+    protected static function normalizeRemovalStrategy(ProductRemoval|string $strategy): string
+    {
+        return $strategy instanceof ProductRemoval ? $strategy->value : $strategy;
     }
 
     public static function getRemovalStrategyOrder(string $removalStrategy): ?string
@@ -429,7 +471,7 @@ class ProductQuantity extends Model
             'fifo'    => 'incoming_at ASC, id',
             'lifo'    => 'incoming_at DESC, id DESC',
             'closest' => null,
-            default   => throw new \RuntimeException(__('Removal strategy :strategy not implemented.', ['strategy' => $removalStrategy])),
+            default   => throw new \RuntimeException(__('inventories::system.product-quantity.removal-strategy-not-implemented', ['strategy' => $removalStrategy])),
         };
     }
 
@@ -563,7 +605,7 @@ class ProductQuantity extends Model
             $available = $quants->sum('reserved_quantity');
 
             if (float_compare(abs($quantity), $available, precisionRounding: $rounding) > 0) {
-                throw new \RuntimeException(__('It is not possible to unreserve more products of :name than you have in stock.', ['name' => $product->name]));
+                throw new \RuntimeException(__('inventories::system.product-quantity.unreserve-more-than-stock', ['name' => $product->name]));
             }
         }
 
@@ -631,7 +673,7 @@ class ProductQuantity extends Model
         return $reservedQuants;
     }
 
-    public static function getQuantsByProductsLocations($productIds, $locationIds, array $extraDomain = []): array
+    public static function getQuantitiesByProductsLocations(mixed $productIds, mixed $locationIds, array $extraFilters = []): array
     {
         $result = [];
 
@@ -639,17 +681,54 @@ class ProductQuantity extends Model
             return $result;
         }
 
-        $domain = [
+        $filters = [
             ['product_id', 'in', $productIds->all()],
             ['location_id', 'child_of', $locationIds->all()],
         ];
 
-        if (! empty($extraDomain)) {
-            $domain = array_merge($domain, $extraDomain);
+        if (! empty($extraFilters)) {
+            $filters = array_merge($filters, $extraFilters);
         }
 
-        $neededQuants = static::where($domain)
+        $neededQuants = static::query()
+            ->where(function ($query) use ($filters) {
+                foreach ($filters as $condition) {
+                    [$column, $operator, $value] = count($condition) === 2
+                        ? [$condition[0], '=', $condition[1]]
+                        : $condition;
+
+                    if ($operator === 'in') {
+                        $query->whereIn($column, $value);
+
+                        continue;
+                    }
+
+                    if ($operator === 'child_of') {
+                        $locationParentPaths = Location::query()
+                            ->whereIn('id', $value)
+                            ->pluck('parent_path')
+                            ->filter();
+
+                        $locationIds = $locationParentPaths->isEmpty()
+                            ? collect()
+                            : Location::query()
+                                ->where(function ($locationQuery) use ($locationParentPaths) {
+                                    foreach ($locationParentPaths as $parentPath) {
+                                        $locationQuery->orWhere('parent_path', 'like', $parentPath.'%');
+                                    }
+                                })
+                                ->pluck('id');
+
+                        $query->whereIn($column, $locationIds);
+
+                        continue;
+                    }
+
+                    $query->where($column, $operator, $value);
+                }
+            })
             ->orderBy('lot_id')
+            ->orderBy('id')
             ->get()
             ->groupBy(fn ($quant) => implode('_', [
                 $quant->product_id,

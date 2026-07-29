@@ -13,18 +13,15 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementRe
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditPurchaseAgreement extends EditRecord
 {
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
     use HasRepeaterColumnManager;
 
     protected static string $resource = PurchaseAgreementResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -49,8 +46,8 @@ class EditPurchaseAgreement extends EditRecord
                     if (! PurchaseAgreementResource::canBeConfirmed($record)) {
                         Notification::make()
                             ->danger()
-                            ->title('Unable to confirm purchase agreement')
-                            ->body('Add at least one product line before confirming this purchase agreement.')
+                            ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.notification.unable.title'))
+                            ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.notification.unable.body'))
                             ->send();
 
                         return;

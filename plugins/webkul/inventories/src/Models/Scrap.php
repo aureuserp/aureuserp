@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\ScrapFactory;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ScrapState;
@@ -21,7 +22,7 @@ use Webkul\Support\Models\UOM;
 
 class Scrap extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 

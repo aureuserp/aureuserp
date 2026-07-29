@@ -20,7 +20,7 @@ class ProjectStageSeeder extends Seeder
         DB::table('projects_project_stages')->insert([
             [
                 'name'       => 'To Do',
-                'is_active'  => 1,
+                'is_active'  => true,
                 'sort'       => 1,
                 'creator_id' => $user?->id,
                 'created_at' => now(),
@@ -28,7 +28,7 @@ class ProjectStageSeeder extends Seeder
             ],
             [
                 'name'       => 'In Progress',
-                'is_active'  => 1,
+                'is_active'  => true,
                 'sort'       => 2,
                 'creator_id' => $user?->id,
                 'created_at' => now(),
@@ -36,7 +36,7 @@ class ProjectStageSeeder extends Seeder
             ],
             [
                 'name'       => 'Done',
-                'is_active'  => 1,
+                'is_active'  => true,
                 'sort'       => 3,
                 'creator_id' => $user?->id,
                 'created_at' => now(),
@@ -44,7 +44,7 @@ class ProjectStageSeeder extends Seeder
             ],
             [
                 'name'       => 'Cancelled',
-                'is_active'  => 1,
+                'is_active'  => true,
                 'sort'       => 4,
                 'creator_id' => $user?->id,
                 'created_at' => now(),

@@ -6,6 +6,7 @@ use App\Providers\Filament\CustomerPanelProvider;
 use Webkul\Account\AccountServiceProvider;
 use Webkul\Accounting\AccountingServiceProvider;
 use Webkul\Analytic\AnalyticServiceProvider;
+use Webkul\Barcode\BarcodeServiceProvider;
 use Webkul\Blog\BlogServiceProvider;
 use Webkul\Chatter\ChatterServiceProvider;
 use Webkul\Contact\ContactServiceProvider;
@@ -14,6 +15,7 @@ use Webkul\Field\FieldServiceProvider;
 use Webkul\FullCalendar\FullCalendarServiceProvider;
 use Webkul\Inventory\InventoryServiceProvider;
 use Webkul\Invoice\InvoiceServiceProvider;
+use Webkul\Maintenance\MaintenanceServiceProvider;
 use Webkul\Manufacturing\ManufacturingServiceProvider;
 use Webkul\Partner\PartnerServiceProvider;
 use Webkul\Payment\PaymentServiceProvider;
@@ -37,6 +39,7 @@ return [
     AccountingServiceProvider::class,
     AccountServiceProvider::class,
     AnalyticServiceProvider::class,
+    BarcodeServiceProvider::class,
     BlogServiceProvider::class,
     ChatterServiceProvider::class,
     ContactServiceProvider::class,
@@ -44,6 +47,7 @@ return [
     FieldServiceProvider::class,
     InventoryServiceProvider::class,
     InvoiceServiceProvider::class,
+    MaintenanceServiceProvider::class,
     ManufacturingServiceProvider::class,
     PartnerServiceProvider::class,
     PaymentServiceProvider::class,

@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Support\Database\Factories\CurrencyFactory;
 
 class Currency extends Model
 {
-    use HasFactory;
+    use HasCustomFields, HasFactory;
 
     protected $fillable = [
         'name',
@@ -36,6 +37,16 @@ class Currency extends Model
     public function rates(): HasMany
     {
         return $this->hasMany(CurrencyRate::class);
+    }
+
+    public function companies(): HasMany
+    {
+        return $this->hasMany(Company::class);
+    }
+
+    public function isInUse(): bool
+    {
+        return $this->companies()->exists();
     }
 
     public function convert(float|int $fromAmount, Currency $toCurrency, ?Company $company = null, $date = null, bool $round = true): float

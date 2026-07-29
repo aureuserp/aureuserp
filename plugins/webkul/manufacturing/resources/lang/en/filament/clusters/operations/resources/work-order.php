@@ -46,6 +46,7 @@ return [
                 'add-action' => 'Add a line',
                 'columns'    => [
                     'product'    => 'Product',
+                    'from' => 'From',
                     'to-consume' => 'To Consume',
                     'quantity'   => 'Quantity',
                     'uom'        => 'UoM',

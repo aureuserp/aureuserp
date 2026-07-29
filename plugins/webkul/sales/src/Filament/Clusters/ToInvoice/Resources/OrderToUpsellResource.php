@@ -30,11 +30,9 @@ class OrderToUpsellResource extends QuotationResource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
-
-        $query = static::getModel()::applyPermissionScope($query);
-
-        return $query->where('invoice_status', InvoiceStatus::UP_SELLING);
+        return parent::getEloquentQuery()
+            ->applyPermissionScope()
+            ->where('invoice_status', InvoiceStatus::UP_SELLING);
     }
 
     public static function getPages(): array

@@ -21,6 +21,6 @@ class ManageVariants extends BaseManageVariants
             return false;
         }
 
-        return app(ProductSettings::class)->enable_variants;
+        return settings(ProductSettings::class)->enable_variants;
     }
 }

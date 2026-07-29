@@ -1,6 +1,24 @@
 <?php
 
+use ArPHP\I18N\Arabic;
 use Illuminate\Support\Number;
+use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\SettingsRegistry;
+use Webkul\Support\SupportServiceProvider;
+
+if (! function_exists('settings')) {
+    function settings(string $settings): object
+    {
+        return app(SettingsRegistry::class)->get($settings);
+    }
+}
+
+if (! function_exists('db_dialect')) {
+    function db_dialect(): DatabaseDialect
+    {
+        return app(DatabaseDialect::class);
+    }
+}
 
 if (! function_exists('money')) {
     function money(float|Closure $amount, string|Closure|null $currency = null, int $divideBy = 0, string|Closure|null $locale = null): string
@@ -13,6 +31,14 @@ if (! function_exists('money')) {
 
         if ($divideBy > 0) {
             $amount /= $divideBy;
+        }
+
+        if (SupportServiceProvider::isRtl()) {
+            return Number::currency($amount, $currency, 'en');
+        }
+
+        if (! str_contains($locale, '-u-nu-')) {
+            $locale .= '-u-nu-latn';
         }
 
         return Number::currency($amount, $currency, $locale);
@@ -56,6 +82,53 @@ if (! function_exists('money')) {
                 ),
             };
         }
+    }
+}
+
+if (! function_exists('prepare_rtl_html')) {
+    function prepare_rtl_html(string $html): string
+    {
+        $dom = new DOMDocument('1.0', 'UTF-8');
+
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
+        libxml_clear_errors();
+
+        $xpath = new DOMXPath($dom);
+
+        foreach ($xpath->query('//tr') as $row) {
+            $cells = [];
+
+            foreach ($row->childNodes as $child) {
+                if (! $child instanceof DOMElement || ! in_array(strtolower($child->nodeName), ['td', 'th'], true)) {
+                    continue;
+                }
+
+                if ($child->hasAttribute('colspan') || $child->hasAttribute('rowspan')) {
+                    continue 2;
+                }
+
+                $cells[] = $child;
+            }
+
+            for ($i = count($cells) - 1; $i > 0; $i--) {
+                $row->insertBefore($cells[$i], $cells[0]);
+            }
+        }
+
+        if (class_exists(Arabic::class)) {
+            $arabic = new Arabic;
+
+            foreach ($xpath->query('//text()[not(ancestor::style) and not(ancestor::script)]') as $node) {
+                if (trim($node->nodeValue) === '' || ! preg_match('/\p{Arabic}/u', $node->nodeValue)) {
+                    continue;
+                }
+
+                $node->nodeValue = $arabic->utf8Glyphs($node->nodeValue, PHP_INT_MAX, false);
+            }
+        }
+
+        return preg_replace('/<\?xml[^>]*>\s*/', '', $dom->saveHTML());
     }
 }
 

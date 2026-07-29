@@ -3,14 +3,18 @@
 namespace Webkul\Manufacturing\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Manufacturing\Database\Factories\WorkCenterProductivityLogFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class WorkCenterProductivityLog extends Model
 {
+    use HasFactory;
+
     protected $table = 'manufacturing_work_center_productivity_logs';
 
     protected $fillable = [
@@ -32,6 +36,11 @@ class WorkCenterProductivityLog extends Model
         'finished_at' => 'datetime',
         'duration'    => 'decimal:4',
     ];
+
+    protected static function newFactory(): WorkCenterProductivityLogFactory
+    {
+        return WorkCenterProductivityLogFactory::new();
+    }
 
     public function getModelTitle(): string
     {
@@ -81,7 +90,7 @@ class WorkCenterProductivityLog extends Model
 
             $productivityLog->company_id ??= $user?->default_company_id;
 
-            $productivityLog->description ??= "Time Tracking: {$user->name}";
+            $productivityLog->description ??= __('manufacturing::system.work-center-productivity-log.time-tracking', ['name' => $user->name]);
 
             $productivityLog->loss_type ??= $productivityLog->loss->loss_type ?? 'other';
 
@@ -173,7 +182,7 @@ class WorkCenterProductivityLog extends Model
             $underperformanceType = WorkCenterProductivityLoss::where('loss_type', 'performance')->first();
 
             if (! $underperformanceType) {
-                throw new \Exception(__("You need to define at least one un archive productivity loss in the category 'Performance'. Create from configuration settings."));
+                throw new \Exception(__('manufacturing::system.work-center-productivity-log.no-performance-productivity-loss'));
             }
 
             $underPerformanceProductivityLogs->each->update(['loss_id' => $underperformanceType->id]);

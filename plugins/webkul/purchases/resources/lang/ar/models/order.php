@@ -3,6 +3,11 @@
 return [
     'title'          => 'الطلب',
 
+    'titles'         => [
+        'quotation'      => 'طلب عرض سعر',
+        'purchase-order' => 'أمر الشراء',
+    ],
+
     'log-attributes' => [
         'state'             => 'الحالة',
         'untaxed-amount'    => 'المبلغ بدون ضريبة',

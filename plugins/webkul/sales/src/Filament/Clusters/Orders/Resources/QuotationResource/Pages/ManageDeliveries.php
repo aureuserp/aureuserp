@@ -2,14 +2,10 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables\Table;
 use Livewire\Livewire;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\PluginManager\Package;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationDeliveryResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -20,6 +16,8 @@ class ManageDeliveries extends ManageRelatedRecords
     protected static string $resource = QuotationResource::class;
 
     protected static string $relationship = 'operations';
+
+    protected static ?string $relatedResource = QuotationDeliveryResource::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
@@ -42,20 +40,5 @@ class ManageDeliveries extends ManageRelatedRecords
     public static function getNavigationBadge($parameters = []): ?string
     {
         return Livewire::current()->getRecord()->operations()->count();
-    }
-
-    public function table(Table $table): Table
-    {
-        return OperationResource::table($table)
-            ->recordActions([
-                ViewAction::make()
-                    ->url(fn ($record) => DeliveryResource::getUrl('view', ['record' => $record]))
-                    ->openUrlInNewTab(true),
-
-                EditAction::make()
-                    ->url(fn ($record) => DeliveryResource::getUrl('edit', ['record' => $record]))
-                    ->openUrlInNewTab(true),
-            ])
-            ->toolbarActions([]);
     }
 }

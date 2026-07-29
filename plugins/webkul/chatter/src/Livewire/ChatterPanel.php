@@ -28,6 +28,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Webkul\Chatter\Support\ChatterMentions;
 use Throwable;
 use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FileAction;
@@ -41,7 +42,6 @@ use Webkul\Chatter\Filament\Infolists\Components\Activities\TitleTextEntry as Ac
 use Webkul\Chatter\Filament\Infolists\Components\Messages\ContentTextEntry as MessageContentTextEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Messages\MessageRepeatableEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Messages\TitleTextEntry as MessageTitleTextEntry;
-use Webkul\Chatter\Models\Message;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
@@ -477,7 +477,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                     }),
                 Action::make('done')
                     ->icon('heroicon-o-check-circle')
-                    ->label('Done')
+                    ->label(__('chatter::livewire/chatter-panel.mark-as-done.actions.done.label'))
                     ->modalIcon('heroicon-o-check-circle')
                     ->action(function (array $data) use ($arguments) {
                         $this->processMessage($arguments['id'], $this->mountedActions[0]['data']['feedback'] ?? null);
@@ -499,7 +499,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     protected function processMessage(int $messageId, ?string $feedback): void
     {
-        $message = Message::find($messageId);
+        $message = $this->record->activities()->find($messageId);
 
         if (! $message) {
             return;
@@ -527,7 +527,11 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             ->label(__('chatter::livewire/chatter-panel.edit-activity.title'))
             ->mountUsing(function (Schema $schema, $arguments) {
                 $activityId = $arguments['id'] ?? null;
-                $record = Message::find($activityId);
+                $record = $this->record->activities()->find($activityId);
+
+                if (! $record) {
+                    return;
+                }
 
                 $schema->fill([
                     'activity_plan_id' => $record->activity_plan_id,
@@ -611,6 +615,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                                 ])->columns(2),
                             RichEditor::make('body')
                                 ->hiddenLabel()
+                                ->mentions([ChatterMentions::provider()])
                                 ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))?->category == 'meeting' : false)
                                 ->visible(fn (Get $get) => ! $get('activity_plan_id'))
                                 ->label(__('chatter::app.filament.actions.chatter.activity.form.type-your-message-here'))
@@ -623,7 +628,11 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             ->action(function (array $data, $arguments) {
                 $activityId = $arguments['id'] ?? null;
 
-                $record = Message::find($activityId);
+                $record = $this->record->activities()->find($activityId);
+
+                if (! $record) {
+                    return;
+                }
 
                 $record->update($data);
 
@@ -681,7 +690,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public function pinMessage(int $id): void
     {
-        $message = Message::find($id);
+        $message = $this->record->messages()->find($id);
 
         if (! $message) {
             return;

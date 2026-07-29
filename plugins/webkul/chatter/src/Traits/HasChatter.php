@@ -3,21 +3,307 @@
 namespace Webkul\Chatter\Traits;
 
 use Carbon\Carbon;
-use Exception;
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 use Webkul\Chatter\Models\Attachment;
 use Webkul\Chatter\Models\Follower;
 use Webkul\Chatter\Models\Message;
+use Webkul\Chatter\Relations\ChatterBelongsToMany;
 use Webkul\Partner\Models\Partner;
+use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
 
 trait HasChatter
 {
+    public static function bootHasChatter(): void
+    {
+        static::created(function (Model $model): void {
+            $model->addDefaultChatterFollowers();
+        });
+
+        static::updated(function (Model $model): void {
+            $model->syncResponsibleChatterFollower();
+        });
+    }
+
+    public function syncResponsibleChatterFollower(): void
+    {
+        foreach ($this->getChatterResponsibles() as $name) {
+            $column = $this->chatterResponsibleColumn($name);
+
+            if (! $column || ! $this->wasChanged($column)) {
+                continue;
+            }
+
+            try {
+                $partnerId = User::whereKey($this->getAttribute($column))->value('partner_id');
+
+                if ($partnerId && $partner = Partner::find($partnerId)) {
+                    $this->addFollower($partner);
+                }
+            } catch (Throwable $e) {
+                report($e);
+            }
+        }
+    }
+
+    public function getChatterResponsibleColumn(): ?string
+    {
+        return 'user_id';
+    }
+
+    public function chatterResponsibles(): array
+    {
+        return [];
+    }
+
+    public function getChatterResponsibles(): array
+    {
+        return array_values(array_filter(array_unique(array_merge(
+            [$this->getChatterResponsibleColumn()],
+            $this->chatterResponsibles(),
+        ))));
+    }
+
+    protected function chatterResponsibleRelation(string $name): ?Relation
+    {
+        if (! method_exists($this, $name)) {
+            return null;
+        }
+
+        try {
+            $relation = $this->{$name}();
+        } catch (Throwable $e) {
+            return null;
+        }
+
+        return $relation instanceof Relation ? $relation : null;
+    }
+
+    protected function chatterResponsibleColumn(string $name): ?string
+    {
+        $relation = $this->chatterResponsibleRelation($name);
+
+        if ($relation instanceof BelongsTo) {
+            return $relation->getForeignKeyName();
+        }
+
+        return $relation ? null : $name;
+    }
+
+    protected function isChatterResponsiblePivot(string $name): bool
+    {
+        return $this->chatterResponsibleRelation($name) instanceof BelongsToMany;
+    }
+
+    protected function chatterResponsibleUserIds(string $name): array
+    {
+        $relation = $this->chatterResponsibleRelation($name);
+
+        if ($relation instanceof BelongsToMany || $relation instanceof HasMany) {
+            $related = $relation->getRelated();
+
+            return $relation->pluck($related->getTable().'.'.$related->getKeyName())->all();
+        }
+
+        if ($relation instanceof BelongsTo) {
+            $value = $this->getAttribute($relation->getForeignKeyName());
+
+            return $value ? [(int) $value] : [];
+        }
+
+        if ($relation instanceof HasOne) {
+            $value = optional($this->{$name})->getKey();
+
+            return $value ? [(int) $value] : [];
+        }
+
+        $value = $this->getAttribute($name);
+
+        return $value ? [(int) $value] : [];
+    }
+
+    public function resolveChatterResponsibleUserIds(): array
+    {
+        $userIds = [];
+
+        foreach ($this->getChatterResponsibles() as $name) {
+            $userIds = array_merge($userIds, $this->chatterResponsibleUserIds($name));
+        }
+
+        return array_values(array_unique(array_filter($userIds)));
+    }
+
+    public function resolveChatterAssignedUserId(array $properties): ?int
+    {
+        if (empty($properties)) {
+            return null;
+        }
+
+        foreach ($this->getChatterResponsibles() as $name) {
+            if ($this->isChatterResponsiblePivot($name)) {
+                continue;
+            }
+
+            $label = $this->chatterResponsibleLabel($name);
+
+            if (! $label || ! array_key_exists($label, $properties)) {
+                continue;
+            }
+
+            $ids = $this->chatterResponsibleUserIds($name);
+
+            if (! empty($ids)) {
+                return (int) $ids[0];
+            }
+        }
+
+        return null;
+    }
+
+    protected function chatterResponsibleLabel(string $name): ?string
+    {
+        if (! method_exists($this, 'getLogAttributeLabels')) {
+            return null;
+        }
+
+        $labels = $this->getLogAttributeLabels();
+
+        if ($this->chatterResponsibleRelation($name)) {
+            return $labels[$name.'.name'] ?? null;
+        }
+
+        $relation = str_ends_with($name, '_id') ? substr($name, 0, -3) : $name;
+
+        return $labels[$relation.'.name'] ?? $labels[$name] ?? null;
+    }
+
+    protected function newBelongsToMany(
+        Builder $query,
+        Model $parent,
+        $table,
+        $foreignPivotKey,
+        $relatedPivotKey,
+        $parentKey,
+        $relatedKey,
+        $relationName = null,
+    ) {
+        return new ChatterBelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName);
+    }
+
+    public function syncChatterResponsibleFollowers(string $action, array $userIds): void
+    {
+        $userIds = array_values(array_filter(array_map('intval', $userIds)));
+
+        if (empty($userIds)) {
+            return;
+        }
+
+        try {
+            $users = User::with('partner')->whereIn('id', $userIds)->get();
+
+            if ($users->isEmpty()) {
+                return;
+            }
+
+            foreach ($users as $user) {
+                if (! $user->partner) {
+                    continue;
+                }
+
+                $action === 'attached'
+                    ? $this->addFollower($user->partner)
+                    : $this->removeFollower($user->partner);
+            }
+
+            if ($action === 'attached') {
+                $this->logChatterResponsibleAssignment($users);
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function logChatterResponsibleAssignment(Collection $users): void
+    {
+        $label = __('chatter::traits/has-chatter.responsible.label');
+
+        $this->addMessage([
+            'type'        => 'notification',
+            'event'       => 'updated',
+            'assigned_to' => $users->count() === 1 ? $users->first()->getKey() : null,
+            'body'        => method_exists($this, 'generateActivityDescription')
+                ? $this->generateActivityDescription('updated')
+                : $label,
+            'properties'  => [
+                $label => [
+                    'type'      => 'added',
+                    'new_value' => $users->pluck('name')->filter()->implode(', '),
+                ],
+            ],
+        ]);
+    }
+
+    public function getChatterResponsibleLabel(): ?string
+    {
+        $column = $this->getChatterResponsibleColumn();
+
+        if (! $column || ! method_exists($this, 'getLogAttributeLabels')) {
+            return null;
+        }
+
+        $labels = $this->getLogAttributeLabels();
+        $relation = str_ends_with($column, '_id') ? substr($column, 0, -3) : $column;
+
+        return $labels[$relation.'.name'] ?? $labels[$column] ?? null;
+    }
+
+    public function getChatterFollowerUserIds(): array
+    {
+        $userIds = [];
+
+        if ($creatorId = $this->getAttribute('creator_id')) {
+            $userIds[] = (int) $creatorId;
+        }
+
+        return array_values(array_unique(array_merge($userIds, $this->resolveChatterResponsibleUserIds())));
+    }
+
+    public function addDefaultChatterFollowers(): void
+    {
+        try {
+            $userIds = $this->getChatterFollowerUserIds();
+
+            if (empty($userIds)) {
+                return;
+            }
+
+            $partnerIds = User::whereIn('id', $userIds)
+                ->pluck('partner_id')
+                ->filter()
+                ->unique();
+
+            foreach ($partnerIds as $partnerId) {
+                if ($partner = Partner::find($partnerId)) {
+                    $this->addFollower($partner);
+                }
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
     public function messages(): MorphMany
     {
         $owner = $this->resolveChatterMessageOwner();
@@ -78,10 +364,10 @@ trait HasChatter
             $searchTerm = '%'.$filters['search'].'%';
 
             $query->where(function ($query) use ($searchTerm) {
-                $query->where('subject', 'like', $searchTerm)
-                    ->orWhere('body', 'like', $searchTerm)
-                    ->orWhere('summary', 'like', $searchTerm)
-                    ->orWhere('name', 'like', $searchTerm);
+                $query->whereLike('subject', $searchTerm)
+                    ->orWhereLike('body', $searchTerm)
+                    ->orWhereLike('summary', $searchTerm)
+                    ->orWhereLike('name', $searchTerm);
             });
         }
 
@@ -138,12 +424,23 @@ trait HasChatter
             'date_deadline' => $data['date_deadline'] ?? now(),
             'causer_type'   => $user?->getMorphClass(),
             'causer_id'     => $user?->id,
-            'company_id'    => $data['company_id'] ?? ($user->defaultCompany?->id ?? null),
+            'company_id'    => $data['company_id'] ?? ($user?->defaultCompany?->id ?? null),
         ], $data));
 
         $this->messages()->save($message);
 
         return $message;
+    }
+
+    public function addActivity(array $data): Message
+    {
+        $user = Filament::auth()->user() ?? Auth::user();
+
+        $data['assigned_to'] ??= $user?->id;
+
+        return $this->addMessage(array_merge($data, [
+            'type' => 'activity',
+        ]));
     }
 
     protected function resolveChatterMessageOwner(): Model
@@ -160,35 +457,74 @@ trait HasChatter
 
     public function chatterMessageOwner(): Model
     {
+        $baseClass = $this->resolveChatterModelClass();
+
+        if ($baseClass === get_class($this)) {
+            return $this;
+        }
+
+        $owner = new $baseClass;
+        $owner->setAttribute($owner->getKeyName(), $this->getKey());
+        $owner->exists = true;
+        $owner->syncOriginal();
+
+        return $owner;
+    }
+
+    public function resolveChatterModelClass(): string
+    {
         $class = get_class($this);
 
-        $parentWebkulClass = null;
-
-        while (($parent = get_parent_class($class)) !== false) {
-            if (str_starts_with($parent, 'Webkul\\')) {
-                $parentWebkulClass = $parent;
-
-                $class = $parent;
-
-                continue;
-            }
-
-            break;
+        while (
+            ($parent = get_parent_class($class)) !== false
+            && str_starts_with($parent, 'Webkul\\')
+        ) {
+            $class = $parent;
         }
 
-        if ($parentWebkulClass && $parentWebkulClass !== get_class($this)) {
-            try {
-                $parentModel = new $parentWebkulClass;
+        return $class;
+    }
 
-                $parentInstance = $parentModel->newQuery()->find($this->getKey());
+    public function getChatterMorphClass(): string
+    {
+        return $this->resolveChatterMessageOwner()->getMorphClass();
+    }
 
-                return $parentInstance ?? $this;
-            } catch (Exception) {
-                return $this;
+    public function getChatterResourceUrl(): string
+    {
+        try {
+            $panel = Filament::getCurrentPanel() ?? Filament::getPanel('admin');
+
+            if (! $panel) {
+                return '';
             }
+
+            foreach ($panel->getResources() as $resource) {
+                if ($resource::getModel() !== static::class) {
+                    continue;
+                }
+
+                $pages = $resource::getPages();
+
+                foreach (['view', 'edit'] as $page) {
+                    if (array_key_exists($page, $pages)) {
+                        return $resource::getUrl($page, ['record' => $this], panel: $panel->getId());
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            report($e);
         }
 
-        return $this;
+        return '';
+    }
+
+    protected function ownsChatterRecord(Model $record): bool
+    {
+        $owner = $this->resolveChatterMessageOwner();
+
+        return $record->messageable_id === $owner->getKey()
+            && $record->messageable_type === $owner->getMorphClass();
     }
 
     public function replyToMessage(Message $parentMessage, array $data): Message
@@ -204,12 +540,7 @@ trait HasChatter
     {
         $message = $this->{$type}()->find($messageId);
 
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            $message->messageable_id !== $owner->id
-            || $message->messageable_type !== get_class($owner)
-        ) {
+        if (! $message || ! $this->ownsChatterRecord($message)) {
             return false;
         }
 
@@ -218,12 +549,7 @@ trait HasChatter
 
     public function pinMessage(Message $message): bool
     {
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            $message->messageable_id !== $owner->id
-            || $message->messageable_type !== get_class($owner)
-        ) {
+        if (! $this->ownsChatterRecord($message)) {
             return false;
         }
 
@@ -234,12 +560,7 @@ trait HasChatter
 
     public function unpinMessage(Message $message): bool
     {
-        $owner = $this->resolveChatterMessageOwner();
-
-        if (
-            $message->messageable_id !== $owner->id
-            || $message->messageable_type !== get_class($owner)
-        ) {
+        if (! $this->ownsChatterRecord($message)) {
             return false;
         }
 
@@ -310,11 +631,7 @@ trait HasChatter
     {
         $attachment = $this->attachments()->find($attachmentId);
 
-        if (
-            ! $attachment ||
-            $attachment->messageable_id !== $this->id ||
-            $attachment->messageable_type !== get_class($this)
-        ) {
+        if (! $attachment || ! $this->ownsChatterRecord($attachment)) {
             return false;
         }
 

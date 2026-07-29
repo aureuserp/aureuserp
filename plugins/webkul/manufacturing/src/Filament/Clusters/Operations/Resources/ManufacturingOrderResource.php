@@ -38,6 +38,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\ComponentAttributeBag;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Location;
@@ -62,6 +63,7 @@ use Webkul\Manufacturing\Models\Product;
 use Webkul\Manufacturing\Models\WorkOrder;
 use Webkul\Manufacturing\Settings\OperationSettings;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -70,6 +72,9 @@ use Webkul\Support\Models\UOM;
 
 class ManufacturingOrderResource extends Resource
 {
+    use HasCustomFields;
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Order::class;
 
     protected static ?string $cluster = Operations::class;
@@ -393,6 +398,7 @@ class ManufacturingOrderResource extends Resource
                                             ->native(false)
                                             ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
                                             ->default(Auth::user()?->default_company_id),
+                                        ...static::getCustomFormFields(),
                                     ]),
                             ]),
                     ]),
@@ -407,7 +413,7 @@ class ManufacturingOrderResource extends Resource
         return $table
             ->reorderableColumns()
             ->defaultSort('id', 'desc')
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.columns.reference'))
                     ->searchable(),
@@ -486,7 +492,7 @@ class ManufacturingOrderResource extends Resource
                 TextColumn::make('state')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.columns.state'))
                     ->badge(),
-            ])
+            ]))
             ->groups([
                 TableGroup::make('state')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.groups.state')),
@@ -606,6 +612,7 @@ class ManufacturingOrderResource extends Resource
                                     ->schema([
                                         TextEntry::make('product.name')
                                             ->hiddenLabel()
+                                            ->formatStateUsing(fn (mixed $state, Move $record): string => $record->product?->trashed() ? $state.' (Deleted)' : $state)
                                             ->placeholder('—'),
                                         TextEntry::make('sourceLocation.full_name')
                                             ->hiddenLabel()
@@ -731,6 +738,7 @@ class ManufacturingOrderResource extends Resource
                                         TextEntry::make('company.name')
                                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.infolist.tabs.miscellaneous.entries.company'))
                                             ->placeholder('—'),
+                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ]),
                     ]),
@@ -975,7 +983,7 @@ class ManufacturingOrderResource extends Resource
                     },
                 )
                 ->default(fn (Get $get): ?int => Product::query()->withTrashed()->find($get('product_id'))?->uom_id)
-                ->placeholder('UoM')
+                ->placeholder(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.sections.general.fields.uom-placeholder'))
                 ->columnSpan(1),
         ])
             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.sections.general.fields.quantity'))
@@ -1106,7 +1114,7 @@ class ManufacturingOrderResource extends Resource
                             'heroicon-o-exclamation-triangle',
                             null,
                             (new ComponentAttributeBag)
-                                ->color(IconComponent::class, 'danger')
+                                ->color(IconComponent::class, 'warning')
                                 ->class(['fi-text-color-600'])
                                 ->merge([
                                     'style'         => 'color: var(--text)',
@@ -1122,8 +1130,8 @@ class ManufacturingOrderResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->visible(fn ($record): bool => $record instanceof Move && $record->id && $record->state !== MoveState::DRAFT)
-                    ->disabled(fn ($record): bool => $record instanceof Move && in_array($record->state, [MoveState::DONE, MoveState::CANCELED])),
+                    ->visible(fn (Get $get): bool => $get('../../state') !== ManufacturingOrderState::DRAFT->value)
+                    ->disabled(fn ($record): bool => ! ($record instanceof Move && $record->id) || in_array($record->state, [MoveState::DONE, MoveState::CANCELED])),
                 // ->suffixAction(fn (Move $record) => static::getMoveLinesAction($record)),
                 Select::make('uom_id')
                     ->hiddenLabel()
@@ -1165,7 +1173,7 @@ class ManufacturingOrderResource extends Resource
             ->compact()
             ->extraItemActions([
                 Action::make('openWorkOrder')
-                    ->tooltip('Open work order')
+                    ->tooltip(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.open-work-order.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (array $arguments, Get $get): ?string => filled($get("workOrders.{$arguments['item']}.id"))
                         ? WorkOrderResource::getUrl('view', [
@@ -1376,7 +1384,7 @@ class ManufacturingOrderResource extends Resource
                             }),
                         Action::make('button_done')
                             ->icon('heroicon-m-check-circle')
-                            ->label('Done')
+                            ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.done.label'))
                             ->color('primary')
                             ->size(Size::ExtraLarge)
                             ->databaseTransaction()
@@ -1561,11 +1569,11 @@ class ManufacturingOrderResource extends Resource
 
     public static function getWarehouseSettings(): WarehouseSettings
     {
-        return once(fn () => app(WarehouseSettings::class));
+        return settings(WarehouseSettings::class);
     }
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 }

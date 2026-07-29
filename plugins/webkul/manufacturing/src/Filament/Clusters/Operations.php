@@ -3,6 +3,7 @@
 namespace Webkul\Manufacturing\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Operations extends Cluster
 {
@@ -15,8 +16,8 @@ class Operations extends Cluster
         return __('manufacturing::filament/clusters/operations.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('manufacturing::filament/clusters/operations.navigation.group');
+        return NavigationGroup::Manufacturing;
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Manufacturing\Database\Factories\WorkOrderFactory;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
@@ -23,7 +24,7 @@ use Webkul\Support\Models\UOM;
 
 class WorkOrder extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'manufacturing_work_orders';
 
@@ -346,13 +347,13 @@ class WorkOrder extends Model implements Sortable
         $this->duration_per_unit = round($this->duration / max($this->quantity_produced, 1), 2);
 
         if ($this->expected_duration) {
-            $this->duration_percent = max(
+            $this->duration_percent = (int) round(max(
                 -2147483648,
                 min(
                     2147483647,
                     100 * ($this->expected_duration - $this->duration) / $this->expected_duration
                 )
-            );
+            ));
         } else {
             $this->duration_percent = 0;
         }
@@ -552,7 +553,7 @@ class WorkOrder extends Model implements Sortable
     public function start(bool $raiseOnInvalidState = false): void
     {
         if ($this->working_state === WorkCenterWorkingState::BLOCKED) {
-            throw new \Exception(__('Please unblock the work center to start the work order.'));
+            throw new \Exception(__('manufacturing::system.work-order.unblock-work-center'));
         }
 
         if ($this->productivityLogs->filter(fn ($time) => $time->user_id === Auth::id() && ! $time->finished_at)->isNotEmpty()) {
@@ -564,7 +565,7 @@ class WorkOrder extends Model implements Sortable
                 return;
             }
 
-            throw new \Exception(__('You cannot start a work order that is already done or cancelled'));
+            throw new \Exception(__('manufacturing::system.work-order.already-done-or-cancelled'));
         }
 
         if ($this->product_tracking === ProductTracking::SERIAL && $this->quantity_producing == 0) {
@@ -666,7 +667,7 @@ class WorkOrder extends Model implements Sortable
 
         foreach ($workCenters as $workCenter) {
             if (! $workCenter->calendar) {
-                throw new \Exception(__('There is no defined calendar on work center :name.', ['name' => $workCenter->name]));
+                throw new \Exception(__('manufacturing::system.work-order.no-calendar-on-work-center', ['name' => $workCenter->name]));
             }
 
             $expectedDuration = $this->work_center_id === $workCenter->id
@@ -694,7 +695,7 @@ class WorkOrder extends Model implements Sortable
         }
 
         if ($bestFinishedDate === null) {
-            throw new \Exception('Impossible to plan the work order. Please check the work center availabilities.');
+            throw new \Exception(__('manufacturing::system.work-order.impossible-to-plan'));
         }
 
         $leave = CalendarLeave::create([
@@ -747,7 +748,7 @@ class WorkOrder extends Model implements Sortable
         $this->endAll(collect([$this]));
 
         $vals = [
-            'quantity_produced' => $this->quantity_produced ?: ($this->quantity_producing ?: $this->quantity_production),
+            'quantity_produced' => (float) $this->quantity_produced ?: ((float) $this->quantity_producing ?: (float) $this->quantity_production),
             'state'             => WorkOrderState::DONE,
             'finished_at'       => $dateFinished,
             'costs_per_hour'    => $this->workCenter->costs_per_hour,
@@ -783,13 +784,13 @@ class WorkOrder extends Model implements Sortable
             $lossId = WorkCenterProductivityLoss::where('loss_type', 'productive')->first();
 
             if (! $lossId) {
-                throw new \Exception(__("You need to define at least one productivity loss in the category 'Productivity'. Create Configuration settings."));
+                throw new \Exception(__('manufacturing::system.work-order.no-productivity-loss'));
             }
         } else {
             $lossId = WorkCenterProductivityLoss::where('loss_type', 'performance')->first();
 
             if (! $lossId) {
-                throw new \Exception(__("You need to define at least one productivity loss in the category 'Performance'. Create Configuration settings."));
+                throw new \Exception(__('manufacturing::system.work-order.no-performance-loss'));
             }
         }
 

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveLineFactory;
-use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -76,7 +75,7 @@ class MoveLine extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -193,31 +192,93 @@ class MoveLine extends Model
         });
 
         static::updating(function ($moveLine) {
-            if ($moveLine->product->is_storable && $moveLine->state !== MoveState::DONE) {
-                if ($moveLine->isDirty('qty') || $moveLine->isDirty('uom_id')) {
-                    $newReservedQty = $moveLine->uom->computeQuantity($moveLine->qty, $moveLine->product->uom, roundingMethod: 'HALF-UP');
+            $values = $moveLine->getDirty();
 
-                    if (float_compare($newReservedQty, 0, precisionRounding: $moveLine->product->uom->rounding) < 0) {
-                        throw new \Exception('Reserving a negative quantity is not allowed.');
+            $triggers = ['source_location_id', 'destination_location_id', 'lot_id', 'package_id', 'result_package_id', 'uom_id'];
+
+            $updates = [];
+
+            foreach ($triggers as $key) {
+                if (array_key_exists($key, $values)) {
+                    $updates[$key] = $values[$key];
+                }
+            }
+
+            if (array_key_exists('result_package_id', $updates)) {
+                if ($moveLine->package_level_id) {
+                    if (! empty($updates['result_package_id'])) {
+                        $moveLine->packageLevel->update(['package_id' => $updates['result_package_id']]);
+                    } else {
+                        $packageLevel = $moveLine->packageLevel;
+
+                        $moveLine->package_level_id = null;
+
+                        if ($packageLevel->moveLines()->count() === 0) {
+                            $packageLevel->delete();
+                        }
                     }
-                } else {
-                    $newReservedQty = $moveLine->uom_qty;
                 }
+            }
 
-                if (! float_is_zero($moveLine->getOriginal('uom_qty'), precisionRounding: $moveLine->product->uom->rounding)) {
-                    $moveLine->synchronizeQuantity(-$moveLine->getOriginal('uom_qty'), $moveLine->sourceLocation, action: 'reserved');
-                }
+            if ((! empty($updates) && ! array_key_exists('result_package_id', $updates)) || array_key_exists('qty', $values)) {
+                if ($moveLine->product->is_storable && $moveLine->state !== MoveState::DONE) {
+                    if (array_key_exists('qty', $values) || array_key_exists('uom_id', $values)) {
+                        $newUOM = $moveLine->uom;
 
-                if (! $moveLine->move->shouldBypassReservation($moveLine->sourceLocation)) {
-                    $moveLine->synchronizeQuantity(
-                        $newReservedQty,
-                        $moveLine->sourceLocation,
-                        action: 'reserved',
-                        values: [
-                            'lot'     => $moveLine->lot,
-                            'package' => $moveLine->package,
-                        ]
-                    );
+                        if (isset($updates['uom_id'])) {
+                            $newUOM = UOM::find($updates['uom_id']);
+                        }
+
+                        $newReservedQty = $newUOM->computeQuantity(
+                            $values['qty'] ?? $moveLine->getOriginal('qty'),
+                            $moveLine->product->uom,
+                            roundingMethod: 'HALF-UP'
+                        );
+
+                        if (float_compare($newReservedQty, 0, precisionRounding: $moveLine->product->uom->rounding) < 0) {
+                            throw new \Exception(__('inventories::system.move-line.negative-quantity-not-allowed'));
+                        }
+                    } else {
+                        $newReservedQty = $moveLine->uom_qty;
+                    }
+
+                    $originalLocation = Location::find($moveLine->getOriginal('source_location_id')) ?? $moveLine->sourceLocation;
+
+                    $originalLot = Lot::find($moveLine->getOriginal('lot_id'));
+
+                    $originalPackage = Package::find($moveLine->getOriginal('package_id'));
+
+                    if (! float_is_zero($moveLine->getOriginal('uom_qty'), precisionRounding: $moveLine->product->uom->rounding)) {
+                        $moveLine->synchronizeQuantity(
+                            -$moveLine->getOriginal('uom_qty'),
+                            $originalLocation,
+                            action: 'reserved',
+                            values: [
+                                'lot'     => $originalLot,
+                                'package' => $originalPackage,
+                            ]
+                        );
+                    }
+
+                    $location = array_key_exists('source_location_id', $updates)
+                        ? Location::find($updates['source_location_id'])
+                        : $originalLocation;
+
+                    if (! $moveLine->move->shouldBypassReservation($location)) {
+                        $moveLine->synchronizeQuantity(
+                            $newReservedQty,
+                            $location,
+                            action: 'reserved',
+                            values: [
+                                'lot' => array_key_exists('lot_id', $updates)
+                                    ? Lot::find($updates['lot_id'])
+                                    : $originalLot,
+                                'package' => array_key_exists('package_id', $updates)
+                                    ? Package::find($updates['package_id'])
+                                    : $originalPackage,
+                            ]
+                        );
+                    }
                 }
             }
         });
@@ -233,13 +294,31 @@ class MoveLine extends Model
         });
 
         static::deleted(function ($moveLine) {
-            ProductQuantity::updateReservedQuantity(
-                product: $moveLine->product,
-                location: $moveLine->sourceLocation,
-                quantity: -$moveLine->uom_qty,
-                lot: $moveLine->lot,
-                package: $moveLine->package,
-            );
+            if (
+                ! float_is_zero($moveLine->uom_qty, precisionRounding: $moveLine->product->uom->rounding)
+                && $moveLine->move_id
+                && ! $moveLine->move->shouldBypassReservation($moveLine->location)
+            ) {
+                ProductQuantity::updateReservedQuantity(
+                    product: $moveLine->product,
+                    location: $moveLine->sourceLocation,
+                    quantity: -$moveLine->uom_qty,
+                    lot: $moveLine->lot,
+                    package: $moveLine->package,
+                );
+            }
+
+            if ($moveLine->package_level_id) {
+                $packageLevel = $moveLine->packageLevel;
+
+                if (
+                    $packageLevel
+                    && $packageLevel->moveLines()->count() === 0
+                    && $packageLevel->moves()->count() === 0
+                ) {
+                    $packageLevel->delete();
+                }
+            }
 
             $moveLine->move->computeQuantity();
 
@@ -320,9 +399,13 @@ class MoveLine extends Model
         $incomingDate = null,
         array $values = []
     ): array {
-        $lot = $values['lot'] ?? $this->lot;
+        $lot = array_key_exists('lot', $values)
+            ? $values['lot']
+            : $this->lot;
 
-        $package = $values['package'] ?? $this->package;
+        $package = array_key_exists('package', $values)
+            ? $values['package']
+            : $this->package;
 
         $availableQty = 0;
 
@@ -477,7 +560,7 @@ class MoveLine extends Model
 
         if ($this->product->tracking === ProductTracking::LOT) {
             $existingLot = Lot::where('product_id', $this->product_id)
-                ->where('name', $this->lot_name)
+                ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$this->lot_name])
                 ->first();
 
             if ($existingLot) {
@@ -499,14 +582,5 @@ class MoveLine extends Model
             'product_id' => $this->product_id,
             'company_id' => $this->company_id,
         ];
-    }
-
-    private function calculateReservedQty($location, $qty): int
-    {
-        if ($location->type === LocationType::INTERNAL && ! $location->is_stock_location) {
-            return $qty;
-        }
-
-        return 0;
     }
 }

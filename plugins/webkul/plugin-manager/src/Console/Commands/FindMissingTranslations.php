@@ -117,6 +117,8 @@ class FindMissingTranslations extends Command
 
     protected function processLangFolder(string $name, string $langRoot, ?string $targetLocale): void
     {
+        $langRoot = str_replace('\\', '/', $langRoot);
+
         $enPath = $langRoot.'/'.self::BASE_LOCALE;
 
         if (! File::isDirectory($enPath)) {
@@ -856,7 +858,7 @@ class FindMissingTranslations extends Command
 
         return collect(File::allFiles($dir))
             ->filter(fn ($file) => $file->getExtension() === 'php')
-            ->map(fn ($file) => $file->getPathname())
+            ->map(fn ($file) => str_replace('\\', '/', $file->getPathname()))
             ->sort()
             ->values();
     }

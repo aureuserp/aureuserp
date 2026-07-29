@@ -35,14 +35,18 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\CreatePage;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\EditPage;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ListPages;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ViewPage;
 use Webkul\Website\Models\Page as PageModel;
+use Webkul\Support\Enums\NavigationGroup;
 
 class PageResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = PageModel::class;
 
     protected static ?string $slug = 'website/pages';
@@ -56,9 +60,9 @@ class PageResource extends Resource
         return __('website::filament/admin/resources/page.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string | \UnitEnum
     {
-        return __('website::filament/admin/resources/page.navigation.group');
+        return NavigationGroup::Website;
     }
 
     public static function form(Schema $schema): Schema
@@ -110,6 +114,10 @@ class PageResource extends Resource
                                     ->inline(false),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columnSpanFull()
+                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -119,7 +127,7 @@ class PageResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('title')
                     ->label(__('website::filament/admin/resources/page.table.columns.title'))
                     ->searchable()
@@ -152,13 +160,13 @@ class PageResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('website::filament/admin/resources/page.table.columns.created-at'))
                     ->sortable(),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('website::filament/admin/resources/page.table.groups.created-at'))
                     ->date(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 Filter::make('is_published')
                     ->label(__('website::filament/admin/resources/page.table.filters.is-published')),
                 SelectFilter::make('creator_id')
@@ -166,7 +174,7 @@ class PageResource extends Resource
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
@@ -239,6 +247,7 @@ class PageResource extends Resource
                                 TextEntry::make('content')
                                     ->label(__('website::filament/admin/resources/page.form.sections.general.fields.content'))
                                     ->markdown(),
+                                ...static::getCustomInfolistEntries(),
                             ]),
 
                         Section::make(__('website::filament/admin/resources/page.form.sections.seo.title'))

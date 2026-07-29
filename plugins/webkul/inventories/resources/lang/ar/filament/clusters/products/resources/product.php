@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'table' => [
+        'columns' => [
+            'on-hand'    => 'المتاح',
+            'forecasted' => 'المتوقع',
+        ],
+    ],
+
     'navigation' => [
         'title' => 'المنتجات',
         'group' => 'المخزون',

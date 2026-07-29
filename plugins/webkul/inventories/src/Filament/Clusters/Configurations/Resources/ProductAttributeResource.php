@@ -33,7 +33,7 @@ class ProductAttributeResource extends AttributeResource
             return true;
         }
 
-        return app(ProductSettings::class)->enable_variants;
+        return settings(ProductSettings::class)->enable_variants;
     }
 
     public static function getNavigationGroup(): string

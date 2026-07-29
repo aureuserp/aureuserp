@@ -60,7 +60,7 @@ class InvoiceResource extends BaseInvoiceResource
         return parent::getProductRepeater()
             ->extraItemActions([
                 Action::make('openProduct')
-                    ->tooltip('Open product')
+                    ->tooltip(__('invoices::filament/clusters/customers/resources/invoice.actions.open-product.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
                         'record' => $get("products.{$arguments['item']}.product_id"),

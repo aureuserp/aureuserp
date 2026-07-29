@@ -10,6 +10,17 @@ return [
         ],
     ],
 
+    'products' => [
+        'columns' => [
+            'product'    => 'المنتج',
+            'quantity'   => 'الكمية',
+            'unit-price' => 'سعر الوحدة',
+            'taxes'      => 'الضرائب',
+            'discount'   => 'الخصم %',
+            'amount'     => 'المبلغ',
+        ],
+    ],
+
     'infolist' => [
         'settings' => [
             'entries' => [

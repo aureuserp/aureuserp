@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -45,34 +44,36 @@ return new class extends Migration
 
     private function dropForeignKeysOnBankAccountId(): void
     {
-        $constraintNames = $this->getForeignConstraintNames();
-
-        foreach ($constraintNames as $constraintName) {
-            DB::statement(sprintf(
-                'ALTER TABLE `accounts_journals` DROP FOREIGN KEY `%s`',
-                str_replace('`', '``', (string) $constraintName)
-            ));
+        foreach ($this->foreignKeysOnBankAccountId() as $foreignKey) {
+            Schema::table('accounts_journals', function (Blueprint $table) use ($foreignKey) {
+                $table->dropForeign($foreignKey['name']);
+            });
         }
     }
 
     private function hasForeignKeyTo(string $referencedTable): bool
     {
-        return DB::table('information_schema.KEY_COLUMN_USAGE')
-            ->where('TABLE_SCHEMA', DB::raw('DATABASE()'))
-            ->where('TABLE_NAME', 'accounts_journals')
-            ->where('COLUMN_NAME', 'bank_account_id')
-            ->where('REFERENCED_TABLE_NAME', $referencedTable)
-            ->exists();
+        foreach ($this->foreignKeysOnBankAccountId() as $foreignKey) {
+            if ($foreignKey['foreign_table'] === $referencedTable) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    private function getForeignConstraintNames(): Collection
+    /**
+     * Schema::getForeignKeys() is driver-agnostic (works on both MySQL and
+     * PostgreSQL), unlike hand-rolled information_schema.KEY_COLUMN_USAGE
+     * queries which relied on MySQL-only DATABASE().
+     *
+     * @return list<array{name: string|null, columns: list<string>, foreign_table: string}>
+     */
+    private function foreignKeysOnBankAccountId(): array
     {
-        return DB::table('information_schema.KEY_COLUMN_USAGE')
-            ->select('CONSTRAINT_NAME')
-            ->where('TABLE_SCHEMA', DB::raw('DATABASE()'))
-            ->where('TABLE_NAME', 'accounts_journals')
-            ->where('COLUMN_NAME', 'bank_account_id')
-            ->whereNotNull('REFERENCED_TABLE_NAME')
-            ->pluck('CONSTRAINT_NAME');
+        return array_values(array_filter(
+            Schema::getForeignKeys('accounts_journals'),
+            fn (array $foreignKey) => in_array('bank_account_id', $foreignKey['columns'], true)
+        ));
     }
 };

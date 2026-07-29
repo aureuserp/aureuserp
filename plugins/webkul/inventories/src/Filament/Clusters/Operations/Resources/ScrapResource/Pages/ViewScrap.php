@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
@@ -24,6 +25,20 @@ class ViewScrap extends ViewRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
+            Action::make('validate')
+                ->label(__('inventories::filament/clusters/operations/resources/scrap/pages/view-scrap.header-actions.validate.label'))
+                ->color('gray')
+                ->action(function (Scrap $record) {
+                    if (! $record->validate()) {
+                        Notification::make()
+                            ->success()
+                            ->title(__('inventories::filament/clusters/operations/resources/scrap/pages/view-scrap.header-actions.validate.notification.warning.title'))
+                            ->body(__('inventories::filament/clusters/operations/resources/scrap/pages/view-scrap.header-actions.validate.notification.warning.body'))
+                            ->warning()
+                            ->send();
+                    }
+                })
+                ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE)
                 ->action(function (DeleteAction $action, Scrap $record) {

@@ -14,6 +14,7 @@ use Webkul\Inventory\Database\Factories\MoveFactory;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -48,6 +49,7 @@ class Move extends Model
         'is_picked',
         'is_scraped',
         'is_inventory',
+        'additional',
         'is_refund',
         'deadline',
         'reservation_date',
@@ -77,6 +79,7 @@ class Move extends Model
 
     protected $casts = [
         'state'            => MoveState::class,
+        'procure_method'   => ProcureMethod::class,
         'quantity'         => 'float',
         'product_qty'      => 'float',
         'product_uom_qty'  => 'float',
@@ -84,6 +87,7 @@ class Move extends Model
         'is_picked'        => 'boolean',
         'is_scraped'       => 'boolean',
         'is_inventory'     => 'boolean',
+        'additional'       => 'boolean',
         'is_refund'        => 'boolean',
         'reservation_date' => 'date',
         'scheduled_at'     => 'datetime',
@@ -93,11 +97,18 @@ class Move extends Model
 
     protected array $context = [];
 
+    public static array $globalContext = [];
+
     public function setContext(array $context)
     {
         $this->context = array_merge($this->context, $context);
 
         return $this;
+    }
+
+    public function getContext(string $key, $default = null)
+    {
+        return $this->context[$key] ?? $default;
     }
 
     public function isPurchaseReturn()
@@ -135,7 +146,7 @@ class Move extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -215,7 +226,7 @@ class Move extends Model
 
     public function lines(): HasMany
     {
-        return $this->hasMany(MoveLine::class);
+        return $this->hasMany(MoveLine::class)->orderBy('id');
     }
 
     public function moveOrigins(): BelongsToMany
@@ -317,6 +328,34 @@ class Move extends Model
             $move->company_id ??= $move->operation?->company_id ?? $move->operationType?->company_id;
 
             $move->state ??= MoveState::DRAFT;
+
+            $skipAdditional = static::$globalContext['skip_additional'] ?? true;
+
+            static::$globalContext = [];
+
+            $move->setContext(['skip_additional' => $skipAdditional]);
+
+            if ($move->operation && ! $skipAdditional) {
+                if ($move->operation->state === OperationState::DONE) {
+                    $move->state = MoveState::DONE;
+
+                    $move->additional = true;
+                } elseif (! in_array($move->operation->state, [
+                    OperationState::DRAFT,
+                    OperationState::DONE,
+                    OperationState::CANCELED,
+                ])) {
+                    $move->additional = true;
+                }
+            }
+        });
+
+        static::created(function ($move) {
+            if ($move->getContext('skip_additional', true) || ! $move->additional) {
+                return;
+            }
+
+            $move->operation->autoConfirm();
         });
 
         static::saving(function ($move) {
@@ -398,8 +437,47 @@ class Move extends Model
                 $move->lines()->get()->each(fn ($moveLine) => $moveLine->update(['is_picked' => $move->is_picked]));
             }
 
+            if ($move->wasChanged('source_location_id')) {
+                $move->load('sourceLocation');
+
+                foreach ($move->lines()->get() as $moveLine) {
+                    if ($moveLine->sourceLocation->isChildOf($move->sourceLocation)) {
+                        continue;
+                    }
+
+                    $move->procure_method = ProcureMethod::MAKE_TO_STOCK;
+
+                    $move->saveQuietly();
+
+                    $move->moveOrigins()->detach();
+
+                    $moveLine->delete();
+                }
+
+                $receiptMovesToReassign->push($move->refresh());
+            }
+
+            if ($move->wasChanged('destination_location_id')) {
+                // TODO: apply putaway rules
+            }
+
+            if (
+                $move->wasChanged('source_location_id')
+                || $move->wasChanged('destination_location_id')
+            ) {
+                $move->load('sourceLocation', 'destinationLocation');
+
+                $warehouseId = $move->sourceLocation?->warehouse_id ?? $move->destinationLocation?->warehouse_id;
+
+                if ($warehouseId !== $move->warehouse_id) {
+                    $move->warehouse_id = $warehouseId;
+
+                    $move->saveQuietly();
+                }
+            }
+
             if ($receiptMovesToReassign->isNotEmpty()) {
-                InventoryFacade::assignMoves($receiptMovesToReassign);
+                InventoryFacade::assignMoves($receiptMovesToReassign->unique('id'));
             }
         });
 
@@ -425,7 +503,18 @@ class Move extends Model
 
     public function computeProductQty()
     {
-        $this->product_qty ??= $this->uom?->computeQuantity($this->product_uom_qty, $this->product->uom, roundingMethod: 'HALF-UP');
+        if (
+            $this->product_qty !== null
+            && ! $this->isDirty(['product_uom_qty', 'uom_id', 'product_id'])
+        ) {
+            return;
+        }
+
+        if ($this->product_uom_qty === null) {
+            return;
+        }
+
+        $this->product_qty = $this->uom?->computeQuantity($this->product_uom_qty, $this->product->uom, roundingMethod: 'HALF-UP');
     }
 
     public function computeProductUOMQty()
@@ -575,7 +664,7 @@ class Move extends Model
         $this->setQuantityDonePrepareVals($quantity);
     }
 
-    public function setQuantityDonePrepareVals(float $qty): void
+    public function setQuantityDonePrepareVals(float $qty)
     {
         $toDelete = collect();
 
@@ -583,35 +672,35 @@ class Move extends Model
 
         $toCreate = [];
 
-        foreach ($this->lines as $ml) {
-            $mlQty = $ml->qty;
+        foreach ($this->lines as $moveLine) {
+            $moveLineQty = $moveLine->qty;
 
             if (float_is_zero($qty, precisionRounding: $this->uom->rounding)) {
-                $toDelete->push($ml->id);
+                $toDelete->push($moveLine->id);
 
                 continue;
             }
 
-            if (float_compare($mlQty, 0, precisionRounding: $ml->uom->rounding) <= 0) {
+            if (float_compare($moveLineQty, 0, precisionRounding: $moveLine->uom->rounding) <= 0) {
                 continue;
             }
 
-            if ($ml->uom->id !== $this->uom->id) {
-                $mlQty = $ml->uom->computeQuantity($mlQty, $this->uom, round: false);
+            if ($moveLine->uom->id !== $this->uom->id) {
+                $moveLineQty = $moveLine->uom->computeQuantity($moveLineQty, $this->uom, round: false);
             }
 
-            $takenQty = min($qty, $mlQty);
+            $takenQty = min($qty, $moveLineQty);
 
-            if ($ml->uom->id !== $this->uom->id) {
-                $takenQty = $this->uom->computeQuantity($takenQty, $ml->uom, round: false);
+            if ($moveLine->uom->id !== $this->uom->id) {
+                $takenQty = $this->uom->computeQuantity($takenQty, $moveLine->uom, round: false);
             }
 
-            $takenQty = float_round($takenQty, precisionRounding: $ml->uom->rounding);
+            $takenQty = float_round($takenQty, precisionRounding: $moveLine->uom->rounding);
 
-            $toUpdate[] = ['id' => $ml->id, 'qty' => $takenQty];
+            $toUpdate[] = ['id' => $moveLine->id, 'qty' => $takenQty];
 
-            if ($ml->uom->id !== $this->uom->id) {
-                $takenQty = $ml->uom->computeQuantity($takenQty, $this->uom, round: false);
+            if ($moveLine->uom->id !== $this->uom->id) {
+                $takenQty = $moveLine->uom->computeQuantity($takenQty, $this->uom, round: false);
             }
 
             $qty -= $takenQty;
@@ -647,9 +736,15 @@ class Move extends Model
             $moveLine->update(['qty' => $update['qty']]);
         }
 
+        $newMoveLines = collect();
+
         foreach ($toCreate as $vals) {
-            $this->lines()->create($vals);
+            $moveLine = $this->lines()->create($vals);
+
+            $newMoveLines->push($moveLine);
         }
+
+        return $newMoveLines;
     }
 
     public function computeQuantity()
@@ -686,11 +781,11 @@ class Move extends Model
     public function split(float $qty, ?int $restrictPartnerId = null): array
     {
         if (in_array($this->state, [MoveState::DONE, MoveState::CANCELED])) {
-            throw new \Exception(__('You cannot split a stock move that has been set to \'Done\' or \'Cancel\'.'));
+            throw new \Exception(__('inventories::system.move.split-done-or-cancel'));
         }
 
         if ($this->state === MoveState::DRAFT) {
-            throw new \Exception(__('You cannot split a draft move. It needs to be confirmed first.'));
+            throw new \Exception(__('inventories::system.move.split-draft'));
         }
 
         if (float_is_zero($qty, precisionRounding: $this->product->uom->rounding)) {
@@ -751,7 +846,7 @@ class Move extends Model
             'procure_method'          => $this->procure_method,
             'price_unit'              => $this->price_unit,
             'deadline'                => $this->deadline,
-            'rule_id'                 => null,
+            // 'rule_id'                 => null,
             'origin_returned_move_id' => $this->origin_returned_move_id,
             'move_origin_ids'         => $this->moveOrigins->pluck('id')->all(),
             'move_destination_ids'    => $this->moveDestinations
@@ -1104,7 +1199,7 @@ class Move extends Model
             }
 
             if ($toUpdate && float_compare($quantity, $uomQuantityBackToProductUom, precisionRounding: $rounding) === 0) {
-                $toUpdate->update(['uom_qty' => $toUpdate->uom_qty + $uomQuantity]);
+                $toUpdate->update(['qty' => $toUpdate->qty + $uomQuantity]);
             } else {
                 if (
                     $this->product->tracking === ProductTracking::SERIAL
@@ -1145,7 +1240,8 @@ class Move extends Model
 
         $toWarehouse = $this->destinationLocation->warehouse ?? null;
 
-        return $this->operationType?->type === OperationTypeEnum::OUTGOING
+        return $this->operationType?->type === OperationTypeEnum::INTERNAL
+            || $this->operationType?->type === OperationTypeEnum::OUTGOING
             || $this->operationType?->type === OperationTypeEnum::MANUFACTURE
             || (
                 $fromWarehouse
@@ -1246,10 +1342,10 @@ class Move extends Model
 
         $forecastExpectedDate = false;
 
-        if (! $this->product->is_storable) {
+        if (! $this->product?->is_storable) {
             return [
-                'forecast_availability'  => $this->product_qty,
-                'forecast_expected_date' => false,
+                $this->product_qty,
+                false,
             ];
         }
 
@@ -1270,13 +1366,18 @@ class Move extends Model
             } elseif ($this->state === MoveState::DRAFT) {
                 $key = $keyVirtualAvailable();
 
-                $product = Product::find($this->product_id);
+                $product = Product::withTrashed()->find($this->product_id);
 
-                $product->setContext(['to_date' => Carbon::parse($key[1])]);
+                $product->setContext([
+                    'warehouse_id' => $key[0],
+                    'to_date'      => Carbon::parse($key[1]),
+                ]);
 
-                $virtualAvailable = $product->computeQuantities()['virtual_available_qty'] ?? 0;
+                $freeQty = $product->computeQuantities()['virtual_available_qty'] ?? 0;
 
-                $forecastAvailability = $virtualAvailable - $this->product_qty;
+                $forecastAvailability = float_compare($freeQty, $this->product_qty, precisionRounding: $this->product->uom->rounding) >= 0
+                    ? $freeQty
+                    : $freeQty - $this->product_qty;
             } elseif (in_array($this->state, [MoveState::WAITING, MoveState::CONFIRMED, MoveState::PARTIALLY_ASSIGNED])) {
                 $warehouseId = $this->sourceLocation->warehouse_id;
 
@@ -1293,9 +1394,12 @@ class Move extends Model
         } elseif ($this->operationType?->type === OperationTypeEnum::INCOMING) {
             $key = $keyVirtualAvailable(incoming: true);
 
-            $product = Product::find($this->product_id);
+            $product = Product::withTrashed()->find($this->product_id);
 
-            $product->setContext(['to_date' => Carbon::parse($key[1])]);
+            $product->setContext([
+                'warehouse_id' => $key[0],
+                'to_date'      => Carbon::parse($key[1]),
+            ]);
 
             $forecastAvailability = $product->computeQuantities()['virtual_available_qty'] ?? 0;
 
@@ -1308,5 +1412,46 @@ class Move extends Model
             $forecastAvailability,
             $forecastExpectedDate,
         ];
+    }
+
+    public function checkQuantity()
+    {
+        $locationIds = $this->destinationLocation->getInternalChildLocations()->pluck('id')->unique()->all();
+
+        $quantities = ProductQuantity::where('product_id', $this->product_id)
+            ->whereIn('location_id', $locationIds)
+            ->whereIn('lot_id', $this->lines->pluck('lot_id')->unique()->filter()->all())
+            ->get();
+
+        $serialNumberQuantities = $quantities->filter(
+            fn ($quantity) => $quantity->product->tracking === ProductTracking::SERIAL
+                && $quantity->location->type !== LocationType::INVENTORY
+                && $quantity->lot_id
+        );
+
+        if ($serialNumberQuantities->isEmpty()) {
+            return;
+        }
+
+        $locationIds = $serialNumberQuantities->flatMap(
+            fn ($quantity) => $quantity->location->getInternalChildLocations()->pluck('id')
+        )->unique()->all();
+
+        $groups = ProductQuantity::whereIn('product_id', $serialNumberQuantities->pluck('product_id')->unique()->all())
+            ->whereIn('location_id', $locationIds)
+            ->whereIn('lot_id', $serialNumberQuantities->pluck('lot_id')->unique()->filter()->all())
+            ->groupBy('product_id', 'location_id', 'lot_id')
+            ->selectRaw('product_id, location_id, lot_id, SUM(quantity) as qty')
+            ->with(['product', 'lot'])
+            ->get();
+
+        foreach ($groups as $group) {
+            if (float_compare(abs($group->qty), 1, precisionRounding: $group->product->uom->rounding) > 0) {
+                throw new \Exception(__('inventories::system.move.serial-already-assigned', [
+                    'product'       => $group->product->name,
+                    'serial_number' => $group->lot->name,
+                ]));
+            }
+        }
     }
 }

@@ -186,7 +186,7 @@ class Product extends BaseProduct
 
         if ($rule && $seenRules->contains(fn ($seenRule) => $seenRule->id === $rule->id)) {
             throw new \Exception(__(
-                "Invalid rule's configuration, the following rule causes an endless loop: :name",
+                'inventories::system.product.endless-loop-rule',
                 ['name' => $rule->name]
             ));
         }

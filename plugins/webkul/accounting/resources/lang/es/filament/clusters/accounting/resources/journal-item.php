@@ -1,0 +1,97 @@
+<?php
+
+return [
+    'title' => 'Apuntes contables',
+
+    'navigation' => [
+        'title' => 'Apuntes contables',
+    ],
+
+    'table' => [
+        'total'   => 'Total',
+        'columns' => [
+            'number'          => 'Número',
+            'date'            => 'Fecha',
+            'account'         => 'Cuenta',
+            'partner'         => 'Contacto',
+            'label'           => 'Etiqueta',
+            'reference'       => 'Referencia',
+            'journal'         => 'Diario',
+            'debit'           => 'Débito',
+            'credit'          => 'Crédito',
+            'balance'         => 'Saldo',
+            'currency'        => 'Moneda',
+            'company'         => 'Empresa',
+            'status'          => 'Estado',
+            'amount-currency' => 'Importe en moneda',
+            'amount-residual' => 'Importe residual',
+            'reconciled'      => 'Conciliado',
+            'due-date'        => 'Fecha de vencimiento',
+        ],
+
+        'groups' => [
+            'journal-entry' => 'Asiento contable',
+            'account'       => 'Cuenta',
+            'partner'       => 'Contacto',
+            'journal'       => 'Diario',
+            'date'          => 'Fecha',
+            'invoice-date'  => 'Fecha de factura',
+            'matching'      => 'Conciliación',
+            'status'        => 'Estado',
+            'company'       => 'Empresa',
+        ],
+
+        'filters' => [
+            'number'          => 'Número',
+            'label'           => 'Etiqueta',
+            'reference'       => 'Referencia',
+            'matching-number' => 'Número de conciliación',
+            'account'         => 'Cuenta',
+            'partner'         => 'Contacto',
+            'journal'         => 'Diario',
+            'currency'        => 'Moneda',
+            'company'         => 'Empresa',
+            'date'            => 'Fecha',
+            'invoice-date'    => 'Fecha de factura',
+            'due-date'        => 'Fecha de vencimiento',
+            'discount-date'   => 'Fecha de descuento',
+            'debit'           => 'Débito',
+            'credit'          => 'Crédito',
+            'balance'         => 'Saldo',
+            'amount-currency' => 'Importe en moneda',
+            'amount-residual' => 'Importe residual',
+            'quantity'        => 'Cantidad',
+            'price-unit'      => 'Precio unitario',
+            'discount'        => 'Descuento',
+            'reconciled'      => 'Conciliado',
+            'imported'        => 'Importado',
+            'down-payment'    => 'Anticipo',
+            'created-at'      => 'Creado el',
+            'updated-at'      => 'Actualizado el',
+        ],
+
+        'saved-filters' => [
+            'label'         => 'Filtros guardados',
+            'unposted'      => 'Sin contabilizar',
+            'posted'        => 'Contabilizado',
+            'to-check'      => 'Por verificar',
+            'unreconciled'  => 'Sin conciliar',
+            'with-residual' => 'Con residual',
+            'sales'         => 'Ventas',
+            'purchases'     => 'Compras',
+            'bank'          => 'Banco',
+            'cash'          => 'Efectivo',
+            'credit'        => 'Crédito',
+            'miscellaneous' => 'Varios',
+            'payable'       => 'Por pagar',
+            'receivable'    => 'Por cobrar',
+            'pl-accounts'   => 'Cuentas de pérdidas y ganancias',
+        ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Exportar',
+            ],
+        ],
+    ],
+];

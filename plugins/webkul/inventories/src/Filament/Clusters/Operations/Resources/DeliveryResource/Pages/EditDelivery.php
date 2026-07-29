@@ -14,18 +14,17 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\Delivery;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditDelivery extends EditRecord
 {
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
     use HasRepeaterColumnManager;
 
     protected static string $resource = DeliveryResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected function getSavedNotification(): Notification
     {
@@ -79,11 +78,14 @@ class EditDelivery extends EditRecord
                         ->title(__('inventories::filament/clusters/operations/resources/delivery/pages/edit-delivery.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/delivery/pages/edit-delivery.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
     }
 
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

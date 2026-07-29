@@ -39,7 +39,8 @@ class ListOperations extends ListRecords
     {
         return [
             'all' => Tab::make(__('manufacturing::filament/clusters/configurations/resources/operation/pages/list-operations.tabs.all'))
-                ->badge(Operation::count()),
+                ->badge(Operation::count())
+                ->modifyQueryUsing(fn (Builder $query) => $query->withoutTrashed()),
             'archived' => Tab::make(__('manufacturing::filament/clusters/configurations/resources/operation/pages/list-operations.tabs.archived'))
                 ->badge(Operation::onlyTrashed()->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->onlyTrashed()),

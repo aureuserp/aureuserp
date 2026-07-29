@@ -51,7 +51,11 @@ class ValidateAction extends Action
                     }),
             ] : [])
             ->action(function (Operation $record, Component $livewire): void {
-                $this->executeDoneTransfer($record, $livewire);
+                $this->executeDoneTransfer(
+                    $record,
+                    $livewire,
+                    cancelBackOrder: $record->operationType->create_backorder === CreateBackorder::NEVER,
+                );
             })
             ->hidden(function (Operation $record) {
                 return in_array($record->state, [

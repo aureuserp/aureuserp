@@ -23,6 +23,7 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('product.uom.name')
                     ->label(__('inventories::filament/clusters/products/resources/package/relation-managers/products.table.columns.unit-of-measure')),
             ])
-            ->paginated(false);
+            ->paginated(false)
+            ->modifyQueryUsing(fn ($query) => $query->where('location_id', $this->ownerRecord->location_id));
     }
 }

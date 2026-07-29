@@ -46,6 +46,7 @@ return [
                 'add-action' => 'إضافة سطر',
                 'columns'    => [
                     'product'    => 'المنتج',
+                    'from'       => 'من',
                     'to-consume' => 'للاستهلاك',
                     'quantity'   => 'الكمية',
                     'uom'        => 'وحدة القياس',

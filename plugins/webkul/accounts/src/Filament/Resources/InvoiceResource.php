@@ -59,6 +59,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -79,6 +80,7 @@ use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -91,6 +93,7 @@ use Webkul\Support\Models\UOM;
 
 class InvoiceResource extends Resource
 {
+    use HasCustomFields;
     use HasResourcePermissionQuery;
 
     protected static ?string $model = Invoice::class;
@@ -122,14 +125,7 @@ class InvoiceResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if (
-                            $record
-                            && $record->state != MoveState::CANCEL->value
-                        ) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -344,7 +340,7 @@ class InvoiceResource extends Resource
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.fields.delivery-date'))
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ])
-                                    ->columns(1),
+                                    ->columns(2),
 
                                 Fieldset::make(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.title'))
                                     ->schema([
@@ -379,7 +375,12 @@ class InvoiceResource extends Resource
                                         TextInput::make('incoterm_location')
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
                                         Select::make('preferred_payment_method_line_id')
-                                            ->relationship('paymentMethodLine', 'name')
+                                            ->relationship(
+                                                name: 'paymentMethodLine',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn ($query) => $query->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::RECEIVE)),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
@@ -405,9 +406,10 @@ class InvoiceResource extends Resource
                                             ->inline(false)
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.checked')),
                                     ])
-                                    ->columns(1),
+                                    ->columns(2),
                             ])
                             ->columns(2),
+
                         Tab::make(__('accounts::filament/resources/invoice.form.tabs.term-and-conditions.title'))
                             ->icon('heroicon-o-clipboard-document-list')
                             ->schema([
@@ -415,6 +417,10 @@ class InvoiceResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -424,7 +430,7 @@ class InvoiceResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/invoice.table.columns.number'))
@@ -434,6 +440,7 @@ class InvoiceResource extends Resource
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/invoice.table.columns.state'))
                     ->sortable()
+                    ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('creator.name')
                     ->placeholder('-')
@@ -567,7 +574,7 @@ class InvoiceResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/invoice.table.groups.name'))
@@ -609,7 +616,7 @@ class InvoiceResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -702,7 +709,7 @@ class InvoiceResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounts::filament/resources/invoice.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
@@ -752,11 +759,7 @@ class InvoiceResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if ($record->state != MoveState::CANCEL->value) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -1019,7 +1022,7 @@ class InvoiceResource extends Resource
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.invoice.entries.delivery-date'))
                                             ->date(),
                                     ])
-                                    ->columns(1),
+                                    ->columns(2),
 
                                 Fieldset::make(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.title'))
                                     ->schema([
@@ -1038,7 +1041,7 @@ class InvoiceResource extends Resource
                                         TextEntry::make('cashRounding.name')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.entries.cash-rounding')),
-                                        TextEntry::make('paymentMethodLine.name')
+                                        TextEntry::make('paymentMethodLine.display_name')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.entries.payment-method')),
                                         IconEntry::make('auto_post')
@@ -1049,7 +1052,7 @@ class InvoiceResource extends Resource
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.entries.checked'))
                                             ->boolean(),
                                     ])
-                                    ->columns(1),
+                                    ->columns(2),
                             ])
                             ->columns(2),
 
@@ -1061,6 +1064,10 @@ class InvoiceResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 
@@ -1111,7 +1118,7 @@ class InvoiceResource extends Resource
                 TableColumn::make('uom_id')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit'))
                     ->resizable()
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
+                    ->visible(fn () => settings(ProductSettings::class)->enable_uom)
                     ->toggleable(),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit-price'))

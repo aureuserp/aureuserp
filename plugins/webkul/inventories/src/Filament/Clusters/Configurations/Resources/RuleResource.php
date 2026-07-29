@@ -35,7 +35,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\HtmlString;
+use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\RuleAction;
+use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\ManageRules;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers\RulesRelationManager;
@@ -47,6 +49,7 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Filament\Resources\PartnerResource;
+use Webkul\PluginManager\Package;
 
 class RuleResource extends Resource
 {
@@ -68,7 +71,7 @@ class RuleResource extends Resource
             return true;
         }
 
-        return app(WarehouseSettings::class)->enable_multi_steps_routes;
+        return settings(WarehouseSettings::class)->enable_multi_steps_routes;
     }
 
     public static function getNavigationGroup(): string
@@ -103,7 +106,8 @@ class RuleResource extends Resource
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.action'))
                                                     ->required()
                                                     ->options(RuleAction::class)
-                                                    ->default(RuleAction::PULL->value)
+                                                    ->disableOptionWhen(fn (string $value): bool => $value === RuleAction::MANUFACTURE->value && ! Package::isPluginInstalled('manufacturing'))
+                                                    ->default(RuleAction::PULL)
                                                     ->selectablePlaceholder(false)
                                                     ->live(),
                                                 Select::make('operation_type_id')
@@ -139,6 +143,20 @@ class RuleResource extends Resource
                                                     ->searchable()
                                                     ->preload()
                                                     ->required(),
+                                                Select::make('procure_method')
+                                                    ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.supply-method'))
+                                                    ->required()
+                                                    ->options(ProcureMethod::class)
+                                                    ->selectablePlaceholder(false)
+                                                    ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.supply-method-hint-tooltip')))
+                                                    ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PUSH),
+                                                Select::make('auto')
+                                                    ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.automatic-move'))
+                                                    ->required()
+                                                    ->options(RuleAuto::class)
+                                                    ->selectablePlaceholder(false)
+                                                    ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.automatic-move-hint-tooltip')))
+                                                    ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PULL),
                                             ]),
 
                                         Group::make()
@@ -170,7 +188,7 @@ class RuleResource extends Resource
 
                                                         $action = ($get('action') instanceof RuleAction)
                                                             ? $get('action')
-                                                            : RuleAction::tryFrom($get('action') ?? RuleAction::PULL->value);
+                                                            : RuleAction::tryFrom($get('action')?->value ?? RuleAction::PULL->value);
 
                                                         return match ($action) {
                                                             RuleAction::PULL        => new HtmlString($pullMessage),
@@ -198,7 +216,7 @@ class RuleResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm(fn (Schema $schema): Schema => PartnerResource::form($schema))
-                                    ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PUSH->value),
+                                    ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PUSH),
                                 TextInput::make('delay')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.lead-time'))
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.lead-time-hint-tooltip')))

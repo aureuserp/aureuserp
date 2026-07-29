@@ -105,4 +105,29 @@ class Package extends Model
             $package->company_id ??= $authUser?->default_company_id;
         });
     }
+
+    public function checkMoveLinesMapQuant($moveLines): bool
+    {
+        $groupedQuantities = $this->quantities
+            ->groupBy(fn ($quantity) => $quantity->product_id.'-'.$quantity->lot_id)
+            ->map(fn ($quantities) => $quantities->sum('quantity'));
+
+        $groupedOps = $moveLines
+            ->groupBy(fn ($moveLine) => $moveLine->product_id.'-'.$moveLine->lot_id)
+            ->map(fn ($moveLines) => $moveLines->sum('qty'));
+
+        foreach ($groupedQuantities as $key => $quantity) {
+            if (! float_is_zero($quantity - ($groupedOps[$key] ?? 0), 2)) {
+                return false;
+            }
+        }
+
+        foreach ($groupedOps as $key => $quantity) {
+            if (! float_is_zero($quantity - ($groupedQuantities[$key] ?? 0), 2)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

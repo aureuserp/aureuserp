@@ -44,11 +44,14 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 
 class PaymentResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Payment::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
@@ -232,6 +235,7 @@ class PaymentResource extends Resource
                                                     $query->whereIn('id', $paymentMethodLineIds);
                                                 }
                                             )
+                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                             ->required()
                                             ->searchable()
                                             ->preload()
@@ -269,6 +273,8 @@ class PaymentResource extends Resource
                                     ->columns(1),
                             ])
                             ->columns(2),
+
+                        ...static::getCustomFormFields(),
                     ])
                     ->columns(1),
             ])
@@ -280,7 +286,7 @@ class PaymentResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('date')
                     ->label(__('accounts::filament/resources/payment.table.columns.date'))
                     ->placeholder('-')
@@ -323,7 +329,7 @@ class PaymentResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/payment.table.groups.name'))
@@ -334,8 +340,9 @@ class PaymentResource extends Resource
                 Tables\Grouping\Group::make('journal.name')
                     ->label(__('accounts::filament/resources/payment.table.groups.journal'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('paymentMethodLine.name')
+                Tables\Grouping\Group::make('paymentMethodLine.id')
                     ->label(__('accounts::filament/resources/payment.table.groups.payment-method-line'))
+                    ->getTitleFromRecordUsing(fn ($record) => $record->paymentMethodLine?->display_name)
                     ->collapsible(),
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('accounts::filament/resources/payment.table.groups.partner'))
@@ -355,7 +362,7 @@ class PaymentResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -448,7 +455,7 @@ class PaymentResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounts::filament/resources/payment.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActivityTableAction::make(),
                 ViewAction::make(),
@@ -559,7 +566,7 @@ class PaymentResource extends Resource
                                     ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.journal'))
                                     ->icon('heroicon-o-building-library')
                                     ->placeholder('—'),
-                                TextEntry::make('paymentMethodLine.name')
+                                TextEntry::make('paymentMethodLine.display_name')
                                     ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.payment-method'))
                                     ->icon('heroicon-o-credit-card')
                                     ->placeholder('—'),
@@ -573,6 +580,8 @@ class PaymentResource extends Resource
                                     ->placeholder('—'),
                             ])
                             ->columns(1),
+
+                        ...static::getCustomInfolistEntries(),
                     ])
                     ->columns(2),
             ]);

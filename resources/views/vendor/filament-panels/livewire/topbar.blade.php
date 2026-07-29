@@ -167,7 +167,9 @@
                                 {{-- Admin panel: show active group name as a plain bold heading --}}
                                 <li class="fi-topbar-item">
                                     <span class="px-3 py-2 text-xl font-bold">
-                                        {{ $groupLabel }}
+                                        <a {{ \Filament\Support\generate_href_html($group->getItems()->first()->getUrl()) }}>
+                                            {{ $groupLabel }}
+                                        </a>
                                     </span>
                                 </li>
 

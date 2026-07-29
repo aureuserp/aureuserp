@@ -17,7 +17,7 @@ class MoveObserver
 
         $move = ManufacturingMove::find($move->id);
 
-        if (! $move->raw_material_order_id) {
+        if (! $move?->raw_material_order_id) {
             return;
         }
 

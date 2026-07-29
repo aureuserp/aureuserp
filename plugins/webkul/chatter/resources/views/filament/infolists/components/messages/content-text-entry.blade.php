@@ -24,8 +24,8 @@
 
                 {{-- Body --}}
                 @if ($record->body)
-                    <div class="text-sm leading-6 text-gray-700 dark:text-white overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
-                        {!! str($record->body)->sanitizeHtml() !!}
+                    <div class="font-inter text-base leading-6 text-gray-900 dark:text-gray-100 overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
+                        {!! \Webkul\Chatter\Support\ChatterMentions::render($record->body) !!}
                     </div>
                 @endif
 
@@ -146,7 +146,7 @@
 
                                     <div class="flex items-start gap-2">
                                         <!-- Icon -->
-                                        <div class="flex-shrink-0 w-5 h-5 mt-0.5">
+                                        <div class="flex-shrink-0 w-5 h-5">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 {!! $icon !!}
                                             </svg>

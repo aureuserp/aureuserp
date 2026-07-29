@@ -156,7 +156,7 @@ it('rejects check availability when internal transfer is not confirmed or assign
 
     $this->postJson(internalTransferRoute('check-availability', $internalTransfer->id))
         ->assertUnprocessable()
-        ->assertJsonPath('message', 'Only confirmed or assigned operations can check availability.');
+        ->assertJsonPath('message', 'Only waiting, confirmed or assigned operations can check availability.');
 });
 
 it('forbids check availability without update permission', function () {

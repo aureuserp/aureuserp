@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Database\Factories\AccountFactory;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class Account extends Model
 {
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'accounts_accounts';
@@ -158,7 +160,7 @@ class Account extends Model
             ->mergeBindings($query)
             ->select('q.account_id')
             ->join('accounts_accounts', 'accounts_accounts.id', '=', 'q.account_id')
-            ->groupBy('q.account_id')
+            ->groupBy('q.account_id', 'accounts_accounts.code')
             ->orderByRaw('COUNT(q.account_id) DESC')
             ->orderBy('accounts_accounts.code', 'DESC');
 

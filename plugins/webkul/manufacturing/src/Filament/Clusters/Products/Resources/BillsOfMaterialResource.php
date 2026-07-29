@@ -3,6 +3,7 @@
 namespace Webkul\Manufacturing\Filament\Clusters\Products\Resources;
 
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -282,7 +283,9 @@ class BillsOfMaterialResource extends Resource
                                     ->preload()
                                     ->native(false)
                                     ->wrapOptionLabels(false)
-                                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->warehouse->name.': '.$record->name)
+                                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->warehouse
+                                        ? $record->warehouse->name.': '.$record->name
+                                        : $record->name)
                                     ->visible(fn (Get $get): bool => ! static::matchesEnumState($get('type'), BillOfMaterialType::PHANTOM))
                                     ->columnSpanFull(),
                                 Select::make('consumption')
@@ -713,6 +716,31 @@ class BillsOfMaterialResource extends Resource
         ]);
     }
 
+    protected static function getSelectedBillOfMaterialProductId(Get $get): mixed
+    {
+        return $get('../../product_variant_id') ?: $get('../../product_id');
+    }
+
+    protected static function isSelectedBillOfMaterialProduct(Get $get, mixed $productId): bool
+    {
+        $billOfMaterialProductId = static::getSelectedBillOfMaterialProductId($get);
+
+        return filled($productId)
+            && filled($billOfMaterialProductId)
+            && (string) $productId === (string) $billOfMaterialProductId;
+    }
+
+    protected static function notBillOfMaterialProductRule(Get $get): Closure
+    {
+        return function (string $attribute, mixed $value, Closure $fail) use ($get): void {
+            if (static::isSelectedBillOfMaterialProduct($get, $value)) {
+                $fail(__(
+                    'manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.validation.component-different-from-product',
+                ));
+            }
+        };
+    }
+
     public static function normalizeProductVariantData(array $data): array
     {
         if (! empty($data['product_variant_id'])) {
@@ -778,7 +806,7 @@ class BillsOfMaterialResource extends Resource
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->wrapOptionLabels(false)
-                    ->disableOptionWhen(function ($label, $value, $state, $component) {
+                    ->disableOptionWhen(function ($label, $value, $state, $component, Get $get) {
                         $isDeleted = str_contains($label, ' (Deleted)');
 
                         $isDuplicate = false;
@@ -798,8 +826,13 @@ class BillsOfMaterialResource extends Resource
                                 ->contains($value);
                         }
 
-                        return $isDeleted || $isDuplicate;
+                        return $isDeleted
+                            || $isDuplicate
+                            || static::isSelectedBillOfMaterialProduct($get, $value);
                     })
+                    ->rules([
+                        fn (Get $get): Closure => static::notBillOfMaterialProductRule($get),
+                    ])
                     ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
                         $product = Product::query()->find($state);
 
@@ -810,17 +843,6 @@ class BillsOfMaterialResource extends Resource
                         $set('uom_id', $product->uom_id);
                         $set('company_id', $get('../../company_id'));
                     }),
-                Select::make('operation_id')
-                    ->relationship('operation', 'name')
-                    ->native(false)
-                    ->searchable()
-                    ->preload()
-                    ->wrapOptionLabels(false)
-                    ->createOptionForm(fn (Schema $schema): Schema => OperationResource::form($schema))
-                    ->createOptionAction(fn (Action $action) => $action->modalWidth(Width::SevenExtraLarge)),
-                Checkbox::make('is_manual_consumption')
-                    ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.columns.highlight-consumption'))
-                    ->default(false),
                 TextInput::make('quantity')
                     ->numeric()
                     ->minValue(0.0001)
@@ -859,6 +881,17 @@ class BillsOfMaterialResource extends Resource
                     ->searchable()
                     ->preload()
                     ->multiple(),
+                Select::make('operation_id')
+                    ->relationship('operation', 'name')
+                    ->native(false)
+                    ->searchable()
+                    ->preload()
+                    ->wrapOptionLabels(false)
+                    ->createOptionForm(fn (Schema $schema): Schema => OperationResource::form($schema))
+                    ->createOptionAction(fn (Action $action) => $action->modalWidth(Width::SevenExtraLarge)),
+                Checkbox::make('is_manual_consumption')
+                    ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.components.columns.highlight-consumption'))
+                    ->default(false),
             ]);
     }
 
@@ -1246,6 +1279,6 @@ class BillsOfMaterialResource extends Resource
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 }

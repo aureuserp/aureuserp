@@ -27,6 +27,10 @@ class ViewDropship extends ViewRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
+            OperationActions\TodoAction::make(),
+            OperationActions\ValidateAction::make(),
+            OperationActions\CancelAction::make(),
+            OperationActions\ReturnAction::make(),
             ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),
@@ -60,6 +64,12 @@ class ViewDropship extends ViewRecord
                         ->title(__('inventories::filament/clusters/operations/resources/dropship/pages/view-dropship.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/dropship/pages/view-dropship.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
+    }
+
+    public function updateForm(): void
+    {
+        $this->fillForm();
     }
 }

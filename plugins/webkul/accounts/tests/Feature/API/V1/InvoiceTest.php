@@ -399,3 +399,21 @@ it('rejects reversing a draft invoice', function () {
     ])->assertUnprocessable()
         ->assertJsonPath('message', 'Only posted invoices can be reversed.');
 });
+
+it('reverses a posted invoice into a linked draft credit note', function () {
+    actingAsInvoiceApiUser(['create_account_invoice', 'update_account_invoice']);
+
+    $invoiceId = $this->postJson(invoiceRoute('store'), invoicePayload())
+        ->assertCreated()
+        ->json('data.id');
+
+    $this->postJson(invoiceRoute('confirm', $invoiceId))->assertOk();
+
+    $this->postJson(invoiceRoute('reverse', $invoiceId), [
+        'reason'     => 'Reversal reason',
+        'journal_id' => Journal::factory()->create()->id,
+        'date'       => now()->format('Y-m-d'),
+    ])->assertCreated()
+        ->assertJsonPath('data.state', MoveState::DRAFT->value)
+        ->assertJsonPath('data.reversed_entry_id', $invoiceId);
+});

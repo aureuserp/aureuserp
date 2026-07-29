@@ -59,6 +59,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -78,6 +79,7 @@ use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -89,6 +91,8 @@ use Webkul\Support\Models\UOM;
 
 class BillResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Bill::class;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -118,14 +122,7 @@ class BillResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if (
-                            $record
-                            && $record->state != MoveState::CANCEL->value
-                        ) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -345,7 +342,12 @@ class BillResource extends Resource
                                         TextInput::make('incoterm_location')
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
                                         Select::make('preferred_payment_method_line_id')
-                                            ->relationship('paymentMethodLine', 'name')
+                                            ->relationship(
+                                                name: 'paymentMethodLine',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn ($query) => $query->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::SEND)),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
@@ -371,7 +373,7 @@ class BillResource extends Resource
                                             ->inline(false)
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.checked')),
                                     ])
-                                    ->columns(1),
+                                    ->columns(2),
                             ])
                             ->columns(2),
 
@@ -382,6 +384,10 @@ class BillResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -391,7 +397,7 @@ class BillResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/bill.table.columns.number'))
@@ -401,6 +407,7 @@ class BillResource extends Resource
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/bill.table.columns.state'))
                     ->sortable()
+                    ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')
                     ->label(__('accounts::filament/resources/bill.table.columns.customer'))
@@ -529,7 +536,7 @@ class BillResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/bill.table.groups.name'))
@@ -571,7 +578,7 @@ class BillResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -664,7 +671,7 @@ class BillResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounts::filament/resources/bill.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
@@ -713,11 +720,7 @@ class BillResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if ($record->state != MoveState::CANCEL->value) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -989,7 +992,7 @@ class BillResource extends Resource
                                         TextEntry::make('cashRounding.name')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.cash-rounding')),
-                                        TextEntry::make('paymentMethodLine.name')
+                                        TextEntry::make('paymentMethodLine.display_name')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.payment-method')),
                                         IconEntry::make('checked')
@@ -997,7 +1000,7 @@ class BillResource extends Resource
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.checked')),
                                     ])
-                                    ->columns(1),
+                                    ->columns(2),
                             ])
                             ->columns(2),
 
@@ -1009,6 +1012,10 @@ class BillResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -1055,7 +1062,7 @@ class BillResource extends Resource
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.unit'))
                     ->resizable()
                     ->markAsRequired()
-                    ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
+                    ->visible(fn () => settings(ProductSettings::class)->enable_uom)
                     ->toggleable(),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
