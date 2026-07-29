@@ -29,7 +29,7 @@ use Webkul\Support\Traits\BelongsToCompany;
 class Partner extends Authenticatable implements FilamentUser
 {
     use BelongsToCompany;
-    use HasChatter,HasCustomFields, HasContributedAttributes, HasFactory, HasLogActivity, HasOwnershipScope, Notifiable, SoftDeletes;
+    use HasChatter,HasContributedAttributes, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, Notifiable, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'partners';
 

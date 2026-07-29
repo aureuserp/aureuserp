@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Collection;
 use ArPHP\I18N\Arabic;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
 use Webkul\Support\Models\Company;

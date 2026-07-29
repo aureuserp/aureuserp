@@ -36,7 +36,6 @@ use Webkul\Security\Support\OwnerSource;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
-use Webkul\Support\Traits\BelongsToCompany;
 
 class Order extends Model
 {

@@ -43,9 +43,9 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class PaymentResource extends Resource
 {

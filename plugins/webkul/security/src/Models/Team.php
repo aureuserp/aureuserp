@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Field\Traits\HasCustomFields;
+use Webkul\Security\Traits\HasOwnershipScope;
 
 class Team extends Model
 {

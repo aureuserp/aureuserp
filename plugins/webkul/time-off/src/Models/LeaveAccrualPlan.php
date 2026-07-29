@@ -18,8 +18,8 @@ use Webkul\TimeOff\Enums\CarryoverMonth;
 class LeaveAccrualPlan extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
     use HasCustomFields;
+    use HasFactory;
 
     protected $table = 'time_off_leave_accrual_plans';
 
