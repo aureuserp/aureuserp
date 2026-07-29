@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\Inventory\Enums\MoveState;
@@ -36,7 +37,7 @@ use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 

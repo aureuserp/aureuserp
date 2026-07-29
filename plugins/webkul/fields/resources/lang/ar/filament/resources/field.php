@@ -424,6 +424,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'رفيع',
                         'extra-light' => 'خفيف جداً',
                         'light'       => 'خفيف',
                         'normal'      => 'عادي',
@@ -431,6 +432,7 @@ return [
                         'semi-bold'   => 'شبه عريض',
                         'bold'        => 'عريض',
                         'extra-bold'  => 'عريض جداً',
+                        'black'       => 'أسود',
                     ],
 
                     'icon-position-options' => [
@@ -520,6 +522,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'رفيع',
                         'extra-light' => 'خفيف جداً',
                         'light'       => 'خفيف',
                         'normal'      => 'عادي',
@@ -527,6 +530,7 @@ return [
                         'semi-bold'   => 'شبه عريض',
                         'bold'        => 'عريض',
                         'extra-bold'  => 'عريض جداً',
+                        'black'       => 'أسود',
                     ],
 
                     'icon-position-options' => [
@@ -666,6 +670,7 @@ return [
                 'title' => 'المورد',
 
                 'fields' => [
+                    'plugin'   => 'الإضافة',
                     'resource' => 'المورد',
                 ],
             ],

@@ -15,6 +15,7 @@ use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\SubLocation;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
@@ -22,7 +23,7 @@ use Webkul\Support\Models\Company;
 
 class Location extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'inventories_locations';
 

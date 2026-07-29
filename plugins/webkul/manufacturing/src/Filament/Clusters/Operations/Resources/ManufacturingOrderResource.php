@@ -38,6 +38,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\ComponentAttributeBag;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Location;
@@ -71,8 +72,9 @@ use Webkul\Support\Models\UOM;
 
 class ManufacturingOrderResource extends Resource
 {
+    use HasCustomFields;
     use HasResourcePermissionQuery;
-    
+
     protected static ?string $model = Order::class;
 
     protected static ?string $cluster = Operations::class;
@@ -396,6 +398,7 @@ class ManufacturingOrderResource extends Resource
                                             ->native(false)
                                             ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
                                             ->default(Auth::user()?->default_company_id),
+                                        ...static::getCustomFormFields(),
                                     ]),
                             ]),
                     ]),
@@ -410,7 +413,7 @@ class ManufacturingOrderResource extends Resource
         return $table
             ->reorderableColumns()
             ->defaultSort('id', 'desc')
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.columns.reference'))
                     ->searchable(),
@@ -489,7 +492,7 @@ class ManufacturingOrderResource extends Resource
                 TextColumn::make('state')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.columns.state'))
                     ->badge(),
-            ])
+            ]))
             ->groups([
                 TableGroup::make('state')
                     ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.table.groups.state')),
@@ -734,6 +737,7 @@ class ManufacturingOrderResource extends Resource
                                         TextEntry::make('company.name')
                                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.infolist.tabs.miscellaneous.entries.company'))
                                             ->placeholder('—'),
+                                        ...static::getCustomInfolistEntries(),
                                     ]),
                             ]),
                     ]),

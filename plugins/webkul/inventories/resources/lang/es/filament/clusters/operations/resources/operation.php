@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'Ubicación de destino',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'Información adicional',
+            ],
         ],
 
         'tabs' => [
@@ -64,9 +68,9 @@ return [
                     'picked'         => 'Recogido',
 
                     'lines' => [
-                        'modal-heading' => 'Gestionar movimientos de existencias',
+                        'modal-heading'             => 'Gestionar movimientos de existencias',
                         'modal-submit-action-label' => 'Guardar',
-                        'add-line'      => 'Agregar línea',
+                        'add-line'                  => 'Agregar línea',
 
                         'actions' => [
                             'generate' => 'Generar series/lotes',

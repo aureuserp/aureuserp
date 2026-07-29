@@ -79,6 +79,7 @@ use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -90,6 +91,8 @@ use Webkul\Support\Models\UOM;
 
 class BillResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Bill::class;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -381,6 +384,10 @@ class BillResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -390,7 +397,7 @@ class BillResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/bill.table.columns.number'))
@@ -529,7 +536,7 @@ class BillResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/bill.table.groups.name'))
@@ -571,7 +578,7 @@ class BillResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -664,7 +671,7 @@ class BillResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounts::filament/resources/bill.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
@@ -1005,6 +1012,10 @@ class BillResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ])
             ->columns(1);
     }

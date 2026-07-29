@@ -44,11 +44,14 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 
 class PaymentResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Payment::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
@@ -270,6 +273,8 @@ class PaymentResource extends Resource
                                     ->columns(1),
                             ])
                             ->columns(2),
+
+                        ...static::getCustomFormFields(),
                     ])
                     ->columns(1),
             ])
@@ -281,7 +286,7 @@ class PaymentResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('date')
                     ->label(__('accounts::filament/resources/payment.table.columns.date'))
                     ->placeholder('-')
@@ -324,7 +329,7 @@ class PaymentResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/payment.table.groups.name'))
@@ -357,7 +362,7 @@ class PaymentResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -450,7 +455,7 @@ class PaymentResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounts::filament/resources/payment.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActivityTableAction::make(),
                 ViewAction::make(),
@@ -575,6 +580,8 @@ class PaymentResource extends Resource
                                     ->placeholder('—'),
                             ])
                             ->columns(1),
+
+                        ...static::getCustomInfolistEntries(),
                     ])
                     ->columns(2),
             ]);

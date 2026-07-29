@@ -7,13 +7,13 @@ use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Models\Order;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\EditOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageDeliveries;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
+use Webkul\Sale\Models\Order;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class OrderResource extends QuotationResource
