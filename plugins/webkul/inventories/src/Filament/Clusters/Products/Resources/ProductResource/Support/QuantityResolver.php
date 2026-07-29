@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support;
 
+use Closure;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,9 +16,23 @@ use Webkul\Inventory\Models\ProductQuantity;
 class QuantityResolver
 {
     /**
-     * @var array<int, array<string, float>>
+     * @var array<string, array<int, array<string, float>>>
      */
     protected array $quantities = [];
+
+    /**
+     * @var array<string, array<int, Closure>>
+     */
+    protected array $locationFilters = [];
+
+    protected ?int $locationId = null;
+
+    public function forLocation(?int $locationId): static
+    {
+        $this->locationId = $locationId;
+
+        return $this;
+    }
 
     public function onHand(Model $record, mixed $scope = null): float
     {
@@ -33,11 +48,16 @@ class QuantityResolver
     {
         $id = $record->getKey();
 
-        if (! array_key_exists($id, $this->quantities)) {
+        if (! array_key_exists($id, $this->quantities[$this->scopeKey()] ?? [])) {
             $this->load($this->products($record, $scope));
         }
 
-        return $this->quantities[$id][$key] ?? 0.0;
+        return $this->quantities[$this->scopeKey()][$id][$key] ?? 0.0;
+    }
+
+    protected function scopeKey(): string
+    {
+        return (string) ($this->locationId ?? 'company');
     }
 
     /**
@@ -80,11 +100,21 @@ class QuantityResolver
 
             $rounding = $product->uom?->rounding;
 
-            $this->quantities[$id] = [
+            $this->quantities[$this->scopeKey()][$id] = [
                 'on_hand'    => $this->round($available, $rounding),
                 'forecasted' => $this->round($available + $in - $out, $rounding),
             ];
         }
+    }
+
+    /**
+     * @return array<int, Closure>
+     */
+    protected function locationFilters(): array
+    {
+        return $this->locationFilters[$this->scopeKey()] ??= (new Product)
+            ->setContext($this->locationId ? ['location_id' => $this->locationId] : [])
+            ->getLocationFilters();
     }
 
     protected function round(float $quantity, ?float $rounding): float
@@ -104,7 +134,7 @@ class QuantityResolver
             return [];
         }
 
-        [$quantityScope] = (new Product)->getLocationFilters();
+        [$quantityScope] = $this->locationFilters();
 
         return ProductQuantity::query()
             ->whereIn('product_id', $productIds)
@@ -125,7 +155,7 @@ class QuantityResolver
             return [];
         }
 
-        [, $moveInScope, $moveOutScope] = (new Product)->getLocationFilters();
+        [, $moveInScope, $moveOutScope] = $this->locationFilters();
 
         $scope = $incoming ? $moveInScope : $moveOutScope;
 
