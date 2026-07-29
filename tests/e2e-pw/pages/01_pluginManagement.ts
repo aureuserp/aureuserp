@@ -1,6 +1,8 @@
 import { Page, expect } from '@playwright/test';
 import { ErpLocators } from '../locator/erp_locator';
 
+type PluginAction = 'install' | 'uninstall';
+
 export class PluginManagementPage {
 
     /**
@@ -10,7 +12,7 @@ export class PluginManagementPage {
     readonly erpLocators: ErpLocators;
 
     constructor(page: Page) {
-        this.page = page
+        this.page = page;
 
         this.erpLocators = new ErpLocators(page);
     }
@@ -20,245 +22,171 @@ export class PluginManagementPage {
      */
     async gotoPluginManagementPage() {
         await this.page.goto('/admin/plugins');
-        await expect(this.page).toHaveURL(/.*admin/);
+        await expect(this.page).toHaveURL(/.*admin\/plugins/);
         await expect(this.erpLocators.pluginSyncButton).toBeVisible();
     }
 
     /**
-     * Install all plugins
+     * Install every plugin listed on the "Not Installed" tab
      */
     async installAllPlugins() {
-        const pluginCount = await this.erpLocators.pluginName.count();
-
-        // A plugin's card jumps to the top of the list once it is installed, and installing
-        // one also installs its dependencies, so walking the cards by index does not stay on
-        // the same plugin. Always act on the first card that is still not installed instead.
-        for (let installed = 0; installed < pluginCount; installed++) {
-            const pending = this.erpLocators.pluginNotInstalledCards;
-
-            if (await pending.count() === 0) {
-                break;
-            }
-
-            const card = pending.first();
-            const pluginTitle = await this.pluginCardTitle(card);
-            console.log(`Installing Plugin: ${pluginTitle}`);
-
-            if (!await this.openCardActions(card)) {
-                continue;
-            }
-
-            await this.erpLocators.pluginInstallButton.first().click({ timeout: 30000 });
-            await this.page.waitForTimeout(3000); // Wait for 3 seconds to allow installation to complete
-            await this.erpLocators.pluginConfirmButton.click();
-
-            await this.waitForPluginState(pluginTitle, true);
-        }
-
-        await expect(this.erpLocators.pluginNotInstalledCards).toHaveCount(0, { timeout: 60000 });
+        await this.processAllPlugins('install');
     }
 
     /**
-     * Uninstall all plugins
+     * Uninstall every plugin listed on the "Installed" tab
      */
     async uninstallAllPlugins() {
-        const pluginCount = await this.erpLocators.pluginName.count();
-
-        // Uninstalling also uninstalls a plugin's dependents, and the list reorders, so the
-        // first still-installed card is taken on every pass.
-        for (let uninstalled = 0; uninstalled < pluginCount; uninstalled++) {
-            const remaining = this.erpLocators.pluginInstalledCards;
-
-            if (await remaining.count() === 0) {
-                break;
-            }
-
-            const card = remaining.first();
-            const pluginTitle = await this.pluginCardTitle(card);
-            console.log(`Uninstalling Plugin: ${pluginTitle}`);
-
-            if (!await this.openCardActions(card)) {
-                continue;
-            }
-
-            await this.erpLocators.pluginUninstallButton.first().click({ timeout: 30000 });
-            await this.page.waitForTimeout(3000);
-            await this.erpLocators.pluginConfirmButton.click();
-
-            await this.waitForPluginState(pluginTitle, false);
-        }
-
-        await expect(this.erpLocators.pluginInstalledCards).toHaveCount(0, { timeout: 60000 });
-    }
-
-    /**
-     * The plugin name is the card's first line of text.
-     */
-    private async pluginCardTitle(card: ReturnType<Page['locator']>): Promise<string> {
-        return (await card.innerText()).split('\n')[0].trim();
-    }
-
-    /**
-     * Wait for a plugin to reach its new state, read from its own card's badge. This is the
-     * only reliable completion signal: the action shells out to `php artisan <plugin>:install`
-     * and takes tens of seconds, the success toast has auto-dismissed by the time it returns,
-     * and every actions button stays disabled by wire:loading until the request lands.
-     */
-    private async waitForPluginState(pluginTitle: string, installed: boolean): Promise<void> {
-        await this.page.waitForLoadState('networkidle', { timeout: 300000 });
-
-        const expected = installed ? /^\s*Installed\s*$/ : /^\s*Not Installed\s*$/;
-
-        await expect(this.pluginCardByName(pluginTitle).locator('.fi-badge').filter({ hasText: expected }))
-            .toHaveCount(1, { timeout: 300000 });
-    }
-
-    /**
-     * A card matched on its name element, not on its whole text: the Barcode card's summary
-     * mentions "inventory and manufacturing", so a plain text match for "Inventory" reads the
-     * wrong card's badge.
-     */
-    private pluginCardByName(pluginTitle: string) {
-        const exactName = new RegExp(`^\\s*${pluginTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`);
-
-        return this.erpLocators.pluginCards
-            .filter({ has: this.erpLocators.pluginName.filter({ hasText: exactName }) })
-            .first();
-    }
-
-    /**
-     * Open a card's actions dropdown, retrying when a re-render lands while it opens and
-     * closes it again — leaving neither action on screen.
-     */
-    private async openCardActions(card: ReturnType<Page['locator']>): Promise<boolean> {
-        for (let attempt = 0; attempt < 3; attempt++) {
-            const actions = card.locator('button[title="Actions"]');
-
-            // Uninstalling a plugin takes its dependents with it, so the card picked for this
-            // pass can be gone by now; the caller re-reads the list rather than waiting for a
-            // button that will never appear.
-            if (await actions.count() === 0) {
-                return false;
-            }
-
-            // Every actions button is held disabled while a Livewire request is in flight.
-            await expect(actions).toBeEnabled({ timeout: 120000 });
-            await actions.click({ timeout: 30000 });
-
-            const opened = await Promise.race([
-                this.erpLocators.pluginInstallButton.first().waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false),
-                this.erpLocators.pluginUninstallButton.first().waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false),
-            ]);
-
-            if (opened) {
-                return true;
-            }
-
-            await this.page.keyboard.press('Escape');
-            await this.page.waitForLoadState('networkidle');
-            await this.page.waitForTimeout(1000);
-        }
-
-        throw new Error('The plugin actions dropdown never opened.');
+        await this.processAllPlugins('uninstall');
     }
 
     /**
      * Install plugin by name if not installed
      */
     async installPluginByName(pluginName: string) {
-        await this.searchPlugin(pluginName);
+        await this.erpLocators.pluginSearchInput.fill(pluginName);
+        await this.page.waitForTimeout(1000); // table search debounce
+        await this.page.waitForLoadState('networkidle');
 
-        // The card's own name, which the state is read back from once the install is done:
-        // it differs from the search key ("Inventories" is listed as "Inventory").
-        const pluginTitle = await this.pluginCardTitle(this.erpLocators.pluginCards.first());
+        await expect(this.erpLocators.pluginName.first()).toBeVisible();
 
-        if (await this.openPluginActionsAndCheckInstalled()) {
+        await this.erpLocators.pluginActionsButton.first().click();
+        await expect(this.erpLocators.pluginDropdownPanel).toBeVisible();
+
+        if (await this.erpLocators.pluginUninstallOption.isVisible()) {
+            console.log(`Plugin "${pluginName}" is already installed, skipping installation`);
+            await this.page.keyboard.press('Escape');
             return;
         }
 
-        await this.page.waitForLoadState('networkidle');
-        await this.erpLocators.pluginInstallButton.first().click({ timeout: 30000 });
-        await this.page.waitForTimeout(3000);
-        await this.erpLocators.pluginConfirmButton.click();
-
-        // The install shells out to artisan and only redirects back to the list when it is
-        // done, and that redirect drops the search — so the plugin is found by name, not by
-        // position in a filtered list that may no longer be filtered.
-        await this.waitForPluginState(pluginTitle, true);
+        console.log(`Installing plugin: ${pluginName}`);
+        await this.erpLocators.pluginInstallOption.click();
+        await expect(this.erpLocators.pluginInstallConfirmButton).toBeVisible();
+        await this.erpLocators.pluginInstallConfirmButton.click();
+        await this.expectActionSucceeded('install', pluginName);
     }
 
     /**
-     * Filter the list down to one plugin. The search is debounced and the fill is discarded
-     * if it lands mid-navigation, so it is retyped until the list is actually filtered.
+     * Open the plugins list filtered to the tab holding the remaining work
      */
-    private async searchPlugin(pluginName: string): Promise<void> {
-        for (let attempt = 0; attempt < 3; attempt++) {
-            await this.erpLocators.pluginSearchInput.fill(pluginName);
-            await this.page.waitForLoadState('networkidle');
-            await this.page.waitForTimeout(500);
+    private async gotoPluginTab(tab: 'installed' | 'not_installed') {
+        await this.page.goto(`/admin/plugins?tab=${tab}`);
+        await expect(this.erpLocators.pluginSyncButton).toBeVisible();
+        await this.page.waitForLoadState('networkidle');
+    }
 
-            if (await this.erpLocators.pluginCards.count() === 1) {
-                return;
-            }
+    /**
+     * Show every plugin on a single page. 
+     */
+    private async showAllPluginsOnOnePage() {
+        if (await this.erpLocators.pluginsPerPageSelect.count() === 0) {
+            return;
         }
 
-        await expect(this.erpLocators.pluginCards).toHaveCount(1, { timeout: 30000 });
+        await this.erpLocators.pluginsPerPageSelect.selectOption('32');
+        await this.page.waitForLoadState('networkidle');
     }
 
     /**
-     * Assert a plugin card's install state from its badge. The success notification cannot
-     * be used for this: an install takes tens of seconds on the server, and by the time it
-     * finishes and the list has reloaded, the toast has already auto-dismissed.
+     * Install/uninstall every plugin on the matching tab.
      */
-    private async expectPluginCardState(cardIndex: number, installed: boolean): Promise<void> {
-        const badges = this.erpLocators.pluginCards.nth(cardIndex).locator('.fi-badge');
-        const expected = installed ? /^\s*Installed\s*$/ : /^\s*Not Installed\s*$/;
+    private async processAllPlugins(action: PluginAction) {
+        const tab = action === 'install' ? 'not_installed' : 'installed';
 
-        await expect(badges.filter({ hasText: expected })).toHaveCount(1, { timeout: 300000 });
-    }
+        await this.gotoPluginTab(tab);
+        await this.showAllPluginsOnOnePage();
 
-    /**
-     * Wait for the install/uninstall request itself, which runs artisan on the server and
-     * takes tens of seconds. The success notification alone is not a safe signal: the
-     * previous plugin's toast is still on screen, so it reads as done while this request is
-     * still running and every action button is held disabled by wire:loading.
-     */
-    private async waitForPluginActionToFinish() {
-        await this.page.waitForLoadState('networkidle', { timeout: 300000 });
-        await expect(this.erpLocators.pluginthreeDot.first()).toBeEnabled({ timeout: 300000 });
-    }
+        const total = await this.erpLocators.pluginName.count();
+        console.log(`Plugins to ${action}: ${total}`);
 
-    /**
-     * Open a plugin's actions dropdown and report whether it is already installed. The
-     * dropdown holds a single action set, so the state is always read from its first
-     * button: indexing those buttons by the card position never matches, which reads as
-     * "not installed" and sends the caller looking for an install button that is not there.
-     */
-    private async openPluginActionsAndCheckInstalled(cardIndex = 0): Promise<boolean> {
-        for (let attempt = 0; attempt < 3; attempt++) {
-            await this.erpLocators.pluginthreeDot.nth(cardIndex).click({ timeout: 30000 });
+        let guard = total + 5;
 
-            const uninstall = this.erpLocators.pluginUninstallButton.first();
-            const install = this.erpLocators.pluginInstallButton.first();
+        while (await this.erpLocators.pluginName.count() > 0 && guard-- > 0) {
+            const acted = action === 'install'
+                ? await this.installFirstPlugin()
+                : await this.uninstallFirstAvailablePlugin();
 
-            const opened = await Promise.race([
-                uninstall.waitFor({ state: 'visible', timeout: 5000 }).then(() => 'installed').catch(() => null),
-                install.waitFor({ state: 'visible', timeout: 5000 }).then(() => 'not-installed').catch(() => null),
-            ]);
-
-            if (opened === 'installed') {
-                return true;
+            if (!acted) {
+                throw new Error(`No "${tab}" plugin could be ${action}ed; the remaining plugins may form an unresolved dependency order.`);
             }
 
-            if (opened === 'not-installed') {
-                return false;
+            await this.gotoPluginTab(tab);
+        }
+
+        await expect(this.erpLocators.pluginName).toHaveCount(0);
+        console.log(`All plugins ${action === 'install' ? 'installed' : 'uninstalled'}`);
+    }
+
+    /**
+     * Install the first plugin listed on the current tab
+     */
+    private async installFirstPlugin(): Promise<boolean> {
+        if (await this.erpLocators.pluginName.count() === 0) {
+            return false;
+        }
+
+        const pluginTitle = (await this.erpLocators.pluginName.first().innerText()).trim();
+        console.log(`Installing plugin: ${pluginTitle}`);
+
+        await this.erpLocators.pluginActionsButton.first().click();
+        await expect(this.erpLocators.pluginInstallOption).toBeVisible();
+        await this.erpLocators.pluginInstallOption.click();
+
+        await expect(this.erpLocators.pluginInstallConfirmButton).toBeVisible();
+        await this.erpLocators.pluginInstallConfirmButton.click();
+
+        await this.expectActionSucceeded('install', pluginTitle);
+        return true;
+    }
+
+    /**
+     * Uninstall the first plugin on the tab that has no installed dependents.
+     */
+    private async uninstallFirstAvailablePlugin(): Promise<boolean> {
+        await this.gotoPluginTab('installed');
+
+        const names = (await this.erpLocators.pluginName.allInnerTexts()).map(name => name.trim());
+
+        for (let i = 0; i < names.length; i++) {
+            const pluginTitle = names[i];
+
+            await this.erpLocators.pluginActionsButton.nth(i).click();
+            await expect(this.erpLocators.pluginUninstallOption).toBeVisible();
+            await this.erpLocators.pluginUninstallOption.click();
+            await expect(this.erpLocators.pluginUninstallModalReady).toBeVisible();
+
+            if (await this.erpLocators.pluginUninstallDependencyWarning.isVisible()) {
+                console.log(`Skipping "${pluginTitle}" - dependent plugins still installed`);
+                await this.page.keyboard.press('Escape');
+                await expect(this.erpLocators.pluginUninstallModalReady).toBeHidden();
+                continue;
             }
 
-            await this.page.keyboard.press('Escape');
-            await this.page.waitForLoadState('networkidle');
-            await this.page.waitForTimeout(1000);
+            console.log(`Uninstalling plugin: ${pluginTitle}`);
+            await this.erpLocators.pluginUninstallConfirmButton.click();
+            await this.expectActionSucceeded('uninstall', pluginTitle);
+            return true;
         }
 
         return false;
+    }
+
+    /**
+     * Wait for the action's success notification; surface the plugin name
+     * immediately if the app reports a failure instead
+     */
+    private async expectActionSucceeded(action: PluginAction, pluginTitle: string) {
+        const successNotification = action === 'install'
+            ? this.erpLocators.pluginInstallSuccessNotification
+            : this.erpLocators.pluginUninstallSuccessNotification;
+        const failureNotification = this.erpLocators.pluginActionFailedNotification;
+
+        await expect(successNotification.or(failureNotification).first()).toBeVisible({ timeout: 320_000 });
+
+        if (await failureNotification.isVisible()) {
+            throw new Error(`Failed to ${action} plugin "${pluginTitle}" - the app reported: ${await failureNotification.innerText()}`);
+        }
+
+        console.log(`${action === 'install' ? 'Installed' : 'Uninstalled'} plugin: ${pluginTitle}`);
     }
 }
