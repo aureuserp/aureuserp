@@ -167,4 +167,9 @@ class Partner extends Authenticatable implements FilamentUser
             $partner->creator_id ??= Auth::id();
         });
     }
+
+    protected static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
 }

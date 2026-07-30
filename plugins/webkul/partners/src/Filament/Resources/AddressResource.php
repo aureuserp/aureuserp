@@ -154,7 +154,7 @@ class AddressResource extends Resource
                     ->mutateDataUsing(function (array $data, $livewire): array {
                         $data['account_type'] = AccountType::ADDRESS;
 
-                        $data['company_id'] = $livewire->getOwnerRecord()->company_id ?? current_company_id();
+                        $data['company_id'] = $livewire->getOwnerRecord()->company_id;
 
                         return $data;
                     })
