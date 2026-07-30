@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\ProductFactory;
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
@@ -434,6 +435,13 @@ class Product extends BaseProduct
                 ->whereIn('company_id', $companyIds)
                 ->pluck('view_location_id')
                 ->filter()
+                ->merge(
+                    Location::query()
+                        ->where('type', LocationType::INTERNAL)
+                        ->whereNull('warehouse_id')
+                        ->whereIn('company_id', $companyIds)
+                        ->pluck('id')
+                )
                 ->unique()
                 ->values()
                 ->toArray();
