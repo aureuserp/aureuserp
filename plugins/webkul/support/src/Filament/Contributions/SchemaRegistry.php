@@ -68,12 +68,12 @@ class SchemaRegistry
         ];
     }
 
-    public static function companyDefaultFields(string $scope, array $fields): void
+    public static function companyDefaultFields(string $scope, array $resolvers): void
     {
-        static::$companyDefaultFields[$scope] = array_values(array_unique([
-            ...(static::$companyDefaultFields[$scope] ?? []),
-            ...$fields,
-        ]));
+        static::$companyDefaultFields[$scope] = array_merge(
+            static::$companyDefaultFields[$scope] ?? [],
+            $resolvers,
+        );
     }
 
     public static function companyDefaultFieldsFor(string $scope): array

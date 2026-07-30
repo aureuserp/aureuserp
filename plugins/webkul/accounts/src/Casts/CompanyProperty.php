@@ -111,7 +111,9 @@ class CompanyProperty implements CastsAttributes
 
     public static function companyIdFor(Model $model, ?int $companyId = null): ?int
     {
-        $companyId = $companyId ?: current_company_id() ?: ($model->getAttributes()['company_id'] ?? null);
+        $companyId = $companyId
+            ?: ($model->getAttributes()['company_id'] ?? null)
+            ?: current_company_id();
 
         return $companyId ? (int) $companyId : null;
     }

@@ -14,10 +14,12 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Lot extends Model
 {
     use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasCustomFields;
     use HasFactory;
 
@@ -48,6 +50,13 @@ class Lot extends Model
         'removal_date'    => 'datetime',
         'alert_date'      => 'datetime',
     ];
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+        ];
+    }
 
     public function product(): BelongsTo
     {

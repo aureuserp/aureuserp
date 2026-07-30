@@ -124,6 +124,7 @@ class AccountProductSchema
                         tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.income-account-hint-tooltip')
                     )
                     ->options(fn (Get $get) => static::accountOptions($get('company_id')))
+                    ->getOptionLabelUsing(fn ($value, Get $get) => static::accountOptions($get('company_id'))[$value] ?? null)
                     ->preload()
                     ->searchable()
                     ->default(fn (Get $get, DefaultAccountSettings $settings) => Account::resolveForCompany(
@@ -131,7 +132,7 @@ class AccountProductSchema
                         $get('company_id'),
                     ))
                     ->afterStateHydrated(function (Select $component, $state, Get $get, DefaultAccountSettings $settings): void {
-                        if (filled($state)) {
+                        if (filled($state) && array_key_exists((int) $state, static::accountOptions($get('company_id')))) {
                             return;
                         }
 
@@ -145,6 +146,7 @@ class AccountProductSchema
                         tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account-hint-tooltip')
                     )
                     ->options(fn (Get $get) => static::accountOptions($get('company_id')))
+                    ->getOptionLabelUsing(fn ($value, Get $get) => static::accountOptions($get('company_id'))[$value] ?? null)
                     ->preload()
                     ->searchable()
                     ->default(fn (Get $get, DefaultAccountSettings $settings) => Account::resolveForCompany(
@@ -152,7 +154,7 @@ class AccountProductSchema
                         $get('company_id'),
                     ))
                     ->afterStateHydrated(function (Select $component, $state, Get $get, DefaultAccountSettings $settings): void {
-                        if (filled($state)) {
+                        if (filled($state) && array_key_exists((int) $state, static::accountOptions($get('company_id')))) {
                             return;
                         }
 
@@ -191,6 +193,7 @@ class AccountProductSchema
 
     protected static function accountOptions($companyId): array
     {
+
         return Account::query()
             ->where('deprecated', false)
             ->whereNotIn('account_type', [

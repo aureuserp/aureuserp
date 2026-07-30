@@ -21,6 +21,7 @@ return [
                     'name-placeholder'       => 'ex.: LOT/0001/20121',
                     'product'                => 'Produto',
                     'product-hint-tooltip'   => 'O produto associado a este lote/número de série. Ele não pode ser alterado se já tiver sido movimentado.',
+                    'company'                => 'Empresa',
                     'reference'              => 'Referência',
                     'reference-hint-tooltip' => 'Um número de referência interno, se diferente do lote/número de série do fabricante.',
                     'description'            => 'Descrição',

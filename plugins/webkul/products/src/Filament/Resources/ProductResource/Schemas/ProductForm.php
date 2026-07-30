@@ -166,7 +166,7 @@ class ProductForm
                     ->searchable()
                     ->preload()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, Get $get, $state, $component): void {
+                    ->afterStateUpdated(function (Set $set, Get $get, $state): void {
                         clear_foreign_company_values(
                             $set,
                             $get,
@@ -174,7 +174,9 @@ class ProductForm
                             $state,
                         );
 
-                        reapply_company_defaults($component, Registry::companyDefaultFieldsFor());
+                        foreach (Registry::companyDefaultFieldsFor() as $field => $resolveDefault) {
+                            $set($field, $resolveDefault($state));
+                        }
                     }),
             ]);
     }

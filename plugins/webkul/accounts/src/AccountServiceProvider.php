@@ -25,6 +25,7 @@ use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\ProductCompanyAccount;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
 use Webkul\Partner\Models\Partner;
@@ -257,8 +258,14 @@ class AccountServiceProvider extends PackageServiceProvider
         ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes', CompanyProperty::RELATION]);
 
         ProductSchemaRegistry::companyDefaultFields([
-            'property_account_income_id',
-            'property_account_expense_id',
+            'property_account_income_id' => fn (?int $companyId) => Account::resolveForCompany(
+                settings(DefaultAccountSettings::class)->income_account_id,
+                $companyId,
+            ),
+            'property_account_expense_id' => fn (?int $companyId) => Account::resolveForCompany(
+                settings(DefaultAccountSettings::class)->expense_account_id,
+                $companyId,
+            ),
         ]);
 
         ProductSchemaRegistry::companyDependentFields([
