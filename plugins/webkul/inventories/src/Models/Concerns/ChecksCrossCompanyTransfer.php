@@ -4,11 +4,6 @@ namespace Webkul\Inventory\Models\Concerns;
 
 use Webkul\Inventory\Support\CrossCompanyTransferGuard;
 
-/**
- * Rejects a record that moves stock between two companies.
- *
- * Same contract as ChecksCompanyConsistency: the model decides, the caller presents.
- */
 trait ChecksCrossCompanyTransfer
 {
     public static function bootChecksCrossCompanyTransfer(): void

@@ -18,6 +18,8 @@ class SchemaRegistry
 
     protected static array $eagerLoad = [];
 
+    protected static array $companyDependentFields = [];
+
     public static function form(string $scope, string $slot, Closure $factory, int $priority = 0): void
     {
         static::$form[$scope][$slot][] = [$priority, $factory];
@@ -54,6 +56,19 @@ class SchemaRegistry
     public static function eagerLoads(string $scope): array
     {
         return static::$eagerLoad[$scope] ?? [];
+    }
+
+    public static function companyDependentFields(string $scope, array $fields): void
+    {
+        static::$companyDependentFields[$scope] = [
+            ...(static::$companyDependentFields[$scope] ?? []),
+            ...$fields,
+        ];
+    }
+
+    public static function companyDependentFieldsFor(string $scope): array
+    {
+        return static::$companyDependentFields[$scope] ?? [];
     }
 
     public static function hasForm(string $scope, string $slot): bool

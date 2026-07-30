@@ -409,7 +409,7 @@ class QuantityResource extends Resource
                     ->mutateDataUsing(function (array $data): array {
                         $product = Product::find($data['product_id']);
 
-                        $data['location_id'] = $data['location_id'] ?? Warehouse::where('company_id', $product->company_id ?? current_company_id())->first()?->lot_stock_location_id;
+                        $data['location_id'] = $data['location_id'] ?? Warehouse::query()->when($product->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->value('lot_stock_location_id');
 
                         $data['company_id'] = $product->company_id;
 
@@ -422,7 +422,7 @@ class QuantityResource extends Resource
                         return $data;
                     })
                     ->before(function (CreateAction $action, array $data) {
-                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? Warehouse::where('company_id', Product::find($data['product_id'])?->company_id ?? current_company_id())->first()?->lot_stock_location_id)
+                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? Warehouse::query()->when(Product::find($data['product_id'])?->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->value('lot_stock_location_id'))
                             ->where('product_id', $data['product_id'])
                             ->where('package_id', $data['package_id'] ?? null)
                             ->where('lot_id', $data['lot_id'] ?? null)

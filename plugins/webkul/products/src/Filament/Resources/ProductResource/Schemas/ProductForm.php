@@ -164,7 +164,14 @@ class ProductForm
                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                     ->placeholder(__('products::filament/resources/product.form.sections.settings.fields.company-placeholder'))
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values(
+                        $set,
+                        $get,
+                        Registry::companyDependentFieldsFor(),
+                        $state,
+                    )),
             ]);
     }
 

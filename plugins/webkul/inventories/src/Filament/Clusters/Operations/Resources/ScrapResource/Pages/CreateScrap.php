@@ -47,12 +47,12 @@ class CreateScrap extends CreateRecord
 
         $data['creator_id'] = Auth::id();
 
-        $data['source_location_id'] ??= Warehouse::where('company_id', current_company_id())->first()?->lot_stock_location_id;
+        $data['source_location_id'] ??= Warehouse::where(owned_by_company(current_company_id()))->value('lot_stock_location_id');
 
         $sourceCompanyId = Location::find($data['source_location_id'])?->company_id;
 
         $data['destination_location_id'] ??= Location::where('is_scrap', true)
-            ->where('company_id', $sourceCompanyId)
+            ->when($sourceCompanyId, fn ($query, $companyId) => $query->where(owned_by_company($companyId)))
             ->value('id');
 
         $data['company_id'] ??= $sourceCompanyId ?? current_company_id();

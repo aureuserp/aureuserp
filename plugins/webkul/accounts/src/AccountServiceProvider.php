@@ -19,6 +19,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Account\Models\ProductCompanyAccount;
 use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
@@ -109,6 +110,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_04_17_000001_add_parent_id_to_accounts_accounts_table',
                 '2026_07_21_110000_fix_bank_cash_journal_default_accounts',
                 '2026_07_21_120000_null_company_on_payment_terms',
+                '2026_07_30_090000_create_products_product_company_accounts_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -208,7 +210,14 @@ class AccountServiceProvider extends PackageServiceProvider
         ProductSchemaRegistry::form('right.pricing.fields', fn () => AccountProductSchema::taxFields());
         ProductSchemaRegistry::form('left.append', fn () => AccountProductSchema::policySection());
         ProductSchemaRegistry::form('hidden', fn () => AccountProductSchema::hiddenFields());
-        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes']);
+        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes', 'companyAccounts']);
+
+        ProductSchemaRegistry::companyDependentFields([
+            'accounts_product_taxes'          => Tax::class,
+            'accounts_product_supplier_taxes' => Tax::class,
+            'property_account_income_id'      => Account::class,
+            'property_account_expense_id'     => Account::class,
+        ]);
 
         Product::contributeFillable([
             'property_account_income_id',
@@ -235,6 +244,11 @@ class AccountServiceProvider extends PackageServiceProvider
             'accounts_product_supplier_taxes',
             'product_id',
             'tax_id',
+        ));
+
+        Product::resolveRelationUsing('companyAccounts', fn (Product $product) => $product->hasMany(
+            ProductCompanyAccount::class,
+            'product_id',
         ));
 
         Product::resolveRelationUsing('propertyAccountIncome', fn (Product $product) => $product->belongsTo(

@@ -380,7 +380,7 @@ class DepartmentResource extends Resource
         );
 
         $children = Department::where('parent_id', $department->id)
-            ->where('company_id', $department->company_id)
+            ->when($department->company_id, fn ($query, $companyId) => $query->where(owned_by_company($companyId)))
             ->orderBy('name')
             ->get();
 

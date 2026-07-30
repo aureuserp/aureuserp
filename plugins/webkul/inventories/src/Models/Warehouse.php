@@ -1338,12 +1338,6 @@ class Warehouse extends Model implements Sortable
         return WarehouseFactory::new();
     }
 
-    /**
-     * The "Replenish on Order (MTO)" route for this warehouse's company.
-     *
-     * The seeded route belongs to the default company only, so every other company
-     * needs its own; it stays archived until MTO is enabled, matching the seed.
-     */
     protected function resolveMtoRouteId(): int
     {
         $query = fn () => Route::withoutGlobalScopes()->where('name', static::MTO_ROUTE_NAME);

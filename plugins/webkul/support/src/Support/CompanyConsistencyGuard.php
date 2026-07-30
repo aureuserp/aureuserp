@@ -6,15 +6,6 @@ use Webkul\Support\Exceptions\CrossCompanyException;
 
 class CompanyConsistencyGuard
 {
-    /**
-     * Names of the referenced records that do not belong to the given company.
-     *
-     * A record without a company is shared across every company and never conflicts.
-     *
-     * @param  array<int|string, mixed>  $rows
-     * @param  array<string, class-string>  $fields
-     * @return array<int, string>
-     */
     public static function detect($companyId, array $rows, array $fields): array
     {
         $companyId = $companyId ?: current_company_id();
@@ -60,7 +51,6 @@ class CompanyConsistencyGuard
                 ->mapWithKeys(fn ($record) => [$record->getKey() => $record->name ?? $record->getKey()]);
 
             foreach ($foreign as $id) {
-                // An id with no matching row is still a conflict; fall back to the raw id.
                 $conflicts[] = $names[$id] ?? $id;
             }
         }
@@ -68,10 +58,6 @@ class CompanyConsistencyGuard
         return array_values(array_unique($conflicts));
     }
 
-    /**
-     * @param  array<int|string, mixed>  $rows
-     * @param  array<string, class-string>  $fields
-     */
     public static function assert($companyId, array $rows, array $fields): void
     {
         if ($conflicts = static::detect($companyId, $rows, $fields)) {

@@ -48,6 +48,16 @@ abstract class AbstractSchemaRegistry
         return SchemaRegistry::eagerLoads(static::scope());
     }
 
+    public static function companyDependentFields(array $fields): void
+    {
+        SchemaRegistry::companyDependentFields(static::scope(), $fields);
+    }
+
+    public static function companyDependentFieldsFor(): array
+    {
+        return SchemaRegistry::companyDependentFieldsFor(static::scope());
+    }
+
     public static function hasFormSlot(string $slot): bool
     {
         return SchemaRegistry::hasForm(static::scope(), $slot);

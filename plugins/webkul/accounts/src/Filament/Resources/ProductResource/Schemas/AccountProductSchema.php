@@ -8,7 +8,9 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Webkul\Account\Enums\InvoicePolicy;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\DefaultAccountSettings;
 
@@ -29,7 +31,9 @@ class AccountProductSchema
                 ->relationship(
                     'productTaxes',
                     'name',
-                    modifyQueryUsing: fn ($query) => $query->where('type_tax_use', TypeTaxUse::SALE),
+                    modifyQueryUsing: fn ($query, Get $get) => $query
+                        ->where('type_tax_use', TypeTaxUse::SALE)
+                        ->where(owned_by_company($get('company_id'))),
                 )
                 ->multiple()
                 ->live()
@@ -97,7 +101,9 @@ class AccountProductSchema
                 ->relationship(
                     'supplierTaxes',
                     'name',
-                    modifyQueryUsing: fn ($query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
+                    modifyQueryUsing: fn ($query, Get $get) => $query
+                        ->where('type_tax_use', TypeTaxUse::PURCHASE)
+                        ->where(owned_by_company($get('company_id'))),
                 )
                 ->multiple()
                 ->live()
@@ -117,10 +123,10 @@ class AccountProductSchema
                         'heroicon-m-question-mark-circle',
                         tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.income-account-hint-tooltip')
                     )
-                    ->relationship('propertyAccountIncome', 'name')
+                    ->options(fn (Get $get) => static::accountOptions($get('company_id')))
                     ->preload()
                     ->searchable()
-                    ->default(fn (DefaultAccountSettings $settings) => $settings->income_account_id),
+                    ->placeholder(fn (DefaultAccountSettings $settings) => Account::find($settings->income_account_id)?->name),
 
                 Select::make('property_account_expense_id')
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account'))
@@ -128,10 +134,10 @@ class AccountProductSchema
                         'heroicon-m-question-mark-circle',
                         tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account-hint-tooltip')
                     )
-                    ->relationship('propertyAccountExpense', 'name')
+                    ->options(fn (Get $get) => static::accountOptions($get('company_id')))
                     ->preload()
                     ->searchable()
-                    ->default(fn (DefaultAccountSettings $settings) => $settings->expense_account_id),
+                    ->placeholder(fn (DefaultAccountSettings $settings) => Account::find($settings->expense_account_id)?->name),
             ]);
 
         return Section::make()
@@ -162,4 +168,22 @@ class AccountProductSchema
                 ->default('no-message'),
         ];
     }
+
+    protected static function accountOptions($companyId): array
+    {
+        return Account::query()
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ])
+            ->where(owned_by_company($companyId))
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->all();
+    }
+
 }

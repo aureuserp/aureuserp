@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class CrossCompanyException extends Exception
 {
-    /**
-     * @param  array<int, string>  $records
-     */
     public static function forRecords(array $records): self
     {
         return new self(__('support::support.cross-company.records', [

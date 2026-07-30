@@ -84,7 +84,7 @@ class UpdateQuantityAction extends Action
                     return;
                 }
 
-                $warehouse = Warehouse::where('company_id', $record->company_id ?? current_company_id())->first();
+                $warehouse = Warehouse::query()->when($record->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->first();
 
                 $productQuantity = ProductQuantity::where('product_id', $record->id)
                     ->where('location_id', $data['location_id'] ?? $warehouse?->lot_stock_location_id)
