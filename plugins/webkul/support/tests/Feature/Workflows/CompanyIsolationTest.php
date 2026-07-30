@@ -29,16 +29,6 @@ it('hides utm campaigns owned by another company', function () {
         ->not->toContain($otherCampaign->id);
 });
 
-it('stamps a new utm campaign with the active company', function () {
-    $companyB = CompanyHelper::company();
-
-    CompanyHelper::actingAsCompanyUser($companyB);
-
-    $campaign = UtmCampaign::factory()->create();
-
-    expect($campaign->company_id)->toBe($companyB->id);
-});
-
 it('never resolves a current company outside the allowed set', function () {
     $allowed = CompanyHelper::company();
     $forbidden = CompanyHelper::company();

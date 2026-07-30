@@ -60,7 +60,7 @@ class Packaging extends Model implements Sortable
         });
     }
 
-    protected static function autoAssignsCompany(): bool
+    public static function autoAssignsCompany(): bool
     {
         return false;
     }

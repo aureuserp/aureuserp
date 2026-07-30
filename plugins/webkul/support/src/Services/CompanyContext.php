@@ -30,7 +30,7 @@ class CompanyContext
         $user = auth()->user();
 
         if (! $user) {
-            return $this->allowed = collect();
+            return collect();
         }
 
         if ($this->seesAllCompanies()) {

@@ -24,7 +24,7 @@ class PaymentTerm extends Model implements Sortable
 
     protected $table = 'accounts_payment_terms';
 
-    protected static function autoAssignsCompany(): bool
+    public static function autoAssignsCompany(): bool
     {
         return false;
     }

@@ -35,7 +35,7 @@ class Calendar extends Model
         'company_id',
     ];
 
-    protected static function autoAssignsCompany(): bool
+    public static function autoAssignsCompany(): bool
     {
         return false;
     }

@@ -38,6 +38,7 @@ use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\CompanyContext;
 
 class AccountHelper
 {
@@ -51,6 +52,8 @@ class AccountHelper
         $user = User::query()->firstOrFail();
 
         Auth::login($user);
+
+        app()->forgetInstance(CompanyContext::class);
 
         return $user;
     }

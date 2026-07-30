@@ -162,7 +162,7 @@ class LeaveAllocation extends Model
         });
     }
 
-    protected static function autoAssignsCompany(): bool
+    public static function autoAssignsCompany(): bool
     {
         return false;
     }

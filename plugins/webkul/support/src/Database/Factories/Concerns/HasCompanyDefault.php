@@ -9,11 +9,17 @@ trait HasCompanyDefault
     public function configure(): static
     {
         return $this->afterMaking(function ($model): void {
-            if (empty($model->company_id)) {
-                $model->company_id = current_company_id()
-                    ?? Company::query()->value('id')
-                    ?? Company::factory()->create()->id;
+            if (! empty($model->company_id)) {
+                return;
             }
+
+            if (method_exists($model, 'autoAssignsCompany') && ! $model::autoAssignsCompany()) {
+                return;
+            }
+
+            $model->company_id = current_company_id()
+                ?? Company::query()->value('id')
+                ?? Company::factory()->create()->id;
         });
     }
 
