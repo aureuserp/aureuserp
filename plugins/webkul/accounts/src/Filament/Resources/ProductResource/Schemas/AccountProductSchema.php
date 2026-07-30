@@ -118,6 +118,7 @@ class AccountProductSchema
             ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.label'))
             ->schema([
                 Select::make('property_account_income_id')
+                    ->key(fn (Get $get) => 'property_account_income_id.'.($get('company_id') ?? 'all'))
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.income-account'))
                     ->hintIcon(
                         'heroicon-m-question-mark-circle',
@@ -140,6 +141,7 @@ class AccountProductSchema
                     }),
 
                 Select::make('property_account_expense_id')
+                    ->key(fn (Get $get) => 'property_account_expense_id.'.($get('company_id') ?? 'all'))
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account'))
                     ->hintIcon(
                         'heroicon-m-question-mark-circle',
