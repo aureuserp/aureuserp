@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+    private static bool $hasRebootedAfterInstall = false;
+
     /**
      * Boot the app and install the ERP schema before DatabaseTransactions (registered
      * via Pest.php) opens its per-test transaction in parent::setUp(). On PostgreSQL,
@@ -19,6 +21,12 @@ abstract class TestCase extends BaseTestCase
         }
 
         \TestBootstrapHelper::ensureAllPluginsInstalled();
+
+        if (! static::$hasRebootedAfterInstall) {
+            static::$hasRebootedAfterInstall = true;
+
+            $this->refreshApplication();
+        }
 
         parent::setUp();
     }

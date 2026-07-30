@@ -85,7 +85,11 @@ class TimesheetResource extends Resource
                 Select::make('project_id')
                     ->label(__('timesheets::filament/resources/timesheet.form.project'))
                     ->required()
-                    ->relationship('project', 'name')
+                    ->relationship(
+                        name: 'project',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->where(owned_by_company()),
+                    )
                     ->searchable()
                     ->preload()
                     ->live()

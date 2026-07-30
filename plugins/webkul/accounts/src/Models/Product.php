@@ -122,7 +122,7 @@ class Product extends BaseProduct
         $result = [];
 
         foreach ($accounts as $key => $account) {
-            $result[$key] = $fiscalPosition->mapAccount($account);
+            $result[$key] = $account ? $fiscalPosition->mapAccount($account) : null;
         }
 
         return $result;

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 
 class TestBootstrapHelper
 {
@@ -108,6 +110,8 @@ class TestBootstrapHelper
                 'updated_at'   => now(),
             ],
         );
+
+        Package::$plugins = Plugin::all()->keyBy('name');
     }
 
     private static function loadPluginRoutes(string $pluginName): void

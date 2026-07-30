@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Services\CompanyContext;
@@ -43,25 +42,28 @@ class CompanyHelper
      */
     public static function withoutCompanyContext(callable $callback): mixed
     {
-        $user = Auth::user();
-
         $active = session(CompanyContext::SESSION_KEY);
-
-        Auth::logout();
 
         session()->forget(CompanyContext::SESSION_KEY);
 
-        app()->forgetInstance(CompanyContext::class);
+        app()->instance(CompanyContext::class, new class extends CompanyContext
+        {
+            public function activeIds(): array
+            {
+                return [];
+            }
+
+            public function currentId(): ?int
+            {
+                return null;
+            }
+        });
 
         try {
             return $callback();
         } finally {
             if ($active !== null) {
                 session([CompanyContext::SESSION_KEY => $active]);
-            }
-
-            if ($user) {
-                Auth::login($user);
             }
 
             app()->forgetInstance(CompanyContext::class);

@@ -99,7 +99,7 @@ class OrderResource extends Resource
     {
         return [
             __('purchases::filament/admin/clusters/orders/resources/order.global-search.vendor') => $record->partner?->name ?? '—',
-            __('purchases::filament/admin/clusters/orders/resources/order.global-search.amount') => money($record->total_amount, $record->currency?->name) ?? '—',
+            __('purchases::filament/admin/clusters/orders/resources/order.global-search.amount') => money($record->total_amount ?? 0, $record->currency?->name) ?? '—',
         ];
     }
 
