@@ -53,6 +53,16 @@ abstract class AbstractSchemaRegistry
         SchemaRegistry::companyDependentFields(static::scope(), $fields);
     }
 
+    public static function companyDefaultFields(array $fields): void
+    {
+        SchemaRegistry::companyDefaultFields(static::scope(), $fields);
+    }
+
+    public static function companyDefaultFieldsFor(): array
+    {
+        return SchemaRegistry::companyDefaultFieldsFor(static::scope());
+    }
+
     public static function companyDependentFieldsFor(): array
     {
         return SchemaRegistry::companyDependentFieldsFor(static::scope());

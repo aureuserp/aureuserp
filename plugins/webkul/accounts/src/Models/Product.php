@@ -3,7 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Database\Factories\ProductFactory;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Settings\DefaultAccountSettings;
@@ -11,6 +11,7 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Models\Product as BaseProduct;
+use Webkul\Support\Models\Scopes\CompaniesScope;
 
 class Product extends BaseProduct
 {
@@ -85,128 +86,36 @@ class Product extends BaseProduct
             ]);
     }
 
-    protected $appends = [
-        'property_account_income_id',
-        'property_account_expense_id',
-    ];
-
-    protected array $pendingCompanyAccounts = [];
-
-    protected static function booted(): void
+    public function companyAccountValue(string $field, ?int $companyId = null): mixed
     {
-        static::saved(function (self $product): void {
-            $product->flushPendingCompanyAccounts();
-        });
+        return CompanyProperty::valueFor($this, ProductCompanyAccount::class, 'product_id', $field, $companyId);
     }
 
-    public function getPropertyAccountIncomeIdAttribute(): mixed
+    public function getAccounts(?int $companyId = null): array
     {
-        return $this->resolveCompanyAccountAttribute('property_account_income_id');
-    }
-
-    public function setPropertyAccountIncomeIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyAccounts['property_account_income_id'] = $value;
-    }
-
-    public function getPropertyAccountExpenseIdAttribute(): mixed
-    {
-        return $this->resolveCompanyAccountAttribute('property_account_expense_id');
-    }
-
-    public function setPropertyAccountExpenseIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyAccounts['property_account_expense_id'] = $value;
-    }
-
-    public function accountCompanyId(): ?int
-    {
-        $companyId = current_company_id() ?: $this->company_id;
-
-        return $companyId ? (int) $companyId : null;
-    }
-
-    protected function resolveCompanyAccountAttribute(string $field): mixed
-    {
-        if (array_key_exists($field, $this->pendingCompanyAccounts)) {
-            return $this->pendingCompanyAccounts[$field];
-        }
-
-        return $this->companyAccountsFor()?->{$field};
-    }
-
-    protected function flushPendingCompanyAccounts(): void
-    {
-        if (! $this->pendingCompanyAccounts) {
-            return;
-        }
-
-        $pending = $this->pendingCompanyAccounts;
-
-        $this->pendingCompanyAccounts = [];
-
-        $companyId = $this->accountCompanyId();
-
-        if (! $companyId) {
-            return;
-        }
-
-        $existing = ProductCompanyAccount::query()
-            ->where('product_id', $this->id)
-            ->where('company_id', $companyId)
-            ->first();
-
-        if (! $existing && ! array_filter($pending, fn ($value) => filled($value))) {
-            return;
-        }
-
-        ProductCompanyAccount::updateOrCreate(
-            ['product_id' => $this->id, 'company_id' => $companyId],
-            $pending,
-        );
-
-        $this->unsetRelation('companyAccounts');
-    }
-
-    public function companyAccounts(): HasMany
-    {
-        return $this->hasMany(ProductCompanyAccount::class, 'product_id');
-    }
-
-    public function companyAccountsFor(): ?ProductCompanyAccount
-    {
-        $companyId = $this->accountCompanyId();
-
-        if (! $companyId || ! $this->exists) {
-            return null;
-        }
-
-        return $this->companyAccounts->firstWhere('company_id', $companyId);
-    }
-
-    public function getAccounts(): array
-    {
-        $own = $this->companyAccountsFor();
-
-        $parent = $this->parent_id ? $this->parent?->companyAccountsFor() : null;
-
         $settings = settings(DefaultAccountSettings::class);
 
         return [
-            'income' => $own?->propertyAccountIncome
-                ?? $parent?->propertyAccountIncome
-                ?? $this->category?->propertyAccountIncome
-                ?? Account::find($settings->income_account_id),
-            'expense' => $own?->propertyAccountExpense
-                ?? $parent?->propertyAccountExpense
-                ?? $this->category?->propertyAccountExpense
-                ?? Account::find($settings->expense_account_id),
+            'income'  => $this->resolveAccount('property_account_income_id', $settings->income_account_id, $companyId),
+            'expense' => $this->resolveAccount('property_account_expense_id', $settings->expense_account_id, $companyId),
         ];
     }
 
-    public function getAccountsFromFiscalPosition($fiscalPosition = null)
+    protected function resolveAccount(string $field, mixed $fallbackId, ?int $companyId): ?Account
     {
-        $accounts = $this->getAccounts();
+        $accountId = $this->companyAccountValue($field, $companyId)
+            ?: ($this->parent_id ? $this->parent?->companyAccountValue($field, $companyId) : null)
+            ?: $this->category?->accountFromHierarchy($field, $companyId)
+            ?: Account::resolveForCompany($fallbackId, $companyId);
+
+        return $accountId
+            ? Account::withoutGlobalScope(CompaniesScope::class)->find($accountId)
+            : null;
+    }
+
+    public function getAccountsFromFiscalPosition($fiscalPosition = null, ?int $companyId = null)
+    {
+        $accounts = $this->getAccounts($companyId);
 
         $fiscalPosition = $fiscalPosition ?? new FiscalPosition;
 
@@ -217,6 +126,11 @@ class Product extends BaseProduct
         }
 
         return $result;
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class);
     }
 
     public function category(): BelongsTo

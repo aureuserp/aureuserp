@@ -7,8 +7,8 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Tax;
@@ -126,7 +126,17 @@ class AccountProductSchema
                     ->options(fn (Get $get) => static::accountOptions($get('company_id')))
                     ->preload()
                     ->searchable()
-                    ->placeholder(fn (DefaultAccountSettings $settings) => Account::find($settings->income_account_id)?->name),
+                    ->default(fn (Get $get, DefaultAccountSettings $settings) => Account::resolveForCompany(
+                        $settings->income_account_id,
+                        $get('company_id'),
+                    ))
+                    ->afterStateHydrated(function (Select $component, $state, Get $get, DefaultAccountSettings $settings): void {
+                        if (filled($state)) {
+                            return;
+                        }
+
+                        $component->state(Account::resolveForCompany($settings->income_account_id, $get('company_id')));
+                    }),
 
                 Select::make('property_account_expense_id')
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account'))
@@ -137,7 +147,17 @@ class AccountProductSchema
                     ->options(fn (Get $get) => static::accountOptions($get('company_id')))
                     ->preload()
                     ->searchable()
-                    ->placeholder(fn (DefaultAccountSettings $settings) => Account::find($settings->expense_account_id)?->name),
+                    ->default(fn (Get $get, DefaultAccountSettings $settings) => Account::resolveForCompany(
+                        $settings->expense_account_id,
+                        $get('company_id'),
+                    ))
+                    ->afterStateHydrated(function (Select $component, $state, Get $get, DefaultAccountSettings $settings): void {
+                        if (filled($state)) {
+                            return;
+                        }
+
+                        $component->state(Account::resolveForCompany($settings->expense_account_id, $get('company_id')));
+                    }),
             ]);
 
         return Section::make()
@@ -185,5 +205,4 @@ class AccountProductSchema
             ->pluck('name', 'id')
             ->all();
     }
-
 }

@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Product\Models\Category as BaseCategory;
 
@@ -20,114 +21,28 @@ class Category extends BaseCategory
         parent::__construct($attributes);
     }
 
-    protected $appends = [
-        'property_account_income_id',
-        'property_account_expense_id',
-        'property_account_down_payment_id',
-    ];
-
-    protected array $pendingCompanyAccounts = [];
-
-    protected static function booted(): void
+    public function companyAccountValue(string $field, ?int $companyId = null): mixed
     {
-        static::saved(function (self $category): void {
-            $category->flushPendingCompanyAccounts();
-        });
+        return CompanyProperty::valueFor($this, CategoryCompanyAccount::class, 'category_id', $field, $companyId);
     }
 
-    public function getPropertyAccountIncomeIdAttribute(): mixed
+    public function accountFromHierarchy(string $field, ?int $companyId = null): mixed
     {
-        return $this->resolveCompanyAccountAttribute('property_account_income_id');
-    }
+        $category = $this;
 
-    public function setPropertyAccountIncomeIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyAccounts['property_account_income_id'] = $value;
-    }
+        $seen = [];
 
-    public function getPropertyAccountExpenseIdAttribute(): mixed
-    {
-        return $this->resolveCompanyAccountAttribute('property_account_expense_id');
-    }
+        while ($category && ! in_array($category->id, $seen, true)) {
+            $seen[] = $category->id;
 
-    public function setPropertyAccountExpenseIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyAccounts['property_account_expense_id'] = $value;
-    }
+            if ($accountId = $category->companyAccountValue($field, $companyId)) {
+                return $accountId;
+            }
 
-    public function getPropertyAccountDownPaymentIdAttribute(): mixed
-    {
-        return $this->resolveCompanyAccountAttribute('property_account_down_payment_id');
-    }
-
-    public function setPropertyAccountDownPaymentIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyAccounts['property_account_down_payment_id'] = $value;
-    }
-
-    public function accountCompanyId(): ?int
-    {
-        $companyId = current_company_id() ?: $this->company_id;
-
-        return $companyId ? (int) $companyId : null;
-    }
-
-    protected function resolveCompanyAccountAttribute(string $field): mixed
-    {
-        if (array_key_exists($field, $this->pendingCompanyAccounts)) {
-            return $this->pendingCompanyAccounts[$field];
+            $category = $category->parent_id ? $category->parent : null;
         }
 
-        return $this->companyAccountsFor()?->{$field};
-    }
-
-    protected function flushPendingCompanyAccounts(): void
-    {
-        if (! $this->pendingCompanyAccounts) {
-            return;
-        }
-
-        $pending = $this->pendingCompanyAccounts;
-
-        $this->pendingCompanyAccounts = [];
-
-        $companyId = $this->accountCompanyId();
-
-        if (! $companyId) {
-            return;
-        }
-
-        $existing = CategoryCompanyAccount::query()
-            ->where('category_id', $this->id)
-            ->where('company_id', $companyId)
-            ->first();
-
-        if (! $existing && ! array_filter($pending, fn ($value) => filled($value))) {
-            return;
-        }
-
-        CategoryCompanyAccount::updateOrCreate(
-            ['category_id' => $this->id, 'company_id' => $companyId],
-            $pending,
-        );
-
-        $this->unsetRelation('companyAccounts');
-    }
-
-    public function companyAccounts(): HasMany
-    {
-        return $this->hasMany(CategoryCompanyAccount::class, 'category_id');
-    }
-
-    public function companyAccountsFor(): ?CategoryCompanyAccount
-    {
-        $companyId = $this->accountCompanyId();
-
-        if (! $companyId || ! $this->exists) {
-            return null;
-        }
-
-        return $this->companyAccounts->firstWhere('company_id', $companyId);
+        return null;
     }
 
     public function propertyAccountIncome(): BelongsTo
@@ -159,6 +74,11 @@ class Category extends BaseCategory
     public function propertyAccountDownPayment(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'property_account_down_payment_id');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class);
     }
 
     public function products(): HasMany

@@ -87,6 +87,36 @@ class Account extends Model
         return [AccountType::EXPENSE, AccountType::EXPENSE_DEPRECIATION, AccountType::EXPENSE_DIRECT_COST];
     }
 
+    public static function resolveForCompany(?int $accountId, ?int $companyId = null): ?int
+    {
+        if (! $accountId) {
+            return null;
+        }
+
+        $companyId = $companyId ?: current_company_id();
+
+        $account = static::withoutGlobalScopes()->find($accountId);
+
+        if (! $account || ! $companyId) {
+            return $account?->id;
+        }
+
+        $owned = static::withoutGlobalScopes()
+            ->whereKey($account->id)
+            ->where(owned_by_company($companyId))
+            ->exists();
+
+        if ($owned) {
+            return $account->id;
+        }
+
+        return static::withoutGlobalScopes()
+            ->where('code', $account->code)
+            ->where('deprecated', false)
+            ->where(owned_by_company($companyId))
+            ->value('id');
+    }
+
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'accounts_account_taxes', 'account_id', 'tax_id');

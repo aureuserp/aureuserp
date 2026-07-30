@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Database\Factories\PartnerFactory;
 use Webkul\Partner\Database\Factories\PartnerFactory as BasePartnerFactory;
 use Webkul\Partner\Models\Partner as BasePartner;
@@ -42,158 +42,9 @@ class Partner extends BasePartner
         parent::__construct($attributes);
     }
 
-    protected $appends = [
-        'property_account_payable_id',
-        'property_account_receivable_id',
-        'property_account_position_id',
-        'property_payment_term_id',
-        'property_supplier_payment_term_id',
-        'property_inbound_payment_method_line_id',
-        'property_outbound_payment_method_line_id',
-    ];
-
-    protected array $pendingCompanyProperties = [];
-
-    protected static function booted(): void
+    public function companyPropertyValue(string $field, ?int $companyId = null): mixed
     {
-        static::saved(function (self $partner): void {
-            $partner->flushPendingCompanyProperties();
-        });
-    }
-
-    public function getPropertyAccountPayableIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_account_payable_id');
-    }
-
-    public function setPropertyAccountPayableIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_account_payable_id'] = $value;
-    }
-
-    public function getPropertyAccountReceivableIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_account_receivable_id');
-    }
-
-    public function setPropertyAccountReceivableIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_account_receivable_id'] = $value;
-    }
-
-    public function getPropertyAccountPositionIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_account_position_id');
-    }
-
-    public function setPropertyAccountPositionIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_account_position_id'] = $value;
-    }
-
-    public function getPropertyPaymentTermIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_payment_term_id');
-    }
-
-    public function setPropertyPaymentTermIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_payment_term_id'] = $value;
-    }
-
-    public function getPropertySupplierPaymentTermIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_supplier_payment_term_id');
-    }
-
-    public function setPropertySupplierPaymentTermIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_supplier_payment_term_id'] = $value;
-    }
-
-    public function getPropertyInboundPaymentMethodLineIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_inbound_payment_method_line_id');
-    }
-
-    public function setPropertyInboundPaymentMethodLineIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_inbound_payment_method_line_id'] = $value;
-    }
-
-    public function getPropertyOutboundPaymentMethodLineIdAttribute(): mixed
-    {
-        return $this->resolveCompanyPropertyAttribute('property_outbound_payment_method_line_id');
-    }
-
-    public function setPropertyOutboundPaymentMethodLineIdAttribute(mixed $value): void
-    {
-        $this->pendingCompanyProperties['property_outbound_payment_method_line_id'] = $value;
-    }
-
-    public function propertyCompanyId(): ?int
-    {
-        $companyId = current_company_id() ?: $this->company_id;
-
-        return $companyId ? (int) $companyId : null;
-    }
-
-    protected function resolveCompanyPropertyAttribute(string $field): mixed
-    {
-        if (array_key_exists($field, $this->pendingCompanyProperties)) {
-            return $this->pendingCompanyProperties[$field];
-        }
-
-        return $this->companyPropertiesFor()?->{$field};
-    }
-
-    protected function flushPendingCompanyProperties(): void
-    {
-        if (! $this->pendingCompanyProperties) {
-            return;
-        }
-
-        $pending = $this->pendingCompanyProperties;
-
-        $this->pendingCompanyProperties = [];
-
-        $companyId = $this->propertyCompanyId();
-
-        if (! $companyId) {
-            return;
-        }
-
-        $existing = PartnerCompanyProperty::query()
-            ->where('partner_id', $this->id)
-            ->where('company_id', $companyId)
-            ->first();
-
-        if (! $existing && ! array_filter($pending, fn ($value) => filled($value))) {
-            return;
-        }
-
-        PartnerCompanyProperty::updateOrCreate(
-            ['partner_id' => $this->id, 'company_id' => $companyId],
-            $pending,
-        );
-
-        $this->unsetRelation('companyProperties');
-    }
-
-    public function companyProperties(): HasMany
-    {
-        return $this->hasMany(PartnerCompanyProperty::class, 'partner_id');
-    }
-
-    public function companyPropertiesFor(): ?PartnerCompanyProperty
-    {
-        $companyId = $this->propertyCompanyId();
-
-        if (! $companyId || ! $this->exists) {
-            return null;
-        }
-
-        return $this->companyProperties->firstWhere('company_id', $companyId);
+        return CompanyProperty::valueFor($this, PartnerCompanyProperty::class, 'partner_id', $field, $companyId);
     }
 
     public function propertyAccountPayable()

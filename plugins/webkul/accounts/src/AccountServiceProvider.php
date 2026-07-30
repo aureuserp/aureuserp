@@ -6,7 +6,9 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -14,8 +16,10 @@ use Webkul\Account\Filament\Resources\PartnerResource\Schemas\AccountPartnerSche
 use Webkul\Account\Filament\Resources\ProductResource\Schemas\AccountProductSchema;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\CategoryCompanyAccount;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Models\PartnerCompanyProperty;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
@@ -29,6 +33,7 @@ use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 
 class AccountServiceProvider extends PackageServiceProvider
@@ -145,9 +150,29 @@ class AccountServiceProvider extends PackageServiceProvider
 
         $this->registerCustomCss();
 
+        $this->flushCompanyPropertiesOnSave();
+
         $this->contributeProductSchema();
 
         $this->contributePartnerSchema();
+    }
+
+    protected function flushCompanyPropertiesOnSave(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Event::listen('eloquent.saved: *', function (string $event, array $payload): void {
+            $model = $payload[0] ?? null;
+
+            match (true) {
+                $model instanceof Partner  => CompanyProperty::flush($model, PartnerCompanyProperty::class, 'partner_id'),
+                $model instanceof Product  => CompanyProperty::flush($model, ProductCompanyAccount::class, 'product_id'),
+                $model instanceof Category => CompanyProperty::flush($model, CategoryCompanyAccount::class, 'category_id'),
+                default                    => null,
+            };
+        });
     }
 
     protected function contributePartnerSchema(): void
@@ -194,6 +219,23 @@ class AccountServiceProvider extends PackageServiceProvider
             'property_inbound_payment_method_line_id',
         ]);
 
+        Partner::contributeCasts([
+            'property_account_payable_id'              => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_account_receivable_id'           => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_account_position_id'             => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_payment_term_id'                 => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_supplier_payment_term_id'        => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_inbound_payment_method_line_id'  => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_outbound_payment_method_line_id' => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+        ]);
+
+        Partner::resolveRelationUsing(CompanyProperty::RELATION, fn (Partner $partner) => $partner->hasMany(
+            PartnerCompanyProperty::class,
+            'partner_id',
+        ));
+
+        PartnerSchemaRegistry::eagerLoad([CompanyProperty::RELATION]);
+
         Partner::resolveRelationUsing('propertyAccountPayable', fn (Partner $partner) => $partner->belongsTo(Account::class, 'property_account_payable_id'));
         Partner::resolveRelationUsing('propertyAccountReceivable', fn (Partner $partner) => $partner->belongsTo(Account::class, 'property_account_receivable_id'));
         Partner::resolveRelationUsing('propertyAccountPosition', fn (Partner $partner) => $partner->belongsTo(FiscalPosition::class, 'property_account_position_id'));
@@ -212,7 +254,12 @@ class AccountServiceProvider extends PackageServiceProvider
         ProductSchemaRegistry::form('right.pricing.fields', fn () => AccountProductSchema::taxFields());
         ProductSchemaRegistry::form('left.append', fn () => AccountProductSchema::policySection());
         ProductSchemaRegistry::form('hidden', fn () => AccountProductSchema::hiddenFields());
-        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes', 'companyAccounts']);
+        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes', CompanyProperty::RELATION]);
+
+        ProductSchemaRegistry::companyDefaultFields([
+            'property_account_income_id',
+            'property_account_expense_id',
+        ]);
 
         ProductSchemaRegistry::companyDependentFields([
             'accounts_product_taxes'          => Tax::class,
@@ -248,9 +295,25 @@ class AccountServiceProvider extends PackageServiceProvider
             'tax_id',
         ));
 
-        Product::resolveRelationUsing('companyAccounts', fn (Product $product) => $product->hasMany(
+        Product::contributeCasts([
+            'property_account_income_id'  => CompanyProperty::class.':'.ProductCompanyAccount::class.',product_id',
+            'property_account_expense_id' => CompanyProperty::class.':'.ProductCompanyAccount::class.',product_id',
+        ]);
+
+        Product::resolveRelationUsing(CompanyProperty::RELATION, fn (Product $product) => $product->hasMany(
             ProductCompanyAccount::class,
             'product_id',
+        ));
+
+        Category::contributeCasts([
+            'property_account_income_id'       => CompanyProperty::class.':'.CategoryCompanyAccount::class.',category_id',
+            'property_account_expense_id'      => CompanyProperty::class.':'.CategoryCompanyAccount::class.',category_id',
+            'property_account_down_payment_id' => CompanyProperty::class.':'.CategoryCompanyAccount::class.',category_id',
+        ]);
+
+        Category::resolveRelationUsing(CompanyProperty::RELATION, fn (Category $category) => $category->hasMany(
+            CategoryCompanyAccount::class,
+            'category_id',
         ));
 
         Product::resolveRelationUsing('propertyAccountIncome', fn (Product $product) => $product->belongsTo(

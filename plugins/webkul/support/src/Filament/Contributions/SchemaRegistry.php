@@ -20,6 +20,8 @@ class SchemaRegistry
 
     protected static array $companyDependentFields = [];
 
+    protected static array $companyDefaultFields = [];
+
     public static function form(string $scope, string $slot, Closure $factory, int $priority = 0): void
     {
         static::$form[$scope][$slot][] = [$priority, $factory];
@@ -64,6 +66,19 @@ class SchemaRegistry
             ...(static::$companyDependentFields[$scope] ?? []),
             ...$fields,
         ];
+    }
+
+    public static function companyDefaultFields(string $scope, array $fields): void
+    {
+        static::$companyDefaultFields[$scope] = array_values(array_unique([
+            ...(static::$companyDefaultFields[$scope] ?? []),
+            ...$fields,
+        ]));
+    }
+
+    public static function companyDefaultFieldsFor(string $scope): array
+    {
+        return static::$companyDefaultFields[$scope] ?? [];
     }
 
     public static function companyDependentFieldsFor(string $scope): array

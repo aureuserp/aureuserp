@@ -21,6 +21,8 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Models\Scopes\CompaniesScope;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\Support\Traits\ChecksCompanyConsistency;
@@ -399,10 +401,18 @@ class MoveLine extends Model implements Sortable
 
                 $accountType = $isSale ? AccountType::ASSET_RECEIVABLE : AccountType::LIABILITY_PAYABLE;
 
-                $propertyField = $isSale ? 'propertyAccountReceivable' : 'propertyAccountPayable';
+                $propertyField = $isSale ? 'property_account_receivable_id' : 'property_account_payable_id';
 
-                $account = $this->move->partner?->{$propertyField}
-                    ?? (method_exists($this->move->company, 'partner') ? $this->move->company->partner?->{$propertyField} : null)
+                $companyId = $this->move->company_id;
+
+                $companyPartner = $this->move->company?->partner_id
+                    ? Partner::withoutGlobalScope(CompanyScope::class)->find($this->move->company->partner_id)
+                    : null;
+
+                $account = Account::withoutGlobalScope(CompaniesScope::class)->find(
+                    $this->move->partner?->companyPropertyValue($propertyField, $companyId)
+                        ?: $companyPartner?->companyPropertyValue($propertyField, $companyId)
+                )
                     ?? Account::query()
                         ->where('account_type', $accountType)
                         ->where('deprecated', false)
@@ -422,7 +432,7 @@ class MoveLine extends Model implements Sortable
 
             case DisplayType::PRODUCT:
                 if ($this->product) {
-                    $accounts = $this->product->getAccountsFromFiscalPosition($this->move->fiscalPosition);
+                    $accounts = $this->product->getAccountsFromFiscalPosition($this->move->fiscalPosition, $this->move->company_id);
 
                     $account = match (true) {
                         $this->move->isSaleDocument(true)     => $accounts['income'] ?? $this->account,
