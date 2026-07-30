@@ -54,6 +54,7 @@ use Illuminate\View\ComponentAttributeBag;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Account\Models\Tax as TaxModel;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
@@ -1747,7 +1748,7 @@ class QuotationResource extends Resource
                             'price_total'           => 0,
                             'margin'                => 0,
                             'margin_percent'        => 0,
-                            'taxes'                 => $product->productTaxes->pluck('id')->toArray(),
+                            'taxes'                 => TaxModel::forProduct($product, TypeTaxUse::SALE),
                             'product_packaging_id'  => null,
                             'product_packaging_qty' => null,
                         ];
@@ -1826,7 +1827,7 @@ class QuotationResource extends Resource
 
         $set('price_unit', round($priceUnit, 2));
 
-        $set('taxes', $product->productTaxes->pluck('id')->toArray());
+        $set('taxes', TaxModel::forProduct($product, TypeTaxUse::SALE, $get('../../company_id')));
 
         $packaging = static::getBestPackaging($get('product_id'), round($uomQuantity, 2));
 
@@ -2050,7 +2051,7 @@ class QuotationResource extends Resource
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
+        $taxes = TaxModel::whereIn('id', $taxIds)->get();
 
         if ($taxes->isEmpty()) {
             $subTotal = round($discountedUnit * $quantity, 4);

@@ -1251,7 +1251,7 @@ class OrderResource extends Resource
 
         $set('price_unit', round($priceUnit, 2));
 
-        $set('taxes', $product->productTaxes->pluck('id')->toArray());
+        $set('taxes', Tax::forProduct($product, TypeTaxUse::PURCHASE, $get('../../company_id')));
 
         $packaging = static::getBestPackaging($get('product_id'), round($uomQuantity, 2));
 
@@ -1609,7 +1609,7 @@ class OrderResource extends Resource
                 'product_qty'       => $line->qty,
                 'price_unit'        => $line->price_unit,
                 'planned_at'        => now(),
-                'taxes'             => $product?->productTaxes->pluck('id')->toArray() ?? [],
+                'taxes'             => $product ? Tax::forProduct($product, TypeTaxUse::PURCHASE, $requisition->company_id) : [],
                 'discount'          => 0,
                 'from_requisition'  => true,
             ];

@@ -83,6 +83,23 @@ class Tax extends Model implements Sortable
         return $this->belongsTo(Country::class, 'country_id');
     }
 
+    public static function forProduct(Model $product, TypeTaxUse $type, ?int $companyId = null): array
+    {
+        $relation = $type === TypeTaxUse::SALE ? 'productTaxes' : 'supplierTaxes';
+
+        $taxes = $product->{$relation};
+
+        $companyId = $companyId ?: current_company_id();
+
+        if ($companyId) {
+            $taxes = $taxes->filter(
+                fn (self $tax) => $tax->company_id === null || (int) $tax->company_id === (int) $companyId,
+            );
+        }
+
+        return $taxes->pluck('id')->all();
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');

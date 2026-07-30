@@ -1263,7 +1263,7 @@ class BillResource extends Resource
 
         $set('price_unit', round($priceUnit, 2));
 
-        $set('taxes', $product->productTaxes->pluck('id')->toArray());
+        $set('taxes', Tax::forProduct($product, TypeTaxUse::PURCHASE, $get('../../company_id')));
 
         $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'));
 
