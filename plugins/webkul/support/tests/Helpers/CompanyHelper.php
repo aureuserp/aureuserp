@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Services\CompanyContext;
@@ -34,6 +35,37 @@ class CompanyHelper
         app()->forgetInstance(CompanyContext::class);
 
         return $user;
+    }
+
+    /**
+     * Run the callback as a console/seeder would: nobody authenticated and no
+     * active company, so current_company_id() resolves to null.
+     */
+    public static function withoutCompanyContext(callable $callback): mixed
+    {
+        $user = Auth::user();
+
+        $active = session(CompanyContext::SESSION_KEY);
+
+        Auth::logout();
+
+        session()->forget(CompanyContext::SESSION_KEY);
+
+        app()->forgetInstance(CompanyContext::class);
+
+        try {
+            return $callback();
+        } finally {
+            if ($active !== null) {
+                session([CompanyContext::SESSION_KEY => $active]);
+            }
+
+            if ($user) {
+                Auth::login($user);
+            }
+
+            app()->forgetInstance(CompanyContext::class);
+        }
     }
 
     public static function setActive(array $ids): void

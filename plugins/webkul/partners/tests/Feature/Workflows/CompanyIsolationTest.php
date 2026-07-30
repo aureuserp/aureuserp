@@ -26,12 +26,27 @@ it('hides partners owned by another company', function () {
         ->not->toContain($otherPartner->id);
 });
 
-it('stamps a new partner with the active company', function () {
+it('leaves a new partner shared instead of stamping the active company', function () {
     $companyB = CompanyHelper::company();
 
     CompanyHelper::actingAsCompanyUser($companyB);
 
     $partner = Partner::factory()->create();
 
-    expect($partner->company_id)->toBe($companyB->id);
+    expect($partner->company_id)->toBeNull();
+});
+
+it('shows a shared partner from every company', function () {
+    $companyA = CompanyHelper::company();
+    $companyB = CompanyHelper::company();
+
+    CompanyHelper::actingAsCompanyUser($companyA);
+
+    $partner = Partner::factory()->create();
+
+    expect(Partner::query()->pluck('id'))->toContain($partner->id);
+
+    CompanyHelper::actingAsCompanyUser($companyB);
+
+    expect(Partner::query()->pluck('id'))->toContain($partner->id);
 });

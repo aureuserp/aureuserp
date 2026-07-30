@@ -1,5 +1,7 @@
 <?php
 
+use Webkul\Support\Models\ActivityPlan;
+use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Services\CompanyContext;
 
@@ -122,4 +124,51 @@ it('shows records with no company to every active company', function () {
 
     expect(UtmCampaign::query()->pluck('id'))->toContain($shared->id)
         ->not->toContain($owned->id);
+});
+
+it('leaves a new working calendar shared across companies', function () {
+    $companyA = CompanyHelper::company();
+    $companyB = CompanyHelper::company();
+
+    CompanyHelper::actingAsCompanyUser($companyA);
+
+    $calendar = Calendar::factory()->create();
+
+    expect($calendar->company_id)->toBeNull()
+        ->and(Calendar::query()->pluck('id'))->toContain($calendar->id);
+
+    CompanyHelper::actingAsCompanyUser($companyB);
+
+    expect(Calendar::query()->pluck('id'))->toContain($calendar->id);
+});
+
+it('leaves a new activity plan shared across companies', function () {
+    $companyA = CompanyHelper::company();
+    $companyB = CompanyHelper::company();
+
+    CompanyHelper::actingAsCompanyUser($companyA);
+
+    $plan = ActivityPlan::query()->create(['name' => 'Shared plan '.uniqid()]);
+
+    expect($plan->company_id)->toBeNull()
+        ->and(ActivityPlan::query()->pluck('id'))->toContain($plan->id);
+
+    CompanyHelper::actingAsCompanyUser($companyB);
+
+    expect(ActivityPlan::query()->pluck('id'))->toContain($plan->id);
+});
+
+it('leaves a new utm campaign shared across companies', function () {
+    $companyA = CompanyHelper::company();
+    $companyB = CompanyHelper::company();
+
+    CompanyHelper::actingAsCompanyUser($companyA);
+
+    $campaign = UtmCampaign::factory()->create();
+
+    expect($campaign->company_id)->toBeNull();
+
+    CompanyHelper::actingAsCompanyUser($companyB);
+
+    expect(UtmCampaign::query()->pluck('id'))->toContain($campaign->id);
 });

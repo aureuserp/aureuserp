@@ -17,6 +17,35 @@ class FilamentHelper
         Filament::bootCurrentPanel();
     }
 
+    /**
+     * Admin panel resources of the given namespace that build their own global
+     * search details instead of inheriting the Filament default.
+     *
+     * @return array<int, class-string>
+     */
+    public static function resourcesWithOwnGlobalSearchDetails(string $namespace): array
+    {
+        static::bootAdminPanel();
+
+        $resources = [];
+
+        foreach (Filament::getPanel('admin')->getResources() as $resource) {
+            if (! str_starts_with($resource, $namespace)) {
+                continue;
+            }
+
+            $method = new ReflectionMethod($resource, 'getGlobalSearchResultDetails');
+
+            if ($method->getDeclaringClass()->getName() === $resource) {
+                $resources[] = $resource;
+            }
+        }
+
+        sort($resources);
+
+        return $resources;
+    }
+
     public static function actingAs(array $permissions = [], bool $global = true): User
     {
         $user = SecurityHelper::authenticateWithPermissions($permissions);
