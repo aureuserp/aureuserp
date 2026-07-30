@@ -646,6 +646,7 @@ class MoveLine extends Model implements Sortable
     {
         return [
             'product_id' => Product::class,
+            'account_id' => Account::class,
         ];
     }
 }

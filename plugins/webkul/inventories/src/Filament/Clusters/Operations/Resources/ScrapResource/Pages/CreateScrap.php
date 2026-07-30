@@ -7,14 +7,14 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateScrap extends CreateRecord
 {
-    use HandlesCrossCompanyTransferException;
+    use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
 

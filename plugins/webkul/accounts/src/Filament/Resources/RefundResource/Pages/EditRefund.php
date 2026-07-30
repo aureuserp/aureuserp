@@ -19,6 +19,8 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditRefund extends EditRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRecordNavigationTabs;
     use RefreshesRecordState;
 
@@ -68,12 +70,5 @@ class EditRefund extends EditRecord
         parent::refreshFormData($statePaths);
 
         $this->rememberData();
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
     }
 }

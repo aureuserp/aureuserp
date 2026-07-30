@@ -82,12 +82,4 @@ class EditQuotation extends EditRecord
 
         $this->rememberData();
     }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products'         => ['taxes' => Tax::class],
-            'optionalProducts' => ['product_id' => Product::class],
-        ];
-    }
 }

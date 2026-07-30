@@ -16,6 +16,8 @@ use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 class CreatePurchaseAgreement extends CreateRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRepeaterColumnManager;
 
     protected static string $resource = PurchaseAgreementResource::class;
@@ -80,12 +82,5 @@ class CreatePurchaseAgreement extends CreateRecord
             ->where('type', $requisitionType)
             ->where('state', RequisitionState::CONFIRMED)
             ->exists();
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'lines' => ['product_id' => Product::class],
-        ];
     }
 }

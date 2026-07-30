@@ -21,6 +21,8 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditInvoice extends EditRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 
@@ -85,12 +87,5 @@ class EditInvoice extends EditRecord
         parent::refreshFormData($statePaths);
 
         $this->rememberData();
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
     }
 }

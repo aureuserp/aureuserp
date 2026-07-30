@@ -14,6 +14,8 @@ class EditCreditNote extends EditRecord
 {
     use HandlesCrossCompanyException;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = CreditNoteResource::class;
 
     protected function getSavedNotification(): ?Notification
@@ -53,12 +55,5 @@ class EditCreditNote extends EditRecord
         AccountFacade::computeAccountMove($this->getRecord());
 
         $this->refreshRecordState();
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
     }
 }

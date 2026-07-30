@@ -6,9 +6,13 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
+use Webkul\Inventory\Models\Warehouse;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateRoute extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = RouteResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;

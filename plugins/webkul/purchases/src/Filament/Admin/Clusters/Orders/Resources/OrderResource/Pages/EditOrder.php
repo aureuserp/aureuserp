@@ -127,11 +127,4 @@ class EditOrder extends EditRecord
 
         $this->rememberData();
     }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
-    }
 }

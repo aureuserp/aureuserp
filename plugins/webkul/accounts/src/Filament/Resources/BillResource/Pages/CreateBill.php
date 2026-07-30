@@ -16,6 +16,8 @@ use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 class CreateBill extends CreateRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRepeaterColumnManager;
 
     protected static string $resource = BillResource::class;
@@ -64,12 +66,5 @@ class CreateBill extends CreateRecord
     protected function afterCreate(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
     }
 }

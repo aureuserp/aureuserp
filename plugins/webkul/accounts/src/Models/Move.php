@@ -33,10 +33,12 @@ use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
 use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Move extends Model implements Sortable
 {
     use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
@@ -1063,5 +1065,14 @@ class Move extends Model implements Sortable
     protected static function newFactory(): Factory
     {
         return MoveFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'journal_id' => Journal::class,
+            'invoice_payment_term_id' => PaymentTerm::class,
+            'fiscal_position_id' => FiscalPosition::class,
+        ];
     }
 }

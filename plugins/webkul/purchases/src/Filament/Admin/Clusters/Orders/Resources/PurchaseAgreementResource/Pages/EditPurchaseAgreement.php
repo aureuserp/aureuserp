@@ -20,6 +20,8 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditPurchaseAgreement extends EditRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
     use RefreshesRecordState;
@@ -122,13 +124,6 @@ class EditPurchaseAgreement extends EditRecord
                         ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.delete.notification.title'))
                         ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.delete.notification.body')),
                 ),
-        ];
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'lines' => ['product_id' => Product::class],
         ];
     }
 }

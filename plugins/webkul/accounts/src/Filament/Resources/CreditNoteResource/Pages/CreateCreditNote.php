@@ -14,6 +14,8 @@ class CreateCreditNote extends CreateRecord
 {
     use HandlesCrossCompanyException;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = CreditNoteResource::class;
 
     protected function getCreatedNotification(): ?Notification
@@ -43,12 +45,5 @@ class CreateCreditNote extends CreateRecord
     protected function afterCreate(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
     }
 }

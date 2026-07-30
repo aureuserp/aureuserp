@@ -33,6 +33,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -155,7 +156,11 @@ class WarehouseResource extends Resource
                                     ->schema([
                                         CheckboxList::make('supplierWarehouses')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.settings.fields.resupply-from'))
-                                            ->relationship('supplierWarehouses', 'name')
+                                            ->relationship(
+                                                'supplierWarehouses',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->visible(Warehouse::maxPerCompany() > 1),
 
                                         Radio::make('manufacture_steps')

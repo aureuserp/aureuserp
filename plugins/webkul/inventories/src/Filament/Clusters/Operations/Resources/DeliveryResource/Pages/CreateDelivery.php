@@ -7,13 +7,13 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
-use Webkul\Inventory\Filament\Concerns\HandlesCrossCompanyTransferException;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateDelivery extends CreateRecord
 {
-    use HandlesCrossCompanyTransferException;
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected static string $resource = DeliveryResource::class;

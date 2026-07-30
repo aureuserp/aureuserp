@@ -19,11 +19,13 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Support\Traits\BelongsToCompany;
 
 class Scrap extends Model
 {
     use BelongsToCompany;
+    use ChecksCrossCompanyTransfer;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';

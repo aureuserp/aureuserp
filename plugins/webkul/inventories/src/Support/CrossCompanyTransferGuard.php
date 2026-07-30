@@ -3,7 +3,7 @@
 namespace Webkul\Inventory\Support;
 
 use Webkul\Inventory\Models\Location;
-use Webkul\Support\Exceptions\CrossCompanyException;
+use Webkul\Inventory\Exceptions\CrossCompanyTransferException;
 use Webkul\Support\Models\Scopes\CompanyScope;
 
 class CrossCompanyTransferGuard
@@ -40,7 +40,7 @@ class CrossCompanyTransferGuard
     public static function assert(?int $sourceId, ?int $destinationId): void
     {
         if ($names = static::detect($sourceId, $destinationId)) {
-            throw CrossCompanyException::forTransfer($names['source'], $names['destination']);
+            throw new CrossCompanyTransferException($names['source'], $names['destination']);
         }
     }
 }

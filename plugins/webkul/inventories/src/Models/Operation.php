@@ -28,11 +28,15 @@ use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Operation extends Model
 {
     use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use ChecksCrossCompanyTransfer;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
@@ -470,5 +474,12 @@ class Operation extends Model
         return $package->checkMoveLinesMapQuant(
             $moveLines->filter(fn (MoveLine $line) => $line->product->is_storable)
         );
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'operation_type_id' => OperationType::class,
+        ];
     }
 }

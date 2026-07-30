@@ -16,6 +16,8 @@ use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 class CreateInvoice extends CreateRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRepeaterColumnManager;
 
     public function getSubNavigation(): array
@@ -62,12 +64,5 @@ class CreateInvoice extends CreateRecord
     protected function afterCreate(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products' => ['taxes' => Tax::class],
-        ];
     }
 }

@@ -35,10 +35,12 @@ use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
 use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Order extends Model
 {
     use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'sales';
@@ -312,5 +314,15 @@ class Order extends Model
     protected static function newFactory(): OrderFactory
     {
         return OrderFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'warehouse_id' => Warehouse::class,
+            'fiscal_position_id' => FiscalPosition::class,
+            'payment_term_id' => PaymentTerm::class,
+            'journal_id' => Journal::class,
+        ];
     }
 }

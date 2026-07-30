@@ -17,6 +17,8 @@ use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 class CreateJournalEntry extends CreateRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRepeaterColumnManager;
 
     public function getSubNavigation(): array
@@ -63,12 +65,5 @@ class CreateJournalEntry extends CreateRecord
     protected function afterCreate(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'lines' => ['account_id' => Account::class, 'taxes' => Tax::class],
-        ];
     }
 }

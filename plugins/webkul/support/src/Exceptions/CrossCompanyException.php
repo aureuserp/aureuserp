@@ -8,25 +8,12 @@ use Illuminate\Http\Request;
 
 class CrossCompanyException extends Exception
 {
-    protected function __construct(string $message)
-    {
-        parent::__construct($message);
-    }
-
-    public static function forTransfer(string $sourceLocation, string $destinationLocation): static
-    {
-        return new static(__('support::support.cross-company.transfer', [
-            'source'      => $sourceLocation,
-            'destination' => $destinationLocation,
-        ]));
-    }
-
     /**
      * @param  array<int, string>  $records
      */
-    public static function forRecords(array $records): static
+    public static function forRecords(array $records): self
     {
-        return new static(__('support::support.cross-company.records', [
+        return new self(__('support::support.cross-company.records', [
             'records' => implode(', ', $records),
         ]));
     }

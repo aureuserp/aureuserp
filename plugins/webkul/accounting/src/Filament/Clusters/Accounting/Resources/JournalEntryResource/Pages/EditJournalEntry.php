@@ -22,6 +22,8 @@ use Webkul\Support\Traits\RefreshesRecordState;
 class EditJournalEntry extends EditRecord
 {
     use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 
@@ -78,12 +80,5 @@ class EditJournalEntry extends EditRecord
         parent::refreshFormData($statePaths);
 
         $this->rememberData();
-    }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'lines' => ['account_id' => Account::class, 'taxes' => Tax::class],
-        ];
     }
 }

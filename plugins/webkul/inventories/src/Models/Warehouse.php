@@ -34,6 +34,8 @@ use Webkul\Support\Traits\BelongsToCompany;
 
 class Warehouse extends Model implements Sortable
 {
+    public const MTO_ROUTE_NAME = 'Replenish on Order (MTO)';
+
     use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
@@ -810,7 +812,7 @@ class Warehouse extends Model implements Sortable
             'propagate_carrier'        => true,
             'source_location_id'       => $this->lot_stock_location_id,
             'destination_location_id'  => $customerLocation->id,
-            'route_id'                 => 1,
+            'route_id'                 => $this->resolveMtoRouteId(),
             'operation_type_id'        => $this->out_type_id,
             'creator_id'               => $this->creator_id,
             'company_id'               => $this->company_id,
@@ -1335,4 +1337,35 @@ class Warehouse extends Model implements Sortable
     {
         return WarehouseFactory::new();
     }
+
+    /**
+     * The "Replenish on Order (MTO)" route for this warehouse's company.
+     *
+     * The seeded route belongs to the default company only, so every other company
+     * needs its own; it stays archived until MTO is enabled, matching the seed.
+     */
+    protected function resolveMtoRouteId(): int
+    {
+        $query = fn () => Route::withoutGlobalScopes()->where('name', static::MTO_ROUTE_NAME);
+
+        $route = $query()->where('company_id', $this->company_id)->first()
+            ?? $query()->whereNull('company_id')->first();
+
+        if ($route) {
+            return $route->id;
+        }
+
+        return Route::create([
+            'sort'                        => 1,
+            'name'                        => static::MTO_ROUTE_NAME,
+            'product_selectable'          => true,
+            'product_category_selectable' => false,
+            'warehouse_selectable'        => false,
+            'packaging_selectable'        => false,
+            'company_id'                  => $this->company_id,
+            'creator_id'                  => $this->creator_id,
+            'deleted_at'                  => now(),
+        ])->id;
+    }
+
 }

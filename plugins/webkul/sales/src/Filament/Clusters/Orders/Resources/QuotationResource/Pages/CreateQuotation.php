@@ -55,12 +55,4 @@ class CreateQuotation extends CreateRecord
             $this->halt(shouldRollbackDatabaseTransaction: true);
         }
     }
-
-    protected function companyConsistencyMap(): array
-    {
-        return [
-            'products'         => ['taxes' => Tax::class],
-            'optionalProducts' => ['product_id' => Product::class],
-        ];
-    }
 }
