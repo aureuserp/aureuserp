@@ -209,7 +209,6 @@ class QuotationResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(PaymentTerm::find(10)?->id)
                                     ->columnSpan(1),
                             ])->columns(2),
                     ]),

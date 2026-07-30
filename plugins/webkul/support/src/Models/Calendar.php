@@ -35,6 +35,11 @@ class Calendar extends Model
         'company_id',
     ];
 
+    protected static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');

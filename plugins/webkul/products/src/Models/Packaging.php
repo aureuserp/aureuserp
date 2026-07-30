@@ -12,7 +12,6 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\PackagingFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
-use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Traits\BelongsToCompany;
 
 class Packaging extends Model implements Sortable
@@ -58,9 +57,12 @@ class Packaging extends Model implements Sortable
 
         static::creating(function ($packaging) {
             $packaging->creator_id ??= Auth::id();
-
-            $packaging->company_id = Product::withoutGlobalScope(CompanyScope::class)->find($packaging->product_id)?->company_id ?? current_company_id();
         });
+    }
+
+    protected static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 
     protected static function newFactory(): PackagingFactory

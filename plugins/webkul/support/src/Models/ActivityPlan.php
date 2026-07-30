@@ -130,8 +130,11 @@ class ActivityPlan extends Model
             $authUser = Auth::user();
 
             $activityPlan->creator_id ??= $authUser->id;
-
-            $activityPlan->company_id ??= current_company_id();
         });
+    }
+
+    protected static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 }

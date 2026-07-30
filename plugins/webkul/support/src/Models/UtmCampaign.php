@@ -58,6 +58,11 @@ class UtmCampaign extends Model
         });
     }
 
+    protected static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     protected static function newFactory()
     {
         return UtmCampaignFactory::new();

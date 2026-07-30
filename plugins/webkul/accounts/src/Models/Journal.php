@@ -230,9 +230,9 @@ class Journal extends Model implements Sortable
     public function companyConsistentFields(): array
     {
         return [
-            'default_account_id' => Account::class,
-            'profit_account_id' => Account::class,
-            'loss_account_id' => Account::class,
+            'default_account_id'  => Account::class,
+            'profit_account_id'   => Account::class,
+            'loss_account_id'     => Account::class,
             'suspense_account_id' => Account::class,
         ];
     }

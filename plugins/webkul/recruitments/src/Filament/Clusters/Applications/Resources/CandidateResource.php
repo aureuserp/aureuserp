@@ -84,8 +84,8 @@ class CandidateResource extends Resource
         return [
             __('recruitments::filament/clusters/applications/resources/candidate.global-search.email-from') => $record?->email_from ?? '—',
             __('recruitments::filament/clusters/applications/resources/candidate.global-search.phone')      => $record?->phone ?? '—',
-            __('recruitments::filament/clusters/applications/resources/candidate.global-search.company')    => $record?->company->name ?? '—',
-            __('recruitments::filament/clusters/applications/resources/candidate.global-search.degree')     => $record?->degree->name ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.company')    => $record?->company?->name ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.degree')     => $record?->degree?->name ?? '—',
         ];
     }
 

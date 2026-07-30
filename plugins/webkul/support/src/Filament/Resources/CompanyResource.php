@@ -248,9 +248,6 @@ class CompanyResource extends Resource
                                         DatePicker::make('founded_date')
                                             ->native(false)
                                             ->label(__('support::filament/resources/company.form.sections.additional-information.fields.company-foundation-date')),
-                                        Toggle::make('is_active')
-                                            ->label(__('support::filament/resources/company.form.sections.additional-information.fields.status'))
-                                            ->default(true),
                                         ...static::getCustomFormFields(),
                                     ])->columns(2),
                             ])

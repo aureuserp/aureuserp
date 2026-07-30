@@ -111,6 +111,8 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_07_21_110000_fix_bank_cash_journal_default_accounts',
                 '2026_07_21_120000_null_company_on_payment_terms',
                 '2026_07_30_090000_create_products_product_company_accounts_table',
+                '2026_07_30_120000_create_products_category_company_accounts_table',
+                '2026_07_30_120001_create_partners_partner_company_properties_table',
             ])
             ->runsMigrations()
             ->hasSettings([

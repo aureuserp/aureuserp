@@ -1070,9 +1070,9 @@ class Move extends Model implements Sortable
     public function companyConsistentFields(): array
     {
         return [
-            'journal_id' => Journal::class,
+            'journal_id'              => Journal::class,
             'invoice_payment_term_id' => PaymentTerm::class,
-            'fiscal_position_id' => FiscalPosition::class,
+            'fiscal_position_id'      => FiscalPosition::class,
         ];
     }
 }
