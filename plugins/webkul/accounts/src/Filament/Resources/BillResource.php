@@ -222,7 +222,11 @@ class BillResource extends Resource
                                                     ->hidden(fn (Get $get) => $get('invoice_payment_term_id') !== null)
                                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.due-date')),
                                                 Select::make('invoice_payment_term_id')
-                                                    ->relationship('invoicePaymentTerm', 'name')
+                                                    ->relationship(
+                                                        'invoicePaymentTerm',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                                    )
                                                     ->required(fn (Get $get) => $get('invoice_date_due') === null)
                                                     ->live()
                                                     ->searchable()

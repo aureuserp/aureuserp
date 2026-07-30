@@ -195,7 +195,9 @@ class InvoiceResource extends Resource
                                                     ->relationship(
                                                         'invoicePaymentTerm',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->withTrashed()
+                                                            ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');

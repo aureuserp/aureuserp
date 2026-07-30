@@ -231,7 +231,11 @@ class EmployeeResource extends Resource
                                     )
                                     ->tel(),
                                 Select::make('parent_id')
-                                    ->relationship('parent', 'name')
+                                    ->relationship(
+                                        'parent',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->suffixIcon('heroicon-o-user')
@@ -246,7 +250,11 @@ class EmployeeResource extends Resource
                                 Select::make('coach_id')
                                     ->searchable()
                                     ->preload()
-                                    ->relationship('coach', 'name')
+                                    ->relationship(
+                                        'coach',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->label(__('employees::filament/resources/employee.form.sections.fields.coach')),
                             ])
                             ->columns(2),
