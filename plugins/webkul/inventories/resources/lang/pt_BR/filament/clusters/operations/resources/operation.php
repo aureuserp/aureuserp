@@ -68,9 +68,9 @@ return [
                     'picked'         => 'Separado',
 
                     'lines' => [
-                        'modal-heading' => 'Gerenciar movimentações de estoque',
+                        'modal-heading'             => 'Gerenciar movimentações de estoque',
                         'modal-submit-action-label' => 'Salvar',
-                        'add-line'      => 'Adicionar linha',
+                        'add-line'                  => 'Adicionar linha',
 
                         'actions' => [
                             'generate' => 'Gerar séries/lotes',

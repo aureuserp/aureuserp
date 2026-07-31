@@ -24,9 +24,11 @@ use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Payment extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
@@ -500,7 +502,7 @@ class Payment extends Model
             'origin_payment_id' => $this->id,
         ]);
 
-        $lines = $lines ?: $this->prepareMoveLineDefaultVals($writeOffLineVals, $forceBalance);
+        $lines = $lines ?: $this->buildDefaultMoveLineAttributes($writeOffLineVals, $forceBalance);
 
         collect($lines)->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
 
@@ -512,7 +514,7 @@ class Payment extends Model
         ]);
     }
 
-    public function prepareMoveLineDefaultVals($writeOffLineVals = null, $forceBalance = null)
+    public function buildDefaultMoveLineAttributes($writeOffLineVals = null, $forceBalance = null)
     {
         if (! $this->outstanding_account_id) {
             throw new Exception(
@@ -596,7 +598,7 @@ class Payment extends Model
                 ];
             }
 
-            $lineValsList = $pay->prepareMoveLineDefaultVals($writeOffLineVals);
+            $lineValsList = $pay->buildDefaultMoveLineAttributes($writeOffLineVals);
 
             $lineIdsCommands = [
                 $liquidityLines->isNotEmpty()

@@ -12,10 +12,10 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'name' => 'Nome',
-                    'barcode' => 'Código de barras',
-                    'company' => 'Empresa',
-                    'weight' => 'Peso',
+                    'name'       => 'Nome',
+                    'barcode'    => 'Código de barras',
+                    'company'    => 'Empresa',
+                    'weight'     => 'Peso',
                     'max-weight' => 'Peso máximo',
 
                     'fieldsets' => [
@@ -24,7 +24,7 @@ return [
 
                             'fields' => [
                                 'length' => 'Comprimento',
-                                'width' => 'Largura',
+                                'width'  => 'Largura',
                                 'height' => 'Altura',
                             ],
                         ],
@@ -36,13 +36,13 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'barcode' => 'Código de barras',
-            'weight' => 'Peso',
+            'name'       => 'Nome',
+            'barcode'    => 'Código de barras',
+            'weight'     => 'Peso',
             'max-weight' => 'Peso máximo',
-            'width' => 'Largura',
-            'height' => 'Altura',
-            'length' => 'Comprimento',
+            'width'      => 'Largura',
+            'height'     => 'Altura',
+            'length'     => 'Comprimento',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
@@ -56,7 +56,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de embalagem excluído',
-                    'body' => 'O tipo de embalagem foi excluído com sucesso.',
+                    'body'  => 'O tipo de embalagem foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -65,7 +65,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Tipo de embalagem excluído',
-                    'body' => 'O tipo de embalagem foi excluído com sucesso.',
+                    'body'  => 'O tipo de embalagem foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -74,23 +74,23 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Informações gerais',
+                'title'   => 'Informações gerais',
                 'entries' => [
-                    'name' => 'Nome',
+                    'name'      => 'Nome',
                     'fieldsets' => [
                         'size' => [
-                            'title' => 'Dimensões da embalagem',
+                            'title'   => 'Dimensões da embalagem',
                             'entries' => [
                                 'length' => 'Comprimento',
-                                'width' => 'Largura',
+                                'width'  => 'Largura',
                                 'height' => 'Altura',
                             ],
                         ],
                     ],
-                    'weight' => 'Peso base',
+                    'weight'     => 'Peso base',
                     'max-weight' => 'Peso máximo',
-                    'barcode' => 'Código de barras',
-                    'company' => 'Empresa',
+                    'barcode'    => 'Código de barras',
+                    'company'    => 'Empresa',
                     'created-at' => 'Criado em',
                     'updated-at' => 'Última atualização',
                 ],
@@ -100,8 +100,8 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'created-by' => 'Criado por',
-                    'created-at' => 'Criado em',
+                    'created-by'   => 'Criado por',
+                    'created-at'   => 'Criado em',
                     'last-updated' => 'Última atualização',
                 ],
             ],

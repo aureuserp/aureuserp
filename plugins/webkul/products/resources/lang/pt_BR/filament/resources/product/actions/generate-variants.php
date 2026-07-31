@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'label' => 'Gerar variantes',
+    'label'        => 'Gerar variantes',
     'notification' => [
         'empty' => [
             'title' => 'Nenhum atributo encontrado',
-            'body' => 'Adicione atributos para gerar variantes.',
+            'body'  => 'Adicione atributos para gerar variantes.',
         ],
 
         'success' => [
             'title' => 'Variantes geradas com sucesso',
-            'body' => 'Todas as variantes do produto foram geradas.',
+            'body'  => 'Todas as variantes do produto foram geradas.',
         ],
 
         'error' => [
             'title' => 'Erro ao gerar variantes',
-            'body' => 'Ocorreu um erro ao gerar as variantes do produto.',
+            'body'  => 'Ocorreu um erro ao gerar as variantes do produto.',
         ],
     ],
 ];

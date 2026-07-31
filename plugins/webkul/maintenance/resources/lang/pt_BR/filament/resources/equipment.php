@@ -8,7 +8,7 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'Informações gerais',
+                'title'  => 'Informações gerais',
                 'fields' => [
                     'name' => 'Nome',
                     'note' => 'Descrição',
@@ -16,33 +16,33 @@ return [
             ],
 
             'settings' => [
-                'title' => 'Configurações',
+                'title'  => 'Configurações',
                 'fields' => [
-                    'category' => 'Categoria do equipamento',
-                    'team' => 'Equipe de manutenção',
-                    'company' => 'Empresa',
+                    'category'   => 'Categoria do equipamento',
+                    'team'       => 'Equipe de manutenção',
+                    'company'    => 'Empresa',
                     'technician' => 'Técnico',
-                    'owner' => 'Proprietário',
-                    'location' => 'Usado no local',
+                    'owner'      => 'Proprietário',
+                    'location'   => 'Usado no local',
                 ],
             ],
 
             'product-information' => [
-                'title' => 'Informações do produto',
+                'title'  => 'Informações do produto',
                 'fields' => [
-                    'partner' => 'Fornecedor',
-                    'partner-ref' => 'Referência do fornecedor',
-                    'model' => 'Modelo',
-                    'serial-no' => 'Número de série',
-                    'effective-date' => 'Data efetiva',
+                    'partner'                     => 'Fornecedor',
+                    'partner-ref'                 => 'Referência do fornecedor',
+                    'model'                       => 'Modelo',
+                    'serial-no'                   => 'Número de série',
+                    'effective-date'              => 'Data efetiva',
                     'effective-date-hint-tooltip' => 'Usada como ponto de partida para calcular o tempo médio entre falhas.',
-                    'cost' => 'Custo',
-                    'warranty-date' => 'Data de expiração da garantia',
+                    'cost'                        => 'Custo',
+                    'warranty-date'               => 'Data de expiração da garantia',
                 ],
             ],
 
             'maintenance' => [
-                'title' => 'Manutenção',
+                'title'  => 'Manutenção',
                 'fields' => [
                     'expected-mtbf' => 'Tempo médio esperado entre falhas',
                 ],
@@ -55,47 +55,47 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome do equipamento',
-            'owner' => 'Proprietário',
-            'serial-no' => 'Número de série',
-            'category' => 'Categoria do equipamento',
+            'name'       => 'Nome do equipamento',
+            'owner'      => 'Proprietário',
+            'serial-no'  => 'Número de série',
+            'category'   => 'Categoria do equipamento',
             'technician' => 'Técnico',
-            'company' => 'Empresa',
+            'company'    => 'Empresa',
             'created-at' => 'Criado em',
         ],
 
         'filters' => [
-            'category' => 'Categoria do equipamento',
-            'team' => 'Equipe de manutenção',
+            'category'   => 'Categoria do equipamento',
+            'team'       => 'Equipe de manutenção',
             'technician' => 'Técnico',
         ],
 
         'groups' => [
-            'category' => 'Categoria do equipamento',
-            'owner' => 'Proprietário',
+            'category'   => 'Categoria do equipamento',
+            'owner'      => 'Proprietário',
             'technician' => 'Técnico',
-            'vendor' => 'Fornecedor',
+            'vendor'     => 'Fornecedor',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Equipamento atualizado',
-                    'body' => 'O equipamento foi atualizado com sucesso.',
+                    'body'  => 'O equipamento foi atualizado com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Equipamento restaurado',
-                    'body' => 'O equipamento foi restaurado com sucesso.',
+                    'body'  => 'O equipamento foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Equipamento arquivado',
-                    'body' => 'O equipamento foi arquivado com sucesso.',
+                    'body'  => 'O equipamento foi arquivado com sucesso.',
                 ],
             ],
 
@@ -103,12 +103,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Equipamento excluído',
-                        'body' => 'O equipamento foi excluído permanentemente.',
+                        'body'  => 'O equipamento foi excluído permanentemente.',
                     ],
 
                     'error' => [
                         'title' => 'Equipamento não pôde ser excluído',
-                        'body' => 'Este equipamento é referenciado por outro registro.',
+                        'body'  => 'Este equipamento é referenciado por outro registro.',
                     ],
                 ],
             ],
@@ -118,14 +118,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Equipamento restaurado',
-                    'body' => 'Os equipamentos selecionados foram restaurados com sucesso.',
+                    'body'  => 'Os equipamentos selecionados foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Equipamento arquivado',
-                    'body' => 'Os equipamentos selecionados foram arquivados com sucesso.',
+                    'body'  => 'Os equipamentos selecionados foram arquivados com sucesso.',
                 ],
             ],
         ],
@@ -134,7 +134,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Equipamento criado',
-                    'body' => 'O equipamento foi criado com sucesso.',
+                    'body'  => 'O equipamento foi criado com sucesso.',
                 ],
             ],
         ],
@@ -143,7 +143,7 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Informações gerais',
+                'title'   => 'Informações gerais',
                 'entries' => [
                     'name' => 'Nome',
                     'note' => 'Descrição',
@@ -151,38 +151,38 @@ return [
             ],
 
             'settings' => [
-                'title' => 'Configurações',
+                'title'   => 'Configurações',
                 'entries' => [
-                    'category' => 'Categoria do equipamento',
-                    'team' => 'Equipe de manutenção',
-                    'company' => 'Empresa',
+                    'category'   => 'Categoria do equipamento',
+                    'team'       => 'Equipe de manutenção',
+                    'company'    => 'Empresa',
                     'technician' => 'Técnico',
-                    'owner' => 'Proprietário',
-                    'location' => 'Usado no local',
+                    'owner'      => 'Proprietário',
+                    'location'   => 'Usado no local',
                 ],
             ],
 
             'product-information' => [
-                'title' => 'Informações do produto',
+                'title'   => 'Informações do produto',
                 'entries' => [
-                    'partner' => 'Fornecedor',
-                    'partner-ref' => 'Referência do fornecedor',
-                    'model' => 'Modelo',
-                    'serial-no' => 'Número de série',
+                    'partner'        => 'Fornecedor',
+                    'partner-ref'    => 'Referência do fornecedor',
+                    'model'          => 'Modelo',
+                    'serial-no'      => 'Número de série',
                     'effective-date' => 'Data efetiva',
-                    'cost' => 'Custo',
-                    'warranty-date' => 'Data de expiração da garantia',
+                    'cost'           => 'Custo',
+                    'warranty-date'  => 'Data de expiração da garantia',
                 ],
             ],
 
             'maintenance' => [
-                'title' => 'Manutenção',
+                'title'   => 'Manutenção',
                 'entries' => [
-                    'expected-mtbf' => 'Tempo médio esperado entre falhas',
-                    'maintenance-count' => 'Contagem de manutenções',
+                    'expected-mtbf'          => 'Tempo médio esperado entre falhas',
+                    'maintenance-count'      => 'Contagem de manutenções',
                     'maintenance-open-count' => 'Contagem de manutenções abertas',
-                    'assigned-at' => 'Data de atribuição',
-                    'scraped-at' => 'Data de descarte',
+                    'assigned-at'            => 'Data de atribuição',
+                    'scraped-at'             => 'Data de descarte',
                 ],
                 'suffixes' => [
                     'days' => 'dias',

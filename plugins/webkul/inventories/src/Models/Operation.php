@@ -8,29 +8,36 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
-use Throwable;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Operation extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use ChecksCrossCompanyTransfer;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
@@ -74,15 +81,6 @@ class Operation extends Model
         'scheduled_at'       => 'datetime',
         'closed_at'          => 'datetime',
     ];
-
-    protected array $context = [];
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
 
     public function getModelTitle(): string
     {
@@ -307,7 +305,7 @@ class Operation extends Model
                 $operation->wasChanged('source_location_id')
                 || $operation->wasChanged('destination_location_id')
             ) {
-                $operation->moves()->where('is_scraped', false)->get()->each(function($move) use ($operation) {
+                $operation->moves()->where('is_scraped', false)->get()->each(function ($move) use ($operation) {
                     $move->source_location_id = $operation->source_location_id ?? $operation->operationType?->source_location_id;
 
                     $move->destination_location_id = $operation->destination_location_id ?? $operation->operationType?->destination_location_id;
@@ -330,7 +328,7 @@ class Operation extends Model
         });
     }
 
-    public function autoConfirm()
+    public function confirmAdditionalMoves()
     {
         if (in_array($this->state, [OperationState::DONE, OperationState::CANCELED])) {
             return;
@@ -340,13 +338,13 @@ class Operation extends Model
             return;
         }
 
-        if ($this->moves->some(fn ($move) => $move->additional)) {
+        if ($this->moves->some(fn (Move $move) => $move->additional)) {
             InventoryFacade::confirmTransfer($this);
         }
 
-        $movesToConfirm = $this->moves->filter(fn ($move) => $move->state === MoveState::DRAFT && $move->quantity);
-
-        InventoryFacade::confirmMoves($movesToConfirm);
+        InventoryFacade::confirmMoves(
+            $this->moves->filter(fn (Move $move) => $move->state === MoveState::DRAFT && $move->quantity)
+        );
     }
 
     public function updateName()
@@ -420,12 +418,12 @@ class Operation extends Model
         } elseif ($this->moves->every(fn ($move) => $move->state === MoveState::CONFIRMED)) {
             $this->state = OperationState::CONFIRMED;
         } elseif (
-            $this->sourceLocation->shouldBypassReservation() &&
-            $this->moves->every(fn ($move) => $move->procure_method === ProcureMethod::MAKE_TO_STOCK)
+            $this->sourceLocation->bypassesReservation() &&
+            $this->moves->every(fn (Move $move) => $move->procure_method === ProcureMethod::MAKE_TO_STOCK)
         ) {
             $this->state = OperationState::ASSIGNED;
         } else {
-            $relevantMoveState = InventoryFacade::getRelevantStateAmongMoves($this->moves);
+            $relevantMoveState = InventoryFacade::relevantMoveState($this->moves);
 
             $this->state = $relevantMoveState === MoveState::PARTIALLY_ASSIGNED
                 ? OperationState::ASSIGNED
@@ -433,64 +431,55 @@ class Operation extends Model
         }
     }
 
-    public static function getImpactedOperations($moves)
+    public static function impactedBy(Collection $moves): Collection
     {
-        $impactedOperations = collect();
+        $impacted = collect();
 
-        $exploredMoves = collect();
+        $visited = collect();
 
-        $explore = function ($movesToExplore) use (&$explore, &$impactedOperations, &$exploredMoves) {
-            foreach ($movesToExplore as $move) {
-                if (! $exploredMoves->contains('id', $move->id)) {
-                    if ($move->operation_id) {
-                        $impactedOperations->push($move->operation);
-                    }
+        $frontier = $moves;
 
-                    $exploredMoves->push($move);
+        while ($frontier->isNotEmpty()) {
+            $next = collect();
 
-                    $movesToExplore = $movesToExplore->merge($move->moveDestinations);
+            foreach ($frontier as $move) {
+                if ($visited->contains('id', $move->id)) {
+                    continue;
                 }
+
+                $visited->push($move);
+
+                if ($move->operation_id) {
+                    $impacted->push($move->operation);
+                }
+
+                $next = $next->merge($move->moveDestinations);
             }
 
-            $movesToExplore = $movesToExplore->filter(fn ($move) => ! $exploredMoves->contains('id', $move->id));
-
-            if ($movesToExplore->isNotEmpty()) {
-                $explore($movesToExplore);
-            }
-        };
-
-        $explore($moves);
-
-        return $impactedOperations->unique('id');
-    }
-
-
-    public function getEntirePackDestinationLocation($moveLines)
-    {
-        $destinationLocationIds = $moveLines
-            ->pluck('destination_location_id')
-            ->unique()
-            ->values();
-
-        if ($destinationLocationIds->count() > 1) {
-            return false;
+            $frontier = $next->filter(fn (Move $move) => ! $visited->contains('id', $move->id));
         }
 
-        return $destinationLocationIds->first();
+        return $impacted->unique('id');
     }
 
-    public function checkMoveLinesMapQuant($moveLines, Package $package): mixed
+    public function sharedDestinationLocationId(Collection $moveLines): int|false|null
+    {
+        $locationIds = $moveLines->pluck('destination_location_id')->unique()->values();
+
+        return $locationIds->count() > 1 ? false : $locationIds->first();
+    }
+
+    public function packageFullyMatched(Collection $moveLines, Package $package): bool
     {
         return $package->checkMoveLinesMapQuant(
-            $moveLines->filter(fn ($moveLine) => $moveLine->product->is_storable)
+            $moveLines->filter(fn (MoveLine $line) => $line->product->is_storable)
         );
     }
 
-    public function checkMoveLinesMapQuantPackage(Package $package): mixed
+    public function companyConsistentFields(): array
     {
-        return $this->checkMoveLinesMapQuant(
-            $this->moveLines->filter(fn ($moveLine) => $moveLine->package_id === $package->id),
-            $package
-        );
+        return [
+            'operation_type_id' => OperationType::class,
+        ];
     }
 }

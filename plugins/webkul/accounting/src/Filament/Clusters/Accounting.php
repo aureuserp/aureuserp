@@ -16,7 +16,7 @@ class Accounting extends Cluster
         return __('accounting::filament/clusters/accounting.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Accounting;
     }

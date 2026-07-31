@@ -55,11 +55,11 @@ class QuotationResource extends OrderResource
     public static function getPages(): array
     {
         return [
-            'index'    => ListQuotations::route('/'),
-            'create'   => CreateQuotation::route('/create'),
-            'view'     => ViewQuotation::route('/{record}'),
-            'edit'     => EditQuotation::route('/{record}/edit'),
-            'bills'    => ManageBills::route('/{record}/bills'),
+            'index'      => ListQuotations::route('/'),
+            'create'     => CreateQuotation::route('/create'),
+            'view'       => ViewQuotation::route('/{record}'),
+            'edit'       => EditQuotation::route('/{record}/edit'),
+            'bills'      => ManageBills::route('/{record}/bills'),
             'operations' => ManageReceipts::route('/{record}/receipts'),
         ];
     }

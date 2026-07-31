@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\RoundingStrategy;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -91,5 +91,5 @@ it('folds the rounding into the biggest tax line under the biggest-tax strategy'
         ->and($roundingLine->tax_repartition_line_id)->not->toBeNull()
         ->and((float) $invoice->amount_total)->toBe(110.0)
         ->and((float) $lines->sum(fn ($l) => (float) $l->debit))
-            ->toBe((float) $lines->sum(fn ($l) => (float) $l->credit));
+        ->toBe((float) $lines->sum(fn ($l) => (float) $l->credit));
 });

@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Database\Factories\ProductFactory;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Settings\DefaultAccountSettings;
@@ -10,6 +11,7 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Models\Product as BaseProduct;
+use Webkul\Support\Models\Scopes\CompaniesScope;
 
 class Product extends BaseProduct
 {
@@ -84,27 +86,51 @@ class Product extends BaseProduct
             ]);
     }
 
-    public function getAccounts(): array
+    public function companyAccountValue(string $field, ?int $companyId = null): mixed
     {
+        return CompanyProperty::valueFor($this, ProductCompanyAccount::class, 'product_id', $field, $companyId);
+    }
+
+    public function getAccounts(?int $companyId = null): array
+    {
+        $settings = settings(DefaultAccountSettings::class);
+
         return [
-            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome ?? Account::find(settings(DefaultAccountSettings::class)->income_account_id),
-            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense ?? Account::find(settings(DefaultAccountSettings::class)->expense_account_id),
+            'income'  => $this->resolveAccount('property_account_income_id', $settings->income_account_id, $companyId),
+            'expense' => $this->resolveAccount('property_account_expense_id', $settings->expense_account_id, $companyId),
         ];
     }
 
-    public function getAccountsFromFiscalPosition($fiscalPosition = null)
+    protected function resolveAccount(string $field, mixed $fallbackId, ?int $companyId): ?Account
     {
-        $accounts = $this->getAccounts();
+        $accountId = $this->companyAccountValue($field, $companyId)
+            ?: ($this->parent_id ? $this->parent?->companyAccountValue($field, $companyId) : null)
+            ?: $this->category?->accountFromHierarchy($field, $companyId)
+            ?: Account::resolveForCompany($fallbackId, $companyId);
+
+        return $accountId
+            ? Account::withoutGlobalScope(CompaniesScope::class)->find($accountId)
+            : null;
+    }
+
+    public function getAccountsFromFiscalPosition($fiscalPosition = null, ?int $companyId = null)
+    {
+        $accounts = $this->getAccounts($companyId);
 
         $fiscalPosition = $fiscalPosition ?? new FiscalPosition;
 
         $result = [];
 
         foreach ($accounts as $key => $account) {
-            $result[$key] = $fiscalPosition->mapAccount($account);
+            $result[$key] = $account ? $fiscalPosition->mapAccount($account) : null;
         }
 
         return $result;
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class);
     }
 
     public function category(): BelongsTo

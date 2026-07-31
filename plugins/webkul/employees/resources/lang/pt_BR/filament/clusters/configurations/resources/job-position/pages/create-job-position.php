@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Cargo criado',
-        'body' => 'O cargo foi criado com sucesso.',
+        'body'  => 'O cargo foi criado com sucesso.',
     ],
 ];

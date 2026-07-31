@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'draft' => 'Rascunho',
+    'draft'  => 'Rascunho',
     'posted' => 'Publicado',
     'cancel' => 'Cancelar',
 ];

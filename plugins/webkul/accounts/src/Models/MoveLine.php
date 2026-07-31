@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\MoveLineFactory;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\DocumentType;
@@ -17,14 +18,19 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\TypeTaxUse;
-use Webkul\Account\Database\Factories\MoveLineFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Models\Scopes\CompaniesScope;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class MoveLine extends Model implements Sortable
 {
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasFactory, SortableTrait;
 
     protected $table = 'accounts_account_move_lines';
@@ -262,117 +268,118 @@ class MoveLine extends Model implements Sortable
             $moveLine->creator_id ??= Auth::id();
         });
 
-        static::saving(function ($moveLine) {
-            $moveLine->move_name = $moveLine->move->name;
+        static::saving(function (MoveLine $line) {
+            $line->inheritFromMove();
 
-            $moveLine->company_id = $moveLine->move->company_id;
+            $line->computeUOMId();
 
-            $moveLine->parent_state = $moveLine->move->state;
+            $line->computeCurrencyId();
 
-            if (is_null($moveLine->partner_id)) {
-                $moveLine->partner_id = $moveLine->move->commercial_partner_id;
-            }
+            $line->computePaymentId();
 
-            $moveLine->journal_id = $moveLine->move->journal_id;
+            $line->computeAccountId();
 
-            $moveLine->company_currency_id = $moveLine->move->company->currency_id;
+            $line->computeDisplayType();
 
-            $moveLine->date = $moveLine->move->date;
+            $line->computeName();
 
-            $moveLine->computeUOMId();
-
-            $moveLine->computeCurrencyId();
-
-            $moveLine->computePaymentId();
-
-            $moveLine->computeAccountId();
-
-            $moveLine->computeDisplayType();
-
-            $moveLine->computeName();
-
-            $moveLine->computeTaxTagInvert();
+            $line->computeTaxTagInvert();
         });
+    }
+
+    protected function inheritFromMove(): void
+    {
+        $this->move_name = $this->move->name;
+
+        $this->company_id = $this->move->company_id;
+
+        $this->parent_state = $this->move->state;
+
+        $this->partner_id ??= $this->move->commercial_partner_id;
+
+        $this->journal_id = $this->move->journal_id;
+
+        $this->company_currency_id = $this->move->company->currency_id;
+
+        $this->date = $this->move->date;
     }
 
     public function computeName()
     {
-        $getName = function ($line) {
-            $values = [];
-
-            if (! $line->product) {
-                return false;
-            }
-
-            if ($line->journal->type === JournalType::SALE) {
-                $values[] = $line->product->display_name;
-
-                if ($line->product->description_sale) {
-                    $values[] = $line->product->description_sale;
-                }
-            } elseif ($line->journal->type === JournalType::PURCHASE) {
-                $values[] = $line->product->display_name;
-
-                if ($line->product->description_purchase) {
-                    $values[] = $line->product->description_purchase;
-                }
-            }
-
-            return implode("\n", $values);
-        };
-
-        $allLines = $this->move->lines->merge(collect([$this]));
-
-        $paymentTermLines = $allLines->filter(function ($l) {
-            return $l->display_type === DisplayType::PAYMENT_TERM;
-        })->sortBy(function ($l) {
-            return $l->date_maturity ?? '9999-12-31';
-        });
-
-        $termByMove = $paymentTermLines->groupBy('move_id');
-
         if ($this->move->inalterable_hash !== false && $this->move->inalterable_hash !== null) {
             return;
         }
 
         if ($this->display_type === DisplayType::PAYMENT_TERM) {
-            $move = $this->move()->with('invoicePaymentTerm.dueTerms')->first();
-            $nTerms = $move?->invoicePaymentTerm?->dueTerms?->count() ?? 0;
+            $this->name = $this->instalmentName();
 
-            $baseName = $move->payment_reference ?? $move->ref ?? $move->name ?? 'Payment Term';
-
-            if ($nTerms <= 1) {
-                $this->name = $baseName;
-
-                return;
-            }
-
-            $termLines = $termByMove->get($this->move->id, collect());
-            $index = $termLines->search(fn ($line) => $line->id === $this->id) ?: 0;
-            $number = $index + 1;
-
-            $this->name = "{$baseName} - Installment #{$number}";
+            return;
         }
 
         if (! $this->product_id || in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
             return;
         }
 
-        $originalName = $this->getOriginal('name');
-
-        $originalGetName = false;
-
-        if ($this->exists) {
-            $originalLine = clone $this;
-
-            $originalLine->setRawAttributes($this->getOriginal());
-
-            $originalGetName = $getName($originalLine);
+        if ($this->name && ! $this->nameStillMatchesProduct()) {
+            return;
         }
 
-        if (! $this->name || $originalName === $originalGetName) {
-            $this->name = $getName($this);
+        $this->name = $this->productName($this);
+    }
+
+    protected function instalmentName(): string
+    {
+        $move = $this->move()->with('invoicePaymentTerm.dueTerms')->first();
+
+        $baseName = $move->payment_reference ?? $move->ref ?? $move->name ?? 'Payment Term';
+
+        if (($move?->invoicePaymentTerm?->dueTerms?->count() ?? 0) <= 1) {
+            return $baseName;
         }
+
+        $instalments = $this->move->lines
+            ->merge(collect([$this]))
+            ->filter(fn (MoveLine $line) => $line->display_type === DisplayType::PAYMENT_TERM)
+            ->sortBy(fn (MoveLine $line) => $line->date_maturity ?? '9999-12-31')
+            ->groupBy('move_id')
+            ->get($this->move->id, collect());
+
+        $position = $instalments->search(fn (MoveLine $line) => $line->id === $this->id) ?: 0;
+
+        return "{$baseName} - Installment #".($position + 1);
+    }
+
+    protected function nameStillMatchesProduct(): bool
+    {
+        if (! $this->exists) {
+            return false;
+        }
+
+        $original = (clone $this)->setRawAttributes($this->getOriginal());
+
+        return $this->getOriginal('name') === $this->productName($original);
+    }
+
+    protected function productName(self $line): string|false
+    {
+        if (! $line->product) {
+            return false;
+        }
+
+        $descriptionField = match ($line->journal->type) {
+            JournalType::SALE     => 'description_sale',
+            JournalType::PURCHASE => 'description_purchase',
+            default               => null,
+        };
+
+        if (! $descriptionField) {
+            return '';
+        }
+
+        return implode("\n", array_filter([
+            $line->product->display_name,
+            $line->product->{$descriptionField},
+        ]));
     }
 
     public function computePaymentId()
@@ -394,11 +401,26 @@ class MoveLine extends Model implements Sortable
 
                 $accountType = $isSale ? AccountType::ASSET_RECEIVABLE : AccountType::LIABILITY_PAYABLE;
 
-                $propertyField = $isSale ? 'propertyAccountReceivable' : 'propertyAccountPayable';
+                $propertyField = $isSale ? 'property_account_receivable_id' : 'property_account_payable_id';
 
-                $account = $this->move->partner?->{$propertyField}
-                    ?? (method_exists($this->move->company, 'partner') ? $this->move->company->partner?->{$propertyField} : null)
-                    ?? Account::where('account_type', $accountType)->where('deprecated', false)->first();
+                $companyId = $this->move->company_id;
+
+                $companyPartner = $this->move->company?->partner_id
+                    ? Partner::withoutGlobalScope(CompanyScope::class)->find($this->move->company->partner_id)
+                    : null;
+
+                $account = Account::withoutGlobalScope(CompaniesScope::class)->find(
+                    $this->move->partner?->companyPropertyValue($propertyField, $companyId)
+                        ?: $companyPartner?->companyPropertyValue($propertyField, $companyId)
+                )
+                    ?? Account::query()
+                        ->where('account_type', $accountType)
+                        ->where('deprecated', false)
+                        ->where(function ($query) {
+                            $query->whereHas('companies', fn ($companyQuery) => $companyQuery->where('companies.id', $this->move->company_id))
+                                ->orWhereDoesntHave('companies');
+                        })
+                        ->first();
 
                 if ($this->move->fiscalPosition && $account) {
                     $account = $this->move->fiscalPosition->mapAccount($account);
@@ -410,21 +432,22 @@ class MoveLine extends Model implements Sortable
 
             case DisplayType::PRODUCT:
                 if ($this->product) {
-                    $accounts = $this->product->getAccountsFromFiscalPosition($this->move->fiscalPosition);
+                    $accounts = $this->product->getAccountsFromFiscalPosition($this->move->fiscalPosition, $this->move->company_id);
 
-                    if ($this->move->isSaleDocument(true)) {
-                        $account = $accounts['income'] ?? $this->account;
-                    } elseif ($this->move->isPurchaseDocument(true)) {
-                        $account = $accounts['expense'] ?? $this->account;
-                    }
+                    $account = match (true) {
+                        $this->move->isSaleDocument(true)     => $accounts['income'] ?? $this->account,
+                        $this->move->isPurchaseDocument(true) => $accounts['expense'] ?? $this->account,
+                        default                               => null,
+                    };
 
                     $accountId = $account?->id;
                 } elseif ($this->partner) {
-                    $accountId = $this->account_id ?? (new Account)->getMostFrequentAccountsForPartner(
+                    $accountId = $this->account_id ?? Account::mostUsedForPartner(
                         companyId: $this->move->company_id,
                         partnerId: $this->partner_id,
-                        moveType: $this->move->type,
-                    );
+                        moveType: $this->move->move_type->value,
+                        limit: 1,
+                    )[0] ?? null;
                 }
 
                 break;
@@ -461,7 +484,7 @@ class MoveLine extends Model implements Sortable
         if ($this->move->isInvoice()) {
             if ($this->tax_line_id) {
                 $this->display_type = DisplayType::TAX;
-            } elseif (in_array($this->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])) {
+            } elseif (in_array($this->account?->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])) {
                 $this->display_type = DisplayType::PAYMENT_TERM;
             } else {
                 $this->display_type = DisplayType::PRODUCT;
@@ -485,49 +508,52 @@ class MoveLine extends Model implements Sortable
     public function computeCurrencyId()
     {
         if ($this->display_type === DisplayType::COGS) {
-        } elseif ($this->move->isInvoice(true)) {
-            $this->currency_id = $this->move->currency_id;
-        } else {
-            $this->currency_id = $this->currency_id ?? $this->company_currency_id;
+            return;
         }
+
+        $this->currency_id = $this->move->isInvoice(true)
+            ? $this->move->currency_id
+            : $this->currency_id ?? $this->company_currency_id;
     }
 
     public function computeTaxTagInvert()
     {
-        $this->tax_tag_invert = true;
-
-        $originMove = $this->move->tax_cash_basis_origin_move_id ?: $this->move;
+        $originMove = $this->move->taxCashBasisOriginMove ?: $this->move;
 
         if (! $this->tax_repartition_line_id && $this->taxes->isEmpty()) {
-            $this->tax_tag_invert = $this->taxTags?->isNotEmpty() && $originMove->isInbound();
-        } elseif ($originMove->move_type == MoveType::ENTRY) {
-            $tax = $this->taxRepartitionLine->tax ?? $this->taxes->first();
+            $this->tax_tag_invert = false;
 
-            if ($this->display_type == DisplayType::EPD) {
-                $this->tax_tag_invert = $tax->type_tax_use == TypeTaxUse::PURCHASE;
-            } else {
-                $this->tax_tag_invert = (
-                    $tax->type_tax_use == TypeTaxUse::PURCHASE
-                    && $this->is_refund
-                )
-                    || (
-                        $tax->type_tax_use == TypeTaxUse::SALE
-                        && ! $this->is_refund
-                    );
-            }
-        } else {
-            $this->tax_tag_invert = $originMove->isInbound();
+            return;
         }
+
+        if ($originMove->move_type != MoveType::ENTRY) {
+            $this->tax_tag_invert = $originMove->isInbound();
+
+            return;
+        }
+
+        $tax = $this->taxRepartitionLine->tax ?? $this->taxes->first();
+
+        if ($this->display_type == DisplayType::EPD) {
+            $this->tax_tag_invert = $tax->type_tax_use == TypeTaxUse::PURCHASE;
+
+            return;
+        }
+
+        $this->tax_tag_invert = ($tax->type_tax_use == TypeTaxUse::PURCHASE && $this->is_refund)
+            || ($tax->type_tax_use == TypeTaxUse::SALE && ! $this->is_refund);
     }
 
     public function computeBalance()
     {
         if (in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
             $this->balance = 0.0;
-        } elseif (! $this->move->isInvoice(true)) {
+
+            return;
+        }
+
+        if (! $this->move->isInvoice(true)) {
             $this->balance = $this->debit - $this->credit;
-        } else {
-            $this->balance = $this->balance;
         }
     }
 
@@ -624,5 +650,13 @@ class MoveLine extends Model implements Sortable
     protected static function newFactory(): Factory
     {
         return MoveLineFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+            'account_id' => Account::class,
+        ];
     }
 }

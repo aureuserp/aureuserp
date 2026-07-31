@@ -15,9 +15,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\RouteFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Route extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_routes';
@@ -97,7 +99,7 @@ class Route extends Model implements Sortable
 
             $route->creator_id ??= $authUser->id;
 
-            $route->company_id ??= $authUser?->default_company_id;
+            $route->company_id ??= current_company_id();
         });
     }
 }

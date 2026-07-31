@@ -27,9 +27,13 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class OrderLine extends Model implements Sortable
 {
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasFactory, SortableTrait;
 
     protected $table = 'purchases_order_lines';
@@ -246,5 +250,12 @@ class OrderLine extends Model implements Sortable
         }
 
         return float_round($priceUnit, precisionDigits: 2);
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+        ];
     }
 }

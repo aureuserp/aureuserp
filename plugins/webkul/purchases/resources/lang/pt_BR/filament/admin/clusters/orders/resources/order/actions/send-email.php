@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'label' => 'Enviar por e-mail',
+    'label'        => 'Enviar por e-mail',
     'resend-label' => 'Reenviar por e-mail',
 
     'form' => [
         'fields' => [
-            'to' => 'Para',
+            'to'      => 'Para',
             'subject' => 'Assunto',
             'message' => 'Mensagem',
         ],
@@ -16,7 +16,7 @@ return [
         'notification' => [
             'success' => [
                 'title' => 'E-mail enviado',
-                'body' => 'O e-mail foi enviado com sucesso.',
+                'body'  => 'O e-mail foi enviado com sucesso.',
             ],
         ],
     ],

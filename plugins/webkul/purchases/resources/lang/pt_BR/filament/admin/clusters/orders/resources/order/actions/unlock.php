@@ -7,7 +7,7 @@ return [
         'notification' => [
             'success' => [
                 'title' => 'Pedido desbloqueado',
-                'body' => 'O pedido foi desbloqueado com sucesso.',
+                'body'  => 'O pedido foi desbloqueado com sucesso.',
             ],
         ],
     ],

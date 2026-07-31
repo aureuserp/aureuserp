@@ -28,10 +28,10 @@ use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Product\Models\Category;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Models\Category;
 use Webkul\Product\Settings\ProductSettings;
 
 class QuantityResource extends Resource
@@ -78,7 +78,7 @@ class QuantityResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->default(fn (): ?int => Warehouse::first()?->lot_stock_location_id)
+                    ->default(fn (): ?int => Warehouse::where('company_id', current_company_id())->first()?->lot_stock_location_id)
                     ->live()
                     ->afterStateUpdated(function (Set $set) {
                         $set('package_id', null);
@@ -278,7 +278,7 @@ class QuantityResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
-                        $data['location_id'] = $data['location_id'] ?? Warehouse::first()->lot_stock_location_id;
+                        $data['location_id'] = $data['location_id'] ?? Warehouse::query()->when(Product::find($data['product_id'])?->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->value('lot_stock_location_id');
 
                         $data['company_id'] = Product::find($data['product_id'])?->company_id;
 
@@ -287,7 +287,7 @@ class QuantityResource extends Resource
                         return $data;
                     })
                     ->before(function (array $data) {
-                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? Warehouse::first()->lot_stock_location_id)
+                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? Warehouse::query()->when(Product::find($data['product_id'])?->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->value('lot_stock_location_id'))
                             ->where('product_id', $data['product_id'])
                             ->where('package_id', $data['package_id'] ?? null)
                             ->where('lot_id', $data['lot_id'] ?? null)

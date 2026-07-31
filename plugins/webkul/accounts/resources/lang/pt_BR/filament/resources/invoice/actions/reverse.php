@@ -7,9 +7,9 @@ return [
         'heading' => 'Criar estorno',
 
         'form' => [
-            'reason' => 'Motivo exibido no estorno',
+            'reason'  => 'Motivo exibido no estorno',
             'journal' => 'Diário',
-            'date' => 'Data',
+            'date'    => 'Data',
         ],
     ],
 ];

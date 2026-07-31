@@ -129,4 +129,3 @@ it('registers a full payment and marks the refund paid through the action', func
 
     expect($refund->refresh()->payment_state)->toBe(PaymentState::PAID);
 });
-

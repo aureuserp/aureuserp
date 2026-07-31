@@ -46,7 +46,6 @@ class EmployeeSkillResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/reportings/resources/employee-skill.table.columns.id'))

@@ -5,9 +5,12 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResour
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateRule extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = RuleResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;

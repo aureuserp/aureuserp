@@ -20,9 +20,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Tax extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_taxes';
@@ -79,6 +81,23 @@ class Tax extends Model implements Sortable
     public function country()
     {
         return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public static function forProduct(Model $product, TypeTaxUse $type, ?int $companyId = null): array
+    {
+        $relation = $type === TypeTaxUse::SALE ? 'productTaxes' : 'supplierTaxes';
+
+        $taxes = $product->{$relation};
+
+        $companyId = $companyId ?: current_company_id();
+
+        if ($companyId) {
+            $taxes = $taxes->filter(
+                fn (self $tax) => $tax->company_id === null || (int) $tax->company_id === (int) $companyId,
+            );
+        }
+
+        return $taxes->pluck('id')->all();
     }
 
     public function creator(): BelongsTo

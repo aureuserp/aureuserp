@@ -3,55 +3,55 @@
 return [
     'form' => [
         'fields' => [
-            'color' => 'Cor',
-            'country' => 'País',
+            'color'         => 'Cor',
+            'country'       => 'País',
             'applicability' => 'Aplicabilidade',
-            'name' => 'Nome',
-            'status' => 'Status',
-            'tax-negate' => 'Negar imposto',
+            'name'          => 'Nome',
+            'status'        => 'Status',
+            'tax-negate'    => 'Negar imposto',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'color' => 'Cor',
-            'country' => 'País',
-            'created-by' => 'Criado por',
+            'color'         => 'Cor',
+            'country'       => 'País',
+            'created-by'    => 'Criado por',
             'applicability' => 'Aplicabilidade',
-            'name' => 'Nome',
-            'status' => 'Status',
-            'tax-negate' => 'Negar imposto',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
-            'deleted-at' => 'Excluído em',
+            'name'          => 'Nome',
+            'status'        => 'Status',
+            'tax-negate'    => 'Negar imposto',
+            'created-at'    => 'Criado em',
+            'updated-at'    => 'Atualizado em',
+            'deleted-at'    => 'Excluído em',
         ],
 
         'filters' => [
-            'bank' => 'Banco',
+            'bank'           => 'Banco',
             'account-holder' => 'Titular da conta',
-            'creator' => 'Criador',
+            'creator'        => 'Criador',
             'can-send-money' => 'Pode enviar dinheiro',
         ],
 
         'groups' => [
-            'country' => 'País',
-            'created-by' => 'Criado por',
+            'country'       => 'País',
+            'created-by'    => 'Criado por',
             'applicability' => 'Aplicabilidade',
-            'name' => 'Nome',
+            'name'          => 'Nome',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Etiqueta de conta atualizada',
-                    'body' => 'A etiqueta de conta foi atualizada com sucesso.',
+                    'body'  => 'A etiqueta de conta foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Etiqueta de conta excluída',
-                    'body' => 'A etiqueta de conta foi excluída com sucesso.',
+                    'body'  => 'A etiqueta de conta foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -60,7 +60,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Etiquetas de conta excluídas',
-                    'body' => 'As etiquetas de conta foram excluídas com sucesso.',
+                    'body'  => 'As etiquetas de conta foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -68,12 +68,12 @@ return [
 
     'infolist' => [
         'entries' => [
-            'color' => 'Cor',
-            'country' => 'País',
+            'color'         => 'Cor',
+            'country'       => 'País',
             'applicability' => 'Aplicabilidade',
-            'name' => 'Nome',
-            'status' => 'Status',
-            'tax-negate' => 'Negar imposto',
+            'name'          => 'Nome',
+            'status'        => 'Status',
+            'tax-negate'    => 'Negar imposto',
         ],
     ],
 ];

@@ -2,6 +2,6 @@
 
 return [
     'empty' => 'Vazio',
-    'same' => 'Igual',
+    'same'  => 'Igual',
     'mixed' => 'Misto',
 ];

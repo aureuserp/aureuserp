@@ -29,9 +29,14 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Warehouse extends Model implements Sortable
 {
+    public const MTO_ROUTE_NAME = 'Replenish on Order (MTO)';
+
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_warehouses';
@@ -235,11 +240,17 @@ class Warehouse extends Model implements Sortable
 
         static::created(function (Warehouse $warehouse) {
             $warehouse->finalizeWarehouseCreation();
+
+            $warehouse->enableLocationsForMultiWarehouse();
         });
 
         static::updated(function (Warehouse $warehouse) {
             if ($warehouse->wasChanged('code')) {
-                $warehouse->viewLocation->update(['name' => $warehouse->code]);
+                $warehouse->viewLocation?->update(['name' => $warehouse->code]);
+            }
+
+            if ($warehouse->wasChanged('company_id')) {
+                $warehouse->enableLocationsForMultiWarehouse();
             }
 
             $warehouse->syncWarehouseConfiguration();
@@ -262,10 +273,14 @@ class Warehouse extends Model implements Sortable
                 $operationTypes->each(fn ($operationType) => $operationType->delete());
             }
 
-            $childLocationIds = Location::query()
-                ->whereRaw('parent_path LIKE ?', [$warehouse->viewLocation->parent_path . '%'])
-                ->where('id', '!=', $warehouse->viewLocation->id)
-                ->pluck('id');
+            $viewLocation = $warehouse->viewLocation;
+
+            $childLocationIds = $viewLocation
+                ? Location::query()
+                    ->whereRaw('parent_path LIKE ?', [$viewLocation->parent_path.'%'])
+                    ->where('id', '!=', $viewLocation->id)
+                    ->pluck('id')
+                : collect();
 
             $blocking = OperationType::query()
                 ->whereDoesntHave('warehouse', fn ($q) => $q->whereKey($warehouse->id))
@@ -276,10 +291,10 @@ class Warehouse extends Model implements Sortable
                 ->pluck('id');
 
             $blocking = OperationType::where(
-                    fn ($q) => $q
-                        ->whereIn('source_location_id', $childLocationIds)
-                        ->orWhereIn('destination_location_id', $childLocationIds)
-                )
+                fn ($q) => $q
+                    ->whereIn('source_location_id', $childLocationIds)
+                    ->orWhereIn('destination_location_id', $childLocationIds)
+            )
                 ->whereNotIn('id', $operationTypes->pluck('id')->all())
                 ->get()
                 ->pluck('id');
@@ -288,7 +303,7 @@ class Warehouse extends Model implements Sortable
                 throw new \Exception("{$blocking->implode(', ')} have default source or destination locations within warehouse {$warehouse->name}, therefore you cannot archive it.");
             }
 
-            $warehouse->viewLocation->delete();
+            $viewLocation?->delete();
 
             $rules = Rule::where('warehouse_id', $warehouse->id)->get();
 
@@ -326,11 +341,46 @@ class Warehouse extends Model implements Sortable
         });
     }
 
+    public static function maxPerCompany(): int
+    {
+        return (int) static::query()
+            ->withoutGlobalScope(CompanyScope::class)
+            ->selectRaw('company_id, count(*) as aggregate')
+            ->groupBy('company_id')
+            ->pluck('aggregate')
+            ->max();
+    }
+
+    public static function countForCompany(?int $companyId): int
+    {
+        return static::query()
+            ->withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $companyId)
+            ->count();
+    }
+
+    protected function enableLocationsForMultiWarehouse(): void
+    {
+        $settings = settings(WarehouseSettings::class);
+
+        if ($settings->enable_locations) {
+            return;
+        }
+
+        if (static::countForCompany($this->company_id) <= 1) {
+            return;
+        }
+
+        $settings->enable_locations = true;
+
+        $settings->save();
+    }
+
     protected function handleWarehouseCreation(): void
     {
         $this->creator_id ??= Auth::id();
 
-        $this->company_id ??= Auth::user()?->default_company_id;
+        $this->company_id ??= current_company_id();
 
         $this->reception_steps ??= ReceptionStep::ONE_STEP;
 
@@ -762,7 +812,7 @@ class Warehouse extends Model implements Sortable
             'propagate_carrier'        => true,
             'source_location_id'       => $this->lot_stock_location_id,
             'destination_location_id'  => $customerLocation->id,
-            'route_id'                 => 1,
+            'route_id'                 => $this->resolveMtoRouteId(),
             'operation_type_id'        => $this->out_type_id,
             'creator_id'               => $this->creator_id,
             'company_id'               => $this->company_id,
@@ -1286,5 +1336,29 @@ class Warehouse extends Model implements Sortable
     protected static function newFactory(): WarehouseFactory
     {
         return WarehouseFactory::new();
+    }
+
+    protected function resolveMtoRouteId(): int
+    {
+        $query = fn () => Route::withoutGlobalScopes()->where('name', static::MTO_ROUTE_NAME);
+
+        $route = $query()->where('company_id', $this->company_id)->first()
+            ?? $query()->whereNull('company_id')->first();
+
+        if ($route) {
+            return $route->id;
+        }
+
+        return Route::create([
+            'sort'                        => 1,
+            'name'                        => static::MTO_ROUTE_NAME,
+            'product_selectable'          => true,
+            'product_category_selectable' => false,
+            'warehouse_selectable'        => false,
+            'packaging_selectable'        => false,
+            'company_id'                  => $this->company_id,
+            'creator_id'                  => $this->creator_id,
+            'deleted_at'                  => now(),
+        ])->id;
     }
 }

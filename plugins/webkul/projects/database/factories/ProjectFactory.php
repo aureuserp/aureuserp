@@ -7,13 +7,15 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Project\Models\Project;
 use Webkul\Project\Models\ProjectStage;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Project>
  */
 class ProjectFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -44,7 +46,6 @@ class ProjectFactory extends Factory
             'is_active'               => true,
             'stage_id'                => ProjectStage::factory(),
             'partner_id'              => Partner::query()->value('id') ?? Partner::factory(),
-            'company_id'              => Company::factory(),
             'user_id'                 => User::query()->value('id') ?? User::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];

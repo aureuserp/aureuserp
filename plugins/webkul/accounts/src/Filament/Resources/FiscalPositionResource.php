@@ -22,16 +22,21 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\CreateFiscalPosition;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\EditFiscalPosition;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ListFiscalPositions;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ManageFiscalPositionTax;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ViewFiscalPosition;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\Tax;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -82,6 +87,51 @@ class FiscalPositionResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.company'))
+                                    ->default(current_company_id())
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                        $mappings = [
+                                            'taxes'    => [Tax::class, ['tax_source_id', 'tax_destination_id']],
+                                            'accounts' => [Account::class, ['account_source_id', 'account_destination_id']],
+                                        ];
+
+                                        foreach ($mappings as $repeater => [$model, $mappedFields]) {
+                                            $rows = $get($repeater);
+
+                                            if (! is_array($rows)) {
+                                                continue;
+                                            }
+
+                                            $referenced = collect($rows)
+                                                ->flatMap(fn ($row) => array_map(fn ($field) => $row[$field] ?? null, $mappedFields))
+                                                ->filter()
+                                                ->unique()
+                                                ->all();
+
+                                            if (empty($referenced)) {
+                                                continue;
+                                            }
+
+                                            $allowed = $model::query()
+                                                ->withoutGlobalScopes()
+                                                ->whereKey($referenced)
+                                                ->where(owned_by_company($state))
+                                                ->pluck('id')
+                                                ->all();
+
+                                            foreach ($rows as $key => $row) {
+                                                foreach ($mappedFields as $field) {
+                                                    $recordId = $row[$field] ?? null;
+
+                                                    if (filled($recordId) && ! in_array($recordId, $allowed)) {
+                                                        $rows[$key][$field] = null;
+                                                    }
+                                                }
+                                            }
+
+                                            $set($repeater, $rows);
+                                        }
+                                    })
                                     ->required(),
 
                                 Toggle::make('auto_reply')
@@ -112,7 +162,11 @@ class FiscalPositionResource extends Resource
                                     ])
                                     ->schema([
                                         Select::make('tax_source_id')
-                                            ->relationship('taxSource', 'name')
+                                            ->relationship(
+                                                'taxSource',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                            )
                                             ->wrapOptionLabels(false)
                                             ->label(__('accounts::traits/fiscal-position-tax.form.fields.tax-source'))
                                             ->preload()
@@ -120,7 +174,11 @@ class FiscalPositionResource extends Resource
                                             ->required(),
 
                                         Select::make('tax_destination_id')
-                                            ->relationship('taxDestination', 'name')
+                                            ->relationship(
+                                                'taxDestination',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                            )
                                             ->wrapOptionLabels(false)
                                             ->label(__('accounts::traits/fiscal-position-tax.form.fields.tax-destination'))
                                             ->preload()
@@ -152,7 +210,11 @@ class FiscalPositionResource extends Resource
                                             ->wrapOptionLabels(false)
                                             ->searchable()
                                             ->preload()
-                                            ->relationship('accountSource', 'name')
+                                            ->relationship(
+                                                'accountSource',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                            )
                                             ->required(),
 
                                         Select::make('account_destination_id')
@@ -160,7 +222,11 @@ class FiscalPositionResource extends Resource
                                             ->wrapOptionLabels(false)
                                             ->searchable()
                                             ->preload()
-                                            ->relationship('accountDestination', 'name')
+                                            ->relationship(
+                                                'accountDestination',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                            )
                                             ->required(),
                                     ])
                                     ->columns(2),

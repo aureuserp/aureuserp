@@ -56,7 +56,7 @@ class FieldResource extends Resource
         return __('fields::filament/resources/field.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }

@@ -3,14 +3,14 @@
 return [
     'notification' => [
         'title' => 'Reembolso atualizado',
-        'body' => 'O reembolso foi atualizado com sucesso.',
+        'body'  => 'O reembolso foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'title' => 'Reembolso excluído',
-                'body' => 'O reembolso foi excluído com sucesso.',
+                'body'  => 'O reembolso foi excluído com sucesso.',
             ],
         ],
 

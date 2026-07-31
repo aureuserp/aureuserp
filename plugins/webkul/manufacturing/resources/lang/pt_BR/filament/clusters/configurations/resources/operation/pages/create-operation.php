@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Operação criada',
-        'body' => 'A operação foi criada com sucesso.',
+        'body'  => 'A operação foi criada com sucesso.',
     ],
 ];

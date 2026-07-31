@@ -11,10 +11,10 @@ return [
                 'title' => 'Informações gerais',
 
                 'fields' => [
-                    'name' => 'Nome',
+                    'name'       => 'Nome',
                     'technician' => 'Responsável',
-                    'company' => 'Empresa',
-                    'note' => 'Nota',
+                    'company'    => 'Empresa',
+                    'note'       => 'Nota',
                 ],
             ],
         ],
@@ -22,9 +22,9 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'technician' => 'Responsável',
-            'company' => 'Empresa',
+            'company'    => 'Empresa',
             'created-at' => 'Criado em',
         ],
 
@@ -36,14 +36,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Categoria atualizada',
-                    'body' => 'A categoria foi atualizada com sucesso.',
+                    'body'  => 'A categoria foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Categoria excluída',
-                    'body' => 'A categoria foi excluída com sucesso.',
+                    'body'  => 'A categoria foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -52,7 +52,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Categorias excluídas',
-                    'body' => 'As categorias foram excluídas com sucesso.',
+                    'body'  => 'As categorias foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -61,7 +61,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Categoria criada',
-                    'body' => 'A categoria foi criada com sucesso.',
+                    'body'  => 'A categoria foi criada com sucesso.',
                 ],
             ],
         ],
@@ -73,10 +73,10 @@ return [
                 'title' => 'Informações gerais',
 
                 'entries' => [
-                    'name' => 'Nome',
+                    'name'       => 'Nome',
                     'technician' => 'Responsável',
-                    'company' => 'Empresa',
-                    'note' => 'Nota',
+                    'company'    => 'Empresa',
+                    'note'       => 'Nota',
                 ],
             ],
         ],

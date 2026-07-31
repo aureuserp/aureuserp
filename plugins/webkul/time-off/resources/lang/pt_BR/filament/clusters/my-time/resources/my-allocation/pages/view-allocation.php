@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Alocação excluída',
-                'body' => 'A alocação foi excluída com sucesso.',
+                'body'  => 'A alocação foi excluída com sucesso.',
             ],
         ],
     ],

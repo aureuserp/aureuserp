@@ -9,6 +9,7 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\PackageUse;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\ReceptionStep;
+use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Move;
@@ -18,23 +19,27 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Package;
 use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Product;
-use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Inventory\Models\ProductQuantity;
-use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Models\PutawayRule;
-use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Models\StorageCategoryCapacity;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 
 class InventoryHelper
 {
+    public static function insufficientStockTooltip(): string
+    {
+        return __('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.columns.insufficient-stock-tooltip');
+    }
+
     public static function unitsUom(): UOM
     {
         return UOM::query()->where('name', 'Units')->firstOrFail();

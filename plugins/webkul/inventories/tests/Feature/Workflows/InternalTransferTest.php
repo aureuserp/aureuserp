@@ -47,7 +47,7 @@ it('moves the quantity from the source to the destination sublocation on validat
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect($operation->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::quantOf($this->product, $this->stock))->toBeNull()

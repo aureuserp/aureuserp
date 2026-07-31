@@ -48,6 +48,8 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\PaymentTerm;
+use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
@@ -69,7 +71,6 @@ use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -79,7 +80,7 @@ use Webkul\Support\Models\UOM;
 
 class OrderResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Order::class;
 
@@ -98,7 +99,7 @@ class OrderResource extends Resource
     {
         return [
             __('purchases::filament/admin/clusters/orders/resources/order.global-search.vendor') => $record->partner?->name ?? '—',
-            __('purchases::filament/admin/clusters/orders/resources/order.global-search.amount') => money($record->total_amount, $record->currency?->name) ?? '—',
+            __('purchases::filament/admin/clusters/orders/resources/order.global-search.amount') => money($record->total_amount ?? 0, $record->currency?->name) ?? '—',
         ];
     }
 
@@ -165,6 +166,7 @@ class OrderResource extends Resource
                                         modifyQueryUsing: function (Builder $query, Get $get, $operation, $state) {
                                             $query
                                                 ->where('partner_id', $get('partner_id'))
+                                                ->where('company_id', $get('company_id') ?? current_company_id())
                                                 ->where(function ($query) use ($operation, $state) {
                                                     $query->where('state', RequisitionState::CONFIRMED);
                                                     if ($operation !== 'create' && $state) {
@@ -199,7 +201,7 @@ class OrderResource extends Resource
                                     ->required()
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()->defaultCompany?->currency_id)
+                                    ->default(current_company()?->currency_id)
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                             ]),
 
@@ -234,11 +236,11 @@ class OrderResource extends Resource
                                         modifyQueryUsing: fn (Builder $query, Get $get) => $query
                                             ->whereIn('type', [
                                                 InventoryEnums\OperationType::INCOMING,
-                                                InventoryEnums\OperationType::DROPSHIP
+                                                InventoryEnums\OperationType::DROPSHIP,
                                             ])
                                             ->where(function (Builder $query) use ($get) {
                                                 $query->whereNull('warehouse_id')
-                                                    ->orWhereHas('warehouse', fn (Builder $q) => $q->where('company_id', $get('company_id') ?? Auth::user()->default_company_id));
+                                                    ->orWhereHas('warehouse', fn (Builder $q) => $q->where('company_id', $get('company_id') ?? current_company_id()));
                                             }),
                                     )
                                     ->getOptionLabelFromRecordUsing(function (OperationType $record) {
@@ -252,7 +254,7 @@ class OrderResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->visible(fn (): bool => static::canUseInventoryWarehouses())
-                                    ->default(fn (Get $get) => static::getInventoryOperationTypeId($get('company_id') ?? Auth::user()->default_company_id))
+                                    ->default(fn (Get $get) => static::getInventoryOperationTypeId($get('company_id') ?? current_company_id()))
                                     ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                             ]),
                     ])
@@ -304,7 +306,14 @@ class OrderResource extends Resource
                                             ->preload()
                                             ->required()
                                             ->live()
-                                            ->default(Auth::user()->default_company_id)
+                                            ->default(current_company_id())
+                                            ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                                                $set('operation_type_id', static::getInventoryOperationTypeId($state ?? current_company_id()));
+
+                                                clear_foreign_company_values($set, $get, [
+                                                    'payment_term_id' => PaymentTerm::class,
+                                                ], $state);
+                                            })
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT])),
                                         TextInput::make('origin')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.source-document'))
@@ -327,7 +336,11 @@ class OrderResource extends Resource
                                     ->schema([
                                         Select::make('payment_term_id')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.payment-term'))
-                                            ->relationship('paymentTerm', 'name')
+                                            ->relationship(
+                                                'paymentTerm',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
@@ -349,7 +362,6 @@ class OrderResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 IconColumn::make('priority')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.favorite'))
@@ -424,7 +436,6 @@ class OrderResource extends Resource
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]))
-            ->columnManagerColumns(3)
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.groups.vendor')),
@@ -880,7 +891,6 @@ class OrderResource extends Resource
             })
             ->deletable(fn ($record): bool => ! in_array($record?->state, [OrderState::DONE, OrderState::CANCELED]))
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::DONE, OrderState::CANCELED]))
-            ->columnManagerColumns(2)
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.product'))
@@ -966,10 +976,11 @@ class OrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query
+                        fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', ProductType::GOODS)
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -1138,7 +1149,9 @@ class OrderResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('type_tax_use', TypeTaxUse::PURCHASE)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->multiple()
@@ -1197,7 +1210,7 @@ class OrderResource extends Resource
                     'currency_id'         => $record->currency_id,
                     'partner_id'          => $record->partner_id,
                     'creator_id'          => Auth::id(),
-                    'company_id'          => Auth::user()->default_company_id,
+                    'company_id'          => $record->company_id,
                 ]);
 
                 return $data;
@@ -1238,7 +1251,7 @@ class OrderResource extends Resource
 
         $set('price_unit', round($priceUnit, 2));
 
-        $set('taxes', $product->productTaxes->pluck('id')->toArray());
+        $set('taxes', Tax::forProduct($product, TypeTaxUse::PURCHASE, $get('../../company_id')));
 
         $packaging = static::getBestPackaging($get('product_id'), round($uomQuantity, 2));
 
@@ -1443,7 +1456,7 @@ class OrderResource extends Resource
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
+        $taxes = Tax::whereIn('id', $taxIds)->get();
 
         if ($taxes->isEmpty()) {
             $subTotal = round($discountedUnit * $quantity, 4);
@@ -1520,7 +1533,7 @@ class OrderResource extends Resource
         $set('requisition_id', null);
 
         if (static::getOrderSettings()->enable_purchase_agreements) {
-            $activeAgreement = static::getActiveAgreementForVendor($state);
+            $activeAgreement = static::getActiveAgreementForVendor($state, $get('company_id') ?? current_company_id());
 
             if ($activeAgreement) {
                 $set('requisition_id', $activeAgreement->id);
@@ -1565,9 +1578,10 @@ class OrderResource extends Resource
         }
     }
 
-    private static function getActiveAgreementForVendor(int $partnerId): ?Requisition
+    private static function getActiveAgreementForVendor(int $partnerId, ?int $companyId = null): ?Requisition
     {
         return Requisition::where('partner_id', $partnerId)
+            ->where('company_id', $companyId ?? current_company_id())
             ->where('state', RequisitionState::CONFIRMED)
             ->where(function ($query) {
                 $query->whereNull('ends_at')
@@ -1595,7 +1609,7 @@ class OrderResource extends Resource
                 'product_qty'       => $line->qty,
                 'price_unit'        => $line->price_unit,
                 'planned_at'        => now(),
-                'taxes'             => $product?->productTaxes->pluck('id')->toArray() ?? [],
+                'taxes'             => $product ? Tax::forProduct($product, TypeTaxUse::PURCHASE, $requisition->company_id) : [],
                 'discount'          => 0,
                 'from_requisition'  => true,
             ];

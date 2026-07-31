@@ -16,7 +16,7 @@ class PluginSettings extends Cluster
         return __('manufacturing::app.navigation.settings.label');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Manufacturing;
     }

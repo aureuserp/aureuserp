@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Pedido criado',
-        'body' => 'O pedido foi criado com sucesso.',
+        'body'  => 'O pedido foi criado com sucesso.',
     ],
 ];

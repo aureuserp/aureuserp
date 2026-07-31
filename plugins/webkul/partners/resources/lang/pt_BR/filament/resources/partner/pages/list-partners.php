@@ -11,8 +11,8 @@ return [
 
     'tabs' => [
         'individuals' => 'Pessoas físicas',
-        'companies' => 'Empresas',
-        'employees' => 'Colaboradores',
-        'archived' => 'Arquivados',
+        'companies'   => 'Empresas',
+        'employees'   => 'Colaboradores',
+        'archived'    => 'Arquivados',
     ],
 ];

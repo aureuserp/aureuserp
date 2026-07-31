@@ -1,8 +1,12 @@
 <?php
 
 use ArPHP\I18N\Arabic;
+use Filament\Forms\Components\Field;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\SettingsRegistry;
 use Webkul\Support\SupportServiceProvider;
 
@@ -285,24 +289,122 @@ if (! function_exists('float_round')) {
 }
 
 if (! function_exists('make_aware')) {
-    /**
-     * Return $dt with an explicit timezone, together with a callable to
-     * convert a Carbon back to the same timezone as $dt.
-     *
-     * Mirrors Python's make_aware(dt):
-     *   if dt.tzinfo → return dt, lambda val: val.astimezone(dt.tzinfo)
-     *   else          → return dt.replace(tzinfo=utc), lambda val: val.astimezone(utc)
-     *
-     * Carbon always carries a timezone, so the first branch always applies.
-     * The second branch (naive datetime → UTC) is handled by ensuring the
-     * caller passes a UTC Carbon when no explicit timezone is intended.
-     *
-     * @return array{0: Carbon\Carbon, 1: callable(Carbon\Carbon): Carbon\Carbon}
-     */
     function make_aware(Carbon\Carbon $dt): array
     {
         $tz = $dt->getTimezone();
 
         return [$dt, fn (Carbon\Carbon $val) => $val->clone()->setTimezone($tz)];
+    }
+}
+
+if (! function_exists('current_company')) {
+    function current_company(): ?Company
+    {
+        return app(CompanyContext::class)->currentCompany();
+    }
+}
+
+if (! function_exists('current_company_id')) {
+    function current_company_id(): ?int
+    {
+        return app(CompanyContext::class)->currentId();
+    }
+}
+
+if (! function_exists('owned_by_company')) {
+    function owned_by_company($companyId = null): Closure
+    {
+        $companyId = $companyId ?: current_company_id();
+
+        return function ($query) use ($companyId) {
+            $model = $query->getModel();
+
+            if (method_exists($model, 'companyScopeRelation')) {
+                $relation = $model->companyScopeRelation();
+
+                return $query
+                    ->whereHas($relation, fn ($related) => $related->where('companies.id', $companyId))
+                    ->orWhereDoesntHave($relation);
+            }
+
+            $column = $model->getTable().'.company_id';
+
+            return $query->whereNull($column)->orWhere($column, $companyId);
+        };
+    }
+}
+
+if (! function_exists('reapply_company_defaults')) {
+    function reapply_company_defaults($component, array $fields): void
+    {
+        $container = $component->getContainer();
+
+        $prefix = $container->getStatePath();
+
+        $root = $component->getRootContainer();
+
+        foreach ($fields as $field) {
+            $path = filled($prefix) ? $prefix.'.'.$field : $field;
+
+            $target = $root->getComponent(
+                fn ($candidate) => $candidate instanceof Field
+                    && $candidate->getStatePath() === $path,
+                withHidden: true,
+            );
+
+            $target?->state($target->getDefaultState());
+        }
+    }
+}
+
+if (! function_exists('clear_foreign_company_values')) {
+    function clear_foreign_company_values($set, $get, array $fields, $companyId = null): void
+    {
+        $companyId = $companyId ?: current_company_id();
+
+        foreach ($fields as $field => $model) {
+            $state = $get($field);
+
+            if (blank($state)) {
+                continue;
+            }
+
+            $keyName = (new $model)->getKeyName();
+
+            $allowed = $model::query()
+                ->withoutGlobalScopes()
+                ->whereKey($state)
+                ->where(owned_by_company($companyId))
+                ->pluck($keyName)
+                ->all();
+
+            if (is_array($state)) {
+                $kept = array_values(array_filter($state, fn ($key) => in_array($key, $allowed)));
+
+                if (count($kept) !== count($state)) {
+                    $set($field, $kept);
+                }
+
+                continue;
+            }
+
+            if (! in_array($state, $allowed)) {
+                $set($field, null);
+            }
+        }
+    }
+}
+
+if (! function_exists('allowed_companies')) {
+    function allowed_companies(): Collection
+    {
+        return app(CompanyContext::class)->allowedCompanies();
+    }
+}
+
+if (! function_exists('allowed_company_ids')) {
+    function allowed_company_ids(): array
+    {
+        return app(CompanyContext::class)->allowedIds();
     }
 }

@@ -47,8 +47,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Enums\RecruitmentState as RecruitmentStateEnum;
 use Webkul\Recruitment\Filament\Clusters\Applications;
@@ -249,7 +249,11 @@ class ApplicantResource extends Resource
                                             ->url()
                                             ->columnSpan(1),
                                         Select::make('job_id')
-                                            ->relationship('job', 'name')
+                                            ->relationship(
+                                                name: 'job',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
+                                            )
                                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.form.sections.general-information.fields.job-position'))
                                             ->preload()
                                             ->live()

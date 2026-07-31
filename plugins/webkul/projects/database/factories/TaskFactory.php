@@ -8,13 +8,15 @@ use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Task;
 use Webkul\Project\Models\TaskStage;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Task>
  */
 class TaskFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -52,7 +54,6 @@ class TaskFactory extends Factory
             'project_id'          => Project::factory(),
             'stage_id'            => TaskStage::factory(),
             'partner_id'          => Partner::query()->value('id') ?? Partner::factory(),
-            'company_id'          => Company::factory(),
             'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }

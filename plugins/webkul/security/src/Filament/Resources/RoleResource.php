@@ -44,7 +44,7 @@ class RoleResource extends RolesRoleResource
 
     protected static ?int $navigationSort = 1;
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }

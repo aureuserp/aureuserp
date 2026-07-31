@@ -2,12 +2,12 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
-        'internal' => 'Interno',
-        'customer' => 'Cliente',
+        'all'        => 'Todos',
+        'internal'   => 'Interno',
+        'customer'   => 'Cliente',
         'production' => 'Produção',
-        'vendor' => 'Fornecedor',
-        'archived' => 'Arquivados',
+        'vendor'     => 'Fornecedor',
+        'archived'   => 'Arquivados',
     ],
 
     'header-actions' => [
@@ -16,7 +16,7 @@ return [
 
             'notification' => [
                 'title' => 'Local criado',
-                'body' => 'O local foi criado com sucesso.',
+                'body'  => 'O local foi criado com sucesso.',
             ],
         ],
     ],

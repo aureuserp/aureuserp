@@ -13,9 +13,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class TaxGroup extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_tax_groups';

@@ -20,7 +20,7 @@ class Overview extends Cluster
         return __('time-off::filament/clusters/overview.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::TimeOff;
     }

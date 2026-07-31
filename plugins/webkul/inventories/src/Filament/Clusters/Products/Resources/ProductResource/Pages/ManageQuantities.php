@@ -124,7 +124,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->preload()
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, Get $get) {
+                    ->afterStateUpdated(function (Set $set) {
                         $set('package_id', null);
                     })
                     ->visible((bool) $this->getOwnerRecord()->is_configurable),
@@ -133,14 +133,16 @@ class ManageQuantities extends ManageRelatedRecords
                     ->relationship(
                         name: 'location',
                         titleAttribute: 'full_name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('type', LocationType::INTERNAL),
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->where('type', LocationType::INTERNAL)
+                            ->when($this->ownerCompanyId(), fn (Builder $scoped, $companyId) => $scoped->where(owned_by_company($companyId))),
                     )
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->default(fn (): ?int => Warehouse::first()?->lot_stock_location_id)
+                    ->default(fn (): ?int => $this->defaultStockLocationId())
                     ->live()
-                    ->afterStateUpdated(function (Set $set, Get $get) {
+                    ->afterStateUpdated(function (Set $set) {
                         $set('package_id', null);
                     })
                     ->visible(static::getWarehouseSettings()->enable_locations),
@@ -280,7 +282,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->mutateDataUsing(function (array $data): array {
                         $data['product_id'] ??= $this->getOwnerRecord()->id;
 
-                        $data['location_id'] = $data['location_id'] ?? Warehouse::first()->lot_stock_location_id;
+                        $data['location_id'] = $data['location_id'] ?? $this->defaultStockLocationId();
 
                         $data['company_id'] = $this->getOwnerRecord()->company_id;
 
@@ -291,7 +293,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->before(function (array $data) {
                         $productId = $data['product_id'] ?? $this->getOwnerRecord()->id;
 
-                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? Warehouse::first()->lot_stock_location_id)
+                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? $this->defaultStockLocationId())
                             ->where('product_id', $productId)
                             ->where('package_id', $data['package_id'] ?? null)
                             ->where('lot_id', $data['lot_id'] ?? null)
@@ -355,5 +357,19 @@ class ManageQuantities extends ManageRelatedRecords
     public static function getWarehouseSettings(): WarehouseSettings
     {
         return settings(WarehouseSettings::class);
+    }
+
+    protected function ownerCompanyId(): ?int
+    {
+        $companyId = $this->getOwnerRecord()->company_id;
+
+        return $companyId ? (int) $companyId : null;
+    }
+
+    protected function defaultStockLocationId(): ?int
+    {
+        return Warehouse::query()
+            ->when($this->ownerCompanyId(), fn ($query, $companyId) => $query->where(owned_by_company($companyId)))
+            ->value('lot_stock_location_id');
     }
 }

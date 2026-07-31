@@ -25,6 +25,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
@@ -32,10 +33,11 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Unique;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\ManufactureStep;
@@ -92,7 +94,7 @@ class WarehouseResource extends Resource
                                     ->autofocus()
                                     ->placeholder(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.name-placeholder'))
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
-                                    ->unique(ignoreRecord: true),
+                                    ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get): Unique => $rule->where('company_id', $get('company_id'))),
 
                                 TextInput::make('code')
                                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.code'))
@@ -100,7 +102,7 @@ class WarehouseResource extends Resource
                                     ->maxLength(255)
                                     ->placeholder(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.code-placeholder'))
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.code-hint-tooltip'))
-                                    ->unique(ignoreRecord: true),
+                                    ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get): Unique => $rule->where('company_id', $get('company_id'))),
 
                                 Group::make()
                                     ->schema([
@@ -108,8 +110,11 @@ class WarehouseResource extends Resource
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.company'))
                                             ->relationship('company', 'name')
                                             ->required()
-                                            ->disabled(fn () => Auth::user()->default_company_id)
-                                            ->default(Auth::user()->default_company_id),
+                                            ->disabled(fn () => current_company_id())
+                                            ->default(current_company_id())
+                                            ->helperText(fn (?Warehouse $record): ?string => $record || static::getWarehouseSettings()->enable_locations
+                                                ? null
+                                                : __('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.multi-warehouse-warning')),
                                         Select::make('partner_address_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.general.fields.address'))
                                             ->relationship('partnerAddress', 'name')
@@ -151,8 +156,12 @@ class WarehouseResource extends Resource
                                     ->schema([
                                         CheckboxList::make('supplierWarehouses')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.settings.fields.resupply-from'))
-                                            ->relationship('supplierWarehouses', 'name')
-                                            ->visible(Warehouse::count() > 1),
+                                            ->relationship(
+                                                'supplierWarehouses',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
+                                            ->visible(Warehouse::maxPerCompany() > 1),
 
                                         Radio::make('manufacture_steps')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.settings.fields.manufacture'))
@@ -162,7 +171,7 @@ class WarehouseResource extends Resource
                                             ->visible(Package::isPluginInstalled('manufacturing')),
                                     ])
                                     ->columns(1)
-                                    ->visible(Warehouse::count() > 1 || Package::isPluginInstalled('manufacturing')),
+                                    ->visible(Warehouse::maxPerCompany() > 1 || Package::isPluginInstalled('manufacturing')),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1])
@@ -322,7 +331,7 @@ class WarehouseResource extends Resource
                                         ->danger()
                                         ->title(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.title'))
                                         ->body(__('inventories::filament/clusters/configurations/resources/warehouse.table.bulk-actions.force-delete.notification.error.body'))
-                                            ->send();
+                                        ->send();
                                 } else {
                                     Notification::make()
                                         ->danger()

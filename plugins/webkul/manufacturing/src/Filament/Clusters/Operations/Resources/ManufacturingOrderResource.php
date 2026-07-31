@@ -38,8 +38,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\ComponentAttributeBag;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
@@ -63,17 +63,16 @@ use Webkul\Manufacturing\Models\Product;
 use Webkul\Manufacturing\Models\WorkOrder;
 use Webkul\Manufacturing\Settings\OperationSettings;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\UOM;
 
 class ManufacturingOrderResource extends Resource
 {
     use HasCustomFields;
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 
@@ -158,10 +157,11 @@ class ManufacturingOrderResource extends Resource
                                     ->relationship(
                                         'product',
                                         'name',
-                                        fn (Builder $query) => $query
+                                        fn (Builder $query, Get $get) => $query
                                             ->withTrashed()
                                             ->where('type', ProductType::GOODS)
                                             ->whereNull('is_configurable')
+                                            ->where(owned_by_company($get('company_id')))
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (Product $record): string => $record->name)
                                     ->searchable()
@@ -210,7 +210,7 @@ class ManufacturingOrderResource extends Resource
 
                                         $set('uom_id', $product->uom_id ?: static::getDefaultUomId());
 
-                                        $set('company_id', $product->company_id ?? Auth::user()?->default_company_id);
+                                        $set('company_id', $product->company_id ?? current_company_id());
 
                                         $billOfMaterialId = static::getDefaultBillOfMaterialId($product);
 
@@ -252,7 +252,9 @@ class ManufacturingOrderResource extends Resource
 
                                             $productIds = array_filter([$product->id, $product->parent_id]);
 
-                                            $query->withTrashed()->whereIn('product_id', $productIds);
+                                            $query->withTrashed()
+                                                ->whereIn('product_id', $productIds)
+                                                ->where(owned_by_company($get('company_id')));
                                         }
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (BillOfMaterial $record): string => static::getBillOfMaterialLabel($record))
@@ -328,9 +330,10 @@ class ManufacturingOrderResource extends Resource
                                             ->relationship(
                                                 'operationType',
                                                 'name',
-                                                fn (Builder $query) => $query
+                                                fn (Builder $query, Get $get) => $query
                                                     ->withTrashed()
                                                     ->where('type', 'manufacture')
+                                                    ->where(owned_by_company($get('company_id')))
                                             )
                                             ->getOptionLabelFromRecordUsing(fn (OperationType $record): string => static::getOperationTypeLabel($record))
                                             ->searchable()
@@ -358,7 +361,9 @@ class ManufacturingOrderResource extends Resource
                                             }),
                                         Select::make('source_location_id')
                                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.miscellaneous.fields.source'))
-                                            ->relationship('sourceLocation', 'full_name', fn (Builder $query) => $query->withTrashed())
+                                            ->relationship('sourceLocation', 'full_name', fn (Builder $query, Get $get) => $query
+                                                ->withTrashed()
+                                                ->where(owned_by_company($get('company_id'))))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -378,7 +383,9 @@ class ManufacturingOrderResource extends Resource
                                             }),
                                         Select::make('destination_location_id')
                                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.miscellaneous.fields.finished-products-location'))
-                                            ->relationship('destinationLocation', 'full_name', fn (Builder $query) => $query->withTrashed())
+                                            ->relationship('destinationLocation', 'full_name', fn (Builder $query, Get $get) => $query
+                                                ->withTrashed()
+                                                ->where(owned_by_company($get('company_id'))))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -397,7 +404,15 @@ class ManufacturingOrderResource extends Resource
                                             ->preload()
                                             ->native(false)
                                             ->disabled(fn (?Order $record) => $record && $record->state !== ManufacturingOrderState::DRAFT)
-                                            ->default(Auth::user()?->default_company_id),
+                                            ->default(current_company_id())
+                                            ->live()
+                                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                'product_id'              => Product::class,
+                                                'bill_of_material_id'     => BillOfMaterial::class,
+                                                'operation_type_id'       => OperationType::class,
+                                                'source_location_id'      => Location::class,
+                                                'destination_location_id' => Location::class,
+                                            ], $state)),
                                         ...static::getCustomFormFields(),
                                     ]),
                             ]),
@@ -775,6 +790,7 @@ class ManufacturingOrderResource extends Resource
         return BillOfMaterial::query()
             ->withTrashed()
             ->whereIn('product_id', $productIds)
+            ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', current_company_id()))
             ->orderByDesc('product_id')
             ->value('id');
     }
@@ -795,12 +811,15 @@ class ManufacturingOrderResource extends Resource
         }
 
         if ($billOfMaterial->operation_type_id) {
-            $operationType = OperationType::query()->withTrashed()->find($billOfMaterial->operation_type_id);
+            $operationType = OperationType::withoutGlobalScope(CompanyScope::class)->withTrashed()->find($billOfMaterial->operation_type_id);
         } else {
-            $operationType = OperationType::query()->withTrashed()->where('type', 'manufacture')->first();
+            $operationType = OperationType::query()->withTrashed()
+                ->where('type', 'manufacture')
+                ->where('company_id', $billOfMaterial->company_id ?? current_company_id())
+                ->first();
         }
 
-        $set('operation_type_id', $operationType->id);
+        $set('operation_type_id', $operationType?->id);
 
         $set('source_location_id', $operationType?->source_location_id);
 
@@ -810,7 +829,7 @@ class ManufacturingOrderResource extends Resource
             $set('uom_id', $billOfMaterial->uom_id ?: static::getDefaultUomId());
         }
 
-        $set('company_id', $billOfMaterial->company_id);
+        $set('company_id', $billOfMaterial->company_id ?? current_company_id());
 
         $effectiveQuantity = static::convertOrderQuantityToBillOfMaterialUom($billOfMaterial, $quantity, $uomId);
 
@@ -1037,10 +1056,11 @@ class ManufacturingOrderResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query) => $query
+                        fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', ProductType::GOODS)
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()
@@ -1235,7 +1255,9 @@ class ManufacturingOrderResource extends Resource
                     ->relationship(
                         'workCenter',
                         'name',
-                        fn (Builder $query) => $query->withTrashed(),
+                        fn (Builder $query, Get $get) => $query
+                            ->withTrashed()
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()
@@ -1445,9 +1467,9 @@ class ManufacturingOrderResource extends Resource
         $quantityMultiplier = $billOfMaterial->getQuantityMultiplier($quantity);
 
         if ($billOfMaterial->operation_type_id) {
-            $operationType = $billOfMaterial->operationType;
+            $operationType = OperationType::withoutGlobalScope(CompanyScope::class)->withTrashed()->find($billOfMaterial->operation_type_id);
         } else {
-            $operationType = OperationType::query()->withTrashed()->where('type', 'manufacture')->first();
+            $operationType = OperationType::query()->withTrashed()->where('type', 'manufacture')->where('company_id', $billOfMaterial->company_id ?? current_company_id())->first();
         }
 
         return $billOfMaterial->lines()
@@ -1459,8 +1481,8 @@ class ManufacturingOrderResource extends Resource
                 'product_id'         => $line->product_id,
                 'uom_id'             => $line->uom_id,
                 'product_uom_qty'    => round((float) $line->quantity * $quantityMultiplier, 4),
-                'operation_type_id'  => $operationType->id,
-                'source_location_id' => $operationType->source_location_id,
+                'operation_type_id'  => $operationType?->id,
+                'source_location_id' => $operationType?->source_location_id,
                 'display_from'       => $operationType?->sourceLocation?->full_name ?? '—',
                 'display_forecast'   => '—',
             ])

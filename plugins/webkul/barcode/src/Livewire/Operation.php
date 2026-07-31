@@ -413,7 +413,7 @@ class Operation extends Component
                 $this->syncCountedMoveLineQuantitiesForValidation($operation);
             }
 
-            return Inventory::doneTransfer($operation->fresh(), $cancelBackOrder);
+            return Inventory::completeTransfer($operation->fresh(), $cancelBackOrder);
         });
     }
 
@@ -506,7 +506,7 @@ class Operation extends Component
             return [];
         }
 
-        [$quantLocationScope] = $moveLine->product->getLocationFilters();
+        $stockScopes = $moveLine->product->resolveStockScopes();
         $sourceLocationScopeId = $moveLine->move?->source_location_id ?? $moveLine->source_location_id;
 
         return ProductQuantity::query()
@@ -517,7 +517,7 @@ class Operation extends Component
                     ->orWhere('parent_id', $sourceLocationScopeId);
             })
             ->where('quantity', '>', 0)
-            ->where(fn ($query) => $quantLocationScope($query))
+            ->where(fn ($query) => $stockScopes->quantities($query))
             ->get()
             ->mapWithKeys(function (ProductQuantity $quantity): array {
                 $nameParts = array_filter([
@@ -707,7 +707,7 @@ class Operation extends Component
             return [];
         }
 
-        [$quantLocationScope] = $moveLine->product->getLocationFilters();
+        $stockScopes = $moveLine->product->resolveStockScopes();
         $sourceLocationScopeId = $moveLine->move?->source_location_id ?? $moveLine->source_location_id;
 
         return ProductQuantity::query()
@@ -718,7 +718,7 @@ class Operation extends Component
                     ->orWhere('parent_id', $sourceLocationScopeId);
             })
             ->where('quantity', '>', 0)
-            ->where(fn ($query) => $quantLocationScope($query))
+            ->where(fn ($query) => $stockScopes->quantities($query))
             ->get()
             ->map(function (ProductQuantity $quantity) use ($moveLine): array {
                 return [

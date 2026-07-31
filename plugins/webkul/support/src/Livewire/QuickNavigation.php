@@ -10,8 +10,8 @@ use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Throwable;
 use Webkul\Support\Services\QuickNavigationFavorites;
-use Webkul\Support\Services\QuickNavigator;
 use Webkul\Support\Services\QuickNavigationRecents;
+use Webkul\Support\Services\QuickNavigator;
 
 class QuickNavigation extends Component
 {

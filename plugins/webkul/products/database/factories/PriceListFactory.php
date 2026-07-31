@@ -4,12 +4,15 @@ namespace Webkul\Product\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Product\Models\PriceList;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<\App\Models\PriceList>
  */
 class PriceListFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = PriceList::class;
 
     /**
@@ -22,7 +25,6 @@ class PriceListFactory extends Factory
         return [
             'sort'        => fake()->randomNumber(2),
             'currency_id' => 1,
-            'company_id'  => 1,
             'creator_id'  => 1,
             'name'        => fake()->name,
             'is_active'   => true,

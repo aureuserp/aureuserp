@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -15,6 +16,7 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Manufacturing\Database\Factories\OperationFactory;
 use Webkul\Manufacturing\Enums\OperationTimeMode;
 use Webkul\Manufacturing\Enums\OperationWorksheetType;
+use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Product\Models\ProductAttributeValue;
 use Webkul\Security\Models\User;
 
@@ -107,30 +109,32 @@ class Operation extends Model implements Sortable
             return $this->manual_cycle_time;
         }
 
-        $workOrders = WorkOrder::query()
+        $recent = $this->recentlyCompletedWorkOrders();
+
+        $cycles = $recent->sum(fn (WorkOrder $workOrder) => $this->cyclesRun($workOrder));
+
+        return $cycles ? $recent->sum('duration') / $cycles : $this->manual_cycle_time;
+    }
+
+    protected function recentlyCompletedWorkOrders(): Collection
+    {
+        return WorkOrder::query()
             ->where('operation_id', $this->id)
             ->where('quantity_produced', '>', 0)
-            ->where('state', 'done')
+            ->where('state', WorkOrderState::DONE)
             ->orderByDesc('finished_at')
             ->orderByDesc('id')
             ->limit($this->time_mode_batch)
             ->get();
+    }
 
-        $totalDuration = 0;
+    protected function cyclesRun(WorkOrder $workOrder): float
+    {
+        $capacity = $workOrder->workCenter->capacityFor($workOrder->product);
 
-        $cycleNumber = 0;
+        $produced = $workOrder->uom->computeQuantity($workOrder->quantity_produced, $workOrder->product->uom);
 
-        foreach ($workOrders as $workOrder) {
-            $totalDuration += $workOrder->duration;
-
-            $capacity = $workOrder->workCenter->getCapacity($workOrder->product);
-
-            $qtyProduced = $workOrder->uom->computeQuantity($workOrder->quantity_produced, $workOrder->product->uom);
-
-            $cycleNumber += float_round(($qtyProduced / $capacity) ?: 1.0, precisionDigits: 0, roundingMethod: 'UP');
-        }
-
-        return $cycleNumber ? ($totalDuration / $cycleNumber) : $this->manual_cycle_time;
+        return float_round(($produced / $capacity) ?: 1.0, precisionDigits: 0, roundingMethod: 'UP');
     }
 
     public function getExpectedDuration(?Product $product = null, float $quantity = 1): float
@@ -143,13 +147,13 @@ class Operation extends Model implements Sortable
 
         $normalizedQuantity = max($quantity, 0);
 
-        $capacity = $workCenter->getCapacity($product);
+        $capacity = $workCenter->capacityFor($product);
 
         $cycleNumber = $normalizedQuantity > 0 ? (float) ceil($normalizedQuantity / $capacity) : 0.0;
 
         $timeEfficiency = max((float) ($workCenter->time_efficiency ?? 100), 0.0001);
 
-        return $workCenter->getExpectedDuration($product)
+        return $workCenter->setupAndCleanupTime($product)
             + ($cycleNumber * $this->time_cycle * 100.0 / $timeEfficiency);
     }
 

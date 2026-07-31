@@ -13,10 +13,10 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
-use Webkul\Chatter\Support\ChatterMentions;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Support\ChatterMentions;
 
 class LogAction extends Action
 {
