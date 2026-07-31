@@ -122,7 +122,12 @@ class OperationForm
                             ->relationship(
                                 name: 'operationType',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('type', [
+                                    Enums\OperationType::INCOMING,
+                                    Enums\OperationType::OUTGOING,
+                                    Enums\OperationType::INTERNAL,
+                                    Enums\OperationType::DROPSHIP
+                                ]),
                             )
                             ->searchable()
                             ->preload()
