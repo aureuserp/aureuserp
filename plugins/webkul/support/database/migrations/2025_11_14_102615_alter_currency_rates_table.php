@@ -1,22 +1,16 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up()
     {
-        Schema::table('currency_rates', function (Blueprint $table) {
-            $table->date('name')->change();
-        });
+        db_dialect()->alterColumnType('currency_rates', 'name', 'date', 'date', 'name::date');
     }
 
     public function down()
     {
-        Schema::table('currency_rates', function (Blueprint $table) {
-            $table->string('name')->change();
-        });
+        db_dialect()->alterColumnType('currency_rates', 'name', 'string', 'varchar(255)', 'name::text');
     }
 };

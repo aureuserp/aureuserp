@@ -2,6 +2,7 @@
 
 return [
     'title'          => 'المنتج',
+    'plural-title'   => 'المنتجات',
 
     'log-attributes' => [
         'type'                => 'النوع',

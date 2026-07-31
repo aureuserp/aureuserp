@@ -325,7 +325,7 @@ class Adjustments extends Component
             ->where('type', LocationType::INTERNAL)
             ->where('is_scrap', false)
             ->where(function (Builder $query) use ($barcode): void {
-                $query->where('barcode', $barcode)
+                $query->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
                     ->orWhereRaw('LOWER(name) = ?', [mb_strtolower($barcode)])
                     ->orWhereRaw('LOWER(full_name) = ?', [mb_strtolower($barcode)]);
             })
@@ -335,16 +335,16 @@ class Adjustments extends Component
     private function findProduct(string $barcode): ?Product
     {
         return Product::query()
-            ->where('barcode', $barcode)
-            ->orWhere('reference', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
+            ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
     }
 
     private function findLot(string $barcode): ?Lot
     {
         return Lot::query()
-            ->where('name', $barcode)
-            ->orWhere('reference', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$barcode])
+            ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
     }
 

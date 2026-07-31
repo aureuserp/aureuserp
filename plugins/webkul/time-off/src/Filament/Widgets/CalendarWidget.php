@@ -16,6 +16,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
+use Webkul\Field\Filament\Forms\Components\CustomFields;
 use Webkul\FullCalendar\Filament\Actions\CreateAction;
 use Webkul\FullCalendar\Filament\Actions\DeleteAction;
 use Webkul\FullCalendar\Filament\Actions\EditAction;
@@ -23,15 +24,34 @@ use Webkul\FullCalendar\Filament\Actions\ViewAction;
 use Webkul\FullCalendar\Filament\Widgets\FullCalendarWidget;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Actions\HolidayAction;
+use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
 use Webkul\TimeOff\Models\Leave;
 use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class CalendarWidget extends FullCalendarWidget
 {
     use HasWidgetShield;
-    use TimeOffHelper;
+    use TimeOffHelper { getFormSchema as protected baseGetFormSchema; }
 
     public Model|string|null $model = Leave::class;
+
+    /**
+     * Calendar modal form schema with the Leave resource custom fields appended.
+     */
+    public function getFormSchema($isVisible = null): array
+    {
+        $schema = $this->baseGetFormSchema($isVisible);
+
+        $customFields = CustomFields::make(MyTimeOffResource::class)->getSchema();
+
+        if ($customFields !== []) {
+            $schema[] = Section::make()
+                ->schema($customFields)
+                ->columns(2);
+        }
+
+        return $schema;
+    }
 
     protected static function getPagePermission(): ?string
     {

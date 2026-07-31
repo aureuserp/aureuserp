@@ -56,7 +56,7 @@ enum TaskState: string implements HasColor, HasIcon, HasLabel
         return [
             self::IN_PROGRESS->value      => 'gray',
             self::CHANGE_REQUESTED->value => 'warning',
-            self::APPROVED->value         => 'success',
+            self::APPROVED->value         => 'primary',
             self::CANCELLED->value        => 'danger',
             self::DONE->value             => 'success',
         ];

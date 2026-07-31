@@ -100,7 +100,7 @@ class DeliveryController extends OperationController
     #[Endpoint('Check delivery availability', 'Compute and refresh delivery availability')]
     #[UrlParam('id', 'integer', 'The delivery ID', required: true, example: 1)]
     #[ResponseFromApiResource(DeliveryResource::class, Delivery::class, additional: ['message' => 'Delivery availability checked successfully.'])]
-    #[Response(status: 422, description: 'Only confirmed or assigned operations can check availability.')]
+    #[Response(status: 422, description: 'Only waiting, confirmed or assigned operations can check availability.')]
     #[Response(status: 404, description: 'Delivery not found')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function checkAvailability(string $id)

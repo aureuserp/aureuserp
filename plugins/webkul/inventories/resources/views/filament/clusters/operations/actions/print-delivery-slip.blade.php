@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -235,7 +248,11 @@
                     <tbody>
                         @foreach ($record->moveLines as $item)
                             <tr>
-                                <td>{{ $item->product->name }}</td>
+                                <td>
+                                    {{ $item->product->name }}
+                                    </br>
+                                    {{ $item->picking_description }}
+                                </td>
 
                                 @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
                                     <td>{{ $item->lot?->name }}</td>

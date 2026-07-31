@@ -87,7 +87,7 @@ it('leaves the counterpart quantity at the adjustment location', function () {
     InventoryHelper::applyInventoryAdjustment($quant, 10);
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(10.0)
-        ->and(InventoryHelper::onHand($this->product, $this->adjustment))->toBeLessThanOrEqual(0.0);
+        ->and(InventoryHelper::onHand($this->product, $this->adjustment))->toBeLessThan(0.0);
 });
 
 it('records a history move when inventory is added from the product', function () {

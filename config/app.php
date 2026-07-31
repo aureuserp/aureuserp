@@ -115,6 +115,12 @@ return [
             'flag'   => 'es',
             'rtl'    => false,
         ],
+        'pt_BR' => [
+            'label'  => 'Portuguese (Brazil)',
+            'native' => 'Português (Brasil)',
+            'flag'   => 'br',
+            'rtl'    => false,
+        ],
     ],
 
     /*

@@ -116,7 +116,7 @@ return [
                     'package'              => 'Paquete',
                     'owner'                => 'Propietario',
                     'source-location'      => 'Ubicación de origen',
-                    'destination-location' => 'Ubicación de destino',
+                    'destination-location' => 'Ubicación de merma',
                     'source-document'      => 'Documento de origen',
                     'company'              => 'Empresa',
                 ],

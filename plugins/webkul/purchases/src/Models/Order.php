@@ -96,7 +96,10 @@ class Order extends Model
 
     public function getModelTitle(): string
     {
-        return __('purchases::models/order.title');
+        return match ($this->state) {
+            OrderState::PURCHASE, OrderState::DONE => __('purchases::models/order.titles.purchase-order'),
+            default                                => __('purchases::models/order.titles.quotation'),
+        };
     }
 
     public function getLogAttributeLabels(): array
@@ -175,7 +178,7 @@ class Order extends Model
 
     public function lines(): HasMany
     {
-        return $this->hasMany(OrderLine::class, 'order_id');
+        return $this->hasMany(OrderLine::class, 'order_id')->orderBy('id');
     }
 
     public function accountMoves(): BelongsToMany

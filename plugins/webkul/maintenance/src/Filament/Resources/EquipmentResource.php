@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\CreateEquipment;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\EditEquipment;
 use Webkul\Maintenance\Filament\Resources\EquipmentResource\Pages\ListEquipment;
@@ -43,7 +44,7 @@ use Webkul\Support\Enums\NavigationGroup;
 
 class EquipmentResource extends Resource
 {
-    use HasResourcePermissionQuery;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Equipment::class;
 
@@ -195,6 +196,10 @@ class EquipmentResource extends Resource
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(3);
     }
@@ -202,7 +207,7 @@ class EquipmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('maintenance::filament/resources/equipment.table.columns.name'))
                     ->searchable()
@@ -239,8 +244,8 @@ class EquipmentResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
+            ]))
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('category_id')
                     ->label(__('maintenance::filament/resources/equipment.table.filters.category'))
                     ->relationship('category', 'name')
@@ -261,7 +266,7 @@ class EquipmentResource extends Resource
                     ->native(false)
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->groups([
                 TableGroup::make('technician.name')
                     ->label(__('maintenance::filament/resources/equipment.table.groups.technician')),
@@ -470,6 +475,8 @@ class EquipmentResource extends Resource
                                     ->label(__('maintenance::filament/resources/equipment.infolist.sections.maintenance.entries.scraped-at'))
                                     ->date()
                                     ->placeholder('—'),
+
+                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(2),
                     ])

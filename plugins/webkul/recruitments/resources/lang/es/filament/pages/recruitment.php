@@ -22,6 +22,7 @@ return [
         ],
 
         'start-date' => 'Fecha de inicio',
+        'date-range' => 'Rango de fechas',
         'end-date'   => 'Fecha de fin',
     ],
 ];

@@ -10,6 +10,7 @@ use Webkul\Account\Events\MoveCancelled;
 use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MoveReversed;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Events\OperationBackOrdered;
 use Webkul\Inventory\Events\OperationDone;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -23,6 +24,8 @@ use Webkul\Purchase\Listeners\ComputePurchaseOrderFromMoveListener;
 use Webkul\Purchase\Listeners\ComputePurchaseOrderListener;
 use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\OrderSummary;
+use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\Requisition;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -71,7 +74,11 @@ class PurchaseServiceProvider extends PackageServiceProvider
                     ->installDependencies()
                     ->runsMigrations();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class, Requisition::class]);
+                });
+            })
             ->icon('purchases');
     }
 

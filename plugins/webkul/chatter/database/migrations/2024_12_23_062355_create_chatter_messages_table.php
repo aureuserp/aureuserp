@@ -27,7 +27,7 @@ return new class extends Migration
             $table->date('date_deadline')->nullable()->comment('Date');
             $table->date('pinned_at')->nullable()->comment('Pinned At');
             $table->string('log_name')->nullable();
-            $table->morphs('causer');
+            $table->nullableMorphs('causer');
             $table->string('event')->nullable();
             $table->json('properties')->nullable();
 

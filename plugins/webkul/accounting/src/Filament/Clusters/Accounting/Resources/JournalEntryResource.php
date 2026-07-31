@@ -72,6 +72,7 @@ use Webkul\Accounting\Filament\Exports\JournalEntryExporter;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -83,6 +84,7 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
+    use HasCustomFields;
     use HasResourcePermissionQuery;
 
     protected static ?string $model = JournalEntry::class;
@@ -126,14 +128,7 @@ class JournalEntryResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if (
-                            $record
-                            && $record->state != MoveState::CANCEL->value
-                        ) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -242,6 +237,10 @@ class JournalEntryResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -251,7 +250,7 @@ class JournalEntryResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('invoice_date')
                     ->date()
                     ->placeholder('-')
@@ -308,7 +307,7 @@ class JournalEntryResource extends Resource
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.checked'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('invoice_partner_display_name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.partner'))
@@ -334,7 +333,7 @@ class JournalEntryResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -355,7 +354,7 @@ class JournalEntryResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
@@ -422,11 +421,7 @@ class JournalEntryResource extends Resource
                     ->options(function ($record) {
                         $options = MoveState::options();
 
-                        if ($record->state != MoveState::CANCEL->value) {
-                            unset($options[MoveState::CANCEL->value]);
-                        }
-
-                        if ($record == null) {
+                        if ($record?->state !== MoveState::CANCEL) {
                             unset($options[MoveState::CANCEL->value]);
                         }
 
@@ -582,6 +577,10 @@ class JournalEntryResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

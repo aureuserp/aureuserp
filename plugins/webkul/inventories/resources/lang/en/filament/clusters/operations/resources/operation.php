@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'Destination Location',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'Additional Information',
+            ],
         ],
 
         'tabs' => [
@@ -144,6 +148,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'Operation Type',
             'name'                 => 'Name',
             'state'                => 'State',
             'partner'              => 'Partner',

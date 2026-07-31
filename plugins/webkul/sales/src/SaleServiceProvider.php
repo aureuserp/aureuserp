@@ -11,6 +11,7 @@ use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MovePaid;
 use Webkul\Account\Events\MoveReversed;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Events\OperationDone;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -21,6 +22,8 @@ use Webkul\Sale\Listeners\ComputeSaleOrderFromMoveListener;
 use Webkul\Sale\Listeners\ComputeSaleOrderListener;
 use Webkul\Sale\Listeners\SendSMSNotificationListener;
 use Webkul\Sale\Livewire\QuotationSummary;
+use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\Team;
 
 class SaleServiceProvider extends PackageServiceProvider
 {
@@ -79,7 +82,11 @@ class SaleServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class, Team::class]);
+                });
+            })
             ->icon('sales');
     }
 

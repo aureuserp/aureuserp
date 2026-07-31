@@ -196,13 +196,12 @@ class Package extends BasePackage
         return static::$plugins[$name] ??= Plugin::where('name', $name)->first();
     }
 
-   
     public static function refreshPluginCaches(): void
     {
         try {
             Artisan::call('optimize:clear');
 
-           if (app()->isProduction()) {
+            if (app()->isProduction()) {
                 static::rebuildCachesInBackground();
             }
         } catch (Throwable $e) {
@@ -225,7 +224,6 @@ class Package extends BasePackage
         exec($command);
     }
 
-  
     public static function phpBinaryPath(): string
     {
         $php = trim((string) @shell_exec('which php 2>/dev/null'));
@@ -254,9 +252,14 @@ class Package extends BasePackage
         return 'php';
     }
 
+    public static function syncPostgresSequences(): void
+    {
+        db_dialect()->syncSequences();
+    }
+
     public static function isPluginInstalled(string $name): bool
     {
-        static $isLoaded = false; 
+        static $isLoaded = false;
 
         try {
             if (! $isLoaded) {
@@ -264,6 +267,7 @@ class Package extends BasePackage
 
                 if (Schema::hasTable('plugins') === false) {
                     $isLoaded = true;
+
                     return false;
                 }
 

@@ -7,13 +7,13 @@ use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Models\Order;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\EditOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageDeliveries;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
+use Webkul\Sale\Models\Order;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class OrderResource extends QuotationResource
@@ -70,10 +70,8 @@ class OrderResource extends QuotationResource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
-
-        $query = static::getModel()::applyPermissionScope($query);
-
-        return $query->where('state', OrderState::SALE);
+        return parent::getEloquentQuery()
+            ->applyPermissionScope()
+            ->where('state', OrderState::SALE);
     }
 }

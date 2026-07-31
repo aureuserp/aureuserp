@@ -45,13 +45,10 @@ use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ListDepartments;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ManageEmployee;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Models\Department;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Enums\NavigationGroup;
 
 class DepartmentResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Department::class;
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
@@ -63,7 +60,7 @@ class DepartmentResource extends Resource
         return __('employees::filament/resources/department.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Employee;
     }
@@ -139,10 +136,6 @@ class DepartmentResource extends Resource
                                             ->hexColor(),
                                     ])
                                     ->columns(2)->columnSpanFull(),
-                                Section::make(__('employees::filament/resources/department.form.sections.additional.title'))
-                                    ->visible(! empty($customFormFields = static::getCustomFormFields()))
-                                    ->description(__('employees::filament/resources/department.form.sections.additional.description'))
-                                    ->schema($customFormFields),
                             ]),
                     ]),
             ])
@@ -155,7 +148,7 @@ class DepartmentResource extends Resource
             ->columns([
                 Stack::make([
                     ImageColumn::make('manager.partner.avatar')
-                        ->height(35)
+                        ->imageHeight(35)
                         ->circular()
                         ->width(35),
                     Stack::make([
@@ -206,7 +199,7 @@ class DepartmentResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -242,7 +235,7 @@ class DepartmentResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/resources/department.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

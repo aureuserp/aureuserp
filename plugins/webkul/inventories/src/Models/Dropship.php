@@ -7,11 +7,6 @@ use Webkul\Inventory\Enums\OperationState;
 
 class Dropship extends Operation
 {
-    public function getModelTitle(): string
-    {
-        return __('inventories::models/dropship.title');
-    }
-
     protected static function boot()
     {
         parent::boot();

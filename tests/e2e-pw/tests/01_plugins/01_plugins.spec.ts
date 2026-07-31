@@ -1,5 +1,7 @@
-import { test, expect } from "../../setup";
+import { test } from "../../setup";
 import { PluginManagementPage } from "../../pages/01_pluginManagement";
+
+const ALL_PLUGINS_TIMEOUT = 60 * 60 * 1000;
 
 /**
  * Installing and uninstalling plugins rewrites the schema of the whole application, so these
@@ -21,7 +23,9 @@ test.describe('Plugin Installation', () => {
     /**
      * All plugins uninstallation test
      */
-    test('All Plugins Uninstallation Test', async ({  adminPage }) => {
+    test('All Plugins Uninstallation Test', async ({ adminPage }) => {
+        test.setTimeout(ALL_PLUGINS_TIMEOUT);
+
         const pluginManagementPage = new PluginManagementPage(adminPage);
         await pluginManagementPage.uninstallAllPlugins();
     });
@@ -30,7 +34,8 @@ test.describe('Plugin Installation', () => {
      * All plugins installation test
      */
     test('All Plugins Installation Test', async ({ adminPage }) => {
-        // test.setTimeout(400000);
+        test.setTimeout(ALL_PLUGINS_TIMEOUT);
+
         const pluginManagementPage = new PluginManagementPage(adminPage);
         await pluginManagementPage.installAllPlugins();
     });

@@ -4,6 +4,7 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\PackageUse;
+use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
@@ -556,6 +557,53 @@ it('leaves the original delivery untouched by the return', function () {
     expect($operation->state)->toBe(OperationState::DONE)
         ->and($operation->moves)->toHaveCount(1)
         ->and((float) $operation->moves->first()->product_uom_qty)->toBe(10.0);
+});
+
+it('schedules the returned move for today instead of inheriting the original schedule', function () {
+    $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    $sourceMove = $operation->refresh()->moves->first();
+
+    $sourceMove->scheduled_at = now()->subDays(10);
+
+    $sourceMove->saveQuietly();
+
+    $return = Inventory::returnTransfer($operation->refresh(), [$sourceMove->id => 3]);
+
+    $returnMove = $return->refresh()->moves->first();
+
+    expect($returnMove->scheduled_at->isToday())->toBeTrue();
+});
+
+it('resets the returned move picking and procurement fields instead of inheriting them', function () {
+    $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10);
+
+    $sourceMove = $operation->refresh()->moves->first();
+
+    expect($sourceMove->is_picked)->toBeTrue();
+
+    $return = Inventory::returnTransfer($operation, [$sourceMove->id => 3]);
+
+    $returnMove = $return->refresh()->moves->first();
+
+    expect($returnMove->is_picked)->toBeFalse()
+        ->and($returnMove->procure_method)->toBe(ProcureMethod::MAKE_TO_STOCK)
+        ->and($returnMove->is_refund)->toBeTrue()
+        ->and($returnMove->final_location_id)->toBeNull()
+        ->and($returnMove->origin_returned_move_id)->toBe($sourceMove->id)
+        ->and((float) $returnMove->product_uom_qty)->toBe(3.0)
+        ->and((float) $returnMove->product_qty)->toBe(3.0);
+});
+
+it('resets the backorder move picking flag instead of inheriting it', function () {
+    $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10, 4);
+
+    $backorder = InventoryHelper::backorderOf($operation);
+
+    expect($backorder)->not->toBeNull()
+        ->and($backorder->moves->first()->is_picked)->toBeFalse()
+        ->and($backorder->source_location_id)->toBe($operation->source_location_id)
+        ->and($backorder->destination_location_id)->toBe($operation->destination_location_id);
 });
 
 it('reserves a decimal quantity from stock', function () {

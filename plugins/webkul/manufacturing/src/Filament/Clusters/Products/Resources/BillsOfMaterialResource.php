@@ -283,7 +283,9 @@ class BillsOfMaterialResource extends Resource
                                     ->preload()
                                     ->native(false)
                                     ->wrapOptionLabels(false)
-                                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->warehouse->name.': '.$record->name)
+                                    ->getOptionLabelFromRecordUsing(fn ($record): string => $record->warehouse
+                                        ? $record->warehouse->name.': '.$record->name
+                                        : $record->name)
                                     ->visible(fn (Get $get): bool => ! static::matchesEnumState($get('type'), BillOfMaterialType::PHANTOM))
                                     ->columnSpanFull(),
                                 Select::make('consumption')

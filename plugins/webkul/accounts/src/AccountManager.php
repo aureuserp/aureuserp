@@ -810,7 +810,7 @@ class AccountManager
                 $key = [
                     'move_id'                  => $move->id,
                     'date_maturity'            => $move->invoice_date_due?->toDateString(),
-                    'discount_date'            => false,
+                    'discount_date'            => null,
                     'discount_balance'         => 0.0,
                     'discount_amount_currency' => 0.0,
                 ];

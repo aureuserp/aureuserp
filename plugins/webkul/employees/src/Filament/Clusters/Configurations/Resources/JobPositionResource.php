@@ -361,7 +361,7 @@ class JobPositionResource extends Resource
                             ->body(__('employees::filament/clusters/configurations/resources/job-position.table.empty-state-actions.create.notification.body'))
                     ),
             ])
-            ->reorderable('sort')
+            ->reorderable('sort', direction: 'desc')
             ->defaultSort('sort', 'desc');
     }
 

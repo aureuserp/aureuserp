@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\AttributeFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Enums\AttributeType;
 use Webkul\Security\Models\User;
 
 class Attribute extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'products_attributes';
 

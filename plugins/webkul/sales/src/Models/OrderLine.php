@@ -196,12 +196,20 @@ class OrderLine extends Model implements Sortable
         });
 
         static::created(function ($orderLine) {
+            $orderLine->linkMatchingOptions();
+
             if ($orderLine->order->state === OrderState::SALE) {
                 SaleOrderFacade::applyInventoryRules(collect([$orderLine]));
             }
         });
 
         static::updated(function ($orderLine) {
+            if ($orderLine->wasChanged('product_id')) {
+                OrderOption::where('line_id', $orderLine->id)->update(['line_id' => null]);
+
+                $orderLine->linkMatchingOptions();
+            }
+
             if (
                 $orderLine->wasChanged('product_uom_qty')
                 && $orderLine->state === OrderState::SALE
@@ -212,6 +220,18 @@ class OrderLine extends Model implements Sortable
                 SaleOrderFacade::applyInventoryRules(collect([$orderLine]), previousProductUOMQty: $previousProductUomQty);
             }
         });
+    }
+
+    public function linkMatchingOptions(): void
+    {
+        if (! $this->product_id || $this->display_type) {
+            return;
+        }
+
+        OrderOption::where('order_id', $this->order_id)
+            ->where('product_id', $this->product_id)
+            ->whereNull('line_id')
+            ->update(['line_id' => $this->id]);
     }
 
     public function computeWarehouseId()

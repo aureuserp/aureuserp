@@ -1,5 +1,5 @@
 import { type Locator, type Page, expect } from "@playwright/test";
-import { ErpLocators } from "../locator/erp_locator";
+import { anyDialog, ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
 import { runOnce, SETUP_KEYS } from "../utils/setupCache";
 import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
@@ -524,7 +524,7 @@ export class WebsiteManagementPage {
     }
 
     private async clickVisibleButton(name: RegExp): Promise<void> {
-        const dialogButton = this.page.getByRole("dialog").getByRole("button", { name }).last();
+        const dialogButton = anyDialog(this.page).getByRole("button", { name }).last();
 
         if (await dialogButton.isVisible().catch(() => false)) {
             await dialogButton.click();

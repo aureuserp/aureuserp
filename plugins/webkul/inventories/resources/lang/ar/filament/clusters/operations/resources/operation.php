@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'موقع الوجهة',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'معلومات إضافية',
+            ],
         ],
 
         'tabs' => [
@@ -144,6 +148,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'نوع العملية',
             'name'                 => 'الاسم',
             'state'                => 'الحالة',
             'partner'              => 'الشريك',

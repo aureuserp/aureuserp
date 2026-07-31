@@ -244,7 +244,7 @@ test.describe("Inventory Location", () => {
 
         await inventoryPage.createScrapAtLocation(product, "1", scrapLocation);
         await inventoryPage.gotoCurrentOperationView();
-        await inventoryPage.expectInfolistField("Destination Location", scrapLocation);
+        await inventoryPage.expectInfolistField("Scrap Location", scrapLocation);
     });
 
     /**
@@ -738,7 +738,11 @@ test.describe("Inventory Operation Type", () => {
 
         await inventoryPage.disableDropshipping();
         await inventoryPage.gotoOperationTypeCreatePage();
-        await inventoryPage.expectOperationTypeOptionAbsent("dropship");
+        await inventoryPage.expectOperationTypeOptionDisabled("dropship");
+
+        await inventoryPage.enableManageLogisticsToggles();
+        await inventoryPage.gotoOperationTypeCreatePage();
+        await inventoryPage.expectOperationTypeOptionDisabled("dropship", false);
     });
 
     /**

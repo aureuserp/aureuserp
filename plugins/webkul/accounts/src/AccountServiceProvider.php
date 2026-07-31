@@ -15,14 +15,17 @@ use Webkul\Account\Filament\Resources\ProductResource\Schemas\AccountProductSche
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\Move;
+use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\Tax;
+use Webkul\Chatter\Services\ChatterCleanupService;
+use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
+use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
-use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
-use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
@@ -122,7 +125,11 @@ class AccountServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Move::class, Payment::class]);
+                });
+            });
     }
 
     public function packageBooted(): void
