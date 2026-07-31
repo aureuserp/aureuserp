@@ -8,7 +8,7 @@ class JournalAccount extends Model
 {
     protected $table = 'accounts_journal_accounts';
 
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'account_id',

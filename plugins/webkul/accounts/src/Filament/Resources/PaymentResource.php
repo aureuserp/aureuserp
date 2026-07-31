@@ -30,7 +30,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\PaymentType;
@@ -44,9 +43,9 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class PaymentResource extends Resource
 {
@@ -175,7 +174,7 @@ class PaymentResource extends Resource
                                                     ->required()
                                                     ->searchable()
                                                     ->preload()
-                                                    ->default(fn () => Auth::user()->defaultCompany?->currency_id),
+                                                    ->default(fn () => current_company()?->currency_id),
                                             ])
                                             ->columns(2),
 
@@ -285,7 +284,6 @@ class PaymentResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('date')
                     ->label(__('accounts::filament/resources/payment.table.columns.date'))

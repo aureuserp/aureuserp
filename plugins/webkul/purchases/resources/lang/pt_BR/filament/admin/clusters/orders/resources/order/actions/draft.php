@@ -7,7 +7,7 @@ return [
         'notification' => [
             'success' => [
                 'title' => 'Pedido marcado como rascunho',
-                'body' => 'O pedido foi marcado como rascunho com sucesso.',
+                'body'  => 'O pedido foi marcado como rascunho com sucesso.',
             ],
         ],
     ],

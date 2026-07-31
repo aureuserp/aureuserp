@@ -62,11 +62,11 @@ class PurchaseOrderResource extends OrderResource
     public static function getPages(): array
     {
         return [
-            'index'    => ListPurchaseOrders::route('/'),
-            'create'   => CreatePurchaseOrder::route('/create'),
-            'view'     => ViewPurchaseOrder::route('/{record}'),
-            'edit'     => EditPurchaseOrder::route('/{record}/edit'),
-            'bills'    => ManageBills::route('/{record}/bills'),
+            'index'      => ListPurchaseOrders::route('/'),
+            'create'     => CreatePurchaseOrder::route('/create'),
+            'view'       => ViewPurchaseOrder::route('/{record}'),
+            'edit'       => EditPurchaseOrder::route('/{record}/edit'),
+            'bills'      => ManageBills::route('/{record}/bills'),
             'operations' => ManageReceipts::route('/{record}/receipts'),
         ];
     }

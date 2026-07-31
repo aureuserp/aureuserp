@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'sale' => 'Venda',
+    'sale'     => 'Venda',
     'purchase' => 'Compras',
-    'none' => 'Nenhum',
+    'none'     => 'Nenhum',
 ];

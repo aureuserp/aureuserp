@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class MoveReversal extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'accounts_accounts_move_reversals';
 
     protected $fillable = [
@@ -58,7 +61,7 @@ class MoveReversal extends Model
 
             $moveReversal->creator_id ??= $authUser->id;
 
-            $moveReversal->company_id ??= $authUser?->default_company_id;
+            $moveReversal->company_id ??= current_company_id();
         });
     }
 }

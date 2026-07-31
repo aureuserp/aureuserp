@@ -14,12 +14,19 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Database\Factories\CompanyFactory;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Traits\RestrictToAllowedCompanies;
 
 class Company extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasPermissionScope, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasOwnershipScope, RestrictToAllowedCompanies, SoftDeletes, SortableTrait;
+
+    protected static function ownershipScopeIsGlobal(): bool
+    {
+        return false;
+    }
 
     protected $fillable = [
         'sort',
@@ -99,7 +106,8 @@ class Company extends Model implements Sortable
 
     public function partner()
     {
-        return $this->belongsTo(Partner::class, 'partner_id');
+        return $this->belongsTo(Partner::class, 'partner_id')
+            ->withoutGlobalScope(CompanyScope::class);
     }
 
     public function parents()
@@ -165,8 +173,24 @@ class Company extends Model implements Sortable
             }
         });
 
+        static::saving(function ($company) {
+            $company->currency->update([
+                'active' => true,
+            ]);
+        });
+
+        static::created(function ($company) {
+            if (! $company->creator_id) {
+                return;
+            }
+
+            User::find($company->creator_id)
+                ?->allowedCompanies()
+                ->syncWithoutDetaching([$company->id]);
+        });
+
         static::saved(function ($company) {
-            Partner::updateOrCreate(
+            Partner::withoutGlobalScopes()->updateOrCreate(
                 [
                     'id' => $company->partner_id,
                 ],

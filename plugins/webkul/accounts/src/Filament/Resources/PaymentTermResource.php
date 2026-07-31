@@ -79,6 +79,14 @@ class PaymentTermResource extends Resource
                                     ->maxLength(255)
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
                                     ->columnSpan(1),
+                                Select::make('company_id')
+                                    ->label(__('accounts::filament/resources/payment-term.form.sections.fields.company'))
+                                    ->relationship('company', 'name')
+                                    ->placeholder(__('accounts::filament/resources/payment-term.form.sections.fields.company-placeholder'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->default(current_company_id())
+                                    ->columnSpan(1),
                             ])->columns(2),
                         Group::make()
                             ->hidden()

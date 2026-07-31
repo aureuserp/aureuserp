@@ -52,7 +52,7 @@ return [
     ],
 
     'mark-as-done' => [
-        'title' => 'تعيين كمكتمل',
+        'title'   => 'تعيين كمكتمل',
         'actions' => [
             'done' => [
                 'label' => 'تم',

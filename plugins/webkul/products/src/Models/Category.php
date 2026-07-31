@@ -13,10 +13,11 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\CategoryFactory;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Concerns\HasContributedAttributes;
 
 class Category extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
+    use HasChatter, HasContributedAttributes, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 

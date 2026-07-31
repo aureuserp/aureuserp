@@ -9,7 +9,7 @@ return [
     ],
 
     'groups' => [
-        'status' => 'Status',
+        'status'     => 'Status',
         'created-by' => 'Criado por',
         'created-at' => 'Criado em',
         'updated-at' => 'Atualizado em',
@@ -17,24 +17,24 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'             => 'Nome',
             'name-placeholder' => 'Informe o nome da origem',
-            'status' => 'Status',
+            'status'           => 'Status',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Nome',
-            'status' => 'Status',
+            'id'         => 'ID',
+            'name'       => 'Nome',
+            'status'     => 'Status',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
             'updated-at' => 'Atualizado em',
             'created-at' => 'Criado em',
@@ -44,14 +44,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Origem atualizada',
-                    'body' => 'A origem foi atualizada com sucesso.',
+                    'body'  => 'A origem foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Origem excluída',
-                    'body' => 'A origem foi excluída com sucesso.',
+                    'body'  => 'A origem foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -60,7 +60,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Origens excluídas',
-                    'body' => 'As origens foram excluídas com sucesso.',
+                    'body'  => 'As origens foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -69,7 +69,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Origem criada',
-                    'body' => 'A origem foi criada com sucesso.',
+                    'body'  => 'A origem foi criada com sucesso.',
                 ],
             ],
         ],

@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Webkul\Product\Database\Factories\AttributeFactory;
 use Webkul\Field\Traits\HasCustomFields;
+use Webkul\Product\Database\Factories\AttributeFactory;
 use Webkul\Product\Enums\AttributeType;
 use Webkul\Security\Models\User;
 

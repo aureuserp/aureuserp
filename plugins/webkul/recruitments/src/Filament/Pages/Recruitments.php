@@ -15,9 +15,9 @@ use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Recruitment\Filament\Widgets\ApplicantChartWidget;
 use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\Recruitment\Models\Stage;
-use Webkul\Support\Models\Company;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
+use Webkul\Support\Models\Company;
 
 class Recruitments extends BaseDashboard
 {
@@ -36,7 +36,7 @@ class Recruitments extends BaseDashboard
         return __('recruitments::filament/pages/recruitment.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Dashboard;
     }

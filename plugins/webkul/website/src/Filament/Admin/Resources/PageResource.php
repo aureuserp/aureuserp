@@ -36,12 +36,12 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\CreatePage;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\EditPage;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ListPages;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ViewPage;
 use Webkul\Website\Models\Page as PageModel;
-use Webkul\Support\Enums\NavigationGroup;
 
 class PageResource extends Resource
 {
@@ -60,7 +60,7 @@ class PageResource extends Resource
         return __('website::filament/admin/resources/page.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Website;
     }
@@ -126,7 +126,6 @@ class PageResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('title')
                     ->label(__('website::filament/admin/resources/page.table.columns.title'))

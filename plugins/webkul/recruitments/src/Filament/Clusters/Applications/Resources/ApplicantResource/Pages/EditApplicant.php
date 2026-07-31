@@ -229,7 +229,7 @@ class EditApplicant extends EditRecord
 
         $messageData = [
             'from' => [
-                'company' => Auth::user()->defaultCompany->toArray(),
+                'company' => current_company()->toArray(),
             ],
             'body' => view($viewName, ['payload' => $data])->render(),
             'type' => 'comment',

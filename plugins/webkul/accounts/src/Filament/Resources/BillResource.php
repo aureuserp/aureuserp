@@ -50,7 +50,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\CommunicationStandard;
 use Webkul\Account\Enums\CommunicationType;
@@ -71,6 +70,8 @@ use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Bill;
 use Webkul\Account\Models\CashRounding;
+use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
@@ -221,7 +222,11 @@ class BillResource extends Resource
                                                     ->hidden(fn (Get $get) => $get('invoice_payment_term_id') !== null)
                                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.due-date')),
                                                 Select::make('invoice_payment_term_id')
-                                                    ->relationship('invoicePaymentTerm', 'name')
+                                                    ->relationship(
+                                                        'invoicePaymentTerm',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                                    )
                                                     ->required(fn (Get $get) => $get('invoice_date_due') === null)
                                                     ->live()
                                                     ->searchable()
@@ -237,7 +242,9 @@ class BillResource extends Resource
                                                     ->relationship(
                                                         'journal',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::PURCHASE),
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->where('type', JournalType::PURCHASE)
+                                                            ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->searchable()
                                                     ->preload()
@@ -261,7 +268,7 @@ class BillResource extends Resource
                                                                 'type'                     => JournalType::PURCHASE,
                                                                 'invoice_reference_type'   => CommunicationType::INVOICE,
                                                                 'invoice_reference_model'  => CommunicationStandard::AUREUS,
-                                                                'company_id'               => $get('company_id') ?? Auth::user()->default_company_id,
+                                                                'company_id'               => $get('company_id') ?? current_company_id(),
                                                             ])
                                                     )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -278,7 +285,7 @@ class BillResource extends Resource
                                                     ->preload()
                                                     ->live()
                                                     ->reactive()
-                                                    ->default(Auth::user()->defaultCompany?->currency_id)
+                                                    ->default(current_company()?->currency_id)
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                             ])
                                             ->columns(2),
@@ -331,8 +338,17 @@ class BillResource extends Resource
                                                 if ($company) {
                                                     $set('currency_id', $company->currency_id);
                                                 }
+
+                                                $set('journal_id', Journal::query()
+                                                    ->where('type', JournalType::PURCHASE)
+                                                    ->where('company_id', $company?->id)
+                                                    ->value('id'));
+
+                                                clear_foreign_company_values($set, $get, [
+                                                    'fiscal_position_id' => FiscalPosition::class,
+                                                ], $company?->id);
                                             })
-                                            ->default(Auth::user()->default_company_id),
+                                            ->default(current_company_id()),
                                         Select::make('invoice_incoterm_id')
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm'))
                                             ->relationship('invoiceIncoterm', 'name')
@@ -352,7 +368,11 @@ class BillResource extends Resource
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
                                         Select::make('fiscal_position_id')
-                                            ->relationship('fiscalPosition', 'name')
+                                            ->relationship(
+                                                'fiscalPosition',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.fiscal-position'))
@@ -396,7 +416,6 @@ class BillResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->placeholder('-')
@@ -1087,9 +1106,10 @@ class BillResource extends Resource
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
                             ->withTrashed()
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()
@@ -1180,7 +1200,9 @@ class BillResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->where('type_tax_use', TypeTaxUse::PURCHASE)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->wrapOptionLabels(false)
                     ->searchable()
@@ -1234,16 +1256,18 @@ class BillResource extends Resource
         if ($get('../../currency_id')) {
             $currency = Currency::find($get('../../currency_id'));
 
-            $priceUnit = Auth::user()->defaultCompany->currency->convert(
+            $company = Company::find($get('../../company_id')) ?? current_company();
+
+            $priceUnit = $company->currency->convert(
                 $priceUnit,
                 $currency,
-                Auth::user()->defaultCompany
+                $company
             );
         }
 
         $set('price_unit', round($priceUnit, 2));
 
-        $set('taxes', $product->productTaxes->pluck('id')->toArray());
+        $set('taxes', Tax::forProduct($product, TypeTaxUse::PURCHASE, $get('../../company_id')));
 
         $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'));
 
@@ -1369,9 +1393,9 @@ class BillResource extends Resource
         $mockMove->setRelation('currency', $currency);
         $mockMove->setRelation('company', $company);
 
-        $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
+        $baseLine = AccountFacade::productBaseLine($mockLine);
 
-        $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
+        $baseLine = TaxFacade::withTaxDetails($baseLine, $company);
 
         $subtotal = $baseLine['tax_details']['raw_total_excluded_currency'];
         $total = $baseLine['tax_details']['raw_total_included_currency'];
@@ -1464,7 +1488,7 @@ class BillResource extends Resource
 
         $mockMove->setRelation('lines', $mockLines);
 
-        [$baseLines] = AccountFacade::getRoundedBaseAndTaxLines($mockMove, false);
+        [$baseLines] = AccountFacade::roundedBaseAndTaxLines($mockMove, false);
 
         $subtotal = 0;
         $grandTotal = 0;

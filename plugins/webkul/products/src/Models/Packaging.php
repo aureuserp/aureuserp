@@ -12,9 +12,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\PackagingFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Packaging extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'products_packagings';
@@ -55,9 +57,12 @@ class Packaging extends Model implements Sortable
 
         static::creating(function ($packaging) {
             $packaging->creator_id ??= Auth::id();
-
-            $packaging->company_id ??= Auth::user()?->default_company_id;
         });
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 
     protected static function newFactory(): PackagingFactory

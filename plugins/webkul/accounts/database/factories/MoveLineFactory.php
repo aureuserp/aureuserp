@@ -12,7 +12,7 @@ use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Product;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 
@@ -21,6 +21,8 @@ use Webkul\Support\Models\UOM;
  */
 class MoveLineFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = MoveLine::class;
 
     /**
@@ -37,7 +39,6 @@ class MoveLineFactory extends Factory
             'sort'                     => 0,
             'move_id'                  => Move::factory(),
             'journal_id'               => Journal::factory(),
-            'company_id'               => Company::factory(),
             'company_currency_id'      => Currency::factory(),
             'reconcile_id'             => null,
             'payment_id'               => null,

@@ -11,14 +11,16 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
 use Webkul\Inventory\Models\Scrap;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditScrap extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
     use RefreshesRecordState;
-    
+
     protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = ScrapResource::class;

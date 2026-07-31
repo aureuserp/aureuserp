@@ -3,33 +3,33 @@
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\AmountType;
-use Webkul\Account\Enums\DisplayType;
-use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
-use Webkul\Account\Models\CashRounding;
-use Webkul\Account\Models\PaymentDueTerm;
-use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\FiscalPositionAccount;
 use Webkul\Account\Models\FiscalPositionTax;
 use Webkul\Account\Models\Journal;
-use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\PaymentDueTerm;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentRegister;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Models\TaxPartition;
 use Webkul\Product\Models\Product;
@@ -38,6 +38,7 @@ use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\CompanyContext;
 
 class AccountHelper
 {
@@ -51,6 +52,8 @@ class AccountHelper
         $user = User::query()->firstOrFail();
 
         Auth::login($user);
+
+        app()->forgetInstance(CompanyContext::class);
 
         return $user;
     }

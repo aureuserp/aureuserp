@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Rota criada',
-        'body' => 'A rota foi criada com sucesso.',
+        'body'  => 'A rota foi criada com sucesso.',
     ],
 ];

@@ -3,16 +3,16 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'Nova lista de materiais',
+            'label'        => 'Nova lista de materiais',
             'notification' => [
                 'title' => 'Lista de materiais criada',
-                'body' => 'A lista de materiais foi criada com sucesso.',
+                'body'  => 'A lista de materiais foi criada com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

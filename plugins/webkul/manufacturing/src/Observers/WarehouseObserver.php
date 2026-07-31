@@ -11,11 +11,11 @@ class WarehouseObserver implements ShouldHandleEventsAfterCommit
 {
     public function created(InventoryWarehouse $warehouse): void
     {
-        if (! Package::isPluginInstalled('manufacturing')) {
+        $warehouse = static::resolveManufacturingWarehouse($warehouse);
+
+        if (! $warehouse) {
             return;
         }
-
-        $warehouse = ManufacturingWarehouse::find($warehouse->id);
 
         $warehouse->handleManufacturingWarehouseCreation();
 
@@ -24,9 +24,22 @@ class WarehouseObserver implements ShouldHandleEventsAfterCommit
 
     public function updated(InventoryWarehouse $warehouse): void
     {
-        $warehouse = ManufacturingWarehouse::find($warehouse->id);
+        $warehouse = static::resolveManufacturingWarehouse($warehouse);
+
+        if (! $warehouse) {
+            return;
+        }
 
         $warehouse->syncManufacturingWarehouseConfiguration();
+    }
+
+    protected static function resolveManufacturingWarehouse(InventoryWarehouse $warehouse): ?ManufacturingWarehouse
+    {
+        if (! Package::isPluginInstalled('manufacturing')) {
+            return null;
+        }
+
+        return ManufacturingWarehouse::find($warehouse->id);
     }
 
     public function deleted(InventoryWarehouse $warehouse): void {}

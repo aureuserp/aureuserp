@@ -6,8 +6,8 @@ return [
     ],
 
     'stats' => [
-        'pending-requests' => 'Solicitações pendentes',
-        'valid-until' => 'Válido até :date',
+        'pending-requests'  => 'Solicitações pendentes',
+        'valid-until'       => 'Válido até :date',
         'time-off-requests' => 'Solicitações de ausência',
     ],
 ];

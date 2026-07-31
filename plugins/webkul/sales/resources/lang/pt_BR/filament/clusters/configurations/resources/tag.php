@@ -10,7 +10,7 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'  => 'Nome',
             'color' => 'Cor',
         ],
     ],
@@ -18,21 +18,21 @@ return [
     'table' => [
         'columns' => [
             'created-by' => 'Criado por',
-            'name' => 'Nome',
-            'color' => 'Cor',
+            'name'       => 'Nome',
+            'color'      => 'Cor',
         ],
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Tag do produto atualizada',
-                    'body' => 'A tag do produto foi atualizada com sucesso.',
+                    'body'  => 'A tag do produto foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tag do produto excluída',
-                    'body' => 'A tag do produto foi excluída com sucesso.',
+                    'body'  => 'A tag do produto foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -40,7 +40,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Tag do produto excluída',
-                    'body' => 'A tag do produto foi excluída com sucesso.',
+                    'body'  => 'A tag do produto foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -48,7 +48,7 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Nome',
+            'name'  => 'Nome',
             'color' => 'Cor',
         ],
     ],

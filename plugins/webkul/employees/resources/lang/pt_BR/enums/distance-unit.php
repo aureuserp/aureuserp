@@ -2,5 +2,5 @@
 
 return [
     'kilometer' => 'Quilômetro',
-    'meter' => 'Metro',
+    'meter'     => 'Metro',
 ];

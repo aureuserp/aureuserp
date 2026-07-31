@@ -14,9 +14,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Project\Database\Factories\ProjectStageFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class ProjectStage extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'projects_project_stages';
@@ -39,6 +41,11 @@ class ProjectStage extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
 
     public function creator(): BelongsTo
     {

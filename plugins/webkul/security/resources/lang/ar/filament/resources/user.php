@@ -52,9 +52,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'تعدد الشركات',
-                'allowed-companies' => 'الشركات المسموحة',
-                'default-company'   => 'الشركة الافتراضية',
+                'title'                       => 'تعدد الشركات',
+                'allowed-companies'           => 'الشركات المسموحة',
+                'default-company'             => 'الشركة الافتراضية',
+                'default-company-not-allowed' => 'يجب أن تكون الشركة الافتراضية إحدى الشركات المسموحة.',
             ],
         ],
     ],
@@ -181,9 +182,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'تعدد الشركات',
-                'allowed-companies' => 'الشركات المسموحة',
-                'default-company'   => 'الشركة الافتراضية',
+                'title'                       => 'تعدد الشركات',
+                'allowed-companies'           => 'الشركات المسموحة',
+                'default-company'             => 'الشركة الافتراضية',
+                'default-company-not-allowed' => 'يجب أن تكون الشركة الافتراضية إحدى الشركات المسموحة.',
             ],
         ],
     ],

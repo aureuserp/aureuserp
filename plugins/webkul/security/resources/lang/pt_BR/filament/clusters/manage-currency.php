@@ -2,8 +2,8 @@
 
 return [
     'breadcrumb' => 'Gerenciar moeda',
-    'title' => 'Gerenciar moeda',
-    'group' => 'Geral',
+    'title'      => 'Gerenciar moeda',
+    'group'      => 'Geral',
 
     'navigation' => [
         'label' => 'Gerenciar moeda',
@@ -11,7 +11,7 @@ return [
 
     'form' => [
         'default-currency' => [
-            'label' => 'Moeda padrão',
+            'label'       => 'Moeda padrão',
             'helper-text' => 'A moeda padrão usada na aplicação.',
         ],
     ],

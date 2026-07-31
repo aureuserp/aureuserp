@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'home' => 'Início',
+    'home'   => 'Início',
     'office' => 'Escritório',
-    'other' => 'Outro',
+    'other'  => 'Outro',
 ];

@@ -19,9 +19,11 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class BillOfMaterial extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'manufacturing_bills_of_materials';
@@ -52,15 +54,6 @@ class BillOfMaterial extends Model
         'produce_delay'                => 'integer',
         'days_to_prepare_mo'           => 'integer',
     ];
-
-    protected array $context = [];
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
 
     public function getModelTitle(): string
     {
@@ -244,7 +237,7 @@ class BillOfMaterial extends Model
 
             $billOfMaterial->creator_id ??= $authUser?->id;
 
-            $billOfMaterial->company_id ??= $authUser?->default_company_id;
+            $billOfMaterial->company_id ??= current_company_id();
 
             $billOfMaterial->type ??= BillOfMaterialType::NORMAL;
 
@@ -273,7 +266,7 @@ class BillOfMaterial extends Model
                 // });
             });
 
-        $resolvedCompanyId = $companyId ?? (static::$context['company_id'] ?? null);
+        $resolvedCompanyId = $companyId;
 
         if ($resolvedCompanyId) {
             $query->where(function ($q) use ($resolvedCompanyId) {

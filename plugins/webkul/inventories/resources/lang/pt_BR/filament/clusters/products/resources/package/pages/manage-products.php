@@ -5,9 +5,9 @@ return [
 
     'table' => [
         'columns' => [
-            'product' => 'Produto',
-            'lot' => 'Número de lote/série',
-            'quantity' => 'Quantidade',
+            'product'         => 'Produto',
+            'lot'             => 'Número de lote/série',
+            'quantity'        => 'Quantidade',
             'unit-of-measure' => 'Unidade de medida',
         ],
     ],

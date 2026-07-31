@@ -10,8 +10,8 @@ return [
 
     'table' => [
         'columns' => [
-            'code' => 'Código',
-            'name' => 'Nome',
+            'code'       => 'Código',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
         ],
 
@@ -24,21 +24,21 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Incoterm atualizado',
-                    'body' => 'O incoterm foi atualizado com sucesso.',
+                    'body'  => 'O incoterm foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Incoterm excluído',
-                    'body' => 'O incoterm foi excluído com sucesso.',
+                    'body'  => 'O incoterm foi excluído com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Incoterm restaurado',
-                    'body' => 'O incoterm foi restaurado com sucesso.',
+                    'body'  => 'O incoterm foi restaurado com sucesso.',
                 ],
             ],
         ],
@@ -47,21 +47,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Incoterms restaurados',
-                    'body' => 'Os incoterms foram restaurados com sucesso.',
+                    'body'  => 'Os incoterms foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Incoterms excluídos',
-                    'body' => 'Os incoterms foram excluídos com sucesso.',
+                    'body'  => 'Os incoterms foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Incoterms excluídos permanentemente',
-                    'body' => 'Os incoterms foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os incoterms foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],

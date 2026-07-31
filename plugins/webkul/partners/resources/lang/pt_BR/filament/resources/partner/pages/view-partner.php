@@ -7,7 +7,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Contato excluído',
-                'body' => 'O contato foi excluído com sucesso.',
+                'body'  => 'O contato foi excluído com sucesso.',
             ],
         ],
     ],

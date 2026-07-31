@@ -10,15 +10,17 @@ use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditQuotation extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
-    use RefreshesRecordState;
     use HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = QuotationResource::class;
 

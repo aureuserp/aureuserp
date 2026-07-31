@@ -254,6 +254,8 @@ class InstallERP extends Command
             $adminUser->assignRole($adminRoleName);
         }
 
+        $adminUser->allowedCompanies()->syncWithoutDetaching(Company::pluck('id')->all());
+
         $this->backfillMissingCreatorIds($adminUser);
 
         $this->syncDefaultSettings($adminUser);

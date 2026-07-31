@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,14 +14,17 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\OperationSettings;
+use Webkul\Inventory\Support\PlannedReservation;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class ProductQuantity extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_product_quantities';
@@ -50,15 +54,6 @@ class ProductQuantity extends Model
         'scheduled_at'           => 'date',
         'incoming_at'            => 'datetime',
     ];
-
-    protected array $context = [];
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
 
     public function product(): BelongsTo
     {
@@ -119,126 +114,106 @@ class ProductQuantity extends Model
     {
         parent::boot();
 
-        static::creating(function ($productQuantity) {
-            $productQuantity->creator_id ??= Auth::id();
+        static::creating(function (ProductQuantity $stock) {
+            $stock->creator_id ??= Auth::id();
 
-            $productQuantity->incoming_at ??= now();
+            $stock->incoming_at ??= now();
         });
 
-        static::saving(function ($productQuantity) {
-            $productQuantity->updateScheduledAt();
+        static::saving(function (ProductQuantity $stock) {
+            $stock->refreshCountSchedule();
+
+            $stock->company_id = $stock->location?->company_id ?? $stock->company_id;
         });
 
-        static::created(function ($productQuantity) {
-            if ($productQuantity->package) {
-                $productQuantity->package->update([
-                    'pack_date'   => now(),
-                ]);
+        static::created(function (ProductQuantity $stock) {
+            if ($stock->package) {
+                $stock->package->update(['pack_date' => now()]);
 
-                $productQuantity->computePackageLocationCompany();
+                $stock->syncPackagePlacement();
             }
 
-            if ($productQuantity->lot) {
-                $productQuantity->lot->update([
-                    'location_id' => $productQuantity->location_id,
-                ]);
-            }
+            $stock->lot?->update(['location_id' => $stock->location_id]);
 
-            if (! $productQuantity->inventory_quantity_set) {
-                $productQuantity->applyInventory();
+            if (! $stock->inventory_quantity_set) {
+                $stock->applyCountedDifference();
             }
         });
 
-        static::updated(function ($productQuantity) {
-            if (! $productQuantity->inventory_quantity_set) {
-                $productQuantity->applyInventory();
+        static::updated(function (ProductQuantity $stock) {
+            if (! $stock->inventory_quantity_set) {
+                $stock->applyCountedDifference();
             }
 
-            if ($productQuantity->wasChanged('location_id') || $productQuantity->wasChanged('company_id')) {
-                if (! $productQuantity->package) {
+            if ($stock->wasChanged('location_id') || $stock->wasChanged('company_id')) {
+                if (! $stock->package) {
                     return;
                 }
 
-                $productQuantity->computePackageLocationCompany();
+                $stock->syncPackagePlacement();
             }
 
-            static::deleteZeroQuantities();
+            static::purgeEmpty();
         });
     }
 
-    public function computePackageLocationCompany()
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
+    public function syncPackagePlacement(): void
     {
         $package = $this->package;
 
-        $package->location_id = null;
-
-        $package->company_id = null;
-
-        $quantities = $package->quantities->filter(
-            fn ($quantity) => float_compare($quantity->quantity, 0, precisionRounding: $quantity->uom->rounding) > 0
+        $stocked = $package->quantities->filter(
+            fn (self $stock) => float_compare($stock->quantity, 0, precisionRounding: $stock->uom->rounding) > 0
         );
 
-        if ($quantities->isNotEmpty()) {
-            $package->location_id = $quantities->first()->location_id;
+        $package->location_id = $stocked->first()?->location_id;
 
-            if ($package->quantities->every(fn ($quantity) => $quantity->company_id === $quantities->first()->company_id)) {
-                $package->company_id = $quantities->first()->company_id;
-            }
-        }
+        $package->company_id = $stocked->isNotEmpty()
+            && $package->quantities->every(fn (self $stock) => $stock->company_id === $stocked->first()->company_id)
+                ? $stocked->first()->company_id
+                : null;
 
         $package->save();
     }
 
-    public function applyInventory()
+    public function applyCountedDifference(): void
     {
-        if (float_compare($this->inventory_diff_quantity, 0.0, precisionRounding: $this->uom->rounding) == 0) {
+        $difference = $this->inventory_diff_quantity;
+
+        if (float_is_zero($difference, precisionRounding: $this->uom->rounding)) {
             return;
         }
 
-        $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
+        $adjustmentLocation = Location::query()
+            ->where('type', LocationType::INVENTORY)
             ->where('is_scrap', false)
+            ->where('company_id', $this->location->company_id)
             ->first();
 
-        if (float_compare($this->inventory_diff_quantity, 0.0, precisionRounding: $this->uom->rounding) > 0) {
-            $moveValues = $this->getInventoryMoveValues(
-                $this->inventory_diff_quantity,
-                $adjustmentLocation,
-                $this->location,
-                destinationPackage: $this->package
-            );
-        } else {
-            $moveValues = $this->getInventoryMoveValues(
-                -$this->inventory_diff_quantity,
-                $this->location,
-                $adjustmentLocation,
-                package: $this->package
-            );
-        }
+        $isIncrease = float_compare($difference, 0.0, precisionRounding: $this->uom->rounding) > 0;
 
-        $move = Move::create($moveValues);
-
-        foreach ($moveValues['lines'] as $lineValues) {
-            MoveLine::create(array_merge($lineValues, [
-                'move_id' => $move->id,
-            ]));
-        }
-
-        $this->product->context = [
-            'location_id' => $this->location_id,
-        ];
-
-        ProductQuantity::updateOrCreate(
-            [
-                'location_id' => $adjustmentLocation->id,
-                'product_id'  => $this->product_id,
-                'lot_id'      => $this->lot_id,
-            ], [
-                'quantity'    => -$this->product->available_qty,
-                'company_id'  => $this->company_id,
-                'creator_id'  => Auth::id(),
-                'incoming_at' => now(),
-            ]
+        $this->recordAdjustmentMove(
+            abs($difference),
+            $isIncrease ? $adjustmentLocation : $this->location,
+            $isIncrease ? $this->location : $adjustmentLocation,
+            $isIncrease ? null : $this->package,
+            $isIncrease ? $this->package : null,
         );
+
+        static::updateOrCreate([
+            'location_id' => $adjustmentLocation->id,
+            'product_id'  => $this->product_id,
+            'lot_id'      => $this->lot_id,
+        ], [
+            'quantity'    => -$this->product->available_qty,
+            'company_id'  => $this->company_id,
+            'creator_id'  => Auth::id(),
+            'incoming_at' => now(),
+        ]);
 
         $this->updateQuietly([
             'inventory_diff_quantity' => 0.0,
@@ -246,215 +221,216 @@ class ProductQuantity extends Model
         ]);
     }
 
-    public function getInventoryMoveValues(
-        $qty,
-        Location $sourceLocation,
-        Location $destinationLocation,
-        ?Package $package = null,
-        ?Package $destinationPackage = null
-    ) {
-        if ($this->context['inventory_name'] ?? false) {
-            $name = $this->context['inventory_name'];
-        } elseif (float_is_zero($qty, precisionRounding: $this->product->uom->rounding)) {
-            $name = 'Product Quantity Confirmed';
-        } else {
-            $name = 'Product Quantity Updated';
-        }
+    protected function recordAdjustmentMove(
+        float $quantity,
+        Location $source,
+        Location $destination,
+        ?Package $package,
+        ?Package $destinationPackage
+    ): Move {
+        $reference = float_is_zero($quantity, precisionRounding: $this->product->uom->rounding)
+            ? 'Product Quantity Confirmed'
+            : 'Product Quantity Updated';
 
-        return [
-            'name'                    => $name,
+        $companyId = $this->company->id ?? current_company_id();
+
+        $move = Move::create([
+            'name'                    => $reference,
             'state'                   => MoveState::DONE,
-            'quantity'                => $qty,
-            'product_uom_qty'         => $qty,
+            'quantity'                => $quantity,
+            'product_uom_qty'         => $quantity,
             'is_picked'               => true,
             'is_inventory'            => true,
             'product_id'              => $this->product_id,
             'uom_id'                  => $this->uom->id,
-            'source_location_id'      => $sourceLocation->id,
-            'destination_location_id' => $destinationLocation->id,
-            'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
-            'lines'                   => [[
-                'reference'               => $name,
-                'qty'                     => $qty,
-                'uom_qty'                 => $qty,
-                'product_id'              => $this->product_id,
-                'uom_id'                  => $this->uom->id,
-                'source_location_id'      => $sourceLocation->id,
-                'destination_location_id' => $destinationLocation->id,
-                'lot_id'                  => $this->lot_id,
-                'package_id'              => $package?->id,
-                'result_package_id'       => $destinationPackage?->id,
-                'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
-            ]],
-        ];
+            'source_location_id'      => $source->id,
+            'destination_location_id' => $destination->id,
+            'company_id'              => $companyId,
+        ]);
+
+        $move->lines()->create([
+            'reference'               => $reference,
+            'qty'                     => $quantity,
+            'uom_qty'                 => $quantity,
+            'product_id'              => $this->product_id,
+            'uom_id'                  => $this->uom->id,
+            'source_location_id'      => $source->id,
+            'destination_location_id' => $destination->id,
+            'lot_id'                  => $this->lot_id,
+            'package_id'              => $package?->id,
+            'result_package_id'       => $destinationPackage?->id,
+            'company_id'              => $companyId,
+        ]);
+
+        return $move;
     }
 
-    public static function updateReservedQuantity(
+    public static function applyReservationDelta(
         Product $product,
         Location $location,
-        float $quantity,
+        float $delta,
         ?Lot $lot = null,
         ?Package $package = null
     ): void {
-        static::updateAvailableQuantity(
-            product: $product,
-            location: $location,
-            reservedQuantity: $quantity,
-            lot: $lot,
-            package: $package,
-        );
+        static::adjustStock($product, $location, reservedDelta: $delta, lot: $lot, package: $package);
     }
 
-    public static function updateAvailableQuantity(
+    public static function applyQuantityDelta(
         Product $product,
         Location $location,
-        mixed $quantity = false,
-        mixed $reservedQuantity = false,
+        float $delta,
         ?Lot $lot = null,
         ?Package $package = null,
         ?Carbon $incomingDate = null,
     ): array {
-        if (! $quantity && ! $reservedQuantity) {
+        return static::adjustStock($product, $location, quantityDelta: $delta, lot: $lot, package: $package, incomingDate: $incomingDate);
+    }
+
+    protected static function adjustStock(
+        Product $product,
+        Location $location,
+        ?float $quantityDelta = null,
+        ?float $reservedDelta = null,
+        ?Lot $lot = null,
+        ?Package $package = null,
+        ?Carbon $incomingDate = null,
+    ): array {
+        if (! $quantityDelta && ! $reservedDelta) {
             throw new \Exception(__('inventories::system.product-quantity.quantity-not-set'));
         }
 
-        $quants = static::gather($product, $location, lot: $lot, package: $package, strict: true);
+        $candidates = static::findFor($product, $location, lot: $lot, package: $package, strict: true);
 
-        if ($lot && $quantity > 0) {
-            $quants = $quants->filter(fn ($q) => $q->lot_id);
+        if ($lot && $quantityDelta > 0) {
+            $candidates = $candidates->filter(fn (self $stock) => $stock->lot_id);
         }
 
-        if ($location->shouldBypassReservation()) {
-            $incomingDates = [];
-        } else {
-            $incomingDates = $quants
-                ->filter(fn ($q) => $q->incoming_date && float_compare($q->quantity, 0, precisionRounding: $q->product->uom->rounding) > 0)
-                ->pluck('incoming_date')
-                ->map(fn ($date) => Carbon::parse($date))
-                ->all();
-        }
+        $incomingDate ??= now();
 
-        if ($incomingDate) {
-            $incomingDates[] = $incomingDate;
-        }
-
-        $incomingDate = ! empty($incomingDates) ? min($incomingDates) : now();
-
-        $quant = null;
-
-        if ($quants->isNotEmpty()) {
-            $quant = self::whereIn('id', $quants->pluck('id'))
+        $stock = $candidates->isEmpty()
+            ? null
+            : static::query()
+                ->whereIn('id', $candidates->pluck('id'))
                 ->orderBy('lot_id')
                 ->orderBy('id')
                 ->lockForUpdate()
                 ->first();
-        }
 
-        if ($quant) {
-            $vals = ['incoming_date' => $incomingDate];
-
-            if ($quantity) {
-                $vals['quantity'] = $quant->quantity + $quantity;
-            }
-
-            if ($reservedQuantity) {
-                $vals['reserved_quantity'] = $quant->reserved_quantity + $reservedQuantity;
-            }
-
-            $quant->update($vals);
+        if ($stock) {
+            $stock->update(array_filter([
+                'quantity'          => $quantityDelta ? $stock->quantity + $quantityDelta : null,
+                'reserved_quantity' => $reservedDelta ? $stock->reserved_quantity + $reservedDelta : null,
+            ], fn ($value) => $value !== null));
         } else {
-            $vals = [
-                'product_id'    => $product->id,
-                'location_id'   => $location->id,
-                'lot_id'        => $lot?->id,
-                'package_id'    => $package?->id,
-                'incoming_date' => $incomingDate,
-            ];
-
-            if ($quantity) {
-                $vals['quantity'] = $quantity;
-            }
-
-            if ($reservedQuantity) {
-                $vals['reserved_quantity'] = $reservedQuantity;
-            }
-
-            self::create($vals);
+            static::create(array_filter([
+                'product_id'        => $product->id,
+                'location_id'       => $location->id,
+                'lot_id'            => $lot?->id,
+                'package_id'        => $package?->id,
+                'quantity'          => $quantityDelta ?: null,
+                'reserved_quantity' => $reservedDelta ?: null,
+            ], fn ($value) => $value !== null));
         }
 
         return [
-            static::getAvailableQuantity($product, $location, lot: $lot, package: $package, strict: true, allowNegative: true),
+            static::availableFor($product, $location, lot: $lot, package: $package, strict: true, allowNegative: true),
             $incomingDate,
         ];
     }
 
-    public static function deleteZeroQuantities(): void
+    public static function purgeEmpty(): void
     {
-        static::where(function ($query) {
-            $query->whereRaw('ROUND(quantity, ?) = 0', [6])
-                ->orWhereNull('quantity');
-        })
+        static::query()
+            ->where(fn ($query) => $query->whereRaw('ROUND(quantity, ?) = 0', [6])->orWhereNull('quantity'))
             ->whereRaw('ROUND(reserved_quantity, ?) = 0', [6])
             ->whereNull('user_id')
             ->delete();
     }
 
-    public function updateScheduledAt()
+    public function refreshCountSchedule(): void
     {
+        if ($this->location?->cyclic_inventory_frequency) {
+            $this->scheduled_at = now()->addDays($this->location->cyclic_inventory_frequency);
+
+            return;
+        }
+
+        $settings = settings(OperationSettings::class);
+
         $this->scheduled_at = Carbon::create(
             now()->year,
-            settings(OperationSettings::class)->annual_inventory_month,
-            settings(OperationSettings::class)->annual_inventory_day,
+            $settings->annual_inventory_month,
+            $settings->annual_inventory_day,
             0,
             0,
             0
         );
-
-        if ($this->location?->cyclic_inventory_frequency) {
-            $this->scheduled_at = now()->addDays($this->location->cyclic_inventory_frequency);
-        }
     }
 
-    public static function gather(
+    public function scopeMatching(
+        Builder $query,
         Product $product,
         Location $location,
         ?Lot $lot = null,
         ?Package $package = null,
         ?Partner $partner = null,
         bool $strict = false,
-        float $qty = 0,
-    ): Collection {
-        $removalStrategy = static::getRemovalStrategy($product, $location);
+    ): Builder {
+        $query->where('product_id', $product->id);
 
-        $domain = static::getGatherDomain($product, $location, $lot, $package, $partner, $strict);
-
-        $order = static::getRemovalStrategyOrder($removalStrategy);
-
-        $query = static::query()->where($domain);
-
-        if ($order) {
-            $query->orderByRaw($order);
+        if ($lot) {
+            $query->where(fn ($nested) => $nested->where('lot_id', $lot->id)->orWhereNull('lot_id'));
+        } elseif ($strict) {
+            $query->whereNull('lot_id');
         }
 
-        $quants = $query->get();
+        if ($strict) {
+            return $query
+                ->where('package_id', $package?->id)
+                ->where('partner_id', $partner?->id)
+                ->where('location_id', $location->id);
+        }
 
-        return $quants->sortBy(fn ($q) => $q->lot_id ? 0 : 1)->values();
+        if ($package) {
+            $query->where('package_id', $package->id);
+        }
+
+        if ($partner) {
+            $query->where('partner_id', $partner->id);
+        }
+
+        return $query->whereIn('location_id', Location::query()->descendantsOf($location)->select('id'));
     }
 
-    public static function getRemovalStrategy(Product $product, Location $location): string
+    public static function findFor(
+        Product $product,
+        Location $location,
+        ?Lot $lot = null,
+        ?Package $package = null,
+        ?Partner $partner = null,
+        bool $strict = false,
+    ): Collection {
+        $query = static::query()->matching($product, $location, $lot, $package, $partner, $strict);
+
+        if ($ordering = static::removalOrdering(static::resolveRemovalStrategy($product, $location))) {
+            $query->orderByRaw($ordering);
+        }
+
+        return $query->get()
+            ->sortBy(fn (self $stock) => $stock->lot_id ? 0 : 1)
+            ->values();
+    }
+
+    public static function resolveRemovalStrategy(Product $product, Location $location): string
     {
         if ($strategy = $product->category?->removal_strategy) {
             return static::normalizeRemovalStrategy($strategy);
         }
 
-        $loc = $location;
-
-        while ($loc) {
-            if ($loc->removal_strategy) {
-                return static::normalizeRemovalStrategy($loc->removal_strategy);
+        for ($current = $location; $current; $current = $current->parent) {
+            if ($current->removal_strategy) {
+                return static::normalizeRemovalStrategy($current->removal_strategy);
             }
-
-            $loc = $loc->parent;
         }
 
         return ProductRemoval::FIFO->value;
@@ -465,58 +441,17 @@ class ProductQuantity extends Model
         return $strategy instanceof ProductRemoval ? $strategy->value : $strategy;
     }
 
-    public static function getRemovalStrategyOrder(string $removalStrategy): ?string
+    public static function removalOrdering(string $strategy): ?string
     {
-        return match ($removalStrategy) {
+        return match ($strategy) {
             'fifo'    => 'incoming_at ASC, id',
             'lifo'    => 'incoming_at DESC, id DESC',
             'closest' => null,
-            default   => throw new \RuntimeException(__('inventories::system.product-quantity.removal-strategy-not-implemented', ['strategy' => $removalStrategy])),
+            default   => throw new \RuntimeException(__('inventories::system.product-quantity.removal-strategy-not-implemented', ['strategy' => $strategy])),
         };
     }
 
-    public static function getGatherDomain(
-        Product $product,
-        Location $location,
-        ?Lot $lot = null,
-        ?Package $package = null,
-        ?Partner $partner = null,
-        bool $strict = false,
-    ): \Closure {
-        return function ($query) use ($product, $location, $lot, $package, $partner, $strict) {
-            $query->where('product_id', $product->id);
-
-            if (! $strict) {
-                if ($lot) {
-                    $query->where(fn ($q) => $q->where('lot_id', $lot->id)->orWhereNull('lot_id'));
-                }
-
-                if ($package) {
-                    $query->where('package_id', $package->id);
-                }
-
-                if ($partner) {
-                    $query->where('partner_id', $partner->id);
-                }
-
-                $childIds = Location::where('parent_path', 'LIKE', $location->parent_path.'%')->pluck('id');
-
-                $query->whereIn('location_id', $childIds);
-            } else {
-                if ($lot) {
-                    $query->where(fn ($q) => $q->where('lot_id', $lot->id)->orWhereNull('lot_id'));
-                } else {
-                    $query->whereNull('lot_id');
-                }
-
-                $query->where('package_id', $package?->id);
-                $query->where('partner_id', $partner?->id);
-                $query->where('location_id', $location->id);
-            }
-        };
-    }
-
-    public static function getAvailableQuantity(
+    public static function availableFor(
         Product $product,
         Location $location,
         ?Lot $lot = null,
@@ -525,12 +460,12 @@ class ProductQuantity extends Model
         bool $strict = false,
         bool $allowNegative = false,
     ): float {
-        $quants = static::gather($product, $location, $lot, $package, $partner, $strict);
+        $stocks = static::findFor($product, $location, $lot, $package, $partner, $strict);
 
         $rounding = $product->uom->rounding;
 
         if (! in_array($product->tracking, [ProductTracking::LOT, ProductTracking::SERIAL])) {
-            $available = $quants->sum('quantity') - $quants->sum('reserved_quantity');
+            $available = $stocks->sum('quantity') - $stocks->sum('reserved_quantity');
 
             if ($allowNegative) {
                 return $available;
@@ -539,33 +474,31 @@ class ProductQuantity extends Model
             return float_compare($available, 0.0, precisionRounding: $rounding) >= 0 ? $available : 0.0;
         }
 
-        $availableQuantities = array_fill_keys(
-            array_merge($quants->pluck('lot_id')->filter()->unique()->toArray(), ['untracked']),
-            0.0
-        );
+        $perLot = [];
 
-        foreach ($quants as $quant) {
-            if (! $quant->lot_id && $strict && $lot) {
+        foreach ($stocks as $stock) {
+            if (! $stock->lot_id && $strict && $lot) {
                 continue;
             }
 
-            $bucketKey = $quant->lot_id ?? 'untracked';
+            $bucket = $stock->lot_id ?? 'untracked';
 
-            $availableQuantities[$bucketKey] = ($availableQuantities[$bucketKey] ?? 0.0) + ($quant->quantity - $quant->reserved_quantity);
+            $perLot[$bucket] = ($perLot[$bucket] ?? 0.0) + ($stock->quantity - $stock->reserved_quantity);
         }
 
         if ($allowNegative) {
-            return (float) array_sum($availableQuantities);
+            return (float) array_sum($perLot);
         }
 
-        return (float) array_sum(array_filter($availableQuantities, fn ($v) => float_compare($v, 0.0, precisionRounding: $rounding) > 0));
+        return (float) array_sum(
+            array_filter($perLot, fn ($value) => float_compare($value, 0.0, precisionRounding: $rounding) > 0)
+        );
     }
 
-    public static function getReserveQuantity(
+    public static function planReservation(
         Product $product,
         Location $location,
         float $quantity,
-        ?Packaging $productPackaging = null,
         ?UOM $uom = null,
         ?Lot $lot = null,
         ?Package $package = null,
@@ -574,92 +507,81 @@ class ProductQuantity extends Model
     ): array {
         $rounding = $product->uom->rounding;
 
-        $quants = static::gather($product, $location, $lot, $package, $partner, $strict);
+        $stocks = static::findFor($product, $location, $lot, $package, $partner, $strict);
 
-        $availableQuantity = static::getAvailableQuantity($product, $location, $lot, $package, $partner, $strict);
-
-        $quantity = min($quantity, $availableQuantity);
+        $quantity = min($quantity, static::availableFor($product, $location, $lot, $package, $partner, $strict));
 
         if (! $strict && $uom && $product->uom->id !== $uom->id) {
-            $quantityMoveUom = $product->uom->computeQuantity($quantity, $uom, roundingMethod: 'DOWN');
+            $inMoveUom = $product->uom->computeQuantity($quantity, $uom, roundingMethod: 'DOWN');
 
-            $quantity = $uom->computeQuantity($quantityMoveUom, $product->uom, roundingMethod: 'HALF-UP');
+            $quantity = $uom->computeQuantity($inMoveUom, $product->uom, roundingMethod: 'HALF-UP');
         }
 
-        if ($product->tracking === ProductTracking::SERIAL) {
-            if (float_compare($quantity, (float) (int) $quantity, precisionRounding: $rounding) !== 0) {
-                $quantity = 0.0;
-            }
+        if (
+            $product->tracking === ProductTracking::SERIAL
+            && float_compare($quantity, (float) (int) $quantity, precisionRounding: $rounding) !== 0
+        ) {
+            $quantity = 0.0;
         }
 
-        $reservedQuants = [];
-
-        if (float_compare($quantity, 0.0, precisionRounding: $rounding) === 0) {
-            return $reservedQuants;
+        if (float_is_zero($quantity, precisionRounding: $rounding)) {
+            return [];
         }
 
-        if (float_compare($quantity, 0.0, precisionRounding: $rounding) > 0) {
-            $available = $quants->filter(fn ($q) => float_compare($q->quantity, 0.0, precisionRounding: $rounding) > 0)->sum('quantity')
-                - $quants->sum('reserved_quantity');
+        $isReserving = float_compare($quantity, 0.0, precisionRounding: $rounding) > 0;
+
+        if ($isReserving) {
+            $available = $stocks->filter(fn (self $stock) => float_compare($stock->quantity, 0.0, precisionRounding: $rounding) > 0)->sum('quantity')
+                - $stocks->sum('reserved_quantity');
         } else {
-            $available = $quants->sum('reserved_quantity');
+            $available = $stocks->sum('reserved_quantity');
 
             if (float_compare(abs($quantity), $available, precisionRounding: $rounding) > 0) {
                 throw new \RuntimeException(__('inventories::system.product-quantity.unreserve-more-than-stock', ['name' => $product->name]));
             }
         }
 
-        $negativeReserved = [];
+        $shortfalls = static::shortfallsPerBucket($stocks, $rounding);
 
-        foreach ($quants as $quant) {
-            $net = $quant->quantity - $quant->reserved_quantity;
+        $plan = [];
 
-            if (float_compare($net, 0.0, precisionRounding: $rounding) < 0) {
-                $negKey = implode('_', [$quant->location_id, $quant->lot_id, $quant->package_id, $quant->partner_id]);
+        foreach ($stocks as $stock) {
+            if ($isReserving) {
+                $spare = $stock->quantity - $stock->reserved_quantity;
 
-                $negativeReserved[$negKey] = ($negativeReserved[$negKey] ?? 0.0) + $net;
-            }
-        }
-
-        foreach ($quants as $quant) {
-            if (float_compare($quantity, 0.0, precisionRounding: $rounding) > 0) {
-                $maxOnQuant = $quant->quantity - $quant->reserved_quantity;
-
-                if (float_compare($maxOnQuant, 0.0, precisionRounding: $rounding) <= 0) {
+                if (float_compare($spare, 0.0, precisionRounding: $rounding) <= 0) {
                     continue;
                 }
 
-                $negKey = implode('_', [$quant->location_id, $quant->lot_id, $quant->package_id, $quant->partner_id]);
+                $bucket = static::bucketKey($stock);
 
-                $negQty = $negativeReserved[$negKey] ?? 0.0;
+                if ($shortfall = $shortfalls[$bucket] ?? 0.0) {
+                    $offset = min(abs($shortfall), $spare);
 
-                if ($negQty) {
-                    $toRemove = min(abs($negQty), $maxOnQuant);
+                    $shortfalls[$bucket] += $offset;
 
-                    $negativeReserved[$negKey] += $toRemove;
-
-                    $maxOnQuant -= $toRemove;
+                    $spare -= $offset;
                 }
 
-                if (float_compare($maxOnQuant, 0.0, precisionRounding: $rounding) <= 0) {
+                if (float_compare($spare, 0.0, precisionRounding: $rounding) <= 0) {
                     continue;
                 }
 
-                $toReserve = min($maxOnQuant, $quantity);
+                $taken = min($spare, $quantity);
 
-                $reservedQuants[] = [$quant, $toReserve];
+                $plan[] = new PlannedReservation($stock, $taken);
 
-                $quantity -= $toReserve;
+                $quantity -= $taken;
 
-                $available -= $toReserve;
+                $available -= $taken;
             } else {
-                $toRelease = min($quant->reserved_quantity, abs($quantity));
+                $released = min($stock->reserved_quantity, abs($quantity));
 
-                $reservedQuants[] = [$quant, -$toRelease];
+                $plan[] = new PlannedReservation($stock, -$released);
 
-                $quantity += $toRelease;
+                $quantity += $released;
 
-                $available += $toRelease;
+                $available += $released;
             }
 
             if (
@@ -670,78 +592,29 @@ class ProductQuantity extends Model
             }
         }
 
-        return $reservedQuants;
+        return $plan;
     }
 
-    public static function getQuantitiesByProductsLocations(mixed $productIds, mixed $locationIds, array $extraFilters = []): array
+    protected static function shortfallsPerBucket(Collection $stocks, float $rounding): array
     {
-        $result = [];
+        $shortfalls = [];
 
-        if ($productIds->isEmpty() || $locationIds->isEmpty()) {
-            return $result;
+        foreach ($stocks as $stock) {
+            $spare = $stock->quantity - $stock->reserved_quantity;
+
+            if (float_compare($spare, 0.0, precisionRounding: $rounding) < 0) {
+                $bucket = static::bucketKey($stock);
+
+                $shortfalls[$bucket] = ($shortfalls[$bucket] ?? 0.0) + $spare;
+            }
         }
 
-        $filters = [
-            ['product_id', 'in', $productIds->all()],
-            ['location_id', 'child_of', $locationIds->all()],
-        ];
+        return $shortfalls;
+    }
 
-        if (! empty($extraFilters)) {
-            $filters = array_merge($filters, $extraFilters);
-        }
-
-        $neededQuants = static::query()
-            ->where(function ($query) use ($filters) {
-                foreach ($filters as $condition) {
-                    [$column, $operator, $value] = count($condition) === 2
-                        ? [$condition[0], '=', $condition[1]]
-                        : $condition;
-
-                    if ($operator === 'in') {
-                        $query->whereIn($column, $value);
-
-                        continue;
-                    }
-
-                    if ($operator === 'child_of') {
-                        $locationParentPaths = Location::query()
-                            ->whereIn('id', $value)
-                            ->pluck('parent_path')
-                            ->filter();
-
-                        $locationIds = $locationParentPaths->isEmpty()
-                            ? collect()
-                            : Location::query()
-                                ->where(function ($locationQuery) use ($locationParentPaths) {
-                                    foreach ($locationParentPaths as $parentPath) {
-                                        $locationQuery->orWhere('parent_path', 'like', $parentPath.'%');
-                                    }
-                                })
-                                ->pluck('id');
-
-                        $query->whereIn($column, $locationIds);
-
-                        continue;
-                    }
-
-                    $query->where($column, $operator, $value);
-                }
-            })
-            ->orderBy('lot_id')
-            ->orderBy('id')
-            ->get()
-            ->groupBy(fn ($quant) => implode('_', [
-                $quant->product_id,
-                $quant->location_id,
-                $quant->lot_id,
-                $quant->package_id,
-            ]));
-
-        foreach ($neededQuants as $key => $quants) {
-            $result[$key] = $quants;
-        }
-
-        return $result;
+    protected static function bucketKey(self $stock): string
+    {
+        return implode('_', [$stock->location_id, $stock->lot_id, $stock->package_id, $stock->partner_id]);
     }
 
     protected static function newFactory(): ProductQuantityFactory

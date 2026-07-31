@@ -69,7 +69,7 @@ class TeamResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload()
-                    ->default(auth()->user()?->default_company_id),
+                    ->default(current_company_id()),
             ])
             ->columns(1);
     }

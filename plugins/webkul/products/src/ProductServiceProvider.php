@@ -63,6 +63,10 @@ class ProductServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         UOM::observe(UOMObserver::class);
     }
 

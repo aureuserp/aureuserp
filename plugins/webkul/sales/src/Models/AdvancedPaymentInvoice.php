@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class AdvancedPaymentInvoice extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'sales_advance_payment_invoices';
 
     protected $fillable = [

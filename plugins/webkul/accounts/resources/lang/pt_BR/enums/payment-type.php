@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'send' => 'Enviar',
+    'send'    => 'Enviar',
     'receive' => 'Receber',
 ];

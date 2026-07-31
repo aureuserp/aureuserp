@@ -288,7 +288,9 @@ class Warehouse extends BaseWarehouse
 
     protected function createManufacturingRules(): void
     {
-        $productionLocation = Location::where('type', LocationType::PRODUCTION)->first();
+        $productionLocation = Location::where('type', LocationType::PRODUCTION)
+            ->where('company_id', $this->company_id)
+            ->first();
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 15,
@@ -425,7 +427,9 @@ class Warehouse extends BaseWarehouse
             'deleted_at' => $this->manufacture_steps === ManufactureStep::ONE_STEP ? now() : null,
         ]);
 
-        $productionLocation = Location::where('type', LocationType::PRODUCTION)->first();
+        $productionLocation = Location::where('type', LocationType::PRODUCTION)
+            ->where('company_id', $this->company_id)
+            ->first();
 
         $this->updateRules(
             'manufacture_steps',

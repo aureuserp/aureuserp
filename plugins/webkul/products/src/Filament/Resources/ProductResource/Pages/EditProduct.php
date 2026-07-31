@@ -12,13 +12,17 @@ use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Product\Filament\Resources\ProductResource;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditProduct extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
 
     protected static string $resource = ProductResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected function getSavedNotification(): Notification
     {

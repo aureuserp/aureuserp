@@ -11,7 +11,7 @@ return [
 
             'notifications' => [
                 'success' => [
-                    'title' => 'Lista de materiais criada',
+                    'title'   => 'Lista de materiais criada',
                     'message' => 'A lista de materiais foi criada com sucesso.',
                 ],
             ],

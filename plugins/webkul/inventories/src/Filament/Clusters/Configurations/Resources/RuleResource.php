@@ -45,10 +45,13 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pag
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\EditRule;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\ListRules;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\ViewRule;
+use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Filament\Resources\PartnerResource;
+use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Package;
 
 class RuleResource extends Resource
@@ -112,7 +115,11 @@ class RuleResource extends Resource
                                                     ->live(),
                                                 Select::make('operation_type_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.operation-type'))
-                                                    ->relationship('operationType', 'name')
+                                                    ->relationship(
+                                                        'operationType',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
@@ -133,13 +140,21 @@ class RuleResource extends Resource
                                                     ->live(),
                                                 Select::make('source_location_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.source-location'))
-                                                    ->relationship('sourceLocation', 'full_name')
+                                                    ->relationship(
+                                                        'sourceLocation',
+                                                        'full_name',
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required(),
                                                 Select::make('destination_location_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.destination-location'))
-                                                    ->relationship('destinationLocation', 'full_name')
+                                                    ->relationship(
+                                                        'destinationLocation',
+                                                        'full_name',
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required(),
@@ -211,7 +226,11 @@ class RuleResource extends Resource
                             ->schema([
                                 Select::make('partner_address_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.partner-address'))
-                                    ->relationship('partnerAddress', 'name')
+                                    ->relationship(
+                                        'partnerAddress',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.partner-address-hint-tooltip')))
                                     ->searchable()
                                     ->preload()
@@ -230,7 +249,9 @@ class RuleResource extends Resource
                                             ->relationship(
                                                 'route',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->withTrashed()
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -246,7 +267,16 @@ class RuleResource extends Resource
                                             ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.fields.company'))
                                             ->relationship('company', 'name')
                                             ->searchable()
-                                            ->preload(),
+                                            ->preload()
+                                            ->default(current_company_id())
+                                            ->live()
+                                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                'operation_type_id'       => OperationType::class,
+                                                'source_location_id'      => Location::class,
+                                                'destination_location_id' => Location::class,
+                                                'route_id'                => Route::class,
+                                                'partner_address_id'      => Partner::class,
+                                            ], $state)),
                                     ])
                                     ->columns(1),
                             ]),
