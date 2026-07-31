@@ -13,7 +13,7 @@ require_once __DIR__.'/../../../../accounts/tests/Helpers/AccountHelper.php';
 require_once __DIR__.'/../../Helpers/ReportHelper.php';
 
 beforeEach(function () {
-    TestBootstrapHelper::ensurePluginInstalled('accounts');
+    TestBootstrapHelper::ensurePluginInstalled('accounting');
 
     DB::table('plugins')->whereIn('name', ['accounts', 'accounting'])->update([
         'is_installed' => true,

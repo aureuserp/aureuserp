@@ -280,6 +280,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
 
     protected function registerModelObservers(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         Warehouse::observe(WarehouseObserver::class);
 
         Move::observe(MoveObserver::class);

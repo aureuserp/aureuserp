@@ -9,7 +9,7 @@ require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php
 $namespace = 'Webkul\\Accounting\\';
 
 beforeEach(function () {
-    TestBootstrapHelper::ensurePluginInstalled('accounts');
+    TestBootstrapHelper::ensurePluginInstalled('accounting');
 
     SecurityHelper::disableUserEvents();
 

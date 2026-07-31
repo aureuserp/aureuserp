@@ -170,6 +170,10 @@ class InventoryServiceProvider extends PackageServiceProvider
 
     protected function registerObservers(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         Company::observe(CompanyObserver::class);
 
         UOM::observe(UOMObserver::class);
