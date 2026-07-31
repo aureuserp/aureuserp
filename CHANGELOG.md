@@ -20,6 +20,9 @@
 * #1327 Added Arabic localization for the Plugins resource
 * #1303 Added branding settings and middleware for dynamic panel customization
 * #1429 Added dashboard date-range filter widget
+* #1316 Integrated custom fields functionality across Accounting, Products, Projects, Recruitment, Sales, Security, Time-off, Timesheets, and Website resources
+* #1318 Blocked plugin uninstall when dependent plugins exist
+* #1364 Added multi-company (multi-tenancy) support with company scoping, allowed-companies access control, cross-company transfer guards, and a company switcher
 
 ### ✨ Improvements
 
@@ -85,6 +88,11 @@
 * #1220 [fixed] - Linked purchase order receipts to their order operations
 * #1219 [fixed] - Navigation group labels now update correctly on locale switch
 * #1216 [fixed] - Removed duplicate Auth import in LeaveAccrualLevel model
+* #1442 [fixed] - Fixed missing pt_BR translations for field and operation resources
+* #1441 [fixed] - Fixed bill of materials resource issue
+* #1393 [fixed] - Fixed manufacturing plugin uninstall cleanup and reinstall consistency
+* #1387 [fixed] - Fixed Arabic RTL PDF rendering issues (DomPDF + DejaVu font, weight/currency handling)
+* #1296 [fixed] - Fixed manufacturing order consumption check for soft-deleted products and UOMs
 * #1440 [fixed] - Fixed missing translations across the app
 * #1437 [fixed] - Fixed a translation issue
 * #1435 [fixed] - Issue #839 resolved
