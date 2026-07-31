@@ -7,7 +7,7 @@ use Webkul\Support\Enums\NavigationGroup;
 
 class Maintenance extends Cluster
 {
-    protected static ?string $slug = 'maintenance';
+    protected static ?string $slug = 'maintenance/maintenance';
 
     protected static ?int $navigationSort = -1;
 

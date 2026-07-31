@@ -63,6 +63,11 @@ class Equipment extends Model
         return __('maintenance::models/equipment.title');
     }
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(EquipmentCategory::class, 'category_id');
@@ -116,9 +121,11 @@ class Equipment extends Model
             $authUser = Auth::user();
 
             $equipment->creator_id ??= $authUser?->id;
-            $equipment->company_id ??= current_company_id();
+
             $equipment->effective_date ??= now()->toDateString();
+
             $equipment->maintenance_count ??= 0;
+            
             $equipment->maintenance_open_count ??= 0;
         });
     }

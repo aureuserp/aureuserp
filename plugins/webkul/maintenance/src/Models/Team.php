@@ -34,6 +34,11 @@ class Team extends Model
         return __('maintenance::models/team.title');
     }
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
@@ -72,7 +77,6 @@ class Team extends Model
             $authUser = Auth::user();
 
             $team->creator_id ??= $authUser?->id;
-            $team->company_id ??= current_company_id();
         });
     }
 }

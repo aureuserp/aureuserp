@@ -32,6 +32,11 @@ class EquipmentCategory extends Model
         return __('maintenance::models/equipment-category.title');
     }
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
@@ -70,7 +75,6 @@ class EquipmentCategory extends Model
             $authUser = Auth::user();
 
             $category->creator_id ??= $authUser?->id;
-            $category->company_id ??= current_company_id();
         });
     }
 }
