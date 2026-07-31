@@ -13,7 +13,7 @@ trait BelongsToCompany
 
         static::creating(function ($model) {
             if (empty($model->company_id) && static::autoAssignsCompany()) {
-                $model->company_id = app(CompanyContext::class)->currentId();
+                $model->company_id ??= app(CompanyContext::class)->currentId();
             }
         });
     }

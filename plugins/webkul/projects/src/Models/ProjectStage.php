@@ -42,6 +42,11 @@ class ProjectStage extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);

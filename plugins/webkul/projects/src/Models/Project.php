@@ -97,6 +97,11 @@ class Project extends Model implements Sortable
         ];
     }
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     protected function plannedDate(): Attribute
     {
         return Attribute::make(

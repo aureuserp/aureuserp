@@ -82,6 +82,11 @@ class Task extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     protected function getLogAttributeLabels(): array
     {
         return [

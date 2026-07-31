@@ -178,7 +178,6 @@ class ProjectResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.company'))
-                                    ->default(fn () => current_company_id())
                                     ->live()
                                     ->afterStateUpdated(fn (Set $set, $state) => $set('stage_id', static::getDefaultStageId($state)))
                                     ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),

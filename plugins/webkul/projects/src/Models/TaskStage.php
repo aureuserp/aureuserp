@@ -44,6 +44,11 @@ class TaskStage extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
@@ -75,6 +80,8 @@ class TaskStage extends Model implements Sortable
 
         static::creating(function ($taskStage) {
             $taskStage->creator_id ??= Auth::id();
+
+            $taskStage->company_id ??= $taskStage->project?->company_id;
         });
     }
 
