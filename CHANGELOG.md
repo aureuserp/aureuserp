@@ -2,82 +2,77 @@
 
 ### 🧩 Features
 
-* #1215 Added Maintenance module
-* #1214 Added Putaway Rules for inventory operations
-* #1224 Added Time-off dashboard widget
-* #1419 Added Inventory dashboard widgets
-* #1411 Added quick "next transfer" navigation across chained inventory operations
-* #1322 Added native barcode scanning support (Barcode plugin)
-* #1392 Added PostgreSQL database support
-* #1302 Added Inventory Reporting cluster and UOM Category resource
-* #1343 Added Activity notifications
-* #1284 Unified Settings pages across plugins
-* #1273 Unified Product resource across plugins
-* #1272 Implemented nested order resources (Deliveries, Invoices, Receipts, Bills under Orders)
-* #1339 Added bulk lot/serial number generation
-* #1254 Added consolidated Spanish (es) locale
-* #1357 Added Brazilian Portuguese (pt-BR) locale
-* #1327 Added Arabic localization for the Plugins resource
-* #1303 Added branding settings and middleware for dynamic panel customization
-* #1429 Added dashboard date-range filter widget
-* #1316 Integrated custom fields functionality across Accounting, Products, Projects, Recruitment, Sales, Security, Time-off, Timesheets, and Website resources
-* #1318 Blocked plugin uninstall when dependent plugins exist
-* #1364 Added multi-company (multi-tenancy) support with company scoping, allowed-companies access control, cross-company transfer guards, and a company switcher
+* Added multi-company (multi-tenancy) support with company scoping, allowed-companies access control, cross-company transfer guards, and a company switcher
+* Added Maintenance module
+* Added Putaway Rules for inventory operations
+* Added Time-off dashboard widget
+* Added Inventory dashboard widgets
+* Added quick "next transfer" navigation across chained inventory operations
+* Added a system-wide command palette (Ctrl+K / Cmd+K) for keyboard-only search and navigation across records, pages, and actions
+* Added native barcode scanning support (Barcode plugin)
+* Added PostgreSQL database support
+* Added Inventory Reporting cluster and UOM Category resource
+* Added Filament database and email notifications for chatter activity (mentions, assignments, and record updates)
+* Unified Settings pages across plugins
+* Unified Product resource across plugins
+* Implemented nested order resources (Deliveries, Invoices, Receipts, Bills under Orders)
+* Added bulk lot/serial number generation
+* Added consolidated Spanish (es) locale
+* Added Brazilian Portuguese (pt-BR) locale
+* Added Arabic localization for the Plugins resource
+* Added branding settings and middleware for dynamic panel customization
+* Added dashboard date-range filter widget
+* Integrated custom fields functionality across Accounting, Products, Projects, Recruitment, Sales, Security, Time-off, Timesheets, and Website resources
+* Blocked plugin uninstall when dependent plugins exist
 
 ### ✨ Improvements
 
-* #1221 Added `trustProxies` middleware for improved proxy handling
-* #1212 Added Docker setup for the production environment
-* #1213 Simplified Docker image publishing logic and enhanced tag handling
-* #1165 Added Playwright tests for the Website plugin
-* #1243 Added pull request template
-* #1207 Updated README
-* #1162 Removed redundant Arabic translation file
-* #1211 Untracked `.codex` directory
-* #1439 General code refactor
-* #1436 Added picking description to inventory operation moves
-* #1433 Added reusable column-manager traits for repeaters
-* #1432 Hardened `WarehouseFactory` to ensure unique warehouse names/codes
-* #1430 Updated default company seeding and admin user setup on install
-* #1431 Fixed failing test suite
-* #1428 Enhanced availability check to include the WAITING state
-* #1427 Dashboard date filters now default to the start of the year
-* #1425 Removed a redundant redirect
-* #1423 Upgraded Filament to v5.7.3
-* #1422 Upgraded Filament to v5.7.1
-* #1420 Added on-hand and forecasted quantity columns to the products table
-* #1418 Added an excess-quantity tooltip to the return action form
-* #1416 Added more test coverage
-* #1414 Updated `IN_PROCESS` payment status color for consistency
-* #1405 Added unit test coverage for the Accounting plugin
-* #1398 Added unit test cases
-* #1379 Refactored plugin navigation system
-* #1372 Refactored settings retrieval into a centralized function
-* #1371 Fixed duplicate DB queries in the plugin manager's `isPluginInstalled` check
-* #1369 General performance optimization
-* #1367 Removed stray comments
-* #1341 Localized hardcoded UI strings in plugin resources and reports
-* #1325 Refactored code and related fixes
-* #1313 Refresh caches on plugin install/uninstall
-* #1310 Updated README
-* #1308 Updated branding
-* #1306 Refactored `ApplyBrandSettings` middleware
-* #1304 Refactored branding asset URL handling
-* #1293 Updated delivery and receipt status handling
-* #1292 Made "next transfer" nested
-* #1289 Added UOM suffix to the quantity field
-* #1287 Removed unnecessary theme
-* #1278 Added Help section
-* #1277 Updated README
-* #1271 Refactored quantity field handling, added insufficient-stock tooltip
-* #1270 Added "next transfer" button
-* #1269 Refactored product repeater disabled condition
-* #1264 Added view-page actions to match edit pages
-* #1262 Added create-option form for customer selection in quotations
-* #1247 Normalized path separators in `translations:check` for Windows
-* #1210 Added component availability status for Manufacturing Orders and MO readiness
-* #1201 Added Playwright tests for the Inventory plugin
-* #1166 Fixed missing `timeout` command handling on macOS/Windows
+* Added `trustProxies` middleware for improved proxy handling
+* Added Docker setup for the production environment
+* Simplified Docker image publishing logic and enhanced tag handling
+* Added Playwright tests for the Website plugin
+* Added pull request template
+* Updated README
+* Removed redundant Arabic translation file
+* General code refactor
+* Added picking description to inventory operation moves
+* Added reusable column-manager traits for repeaters
+* Hardened `WarehouseFactory` to ensure unique warehouse names/codes
+* Updated default company seeding and admin user setup on install
+* Fixed failing test suite
+* Enhanced availability check to include the WAITING state
+* Dashboard date filters now default to the start of the year
+* Removed a redundant redirect
+* Upgraded Filament to v5.7.3
+* Upgraded Filament to v5.7.1
+* Added on-hand and forecasted quantity columns to the products table
+* Added an excess-quantity tooltip to the return action form
+* Added more test coverage
+* Updated `IN_PROCESS` payment status color for consistency
+* Added unit test coverage for the Accounting plugin
+* Added unit test cases
+* Refactored plugin navigation system
+* Refactored settings retrieval into a centralized function
+* Fixed duplicate DB queries in the plugin manager's `isPluginInstalled` check
+* General performance optimization
+* Removed stray comments
+* Localized hardcoded UI strings in plugin resources and reports
+* Refactored code and related fixes
+* Refresh caches on plugin install/uninstall
+* Refactored `ApplyBrandSettings` middleware
+* Refactored branding asset URL handling
+* Updated delivery and receipt status handling
+* Added UOM suffix to the quantity field
+* Removed unnecessary theme
+* Added Help section
+* Refactored quantity field handling, added insufficient-stock tooltip
+* Refactored product repeater disabled condition
+* Added view-page actions to match edit pages
+* Added create-option form for customer selection in quotations
+* Normalized path separators in `translations:check` for Windows
+* Added component availability status for Manufacturing Orders and MO readiness
+* Added Playwright tests for the Inventory plugin
+* Fixed missing `timeout` command handling on macOS/Windows
 
 ### 🐛 Fixes
 
