@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Maintenance\Database\Factories\MaintenanceRequestFactory;
 use Webkul\Maintenance\Enums\MaintenanceRepeatType;
 use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
@@ -21,7 +22,7 @@ use Webkul\Support\Models\Company;
 
 class MaintenanceRequest extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'maintenance';
 

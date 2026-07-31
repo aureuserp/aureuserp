@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\Inventory\Enums\MoveState;
@@ -36,7 +37,7 @@ use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -1186,9 +1187,9 @@ class Order extends Model
         $expectedQtyByProduct = [];
 
         foreach ($expectedMoveValues as $moveValues) {
-            $moveProduct = Product::find($moveValues['product_id']);
+            $moveProduct = Product::withTrashed()->find($moveValues['product_id']);
 
-            $moveUom = UOM::find($moveValues['uom_id']);
+            $moveUom = UOM::withTrashed()->find($moveValues['uom_id']);
 
             $moveProductQty = $moveUom->computeQuantity($moveValues['product_uom_qty'], $moveProduct->uom);
 
@@ -1222,7 +1223,7 @@ class Order extends Model
         }
 
         foreach ($expectedQtyByProduct as $productId => $qtyToConsume) {
-            $product = Product::find($productId);
+            $product = Product::withTrashed()->find($productId);
 
             $quantity = $doneQtyByProduct[$productId] ?? 0.0;
 

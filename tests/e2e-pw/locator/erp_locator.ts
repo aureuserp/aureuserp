@@ -16,23 +16,25 @@ export class ErpLocators {
     readonly page: Page;
 
     /**
-     *  Plugin Install/Uninstall  
+     *  Plugin Install/Uninstall
      */
 
     readonly pluginSyncButton: Locator;
-    readonly pluginthreeDot: Locator;
-    readonly pluginName : Locator;
-    readonly pluginInstallButton: Locator;
-    readonly pluginUninstallButton: Locator
-    readonly pluginConfirmButton : Locator;
-    readonly pluginSearchInput : Locator;
+    readonly pluginActionsButton: Locator;
+    readonly pluginName: Locator;
+    readonly pluginDropdownPanel: Locator;
+    readonly pluginInstallOption: Locator;
+    readonly pluginUninstallOption: Locator;
+    readonly pluginInstallConfirmButton: Locator;
+    readonly pluginUninstallConfirmButton: Locator;
+    readonly pluginSearchInput: Locator;
+    readonly pluginInstallSuccessNotification: Locator;
+    readonly pluginUninstallSuccessNotification: Locator;
+    readonly pluginActionFailedNotification: Locator;
+    readonly pluginUninstallDependencyWarning: Locator;
+    readonly pluginUninstallModalReady: Locator;
+    readonly pluginsPerPageSelect: Locator;
     readonly inventoryMoveProductSelectButton: Locator;
-    readonly pluginCards : Locator;
-    readonly pluginCardBadges : Locator;
-    readonly pluginInstalledCards : Locator;
-    readonly pluginNotInstalledCards : Locator;
-    readonly pluginSuccessMessage : Locator;
-    readonly pluginErrorMessage : Locator;
 
     /**
      * Companies
@@ -529,29 +531,31 @@ export class ErpLocators {
          *  Plugin Install/Uninstall  
          */
 
-        this.pluginSyncButton = page.locator('text=Sync Available Plugins');
-        this.pluginthreeDot = page.locator('button[title="Actions"]');
+        this.pluginSyncButton = page.getByRole('button', { name: 'Sync Available Plugins' });
+        this.pluginActionsButton = page.locator('button[title="Actions"]');
         this.pluginName = page.locator('.fi-size-lg.fi-font-semibold.fi-ta-text-item.fi-ta-text.fi-inline');
-        // Every card keeps its own dropdown in the DOM, so these are scoped to the open one:
-        // an unscoped match resolves to the first card's hidden button and never clicks.
-        this.pluginInstallButton = page.locator('button.fi-color.fi-color-success.fi-text-color-700:visible');
-        this.pluginUninstallButton = page.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item:visible');
-        this.pluginConfirmButton = page.locator('span[x-show="! isProcessing"]');
+        // Only the open dropdown panel is visible, so the install/uninstall
+        // options below always belong to the plugin whose menu was opened.
+        this.pluginDropdownPanel = page.locator('.fi-dropdown-panel:visible');
+        this.pluginInstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Install', exact: true });
+        this.pluginUninstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Uninstall', exact: true });
+        this.pluginInstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Install Plugin' });
+        this.pluginUninstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Uninstall Plugin' });
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
+        this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Installed Successfully' }).first();
+        this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Uninstalled Successfully' }).first();
+        // "Cannot Uninstall Plugin" is included here too: the confirm button is always rendered
+        // even when dependents are installed, so submitting a blocked plugin the dependency
+        // warning check below missed would otherwise never match a failure/success outcome.
+        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed|Cannot Uninstall Plugin/ }).first();
+        // The modal renders this block up front whenever the plugin still has installed
+        // dependents, so a blocked uninstall can be detected without ever submitting.
+        this.pluginUninstallDependencyWarning = anyDialog(page).getByText('Action Required').first();
+        this.pluginUninstallModalReady = anyDialog(page).getByText('Uninstall Confirmation').first();
+        this.pluginsPerPageSelect = page.locator('.fi-pagination-records-per-page-select-ctn select:visible');
         // The selected product of a move row. A row's own text also contains every option of
         // its product select, so matching a row on its text finds every row, not the right one.
         this.inventoryMoveProductSelectButton = page.locator('.fi-select-input-btn');
-
-        this.pluginCards = page.locator('.fi-ta-record');
-        this.pluginCardBadges = page.locator('.fi-ta-record .fi-badge');
-        // Installing a plugin moves its card to the top of the list, so cards are selected
-        // by their state badge rather than by position.
-        this.pluginInstalledCards = page.locator('.fi-ta-record')
-            .filter({ has: page.locator('.fi-badge', { hasText: /^\s*Installed\s*$/ }) });
-        this.pluginNotInstalledCards = page.locator('.fi-ta-record')
-            .filter({ has: page.locator('.fi-badge', { hasText: /^\s*Not Installed\s*$/ }) });
-        this.pluginSuccessMessage = page.locator('h3.fi-no-notification-title');
-        this.pluginErrorMessage = page.locator('.fi-toast-message-error');
 
         /**
          * Companies

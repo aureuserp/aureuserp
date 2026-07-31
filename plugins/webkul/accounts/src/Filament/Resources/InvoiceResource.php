@@ -80,6 +80,7 @@ use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -92,6 +93,7 @@ use Webkul\Support\Models\UOM;
 
 class InvoiceResource extends Resource
 {
+    use HasCustomFields;
     use HasResourcePermissionQuery;
 
     protected static ?string $model = Invoice::class;
@@ -415,6 +417,10 @@ class InvoiceResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -424,7 +430,7 @@ class InvoiceResource extends Resource
         return $table
             ->reorderableColumns()
             ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/invoice.table.columns.number'))
@@ -568,7 +574,7 @@ class InvoiceResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/invoice.table.groups.name'))
@@ -610,7 +616,7 @@ class InvoiceResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -703,7 +709,7 @@ class InvoiceResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounts::filament/resources/invoice.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
@@ -1058,6 +1064,10 @@ class InvoiceResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 

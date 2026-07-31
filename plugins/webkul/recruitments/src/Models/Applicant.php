@@ -11,6 +11,7 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Traits\HasApplicationStatus;
 use Webkul\Security\Models\User;
@@ -20,7 +21,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Applicant extends Model
 {
-    use HasApplicationStatus, HasChatter, HasLogActivity, SoftDeletes;
+    use HasApplicationStatus, HasChatter, HasCustomFields, HasLogActivity, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 

@@ -1342,7 +1342,7 @@ class Move extends Model
 
         $forecastExpectedDate = false;
 
-        if (! $this->product->is_storable) {
+        if (! $this->product?->is_storable) {
             return [
                 $this->product_qty,
                 false,
@@ -1366,7 +1366,7 @@ class Move extends Model
             } elseif ($this->state === MoveState::DRAFT) {
                 $key = $keyVirtualAvailable();
 
-                $product = Product::find($this->product_id);
+                $product = Product::withTrashed()->find($this->product_id);
 
                 $product->setContext([
                     'warehouse_id' => $key[0],
@@ -1394,7 +1394,7 @@ class Move extends Model
         } elseif ($this->operationType?->type === OperationTypeEnum::INCOMING) {
             $key = $keyVirtualAvailable(incoming: true);
 
-            $product = Product::find($this->product_id);
+            $product = Product::withTrashed()->find($this->product_id);
 
             $product->setContext([
                 'warehouse_id' => $key[0],
