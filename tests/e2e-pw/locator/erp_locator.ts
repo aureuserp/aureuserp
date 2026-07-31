@@ -173,7 +173,6 @@ export class ErpLocators {
     readonly salesInvoicesTable: Locator;
 
     readonly salesSearchInput: Locator;
-    readonly salesRowActionsButton: Locator;
     readonly salesEditAction: Locator;
     readonly salesDeleteAction: Locator;
     readonly salesConfirmDeleteButton: Locator;
@@ -309,7 +308,6 @@ export class ErpLocators {
     readonly inventoryReturnModalSubmitButton: Locator;
     readonly inventoryOperationStateBadge: Locator;
     readonly inventoryOperationTable: Locator;
-    readonly inventoryOperationRowActions: Locator;
     readonly inventoryOperationEditAction: Locator;
     readonly inventoryOperationDeleteAction: Locator;
 
@@ -414,7 +412,6 @@ export class ErpLocators {
 
     readonly purchaseQuotationsTable: Locator;
     readonly purchaseQuotationCreateButton: Locator;
-    readonly purchaseQuotationEditButton: Locator;
     readonly purchaseQuotationVendorSelect: Locator;
     readonly purchaseQuotationAgreementSelect: Locator;
     readonly purchaseQuotationAddProductButton: Locator;
@@ -440,7 +437,6 @@ export class ErpLocators {
     readonly purchaseAgreementProductSelect: Locator;
     readonly purchaseAgreementQuantityInput: Locator;
     readonly purchaseAgreementUnitPriceInput: Locator;
-    readonly purchaseAgreementEditButton: Locator;
     readonly purchaseAgreementDeleteButton: Locator;
     readonly purchaseAgreementSaveButton: Locator;
     readonly purchaseAgreementConfirmButton: Locator;
@@ -448,7 +444,6 @@ export class ErpLocators {
     readonly purchaseAgreementValidationMessage: Locator;
 
     readonly purchaseSearchInput: Locator;
-    readonly purchaseRowActionsButton: Locator;
     readonly purchaseEditAction: Locator;
     readonly purchaseDeleteAction: Locator;
     readonly purchaseConfirmDeleteButton: Locator;
@@ -476,7 +471,6 @@ export class ErpLocators {
     readonly websitePagesFooterVisibleToggle: Locator;
     readonly websitePagesSaveButton: Locator;
     readonly websitePagesSearchInput: Locator;
-    readonly websitePagesRowActionsButton: Locator;
     readonly websitePagesEditButton: Locator;
     readonly websitePagesEditLink: Locator;
     readonly websitePagesEditActionButton: Locator;
@@ -712,7 +706,6 @@ export class ErpLocators {
         this.salesInvoicesTable = page.locator("table, div.fi-ta-empty-state");
 
         this.salesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.salesRowActionsButton = page.getByRole('button', { name: 'Actions' });
         this.salesEditAction = page.getByRole("menuitem", { name: /Edit/i }).first();
         this.salesDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.salesConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
@@ -891,7 +884,6 @@ export class ErpLocators {
             .first();
         this.inventoryOperationStateBadge = page.locator('[wire\\:key$="form.state"], .fi-progress-stepper').first();
         this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");
-        this.inventoryOperationRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryOperationEditAction = page.getByRole("link", { name: /Edit/i }).first();
         this.inventoryOperationDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
 
@@ -919,7 +911,7 @@ export class ErpLocators {
         // action on a confirmed move's quantity field.
         this.inventoryMoveManageLinesAction = page.locator('button[wire\\:click*="manageLines"]');
         this.inventoryMoveLinesModal = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).first();
-        this.inventoryMoveGenerateLotsAction = page.getByRole("button", { name: /Generate Serials\/Lots/i }).first();
+        this.inventoryMoveGenerateLotsAction = page.locator('.fi-modal-window:visible').filter({ hasText: /Manage Stock Moves/i }).getByRole("button", { name: /Generate Serials\/Lots/i }).first();
         this.inventoryMoveLinesFirstLotInput = page.getByLabel(/First Lot Number/i).first();
         this.inventoryMoveLinesQuantityReceivedInput = page.getByLabel(/Quantity Received/i).first();
         this.inventoryMoveLinesGenerateSubmit = page.locator('.fi-modal-window:visible').last().locator('button[type="submit"], .fi-modal-footer-actions button').first();
@@ -1015,7 +1007,6 @@ export class ErpLocators {
 
         this.purchaseQuotationsTable = page.locator("table, div.fi-ta-empty-state");
         this.purchaseQuotationCreateButton = page.locator("a,button").filter({ hasText: /new request for quotation|New RFQ|create quotation|add quotation|create/i }).first();
-        this.purchaseQuotationEditButton = page.getByRole('link', { name: 'Edit' }).first();
         this.purchaseQuotationDeleteButton = page.getByRole('button', { name: 'Delete' }).first();
         this.purchaseQuotationVendorSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
         this.purchaseQuotationAgreementSelect = page.locator('[wire\\:key$="form.requisition_id"] button.fi-select-input-btn').first();
@@ -1042,7 +1033,6 @@ export class ErpLocators {
         this.purchaseAgreementProductSelect = page.locator('[wire\\:key*=".form.lines."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.purchaseAgreementQuantityInput = page.locator('input[id^="form.lines."][id$=".qty"]');
         this.purchaseAgreementUnitPriceInput = page.locator('input[id^="form.lines."][id$=".price_unit"]');
-        this.purchaseAgreementEditButton = page.getByRole('link', { name: 'Edit' });
         this.purchaseAgreementDeleteButton = page.getByRole('button', { name: 'Delete' });
         this.purchaseAgreementSaveButton = page.getByRole("button", { name: /^(Create|Save changes|Submit)$/i }).first();
         this.purchaseAgreementConfirmButton = page.getByRole("button", { name: /^Confirm$/i }).first();
@@ -1050,7 +1040,6 @@ export class ErpLocators {
         this.purchaseAgreementValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
 
         this.purchaseSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.purchaseRowActionsButton = page.getByRole("button", { name: "Actions" });
         this.purchaseEditAction = page.getByRole("menuitem", { name: /Edit/i }).first();
         this.purchaseDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.purchaseConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
@@ -1077,7 +1066,6 @@ export class ErpLocators {
         this.websitePagesFooterVisibleToggle = page.getByRole('switch', { name: 'Is Visible Footer Menu' });
         this.websitePagesSaveButton = page.getByRole("button", { name: /save|create|submit/i }).first();
         this.websitePagesSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.websitePagesRowActionsButton = page.locator("div.fi-ta-text-item").first();
         this.websitePagesEditButton = page.locator('a.fi-tabs-item[href$="/edit"]').first();
         this.websitePagesEditLink = page.getByRole("link", { name: /edit/i }).first();
         this.websitePagesEditActionButton = page.getByRole("button", { name: /edit/i }).first();

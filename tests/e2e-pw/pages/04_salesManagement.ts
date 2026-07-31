@@ -1,7 +1,7 @@
 import { Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
-import { runOnce, SETUP_KEYS } from "../utils/setupCache";
+import { pluginsPreinstalled, runOnce, SETUP_KEYS } from "../utils/setupCache";
 import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type SalesCustomerData = {
@@ -54,6 +54,10 @@ export class SalesFlowPage {
     }
 
     async ensureSalesPluginInstalled() {
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
         await runOnce(SETUP_KEYS.pluginSales, async () => {
             const pluginPage = new PluginManagementPage(this.page);
             await pluginPage.gotoPluginManagementPage();
@@ -800,10 +804,6 @@ export class SalesFlowPage {
 
     async searchList(keyword: string) {
         await filterListBySearch(this.page, this.erpLocators.salesSearchInput, keyword);
-    }
-
-    async openRowActions() {
-        await this.erpLocators.salesRowActionsButton.first().click();
     }
 
     async clickMenuAction(label: RegExp) {

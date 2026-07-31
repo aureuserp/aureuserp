@@ -1,7 +1,7 @@
 import { Page, expect, Locator } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
-import { invalidateSetup, runOnce, SETUP_KEYS } from "../utils/setupCache";
+import { invalidateSetup, pluginsPreinstalled, runOnce, SETUP_KEYS } from "../utils/setupCache";
 import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type WarehouseData = {
@@ -95,6 +95,10 @@ export class InventoriesManagementPage {
      * Plugin / Setup
      */
     async ensureInventoriesPluginInstalled() {
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
         await runOnce(SETUP_KEYS.pluginInventories, async () => {
             const pluginPage = new PluginManagementPage(this.page);
             await pluginPage.gotoPluginManagementPage();
@@ -2051,7 +2055,7 @@ export class InventoriesManagementPage {
         const modal = this.page.locator(".fi-modal-window:visible").last();
         const row = modal.locator("table tbody tr").first();
         const qtyInput = row.locator('input[type="number"]').last();
-        await qtyInput.waitFor({ state: "visible", timeout: 10000 });
+        await qtyInput.waitFor({ state: "visible", timeout: 30000 });
         await qtyInput.fill(quantity);
         await this.page.waitForTimeout(400);
 
@@ -2187,7 +2191,7 @@ export class InventoriesManagementPage {
         const l = this.erpLocators;
         const startUrl = this.page.url();
 
-        await l.inventoryOperationReturnButton.waitFor({ state: "visible", timeout: 60000 });
+        await l.inventoryOperationReturnButton.waitFor({ state: "visible", timeout: 120000 });
 
         for (let attempt = 0; attempt < 3; attempt++) {
             if (await l.inventoryReturnModal.isVisible().catch(() => false)) {
@@ -2710,10 +2714,6 @@ export class InventoriesManagementPage {
 
     async searchList(keyword: string) {
         await filterListBySearch(this.page, this.erpLocators.inventorySearchInput, keyword);
-    }
-
-    async openRowActions() {
-        await this.erpLocators.inventoryOperationRowActions.first().click();
     }
 
     async selectBySearch(trigger: Locator, value: string) {

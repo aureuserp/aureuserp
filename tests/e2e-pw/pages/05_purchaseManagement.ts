@@ -1,7 +1,7 @@
 import { type Locator, Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
-import { runOnce, SETUP_KEYS } from "../utils/setupCache";
+import { pluginsPreinstalled, runOnce, SETUP_KEYS, withSettingsLock } from "../utils/setupCache";
 import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type PurchaseVendorData = {
@@ -72,6 +72,10 @@ export class PurchaseFlowPage {
     }
 
     async ensurePurchasesPluginInstalled() {
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
         await runOnce(SETUP_KEYS.pluginPurchases, async () => {
             const pluginPage = new PluginManagementPage(this.page);
             await pluginPage.gotoPluginManagementPage();
@@ -85,26 +89,32 @@ export class PurchaseFlowPage {
         await expect(this.erpLocators.purchaseAgreementSettingsToggle).toBeVisible();
     }
 
+    /**
+     * Locked: this flips a setting shared by every worker, and a naive read-check-then-save
+     * races when two workers do it at the same time (one's save overwrites the other's).
+     */
     async setPurchaseAgreementsEnabled(enabled: boolean) {
-        for (let attempt = 0; attempt < 3; attempt++) {
-            await this.gotoPurchaseSettingsPage();
+        await withSettingsLock(SETUP_KEYS.settingsPurchaseAgreements, async () => {
+            for (let attempt = 0; attempt < 3; attempt++) {
+                await this.gotoPurchaseSettingsPage();
 
-            const toggle = this.erpLocators.purchaseAgreementSettingsToggle;
+                const toggle = this.erpLocators.purchaseAgreementSettingsToggle;
 
-            if ((await this.isToggleEnabled(toggle)) === enabled) {
-                return;
+                if ((await this.isToggleEnabled(toggle)) === enabled) {
+                    return;
+                }
+
+                await toggle.click();
+                await expect(this.erpLocators.settingsSaveButton).toBeEnabled({ timeout: 30000 });
+                await this.erpLocators.settingsSaveButton.click().catch(() => undefined);
+
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(1500);
             }
 
-            await toggle.click();
-            await expect(this.erpLocators.settingsSaveButton).toBeEnabled({ timeout: 30000 });
-            await this.erpLocators.settingsSaveButton.click().catch(() => undefined);
-
-            await this.page.waitForLoadState("networkidle").catch(() => undefined);
-            await this.page.waitForTimeout(1500);
-        }
-
-        await this.gotoPurchaseSettingsPage();
-        expect(await this.isToggleEnabled(this.erpLocators.purchaseAgreementSettingsToggle)).toBe(enabled);
+            await this.gotoPurchaseSettingsPage();
+            expect(await this.isToggleEnabled(this.erpLocators.purchaseAgreementSettingsToggle)).toBe(enabled);
+        });
     }
 
     private async isToggleEnabled(toggle: Locator): Promise<boolean> {
@@ -670,8 +680,7 @@ export class PurchaseFlowPage {
     async editQuotationQuantity(searchKey: string, quantity: string, unitPrice?: string) {
         await this.gotoQuotationsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        await this.erpLocators.purchaseQuotationEditButton.click();
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
 
         await this.erpLocators.purchaseQuotationQuantityInput.first().fill(quantity);
 
@@ -972,8 +981,7 @@ export class PurchaseFlowPage {
     async editPurchaseAgreement(searchKey: string, updates: PurchaseAgreementUpdateData) {
         await this.gotoPurchaseAgreementsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        await this.erpLocators.purchaseAgreementEditButton.click();
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
 
         if (updates.reference) {
             await this.erpLocators.purchaseAgreementReferenceInput.fill(updates.reference);
@@ -1040,10 +1048,6 @@ export class PurchaseFlowPage {
 
     async searchList(keyword: string) {
         await filterListBySearch(this.page, this.erpLocators.purchaseSearchInput, keyword);
-    }
-
-    async openRowActions() {
-        await this.erpLocators.purchaseRowActionsButton.first().click();
     }
 
     async clickMenuAction(label: RegExp) {

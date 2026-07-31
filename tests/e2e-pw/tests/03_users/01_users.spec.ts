@@ -163,7 +163,11 @@ test.describe("Users Module E2E", () => {
     //     await expect(userPage.page).toHaveURL(/.*\/admin\/login/);
     // });
 
-    test("Reset User Password Configuration - Inabled/Disabled setting,", async ({ adminPage }) => {
+    /**
+     * Tagged @exclusive: it turns the reset-password action off for the whole application, which
+     * would hide it from any other worker's user-management test running beside it.
+     */
+    test("Reset User Password Configuration - Inabled/Disabled setting, @exclusive", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const userPage = new UserManagementPage(adminPage);
         const key = uniqueKey();
@@ -277,7 +281,11 @@ test.describe("Users Module E2E", () => {
         await userPage.bulkDeleteUsers(bulkKey, users.map((user) => user.name));
     });
 
-    test("User Invitation - Inabled/Disabled setting", async ({ adminPage }) => {
+    /**
+     * Tagged @exclusive: it turns user invitation off for the whole application, which would
+     * hide it from any other worker's user-management test running beside it.
+     */
+    test("User Invitation - Inabled/Disabled setting @exclusive", async ({ adminPage }) => {
         const userPage = new UserManagementPage(adminPage);
 
         await userPage.gotoManageUsersSettingsPage();

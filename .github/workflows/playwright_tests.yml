@@ -191,6 +191,8 @@ jobs:
       - name: Run All Playwright Tests
         env:
           BASE_URL: "http://127.0.0.1:8000"
+          PLUGINS_PREINSTALLED: "true"
+          PW_WORKERS: "2"
         run: |
           npx playwright test --config=playwright.config.ts --project=chromium --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }}
         working-directory: tests/e2e-pw
@@ -199,6 +201,7 @@ jobs:
         if: ${{ !cancelled() && matrix.shard_index == matrix.shard_total }}
         env:
           BASE_URL: "http://127.0.0.1:8000"
+          PLUGINS_PREINSTALLED: "true"
         run: |
           npx playwright test --config=playwright.config.ts --project=exclusive-settings --no-deps --workers=1
           npx playwright test --config=playwright.config.ts --project=exclusive-plugins --no-deps --workers=1

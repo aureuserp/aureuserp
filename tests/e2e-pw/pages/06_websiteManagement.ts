@@ -1,7 +1,7 @@
 import { type Locator, type Page, expect } from "@playwright/test";
 import { anyDialog, ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
-import { runOnce, SETUP_KEYS } from "../utils/setupCache";
+import { pluginsPreinstalled, runOnce, SETUP_KEYS } from "../utils/setupCache";
 import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type WebsitePageData = {
@@ -41,6 +41,10 @@ export class WebsiteManagementPage {
     }
 
     async ensureWebsitePluginInstalled(): Promise<void> {
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
         await runOnce(SETUP_KEYS.pluginWebsite, async () => {
             await this.pluginPage.gotoPluginManagementPage();
             await this.pluginPage.installPluginByName("Website");
@@ -48,6 +52,10 @@ export class WebsiteManagementPage {
     }
 
     async ensureBlogsPluginInstalled(): Promise<void> {
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
         await runOnce(SETUP_KEYS.pluginBlogs, async () => {
             await this.pluginPage.gotoPluginManagementPage();
             await this.pluginPage.installPluginByName("Blog");
@@ -459,11 +467,6 @@ export class WebsiteManagementPage {
         await expect(this.erpLocators.blogPostsEditableContent.first()).toBeVisible();
         await this.erpLocators.blogPostsEditableContent.first().click();
         await this.erpLocators.blogPostsEditableContent.first().fill(content);
-    }
-
-    private async openRowActions(): Promise<void> {
-        await this.erpLocators.websitePagesRowActionsButton.click();
-        await this.page.waitForTimeout(300);
     }
 
     private async clickAction(menuItem: Locator, fallbackLink: Locator, fallbackButton: Locator): Promise<void> {

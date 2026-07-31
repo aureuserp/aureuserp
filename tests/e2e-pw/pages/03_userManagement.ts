@@ -282,7 +282,7 @@ export class UserManagementPage {
         await clickRowAction(rowByText(this.page, searchKey), "Edit");
         await this.erpLocators.usersNameInput.fill(newName);
 
-        await this.submitUserForm(false);
+        await this.submitEditForm();
         await this.page.waitForTimeout(1500);
     }
 
@@ -601,5 +601,37 @@ export class UserManagementPage {
     private async expectSuccessFeedback() {
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.usersSuccessToast).toBeVisible();
+    }
+
+    /**
+     * Save an edit-page form, retrying the click if a Livewire hydration race swallows it.
+     * submitUserForm's "settled" check leans on leaving `/users/create` — on an edit page that
+     * URL condition is already true before the click even lands, so it can't tell a real save
+     * from a swallowed one here. The success toast is the only reliable signal on this page.
+     */
+    private async submitEditForm(): Promise<void> {
+        const button = this.erpLocators.usersSaveButton;
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await button.waitFor({ state: "visible", timeout: 15000 });
+        await expect(button).toBeEnabled({ timeout: 60000 });
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await button.click({ force: attempt > 0 }).catch(() => undefined);
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+            const saved = await this.erpLocators.usersSuccessToast
+                .waitFor({ state: "visible", timeout: 15000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (saved) {
+                return;
+            }
+
+            await expect(button).toBeEnabled({ timeout: 60000 });
+        }
+
+        await this.expectSuccessFeedback();
     }
 }

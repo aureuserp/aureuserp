@@ -51,30 +51,25 @@ export default defineConfig({
     },
 
     /**
-     * Three phases, because two kinds of work cannot share the application with anybody:
+     * Two phases, because one kind of work cannot share the application with anybody:
      *
-     *  provision — installs every plugin once. 
      *  chromium  — the suite, fully parallel. Its tests create their own records, keyed by a
-     *              worker-unique id, so they do not collide.
+     *              worker-unique id, so they do not collide. Plugins are installed once via
+     *              CLI (`php artisan X:install`) before this even starts — see the CI workflow —
+     *              so no in-suite provisioning project is needed here.
      *  exclusive — tests that flip a *global* switch (uninstalling all plugins, turning
      *              dropshipping off)
      */
     projects: [
         {
-            name: "provision",
-            testMatch: /00_setup\/.*\.setup\.ts/,
-            use: { ...devices["Desktop Chrome"] },
-        },
-        {
             name: "chromium",
-            testIgnore: [/00_setup\//, /01_plugins\//],
+            testIgnore: [/01_plugins\//],
             grepInvert: /@exclusive/,
-            dependencies: ["provision"],
             use: { ...devices["Desktop Chrome"] },
         },
         {
             name: "exclusive-settings",
-            testIgnore: [/00_setup\//, /01_plugins\//],
+            testIgnore: [/01_plugins\//],
             grep: /@exclusive/,
             fullyParallel: false,
             dependencies: ["chromium"],
