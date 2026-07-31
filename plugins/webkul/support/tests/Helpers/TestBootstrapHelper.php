@@ -336,7 +336,7 @@ class TestBootstrapHelper
 
     private static function ensureWorkerViewPath(string $token): void
     {
-        $viewPath = storage_path('framework/views/parallel_'.$token);
+        $viewPath = storage_path('framework/testing/views/'.$token);
 
         if (! is_dir($viewPath)) {
             mkdir($viewPath, 0755, true);
