@@ -148,32 +148,32 @@ class WorkOrder extends Model implements Sortable
 
     public function getWorkingStateAttribute()
     {
-        return $this->workCenter->working_state;
+        return $this->workCenter?->working_state;
     }
 
     public function getProductionStateAttribute()
     {
-        return $this->manufacturingOrder->state;
+        return $this->manufacturingOrder?->state;
     }
 
     public function getProductTrackingAttribute()
     {
-        return $this->product->tracking;
+        return $this->product?->tracking;
     }
 
     public function getQuantityProductionAttribute()
     {
-        return $this->manufacturingOrder->quantity;
+        return $this->manufacturingOrder?->quantity;
     }
 
     public function getQuantityProducingAttribute()
     {
-        return $this->manufacturingOrder->quantity_producing;
+        return $this->manufacturingOrder?->quantity_producing;
     }
 
     public function getQuantityRemainingAttribute()
     {
-        if (! $this->manufacturingOrder->uom_id) {
+        if (! $this->manufacturingOrder?->uom_id) {
             return 0;
         }
 
