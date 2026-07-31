@@ -31,9 +31,7 @@ class AccountProductSchema
                 ->relationship(
                     'productTaxes',
                     'name',
-                    modifyQueryUsing: fn ($query, Get $get) => $query
-                        ->where('type_tax_use', TypeTaxUse::SALE)
-                        ->where(owned_by_company($get('company_id'))),
+                    modifyQueryUsing: fn ($query) => $query->where('type_tax_use', TypeTaxUse::SALE),
                 )
                 ->multiple()
                 ->live()
@@ -101,9 +99,7 @@ class AccountProductSchema
                 ->relationship(
                     'supplierTaxes',
                     'name',
-                    modifyQueryUsing: fn ($query, Get $get) => $query
-                        ->where('type_tax_use', TypeTaxUse::PURCHASE)
-                        ->where(owned_by_company($get('company_id'))),
+                    modifyQueryUsing: fn ($query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
                 )
                 ->multiple()
                 ->live()
