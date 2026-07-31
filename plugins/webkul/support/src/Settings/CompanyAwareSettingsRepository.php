@@ -62,7 +62,7 @@ class CompanyAwareSettingsRepository extends DatabaseSettingsRepository
             return parent::getPropertyPayload($group, $name);
         }
 
-        $payload = $this->scopedBuilder($group)->where('name', $name)->value('payload');
+        $payload = $this->preferredBuilder($group)->where('name', $name)->value('payload');
 
         return $this->decode((string) $payload);
     }
@@ -156,8 +156,13 @@ class CompanyAwareSettingsRepository extends DatabaseSettingsRepository
                 $query->where('company_id', $currentId)
                     ->orWhere('company_id', $defaultId)
                     ->orWhereNull('company_id');
-            })
-            ->orderByRaw('company_id = ? DESC', [$currentId]);
+            });
+    }
+
+    protected function preferredBuilder(string $group)
+    {
+        return $this->scopedBuilder($group)
+            ->orderByRaw('company_id = ? DESC', [$this->currentCompanyId()]);
     }
 
     protected function isCompanyScoped(string $group): bool
