@@ -6,13 +6,7 @@
                     <span style="display:inline-flex;align-items:center;gap:0.375rem;">
                         <x-filament::icon icon="heroicon-o-building-office-2" style="width:1.25rem;height:1.25rem;flex-shrink:0;" />
 
-                        <span>
-                            @if (count($active) === 1)
-                                {{ $companies->firstWhere('id', $active[0])?->name }}
-                            @else
-                                {{ count($active) }} {{ __('support::company-switcher.companies') }}
-                            @endif
-                        </span>
+                        <span>{{ $companies->firstWhere('id', $active[0] ?? null)?->name }}</span>
 
                         <x-filament::icon icon="heroicon-m-chevron-down" style="width:1rem;height:1rem;flex-shrink:0;" />
                     </span>
@@ -26,15 +20,17 @@
                     @foreach ($companies as $company)
                         <div
                             @click="
-                                const boxes = $root.querySelectorAll('input[type=checkbox]');
-                                const checked = [...boxes].filter(c => c.checked);
+                                const boxes = [...$root.querySelectorAll('input[type=checkbox]')];
                                 const me = $el.querySelector('input[type=checkbox]');
-                                if (checked.length <= 1) {
+                                if (boxes.filter(c => c.checked).length <= 1) {
                                     boxes.forEach(c => c.checked = false);
-                                    me.checked = true;
-                                } else {
-                                    me.checked = ! me.checked;
                                 }
+                                me.checked = true;
+                                const current = document.createElement('input');
+                                current.type = 'hidden';
+                                current.name = 'current';
+                                current.value = me.value;
+                                $root.prepend(current);
                                 $root.requestSubmit();
                             "
                             onmouseover="this.style.background='rgba(128,128,128,0.14)'"
@@ -48,7 +44,7 @@
                                 x-on:click.stop
                             />
 
-                            <span style="flex:1;">{{ $company->name }}</span>
+                            <span style="flex:1;{{ $company->id === ($active[0] ?? null) ? 'font-weight:600;' : '' }}">{{ $company->name }}</span>
                         </div>
                     @endforeach
                 </div>

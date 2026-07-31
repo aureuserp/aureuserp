@@ -5,9 +5,6 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResour
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource;
-use Webkul\Inventory\Models\Location;
-use Webkul\Inventory\Models\OperationType;
-use Webkul\Inventory\Models\Route;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateRule extends CreateRecord

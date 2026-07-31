@@ -8,7 +8,6 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
-use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -18,6 +17,7 @@ class CreatePurchaseAgreement extends CreateRecord
     use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
+
     use HasRepeaterColumnManager;
 
     protected static string $resource = PurchaseAgreementResource::class;

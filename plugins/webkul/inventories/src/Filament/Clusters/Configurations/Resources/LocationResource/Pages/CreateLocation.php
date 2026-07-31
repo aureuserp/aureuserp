@@ -8,7 +8,6 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource;
 use Webkul\Inventory\Models\Location;
-use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateLocation extends CreateRecord

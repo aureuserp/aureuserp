@@ -10,7 +10,6 @@ use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill as EditRecord;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
-use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
@@ -21,6 +20,7 @@ class EditRefund extends EditRecord
     use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs;
     use RefreshesRecordState;
 

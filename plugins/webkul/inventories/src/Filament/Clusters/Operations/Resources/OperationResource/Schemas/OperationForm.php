@@ -126,7 +126,7 @@ class OperationForm
                                     Enums\OperationType::INCOMING,
                                     Enums\OperationType::OUTGOING,
                                     Enums\OperationType::INTERNAL,
-                                    Enums\OperationType::DROPSHIP
+                                    Enums\OperationType::DROPSHIP,
                                 ]),
                             )
                             ->searchable()

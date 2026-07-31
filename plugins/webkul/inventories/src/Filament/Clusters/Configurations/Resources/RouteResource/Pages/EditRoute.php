@@ -6,7 +6,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
-use Webkul\Inventory\Models\Warehouse;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 

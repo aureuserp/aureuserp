@@ -1361,5 +1361,4 @@ class Warehouse extends Model implements Sortable
             'deleted_at'                  => now(),
         ])->id;
     }
-
 }

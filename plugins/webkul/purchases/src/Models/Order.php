@@ -258,9 +258,9 @@ class Order extends Model
     {
         return [
             'fiscal_position_id' => FiscalPosition::class,
-            'payment_term_id' => PaymentTerm::class,
-            'operation_type_id' => OperationType::class,
-            'requisition_id' => Requisition::class,
+            'payment_term_id'    => PaymentTerm::class,
+            'operation_type_id'  => OperationType::class,
+            'requisition_id'     => Requisition::class,
         ];
     }
 }

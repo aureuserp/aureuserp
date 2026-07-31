@@ -47,12 +47,6 @@ class UOMCategoryResource extends Resource
         return __('support::filament/resources/uom-category.navigation.title');
     }
 
-    /**
-     * The reference unit of a category is highlighted, the same way Odoo emphasises it.
-     *
-     * An inline style is used instead of a utility class because the compiled theme only
-     * ships the classes present at build time.
-     */
     public static function getReferenceRowAttributes(Get $get): array
     {
         return static::isReferenceType($get('type'))
@@ -60,10 +54,6 @@ class UOMCategoryResource extends Resource
             : [];
     }
 
-    /**
-     * The state is an enum instance once hydrated, but a plain string when it comes back
-     * from the browser, so both shapes have to be accepted.
-     */
     public static function isReferenceType(mixed $type): bool
     {
         if (! $type instanceof UOMType) {

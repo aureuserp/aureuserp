@@ -18,7 +18,7 @@ class CompanyContextController extends Controller
 
         $ids = array_map('intval', (array) $request->input('companies', []));
 
-        app(CompanyContext::class)->setActive($ids);
+        app(CompanyContext::class)->setActive($ids, $request->integer('current') ?: null);
 
         return back();
     }

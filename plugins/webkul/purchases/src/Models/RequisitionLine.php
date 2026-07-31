@@ -96,5 +96,4 @@ class RequisitionLine extends Model
             'product_id' => Product::class,
         ];
     }
-
 }

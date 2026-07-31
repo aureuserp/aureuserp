@@ -11,7 +11,6 @@ use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Models\Move;
-use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -23,6 +22,7 @@ class EditInvoice extends EditRecord
     use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 

@@ -6,7 +6,6 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
-use Webkul\Inventory\Models\Warehouse;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateWarehouse extends CreateRecord

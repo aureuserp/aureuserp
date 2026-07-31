@@ -2,8 +2,8 @@
 
 namespace Webkul\Inventory\Support;
 
-use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Exceptions\CrossCompanyTransferException;
+use Webkul\Inventory\Models\Location;
 use Webkul\Support\Models\Scopes\CompanyScope;
 
 class CrossCompanyTransferGuard

@@ -5,9 +5,6 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationT
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeResource;
-use Webkul\Inventory\Models\Location;
-use Webkul\Inventory\Models\OperationType;
-use Webkul\Inventory\Models\Warehouse;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateOperationType extends CreateRecord

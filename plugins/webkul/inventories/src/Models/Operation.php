@@ -22,13 +22,13 @@ use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
-use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\Support\Traits\ChecksCompanyConsistency;
 

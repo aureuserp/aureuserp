@@ -319,10 +319,10 @@ class Order extends Model
     public function companyConsistentFields(): array
     {
         return [
-            'warehouse_id' => Warehouse::class,
+            'warehouse_id'       => Warehouse::class,
             'fiscal_position_id' => FiscalPosition::class,
-            'payment_term_id' => PaymentTerm::class,
-            'journal_id' => Journal::class,
+            'payment_term_id'    => PaymentTerm::class,
+            'journal_id'         => Journal::class,
         ];
     }
 }

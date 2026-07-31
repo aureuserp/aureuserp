@@ -275,7 +275,7 @@ class OrderLine extends Model implements Sortable
     public function companyConsistentFields(): array
     {
         return [
-            'product_id' => Product::class,
+            'product_id'   => Product::class,
             'warehouse_id' => Warehouse::class,
         ];
     }

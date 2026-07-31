@@ -10,7 +10,6 @@ use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
-use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -22,6 +21,7 @@ class EditPurchaseAgreement extends EditRecord
     use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
     use RefreshesRecordState;

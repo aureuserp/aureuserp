@@ -78,15 +78,7 @@ class CompanyContext
 
     public function currentId(): ?int
     {
-        $active = $this->activeIds();
-
-        if (empty($active)) {
-            return $this->defaultId();
-        }
-
-        $default = $this->defaultId();
-
-        return $default && in_array($default, $active) ? $default : $active[0];
+        return $this->activeIds()[0] ?? $this->defaultId();
     }
 
     public function currentCompany(): ?Company
@@ -119,9 +111,15 @@ class CompanyContext
         $this->setActive($active);
     }
 
-    public function setActive(array $ids): void
+    public function setActive(array $ids, ?int $current = null): void
     {
-        $valid = array_values(array_intersect($ids, $this->allowedIds()));
+        $valid = array_values(array_unique(array_intersect($ids, $this->allowedIds())));
+
+        $current ??= $this->activeIds()[0] ?? null;
+
+        if ($current && in_array($current, $valid)) {
+            $valid = array_values(array_unique([$current, ...$valid]));
+        }
 
         session([self::SESSION_KEY => $valid]);
     }

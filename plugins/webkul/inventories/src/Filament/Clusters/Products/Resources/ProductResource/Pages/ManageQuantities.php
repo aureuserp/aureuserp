@@ -372,5 +372,4 @@ class ManageQuantities extends ManageRelatedRecords
             ->when($this->ownerCompanyId(), fn ($query, $companyId) => $query->where(owned_by_company($companyId)))
             ->value('lot_stock_location_id');
     }
-
 }

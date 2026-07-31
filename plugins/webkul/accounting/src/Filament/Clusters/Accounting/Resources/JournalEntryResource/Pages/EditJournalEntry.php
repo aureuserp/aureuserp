@@ -8,8 +8,6 @@ use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
-use Webkul\Account\Models\Account;
-use Webkul\Account\Models\Tax;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
@@ -24,6 +22,7 @@ class EditJournalEntry extends EditRecord
     use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 

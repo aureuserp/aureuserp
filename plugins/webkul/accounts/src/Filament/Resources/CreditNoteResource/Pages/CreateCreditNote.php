@@ -7,7 +7,6 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
-use Webkul\Account\Models\Tax;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateCreditNote extends CreateRecord

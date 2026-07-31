@@ -9,7 +9,6 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Models\Journal;
-use Webkul\Account\Models\Tax;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
@@ -18,6 +17,7 @@ class CreateInvoice extends CreateRecord
     use HandlesCrossCompanyException;
 
     protected ?bool $hasDatabaseTransactions = true;
+
     use HasRepeaterColumnManager;
 
     public function getSubNavigation(): array

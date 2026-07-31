@@ -7,7 +7,6 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice as EditRecord;
-use Webkul\Account\Models\Tax;
 use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class EditCreditNote extends EditRecord
