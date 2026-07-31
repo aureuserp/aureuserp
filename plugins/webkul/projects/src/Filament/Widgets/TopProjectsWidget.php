@@ -80,6 +80,7 @@ class TopProjectsWidget extends BaseWidget
 
         return $table
             ->query($query)
+            ->defaultKeySort(false)
             ->defaultPaginationPageOption(5)
             ->columns([
                 TextColumn::make('project_name')

@@ -330,6 +330,8 @@ class LocationSeeder extends Seeder
             ],
         ]);
 
+        db_dialect()->syncSequences();
+
         $provisioner = app(CompanyLocationProvisioner::class);
 
         Company::query()->each(fn (Company $company) => $provisioner->provision($company));
