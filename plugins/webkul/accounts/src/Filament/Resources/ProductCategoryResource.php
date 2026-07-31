@@ -11,6 +11,7 @@ use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\EditProductC
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ListProductCategories;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ManageProducts;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ViewProductCategory;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Category;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Product\Filament\Resources\CategoryResource as BaseProductCategoryResource;
@@ -39,14 +40,28 @@ class ProductCategoryResource extends BaseProductCategoryResource
                         ->relationship('propertyAccountIncome', 'name')
                         ->preload()
                         ->searchable()
-                        ->default(fn (DefaultAccountSettings $settings) => $settings->income_account_id),
+                        ->default(fn (DefaultAccountSettings $settings) => Account::resolveForCompany($settings->income_account_id))
+                        ->afterStateHydrated(function (Select $component, $state, DefaultAccountSettings $settings): void {
+                            if (filled($state)) {
+                                return;
+                            }
+
+                            $component->state(Account::resolveForCompany($settings->income_account_id));
+                        }),
                     Select::make('property_account_expense_id')
                         ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account'))
                         ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account-hint-tooltip'))
                         ->relationship('propertyAccountExpense', 'name')
                         ->preload()
                         ->searchable()
-                        ->default(fn (DefaultAccountSettings $settings) => $settings->expense_account_id),
+                        ->default(fn (DefaultAccountSettings $settings) => Account::resolveForCompany($settings->expense_account_id))
+                        ->afterStateHydrated(function (Select $component, $state, DefaultAccountSettings $settings): void {
+                            if (filled($state)) {
+                                return;
+                            }
+
+                            $component->state(Account::resolveForCompany($settings->expense_account_id));
+                        }),
                 ]),
         ]);
 

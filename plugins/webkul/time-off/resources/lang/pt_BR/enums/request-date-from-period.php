@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'morning' => 'Manhã',
+    'morning'   => 'Manhã',
     'afternoon' => 'Tarde',
 ];

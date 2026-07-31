@@ -49,6 +49,13 @@ use Webkul\Support\Models\UOM;
 
 class OperationForm
 {
+    public static function companyIdFor(Get $get, string $prefix = ''): ?int
+    {
+        return OperationType::withTrashed()
+            ->find($get($prefix.'operation_type_id'))
+            ?->company_id ?? current_company_id();
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -115,7 +122,12 @@ class OperationForm
                             ->relationship(
                                 name: 'operationType',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('type', [
+                                    Enums\OperationType::INCOMING,
+                                    Enums\OperationType::OUTGOING,
+                                    Enums\OperationType::INTERNAL,
+                                    Enums\OperationType::DROPSHIP,
+                                ]),
                             )
                             ->searchable()
                             ->preload()
@@ -143,7 +155,9 @@ class OperationForm
                             ->relationship(
                                 'sourceLocation',
                                 'full_name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                    ->withTrashed()
+                                    ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -161,7 +175,9 @@ class OperationForm
                             ->relationship(
                                 'destinationLocation',
                                 'full_name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                    ->withTrashed()
+                                    ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -264,7 +280,7 @@ class OperationForm
                 return $data;
             })
             ->mutateRelationshipDataBeforeCreateUsing(function (array $data, $record, $livewire) {
-                Move::$globalContext['skip_additional'] = false;
+                Move::markNextAsAdditional();
 
                 $data['source_location_id'] = $livewire->data['source_location_id']
                     ?? $record->operationType?->source_location_id;
@@ -274,7 +290,6 @@ class OperationForm
 
                 return $data;
             })
-            ->columnManagerColumns(2)
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.columns.product'))
@@ -327,10 +342,11 @@ class OperationForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
                             ->withTrashed()
                             ->where('type', ProductType::GOODS)
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company(static::companyIdFor($get, '../../'))),
                     )
                     ->required()
                     ->searchable()
@@ -420,11 +436,14 @@ class OperationForm
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUOMQtyUpdated($set, $get))
                     ->suffix(function (?Move $record, Get $get): mixed {
+                        $forecastAvailability = $record?->forecast_availability;
+
                         if (
                             ! $get('product_id')
                             || (float) ($get('product_uom_qty') ?? 0) <= 0
                             || (float) ($get('quantity') ?? 0) > 0
-                            || ($record?->forecast_availability ?? 1) > 0
+                            || ! is_numeric($forecastAvailability)
+                            || $forecastAvailability > 0
                             || ($record?->operationType?->type === Enums\OperationType::OUTGOING && $record?->state !== MoveState::DRAFT)
                         ) {
                             return null;
@@ -654,7 +673,7 @@ class OperationForm
                                     ];
                                 }
 
-                                [$quantityLocationScope] = $move->product->getLocationFilters();
+                                $stockScopes = $move->product->resolveStockScopes();
 
                                 return ProductQuantity::with(['location', 'lot', 'package'])
                                     ->where('product_id', $move->product_id)
@@ -663,7 +682,7 @@ class OperationForm
                                             ->orWhere('parent_id', $move->source_location_id);
                                     })
                                     // ->where('quantity', '>', 0)
-                                    ->where(fn (Builder $query) => $quantityLocationScope($query))
+                                    ->where(fn (Builder $query) => $stockScopes->quantities($query))
                                     ->get()
                                     ->mapWithKeys(function ($quantity) {
                                         $nameParts = array_filter([

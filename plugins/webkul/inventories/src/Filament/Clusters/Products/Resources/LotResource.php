@@ -20,6 +20,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
@@ -47,6 +49,7 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Pages\List
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Pages\ViewLot;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Inventory\Models\Lot;
+use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 
 class LotResource extends Resource
@@ -106,13 +109,18 @@ class LotResource extends Resource
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.product'))
-                                    ->relationship('product', 'name')
                                     ->relationship(
                                         name: 'product',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])->whereNull('is_configurable'),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->withTrashed()
+                                            ->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])
+                                            ->whereNull('is_configurable')
+                                            ->when(
+                                                $get('company_id'),
+                                                fn (Builder $scoped, $companyId) => $scoped->where(owned_by_company($companyId)),
+                                            ),
                                     )
-
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                     })
@@ -122,7 +130,33 @@ class LotResource extends Resource
                                     ->required()
                                     ->searchable()
                                     ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, $state): void {
+                                        if (blank($state)) {
+                                            return;
+                                        }
+
+                                        $set('company_id', Product::query()->withTrashed()->find($state)?->company_id);
+                                    })
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.product-hint-tooltip'))
+                                    ->hiddenOn([
+                                        EditReceipt::class,
+                                        EditDelivery::class,
+                                        EditInternal::class,
+                                        EditDropship::class,
+                                        ManageQuantities::class,
+                                        CreateScrap::class,
+                                        EditScrap::class,
+                                    ]),
+                                Select::make('company_id')
+                                    ->label(__('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.company'))
+                                    ->relationship('company', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'product_id' => Product::class,
+                                    ], $state))
                                     ->hiddenOn([
                                         EditReceipt::class,
                                         EditDelivery::class,

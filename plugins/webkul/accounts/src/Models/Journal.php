@@ -18,9 +18,13 @@ use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Journal extends Model implements Sortable
 {
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_journals';
@@ -221,5 +225,15 @@ class Journal extends Model implements Sortable
     protected static function newFactory()
     {
         return JournalFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'default_account_id'  => Account::class,
+            'profit_account_id'   => Account::class,
+            'loss_account_id'     => Account::class,
+            'suspense_account_id' => Account::class,
+        ];
     }
 }

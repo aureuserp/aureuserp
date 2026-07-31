@@ -21,7 +21,11 @@ class Bouncer
             return static::$authorizedUserIdsCache;
         }
 
-        $user = filament()->auth()->user();
+        $user = auth()->user();
+
+        if (! $user) {
+            return static::$authorizedUserIdsCache = null;
+        }
 
         if ($user->resource_permission == PermissionType::GLOBAL) {
             static::$authorizedUserIdsCache = null;

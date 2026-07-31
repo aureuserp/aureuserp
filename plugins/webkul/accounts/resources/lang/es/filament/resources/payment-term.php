@@ -5,6 +5,8 @@ return [
         'sections' => [
             'fields' => [
                 'payment-term'         => 'Condición de pago',
+                'company'              => 'Empresa',
+                'company-placeholder'  => 'Todas las empresas',
                 'early-discount'       => 'Descuento por pronto pago',
                 'discount-days-prefix' => 'si se paga dentro de',
                 'discount-days-suffix' => 'días',

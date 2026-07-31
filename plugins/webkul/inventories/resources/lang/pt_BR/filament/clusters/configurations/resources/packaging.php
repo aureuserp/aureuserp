@@ -8,7 +8,7 @@ return [
 
     'form' => [
         'package-type' => 'Tipo de embalagem',
-        'routes' => 'Rotas',
+        'routes'       => 'Rotas',
     ],
 
     'table' => [
@@ -37,7 +37,7 @@ return [
                 'title' => 'Informações de roteamento',
 
                 'entries' => [
-                    'routes' => 'Rotas do armazém',
+                    'routes'     => 'Rotas do armazém',
                     'route_name' => 'Nome da rota',
                 ],
             ],

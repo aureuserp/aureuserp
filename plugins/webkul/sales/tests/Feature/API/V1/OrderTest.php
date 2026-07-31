@@ -73,12 +73,12 @@ function makeLinePayload(array $context, array $overrides = []): array
 
 function salesOrderPayload(int $lineCount = 2, array $overrides = []): array
 {
-    $company = Company::factory()->create(['currency_id' => 1]);
+    $companyId = current_company_id() ?? Company::factory()->create(['currency_id' => 1])->id;
 
     $order = Order::factory()
         ->withPaymentTerms()
         ->make([
-            'company_id'  => $company->id,
+            'company_id'  => $companyId,
             'currency_id' => 1,
         ])
         ->toArray();

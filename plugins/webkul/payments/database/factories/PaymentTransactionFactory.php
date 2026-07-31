@@ -9,7 +9,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**
@@ -17,6 +17,8 @@ use Webkul\Support\Models\Currency;
  */
 class PaymentTransactionFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = PaymentTransaction::class;
 
     /**
@@ -32,7 +34,6 @@ class PaymentTransactionFactory extends Factory
             'sort'                => 0,
             'move_id'             => Move::factory(),
             'journal_id'          => Journal::factory(),
-            'company_id'          => Company::factory(),
             'statement_id'        => null,
             'partner_id'          => null,
             'currency_id'         => Currency::factory(),

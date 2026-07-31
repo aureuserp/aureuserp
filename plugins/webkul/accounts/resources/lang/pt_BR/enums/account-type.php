@@ -2,54 +2,54 @@
 
 return [
     'assets' => [
-        'label' => 'Ativos',
+        'label'   => 'Ativos',
         'options' => [
-            'receivable' => 'A receber',
-            'cash' => 'Banco e caixa',
-            'current' => 'Ativos circulantes',
+            'receivable'  => 'A receber',
+            'cash'        => 'Banco e caixa',
+            'current'     => 'Ativos circulantes',
             'non-current' => 'Ativos não circulantes',
             'prepayments' => 'Pagamentos antecipados',
-            'fixed' => 'Ativos imobilizados',
+            'fixed'       => 'Ativos imobilizados',
         ],
     ],
 
     'liabilities' => [
-        'label' => 'Passivos',
+        'label'   => 'Passivos',
         'options' => [
-            'payable' => 'A pagar',
+            'payable'     => 'A pagar',
             'credit-card' => 'Cartão de crédito',
-            'current' => 'Passivos circulantes',
+            'current'     => 'Passivos circulantes',
             'non-current' => 'Passivos não circulantes',
         ],
     ],
 
     'equity' => [
-        'label' => 'Patrimônio líquido',
+        'label'   => 'Patrimônio líquido',
         'options' => [
-            'equity' => 'Patrimônio líquido',
+            'equity'     => 'Patrimônio líquido',
             'unaffected' => 'Resultado do ano corrente',
         ],
     ],
 
     'income' => [
-        'label' => 'Receitas',
+        'label'   => 'Receitas',
         'options' => [
             'income' => 'Receitas',
-            'other' => 'Outras receitas',
+            'other'  => 'Outras receitas',
         ],
     ],
 
     'expenses' => [
-        'label' => 'Despesas',
+        'label'   => 'Despesas',
         'options' => [
-            'expense' => 'Despesas',
+            'expense'      => 'Despesas',
             'depreciation' => 'Depreciação',
-            'direct-cost' => 'Custo da receita',
+            'direct-cost'  => 'Custo da receita',
         ],
     ],
 
     'off-balance' => [
-        'label' => 'Fora do balanço',
+        'label'   => 'Fora do balanço',
         'options' => [
             'off-balance' => 'Fora do balanço',
         ],

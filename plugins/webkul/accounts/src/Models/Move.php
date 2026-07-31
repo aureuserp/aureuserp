@@ -18,22 +18,27 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentStatus;
+use Webkul\Account\Exceptions\MissingJournalException;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
-use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Move extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SortableTrait;
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'accounts';
 
@@ -177,9 +182,12 @@ class Move extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    protected function getAssignmentColumn(): ?string
+    public function ownershipSources(): array
     {
-        return 'invoice_user_id';
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('invoice_user_id'),
+        ];
     }
 
     public function campaign()
@@ -479,7 +487,7 @@ class Move extends Model implements Sortable
             return;
         }
 
-        $this->company_id ??= Auth::user()->default_company_id;
+        $this->company_id ??= current_company_id();
     }
 
     public function computeName()
@@ -587,7 +595,16 @@ class Move extends Model implements Sortable
     public function computeJournalId()
     {
         if (! in_array($this->journal?->type, $this->getValidJournalTypes())) {
-            $this->journal_id = $this->searchDefaultJournal($this)?->id;
+            $journal = $this->searchDefaultJournal();
+
+            if (! $journal) {
+                throw new MissingJournalException(__('accounts::system.move.no-journal-found', [
+                    'company' => $this->company?->name ?? $this->company_id,
+                    'types'   => collect($this->getValidJournalTypes())->map(fn ($type) => $type->value)->implode(', '),
+                ]));
+            }
+
+            $this->journal_id = $journal->id;
 
             $this->unsetRelation('journal');
         }
@@ -604,164 +621,140 @@ class Move extends Model implements Sortable
 
     public function computePaymentState()
     {
-        $debitResults = DB::table('accounts_partial_reconciles as partial_reconciles')
-            ->select([
-                'source_line.id as source_line_id',
-                'source_line.move_id as source_move_id',
-                'account.account_type as source_line_account_type',
-                ...$this->reconciliationAggregateSelects(),
-            ])
-            ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.debit_move_id')
-            ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
-            ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.credit_move_id')
-            ->join('accounts_account_moves as opposite_move', 'opposite_move.id', '=', 'opposite_line.move_id')
-            ->leftJoin('accounts_account_payments as payment', 'payment.id', '=', 'opposite_move.origin_payment_id')
-            ->where('source_line.move_id', $this->id)
-            ->whereColumn('opposite_line.move_id', '!=', 'source_line.move_id')
-            ->groupBy('source_line.id', 'source_line.move_id', 'account.account_type')
-            ->get();
+        $needsPaymentState = $this->isInvoice(true);
 
-        $creditResults = DB::table('accounts_partial_reconciles as partial_reconciles')
-            ->select([
-                'source_line.id as source_line_id',
-                'source_line.move_id as source_move_id',
-                'account.account_type as source_line_account_type',
-                ...$this->reconciliationAggregateSelects(),
-            ])
-            ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.credit_move_id')
-            ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
-            ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.debit_move_id')
-            ->join('accounts_account_moves as opposite_move', 'opposite_move.id', '=', 'opposite_line.move_id')
-            ->leftJoin('accounts_account_payments as payment', 'payment.id', '=', 'opposite_move.origin_payment_id')
-            ->where('source_line.move_id', $this->id)
-            ->whereColumn('opposite_line.move_id', '!=', 'source_line.move_id')
-            ->groupBy('source_line.id', 'source_line.move_id', 'account.account_type')
-            ->get();
+        $matchings = $this->reconciliationMatchings();
 
-        $allResults = $debitResults->merge($creditResults);
+        if ($needsPaymentState) {
+            $matchings = array_filter(
+                $matchings,
+                fn (array $row) => in_array($row['source_line_account_type'], ['asset_receivable', 'liability_payable'])
+            );
+        }
 
-        $paymentData = [];
+        $currentState = $this->payment_state !== PaymentState::BLOCKED
+            ? PaymentState::NOT_PAID
+            : PaymentState::BLOCKED;
 
-        foreach ($allResults as $row) {
-            $oppositeMoveTypes = $row->opposite_move_types;
+        if ($this->state !== MoveState::POSTED || ! $needsPaymentState) {
+            $this->payment_state = $currentState;
 
-            if (is_string($oppositeMoveTypes)) {
-                $oppositeMoveTypes = json_decode($oppositeMoveTypes, true) ?? [];
-            }
+            return;
+        }
 
-            $paymentData[] = [
+        $this->payment_state = $this->settlementCurrency()->isZero($this->amount_residual)
+            ? $this->settledPaymentState($matchings)
+            : $this->outstandingPaymentState($matchings, $currentState);
+    }
+
+    protected function settlementCurrency()
+    {
+        $currencies = $this->lines->pluck('currency_id')->unique();
+
+        return Currency::find(
+            $currencies->count() === 1 ? $currencies->first() : $this->company->currency_id
+        );
+    }
+
+    protected function settledPaymentState(array $matchings): PaymentState
+    {
+        $paidByPaymentOrStatement = collect($matchings)
+            ->contains(fn (array $row) => $row['has_payment'] || $row['has_statement_line']);
+
+        if ($paidByPaymentOrStatement) {
+            return collect($matchings)->every(fn (array $row) => $row['all_payments_matched'])
+                ? PaymentState::PAID
+                : $this->getInvoiceInPaymentState();
+        }
+
+        return $this->isFullyReversedBy($this->counterpartMoveTypes($matchings))
+            ? PaymentState::REVERSED
+            : PaymentState::PAID;
+    }
+
+    protected function outstandingPaymentState(array $matchings, PaymentState $fallback): PaymentState
+    {
+        $awaitingPayment = fn (PaymentStatus $status) => $this->matchedPayments
+            ->contains(fn ($payment) => ! $payment->move_id && $payment->state === $status);
+
+        return match (true) {
+            $awaitingPayment(PaymentStatus::IN_PROCESS) => $this->getInvoiceInPaymentState(),
+            $matchings !== []                           => PaymentState::PARTIAL,
+            $awaitingPayment(PaymentStatus::PAID)       => $this->getInvoiceInPaymentState(),
+            default                                     => $fallback,
+        };
+    }
+
+    protected function counterpartMoveTypes(array $matchings): array
+    {
+        $types = collect($matchings)
+            ->flatMap(fn (array $row) => $row['opposite_move_types'])
+            ->unique()
+            ->values()
+            ->all();
+
+        sort($types);
+
+        return $types;
+    }
+
+    protected function isFullyReversedBy(array $counterpartTypes): bool
+    {
+        $reversedBy = function (MoveType $refund) use ($counterpartTypes) {
+            return $counterpartTypes === [$refund->value]
+                || (count($counterpartTypes) === 2
+                    && in_array($refund->value, $counterpartTypes)
+                    && in_array(MoveType::ENTRY->value, $counterpartTypes));
+        };
+
+        return match (true) {
+            in_array($this->move_type, [MoveType::IN_INVOICE, MoveType::IN_RECEIPT])                 => $reversedBy(MoveType::IN_REFUND),
+            in_array($this->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_RECEIPT])               => $reversedBy(MoveType::OUT_REFUND),
+            in_array($this->move_type, [MoveType::ENTRY, MoveType::OUT_REFUND, MoveType::IN_REFUND]) => $counterpartTypes === [MoveType::ENTRY->value],
+            default                                                                                  => false,
+        };
+    }
+
+    protected function reconciliationMatchings(): array
+    {
+        $rows = $this->reconciliationSideQuery('debit_move_id', 'credit_move_id')
+            ->get()
+            ->merge($this->reconciliationSideQuery('credit_move_id', 'debit_move_id')->get());
+
+        return $rows->map(function ($row) {
+            $counterpartTypes = is_string($row->opposite_move_types)
+                ? json_decode($row->opposite_move_types, true) ?? []
+                : $row->opposite_move_types;
+
+            return [
                 'source_line_id'           => $row->source_line_id,
                 'source_move_id'           => $row->source_move_id,
                 'source_line_account_type' => $row->source_line_account_type,
-                'opposite_move_types'      => $oppositeMoveTypes,
+                'opposite_move_types'      => $counterpartTypes,
                 'all_payments_matched'     => (bool) $row->all_payments_matched,
                 'has_payment'              => (bool) $row->has_payment,
                 'has_statement_line'       => (bool) $row->has_statement_line,
             ];
-        }
+        })->all();
+    }
 
-        $currencies = $this->lines->pluck('currency_id')->unique();
-
-        $currency = $currencies->count() === 1
-            ? Currency::find($currencies->first())
-            : Currency::find($this->company->currency_id);
-
-        $reconciliationVals = $paymentData;
-
-        $paymentStateNeeded = $this->isInvoice(true);
-
-        if ($paymentStateNeeded) {
-            $reconciliationVals = array_filter($reconciliationVals, function ($row) {
-                return in_array($row['source_line_account_type'], ['asset_receivable', 'liability_payable']);
-            });
-        }
-
-        $newPaymentState = $this->payment_state !== PaymentState::BLOCKED ? PaymentState::NOT_PAID : PaymentState::BLOCKED;
-
-        if ($this->state === MoveState::POSTED && $paymentStateNeeded) {
-            if ($currency->isZero($this->amount_residual)) {
-                $hasPaymentOrStatementLine = false;
-
-                foreach ($reconciliationVals as $row) {
-                    if ($row['has_payment'] || $row['has_statement_line']) {
-                        $hasPaymentOrStatementLine = true;
-
-                        break;
-                    }
-                }
-
-                if ($hasPaymentOrStatementLine) {
-                    $allPaymentsMatched = true;
-
-                    foreach ($reconciliationVals as $row) {
-                        if (! $row['all_payments_matched']) {
-                            $allPaymentsMatched = false;
-
-                            break;
-                        }
-                    }
-
-                    if ($allPaymentsMatched) {
-                        $newPaymentState = PaymentState::PAID;
-                    } else {
-                        $newPaymentState = $this->getInvoiceInPaymentState();
-                    }
-                } else {
-                    $newPaymentState = PaymentState::PAID;
-
-                    $reverseMoveTypes = [];
-
-                    foreach ($reconciliationVals as $row) {
-                        foreach ($row['opposite_move_types'] as $moveType) {
-                            $reverseMoveTypes[$moveType] = true;
-                        }
-                    }
-
-                    $reverseMoveTypes = array_keys($reverseMoveTypes);
-
-                    sort($reverseMoveTypes);
-
-                    $inReverse = in_array($this->move_type, [MoveType::IN_INVOICE, MoveType::IN_RECEIPT])
-                        && (
-                            $reverseMoveTypes === [MoveType::IN_REFUND->value]
-                            || (
-                                count($reverseMoveTypes) === 2
-                                && in_array(MoveType::IN_REFUND->value, $reverseMoveTypes)
-                                && in_array(MoveType::ENTRY->value, $reverseMoveTypes)
-                            )
-                        );
-
-                    $outReverse = in_array($this->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_RECEIPT])
-                        && (
-                            $reverseMoveTypes === [MoveType::OUT_REFUND->value]
-                            || (
-                                count($reverseMoveTypes) === 2
-                                && in_array(MoveType::OUT_REFUND->value, $reverseMoveTypes)
-                                && in_array(MoveType::ENTRY->value, $reverseMoveTypes)
-                            )
-                        );
-
-                    $miscReverse = in_array($this->move_type, [MoveType::ENTRY, MoveType::OUT_REFUND, MoveType::IN_REFUND])
-                        && $reverseMoveTypes === [MoveType::ENTRY->value];
-
-                    if ($inReverse || $outReverse || $miscReverse) {
-                        $newPaymentState = PaymentState::REVERSED;
-                    }
-                }
-            } elseif ($this->matchedPayments->filter(function ($payment) {
-                return ! $payment->move_id && $payment->state === PaymentStatus::IN_PROCESS;
-            })->isNotEmpty()) {
-                $newPaymentState = $this->getInvoiceInPaymentState();
-            } elseif (! empty($reconciliationVals)) {
-                $newPaymentState = PaymentState::PARTIAL;
-            } elseif ($this->matchedPayments->filter(function ($payment) {
-                return ! $payment->move_id && $payment->state === PaymentStatus::PAID;
-            })->isNotEmpty()) {
-                $newPaymentState = $this->getInvoiceInPaymentState();
-            }
-        }
-
-        $this->payment_state = $newPaymentState;
+    protected function reconciliationSideQuery(string $sourceColumn, string $oppositeColumn)
+    {
+        return DB::table('accounts_partial_reconciles as partial_reconciles')
+            ->select([
+                'source_line.id as source_line_id',
+                'source_line.move_id as source_move_id',
+                'account.account_type as source_line_account_type',
+                ...$this->reconciliationAggregateSelects(),
+            ])
+            ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', "partial_reconciles.{$sourceColumn}")
+            ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
+            ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', "partial_reconciles.{$oppositeColumn}")
+            ->join('accounts_account_moves as opposite_move', 'opposite_move.id', '=', 'opposite_line.move_id')
+            ->leftJoin('accounts_account_payments as payment', 'payment.id', '=', 'opposite_move.origin_payment_id')
+            ->where('source_line.move_id', $this->id)
+            ->whereColumn('opposite_line.move_id', '!=', 'source_line.move_id')
+            ->groupBy('source_line.id', 'source_line.move_id', 'account.account_type');
     }
 
     /**
@@ -981,101 +974,88 @@ class Move extends Model implements Sortable
 
     protected function getAllReconciledInvoicePartials()
     {
-        $reconciledLines = $this->lines->filter(function ($line) {
-            return in_array($line->account?->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
-        });
+        $lineIds = $this->lines
+            ->filter(fn ($line) => in_array($line->account?->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]))
+            ->pluck('id');
 
-        if ($reconciledLines->isEmpty()) {
+        if ($lineIds->isEmpty()) {
             return [];
         }
 
-        $lineIds = $reconciledLines->pluck('id')->toArray();
+        $partials = $this->partialsFacing($lineIds);
 
-        $sql = '
-            SELECT
-                part.id,
-                part.exchange_move_id,
-                part.debit_amount_currency AS amount,
-                part.credit_move_id AS counterpart_line_id
-            FROM accounts_partial_reconciles part
-            WHERE part.debit_move_id IN ('.implode(',', $lineIds).')
-
-            UNION ALL
-
-            SELECT
-                part.id,
-                part.exchange_move_id,
-                part.credit_amount_currency AS amount,
-                part.debit_move_id AS counterpart_line_id
-            FROM accounts_partial_reconciles part
-            WHERE part.credit_move_id IN ('.implode(',', $lineIds).')
-        ';
-
-        $results = DB::select($sql);
-
-        $partialValuesList = collect($results)->map(fn ($values) => [
-            'line_id'    => $values->counterpart_line_id,
-            'partial_id' => $values->id,
-            'amount'     => $values->amount,
+        $matched = $partials->map(fn ($partial) => [
+            'line_id'    => $partial->counterpart_line_id,
+            'partial_id' => $partial->id,
+            'amount'     => $partial->amount,
             'currency'   => $this->currency,
         ])->all();
 
-        $counterpartLineIds = collect($results)->pluck('counterpart_line_id')->all();
-        $exchangeMoveIds = collect($results)->pluck('exchange_move_id')->filter()->all();
+        $counterpartLineIds = $partials->pluck('counterpart_line_id')->all();
 
-        if (! empty($exchangeMoveIds)) {
-            $exchangeMoveIdsStr = implode(',', array_unique($exchangeMoveIds));
+        $exchangeMoveIds = $partials->pluck('exchange_move_id')->filter()->unique()->values()->all();
 
-            $counterpartLineIdsStr = implode(',', array_unique($counterpartLineIds));
+        foreach ($this->exchangePartials($exchangeMoveIds, $counterpartLineIds) as $partial) {
+            $counterpartLineIds[] = $partial->counterpart_line_id;
 
-            $sql = '
-                SELECT
-                    part.id,
-                    part.credit_move_id AS counterpart_line_id
-                FROM accounts_partial_reconciles part
-                JOIN account_move_line credit_line ON credit_line.id = part.credit_move_id
-                WHERE credit_line.move_id IN ('.$exchangeMoveIdsStr.') 
-                    AND part.debit_move_id IN ('.$counterpartLineIdsStr.')
-
-                UNION ALL
-
-                SELECT
-                    part.id,
-                    part.debit_move_id AS counterpart_line_id
-                FROM accounts_partial_reconciles part
-                JOIN account_move_line debit_line ON debit_line.id = part.debit_move_id
-                WHERE debit_line.move_id IN ('.$exchangeMoveIdsStr.') 
-                    AND part.credit_move_id IN ('.$counterpartLineIdsStr.')
-            ';
-
-            $exchangeResults = DB::select($sql);
-
-            foreach ($exchangeResults as $row) {
-                $counterpartLineIds[] = $row->counterpart_line_id;
-
-                $partialValuesList[] = [
-                    'line_id'    => $row->counterpart_line_id,
-                    'partial_id' => $row->id,
-                    'currency'   => $this->company->currency_id,
-                ];
-            }
+            $matched[] = [
+                'line_id'    => $partial->counterpart_line_id,
+                'partial_id' => $partial->id,
+                'currency'   => $this->company->currency_id,
+            ];
         }
 
-        $counterpartLines = MoveLine::whereIn('id', array_unique($counterpartLineIds))
-            ->get()
-            ->keyBy('id');
+        $counterpartLines = MoveLine::whereIn('id', array_unique($counterpartLineIds))->get()->keyBy('id');
 
-        foreach ($partialValuesList as &$partialValues) {
-            $partialValues['line'] = $counterpartLines[$partialValues['line_id']];
+        return array_map(function (array $values) use ($counterpartLines, $exchangeMoveIds) {
+            $values['line'] = $counterpartLines[$values['line_id']];
 
-            $partialValues['is_exchange'] = in_array($partialValues['line']->move_id, $exchangeMoveIds);
+            $values['is_exchange'] = in_array($values['line']->move_id, $exchangeMoveIds);
 
-            if ($partialValues['is_exchange']) {
-                $partialValues['amount'] = abs($partialValues['line']->balance);
+            if ($values['is_exchange']) {
+                $values['amount'] = abs($values['line']->balance);
             }
+
+            return $values;
+        }, $matched);
+    }
+
+    protected function partialsFacing($lineIds)
+    {
+        $side = fn (string $ownColumn, string $counterpartColumn, string $amountColumn) => DB::table('accounts_partial_reconciles')
+            ->select([
+                'id',
+                'exchange_move_id',
+                "{$amountColumn} as amount",
+                "{$counterpartColumn} as counterpart_line_id",
+            ])
+            ->whereIn($ownColumn, $lineIds);
+
+        return $side('debit_move_id', 'credit_move_id', 'debit_amount_currency')
+            ->unionAll($side('credit_move_id', 'debit_move_id', 'credit_amount_currency'))
+            ->get();
+    }
+
+    protected function exchangePartials(array $exchangeMoveIds, array $counterpartLineIds)
+    {
+        if ($exchangeMoveIds === [] || $counterpartLineIds === []) {
+            return collect();
         }
 
-        return $partialValuesList;
+        $side = fn (string $joinColumn, string $counterpartColumn, string $facingColumn) => DB::table('accounts_partial_reconciles')
+            ->select(['accounts_partial_reconciles.id', "accounts_partial_reconciles.{$counterpartColumn} as counterpart_line_id"])
+            ->join(
+                'accounts_account_move_lines',
+                'accounts_account_move_lines.id',
+                '=',
+                "accounts_partial_reconciles.{$joinColumn}"
+            )
+            ->whereIn('accounts_account_move_lines.move_id', $exchangeMoveIds)
+            ->whereIn("accounts_partial_reconciles.{$facingColumn}", array_unique($counterpartLineIds));
+
+        return $side('credit_move_id', 'credit_move_id', 'debit_move_id')
+            ->unionAll($side('debit_move_id', 'debit_move_id', 'credit_move_id'))
+            ->get();
     }
 
     /**
@@ -1084,5 +1064,14 @@ class Move extends Model implements Sortable
     protected static function newFactory(): Factory
     {
         return MoveFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'journal_id'              => Journal::class,
+            'invoice_payment_term_id' => PaymentTerm::class,
+            'fiscal_position_id'      => FiscalPosition::class,
+        ];
     }
 }

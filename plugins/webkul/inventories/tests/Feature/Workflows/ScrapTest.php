@@ -1,6 +1,7 @@
 <?php
 
 use Webkul\Inventory\Enums\ScrapState;
+use Webkul\Inventory\Models\Move;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/InventoryHelper.php';
@@ -45,5 +46,5 @@ it('records an inventory move for the scrap', function () {
 
     $scrap->validate();
 
-    expect(Webkul\Inventory\Models\Move::query()->where('scrap_id', $scrap->id)->exists())->toBeTrue();
+    expect(Move::query()->where('scrap_id', $scrap->id)->exists())->toBeTrue();
 });

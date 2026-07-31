@@ -179,7 +179,6 @@ class LeaveTypeResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.name'))

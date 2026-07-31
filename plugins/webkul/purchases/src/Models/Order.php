@@ -26,13 +26,17 @@ use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
@@ -248,5 +252,15 @@ class Order extends Model
     protected static function newFactory(): OrderFactory
     {
         return OrderFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'fiscal_position_id' => FiscalPosition::class,
+            'payment_term_id'    => PaymentTerm::class,
+            'operation_type_id'  => OperationType::class,
+            'requisition_id'     => Requisition::class,
+        ];
     }
 }

@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Transferência interna criada',
-                'body' => 'A transferência interna foi criada com sucesso.',
+                'body'  => 'A transferência interna foi criada com sucesso.',
             ],
         ],
     ],

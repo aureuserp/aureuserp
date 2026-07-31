@@ -17,6 +17,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Facades\Tax as TaxFacade;
+use Webkul\Account\Models\Tax;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Product;
 use Webkul\Purchase\Enums\OrderState;
@@ -395,7 +396,7 @@ class PurchaseOrderController extends Controller
     {
         $discountedUnit = $discount > 0 ? $priceUnit * (1 - ($discount / 100)) : $priceUnit;
 
-        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
+        $taxes = Tax::whereIn('id', $taxIds)->get();
 
         if ($taxes->isEmpty()) {
             $subTotal = round($discountedUnit * $quantity, 4);

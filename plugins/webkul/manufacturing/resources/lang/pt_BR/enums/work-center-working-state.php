@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'normal' => 'Normal',
+    'normal'  => 'Normal',
     'blocked' => 'Bloqueado',
-    'done' => 'Em andamento',
+    'done'    => 'Em andamento',
 ];

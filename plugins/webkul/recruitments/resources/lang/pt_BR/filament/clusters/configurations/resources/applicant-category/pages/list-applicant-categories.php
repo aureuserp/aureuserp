@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Tags criadas',
-        'body' => 'As tags foram criadas com sucesso.',
+        'body'  => 'As tags foram criadas com sucesso.',
     ],
 
     'header-actions' => [

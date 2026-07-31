@@ -17,6 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -27,13 +29,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\CreateVendorPrice;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\EditVendorPrice;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\ListVendorPrices;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\ViewVendorPrice;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
+use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\ProductSupplier;
 
 class VendorPriceResource extends Resource
@@ -93,7 +95,9 @@ class VendorPriceResource extends Resource
                                     ->relationship(
                                         'product',
                                         'name',
-                                        fn ($query) => $query->where('is_configurable', null)
+                                        fn (Builder $query, Get $get) => $query
+                                            ->where('is_configurable', null)
+                                            ->where(owned_by_company($get('company_id')))
                                     )
                                     ->searchable()
                                     ->preload()
@@ -123,7 +127,7 @@ class VendorPriceResource extends Resource
                                             )
                                             ->required()
                                             ->searchable()
-                                            ->default(Auth::user()->defaultCompany?->currency_id)
+                                            ->default(current_company()?->currency_id)
                                             ->preload(),
                                         DatePicker::make('starts_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.valid-from'))
@@ -145,8 +149,12 @@ class VendorPriceResource extends Resource
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.company'))
                                     ->relationship('company', 'name')
                                     ->searchable()
-                                    ->default(Auth::user()->default_company_id)
-                                    ->preload(),
+                                    ->default(current_company_id())
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'product_id' => Product::class,
+                                    ], $state)),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -158,7 +166,6 @@ class VendorPriceResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.vendor'))

@@ -24,7 +24,7 @@ class ListWorkCenters extends ListRecords
                     $user = Auth::user();
 
                     $data['creator_id'] = $user?->id;
-                    $data['company_id'] ??= $user?->default_company_id;
+                    $data['company_id'] ??= current_company_id();
 
                     return $data;
                 })

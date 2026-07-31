@@ -7,13 +7,15 @@ use Webkul\Manufacturing\Models\WorkCenter;
 use Webkul\Manufacturing\Models\WorkCenterProductivityLog;
 use Webkul\Manufacturing\Models\WorkCenterProductivityLoss;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<WorkCenterProductivityLog>
  */
 class WorkCenterProductivityLogFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = WorkCenterProductivityLog::class;
 
     public function definition(): array
@@ -25,7 +27,6 @@ class WorkCenterProductivityLogFactory extends Factory
             'finished_at'      => now(),
             'duration'         => 0,
             'work_center_id'   => WorkCenter::factory(),
-            'company_id'       => Company::query()->value('id') ?? Company::factory(),
             'work_order_id'    => null,
             'assigned_user_id' => User::query()->value('id'),
             'loss_id'          => fn () => WorkCenterProductivityLoss::query()->where('loss_type', 'productive')->value('id'),

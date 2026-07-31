@@ -7,9 +7,12 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class EditRule extends EditRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = RuleResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;

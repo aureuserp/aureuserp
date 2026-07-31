@@ -1,11 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Warehouse;
+use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Services\CompanyContext;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/InventoryHelper.php';
@@ -274,4 +279,181 @@ it('throws when archiving a warehouse that has an ongoing operation', function (
 
     expect(fn () => $wh->delete())
         ->toThrow(Exception::class, 'ongoing operations');
+});
+
+function setWarehouseStorageLocations(bool $enabled): void
+{
+    $settings = settings(WarehouseSettings::class);
+
+    $settings->enable_locations = $enabled;
+
+    $settings->save();
+}
+
+function warehouseStorageLocationsEnabled(): bool
+{
+    return settings(WarehouseSettings::class)->enable_locations;
+}
+
+function allowCompanies(Company ...$companies): void
+{
+    $user = Auth::user();
+
+    $ids = collect($companies)->pluck('id')->all();
+
+    $user->allowedCompanies()->syncWithoutDetaching($ids);
+
+    $active = array_merge(
+        session(CompanyContext::SESSION_KEY, []),
+        $ids,
+        array_filter([$user->default_company_id]),
+    );
+
+    session([CompanyContext::SESSION_KEY => array_values(array_unique($active))]);
+
+    app()->forgetInstance(CompanyContext::class);
+}
+
+function warehouseFor(Company $company, string $name, string $code): Warehouse
+{
+    allowCompanies($company);
+
+    return Warehouse::factory()->create([
+        'company_id' => $company->id,
+        'name'       => $name,
+        'code'       => $code,
+        'sort'       => 1,
+    ]);
+}
+
+function totalWarehouseCount(): int
+{
+    return Warehouse::query()->withoutGlobalScope(CompanyScope::class)->count();
+}
+
+it('counts warehouses per company rather than globally', function () {
+    $baseline = Warehouse::maxPerCompany();
+    $totalBefore = totalWarehouseCount();
+
+    warehouseFor(Company::factory()->create(), 'Alpha WH', 'AWH');
+    warehouseFor(Company::factory()->create(), 'Beta WH', 'BWH');
+
+    expect(totalWarehouseCount())->toBe($totalBefore + 2)
+        ->and(Warehouse::maxPerCompany())->toBe($baseline);
+});
+
+it('reports the highest per company warehouse count', function () {
+    $target = Warehouse::maxPerCompany() + 2;
+
+    $company = Company::factory()->create();
+
+    for ($i = 1; $i <= $target; $i++) {
+        warehouseFor($company, "Stacked WH {$i}", "SWH{$i}");
+    }
+
+    expect(Warehouse::countForCompany($company->id))->toBe($target)
+        ->and(Warehouse::maxPerCompany())->toBe($target);
+});
+
+it('counts warehouses for a company ignoring the active company scope', function () {
+    $company = Company::factory()->create();
+
+    warehouseFor($company, 'Hidden WH', 'HWH');
+
+    $unscoped = Warehouse::query()
+        ->withoutGlobalScope(CompanyScope::class)
+        ->where('company_id', $company->id)
+        ->count();
+
+    expect(Warehouse::countForCompany($company->id))->toBe($unscoped)
+        ->and($unscoped)->toBe(1);
+});
+
+it('excludes archived warehouses from the per company count', function () {
+    $company = Company::factory()->create();
+
+    warehouseFor($company, 'Kept WH', 'KWH');
+    $removed = warehouseFor($company, 'Removed WH', 'RWH');
+
+    expect(Warehouse::countForCompany($company->id))->toBe(2);
+
+    $removed->delete();
+
+    expect(Warehouse::countForCompany($company->id))->toBe(1);
+});
+
+it('leaves storage locations disabled for the first warehouse of a company', function () {
+    setWarehouseStorageLocations(false);
+
+    $company = Company::factory()->create();
+
+    warehouseFor($company, 'Solo WH', 'SOLO');
+
+    expect(Warehouse::countForCompany($company->id))->toBe(1)
+        ->and(warehouseStorageLocationsEnabled())->toBeFalse();
+});
+
+it('enables storage locations once a company owns a second warehouse', function () {
+    setWarehouseStorageLocations(false);
+
+    $company = Company::factory()->create();
+
+    warehouseFor($company, 'First WH', 'FWH');
+
+    expect(warehouseStorageLocationsEnabled())->toBeFalse();
+
+    warehouseFor($company, 'Second WH', 'SWH');
+
+    expect(Warehouse::countForCompany($company->id))->toBe(2)
+        ->and(warehouseStorageLocationsEnabled())->toBeTrue();
+});
+
+it('does not enable storage locations when warehouses are spread across companies', function () {
+    setWarehouseStorageLocations(false);
+
+    warehouseFor(Company::factory()->create(), 'Split A', 'SPA');
+    warehouseFor(Company::factory()->create(), 'Split B', 'SPB');
+
+    expect(warehouseStorageLocationsEnabled())->toBeFalse();
+});
+
+it('enables storage locations when a warehouse moves into a company that already has one', function () {
+    setWarehouseStorageLocations(false);
+
+    $target = Company::factory()->create();
+
+    warehouseFor($target, 'Resident WH', 'RES');
+    $moving = warehouseFor(Company::factory()->create(), 'Moving WH', 'MOV');
+
+    expect(warehouseStorageLocationsEnabled())->toBeFalse();
+
+    $moving->update(['company_id' => $target->id]);
+
+    expect(Warehouse::countForCompany($target->id))->toBe(2)
+        ->and(warehouseStorageLocationsEnabled())->toBeTrue();
+});
+
+it('keeps storage locations enabled after a company drops back to one warehouse', function () {
+    setWarehouseStorageLocations(false);
+
+    $company = Company::factory()->create();
+
+    warehouseFor($company, 'Stay WH', 'STAY');
+    $removed = warehouseFor($company, 'Gone WH', 'GONE');
+
+    expect(warehouseStorageLocationsEnabled())->toBeTrue();
+
+    $removed->delete();
+
+    expect(Warehouse::countForCompany($company->id))->toBe(1)
+        ->and(warehouseStorageLocationsEnabled())->toBeTrue();
+});
+
+it('allows two companies to own warehouses with the same name and code', function () {
+    $first = warehouseFor(Company::factory()->create(), 'Shared WH', 'SHR');
+    $second = warehouseFor(Company::factory()->create(), 'Shared WH', 'SHR');
+
+    expect($first->name)->toBe($second->name)
+        ->and($first->code)->toBe($second->code)
+        ->and($first->company_id)->not->toBe($second->company_id);
 });

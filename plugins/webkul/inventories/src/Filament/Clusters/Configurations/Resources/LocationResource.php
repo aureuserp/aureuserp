@@ -3,8 +3,8 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use BackedEnum;
-use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -37,10 +37,10 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\CreateLocation;
@@ -49,6 +49,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\ViewLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageLocations;
 use Webkul\Inventory\Models\Location;
+use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Settings\WarehouseSettings;
 
 class LocationResource extends Resource
@@ -101,7 +102,11 @@ class LocationResource extends Resource
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
                                 Select::make('parent_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.parent-location'))
-                                    ->relationship('parent', 'full_name')
+                                    ->relationship(
+                                        'parent',
+                                        'full_name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.parent-location-hint-tooltip')),
@@ -139,10 +144,19 @@ class LocationResource extends Resource
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()->default_company_id),
+                                    ->default(current_company_id())
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'parent_id'           => Location::class,
+                                        'storage_category_id' => StorageCategory::class,
+                                    ], $state)),
                                 Select::make('storage_category_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.storage-category'))
-                                    ->relationship('storageCategory', 'name')
+                                    ->relationship(
+                                        'storageCategory',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm(fn (Schema $schema): Schema => StorageCategoryResource::form($schema))

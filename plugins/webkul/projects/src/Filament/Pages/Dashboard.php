@@ -38,7 +38,7 @@ class Dashboard extends BaseDashboard
         return __('projects::filament/pages/dashboard.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Dashboard;
     }

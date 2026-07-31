@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Tipo de vínculo criado',
-                'body' => 'O tipo de vínculo foi criado com sucesso.',
+                'body'  => 'O tipo de vínculo foi criado com sucesso.',
             ],
         ],
     ],

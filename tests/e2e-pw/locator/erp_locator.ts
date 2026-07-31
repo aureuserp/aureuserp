@@ -78,6 +78,7 @@ export class ErpLocators {
     readonly usersPasswordInput: Locator;
     readonly usersPasswordConfirmationInput: Locator;
     readonly usersRoleSelect: Locator;
+    readonly usersAllowedCompaniesSelect: Locator;
     readonly usersCompanySelect: Locator;
     readonly usersCompanySearchInput: Locator;
     readonly usersRoleOption: Locator;
@@ -564,7 +565,7 @@ export class ErpLocators {
         this.companiesPhoneInput = page.locator('input[id="form.phone"]').first();
         this.companiesStatusToggleOn = page.locator('button[aria-checked="true"]');
         this.companiesStatusToggleOff = page.locator('button[aria-checked="false"]');
-        this.companiesSaveButton = page.locator('button[type="submit"]').nth(1);
+        this.companiesSaveButton = page.locator('button[x-data="filamentFormButton"]').first();
         this.companiesSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
         this.companiesRowActionsButton = page.locator('div.fi-ta-text-item').nth(0);
         this.companiesEditButton = page.locator("a.fi-ac-btn-action");
@@ -593,6 +594,7 @@ export class ErpLocators {
         this.usersPasswordInput = page.locator('input[id="form.password"]');
         this.usersPasswordConfirmationInput = page.locator('input[id="form.password_confirmation"]');
         this.usersRoleSelect = page.locator('div.fi-select-input-value-ctn').nth(0);
+        this.usersAllowedCompaniesSelect = page.locator('div.fi-select-input-value-ctn').nth(4);
         this.usersCompanySelect = page.locator('div.fi-select-input-value-ctn').nth(5);
         // Every select on the form keeps its own search box in the DOM; only the open panel's
         // is on screen, so the visible one is the one being typed into.

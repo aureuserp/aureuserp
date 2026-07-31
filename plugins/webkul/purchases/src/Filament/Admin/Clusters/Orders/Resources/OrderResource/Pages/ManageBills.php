@@ -4,8 +4,8 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource
 
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Livewire\Livewire;
-use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationBillResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationBillResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageBills extends ManageRelatedRecords

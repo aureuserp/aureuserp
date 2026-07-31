@@ -73,14 +73,17 @@ use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ManageSkill;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ViewEmployee;
 use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\ResumeRelationManager;
 use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\SkillsRelationManager;
+use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
+use Webkul\Employee\Models\EmployeeJobPosition;
+use Webkul\Employee\Models\WorkLocation;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Country;
-use Webkul\Support\Enums\NavigationGroup;
 
 class EmployeeResource extends Resource
 {
@@ -104,7 +107,7 @@ class EmployeeResource extends Resource
         return __('employees::filament/resources/employee.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Employee;
     }
@@ -184,7 +187,7 @@ class EmployeeResource extends Resource
                                     ->relationship(
                                         name: 'department',
                                         titleAttribute: 'complete_name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -206,7 +209,11 @@ class EmployeeResource extends Resource
                                     )
                                     ->tel(),
                                 Select::make('job_id')
-                                    ->relationship('job', 'name')
+                                    ->relationship(
+                                        name: 'job',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->label(__('employees::filament/resources/employee.form.sections.fields.job-position'))
@@ -224,7 +231,11 @@ class EmployeeResource extends Resource
                                     )
                                     ->tel(),
                                 Select::make('parent_id')
-                                    ->relationship('parent', 'name')
+                                    ->relationship(
+                                        'parent',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->suffixIcon('heroicon-o-user')
@@ -239,7 +250,11 @@ class EmployeeResource extends Resource
                                 Select::make('coach_id')
                                     ->searchable()
                                     ->preload()
-                                    ->relationship('coach', 'name')
+                                    ->relationship(
+                                        'coach',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->label(__('employees::filament/resources/employee.form.sections.fields.coach')),
                             ])
                             ->columns(2),
@@ -265,7 +280,11 @@ class EmployeeResource extends Resource
                                                             ->suffixIcon('heroicon-o-map-pin')
                                                             ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.work-address')),
                                                         Select::make('work_location_id')
-                                                            ->relationship('workLocation', 'name')
+                                                            ->relationship(
+                                                                name: 'workLocation',
+                                                                titleAttribute: 'name',
+                                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
+                                                            )
                                                             ->searchable()
                                                             ->preload()
                                                             ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.work-location'))
@@ -324,6 +343,13 @@ class EmployeeResource extends Resource
                                                                     ->relationship('company', 'name')
                                                                     ->searchable()
                                                                     ->preload()
+                                                                    ->default(current_company_id())
+                                                                    ->live()
+                                                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                                        'job_id'           => EmployeeJobPosition::class,
+                                                                        'work_location_id' => WorkLocation::class,
+                                                                        'department_id'    => Department::class,
+                                                                    ], $state))
                                                                     ->prefixIcon('heroicon-o-building-office')
                                                                     ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.company'))
                                                                     ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),

@@ -10,12 +10,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Recebimento excluído',
-                    'body' => 'O recebimento foi excluído com sucesso.',
+                    'body'  => 'O recebimento foi excluído com sucesso.',
                 ],
 
                 'error' => [
                     'title' => 'Não foi possível excluir o recebimento',
-                    'body' => 'O recebimento não pode ser excluído porque está em uso.',
+                    'body'  => 'O recebimento não pode ser excluído porque está em uso.',
                 ],
             ],
         ],

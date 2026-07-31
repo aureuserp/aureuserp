@@ -151,8 +151,10 @@ class AddressResource extends Resource
                 CreateAction::make()
                     ->label(__('partners::filament/resources/address.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data, $livewire): array {
                         $data['account_type'] = AccountType::ADDRESS;
+
+                        $data['company_id'] = $livewire->getOwnerRecord()->company_id;
 
                         return $data;
                     })

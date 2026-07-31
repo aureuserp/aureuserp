@@ -11,10 +11,10 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'title' => 'Título',
+                    'title'             => 'Título',
                     'title-placeholder' => 'Título da página ...',
-                    'slug' => 'Slug',
-                    'content' => 'Conteúdo',
+                    'slug'              => 'Slug',
+                    'content'           => 'Conteúdo',
                 ],
             ],
 
@@ -22,8 +22,8 @@ return [
                 'title' => 'SEO',
 
                 'fields' => [
-                    'meta-title' => 'Meta título',
-                    'meta-keywords' => 'Meta palavras-chave',
+                    'meta-title'       => 'Meta título',
+                    'meta-keywords'    => 'Meta palavras-chave',
                     'meta-description' => 'Meta descrição',
                 ],
             ],
@@ -41,14 +41,14 @@ return [
 
     'table' => [
         'columns' => [
-            'title' => 'Título',
-            'slug' => 'Slug',
-            'creator' => 'Criado por',
-            'is-published' => 'Está publicado',
+            'title'             => 'Título',
+            'slug'              => 'Slug',
+            'creator'           => 'Criado por',
+            'is-published'      => 'Está publicado',
             'is-header-visible' => 'Visível no menu do cabeçalho',
             'is-footer-visible' => 'Visível no menu do rodapé',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'created-at'        => 'Criado em',
+            'updated-at'        => 'Atualizado em',
         ],
 
         'groups' => [
@@ -57,35 +57,35 @@ return [
 
         'filters' => [
             'is-published' => 'Está publicado',
-            'creator' => 'Criado por',
+            'creator'      => 'Criado por',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Página atualizada',
-                    'body' => 'A página foi atualizada com sucesso.',
+                    'body'  => 'A página foi atualizada com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Página restaurada',
-                    'body' => 'A página foi restaurada com sucesso.',
+                    'body'  => 'A página foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Página excluída',
-                    'body' => 'A página foi excluída com sucesso.',
+                    'body'  => 'A página foi excluída com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Página excluída permanentemente',
-                    'body' => 'A página foi excluída permanentemente com sucesso.',
+                    'body'  => 'A página foi excluída permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -94,21 +94,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Páginas restauradas',
-                    'body' => 'As páginas foram restauradas com sucesso.',
+                    'body'  => 'As páginas foram restauradas com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Páginas excluídas',
-                    'body' => 'As páginas foram excluídas com sucesso.',
+                    'body'  => 'As páginas foram excluídas com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Páginas excluídas permanentemente',
-                    'body' => 'As páginas foram excluídas permanentemente com sucesso.',
+                    'body'  => 'As páginas foram excluídas permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -120,10 +120,10 @@ return [
                 'title' => 'Geral',
 
                 'entries' => [
-                    'title' => 'Título',
-                    'slug' => 'Slug',
+                    'title'   => 'Título',
+                    'slug'    => 'Slug',
                     'content' => 'Conteúdo',
-                    'banner' => 'Banner',
+                    'banner'  => 'Banner',
                 ],
             ],
 
@@ -131,8 +131,8 @@ return [
                 'title' => 'SEO',
 
                 'entries' => [
-                    'meta-title' => 'Meta título',
-                    'meta-keywords' => 'Meta palavras-chave',
+                    'meta-title'       => 'Meta título',
+                    'meta-keywords'    => 'Meta palavras-chave',
                     'meta-description' => 'Meta descrição',
                 ],
             ],
@@ -141,12 +141,12 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'author' => 'Autor',
-                    'created-by' => 'Criado por',
-                    'published-at' => 'Publicado em',
+                    'author'          => 'Autor',
+                    'created-by'      => 'Criado por',
+                    'published-at'    => 'Publicado em',
                     'last-updated-by' => 'Última atualização por',
-                    'last-updated' => 'Última atualização em',
-                    'created-at' => 'Criado em',
+                    'last-updated'    => 'Última atualização em',
+                    'created-at'      => 'Criado em',
                 ],
             ],
 

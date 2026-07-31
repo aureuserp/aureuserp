@@ -13,9 +13,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Maintenance\Database\Factories\TeamFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Team extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'maintenance_teams';
@@ -30,6 +32,11 @@ class Team extends Model
     public function getModelTitle(): string
     {
         return __('maintenance::models/team.title');
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 
     public function creator(): BelongsTo
@@ -70,7 +77,6 @@ class Team extends Model
             $authUser = Auth::user();
 
             $team->creator_id ??= $authUser?->id;
-            $team->company_id ??= $authUser?->default_company_id;
         });
     }
 }

@@ -124,14 +124,14 @@ class AccountPartnerSchema
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->default(Account::where('account_type', AccountType::ASSET_RECEIVABLE)->where('deprecated', false)->first()?->id),
+                            ->default(Account::where('account_type', AccountType::ASSET_RECEIVABLE)->where('deprecated', false)->where(fn ($q) => $q->whereHas('companies', fn ($c) => $c->where('companies.id', current_company_id()))->orWhereDoesntHave('companies'))->first()?->id),
                         Select::make('property_account_payable_id')
                             ->label(__('accounts::filament/resources/partner.form.tabs.invoicing.fieldsets.accounting-entries.fields.account-payable'))
                             ->relationship('propertyAccountPayable', 'name')
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->default(Account::where('account_type', AccountType::LIABILITY_PAYABLE)->where('deprecated', false)->first()?->id),
+                            ->default(Account::where('account_type', AccountType::LIABILITY_PAYABLE)->where('deprecated', false)->where(fn ($q) => $q->whereHas('companies', fn ($c) => $c->where('companies.id', current_company_id()))->orWhereDoesntHave('companies'))->first()?->id),
                     ]),
 
                 Fieldset::make(__('accounts::filament/resources/partner.form.tabs.invoicing.fieldsets.automation.title'))

@@ -7,7 +7,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Moeda excluída',
-                'body' => 'A moeda foi excluída com sucesso.',
+                'body'  => 'A moeda foi excluída com sucesso.',
             ],
         ],
     ],

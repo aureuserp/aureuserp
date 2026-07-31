@@ -64,7 +64,7 @@ class PostResource extends Resource
         return __('blogs::filament/admin/resources/post.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Website;
     }
@@ -176,7 +176,6 @@ class PostResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('title')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.title'))

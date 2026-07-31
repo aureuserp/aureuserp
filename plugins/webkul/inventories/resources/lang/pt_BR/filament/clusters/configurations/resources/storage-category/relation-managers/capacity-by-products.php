@@ -5,7 +5,7 @@ return [
 
     'form' => [
         'product' => 'Produto',
-        'qty' => 'Quantidade',
+        'qty'     => 'Quantidade',
     ],
 
     'table' => [
@@ -15,28 +15,28 @@ return [
 
                 'notification' => [
                     'title' => 'Capacidade por produto criada',
-                    'body' => 'A capacidade por produto foi adicionada com sucesso.',
+                    'body'  => 'A capacidade por produto foi adicionada com sucesso.',
                 ],
             ],
         ],
 
         'columns' => [
             'product' => 'Produto',
-            'qty' => 'Quantidade',
+            'qty'     => 'Quantidade',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Capacidade por produto atualizada',
-                    'body' => 'A capacidade por produto foi atualizada com sucesso.',
+                    'body'  => 'A capacidade por produto foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Capacidade por produto excluída',
-                    'body' => 'A capacidade por produto foi excluída com sucesso.',
+                    'body'  => 'A capacidade por produto foi excluída com sucesso.',
                 ],
             ],
         ],

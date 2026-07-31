@@ -18,9 +18,11 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Applicant extends Model
 {
+    use BelongsToCompany;
     use HasApplicationStatus, HasChatter, HasCustomFields, HasLogActivity, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
@@ -243,7 +245,7 @@ class Applicant extends Model
 
         $this->creator_id ??= $authUser->id;
 
-        $this->company_id ??= $authUser?->default_company_id;
+        $this->company_id ??= current_company_id();
     }
 
     public function handleApplicationUpdation(): void

@@ -32,6 +32,7 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -47,8 +48,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
-use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Maintenance\Enums\MaintenanceRepeatType;
 use Webkul\Maintenance\Enums\MaintenanceRepeatUnit;
 use Webkul\Maintenance\Enums\MaintenanceRequestType;
@@ -58,15 +59,14 @@ use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceReques
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource\Pages\ListMaintenanceRequests;
 use Webkul\Maintenance\Filament\Clusters\Maintenance\Resources\MaintenanceRequestResource\Pages\ViewMaintenanceRequest;
 use Webkul\Maintenance\Models\Equipment;
+use Webkul\Maintenance\Models\EquipmentCategory;
 use Webkul\Maintenance\Models\MaintenanceRequest;
 use Webkul\Maintenance\Models\Stage;
 use Webkul\Maintenance\Models\Team;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class MaintenanceRequestResource extends Resource
 {
     use HasCustomFields;
-    use HasResourcePermissionQuery;
 
     protected static ?string $model = MaintenanceRequest::class;
 
@@ -119,7 +119,9 @@ class MaintenanceRequestResource extends Resource
                                     ->relationship(
                                         'equipment',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->withTrashed()
+                                            ->where(owned_by_company($get('company_id'))),
                                     )
                                     ->getOptionLabelFromRecordUsing(function (Model $record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -136,16 +138,20 @@ class MaintenanceRequestResource extends Resource
 
                                         $set('requested_at', $equipment?->effective_date?->toDateString() ?? now()->toDateString());
 
-                                        $set('maintenance_team_id', $equipment?->maintenance_team_id ?? Team::query()->value('id'));
+                                        $set('maintenance_team_id', $equipment?->maintenance_team_id ?? Team::query()->where(owned_by_company($equipment?->company_id))->value('id'));
 
                                         $set('user_id', $equipment?->technician_user_id ?? $equipment?->category?->technician_user_id ?? Auth::id());
 
-                                        $set('company_id', $equipment?->company_id ?? Auth::user()?->default_company_id);
+                                        $set('company_id', $equipment?->company_id ?? current_company_id());
                                     }),
 
                                 Select::make('category_id')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.request.fields.category'))
-                                    ->relationship('category', 'name')
+                                    ->relationship(
+                                        'category',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->native(false)
                                     ->searchable()
                                     ->preload()
@@ -261,7 +267,9 @@ class MaintenanceRequestResource extends Resource
                                     ->relationship(
                                         'team',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->withTrashed()
+                                            ->where(owned_by_company($get('company_id'))),
                                     )
                                     ->getOptionLabelFromRecordUsing(function (Model $record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -271,7 +279,7 @@ class MaintenanceRequestResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(Team::query()->value('id')),
+                                    ->default(fn (Get $get) => Team::query()->where(owned_by_company($get('company_id')))->value('id')),
 
                                 Select::make('user_id')
                                     ->label(__('maintenance::filament/clusters/maintenance/resources/maintenance-request.form.sections.settings.fields.responsible'))
@@ -312,7 +320,19 @@ class MaintenanceRequestResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(Auth::user()?->default_company_id),
+                                    ->default(current_company_id())
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, Get $get, $state, $component): void {
+                                        clear_foreign_company_values($set, $get, [
+                                            'equipment_id'        => Equipment::class,
+                                            'category_id'         => EquipmentCategory::class,
+                                            'maintenance_team_id' => Team::class,
+                                        ], $state);
+
+                                        if (blank($get('maintenance_team_id'))) {
+                                            reapply_company_defaults($component, ['maintenance_team_id']);
+                                        }
+                                    }),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

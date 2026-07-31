@@ -70,14 +70,14 @@ function makeAgreementLinePayload(array $overrides = []): array
 function purchaseAgreementPayload(int $lineCount = 1, array $overrides = []): array
 {
     $currency = Currency::first() ?? Currency::factory()->create();
-    $company = Company::factory()->create(['currency_id' => $currency->id]);
+    $companyId = current_company_id() ?? Company::factory()->create(['currency_id' => $currency->id])->id;
     $partner = Partner::factory()->create();
 
     $payload = [
         'partner_id'  => $partner->id,
         'type'        => RequisitionType::BLANKET_ORDER->value,
         'currency_id' => $currency->id,
-        'company_id'  => $company->id,
+        'company_id'  => $companyId,
         'starts_at'   => now()->addDay()->format('Y-m-d'),
         'lines'       => collect(range(1, $lineCount))
             ->map(fn () => makeAgreementLinePayload())

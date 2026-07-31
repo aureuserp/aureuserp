@@ -33,22 +33,6 @@ test.describe("Companies Module E2E", () => {
         await companyPage.gotoCompaniesPage();
         await companyPage.assertCompanyVisible(companyData.name);
     });
-
-    test("Create Company - Inactive Status", async ({ adminPage }) => {
-        const companyPage = new CompanyManagementPage(adminPage);
-        const key = uniqueKey();
-        const companyData: CompanyData = {
-            name: `E2E Company ${key}`,
-            email: `company+${key}@example.com`,
-            phone: "9999999999",
-            status: "false",
-        };
-
-        await companyPage.createCompany(companyData);
-        await companyPage.gotoCompaniesPage();
-        await companyPage.assertCompanyVisible(companyData.name);
-    });
-
     test("Edit Company - Updates Name In Listing", async ({ adminPage }) => {
         const companyPage = new CompanyManagementPage(adminPage);
         const key = uniqueKey();

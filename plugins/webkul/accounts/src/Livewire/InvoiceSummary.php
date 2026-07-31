@@ -44,7 +44,7 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
     public $reconciledPayments = null;
 
     protected $listeners = [
-        'itemUpdated'          => 'refreshSummary',
+        'itemUpdated'           => 'refreshSummary',
         'refreshInvoiceSummary' => 'refreshFromRecord',
     ];
 

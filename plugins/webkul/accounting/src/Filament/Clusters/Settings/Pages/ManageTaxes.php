@@ -14,12 +14,14 @@ use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\TaxesSettings;
+use Webkul\Accounting\Filament\Concerns\GatesAccountingSetup;
 use Webkul\Accounting\Models\Invoice;
 use Webkul\Support\Filament\Clusters\Settings;
 use Webkul\Support\Models\Country;
 
 class ManageTaxes extends SettingsPage
 {
+    use GatesAccountingSetup;
     use HasPageShield;
 
     protected static ?string $slug = 'accounting/manage-taxes';
@@ -58,6 +60,10 @@ class ManageTaxes extends SettingsPage
 
     public function form(Schema $schema): Schema
     {
+        if (! $this->isAccountingSetUp()) {
+            return $this->accountingSetupCallout($schema);
+        }
+
         return $schema
             ->components([
                 Group::make()

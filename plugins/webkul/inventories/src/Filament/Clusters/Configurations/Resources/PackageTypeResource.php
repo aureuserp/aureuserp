@@ -89,7 +89,8 @@ class PackageTypeResource extends Resource
                                     ->prefixIcon('heroicon-o-building-office')
                                     ->relationship('company', 'name')
                                     ->searchable()
-                                    ->preload(),
+                                    ->preload()
+                                    ->default(current_company_id()),
                             ]),
                     ])->columnSpanFull(),
 

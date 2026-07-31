@@ -7,13 +7,13 @@ return [
 
             'notification' => [
                 'title' => 'Conta bancária criada',
-                'body' => 'A conta bancária foi criada com sucesso.',
+                'body'  => 'A conta bancária foi criada com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

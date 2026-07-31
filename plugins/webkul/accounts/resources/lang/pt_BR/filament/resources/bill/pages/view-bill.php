@@ -5,12 +5,12 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Fatura de fornecedor excluída',
-                'body' => 'A fatura de fornecedor foi excluída com sucesso.',
+                'body'  => 'A fatura de fornecedor foi excluída com sucesso.',
             ],
         ],
 
         'reverse' => [
-            'label' => 'Reembolso',
+            'label'         => 'Reembolso',
             'modal-heading' => 'Criar reembolso',
         ],
     ],

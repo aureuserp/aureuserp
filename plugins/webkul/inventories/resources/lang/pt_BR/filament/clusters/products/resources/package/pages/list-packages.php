@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'internal' => 'Locais internos',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Embalagem criada',
-                'body' => 'A embalagem foi criada com sucesso.',
+                'body'  => 'A embalagem foi criada com sucesso.',
             ],
         ],
     ],

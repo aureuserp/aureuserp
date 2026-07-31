@@ -14,12 +14,9 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageDel
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
 use Webkul\Sale\Models\Order;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class OrderResource extends QuotationResource
 {
-    use HasResourcePermissionQuery;
-
     protected static ?string $model = Order::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
@@ -71,7 +68,6 @@ class OrderResource extends QuotationResource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->applyPermissionScope()
             ->where('state', OrderState::SALE);
     }
 }

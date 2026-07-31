@@ -133,7 +133,6 @@ class StageResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.id'))

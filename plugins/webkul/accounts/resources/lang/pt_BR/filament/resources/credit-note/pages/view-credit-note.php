@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Nota de crédito excluída',
-                'body' => 'A nota de crédito foi excluída com sucesso.',
+                'body'  => 'A nota de crédito foi excluída com sucesso.',
             ],
         ],
 

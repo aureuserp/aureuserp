@@ -74,6 +74,7 @@ class ActivityPlanResource extends Resource
                             ->relationship(name: 'company', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
+                            ->default(current_company_id())
                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                             ->editOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),
                         Toggle::make('is_active')

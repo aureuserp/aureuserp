@@ -10,7 +10,7 @@ use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\UnbuildOrder;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -18,6 +18,8 @@ use Webkul\Support\Models\UOM;
  */
 class UnbuildOrderFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = UnbuildOrder::class;
 
     public function definition(): array
@@ -27,7 +29,6 @@ class UnbuildOrderFactory extends Factory
             'state'                   => UnbuildOrderState::DRAFT,
             'quantity'                => fake()->randomFloat(4, 1, 10),
             'product_id'              => Product::query()->value('id') ?? Product::factory(),
-            'company_id'              => Company::query()->value('id') ?? Company::factory(),
             'uom_id'                  => UOM::query()->value('id') ?? UOM::factory(),
             'bill_of_material_id'     => BillOfMaterial::factory(),
             'manufacturing_order_id'  => null,

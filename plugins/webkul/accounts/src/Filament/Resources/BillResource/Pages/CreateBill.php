@@ -4,16 +4,20 @@ namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Models\Journal;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateBill extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     use HasRepeaterColumnManager;
 
     protected static string $resource = BillResource::class;
@@ -40,7 +44,7 @@ class CreateBill extends CreateRecord
         parent::mount();
 
         $journal = Journal::where('type', JournalType::PURCHASE)
-            ->where('company_id', Auth::user()->default_company_id)
+            ->where('company_id', current_company_id())
             ->first();
 
         $this->data['move_type'] ??= MoveType::IN_INVOICE->value;

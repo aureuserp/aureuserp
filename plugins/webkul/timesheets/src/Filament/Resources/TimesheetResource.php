@@ -27,9 +27,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
-use Webkul\Support\Enums\NavigationGroup;
 
 class TimesheetResource extends Resource
 {
@@ -42,7 +42,7 @@ class TimesheetResource extends Resource
         return __('timesheets::filament/resources/timesheet.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Project;
     }
@@ -85,7 +85,11 @@ class TimesheetResource extends Resource
                 Select::make('project_id')
                     ->label(__('timesheets::filament/resources/timesheet.form.project'))
                     ->required()
-                    ->relationship('project', 'name')
+                    ->relationship(
+                        name: 'project',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->where(owned_by_company()),
+                    )
                     ->searchable()
                     ->preload()
                     ->live()

@@ -67,6 +67,7 @@ export class UserManagementPage {
         await this.erpLocators.usersPasswordConfirmationInput.fill(userData.password);
 
         await this.selectRole(userData.role);
+        await this.selectAllowedCompany(userData.company);
         await this.selectCompany(userData.company);
         await this.setCreateFormStatus(userData.Status);
 
@@ -199,6 +200,7 @@ export class UserManagementPage {
         await this.erpLocators.usersPasswordInput.fill(userData.password);
         await this.erpLocators.usersPasswordConfirmationInput.fill(userData.password);
         await this.selectRole(userData.role);
+        await this.selectAllowedCompany(userData.company);
         await this.selectCompany(userData.company);
         await this.ensurePlainFields(userData.name, userData.email, userData.password);
         await this.submitUserForm(false);
@@ -521,6 +523,29 @@ export class UserManagementPage {
         }
 
         await expect(roleSelect.first()).toContainText(role);
+    }
+
+    /**
+     * Allowed Companies selection helper (multi-select). The default company
+     * must be present in allowed companies or user creation fails validation.
+     */
+    private async selectAllowedCompany(company: string) {
+        const allowedSelect = this.erpLocators.usersAllowedCompaniesSelect;
+        if (await allowedSelect.count()) {
+            if (await allowedSelect.first().evaluate((el) => el.tagName.toLowerCase() === "select")) {
+                await allowedSelect.selectOption({ label: company });
+                return;
+            }
+            await allowedSelect.click();
+            const companySearchInput = this.erpLocators.usersCompanySearchInput.last();
+            if (await companySearchInput.isVisible()) {
+                await companySearchInput.fill(company);
+            }
+            const option = this.page.getByRole("option", { name: company }).first();
+            await option.waitFor({ state: "visible" });
+            await option.click();
+            await this.page.keyboard.press("Escape");
+        }
     }
 
     /**

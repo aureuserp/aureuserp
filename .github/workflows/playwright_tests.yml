@@ -192,7 +192,7 @@ jobs:
         env:
           BASE_URL: "http://127.0.0.1:8000"
           PLUGINS_PREINSTALLED: "true"
-          PW_WORKERS: "2"
+          PW_WORKERS: "3"
         run: |
           npx playwright test --config=playwright.config.ts --project=chromium --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }}
         working-directory: tests/e2e-pw

@@ -7,7 +7,7 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductSupplier;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**
@@ -15,6 +15,8 @@ use Webkul\Support\Models\Currency;
  */
 class ProductSupplierFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -43,7 +45,6 @@ class ProductSupplierFactory extends Factory
             'partner_id'   => Partner::query()->value('id') ?? Partner::factory(),
             'currency_id'  => Currency::factory(),
             'creator_id'   => User::query()->value('id') ?? User::factory(),
-            'company_id'   => Company::factory(),
         ];
     }
 }

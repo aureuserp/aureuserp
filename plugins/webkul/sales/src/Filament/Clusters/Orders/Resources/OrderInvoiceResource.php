@@ -2,8 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages\EditInvoice;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages\ManagePayments;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderInvoiceResource\Pages\ViewInvoice;
@@ -33,8 +33,8 @@ class OrderInvoiceResource extends QuotationInvoiceResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewInvoice::route('/{record}/view'),
-            'edit' => EditInvoice::route('/{record}/edit'),
+            'view'     => ViewInvoice::route('/{record}/view'),
+            'edit'     => EditInvoice::route('/{record}/edit'),
             'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }

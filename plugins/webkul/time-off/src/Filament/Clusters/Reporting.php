@@ -20,7 +20,7 @@ class Reporting extends Cluster
         return __('time-off::filament/clusters/reporting.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::TimeOff;
     }

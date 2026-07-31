@@ -46,9 +46,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Inventory\Enums\OperationType;
+use Webkul\Inventory\Models\OperationType as OperationTypeModel;
 use Webkul\Manufacturing\Enums\BillOfMaterialConsumption;
 use Webkul\Manufacturing\Enums\BillOfMaterialReadyToProduce;
 use Webkul\Manufacturing\Enums\BillOfMaterialType;
@@ -110,7 +110,10 @@ class BillsOfMaterialResource extends Resource
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.sections.general.fields.product'))
-                                    ->relationship('product', 'name', fn (Builder $query) => $query->withTrashed()->whereNull('parent_id'))
+                                    ->relationship('product', 'name', fn (Builder $query, Get $get) => $query
+                                        ->withTrashed()
+                                        ->whereNull('parent_id')
+                                        ->where(owned_by_company($get('company_id'))))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                     })
@@ -230,7 +233,12 @@ class BillsOfMaterialResource extends Resource
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->default(Auth::user()?->default_company_id)
+                                    ->default(current_company_id())
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'product_id'        => Product::class,
+                                        'operation_type_id' => OperationTypeModel::class,
+                                    ], $state))
                                     ->required(),
                             ])
                             ->columns(2),
@@ -276,9 +284,10 @@ class BillsOfMaterialResource extends Resource
                                     ->columnSpanFull(),
                                 Select::make('operation_type_id')
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.miscellaneous.fields.routing'))
-                                    ->relationship('operationType', 'name', fn (Builder $query) => $query
+                                    ->relationship('operationType', 'name', fn (Builder $query, Get $get) => $query
                                         ->withTrashed()
-                                        ->where('type', OperationType::MANUFACTURE))
+                                        ->where('type', OperationType::MANUFACTURE)
+                                        ->where(owned_by_company($get('company_id'))))
                                     ->searchable()
                                     ->preload()
                                     ->native(false)
@@ -789,13 +798,14 @@ class BillsOfMaterialResource extends Resource
             ->schema([
                 Hidden::make('company_id'),
                 Select::make('product_id')
-                    ->relationship('product', 'name', fn (Builder $query) => $query
+                    ->relationship('product', 'name', fn (Builder $query, Get $get) => $query
                         ->withTrashed()
                         ->where(function (Builder $productQuery): void {
                             $productQuery
                                 ->where('is_configurable', false)
                                 ->orWhereNull('is_configurable');
-                        }))
+                        })
+                        ->where(owned_by_company($get('../../company_id'))))
                     ->searchable()
                     ->preload()
                     ->required()
@@ -1154,7 +1164,9 @@ class BillsOfMaterialResource extends Resource
             ->schema([
                 Hidden::make('company_id'),
                 Select::make('product_id')
-                    ->relationship('product', 'name', fn (Builder $query) => $query->withTrashed())
+                    ->relationship('product', 'name', fn (Builder $query, Get $get) => $query
+                        ->withTrashed()
+                        ->where(owned_by_company($get('../../company_id'))))
                     ->searchable()
                     ->preload()
                     ->required()
@@ -1251,7 +1263,7 @@ class BillsOfMaterialResource extends Resource
             'worksheet'                  => null,
             'worksheet_google_slide_url' => null,
             'note'                       => null,
-            'company_id'                 => Auth::user()?->default_company_id,
+            'company_id'                 => current_company_id(),
             'attributeValues'            => [],
             ...$overrides,
         ]);
@@ -1259,7 +1271,7 @@ class BillsOfMaterialResource extends Resource
 
     protected static function normalizeOperationRepeaterData(array $data): array
     {
-        $data['company_id'] ??= Auth::user()?->default_company_id;
+        $data['company_id'] ??= current_company_id();
         $data['attributeValues'] = array_values($data['attributeValues'] ?? []);
         $data['time_mode'] ??= OperationTimeMode::MANUAL->value;
         $data['time_mode_batch'] ??= 10;

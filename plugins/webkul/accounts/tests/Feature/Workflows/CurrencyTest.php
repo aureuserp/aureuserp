@@ -1,13 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Models\Move;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
@@ -32,6 +33,49 @@ beforeEach(function () {
     $this->foreign = AccountHelper::otherCurrency();
     $this->foreign->rates()->delete();
     AccountHelper::setCurrencyRate($this->foreign, 2.0);
+});
+
+it('converts nothing when both currencies are the same', function () {
+    $company = AccountHelper::company();
+
+    expect($this->foreign->getConversionRate($this->foreign, $this->foreign, $company))->toBe(1);
+});
+
+it('converts from company currency into a foreign currency at the foreign rate', function () {
+    $company = AccountHelper::company();
+    $base = $company->currency;
+
+    expect($base->convert(100, $this->foreign, $company))->toBe(200.0);
+});
+
+it('converts from a foreign currency back into company currency', function () {
+    $company = AccountHelper::company();
+    $base = $company->currency;
+
+    expect($this->foreign->convert(200, $base, $company))->toBe(100.0);
+});
+
+it('converts between two foreign currencies using both rates', function () {
+    $company = AccountHelper::company();
+
+    $other = Currency::query()
+        ->whereNotIn('id', [$company->currency_id, $this->foreign->id])
+        ->firstOrFail();
+
+    $other->rates()->delete();
+
+    AccountHelper::setCurrencyRate($other, 8.0);
+
+    expect($this->foreign->convert(100, $other, $company))->toBe(400.0);
+});
+
+it('returns to the original amount after a round trip', function () {
+    $company = AccountHelper::company();
+    $base = $company->currency;
+
+    $converted = $base->convert(250, $this->foreign, $company);
+
+    expect($this->foreign->convert($converted, $base, $company))->toBe(250.0);
 });
 
 it('totals a foreign-currency invoice in its own currency', function () {

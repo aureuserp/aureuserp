@@ -3,6 +3,7 @@
 namespace Webkul\Manufacturing\Models;
 
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,10 +20,16 @@ use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class WorkCenter extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
+
+    protected const SLOT_SEARCH_WINDOW_DAYS = 14;
+
+    protected const SLOT_SEARCH_WINDOWS = 50;
 
     protected $table = 'manufacturing_work_centers';
 
@@ -109,183 +116,219 @@ class WorkCenter extends Model implements Sortable
         return $this->belongsToMany(WorkCenterTag::class, 'manufacturing_work_center_tag', 'work_center_id', 'tag_id');
     }
 
-    public function getCapacity(?Product $product = null): float
+    public function capacityFor(?Product $product = null): float
     {
-        if (! $product) {
-            return max((float) ($this->default_capacity ?? 1), 0.0001);
-        }
-
-        $capacity = $this->getMatchingCapacities($product)->first();
+        $capacity = $product ? $this->capacityRuleFor($product) : null;
 
         return max((float) ($capacity?->capacity ?? $this->default_capacity ?? 1), 0.0001);
     }
 
-    public function getExpectedDuration(?Product $product = null): float
+    public function setupAndCleanupTime(?Product $product = null): float
     {
-        if (! $product) {
-            return (float) ($this->setup_time ?? 0) + (float) ($this->cleanup_time ?? 0);
-        }
-
-        $capacity = $this->getMatchingCapacities($product)->first();
+        $capacity = $product ? $this->capacityRuleFor($product) : null;
 
         return (float) ($capacity?->time_start ?? $this->setup_time ?? 0)
             + (float) ($capacity?->time_stop ?? $this->cleanup_time ?? 0);
     }
 
-    protected function getMatchingCapacities(Product $product): Collection
+    protected function capacityRuleFor(Product $product): ?WorkCenterCapacity
     {
         return $this->capacities
-            ->filter(fn (WorkCenterCapacity $capacity): bool => (int) $capacity->product_id === (int) $product->getKey())
-            ->values();
+            ->first(fn (WorkCenterCapacity $capacity): bool => (int) $capacity->product_id === (int) $product->getKey());
     }
 
-    public function getFirstAvailableSlot(
+    public function findFirstAvailableSlot(
         Carbon $startDatetime,
         float $duration,
         bool $forward = true,
         ?Collection $leavesToIgnore = null,
         array $extraLeavesSlots = []
     ): array {
+        $blockers = collect($extraLeavesSlots)
+            ->map(fn (array $slot) => [Carbon::parse($slot[0]), Carbon::parse($slot[1])]);
+
+        $leaveFilter = $this->workOrderLeaveFilter($leavesToIgnore);
+
         $remaining = $duration;
-        $delta = 14;
 
-        $startInterval = null;
-        $stopInterval = null;
+        $anchor = null;
 
-        $workOrderLeavesDomain = [['time_type', '=', 'other']];
+        for ($window = 0; $window < static::SLOT_SEARCH_WINDOWS; $window++) {
+            [$windowStart, $windowStop] = $this->searchWindow($startDatetime, $window, $forward);
 
-        if ($leavesToIgnore && $leavesToIgnore->isNotEmpty()) {
-            $workOrderLeavesDomain[] = ['id', 'not in', $leavesToIgnore->pluck('id')->all()];
-        }
+            $slot = $forward
+                ? $this->scanForward($windowStart, $windowStop, $leaveFilter, $blockers, $duration, $remaining, $anchor)
+                : $this->scanBackward($windowStart, $windowStop, $leaveFilter, $blockers, $duration, $remaining, $anchor);
 
-        $extraLeavesIntervals = collect($extraLeavesSlots)->map(fn ($slot) => [
-            Carbon::parse($slot[0]),
-            Carbon::parse($slot[1]),
-        ]);
+            if ($slot['found']) {
+                return $slot['found'];
+            }
 
-        for ($n = 0; $n < 50; $n++) {
-            if ($forward) {
-                $dateStart = $startDatetime->clone()->addDays($delta * $n);
+            $remaining = $slot['remaining'];
 
-                $dateStop = $dateStart->clone()->addDays($delta);
+            $anchor = $slot['anchor'];
 
-                $availableIntervals = $this->calendar->getWorkIntervalsBatch($dateStart, $dateStop, $this)[$this->id] ?? [];
-
-                $workOrderIntervals = collect($this->calendar->getLeaveIntervalsBatch($dateStart, $dateStop, $this, $workOrderLeavesDomain)[$this->id] ?? []);
-
-                foreach ($availableIntervals as [$start, $stop]) {
-                    $startInterval = $startInterval ?? $start;
-
-                    $intervalMinutes = $start->diffInSeconds($stop) / 60;
-
-                    while (true) {
-                        $intervalEnd = $start->clone()->addMinutes(min($remaining, $intervalMinutes));
-
-                        $conflict = null;
-
-                        foreach ($workOrderIntervals->merge($extraLeavesIntervals) as [$conflictStart, $conflictStop]) {
-                            if ($startInterval->lt($conflictStop) && $intervalEnd->gt($conflictStart)) {
-                                $conflict = [$conflictStart, $conflictStop];
-
-                                break;
-                            }
-                        }
-
-                        if (! $conflict) {
-                            break;
-                        }
-
-                        $start = $conflict[1];
-
-                        $intervalMinutes = $start->diffInSeconds($stop) / 60;
-
-                        if ($intervalMinutes <= 0) {
-                            $intervalMinutes = 0;
-
-                            $startInterval = null;
-
-                            $remaining = $duration;
-
-                            break;
-                        } else {
-                            $startInterval = $start;
-                        }
-                    }
-
-                    if (float_compare($intervalMinutes, $remaining, precisionDigits: 3) >= 0) {
-                        return [
-                            $startInterval,
-                            $start->clone()->addMinutes($remaining),
-                        ];
-                    }
-
-                    $remaining -= $intervalMinutes;
-                }
-            } else {
-                $dateStop = $startDatetime->clone()->subDays($delta * $n);
-
-                $dateStart = $dateStop->clone()->subDays($delta);
-
-                $availableIntervals = collect($this->calendar->getWorkIntervalsBatch($dateStart, $dateStop, $this)[$this->id] ?? [])->reverse();
-
-                $workOrderIntervals = collect($this->calendar->getLeaveIntervalsBatch($dateStart, $dateStop, $this, $workOrderLeavesDomain)[$this->id] ?? []);
-
-                foreach ($availableIntervals as [$start, $stop]) {
-                    $stopInterval = $stopInterval ?? $stop;
-
-                    $intervalMinutes = $start->diffInSeconds($stop) / 60;
-
-                    while (true) {
-                        $intervalStart = $stop->clone()->subMinutes(min($remaining, $intervalMinutes));
-
-                        $conflict = null;
-
-                        foreach ($workOrderIntervals->merge($extraLeavesIntervals) as [$conflictStart, $conflictStop]) {
-                            if ($intervalStart->lt($conflictStop) && $stopInterval->gt($conflictStart)) {
-                                $conflict = [$conflictStart, $conflictStop];
-
-                                break;
-                            }
-                        }
-
-                        if (! $conflict) {
-                            break;
-                        }
-
-                        $stop = $conflict[0];
-
-                        $intervalMinutes = $start->diffInSeconds($stop) / 60;
-
-                        if ($intervalMinutes <= 0) {
-                            $intervalMinutes = 0;
-
-                            $stopInterval = null;
-
-                            $remaining = $duration;
-
-                            break;
-                        } else {
-                            $stopInterval = $stop;
-                        }
-                    }
-
-                    if (float_compare($intervalMinutes, $remaining, precisionDigits: 3) >= 0) {
-                        return [
-                            $stop->clone()->subMinutes($remaining),
-                            $stopInterval,
-                        ];
-                    }
-
-                    $remaining -= $intervalMinutes;
-                }
-
-                if ($dateStart->lte(now())) {
-                    break;
-                }
+            if (! $forward && $windowStart->lte(now())) {
+                break;
             }
         }
 
         return [false, 'No available slot 700 days after the planned start'];
+    }
+
+    protected function workOrderLeaveFilter(?Collection $leavesToIgnore): Closure
+    {
+        $ignoredIds = $leavesToIgnore?->pluck('id')->all() ?? [];
+
+        return fn ($query) => $query
+            ->where('time_type', 'other')
+            ->when($ignoredIds, fn ($q) => $q->whereNotIn('id', $ignoredIds));
+    }
+
+    protected function searchWindow(Carbon $startDatetime, int $window, bool $forward): array
+    {
+        $span = static::SLOT_SEARCH_WINDOW_DAYS;
+
+        if ($forward) {
+            $start = $startDatetime->clone()->addDays($span * $window);
+
+            return [$start, $start->clone()->addDays($span)];
+        }
+
+        $stop = $startDatetime->clone()->subDays($span * $window);
+
+        return [$stop->clone()->subDays($span), $stop];
+    }
+
+    protected function workingIntervals(Carbon $from, Carbon $to): Collection
+    {
+        return collect($this->calendar->getWorkIntervalsBatch($from, $to, $this)[$this->id] ?? []);
+    }
+
+    protected function blockedIntervals(Carbon $from, Carbon $to, Closure $leaveFilter, Collection $extraBlockers): Collection
+    {
+        return collect($this->calendar->getLeaveIntervalsBatch($from, $to, $this, $leaveFilter)[$this->id] ?? [])
+            ->merge($extraBlockers);
+    }
+
+    protected function firstOverlap(Collection $blockers, Carbon $from, Carbon $to): ?array
+    {
+        foreach ($blockers as [$blockedFrom, $blockedTo]) {
+            if ($from->lt($blockedTo) && $to->gt($blockedFrom)) {
+                return [$blockedFrom, $blockedTo];
+            }
+        }
+
+        return null;
+    }
+
+    protected function scanForward(
+        Carbon $windowStart,
+        Carbon $windowStop,
+        Closure $leaveFilter,
+        Collection $extraBlockers,
+        float $duration,
+        float $remaining,
+        ?Carbon $anchor
+    ): array {
+        $blockers = $this->blockedIntervals($windowStart, $windowStop, $leaveFilter, $extraBlockers);
+
+        foreach ($this->workingIntervals($windowStart, $windowStop) as [$start, $stop]) {
+            $anchor ??= $start;
+
+            $available = $this->minutesBetween($start, $stop);
+
+            while (true) {
+                $candidateEnd = $start->clone()->addMinutes(min($remaining, $available));
+
+                $overlap = $this->firstOverlap($blockers, $anchor, $candidateEnd);
+
+                if (! $overlap) {
+                    break;
+                }
+
+                $start = $overlap[1];
+
+                $available = $this->minutesBetween($start, $stop);
+
+                if ($available <= 0) {
+                    $available = 0;
+
+                    $anchor = null;
+
+                    $remaining = $duration;
+
+                    break;
+                }
+
+                $anchor = $start;
+            }
+
+            if (float_compare($available, $remaining, precisionDigits: 3) >= 0) {
+                return ['found' => [$anchor, $start->clone()->addMinutes($remaining)]];
+            }
+
+            $remaining -= $available;
+        }
+
+        return ['found' => null, 'remaining' => $remaining, 'anchor' => $anchor];
+    }
+
+    protected function scanBackward(
+        Carbon $windowStart,
+        Carbon $windowStop,
+        Closure $leaveFilter,
+        Collection $extraBlockers,
+        float $duration,
+        float $remaining,
+        ?Carbon $anchor
+    ): array {
+        $blockers = $this->blockedIntervals($windowStart, $windowStop, $leaveFilter, $extraBlockers);
+
+        foreach ($this->workingIntervals($windowStart, $windowStop)->reverse() as [$start, $stop]) {
+            $anchor ??= $stop;
+
+            $available = $this->minutesBetween($start, $stop);
+
+            while (true) {
+                $candidateStart = $stop->clone()->subMinutes(min($remaining, $available));
+
+                $overlap = $this->firstOverlap($blockers, $candidateStart, $anchor);
+
+                if (! $overlap) {
+                    break;
+                }
+
+                $stop = $overlap[0];
+
+                $available = $this->minutesBetween($start, $stop);
+
+                if ($available <= 0) {
+                    $available = 0;
+
+                    $anchor = null;
+
+                    $remaining = $duration;
+
+                    break;
+                }
+
+                $anchor = $stop;
+            }
+
+            if (float_compare($available, $remaining, precisionDigits: 3) >= 0) {
+                return ['found' => [$stop->clone()->subMinutes($remaining), $anchor]];
+            }
+
+            $remaining -= $available;
+        }
+
+        return ['found' => null, 'remaining' => $remaining, 'anchor' => $anchor];
+    }
+
+    protected function minutesBetween(Carbon $start, Carbon $stop): float
+    {
+        return $start->diffInSeconds($stop) / 60;
     }
 
     protected static function newFactory(): WorkCenterFactory
@@ -301,7 +344,7 @@ class WorkCenter extends Model implements Sortable
             $authUser = Auth::user();
 
             $workCenter->creator_id ??= $authUser?->id;
-            $workCenter->company_id ??= $authUser?->default_company_id;
+            $workCenter->company_id ??= current_company_id();
             $workCenter->working_state ??= WorkCenterWorkingState::NORMAL;
             $workCenter->time_efficiency ??= 100;
             $workCenter->default_capacity ??= 1;
@@ -336,7 +379,7 @@ class WorkCenter extends Model implements Sortable
         $this->productivityLogs()->whereNull('finished_at')->update(['finished_at' => now()]);
     }
 
-    public function getWorkDaysDataBatch($startDate, $endDate, $computeLeaves = true, $calendar = null, $filters = [])
+    public function getWorkDaysDataBatch($startDate, $endDate, $computeLeaves = true, $calendar = null, ?Closure $filter = null)
     {
         if (! $calendar) {
             $calendar = $this->calendar;
@@ -352,7 +395,7 @@ class WorkCenter extends Model implements Sortable
         }
 
         if ($computeLeaves) {
-            $internals = $calendar->getWorkIntervalsBatch($startDate, $endDate, [$this], $filters)[$this->id];
+            $internals = $calendar->getWorkIntervalsBatch($startDate, $endDate, [$this], $filter)[$this->id];
         } else {
             $internals = $calendar->getAttendanceIntervalsBatch($startDate, $endDate, [$this])[$this->id];
         }

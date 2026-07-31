@@ -6,13 +6,19 @@ use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages\ManagePackagings;
+use Webkul\Inventory\Models\PackageType;
 use Webkul\Inventory\Models\Packaging;
+use Webkul\Inventory\Models\Product;
+use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Enums\ProductType;
@@ -65,7 +71,10 @@ class PackagingResource extends BasePackagingResource
             ->relationship(
                 'product',
                 'name',
-                fn ($query) => $query->where('type', ProductType::GOODS)->whereNull('is_configurable'),
+                fn (Builder $query, Get $get) => $query
+                    ->where('type', ProductType::GOODS)
+                    ->whereNull('is_configurable')
+                    ->where(owned_by_company($get('company_id'))),
             )
             ->required()
             ->searchable()
@@ -73,18 +82,36 @@ class PackagingResource extends BasePackagingResource
 
         $components[] = Select::make('package_type_id')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.package-type'))
-            ->relationship('packageType', 'name')
+            ->relationship(
+                'packageType',
+                'name',
+                fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+            )
             ->searchable()
             ->preload()
             ->visible(static::getOperationSettings()->enable_packages);
 
         $components[] = Select::make('routes')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.routes'))
-            ->relationship('routes', 'name')
+            ->relationship(
+                'routes',
+                'name',
+                fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+            )
             ->searchable()
             ->preload()
             ->multiple()
             ->visible(static::getWarehouseSettings()->enable_multi_steps_routes);
+
+        foreach ($components as $index => $component) {
+            if ($component instanceof Select && $component->getName() === 'company_id') {
+                $components[$index] = $component->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                    'product_id'      => Product::class,
+                    'package_type_id' => PackageType::class,
+                    'routes'          => Route::class,
+                ], $state));
+            }
+        }
 
         $schema->components($components);
 
