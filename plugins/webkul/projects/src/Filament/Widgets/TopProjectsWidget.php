@@ -32,7 +32,7 @@ class TopProjectsWidget extends BaseWidget
 
     public function getTableRecordKey(Model|array $record): string
     {
-        return 'id';
+        return (string) $record['project_id'];
     }
 
     public function table(Table $table): Table
