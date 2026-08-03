@@ -17,6 +17,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Employee\Filament\Clusters\Reportings;
 use Webkul\Employee\Filament\Clusters\Reportings\Resources\EmployeeSkillResource\Pages\ListEmployeeSkills;
 use Webkul\Employee\Models\EmployeeSkill;
@@ -31,6 +32,11 @@ class EmployeeSkillResource extends Resource
     protected static ?string $pluralModelLabel = 'Skills';
 
     protected static ?string $cluster = Reportings::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('employee');
+    }
 
     public static function getModelLabel(): string
     {
