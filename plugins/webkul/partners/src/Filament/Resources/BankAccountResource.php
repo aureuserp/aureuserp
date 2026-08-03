@@ -43,6 +43,11 @@ class BankAccountResource extends Resource
         return __('partners::filament/resources/bank-account.navigation.title');
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('partner');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
