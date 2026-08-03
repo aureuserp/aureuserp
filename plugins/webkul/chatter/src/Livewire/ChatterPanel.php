@@ -406,10 +406,10 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             }
 
             return match ($this->sortBy) {
-                'created_at_asc'  => $a->created_at <=> $b->created_at,
-                'updated_at_desc' => $b->updated_at <=> $a->updated_at,
+                'created_at_asc'  => ($a->created_at <=> $b->created_at) ?: ($a->id <=> $b->id),
+                'updated_at_desc' => ($b->updated_at <=> $a->updated_at) ?: ($b->id <=> $a->id),
                 'priority'        => $this->comparePriority($a, $b),
-                default           => $b->created_at <=> $a->created_at,
+                default           => ($b->created_at <=> $a->created_at) ?: ($b->id <=> $a->id),
             };
         })->values();
     }
