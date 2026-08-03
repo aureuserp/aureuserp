@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
@@ -8,6 +10,8 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
@@ -23,15 +27,15 @@ beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('sales');
 
     foreach (['inventories', 'sales'] as $plugin) {
-        Illuminate\Support\Facades\DB::table('plugins')->updateOrInsert(
+        DB::table('plugins')->updateOrInsert(
             ['name' => $plugin],
             ['is_installed' => true, 'is_active' => true, 'updated_at' => now()],
         );
     }
 
-    Webkul\PluginManager\Package::$plugins = Webkul\PluginManager\Models\Plugin::all()->keyBy('name');
+    Package::$plugins = Plugin::all()->keyBy('name');
 
-    Illuminate\Support\Facades\URL::resolveMissingNamedRoutesUsing(fn () => '#');
+    URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
     SaleHelper::actingAsAdmin();
 
@@ -103,9 +107,9 @@ it('decreases the delivered quantity when a customer return is validated', funct
     $delivery = SaleHelper::customerDelivery($order);
     $deliveryMove = $delivery->refresh()->moves->first();
 
-    $return = Inventory::returnTransfer($delivery, [$deliveryMove->id => 4]);
+    $return = Inventory::createReturn($delivery, [$deliveryMove->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(6.0);
 });
@@ -221,11 +225,11 @@ it('keeps the delivered quantity when a customer return is physical only', funct
     $delivery = SaleHelper::customerDelivery($order);
     $move = $delivery->refresh()->moves->first();
 
-    $return = Inventory::returnTransfer($delivery, [
+    $return = Inventory::createReturn($delivery, [
         $move->id => ['quantity' => 4, 'to_refund' => false],
     ]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect((float) $order->refresh()->lines->first()->qty_delivered)->toBe(10.0);
 });
@@ -238,7 +242,7 @@ it('links the customer return move back to the delivery move and order line', fu
     $delivery = SaleHelper::customerDelivery($order);
     $move = $delivery->refresh()->moves->first();
 
-    $return = Inventory::returnTransfer($delivery, [$move->id => 4]);
+    $return = Inventory::createReturn($delivery, [$move->id => 4]);
 
     $returnMove = $return->refresh()->moves->first();
 
@@ -253,9 +257,9 @@ it('cancels the sale order cleanly after a delivery has been returned', function
     SaleHelper::deliverChain($order);
 
     $delivery = SaleHelper::customerDelivery($order);
-    $return = Inventory::returnTransfer($delivery, [$delivery->refresh()->moves->first()->id => 4]);
+    $return = Inventory::createReturn($delivery, [$delivery->refresh()->moves->first()->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     SaleOrderFacade::cancelSaleOrder($order->refresh());
 

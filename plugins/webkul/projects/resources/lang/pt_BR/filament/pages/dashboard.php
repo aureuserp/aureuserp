@@ -6,11 +6,12 @@ return [
     ],
 
     'filters-form' => [
-        'project' => 'Projeto',
-        'assignees' => 'Responsáveis',
-        'tags' => 'Tags',
-        'customer' => 'Cliente',
+        'project'    => 'Projeto',
+        'assignees'  => 'Responsáveis',
+        'tags'       => 'Tags',
+        'customer'   => 'Cliente',
         'start-date' => 'Data de início',
-        'end-date' => 'Data de término',
+        'date-range' => 'Intervalo de datas',
+        'end-date'   => 'Data de término',
     ],
 ];

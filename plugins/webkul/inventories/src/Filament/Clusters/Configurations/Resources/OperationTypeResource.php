@@ -40,7 +40,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\LocationType;
@@ -118,41 +117,13 @@ class OperationTypeResource extends Resource
                                                     ->native(true)
                                                     ->live()
                                                     ->selectablePlaceholder(false)
-                                                    ->afterStateUpdated(function (Set $set, Get $get) {
-                                                        // Clear existing values
+                                                    ->afterStateUpdated(function (Set $set, $component): void {
                                                         $set('print_label', null);
 
-                                                        // Get the new default values based on current type
-                                                        $type = $get('type');
-                                                        $warehouseId = $get('warehouse_id');
-
-                                                        // Set new source location
-                                                        $sourceLocationId = match ($type) {
-                                                            Enums\OperationType::INCOMING => Location::where('type', LocationType::SUPPLIER->value)->first()?->id,
-                                                            Enums\OperationType::OUTGOING => Location::where('is_replenish', true)
-                                                                ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                                ->first()?->id,
-                                                            Enums\OperationType::INTERNAL => Location::where('is_replenish', true)
-                                                                ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                                ->first()?->id,
-                                                            default => null,
-                                                        };
-
-                                                        // Set new destination location
-                                                        $destinationLocationId = match ($type) {
-                                                            Enums\OperationType::INCOMING => Location::where('is_replenish', true)
-                                                                ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                                ->first()?->id,
-                                                            Enums\OperationType::OUTGOING => Location::where('type', LocationType::CUSTOMER->value)->first()?->id,
-                                                            Enums\OperationType::INTERNAL => Location::where('is_replenish', true)
-                                                                ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                                ->first()?->id,
-                                                            default => null,
-                                                        };
-
-                                                        // Set the new values
-                                                        $set('source_location_id', $sourceLocationId);
-                                                        $set('destination_location_id', $destinationLocationId);
+                                                        reapply_company_defaults($component, [
+                                                            'source_location_id',
+                                                            'destination_location_id',
+                                                        ]);
                                                     }),
                                                 TextInput::make('sequence_code')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.sequence-prefix'))
@@ -167,7 +138,9 @@ class OperationTypeResource extends Resource
                                                     ->relationship(
                                                         'warehouse',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->withTrashed()
+                                                            ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -178,9 +151,7 @@ class OperationTypeResource extends Resource
                                                     ->searchable()
                                                     ->preload()
                                                     ->live()
-                                                    ->default(function (Get $get) {
-                                                        return Warehouse::first()?->id;
-                                                    }),
+                                                    ->default(fn (Get $get) => static::getDefaultWarehouseId($get('company_id'))),
                                                 Radio::make('reservation_method')
                                                     ->required()
                                                     ->options(ReservationMethod::class)
@@ -200,13 +171,21 @@ class OperationTypeResource extends Resource
                                                     ->relationship('company', 'name')
                                                     ->searchable()
                                                     ->preload()
-                                                    ->default(Auth::user()->default_company_id),
+                                                    ->default(current_company_id())
+                                                    ->live()
+                                                    ->afterStateUpdated(fn ($component) => reapply_company_defaults($component, [
+                                                        'warehouse_id',
+                                                        'source_location_id',
+                                                        'destination_location_id',
+                                                    ])),
                                                 Select::make('return_operation_type_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fields.return-type'))
                                                     ->relationship(
                                                         'returnOperationType',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                            ->withTrashed()
+                                                            ->where(owned_by_company($get('company_id')))
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function (OperationType $record) {
                                                         if (! $record->warehouse) {
@@ -254,7 +233,9 @@ class OperationTypeResource extends Resource
                                             ->relationship(
                                                 'sourceLocation',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->withTrashed()
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -266,30 +247,20 @@ class OperationTypeResource extends Resource
                                             ->preload()
                                             ->required()
                                             ->live()
-                                            ->default(function (Get $get) {
-                                                $type = $get('type');
-
-                                                $warehouseId = $get('warehouse_id');
-
-                                                return match ($type) {
-                                                    Enums\OperationType::INCOMING => Location::where('type', LocationType::SUPPLIER->value)->first()?->id,
-                                                    Enums\OperationType::OUTGOING => Location::where('is_replenish', true)
-                                                        ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                        ->first()?->id,
-                                                    Enums\OperationType::INTERNAL => Location::where('is_replenish', true)
-                                                        ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                        ->first()?->id,
-                                                    default => null,
-                                                };
-                                            })
-                                            ->live(),
+                                            ->default(fn (Get $get) => static::getDefaultSourceLocationId(
+                                                $get('type'),
+                                                $get('warehouse_id'),
+                                                $get('company_id'),
+                                            )),
                                         Select::make('destination_location_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fieldsets.locations.fields.destination-location'))
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fieldsets.locations.fields.destination-location-hint-tooltip'))
                                             ->relationship(
                                                 'destinationLocation',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->withTrashed()
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -300,22 +271,11 @@ class OperationTypeResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->required()
-                                            ->default(function (Get $get) {
-                                                $type = $get('type');
-                                                $warehouseId = $get('warehouse_id');
-
-                                                return match ($type) {
-                                                    Enums\OperationType::INCOMING => Location::where('is_replenish', true)
-                                                        ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
-                                                        ->first()?->id,
-                                                    Enums\OperationType::OUTGOING => Location::where('type', LocationType::CUSTOMER->value)->first()?->id,
-                                                    Enums\OperationType::INTERNAL => Location::where(function ($query) use ($warehouseId) {
-                                                        $query->whereNull('warehouse_id')
-                                                            ->when($warehouseId, fn ($q) => $q->orWhere('warehouse_id', $warehouseId));
-                                                    })->first()?->id,
-                                                    default => null,
-                                                };
-                                            }),
+                                            ->default(fn (Get $get) => static::getDefaultDestinationLocationId(
+                                                $get('type'),
+                                                $get('warehouse_id'),
+                                                $get('company_id'),
+                                            )),
                                     ])
                                     ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_locations),
                                 // Forms\Components\Fieldset::make(__('inventories::filament/clusters/configurations/resources/operation-type.form.tabs.general.fieldsets.packages.title'))
@@ -330,6 +290,53 @@ class OperationTypeResource extends Resource
                     ])
                     ->columnSpan('full'),
             ]);
+    }
+
+    protected static function getDefaultWarehouseId($companyId): ?int
+    {
+        return Warehouse::where(owned_by_company($companyId))->first()?->id;
+    }
+
+    protected static function normalizeOperationType($type): ?Enums\OperationType
+    {
+        return $type instanceof Enums\OperationType
+            ? $type
+            : Enums\OperationType::tryFrom((string) $type);
+    }
+
+    protected static function getDefaultSourceLocationId($type, $warehouseId, $companyId): ?int
+    {
+        return match (static::normalizeOperationType($type)) {
+            Enums\OperationType::INCOMING => static::virtualLocationId(LocationType::SUPPLIER, $companyId),
+            Enums\OperationType::OUTGOING,
+            Enums\OperationType::INTERNAL => static::replenishLocationId($warehouseId, $companyId),
+            default                       => null,
+        };
+    }
+
+    protected static function getDefaultDestinationLocationId($type, $warehouseId, $companyId): ?int
+    {
+        return match (static::normalizeOperationType($type)) {
+            Enums\OperationType::OUTGOING => static::virtualLocationId(LocationType::CUSTOMER, $companyId),
+            Enums\OperationType::INCOMING,
+            Enums\OperationType::INTERNAL => static::replenishLocationId($warehouseId, $companyId),
+            default                       => null,
+        };
+    }
+
+    protected static function virtualLocationId(LocationType $type, $companyId): ?int
+    {
+        return Location::where('type', $type)
+            ->where(owned_by_company($companyId))
+            ->first()?->id;
+    }
+
+    protected static function replenishLocationId($warehouseId, $companyId): ?int
+    {
+        return Location::where('is_replenish', true)
+            ->where(owned_by_company($companyId))
+            ->when($warehouseId, fn ($query) => $query->where('warehouse_id', $warehouseId))
+            ->first()?->id;
     }
 
     public static function table(Table $table): Table

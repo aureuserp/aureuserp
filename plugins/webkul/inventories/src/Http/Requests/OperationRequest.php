@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Support\CrossCompanyTransferGuard;
 use Webkul\Product\Models\Product;
 
 class OperationRequest extends FormRequest
@@ -49,6 +50,16 @@ class OperationRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
+            if ($names = CrossCompanyTransferGuard::detect(
+                $this->input('source_location_id') ? (int) $this->input('source_location_id') : null,
+                $this->input('destination_location_id') ? (int) $this->input('destination_location_id') : null,
+            )) {
+                $validator->errors()->add(
+                    'destination_location_id',
+                    __('inventories::system.move.cross-company.body', $names),
+                );
+            }
+
             $moves = $this->input('moves', []);
             $productIds = collect($moves)->pluck('product_id')->filter()->unique();
 

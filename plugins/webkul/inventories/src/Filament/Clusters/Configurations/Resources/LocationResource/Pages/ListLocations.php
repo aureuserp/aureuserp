@@ -26,7 +26,7 @@ class ListLocations extends ListRecords
 
                     $data['creator_id'] = $user->id;
 
-                    $data['company_id'] = $user->defaultCompany?->id;
+                    $data['company_id'] = current_company()?->id;
 
                     return $data;
                 })

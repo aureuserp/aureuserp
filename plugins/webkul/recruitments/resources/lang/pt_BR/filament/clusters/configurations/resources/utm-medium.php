@@ -10,22 +10,22 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'             => 'Nome',
             'name-placeholder' => 'Informe o nome do meio',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Nome',
+            'id'         => 'ID',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
             'updated-at' => 'Atualizado em',
             'created-at' => 'Criado em',
@@ -35,14 +35,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Meio atualizado',
-                    'body' => 'O meio foi atualizado com sucesso.',
+                    'body'  => 'O meio foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Meio excluído',
-                    'body' => 'O meio foi excluído com sucesso.',
+                    'body'  => 'O meio foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -51,7 +51,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Meios excluídos',
-                    'body' => 'Os meios foram excluídos com sucesso.',
+                    'body'  => 'Os meios foram excluídos com sucesso.',
                 ],
             ],
         ],
@@ -60,7 +60,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Meio criado',
-                    'body' => 'O meio foi criado com sucesso.',
+                    'body'  => 'O meio foi criado com sucesso.',
                 ],
             ],
         ],

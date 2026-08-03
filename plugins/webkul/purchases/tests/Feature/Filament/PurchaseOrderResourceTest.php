@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -17,6 +18,7 @@ use Webkul\Purchase\Models\Order;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
+require_once __DIR__.'/../../../../support/tests/Helpers/CompanyHelper.php';
 require_once __DIR__.'/../../../../inventories/tests/Helpers/InventoryHelper.php';
 require_once __DIR__.'/../../Helpers/PurchaseHelper.php';
 
@@ -127,4 +129,95 @@ it('exposes the create-bill action on a confirmed purchase order', function () {
     Livewire::test(ViewPurchaseOrder::class, ['record' => $order->id])
         ->assertOk()
         ->assertActionExists(CreateBillAction::class);
+});
+
+it('hides the create-bill action on a draft rfq', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = PurchaseHelper::order([
+        'state'   => OrderState::DRAFT,
+        'user_id' => $user->id,
+    ]);
+
+    Livewire::test(ViewPurchaseOrder::class, ['record' => $order->id])
+        ->assertOk()
+        ->assertActionHidden(CreateBillAction::class);
+});
+
+it('shows the create-bill action once the purchase order is done', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = PurchaseHelper::order([
+        'state'   => OrderState::DONE,
+        'user_id' => $user->id,
+    ]);
+
+    Livewire::test(ViewPurchaseOrder::class, ['record' => $order->id])
+        ->assertOk()
+        ->assertActionVisible(CreateBillAction::class);
+});
+
+it('requires a vendor to create a purchase order', function () {
+    FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'create_purchase_purchase::order']);
+
+    $warehouse = InventoryHelper::warehouse();
+
+    Livewire::test(CreatePurchaseOrder::class)
+        ->fillForm([
+            'partner_id'        => null,
+            'ordered_at'        => now(),
+            'operation_type_id' => $warehouse->in_type_id,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['partner_id']);
+});
+
+it('lists the invoice status column of a purchase order', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord($user->id);
+
+    Livewire::test(ListPurchaseOrders::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords([$order])
+        ->assertCanRenderTableColumn('total_amount')
+        ->assertTableColumnExists('invoice_status');
+});
+
+it('lists a purchase order to a user of the owning company', function () {
+    FilamentHelper::actingAsCompanyUser(PurchaseHelper::company(), ['view_any_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord();
+
+    Livewire::test(ListPurchaseOrders::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords([$order]);
+});
+
+it('hides a purchase order owned by another company from the list', function () {
+    FilamentHelper::actingAsCompanyUser(PurchaseHelper::company(), ['view_any_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord();
+
+    FilamentHelper::actingAsCompanyUser(CompanyHelper::company(), ['view_any_purchase_purchase::order']);
+
+    Livewire::test(ListPurchaseOrders::class)
+        ->assertOk()
+        ->assertCanNotSeeTableRecords([$order]);
+});
+
+it('refuses to open a purchase order owned by another company', function () {
+    FilamentHelper::actingAsCompanyUser(PurchaseHelper::company(), [
+        'view_any_purchase_purchase::order',
+    ]);
+
+    $order = purchaseOrderRecord();
+
+    FilamentHelper::actingAsCompanyUser(CompanyHelper::company(), [
+        'view_any_purchase_purchase::order',
+        'view_purchase_purchase::order',
+    ]);
+
+    expect(fn () => Livewire::test(ViewPurchaseOrder::class, ['record' => $order->id]))
+        ->toThrow(ModelNotFoundException::class);
 });

@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support;
 
-use Closure;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +11,8 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Inventory\Support\StockQueryScopes;
+use Webkul\Inventory\Support\StockScope;
 
 class QuantityResolver
 {
@@ -21,9 +22,9 @@ class QuantityResolver
     protected array $quantities = [];
 
     /**
-     * @var array<string, array<int, Closure>>
+     * @var array<string, StockQueryScopes>
      */
-    protected array $locationFilters = [];
+    protected array $stockScopes = [];
 
     protected ?int $locationId = null;
 
@@ -107,14 +108,15 @@ class QuantityResolver
         }
     }
 
-    /**
-     * @return array<int, Closure>
-     */
-    protected function locationFilters(): array
+    protected function stockScopes(): StockQueryScopes
     {
-        return $this->locationFilters[$this->scopeKey()] ??= (new Product)
-            ->setContext($this->locationId ? ['location_id' => $this->locationId] : [])
-            ->getLocationFilters();
+        return $this->stockScopes[$this->scopeKey()] ??= (new Product)
+            ->withStockScope(
+                $this->locationId
+                    ? StockScope::make()->forLocations($this->locationId)
+                    : StockScope::make()
+            )
+            ->resolveStockScopes();
     }
 
     protected function round(float $quantity, ?float $rounding): float
@@ -134,11 +136,11 @@ class QuantityResolver
             return [];
         }
 
-        [$quantityScope] = $this->locationFilters();
+        $scopes = $this->stockScopes();
 
         return ProductQuantity::query()
             ->whereIn('product_id', $productIds)
-            ->where(fn (Builder $query) => $quantityScope($query))
+            ->where(fn (Builder $query) => $scopes->quantities($query))
             ->groupBy('product_id')
             ->selectRaw('product_id, SUM(quantity) as total')
             ->pluck('total', 'product_id')
@@ -155,14 +157,12 @@ class QuantityResolver
             return [];
         }
 
-        [, $moveInScope, $moveOutScope] = $this->locationFilters();
-
-        $scope = $incoming ? $moveInScope : $moveOutScope;
+        $scopes = $this->stockScopes();
 
         return Move::query()
             ->whereIn('product_id', $productIds)
             ->whereIn('state', [MoveState::WAITING, MoveState::CONFIRMED, MoveState::ASSIGNED, MoveState::PARTIALLY_ASSIGNED])
-            ->where(fn (Builder $query) => $scope($query))
+            ->where(fn (Builder $query) => $incoming ? $scopes->incomingMoves($query) : $scopes->outgoingMoves($query))
             ->groupBy('product_id')
             ->selectRaw('product_id, SUM(product_qty) as total')
             ->pluck('total', 'product_id')

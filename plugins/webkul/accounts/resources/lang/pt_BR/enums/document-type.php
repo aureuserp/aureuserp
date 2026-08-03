@@ -2,5 +2,5 @@
 
 return [
     'invoice' => 'Fatura',
-    'refund' => 'Reembolso',
+    'refund'  => 'Reembolso',
 ];

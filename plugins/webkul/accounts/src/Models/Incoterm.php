@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Database\Factories\IncotermFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 
 class Incoterm extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'accounts_incoterms';
 

@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages;
 
-use Closure;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -12,6 +11,8 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Inventory\Support\StockQueryScopes;
+use Webkul\Inventory\Support\StockScope;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
@@ -30,7 +31,7 @@ class ManageProducts extends ManageRelatedRecords implements ProvidesQuantityLoc
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected ?Closure $quantityScope = null;
+    protected ?StockQueryScopes $stockScopes = null;
 
     public function getQuantityLocationId(): ?int
     {
@@ -79,19 +80,19 @@ class ManageProducts extends ManageRelatedRecords implements ProvidesQuantityLoc
 
     protected function getStockedTemplateIdsQuery(): QueryBuilder
     {
-        $quantityScope = $this->getQuantityScope();
+        $stockScopes = $this->getStockScopes();
 
         return ProductQuantity::query()
             ->join('products_products', 'products_products.id', '=', 'inventories_product_quantities.product_id')
-            ->where(fn (EloquentBuilder $query) => $quantityScope($query))
+            ->where(fn (EloquentBuilder $query) => $stockScopes->quantities($query))
             ->selectRaw('DISTINCT COALESCE(products_products.parent_id, products_products.id) AS template_id')
             ->toBase();
     }
 
-    protected function getQuantityScope(): Closure
+    protected function getStockScopes(): StockQueryScopes
     {
-        return $this->quantityScope ??= (new Product)
-            ->setContext(['location_id' => $this->getQuantityLocationId()])
-            ->getLocationFilters()[0];
+        return $this->stockScopes ??= (new Product)
+            ->withStockScope(StockScope::make()->forLocations($this->getQuantityLocationId()))
+            ->resolveStockScopes();
     }
 }

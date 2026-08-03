@@ -14,7 +14,7 @@ class Customers extends Cluster
         return __('invoices::filament/clusters/customers.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Invoice;
     }

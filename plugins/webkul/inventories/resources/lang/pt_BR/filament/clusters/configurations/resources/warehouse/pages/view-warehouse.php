@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Armazém excluído',
-                'body' => 'O armazém foi excluído com sucesso.',
+                'body'  => 'O armazém foi excluído com sucesso.',
             ],
         ],
     ],

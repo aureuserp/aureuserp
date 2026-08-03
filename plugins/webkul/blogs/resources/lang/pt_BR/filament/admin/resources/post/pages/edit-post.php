@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Post atualizado',
-        'body' => 'O post foi atualizado com sucesso.',
+        'body'  => 'O post foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Post definido como rascunho',
-                'body' => 'O post foi definido como rascunho com sucesso.',
+                'body'  => 'O post foi definido como rascunho com sucesso.',
             ],
         ],
 
@@ -21,14 +21,14 @@ return [
 
             'notification' => [
                 'title' => 'Post publicado',
-                'body' => 'O post foi publicado com sucesso.',
+                'body'  => 'O post foi publicado com sucesso.',
             ],
         ],
 
         'delete' => [
             'notification' => [
                 'title' => 'Post excluído',
-                'body' => 'O post foi excluído com sucesso.',
+                'body'  => 'O post foi excluído com sucesso.',
             ],
         ],
     ],

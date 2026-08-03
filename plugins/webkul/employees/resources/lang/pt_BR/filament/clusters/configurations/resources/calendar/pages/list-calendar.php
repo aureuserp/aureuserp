@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Horário de trabalho criado',
-                'body' => 'O horário de trabalho foi criado com sucesso.',
+                'body'  => 'O horário de trabalho foi criado com sucesso.',
             ],
         ],
     ],

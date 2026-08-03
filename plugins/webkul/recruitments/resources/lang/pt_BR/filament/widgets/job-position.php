@@ -6,6 +6,6 @@ return [
     ],
 
     'active-job-applications' => 'Candidaturas ativas a vagas',
-    'total-applications' => 'Total de candidaturas',
-    'hired-candidate' => 'Candidatos contratados',
+    'total-applications'      => 'Total de candidaturas',
+    'hired-candidate'         => 'Candidatos contratados',
 ];

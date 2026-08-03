@@ -3,19 +3,19 @@
 return [
     'notification' => [
         'title' => 'Candidato criado',
-        'body' => 'O candidato foi criado com sucesso.',
+        'body'  => 'O candidato foi criado com sucesso.',
     ],
 
     'tabs' => [
-        'my-applicants' => 'Meus candidatos',
-        'un-assigned' => 'Não atribuído',
-        'in-progress' => 'Em andamento',
-        'hired' => 'Contratado',
-        'refused' => 'Recusado',
-        'archived' => 'Arquivados',
-        'blocked' => 'Bloqueado',
-        'directly-available' => 'Disponível imediatamente',
-        'created-recently' => 'Criado recentemente',
+        'my-applicants'          => 'Meus candidatos',
+        'un-assigned'            => 'Não atribuído',
+        'in-progress'            => 'Em andamento',
+        'hired'                  => 'Contratado',
+        'refused'                => 'Recusado',
+        'archived'               => 'Arquivados',
+        'blocked'                => 'Bloqueado',
+        'directly-available'     => 'Disponível imediatamente',
+        'created-recently'       => 'Criado recentemente',
         'stage-updated-recently' => 'Etapa atualizada recentemente',
     ],
 

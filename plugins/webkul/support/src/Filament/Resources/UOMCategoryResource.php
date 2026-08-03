@@ -19,15 +19,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Enums\UOMType;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
-use Webkul\Support\Models\UOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\CreateUOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\EditUOMCategory;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\ListUOMCategories;
 use Webkul\Support\Filament\Resources\UOMCategoryResource\Pages\ViewUOMCategory;
-use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Models\UOMCategory;
 
 class UOMCategoryResource extends Resource
 {
@@ -37,7 +37,7 @@ class UOMCategoryResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }
@@ -47,12 +47,6 @@ class UOMCategoryResource extends Resource
         return __('support::filament/resources/uom-category.navigation.title');
     }
 
-    /**
-     * The reference unit of a category is highlighted, the same way Odoo emphasises it.
-     *
-     * An inline style is used instead of a utility class because the compiled theme only
-     * ships the classes present at build time.
-     */
     public static function getReferenceRowAttributes(Get $get): array
     {
         return static::isReferenceType($get('type'))
@@ -60,10 +54,6 @@ class UOMCategoryResource extends Resource
             : [];
     }
 
-    /**
-     * The state is an enum instance once hydrated, but a plain string when it comes back
-     * from the browser, so both shapes have to be accepted.
-     */
     public static function isReferenceType(mixed $type): bool
     {
         if (! $type instanceof UOMType) {

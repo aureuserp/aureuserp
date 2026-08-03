@@ -2,5 +2,5 @@
 
 return [
     'yes' => 'Sim',
-    'no' => 'Sem limite',
+    'no'  => 'Sem limite',
 ];

@@ -20,6 +20,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\EditDelivery;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\EditDropship;
@@ -46,10 +49,13 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Pages\List
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Pages\ViewLot;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Inventory\Models\Lot;
+use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 
 class LotResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Lot::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -103,13 +109,18 @@ class LotResource extends Resource
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.product'))
-                                    ->relationship('product', 'name')
                                     ->relationship(
                                         name: 'product',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])->whereNull('is_configurable'),
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                            ->withTrashed()
+                                            ->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])
+                                            ->whereNull('is_configurable')
+                                            ->when(
+                                                $get('company_id'),
+                                                fn (Builder $scoped, $companyId) => $scoped->where(owned_by_company($companyId)),
+                                            ),
                                     )
-
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                     })
@@ -119,7 +130,33 @@ class LotResource extends Resource
                                     ->required()
                                     ->searchable()
                                     ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set, $state): void {
+                                        if (blank($state)) {
+                                            return;
+                                        }
+
+                                        $set('company_id', Product::query()->withTrashed()->find($state)?->company_id);
+                                    })
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.product-hint-tooltip'))
+                                    ->hiddenOn([
+                                        EditReceipt::class,
+                                        EditDelivery::class,
+                                        EditInternal::class,
+                                        EditDropship::class,
+                                        ManageQuantities::class,
+                                        CreateScrap::class,
+                                        EditScrap::class,
+                                    ]),
+                                Select::make('company_id')
+                                    ->label(__('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.company'))
+                                    ->relationship('company', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                        'product_id' => Product::class,
+                                    ], $state))
                                     ->hiddenOn([
                                         EditReceipt::class,
                                         EditDelivery::class,
@@ -139,13 +176,16 @@ class LotResource extends Resource
                             ])
                             ->columns(2),
                     ])->columnSpanFull(),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.name'))
                     ->searchable()
@@ -175,7 +215,7 @@ class LotResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.groups.product')),
@@ -185,7 +225,7 @@ class LotResource extends Resource
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.groups.created-at'))
                     ->date(),
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('product_id')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.filters.product'))
                     ->relationship('product', 'name')
@@ -207,7 +247,7 @@ class LotResource extends Resource
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
-            ])
+            ]))
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -312,6 +352,8 @@ class LotResource extends Resource
                                             ->label(__('inventories::filament/clusters/products/resources/lot.infolist.sections.general.entries.company'))
                                             ->icon('heroicon-o-building-office'),
                                     ]),
+
+                                ...static::getCustomInfolistEntries(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),

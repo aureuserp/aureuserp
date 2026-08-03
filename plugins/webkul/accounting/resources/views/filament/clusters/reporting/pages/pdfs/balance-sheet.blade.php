@@ -1,9 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <title>{{ __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title') }} - {{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') }}</title>
     <style>
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         @page {
             margin: 1.5cm 1.5cm;
             size: A4;
@@ -72,7 +85,7 @@
         .subsection-header {
             background-color: #f3f4f6;
             padding-left: 30px !important;
-            font-weight: 600;
+            font-weight: {{ $isRtl ? 'bold' : '600' }};
             font-size: 11pt;
             color: #374151;
         }
@@ -84,7 +97,7 @@
         
         .subsection-total {
             padding-left: 30px !important;
-            font-weight: 600;
+            font-weight: {{ $isRtl ? 'bold' : '600' }};
             background-color: #f9fafb;
             color: #1f2937;
         }

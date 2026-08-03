@@ -9,13 +9,15 @@ use Webkul\Maintenance\Models\MaintenanceRequest;
 use Webkul\Maintenance\Models\Stage;
 use Webkul\Maintenance\Models\Team;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<MaintenanceRequest>
  */
 class MaintenanceRequestFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = MaintenanceRequest::class;
 
     public function definition(): array
@@ -42,7 +44,6 @@ class MaintenanceRequestFactory extends Factory
             'category_id'              => null,
             'user_id'                  => null,
             'maintenance_team_id'      => Team::factory(),
-            'company_id'               => Company::factory(),
             'creator_id'               => User::query()->value('id') ?? User::factory(),
         ];
     }

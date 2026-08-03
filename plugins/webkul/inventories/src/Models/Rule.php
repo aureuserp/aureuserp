@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\RuleFactory;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\ProcureMethod;
@@ -17,10 +18,12 @@ use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Rule extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_rules';
 
@@ -173,7 +176,7 @@ class Rule extends Model implements Sortable
 
             $rule->creator_id ??= $authUser->id;
 
-            $rule->company_id ??= $authUser?->default_company_id;
+            $rule->company_id ??= current_company_id();
 
             $rule->warehouse_id ??= $rule->operationType?->warehouse_id;
 

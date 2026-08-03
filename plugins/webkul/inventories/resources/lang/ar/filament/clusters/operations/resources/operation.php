@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'موقع الوجهة',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'معلومات إضافية',
+            ],
         ],
 
         'tabs' => [
@@ -64,9 +68,9 @@ return [
                     'picked'         => 'تم الانتقاء',
 
                     'lines' => [
-                        'modal-heading' => 'إدارة حركات المخزون',
+                        'modal-heading'             => 'إدارة حركات المخزون',
                         'modal-submit-action-label' => 'حفظ',
-                        'add-line'      => 'إضافة سطر',
+                        'add-line'                  => 'إضافة سطر',
 
                         'actions' => [
                             'generate' => 'توليد الأرقام التسلسلية/الدفعات',

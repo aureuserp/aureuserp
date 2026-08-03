@@ -8,7 +8,7 @@ return [
 
     'form' => [
         'account-number' => 'Número da conta',
-        'bank' => 'Banco',
+        'bank'           => 'Banco',
         'account-holder' => 'Titular da conta',
         'can-send-money' => 'Pode enviar dinheiro',
     ],
@@ -16,53 +16,53 @@ return [
     'table' => [
         'columns' => [
             'account-number' => 'Número da conta',
-            'bank' => 'Banco',
+            'bank'           => 'Banco',
             'account-holder' => 'Titular da conta',
-            'send-money' => 'Pode enviar dinheiro',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
-            'deleted-at' => 'Excluído em',
+            'send-money'     => 'Pode enviar dinheiro',
+            'created-at'     => 'Criado em',
+            'updated-at'     => 'Atualizado em',
+            'deleted-at'     => 'Excluído em',
         ],
 
         'filters' => [
-            'bank' => 'Banco',
+            'bank'           => 'Banco',
             'account-holder' => 'Titular da conta',
-            'creator' => 'Criador',
+            'creator'        => 'Criador',
             'can-send-money' => 'Pode enviar dinheiro',
         ],
 
         'groups' => [
-            'bank' => 'Banco',
+            'bank'           => 'Banco',
             'can-send-money' => 'Pode enviar dinheiro',
-            'created-at' => 'Criado em',
+            'created-at'     => 'Criado em',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Conta bancária atualizada',
-                    'body' => 'A conta bancária foi atualizada com sucesso.',
+                    'body'  => 'A conta bancária foi atualizada com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Conta bancária restaurada',
-                    'body' => 'A conta bancária foi restaurada com sucesso.',
+                    'body'  => 'A conta bancária foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Conta bancária excluída',
-                    'body' => 'A conta bancária foi excluída com sucesso.',
+                    'body'  => 'A conta bancária foi excluída com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Conta bancária excluída permanentemente',
-                    'body' => 'A conta bancária foi excluída permanentemente com sucesso.',
+                    'body'  => 'A conta bancária foi excluída permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -71,21 +71,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Contas bancárias restauradas',
-                    'body' => 'As contas bancárias foram restauradas com sucesso.',
+                    'body'  => 'As contas bancárias foram restauradas com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Contas bancárias excluídas',
-                    'body' => 'As contas bancárias foram excluídas com sucesso.',
+                    'body'  => 'As contas bancárias foram excluídas com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Contas bancárias excluídas permanentemente',
-                    'body' => 'As contas bancárias foram excluídas permanentemente com sucesso.',
+                    'body'  => 'As contas bancárias foram excluídas permanentemente com sucesso.',
                 ],
             ],
         ],

@@ -54,7 +54,6 @@ class JournalItemResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('move_name')
                     ->placeholder('-')

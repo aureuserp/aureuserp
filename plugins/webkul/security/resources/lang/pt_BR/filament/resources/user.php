@@ -19,23 +19,23 @@ return [
 
         'sections' => [
             'general-information' => [
-                'title' => 'Informações gerais',
+                'title'  => 'Informações gerais',
                 'fields' => [
-                    'name' => 'Nome',
-                    'email' => 'E-mail',
-                    'password' => 'Senha',
+                    'name'                  => 'Nome',
+                    'email'                 => 'E-mail',
+                    'password'              => 'Senha',
                     'password-confirmation' => 'Confirmação de senha',
                 ],
             ],
 
             'permissions' => [
-                'title' => 'Permissões',
+                'title'  => 'Permissões',
                 'fields' => [
-                    'roles' => 'Funções',
-                    'permissions' => 'Permissões',
-                    'resource-permission' => 'Permissão de recurso',
+                    'roles'                                    => 'Funções',
+                    'permissions'                              => 'Permissões',
+                    'resource-permission'                      => 'Permissão de recurso',
                     'resource-permission-self-change-disabled' => 'Você não pode alterar sua própria permissão de recurso. Peça a outro administrador para atualizá-la.',
-                    'teams' => 'Equipes',
+                    'teams'                                    => 'Equipes',
                 ],
             ],
 
@@ -44,59 +44,60 @@ return [
             ],
 
             'lang-and-status' => [
-                'title' => 'Idioma e status',
+                'title'  => 'Idioma e status',
                 'fields' => [
                     'language' => 'Idioma preferido',
-                    'status' => 'Status',
+                    'status'   => 'Status',
                 ],
             ],
 
             'multi-company' => [
-                'title' => 'Multiempresa',
-                'allowed-companies' => 'Empresas permitidas',
-                'default-company' => 'Empresa padrão',
+                'title'                       => 'Multiempresa',
+                'allowed-companies'           => 'Empresas permitidas',
+                'default-company'             => 'Empresa padrão',
+                'default-company-not-allowed' => 'A empresa padrão deve ser uma das empresas permitidas.',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'avatar' => 'Avatar',
-            'name' => 'Nome',
-            'email' => 'E-mail',
-            'teams' => 'Equipes',
-            'role' => 'Função',
+            'avatar'              => 'Avatar',
+            'name'                => 'Nome',
+            'email'               => 'E-mail',
+            'teams'               => 'Equipes',
+            'role'                => 'Função',
             'resource-permission' => 'Permissão de recurso',
-            'default-company' => 'Empresa padrão',
-            'allowed-company' => 'Empresa permitida',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'default-company'     => 'Empresa padrão',
+            'allowed-company'     => 'Empresa permitida',
+            'created-by'          => 'Criado por',
+            'created-at'          => 'Criado em',
+            'updated-at'          => 'Atualizado em',
         ],
 
         'filters' => [
             'resource-permission' => 'Permissão de recurso',
-            'teams' => 'Equipes',
-            'roles' => 'Funções',
-            'default-company' => 'Empresa padrão',
-            'allowed-companies' => 'Empresas permitidas',
+            'teams'               => 'Equipes',
+            'roles'               => 'Funções',
+            'default-company'     => 'Empresa padrão',
+            'allowed-companies'   => 'Empresas permitidas',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Usuário editado',
-                    'body' => 'O usuário foi editado com sucesso.',
+                    'body'  => 'O usuário foi editado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Usuário excluído',
-                    'body' => 'O usuário foi excluído com sucesso.',
+                    'body'  => 'O usuário foi excluído com sucesso.',
                     'error' => [
                         'title' => 'Usuário não pode ser excluído',
-                        'body' => 'Este é um usuário padrão ou você não pode excluir a si mesmo.',
+                        'body'  => 'Este é um usuário padrão ou você não pode excluir a si mesmo.',
                     ],
                 ],
             ],
@@ -104,7 +105,7 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Usuário restaurado',
-                    'body' => 'O usuário foi restaurado com sucesso.',
+                    'body'  => 'O usuário foi restaurado com sucesso.',
                 ],
             ],
         ],
@@ -113,24 +114,24 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Usuários restaurados',
-                    'body' => 'Os usuários foram restaurados com sucesso.',
+                    'body'  => 'Os usuários foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Usuários excluídos',
-                    'body' => 'Os usuários foram excluídos com sucesso.',
+                    'body'  => 'Os usuários foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Usuários excluídos permanentemente',
-                    'body' => 'Os usuários foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os usuários foram excluídos permanentemente com sucesso.',
                     'error' => [
                         'title' => 'Usuário não pôde ser excluído',
-                        'body' => 'O usuário não pode ser excluído porque está em uso no momento.',
+                        'body'  => 'O usuário não pode ser excluído porque está em uso no momento.',
                     ],
                 ],
             ],
@@ -140,7 +141,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Usuários criados',
-                    'body' => 'Os usuários foram criados com sucesso.',
+                    'body'  => 'Os usuários foram criados com sucesso.',
                 ],
             ],
         ],
@@ -149,22 +150,22 @@ return [
     'infolist' => [
         'sections' => [
             'general-information' => [
-                'title' => 'Informações gerais',
+                'title'   => 'Informações gerais',
                 'entries' => [
-                    'name' => 'Nome',
-                    'email' => 'E-mail',
-                    'password' => 'Senha',
+                    'name'                  => 'Nome',
+                    'email'                 => 'E-mail',
+                    'password'              => 'Senha',
                     'password-confirmation' => 'Confirmação de senha',
                 ],
             ],
 
             'permissions' => [
-                'title' => 'Permissões',
+                'title'   => 'Permissões',
                 'entries' => [
-                    'roles' => 'Funções',
-                    'permissions' => 'Permissões',
+                    'roles'               => 'Funções',
+                    'permissions'         => 'Permissões',
                     'resource-permission' => 'Permissão de recurso',
-                    'teams' => 'Equipes',
+                    'teams'               => 'Equipes',
                 ],
             ],
 
@@ -173,17 +174,18 @@ return [
             ],
 
             'lang-and-status' => [
-                'title' => 'Idioma e status',
+                'title'   => 'Idioma e status',
                 'entries' => [
                     'language' => 'Idioma preferido',
-                    'status' => 'Status',
+                    'status'   => 'Status',
                 ],
             ],
 
             'multi-company' => [
-                'title' => 'Multiempresa',
-                'allowed-companies' => 'Empresas permitidas',
-                'default-company' => 'Empresa padrão',
+                'title'                       => 'Multiempresa',
+                'allowed-companies'           => 'Empresas permitidas',
+                'default-company'             => 'Empresa padrão',
+                'default-company-not-allowed' => 'A empresa padrão deve ser uma das empresas permitidas.',
             ],
         ],
     ],

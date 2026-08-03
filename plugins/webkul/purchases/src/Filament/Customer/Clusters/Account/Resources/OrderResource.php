@@ -34,7 +34,7 @@ class OrderResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string | array $routeMiddleware = [Authenticate::class];
+    protected static string|array $routeMiddleware = [Authenticate::class];
 
     public static function table(Table $table): Table
     {

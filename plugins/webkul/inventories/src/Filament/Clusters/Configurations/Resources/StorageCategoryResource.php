@@ -20,7 +20,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\CreateStorageCategory;
@@ -94,7 +93,7 @@ class StorageCategoryResource extends Resource
                             ->relationship(name: 'company', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
-                            ->default(Auth::user()->default_company_id),
+                            ->default(current_company_id()),
                     ])
                     ->columns(2)->columnSpanFull(),
             ]);

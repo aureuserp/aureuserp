@@ -33,9 +33,12 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class AccountResource extends Resource
 {
+    use HasCustomFields;
+
     protected static ?string $model = Account::class;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -172,6 +175,9 @@ class AccountResource extends Resource
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.non-trade')),
                             ]),
                     ]),
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -179,7 +185,7 @@ class AccountResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('code')
                     ->label(__('accounts::filament/resources/account.table.columns.code'))
                     ->searchable()
@@ -205,11 +211,11 @@ class AccountResource extends Resource
                 TextColumn::make('currency.name')
                     ->label(__('accounts::filament/resources/account.table.columns.currency'))
                     ->sortable(),
-            ])
+            ]))
             ->groups([
                 'account_type',
             ])
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 SelectFilter::make('account_type')
                     ->options(AccountType::groupedOptions())
                     ->label(__('accounts::filament/resources/account.table.filters.account-type')),
@@ -232,7 +238,7 @@ class AccountResource extends Resource
                     ->label(__('accounts::filament/resources/account.table.filters.allow-reconcile')),
                 TernaryFilter::make('non_trade')
                     ->label(__('accounts::filament/resources/account.table.filters.non-trade')),
-            ])
+            ]))
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
@@ -372,6 +378,7 @@ class AccountResource extends Resource
                                             ->label(__('accounts::filament/resources/account.infolist.sections.entries.non-trade'))
                                             ->placeholder('-'),
                                     ]),
+                                ...static::getCustomInfolistEntries(),
                             ])
                             ->columns(2),
                     ]),

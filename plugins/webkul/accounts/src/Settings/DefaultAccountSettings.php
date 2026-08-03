@@ -28,6 +28,11 @@ class DefaultAccountSettings extends Settings
 
     public int $expense_account_id;
 
+    public static function cacheKey(): string
+    {
+        return static::class.':'.(current_company_id() ?? 0);
+    }
+
     public static function group(): string
     {
         return 'accounts_accounts';

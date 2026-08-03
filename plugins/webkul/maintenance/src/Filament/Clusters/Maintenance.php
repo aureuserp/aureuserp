@@ -7,7 +7,7 @@ use Webkul\Support\Enums\NavigationGroup;
 
 class Maintenance extends Cluster
 {
-    protected static ?string $slug = 'maintenance';
+    protected static ?string $slug = 'maintenance/maintenance';
 
     protected static ?int $navigationSort = -1;
 
@@ -16,7 +16,7 @@ class Maintenance extends Cluster
         return __('maintenance::filament/clusters/maintenance.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Maintenance;
     }

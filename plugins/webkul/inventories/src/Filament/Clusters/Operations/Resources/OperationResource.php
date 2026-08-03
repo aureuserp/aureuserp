@@ -3,11 +3,13 @@
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\OperationState;
@@ -45,7 +47,19 @@ class OperationResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return OperationForm::configure($schema);
+        $schema = OperationForm::configure($schema);
+
+        $components = $schema->getComponents();
+
+        $components[] = Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.additional-fields.title'))
+            ->visible(! empty($customFormFields = static::getCustomFormFields()))
+            ->schema($customFormFields)
+            ->columns(2)
+            ->columnSpanFull();
+
+        $schema->components($components);
+
+        return $schema;
     }
 
     public static function mergeTableConstraints(array $baseConstraints, array $include = [], array $exclude = []): array
@@ -55,23 +69,52 @@ class OperationResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return OperationsTable::configure($table);
+        $table = OperationsTable::configure($table);
+
+        return $table
+            ->pushColumns(static::getCustomTableColumns())
+            ->pushFilters(static::getCustomTableFilters());
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return OperationInfolist::configure($schema);
+        $schema = OperationInfolist::configure($schema);
+
+        $customInfolistEntries = static::getCustomInfolistEntries();
+
+        if (! empty($customInfolistEntries)) {
+            $components = $schema->getComponents();
+
+            $components[] = Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.additional-fields.title'))
+                ->schema($customInfolistEntries)
+                ->columns(2)
+                ->columnSpanFull();
+
+            $schema->components($components);
+        }
+
+        return $schema;
     }
 
     public static function getUrl(?string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null, bool $shouldGuessMissingParameters = false, ?string $configuration = null): string
     {
-        return match ($parameters['record']?->operationType->type) {
-            Enums\OperationType::INCOMING => ReceiptResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
-            Enums\OperationType::INTERNAL => InternalResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
-            Enums\OperationType::OUTGOING => DeliveryResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
-            Enums\OperationType::DROPSHIP => DropshipResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
-            default                       => parent::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
+        $resource = match ($parameters['record']?->operationType->type) {
+            Enums\OperationType::INCOMING => ReceiptResource::class,
+            Enums\OperationType::INTERNAL => InternalResource::class,
+            Enums\OperationType::OUTGOING => DeliveryResource::class,
+            Enums\OperationType::DROPSHIP => DropshipResource::class,
+            default                       => null,
         };
+
+        if ($resource && Route::has($resource::getRouteBaseName($panel).'.view')) {
+            return $resource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant);
+        }
+
+        if (Route::has(ReceiptResource::getRouteBaseName($panel).'.index')) {
+            return ReceiptResource::getUrl('index', [], $isAbsolute, $panel, $tenant);
+        }
+
+        return '#';
     }
 
     public static function getPresetTableViews(): array

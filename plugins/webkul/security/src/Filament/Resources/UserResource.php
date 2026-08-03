@@ -48,26 +48,29 @@ use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
 use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
-use Webkul\Support\Models\Company;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\AllowedCompanyScope;
 
 class UserResource extends Resource
 {
-    use HasResourcePermissionQuery;
-
     protected static ?string $model = User::class;
 
     protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->ownership();
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('security::filament/resources/user.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }
@@ -216,7 +219,7 @@ class UserResource extends Resource
                                     ->schema([
                                         Select::make('allowed_companies')
                                             ->label(__('security::filament/resources/user.form.sections.multi-company.allowed-companies'))
-                                            ->relationship('allowedCompanies', 'name')
+                                            ->relationship('allowedCompanies', 'name', fn (Builder $query) => $query->withoutGlobalScope(AllowedCompanyScope::class))
                                             ->multiple()
                                             ->preload()
                                             ->searchable(),
@@ -225,13 +228,20 @@ class UserResource extends Resource
                                             ->relationship(
                                                 'defaultCompany',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->withoutGlobalScope(AllowedCompanyScope::class),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
+                                            ->rule(fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                                $allowed = $get('allowed_companies') ?? [];
+
+                                                if (! empty($value) && ! in_array((string) $value, array_map('strval', (array) $allowed), true)) {
+                                                    $fail(__('security::filament/resources/user.form.sections.multi-company.default-company-not-allowed'));
+                                                }
+                                            })
                                             ->searchable()
                                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
@@ -274,7 +284,6 @@ class UserResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 ImageColumn::make('partner.avatar')
                     ->defaultImageUrl(fn ($record) => $record->avatar_url)
@@ -301,9 +310,10 @@ class UserResource extends Resource
                     ->sortable(),
                 TextColumn::make('defaultCompany.name')
                     ->label(__('security::filament/resources/user.table.columns.default-company'))
-                    ->sortable(),
+                    ->getStateUsing(fn ($record) => $record->defaultCompany()->withoutGlobalScope(AllowedCompanyScope::class)->value('name')),
                 TextColumn::make('allowedCompanies.name')
                     ->label(__('security::filament/resources/user.table.columns.allowed-company'))
+                    ->getStateUsing(fn ($record) => $record->allowedCompanies()->withoutGlobalScope(AllowedCompanyScope::class)->pluck('name')->all())
                     ->badge()
                     ->listWithLineBreaks(),
                 TextColumn::make('created_at')
@@ -324,12 +334,12 @@ class UserResource extends Resource
                     ->options(PermissionType::class)
                     ->preload(),
                 SelectFilter::make('default_company')
-                    ->relationship('defaultCompany', 'name')
+                    ->relationship('defaultCompany', 'name', fn (Builder $query) => $query->withoutGlobalScope(AllowedCompanyScope::class))
                     ->label(__('security::filament/resources/user.table.filters.default-company'))
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('allowed_companies')
-                    ->relationship('allowedCompanies', 'name')
+                    ->relationship('allowedCompanies', 'name', fn (Builder $query) => $query->withoutGlobalScope(AllowedCompanyScope::class))
                     ->label(__('security::filament/resources/user.table.filters.allowed-companies'))
                     ->multiple()
                     ->searchable()

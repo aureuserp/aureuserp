@@ -153,7 +153,7 @@ class PluginResource extends Resource
 
                                 $commandName = escapeshellarg("{$record->name}:install");
 
-                                $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName 2>&1");
+                                $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName --no-interaction 2>&1");
 
                                 $output = [];
 
@@ -213,8 +213,18 @@ class PluginResource extends Resource
                         ->visible(fn ($record) => $record->is_installed)
                         ->modalHeading(__('plugin-manager::filament/resources/plugin.actions.uninstall.heading'))
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.uninstall.submit'))
+                        ->modalSubmitAction(
+                            fn ($action, $record) => $action->hidden(
+                                collect($record->getDependentsFromConfig())
+                                    ->contains(fn ($dependent) => Package::isPluginInstalled($dependent))
+                            )
+                        )
                         ->modalContent(function ($record) {
                             $dependents = $record->getDependentsFromConfig();
+
+                            $installedDependents = collect($dependents)
+                                ->filter(fn ($dependent) => Package::isPluginInstalled($dependent))
+                                ->values();
 
                             $packages = collect([$record->name => $record->package])
                                 ->merge(
@@ -241,7 +251,7 @@ class PluginResource extends Resource
                                 ->unique('table')
                                 ->values();
 
-                            return view('plugin-manager::uninstall-modal', compact('record', 'dependents', 'tables'));
+                            return view('plugin-manager::uninstall-modal', compact('record', 'dependents', 'installedDependents', 'tables'));
                         })
                         ->action(fn ($record) => self::uninstallPlugin($record))
                         ->after(fn () => redirect(self::getUrl('index'))),
@@ -321,7 +331,7 @@ class PluginResource extends Resource
             ->schema([
                 TextEntry::make('name')
                     ->label(__('plugin-manager::filament/resources/plugin.infolist.'.$key.'.name'))
-                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->formatStateUsing(fn ($state) => self::localize('names', $state, ucfirst($state)))
                     ->badge()
                     ->color($color),
 
@@ -343,6 +353,24 @@ class PluginResource extends Resource
 
         $dependents = $record->getDependentsFromConfig();
 
+        $installedDependents = collect($dependents)
+            ->filter(fn ($dependent) => Package::isPluginInstalled($dependent))
+            ->values();
+
+        if ($installedDependents->isNotEmpty()) {
+            Notification::make()
+                ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-blocked.title'))
+                ->body(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-blocked.body', [
+                    'name'       => $record->name,
+                    'dependents' => $installedDependents->map(fn ($dependent) => ucfirst($dependent))->implode(', '),
+                ]))
+                ->danger()
+                ->persistent()
+                ->send();
+
+            return;
+        }
+
         collect($dependents)
             ->push($record->name)
             ->each(function ($pluginName) use (&$errors) {
@@ -355,6 +383,12 @@ class PluginResource extends Resource
                 try {
                     if (! $plugin->package) {
                         throw new Exception("Package for '{$pluginName}' not found.");
+                    }
+
+                    $uninstallCommand = static::resolveUninstallCommand($plugin->package);
+
+                    if ($uninstallCommand?->startWith) {
+                        ($uninstallCommand->startWith)($uninstallCommand);
                     }
 
                     collect(array_reverse($plugin->package->migrationFileNames))
@@ -372,9 +406,6 @@ class PluginResource extends Resource
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
-
-                    $uninstallCommand = collect($plugin->package->consoleCommands)
-                        ->first(fn ($command) => $command instanceof UninstallCommand);
 
                     if ($uninstallCommand?->endWith) {
                         ($uninstallCommand->endWith)($uninstallCommand);
@@ -402,9 +433,19 @@ class PluginResource extends Resource
         }
     }
 
+    protected static function resolveUninstallCommand(Package $package): ?UninstallCommand
+    {
+        return collect($package->consoleCommands ?? [])
+            ->first(fn ($command) => $command instanceof UninstallCommand);
+    }
+
     protected static function downMigration(string $fullPath, string $migration): void
     {
         if (! file_exists($fullPath)) {
+            return;
+        }
+
+        if (! DB::table('migrations')->where('migration', $migration)->exists()) {
             return;
         }
 

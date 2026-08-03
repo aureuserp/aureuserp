@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'Destination Location',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'Additional Information',
+            ],
         ],
 
         'tabs' => [
@@ -64,9 +68,9 @@ return [
                     'picked'         => 'Picked',
 
                     'lines' => [
-                        'modal-heading' => 'Manage Stock Moves',
+                        'modal-heading'             => 'Manage Stock Moves',
                         'modal-submit-action-label' => 'Save',
-                        'add-line'      => 'Add Line',
+                        'add-line'                  => 'Add Line',
 
                         'actions' => [
                             'generate' => 'Generate Serials/Lots',

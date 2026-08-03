@@ -52,7 +52,7 @@ return [
     ],
 
     'mark-as-done' => [
-        'title' => 'Marcar como hecho',
+        'title'   => 'Marcar como hecho',
         'actions' => [
             'done' => [
                 'label' => 'Hecho',

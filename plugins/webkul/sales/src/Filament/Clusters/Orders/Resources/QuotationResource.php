@@ -54,11 +54,14 @@ use Illuminate\View\ComponentAttributeBag;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Account\Models\Tax as TaxModel;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Inventory\Support\StockScope;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Settings\ProductSettings;
@@ -78,7 +81,6 @@ use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Quotation as Order;
 use Webkul\Sale\Settings\PriceSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -89,7 +91,7 @@ use Webkul\Support\Models\UOM;
 
 class QuotationResource extends Resource
 {
-    use HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Order::class;
 
@@ -200,11 +202,14 @@ class QuotationResource extends Resource
                                     ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL])),
                                 Select::make('payment_term_id')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.payment-term'))
-                                    ->relationship('paymentTerm', 'name')
+                                    ->relationship(
+                                        'paymentTerm',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->default(PaymentTerm::find(10)?->id)
                                     ->columnSpan(1),
                             ])->columns(2),
                     ]),
@@ -267,11 +272,11 @@ class QuotationResource extends Resource
                                                 'name',
                                                 modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(
                                                     'company_id',
-                                                    $get('company_id') ?? Auth::user()->default_company_id,
+                                                    $get('company_id') ?? current_company_id(),
                                                 )->orderBy('id'),
                                             )
                                             ->default(fn (Get $get): ?int => static::getDefaultWarehouseId(
-                                                $get('company_id') ?? Auth::user()->default_company_id
+                                                $get('company_id') ?? current_company_id()
                                             ))
                                             ->searchable()
                                             ->preload()
@@ -318,14 +323,18 @@ class QuotationResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->live()
-                                            ->afterStateUpdated(function (Set $set, ?int $state): void {
-                                                $companyId = $state ?? Auth::user()->default_company_id;
+                                            ->afterStateUpdated(function (Set $set, Get $get, ?int $state): void {
+                                                $companyId = $state ?? current_company_id();
 
                                                 $set('currency_id', Company::find($state)?->currency_id);
                                                 $set('warehouse_id', static::getDefaultWarehouseId($companyId));
+
+                                                clear_foreign_company_values($set, $get, [
+                                                    'payment_term_id' => PaymentTerm::class,
+                                                ], $companyId);
                                             })
                                             ->reactive()
-                                            ->default(Auth::user()->default_company_id),
+                                            ->default(current_company_id()),
                                         Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
                                             ->relationship(
@@ -338,7 +347,8 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->reactive()
-                                            ->default(Auth::user()->defaultCompany?->currency_id),
+                                            ->default(current_company()?->currency_id),
+                                        ...static::getCustomFormFields(),
                                     ]),
                             ]),
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.form.tabs.term-and-conditions.title'))
@@ -356,8 +366,7 @@ class QuotationResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.number'))
                     ->searchable()
@@ -437,12 +446,12 @@ class QuotationResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->filtersFormColumns(2)
             ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
-                    ->constraints([
+                    ->constraints(static::mergeCustomTableQueryBuilderConstraints([
                         RelationshipConstraint::make('user')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.sales-person'))
                             ->icon('heroicon-o-user')
@@ -566,7 +575,7 @@ class QuotationResource extends Resource
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.created-at')),
                         DateConstraint::make('updated_at')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.updated-at')),
-                    ]),
+                    ])),
             ])
             ->groups([
                 Tables\Grouping\Group::make('medium.name')
@@ -1077,6 +1086,7 @@ class QuotationResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+                ...static::getCustomInfolistEntries(),
             ])
             ->columns(1);
     }
@@ -1141,7 +1151,6 @@ class QuotationResource extends Resource
                 });
             })
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]))
-            ->columnManagerColumns(2)
             ->compact()
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
@@ -1235,9 +1244,10 @@ class QuotationResource extends Resource
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
                             ->withTrashed()
-                            ->whereNull('is_configurable'),
+                            ->whereNull('is_configurable')
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -1318,23 +1328,15 @@ class QuotationResource extends Resource
                             return null;
                         }
 
-                        $context = [];
-
                         $warehouseId = $get('../../warehouse_id');
 
-                        if (filled($warehouseId)) {
-                            $context['warehouse_id'] = (int) $warehouseId;
-                        }
+                        $companyId = $get('../../company_id') ?? current_company_id();
 
-                        $companyId = $get('../../company_id') ?? Auth::user()?->default_company_id;
-
-                        if (filled($companyId)) {
-                            $context['company_ids'] = [(int) $companyId];
-                        }
-
-                        if ($context !== []) {
-                            $inventoryProduct->setContext($context);
-                        }
+                        $inventoryProduct->withStockScope(
+                            StockScope::make()
+                                ->forWarehouses(filled($warehouseId) ? (int) $warehouseId : null)
+                                ->forCompanies(filled($companyId) ? (int) $companyId : null)
+                        );
 
                         $freeQty = (float) $inventoryProduct->free_qty;
 
@@ -1467,7 +1469,9 @@ class QuotationResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE),
+                        fn (Builder $query, Get $get) => $query
+                            ->where('type_tax_use', TypeTaxUse::SALE)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->multiple()
@@ -1583,7 +1587,10 @@ class QuotationResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->withTrashed()->where('is_configurable', null),
+                        fn (Builder $query, Get $get) => $query
+                            ->withTrashed()
+                            ->where('is_configurable', null)
+                            ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
                     ->preload()
@@ -1741,7 +1748,7 @@ class QuotationResource extends Resource
                             'price_total'           => 0,
                             'margin'                => 0,
                             'margin_percent'        => 0,
-                            'taxes'                 => $product->productTaxes->pluck('id')->toArray(),
+                            'taxes'                 => TaxModel::forProduct($product, TypeTaxUse::SALE),
                             'product_packaging_id'  => null,
                             'product_packaging_qty' => null,
                         ];
@@ -1797,7 +1804,7 @@ class QuotationResource extends Resource
             'currency_id'          => $record->currency_id,
             'partner_id'           => $record->partner_id,
             'creator_id'           => Auth::id(),
-            'company_id'           => Auth::user()->default_company_id,
+            'company_id'           => $record->company_id,
             ...$data,
         ];
     }
@@ -1820,7 +1827,7 @@ class QuotationResource extends Resource
 
         $set('price_unit', round($priceUnit, 2));
 
-        $set('taxes', $product->productTaxes->pluck('id')->toArray());
+        $set('taxes', TaxModel::forProduct($product, TypeTaxUse::SALE, $get('../../company_id')));
 
         $packaging = static::getBestPackaging($get('product_id'), round($uomQuantity, 2));
 
@@ -2044,7 +2051,7 @@ class QuotationResource extends Resource
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        $taxes = \Webkul\Account\Models\Tax::whereIn('id', $taxIds)->get();
+        $taxes = TaxModel::whereIn('id', $taxIds)->get();
 
         if ($taxes->isEmpty()) {
             $subTotal = round($discountedUnit * $quantity, 4);

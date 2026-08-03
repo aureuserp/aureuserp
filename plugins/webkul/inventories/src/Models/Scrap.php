@@ -11,17 +11,22 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\ScrapFactory;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ScrapState;
+use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Scrap extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use BelongsToCompany;
+    use ChecksCrossCompanyTransfer;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
@@ -235,7 +240,7 @@ class Scrap extends Model
             'uom_id'                  => $this->uom_id,
             'source_location_id'      => $this->source_location_id,
             'destination_location_id' => $this->destination_location_id,
-            'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
+            'company_id'              => $this->company->id ?? current_company_id(),
             'scrap_id'                => $this->id,
             'lines'                   => [[
                 'reference'               => $this->name,
@@ -247,7 +252,7 @@ class Scrap extends Model
                 'destination_location_id' => $this->destination_location_id,
                 'lot_id'                  => $this->lot_id,
                 'package_id'              => $this->package_id,
-                'company_id'              => $this->company->id ?? Auth::user()->default_company_id,
+                'company_id'              => $this->company->id ?? current_company_id(),
             ]],
         ];
     }

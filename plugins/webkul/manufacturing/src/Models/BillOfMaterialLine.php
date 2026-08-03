@@ -11,9 +11,11 @@ use Webkul\Product\Models\ProductAttributeValue;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class BillOfMaterialLine extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'manufacturing_bill_of_material_lines';
@@ -78,7 +80,7 @@ class BillOfMaterialLine extends Model
             $authUser = Auth::user();
 
             $line->creator_id ??= $authUser?->id;
-            $line->company_id ??= $line->company_id ?? $authUser?->default_company_id;
+            $line->company_id ??= $line->company_id ?? current_company_id();
         });
     }
 

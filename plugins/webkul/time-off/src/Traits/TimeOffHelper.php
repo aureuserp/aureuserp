@@ -444,8 +444,8 @@ trait TimeOffHelper
 
         if ($user) {
             $data['user_id'] = $user->id;
-            $data['company_id'] = $user->default_company_id;
-            $data['employee_company_id'] = $user->default_company_id;
+            $data['employee_company_id'] = $employee?->company_id ?? current_company_id();
+            $data['company_id'] = $data['employee_company_id'];
         }
     }
 }

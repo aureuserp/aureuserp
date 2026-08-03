@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'delivered' => 'Fatura regular',
+    'delivered'  => 'Fatura regular',
     'percentage' => 'Adiantamento (percentual)',
-    'fixed' => 'Adiantamento (valor fixo)',
+    'fixed'      => 'Adiantamento (valor fixo)',
 ];

@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Categoria de armazenamento criada',
-                'body' => 'A categoria de armazenamento foi criada com sucesso.',
+                'body'  => 'A categoria de armazenamento foi criada com sucesso.',
             ],
         ],
     ],

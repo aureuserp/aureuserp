@@ -15,8 +15,8 @@ return [
                         'title' => 'Vendas',
 
                         'fields' => [
-                            'sales-person' => 'Vendedor',
-                            'payment-terms' => 'Condições de pagamento',
+                            'sales-person'   => 'Vendedor',
+                            'payment-terms'  => 'Condições de pagamento',
                             'payment-method' => 'Método de pagamento',
                         ],
                     ],
@@ -25,7 +25,7 @@ return [
                         'title' => 'Compras',
 
                         'fields' => [
-                            'payment-terms' => 'Condições de pagamento',
+                            'payment-terms'  => 'Condições de pagamento',
                             'payment-method' => 'Método de pagamento',
                         ],
                     ],
@@ -48,10 +48,10 @@ return [
                         'title' => 'Faturas de cliente',
 
                         'fields' => [
-                            'invoice-sending-method' => 'Método de envio da fatura',
+                            'invoice-sending-method'   => 'Método de envio da fatura',
                             'invoice-edi-format-store' => 'Formato da fatura eletrônica',
-                            'peppol-eas' => 'Endereço Peppol',
-                            'endpoint' => 'Endpoint',
+                            'peppol-eas'               => 'Endereço Peppol',
+                            'endpoint'                 => 'Endpoint',
                         ],
                     ],
 
@@ -60,7 +60,7 @@ return [
 
                         'fields' => [
                             'account-receivable' => 'Conta a receber',
-                            'account-payable' => 'Conta a pagar',
+                            'account-payable'    => 'Conta a pagar',
                         ],
                     ],
 
@@ -68,9 +68,9 @@ return [
                         'title' => 'Automação',
 
                         'fields' => [
-                            'auto-post-bills' => 'Publicar faturas de fornecedor automaticamente',
+                            'auto-post-bills'                => 'Publicar faturas de fornecedor automaticamente',
                             'ignore-abnormal-invoice-amount' => 'Ignorar valor anormal da fatura',
-                            'ignore-abnormal-invoice-date' => 'Ignorar data anormal da fatura',
+                            'ignore-abnormal-invoice-date'   => 'Ignorar data anormal da fatura',
                         ],
                     ],
                 ],
@@ -91,8 +91,8 @@ return [
                         'title' => 'Vendas',
 
                         'entries' => [
-                            'sales-person' => 'Vendedor',
-                            'payment-terms' => 'Condições de pagamento',
+                            'sales-person'   => 'Vendedor',
+                            'payment-terms'  => 'Condições de pagamento',
                             'payment-method' => 'Método de pagamento',
                         ],
                     ],
@@ -101,7 +101,7 @@ return [
                         'title' => 'Compras',
 
                         'entries' => [
-                            'payment-terms' => 'Condições de pagamento',
+                            'payment-terms'  => 'Condições de pagamento',
                             'payment-method' => 'Método de pagamento',
                         ],
                     ],
@@ -124,10 +124,10 @@ return [
                         'title' => 'Faturas de cliente',
 
                         'entries' => [
-                            'invoice-sending-method' => 'Método de envio da fatura',
+                            'invoice-sending-method'   => 'Método de envio da fatura',
                             'invoice-edi-format-store' => 'Formato da fatura eletrônica',
-                            'peppol-eas' => 'Endereço Peppol',
-                            'endpoint' => 'Endpoint',
+                            'peppol-eas'               => 'Endereço Peppol',
+                            'endpoint'                 => 'Endpoint',
                         ],
                     ],
 
@@ -136,7 +136,7 @@ return [
 
                         'entries' => [
                             'account-receivable' => 'Conta a receber',
-                            'account-payable' => 'Conta a pagar',
+                            'account-payable'    => 'Conta a pagar',
                         ],
                     ],
 
@@ -144,9 +144,9 @@ return [
                         'title' => 'Automação',
 
                         'entries' => [
-                            'auto-post-bills' => 'Publicar faturas de fornecedor automaticamente',
+                            'auto-post-bills'                => 'Publicar faturas de fornecedor automaticamente',
                             'ignore-abnormal-invoice-amount' => 'Ignorar valor anormal da fatura',
-                            'ignore-abnormal-invoice-date' => 'Ignorar data anormal da fatura',
+                            'ignore-abnormal-invoice-date'   => 'Ignorar data anormal da fatura',
                         ],
                     ],
                 ],

@@ -24,12 +24,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PutawayRuleResource\Pages\ManagePutawayRules;
 use Webkul\Inventory\Models\Location;
+use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\PutawayRule;
+use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Settings\WarehouseSettings;
 
 class PutawayRuleResource extends Resource
@@ -73,19 +74,21 @@ class PutawayRuleResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->default(Auth::user()->default_company_id)
+                    ->default(current_company_id())
                     ->live()
-                    ->afterStateUpdated(function (Set $set): void {
-                        $set('in_location_id', null);
-                        $set('out_location_id', null);
-                    }),
+                    ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                        'in_location_id'      => Location::class,
+                        'out_location_id'     => Location::class,
+                        'product_id'          => Product::class,
+                        'storage_category_id' => StorageCategory::class,
+                    ], $state)),
                 Select::make('in_location_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/putaway-rule.form.fields.in-location'))
                     ->relationship(
                         'inLocation',
                         'full_name',
                         modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()
-                            ->where(fn ($q) => $q->where('company_id', $get('company_id'))->orWhereNull('company_id'))
+                            ->where(owned_by_company($get('company_id')))
                             ->whereHas('children')
                             ->orderBy('full_name')
                     )
@@ -132,11 +135,12 @@ class PutawayRuleResource extends Resource
                     ->required(),
                 Select::make('product_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/putaway-rule.form.fields.product'))
-                    ->relationship('product', 'name')
                     ->relationship(
                         'product',
                         'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                            ->withTrashed()
+                            ->where(owned_by_company($get('company_id')))
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -169,7 +173,11 @@ class PutawayRuleResource extends Resource
                     }),
                 Select::make('storage_category_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/putaway-rule.form.fields.storage-category'))
-                    ->relationship('storageCategory', 'name')
+                    ->relationship(
+                        'storageCategory',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                    )
                     ->searchable()
                     ->preload()
                     ->nullable(),

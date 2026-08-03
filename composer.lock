@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9c80b3bb6ec725602ce248600d62a42",
+    "content-hash": "4c02d0b1db955d5a712e0dc243e6a617",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3569,6 +3569,69 @@
                 }
             ],
             "time": "2022-05-21T17:30:32+00:00"
+        },
+        {
+            "name": "khaled.alshamaa/ar-php",
+            "version": "v7.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/khaled-alshamaa/ar-php.git",
+                "reference": "1e2d3fa335ce57ff261920228dd6e73fe7e49e19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/khaled-alshamaa/ar-php/zipball/1e2d3fa335ce57ff261920228dd6e73fe7e49e19",
+                "reference": "1e2d3fa335ce57ff261920228dd6e73fe7e49e19",
+                "shasum": ""
+            },
+            "require": {
+                "ext-calendar": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "9.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ArPHP\\I18N\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Khaled Al-Sham'aa",
+                    "email": "khaled@ar-php.org",
+                    "homepage": "http://www.ar-php.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Set of functionalities enable Arabic website developers to serve professional search, present and process Arabic content in PHP",
+            "homepage": "https://github.com/khaled-alshamaa/ar-php",
+            "keywords": [
+                "arabic",
+                "arabic-calendar",
+                "arabic-glyphs",
+                "arabic-numbers",
+                "arabic-segments-identifier",
+                "arabic-sentiment",
+                "arabic-sql-query"
+            ],
+            "support": {
+                "issues": "https://github.com/khaled-alshamaa/ar-php/issues",
+                "source": "https://github.com/khaled-alshamaa/ar-php/tree/v7.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/khaled-alshamaa",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-03-07T22:46:10+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -15704,12 +15767,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

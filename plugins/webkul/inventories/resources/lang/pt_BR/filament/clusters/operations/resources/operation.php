@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'Local de destino',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'Informações adicionais',
+            ],
         ],
 
         'tabs' => [
@@ -64,9 +68,9 @@ return [
                     'picked'         => 'Separado',
 
                     'lines' => [
-                        'modal-heading' => 'Gerenciar movimentações de estoque',
+                        'modal-heading'             => 'Gerenciar movimentações de estoque',
                         'modal-submit-action-label' => 'Salvar',
-                        'add-line'      => 'Adicionar linha',
+                        'add-line'                  => 'Adicionar linha',
 
                         'actions' => [
                             'generate' => 'Gerar séries/lotes',
@@ -144,6 +148,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'Tipo de operação',
             'name'                 => 'Nome',
             'state'                => 'Estado',
             'partner'              => 'Parceiro',

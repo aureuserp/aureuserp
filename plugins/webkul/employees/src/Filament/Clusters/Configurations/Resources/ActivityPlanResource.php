@@ -20,6 +20,8 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -40,6 +42,7 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResou
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\ActivityPlan;
+use Webkul\Employee\Models\Department;
 use Webkul\Security\Filament\Resources\CompanyResource;
 
 class ActivityPlanResource extends Resource
@@ -67,7 +70,11 @@ class ActivityPlanResource extends Resource
                             ->maxLength(255),
                         Select::make('department_id')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.department'))
-                            ->relationship(name: 'department', titleAttribute: 'name')
+                            ->relationship(
+                                name: 'department',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                            )
                             ->searchable()
                             ->preload()
                             ->createOptionForm(fn (Schema $schema) => DepartmentResource::form($schema))
@@ -83,7 +90,12 @@ class ActivityPlanResource extends Resource
                             )
                             ->disableOptionWhen(
                                 fn (string $label): bool => str_contains($label, ' (Deleted)'),
-                            ),
+                            )
+                            ->default(current_company_id())
+                            ->live()
+                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                'department_id' => Department::class,
+                            ], $state)),
                         Toggle::make('is_active')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.status'))
                             ->default(true)
@@ -96,7 +108,6 @@ class ActivityPlanResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.columns.name'))

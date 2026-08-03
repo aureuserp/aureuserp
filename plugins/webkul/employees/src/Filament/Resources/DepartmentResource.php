@@ -25,6 +25,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -45,13 +47,11 @@ use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ListDepartments;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ManageEmployee;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Models\Department;
-use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Employee\Models\Employee;
 use Webkul\Support\Enums\NavigationGroup;
 
 class DepartmentResource extends Resource
 {
-    use HasCustomFields;
-
     protected static ?string $model = Department::class;
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
@@ -63,7 +63,7 @@ class DepartmentResource extends Resource
         return __('employees::filament/resources/department.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Employee;
     }
@@ -103,7 +103,9 @@ class DepartmentResource extends Resource
                                             ->relationship(
                                                 name: 'parent',
                                                 titleAttribute: 'complete_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->withTrashed()
+                                                    ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(
                                                 fn (Model $record): string => $record->complete_name.($record->trashed() ? ' (Deleted)' : ''),
@@ -116,7 +118,11 @@ class DepartmentResource extends Resource
                                             ->live(),
                                         Select::make('manager_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.manager'))
-                                            ->relationship('manager', 'name')
+                                            ->relationship(
+                                                'manager',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->placeholder(__('employees::filament/resources/department.form.sections.general.fields.manager-placeholder'))
@@ -133,16 +139,18 @@ class DepartmentResource extends Resource
                                             ->preload()
                                             ->searchable()
                                             ->placeholder(__('employees::filament/resources/department.form.sections.general.fields.company-placeholder'))
+                                            ->default(current_company_id())
+                                            ->live()
+                                            ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [
+                                                'parent_id'  => Department::class,
+                                                'manager_id' => Employee::class,
+                                            ], $state))
                                             ->nullable(),
                                         ColorPicker::make('color')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.color'))
                                             ->hexColor(),
                                     ])
                                     ->columns(2)->columnSpanFull(),
-                                Section::make(__('employees::filament/resources/department.form.sections.additional.title'))
-                                    ->visible(! empty($customFormFields = static::getCustomFormFields()))
-                                    ->description(__('employees::filament/resources/department.form.sections.additional.description'))
-                                    ->schema($customFormFields),
                             ]),
                     ]),
             ])
@@ -155,7 +163,7 @@ class DepartmentResource extends Resource
             ->columns([
                 Stack::make([
                     ImageColumn::make('manager.partner.avatar')
-                        ->height(35)
+                        ->imageHeight(35)
                         ->circular()
                         ->width(35),
                     Stack::make([
@@ -206,7 +214,7 @@ class DepartmentResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters(static::mergeCustomTableFilters([
+            ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -242,7 +250,7 @@ class DepartmentResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('employees::filament/resources/department.table.filters.updated-at')),
                     ]),
-            ]))
+            ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
@@ -372,7 +380,7 @@ class DepartmentResource extends Resource
         );
 
         $children = Department::where('parent_id', $department->id)
-            ->where('company_id', $department->company_id)
+            ->when($department->company_id, fn ($query, $companyId) => $query->where(owned_by_company($companyId)))
             ->orderBy('name')
             ->get();
 

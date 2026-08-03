@@ -73,13 +73,12 @@ use Webkul\Project\Models\TaskStage;
 use Webkul\Project\Settings\TaskSettings;
 use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\UserResource;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
-use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Tables\Columns\ProgressBarEntry;
 
 class TaskResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Task::class;
 
@@ -94,7 +93,7 @@ class TaskResource extends Resource
         return __('projects::filament/resources/task.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Project;
     }
@@ -123,8 +122,8 @@ class TaskResource extends Resource
                             ->hiddenLabel()
                             ->inline()
                             ->required()
-                            ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
-                            ->default(TaskStage::first()?->id),
+                            ->options(fn (Get $get, ?Task $record) => TaskStage::where('project_id', $get('project_id') ?? $record?->project_id)->orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
+                            ->default(fn (Get $get) => static::getDefaultStageId($get('project_id'))),
                         Section::make(__('projects::filament/resources/task.form.sections.general.title'))
                             ->schema([
                                 TextInput::make('title')
@@ -191,6 +190,7 @@ class TaskResource extends Resource
                                     ->createOptionForm(fn (Schema $schema): Schema => ProjectResource::form($schema))
                                     ->afterStateUpdated(function (Set $set, $state) {
                                         $set('milestone_id', null);
+                                        $set('stage_id', static::getDefaultStageId($state));
                                         $project = $state ? Project::find($state) : null;
                                         $set('partner_id', $project?->partner_id);
                                     }),
@@ -266,11 +266,22 @@ class TaskResource extends Resource
             ->columns(3);
     }
 
+    protected static function getDefaultStageId($projectId): ?int
+    {
+        if (! $projectId) {
+            return null;
+        }
+
+        return TaskStage::query()
+            ->where('project_id', $projectId)
+            ->orderBy('sort')
+            ->first()?->id;
+    }
+
     public static function table(Table $table): Table
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('projects::filament/resources/task.table.columns.id'))
@@ -670,8 +681,8 @@ class TaskResource extends Resource
                         InfolistProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
-                            ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
-                            ->default(TaskStage::first()?->id),
+                            ->options(fn ($record) => TaskStage::where('project_id', $record?->project_id)->orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
+                            ->default(fn ($record) => static::getDefaultStageId($record?->project_id)),
 
                         Section::make(__('projects::filament/resources/task.infolist.sections.general.title'))
                             ->schema([

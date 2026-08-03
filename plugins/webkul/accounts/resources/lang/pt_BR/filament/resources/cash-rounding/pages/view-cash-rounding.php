@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Arredondamento de caixa excluído',
-                'body' => 'O arredondamento de caixa foi excluído com sucesso.',
+                'body'  => 'O arredondamento de caixa foi excluído com sucesso.',
             ],
         ],
     ],

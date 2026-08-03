@@ -10,7 +10,7 @@ return [
 
                 'notification' => [
                     'title' => 'Tarefa criada',
-                    'body' => 'A tarefa foi criada com sucesso.',
+                    'body'  => 'A tarefa foi criada com sucesso.',
                 ],
             ],
         ],
@@ -19,21 +19,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Tarefa restaurada',
-                    'body' => 'A tarefa foi restaurada com sucesso.',
+                    'body'  => 'A tarefa foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Tarefa excluída',
-                    'body' => 'A tarefa foi excluída com sucesso.',
+                    'body'  => 'A tarefa foi excluída com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Tarefa excluída permanentemente',
-                    'body' => 'A tarefa foi excluída permanentemente com sucesso.',
+                    'body'  => 'A tarefa foi excluída permanentemente com sucesso.',
                 ],
             ],
         ],

@@ -3,12 +3,28 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Inventory\Support\CrossCompanyTransferGuard;
 
 class ScrapRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            if ($names = CrossCompanyTransferGuard::detect(
+                $this->input('source_location_id') ? (int) $this->input('source_location_id') : null,
+                $this->input('destination_location_id') ? (int) $this->input('destination_location_id') : null,
+            )) {
+                $validator->errors()->add(
+                    'destination_location_id',
+                    __('inventories::system.move.cross-company.body', $names),
+                );
+            }
+        });
     }
 
     public function rules(): array

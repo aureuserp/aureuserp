@@ -5,8 +5,8 @@ namespace Webkul\Manufacturing\Filament\Clusters\Operations\Resources;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Manufacturing\Filament\Clusters\Operations;
-use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\ManufacturingOrderResource;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Pages\EditTransfer;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Pages\ManageMoves;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Pages\ViewTransfer;
@@ -90,8 +89,8 @@ class TransferResource extends OperationResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewTransfer::route('/{record}/view'),
-            'edit' => EditTransfer::route('/{record}/edit'),
+            'view'  => ViewTransfer::route('/{record}/view'),
+            'edit'  => EditTransfer::route('/{record}/edit'),
             'moves' => ManageMoves::route('/{record}/moves'),
         ];
     }

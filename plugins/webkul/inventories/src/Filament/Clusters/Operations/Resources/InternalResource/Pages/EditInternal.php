@@ -12,12 +12,14 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditInternal extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
     use RefreshesRecordState;
 

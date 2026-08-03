@@ -11,12 +11,14 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ProductTracking;
+use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
@@ -30,13 +32,14 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 
 class Order extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -87,18 +90,12 @@ class Order extends Model
         'finished_at'        => 'datetime',
     ];
 
-    protected array $context = [];
-
-    protected function getAssignmentColumn(): ?string
+    public function ownershipSources(): array
     {
-        return 'assigned_user_id';
-    }
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('assigned_user_id'),
+        ];
     }
 
     public function getModelTitle(): string
@@ -365,7 +362,7 @@ class Order extends Model
 
             $order->creator_id ??= $authUser?->id;
 
-            $order->company_id ??= $authUser?->default_company_id;
+            $order->company_id ??= current_company_id();
 
             $order->computeState();
 
@@ -537,7 +534,7 @@ class Order extends Model
             return;
         }
 
-        $relevantMoveState = Move::getRelevantStateAmongMoves(
+        $relevantMoveState = InventoryFacade::relevantMoveState(
             $this->rawMaterialMoves->filter(fn ($move) => ! $move->is_picked)
         );
 
@@ -559,10 +556,6 @@ class Order extends Model
 
     public function computeStartedAt()
     {
-        if ($defaultDateDeadline = ($this->context['default_deadline'] ?? false)) {
-            return Carbon::parse($defaultDateDeadline)->subHour();
-        }
-
         return now();
     }
 
@@ -1003,7 +996,7 @@ class Order extends Model
                 precisionRounding: $move->uom->rounding
             );
 
-            $move->setQuantityDone($newQty);
+            $move->distributeQuantityAcrossLines($newQty);
 
             if (! $move->manual_consumption || $pickManualConsumptionMoves) {
                 $move->update(['is_picked' => true]);
@@ -1167,10 +1160,6 @@ class Order extends Model
 
     public function getConsumptionIssues(): array
     {
-        if ($this->context['skip_consumption'] ?? false) {
-            return [];
-        }
-
         $issues = [];
 
         if (
@@ -1186,9 +1175,9 @@ class Order extends Model
         $expectedQtyByProduct = [];
 
         foreach ($expectedMoveValues as $moveValues) {
-            $moveProduct = Product::find($moveValues['product_id']);
+            $moveProduct = Product::withTrashed()->find($moveValues['product_id']);
 
-            $moveUom = UOM::find($moveValues['uom_id']);
+            $moveUom = UOM::withTrashed()->find($moveValues['uom_id']);
 
             $moveProductQty = $moveUom->computeQuantity($moveValues['product_uom_qty'], $moveProduct->uom);
 
@@ -1201,7 +1190,7 @@ class Order extends Model
         $doneQtyByProduct = [];
 
         foreach ($this->rawMaterialMoves as $move) {
-            $quantity = $move->uom->computeQuantity($move->getPickedQuantity(), $move->product->uom);
+            $quantity = $move->uom->computeQuantity($move->pickedQuantity(), $move->product->uom);
 
             $rounding = $move->product->uom->rounding;
 
@@ -1222,7 +1211,7 @@ class Order extends Model
         }
 
         foreach ($expectedQtyByProduct as $productId => $qtyToConsume) {
-            $product = Product::find($productId);
+            $product = Product::withTrashed()->find($productId);
 
             $quantity = $doneQtyByProduct[$productId] ?? 0.0;
 
@@ -1237,10 +1226,6 @@ class Order extends Model
     public function getQuantityProducedIssues(): array
     {
         $quantityIssues = [];
-
-        if ($this->context['skip_back_order'] ?? false) {
-            return $quantityIssues;
-        }
 
         if (! float_is_zero($this->getQuantityToBackOrder(), precisionRounding: $this->uom->rounding)) {
             $quantityIssues[] = $this;

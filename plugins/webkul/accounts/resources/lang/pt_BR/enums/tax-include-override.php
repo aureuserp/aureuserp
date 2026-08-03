@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default' => 'Padrão',
+    'default'  => 'Padrão',
     'included' => 'Incluído',
     'excluded' => 'Excluído',
 ];

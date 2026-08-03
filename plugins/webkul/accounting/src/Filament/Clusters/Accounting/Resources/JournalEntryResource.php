@@ -45,7 +45,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -54,6 +53,7 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\JournalResource;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
@@ -72,8 +72,8 @@ use Webkul\Accounting\Filament\Exports\JournalEntryExporter;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -83,7 +83,7 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
-    use HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = JournalEntry::class;
 
@@ -171,7 +171,9 @@ class JournalEntryResource extends Resource
                                             ->relationship(
                                                 'journal',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::GENERAL),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                    ->where('type', JournalType::GENERAL)
+                                                    ->where('company_id', $get('company_id') ?? current_company_id()),
                                             )
                                             ->searchable()
                                             ->preload()
@@ -206,8 +208,7 @@ class JournalEntryResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->reactive()
-                                    ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
-                                    ->default(Auth::user()->default_company_id)
+                                    ->default(current_company_id())
                                     ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set) {
                                         $company = Company::find($get('company_id'));
@@ -215,12 +216,21 @@ class JournalEntryResource extends Resource
                                         if ($company?->currency_id) {
                                             $set('currency_id', $company->currency_id);
                                         }
+
+                                        clear_foreign_company_values($set, $get, [
+                                            'journal_id'         => Journal::class,
+                                            'fiscal_position_id' => FiscalPosition::class,
+                                        ], $get('company_id'));
                                     }),
                                 Toggle::make('checked')
                                     ->inline(false)
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.checked')),
                                 Select::make('fiscal_position_id')
-                                    ->relationship('fiscalPosition', 'name')
+                                    ->relationship(
+                                        'fiscalPosition',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('company_id'))),
+                                    )
                                     ->preload()
                                     ->searchable()
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.fiscal-position'))
@@ -235,6 +245,10 @@ class JournalEntryResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomFormFields())
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -243,8 +257,7 @@ class JournalEntryResource extends Resource
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
-            ->columns([
+            ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('invoice_date')
                     ->date()
                     ->placeholder('-')
@@ -301,7 +314,7 @@ class JournalEntryResource extends Resource
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.checked'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->groups([
                 Tables\Grouping\Group::make('invoice_partner_display_name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.partner'))
@@ -327,7 +340,7 @@ class JournalEntryResource extends Resource
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
-            ->filters([
+            ->filters(static::mergeCustomTableFilters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
@@ -348,7 +361,7 @@ class JournalEntryResource extends Resource
                         DateConstraint::make('updated_at')
                             ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.updated-at')),
                     ]),
-            ])
+            ]))
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
@@ -571,6 +584,10 @@ class JournalEntryResource extends Resource
                                     ->hiddenLabel(),
                             ]),
                     ]),
+
+                Section::make()
+                    ->schema(static::getCustomInfolistEntries())
+                    ->columns(2),
             ]);
     }
 
@@ -637,7 +654,11 @@ class JournalEntryResource extends Resource
                 Hidden::make('display_type'),
                 Select::make('account_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.account'))
-                    ->relationship('account', 'name')
+                    ->relationship(
+                        'account',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                    )
                     ->searchable()
                     ->required()
                     ->preload()
@@ -675,7 +696,7 @@ class JournalEntryResource extends Resource
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->active(),
                     )
-                    ->default(Auth::user()->defaultCompany?->currency_id)
+                    ->default(current_company()?->currency_id)
                     ->required()
                     ->live()
                     ->selectablePlaceholder(false)
@@ -685,7 +706,11 @@ class JournalEntryResource extends Resource
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Select::make('taxes')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.taxes'))
-                    ->relationship('taxes', 'name')
+                    ->relationship(
+                        'taxes',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                    )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.' ('.$record->type_tax_use->getLabel().')';
                     })
@@ -834,11 +859,11 @@ class JournalEntryResource extends Resource
 
             $mockLine = self::createMockMoveLine($lineData, $mockMove, $currency, $company);
 
-            $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
+            $baseLine = AccountFacade::productBaseLine($mockLine);
 
-            $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
+            $baseLine = TaxFacade::withTaxDetails($baseLine, $company);
 
-            $baseLine = TaxFacade::addAccountingDataToBaseLineTaxDetails($baseLine, $company);
+            $baseLine = TaxFacade::withAccountingData($baseLine, $company);
 
             $baseLines[] = $baseLine;
         }

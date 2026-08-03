@@ -3,14 +3,14 @@
 return [
     'notification' => [
         'title' => 'Solicitação de manutenção atualizada',
-        'body' => 'A solicitação de manutenção foi atualizada com sucesso.',
+        'body'  => 'A solicitação de manutenção foi atualizada com sucesso.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'title' => 'Solicitação de manutenção arquivada',
-                'body' => 'A solicitação de manutenção foi arquivada com sucesso.',
+                'body'  => 'A solicitação de manutenção foi arquivada com sucesso.',
             ],
         ],
     ],

@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Página excluída',
-                'body' => 'A página foi excluída com sucesso.',
+                'body'  => 'A página foi excluída com sucesso.',
             ],
         ],
     ],

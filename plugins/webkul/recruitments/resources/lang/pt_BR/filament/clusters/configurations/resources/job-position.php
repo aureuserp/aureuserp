@@ -7,11 +7,11 @@ return [
     ],
 
     'global-search' => [
-        'name' => 'Cargo',
-        'department' => 'Departamento',
+        'name'            => 'Cargo',
+        'department'      => 'Departamento',
         'employment-type' => 'Tipo de vínculo',
-        'company' => 'Empresa',
-        'created-by' => 'Criado por',
+        'company'         => 'Empresa',
+        'created-by'      => 'Criado por',
     ],
 
     'form' => [
@@ -20,17 +20,17 @@ return [
                 'title' => 'Informações de vínculo',
 
                 'fields' => [
-                    'job-position-title' => 'Título do cargo',
+                    'job-position-title'         => 'Título do cargo',
                     'job-position-title-tooltip' => 'Informe o título oficial do cargo',
-                    'department' => 'Departamento',
-                    'department-modal-title' => 'Criar departamento',
-                    'job-location' => 'Local da vaga',
-                    'industry' => 'Setor',
-                    'company' => 'Empresa',
-                    'employment-type' => 'Tipo de vínculo',
-                    'interviewers' => 'Entrevistadores',
-                    'recruiter' => 'Recrutador',
-                    'manager' => 'Gerente',
+                    'department'                 => 'Departamento',
+                    'department-modal-title'     => 'Criar departamento',
+                    'job-location'               => 'Local da vaga',
+                    'industry'                   => 'Setor',
+                    'company'                    => 'Empresa',
+                    'employment-type'            => 'Tipo de vínculo',
+                    'interviewers'               => 'Entrevistadores',
+                    'recruiter'                  => 'Recrutador',
+                    'manager'                    => 'Gerente',
                 ],
             ],
 
@@ -38,7 +38,7 @@ return [
                 'title' => 'Descrição da vaga',
 
                 'fields' => [
-                    'job-description' => 'Descrição da vaga',
+                    'job-description'  => 'Descrição da vaga',
                     'job-requirements' => 'Requisitos da vaga',
                 ],
             ],
@@ -48,11 +48,11 @@ return [
 
                 'fields' => [
                     'recruitment-target' => 'Meta de recrutamento',
-                    'date-from' => 'Data inicial',
-                    'date-to' => 'Data até',
-                    'expected-skills' => 'Habilidades esperadas',
-                    'employment-type' => 'Tipo de vínculo',
-                    'status' => 'Status',
+                    'date-from'          => 'Data inicial',
+                    'date-to'            => 'Data até',
+                    'expected-skills'    => 'Habilidades esperadas',
+                    'employment-type'    => 'Tipo de vínculo',
+                    'status'             => 'Status',
                 ],
             ],
 
@@ -68,52 +68,52 @@ return [
 
     'table' => [
         'columns' => [
-            'id' => 'ID',
-            'name' => 'Cargo',
-            'department' => 'Departamento',
-            'job-position' => 'Cargo',
-            'company' => 'Empresa',
+            'id'                 => 'ID',
+            'name'               => 'Cargo',
+            'department'         => 'Departamento',
+            'job-position'       => 'Cargo',
+            'company'            => 'Empresa',
             'expected-employees' => 'Colaboradores esperados',
-            'current-employees' => 'Colaboradores atuais',
-            'status' => 'Status',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'current-employees'  => 'Colaboradores atuais',
+            'status'             => 'Status',
+            'created-by'         => 'Criado por',
+            'created-at'         => 'Criado em',
+            'updated-at'         => 'Atualizado em',
         ],
 
         'filters' => [
-            'department' => 'Departamento',
+            'department'      => 'Departamento',
             'employment-type' => 'Tipo de vínculo',
-            'job-position' => 'Cargo',
-            'company' => 'Empresa',
-            'status' => 'Status',
-            'created-by' => 'Criado por',
-            'updated-at' => 'Atualizado em',
-            'created-at' => 'Criado em',
+            'job-position'    => 'Cargo',
+            'company'         => 'Empresa',
+            'status'          => 'Status',
+            'created-by'      => 'Criado por',
+            'updated-at'      => 'Atualizado em',
+            'created-at'      => 'Criado em',
         ],
 
         'groups' => [
-            'job-position' => 'Cargo',
-            'company' => 'Empresa',
-            'department' => 'Departamento',
+            'job-position'    => 'Cargo',
+            'company'         => 'Empresa',
+            'department'      => 'Departamento',
             'employment-type' => 'Tipo de vínculo',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'created-by'      => 'Criado por',
+            'created-at'      => 'Criado em',
+            'updated-at'      => 'Atualizado em',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
                     'title' => 'Cargo restaurado',
-                    'body' => 'O cargo foi restaurado com sucesso.',
+                    'body'  => 'O cargo foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Cargo excluído',
-                    'body' => 'O cargo foi excluído com sucesso.',
+                    'body'  => 'O cargo foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -122,21 +122,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Cargos restaurados',
-                    'body' => 'Os cargos foram restaurados com sucesso.',
+                    'body'  => 'Os cargos foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Cargos excluídos',
-                    'body' => 'Os cargos foram excluídos com sucesso.',
+                    'body'  => 'Os cargos foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Cargos excluídos permanentemente',
-                    'body' => 'Os cargos foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os cargos foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -145,7 +145,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Cargos',
-                    'body' => 'Os cargos foram criados com sucesso.',
+                    'body'  => 'Os cargos foram criados com sucesso.',
                 ],
             ],
         ],
@@ -158,21 +158,21 @@ return [
 
                 'entries' => [
                     'job-position-title' => 'Título do cargo',
-                    'department' => 'Departamento',
-                    'company' => 'Empresa',
-                    'employment-type' => 'Tipo de vínculo',
-                    'job-location' => 'Local da vaga',
-                    'industry' => 'Setor',
-                    'manager' => 'Gerente',
-                    'recruiter' => 'Recrutador',
-                    'interviewers' => 'Entrevistadores',
+                    'department'         => 'Departamento',
+                    'company'            => 'Empresa',
+                    'employment-type'    => 'Tipo de vínculo',
+                    'job-location'       => 'Local da vaga',
+                    'industry'           => 'Setor',
+                    'manager'            => 'Gerente',
+                    'recruiter'          => 'Recrutador',
+                    'interviewers'       => 'Entrevistadores',
                 ],
             ],
             'job-description' => [
                 'title' => 'Descrição da vaga',
 
                 'entries' => [
-                    'job-description' => 'Descrição da vaga',
+                    'job-description'  => 'Descrição da vaga',
                     'job-requirements' => 'Requisitos da vaga',
                 ],
             ],
@@ -181,9 +181,9 @@ return [
 
                 'entries' => [
                     'expected-employees' => 'Colaboradores esperados',
-                    'current-employees' => 'Colaboradores atuais',
-                    'date-from' => 'Data inicial',
-                    'date-to' => 'Data até',
+                    'current-employees'  => 'Colaboradores atuais',
+                    'date-from'          => 'Data inicial',
+                    'date-to'            => 'Data até',
                     'recruitment-target' => 'Meta de recrutamento',
                 ],
             ],

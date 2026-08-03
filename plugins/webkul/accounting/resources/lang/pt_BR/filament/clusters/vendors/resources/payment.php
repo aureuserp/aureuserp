@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Pagamentos',
+    'title'       => 'Pagamentos',
     'model-label' => 'Pagamento',
 
     'navigation' => [

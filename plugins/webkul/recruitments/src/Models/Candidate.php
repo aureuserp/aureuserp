@@ -10,13 +10,16 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Candidate extends Model
 {
-    use HasChatter, HasLogActivity, SoftDeletes;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasLogActivity, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 
@@ -142,7 +145,7 @@ class Candidate extends Model
 
             $candidate->creator_id ??= $authUser->id;
 
-            $candidate->company_id ??= $authUser?->default_company_id;
+            $candidate->company_id ??= current_company_id();
         });
 
         static::saved(function (self $candidate) {
