@@ -99,7 +99,8 @@ class PartnersTable
                                 ->badge()
                                 ->formatStateUsing(fn ($state) => $state['label'])
                                 ->color(fn ($state) => Color::generateV3Palette($state['color']))
-                                ->weight(FontWeight::Bold),
+                                ->weight(FontWeight::Bold)
+                                ->wrap(),
                         ])
                             ->visible(fn ($record): bool => (bool) $record->tags?->count()),
                     ])->space(1),
