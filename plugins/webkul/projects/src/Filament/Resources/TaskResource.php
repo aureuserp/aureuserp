@@ -732,7 +732,7 @@ class TaskResource extends Resource
                                             ->icon('heroicon-o-folder')
                                             ->placeholder('—')
                                             ->color('primary')
-                                            ->url(fn (Task $record): string => $record->project_id ? ProjectResource::getUrl('view', ['record' => $record->project]) : '#'),
+                                            ->url(fn (Task $record): string => $record->project_id ? ProjectResource::getUrl('view', ['record' => $record->project_id]) : '#'),
 
                                         TextEntry::make('milestone.name')
                                             ->label(__('projects::filament/resources/task.infolist.sections.project-information.entries.milestone'))
