@@ -20,6 +20,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource\Pages;
@@ -39,6 +40,11 @@ class MilestoneResource extends Resource
     protected static ?int $navigationSort = 3;
 
     protected static ?string $cluster = Configurations::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('project');
+    }
 
     public static function getNavigationLabel(): string
     {
