@@ -153,7 +153,7 @@ class PluginResource extends Resource
 
                                 $commandName = escapeshellarg("{$record->name}:install");
 
-                                $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName 2>&1");
+                                $cmd = self::buildTimeoutCommand(300, "$php $artisan $commandName --no-interaction 2>&1");
 
                                 $output = [];
 
@@ -442,6 +442,10 @@ class PluginResource extends Resource
     protected static function downMigration(string $fullPath, string $migration): void
     {
         if (! file_exists($fullPath)) {
+            return;
+        }
+
+        if (! DB::table('migrations')->where('migration', $migration)->exists()) {
             return;
         }
 

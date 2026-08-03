@@ -122,8 +122,8 @@ class TaskResource extends Resource
                             ->hiddenLabel()
                             ->inline()
                             ->required()
-                            ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
-                            ->default(fn () => static::getDefaultStageId(current_company_id())),
+                            ->options(fn (Get $get, ?Task $record) => TaskStage::where('project_id', $get('project_id') ?? $record?->project_id)->orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
+                            ->default(fn (Get $get) => static::getDefaultStageId($get('project_id'))),
                         Section::make(__('projects::filament/resources/task.form.sections.general.title'))
                             ->schema([
                                 TextInput::make('title')
@@ -190,6 +190,7 @@ class TaskResource extends Resource
                                     ->createOptionForm(fn (Schema $schema): Schema => ProjectResource::form($schema))
                                     ->afterStateUpdated(function (Set $set, $state) {
                                         $set('milestone_id', null);
+                                        $set('stage_id', static::getDefaultStageId($state));
                                         $project = $state ? Project::find($state) : null;
                                         $set('partner_id', $project?->partner_id);
                                     }),
@@ -265,12 +266,14 @@ class TaskResource extends Resource
             ->columns(3);
     }
 
-    protected static function getDefaultStageId($companyId): ?int
+    protected static function getDefaultStageId($projectId): ?int
     {
-        $companyId = $companyId ?: current_company_id();
+        if (! $projectId) {
+            return null;
+        }
 
         return TaskStage::query()
-            ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $companyId))
+            ->where('project_id', $projectId)
             ->orderBy('sort')
             ->first()?->id;
     }
@@ -678,8 +681,8 @@ class TaskResource extends Resource
                         InfolistProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
-                            ->options(fn () => TaskStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
-                            ->default(fn ($record) => static::getDefaultStageId($record?->company_id)),
+                            ->options(fn ($record) => TaskStage::where('project_id', $record?->project_id)->orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
+                            ->default(fn ($record) => static::getDefaultStageId($record?->project_id)),
 
                         Section::make(__('projects::filament/resources/task.infolist.sections.general.title'))
                             ->schema([
