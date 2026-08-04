@@ -13,6 +13,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\RichEditor\TextColor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -92,8 +93,10 @@ class PageResource extends Resource
                                     ->resizableImages()
                                     ->fileAttachmentsDirectory('website/pages')
                                     ->fileAttachmentsVisibility('public')
+                                    ->textColors(TextColor::getDefaults())
+                                    ->customTextColors()
                                     ->toolbarButtons([
-                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link', 'textColor'],
                                         ['h2', 'h3'],
                                         ['alignStart', 'alignCenter', 'alignEnd'],
                                         ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
