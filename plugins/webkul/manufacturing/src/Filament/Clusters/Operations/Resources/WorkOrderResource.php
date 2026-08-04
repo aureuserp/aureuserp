@@ -43,6 +43,11 @@ class WorkOrderResource extends Resource
         return settings(OperationSettings::class)->enable_work_orders;
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereHas('manufacturingOrder');
+    }
+
     public static function getModelLabel(): string
     {
         return __('manufacturing::models/work-order.title');
