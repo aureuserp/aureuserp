@@ -24,6 +24,7 @@
 * Added dashboard date-range filter widget
 * Integrated custom fields functionality across Accounting, Products, Projects, Recruitment, Sales, Security, Time-off, Timesheets, and Website resources
 * Blocked plugin uninstall when dependent plugins exist
+* Added customer Portal Access management for partners (grant/revoke access, change or send portal password reset from the admin panel)
 
 ### ✨ Improvements
 
@@ -73,9 +74,23 @@
 * Added component availability status for Manufacturing Orders and MO readiness
 * Added Playwright tests for the Inventory plugin
 * Fixed missing `timeout` command handling on macOS/Windows
+* Added authorization policy for inventory move lines and page-level access control for the Barcode launch page
+* Improved badge wrapping in the Partners table
 
 ### 🐛 Fixes
 
+* #1459 [fixed] - Removed static title on Website homepage/view pages
+* #1458 [fixed] - Fixed Website content and RichEditor rendering issue
+* #1456 [fixed] - Fixed default Time-off leave types not being shared across companies
+* #1455 [fixed] - Fixed Project milestone company filter
+* #1454 [fixed] - Fixed chatter message sorting issue
+* #1453 [fixed] - Fixed Employee reporting company filter
+* #1452 [fixed] - Fixed bank account company scope issue
+* #1451 [fixed] - Fixed duplicate records on the Project dashboard widgets
+* #1448 [fixed] - Fixed chatter auto-scroll issue
+* #1447 [fixed] - Issue #1445 resolved - Fixed print delivery slip issue
+* #1444 [fixed] - Fixed Accounts plugin uninstallation issue
+* #1443 [fixed] - [Security] Removed publicly accessible `adminer.php` database admin tool from the public directory
 * #1245 [fixed] - Job Title and Title fields now hidden for company-type partners (shown only for individuals)
 * #1231 [fixed] - Fixed broken Facebook social link URL in Website plugin
 * #1229 [fixed] - Archived records appearing in the "All" tab for Manufacturing Operations, Work Centers, and Bills of Materials
