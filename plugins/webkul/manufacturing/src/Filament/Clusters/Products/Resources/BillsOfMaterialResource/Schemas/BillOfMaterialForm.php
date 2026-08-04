@@ -33,6 +33,7 @@ use Webkul\Manufacturing\Enums\OperationTimeMode;
 use Webkul\Manufacturing\Enums\OperationWorksheetType;
 use Webkul\Manufacturing\Filament\Clusters\Configurations\Resources\OperationResource;
 use Webkul\Manufacturing\Filament\Clusters\Products\Resources\BillsOfMaterialResource;
+use Webkul\Manufacturing\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\Operation;
 use Webkul\Manufacturing\Models\Product;

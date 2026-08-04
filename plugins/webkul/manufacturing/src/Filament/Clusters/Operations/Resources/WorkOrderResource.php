@@ -7,6 +7,7 @@ use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Manufacturing\Filament\Clusters\Operations;

@@ -32,6 +32,7 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkCenterWorkingState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\ManufacturingOrderResource;
+use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\WorkOrderResource;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\BillOfMaterialLine;
 use Webkul\Manufacturing\Models\Move;
