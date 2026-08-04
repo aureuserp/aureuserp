@@ -88,7 +88,18 @@ class PageResource extends Resource
                                     ->unique(PageModel::class, 'slug', ignoreRecord: true),
                                 RichEditor::make('content')
                                     ->label(__('website::filament/admin/resources/page.form.sections.general.fields.content'))
-                                    ->required(),
+                                    ->required()
+                                    ->resizableImages()
+                                    ->fileAttachmentsDirectory('website/pages')
+                                    ->fileAttachmentsVisibility('public')
+                                    ->toolbarButtons([
+                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                                        ['h2', 'h3'],
+                                        ['alignStart', 'alignCenter', 'alignEnd'],
+                                        ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+                                        ['table', 'grid', 'gridDelete', 'attachFiles'],
+                                        ['undo', 'redo'],
+                                    ]),
                             ]),
 
                         Section::make(__('website::filament/admin/resources/page.form.sections.seo.title'))
