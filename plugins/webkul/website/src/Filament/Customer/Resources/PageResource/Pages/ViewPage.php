@@ -28,6 +28,11 @@ class ViewPage extends ViewRecord
         return [];
     }
 
+    public function getHeading(): string|Htmlable|null
+    {
+        return null;
+    }
+
     public function getTitle(): string|Htmlable
     {
         $record = $this->getRecord();
