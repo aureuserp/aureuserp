@@ -22,12 +22,16 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Employee\Models\Employee;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
@@ -115,7 +119,17 @@ class AllocationResource extends Resource
                                     ->schema([
                                         Select::make('holiday_status_id')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.time-off-type'))
-                                            ->relationship('holidayStatus', 'name')
+                                            ->relationship(
+                                                'holidayStatus',
+                                                'name',
+                                                modifyQueryUsing: function (Get $get, Builder $query) {
+                                                    $employeeCompanyId = $get('employee_id')
+                                                        ? Employee::withoutGlobalScope(CompanyScope::class)->find($get('employee_id'))?->company_id
+                                                        : null;
+
+                                                    return $query->where(owned_by_company($employeeCompanyId));
+                                                },
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->required(),
@@ -124,6 +138,7 @@ class AllocationResource extends Resource
                                             ->relationship('employee', 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->live()
                                             ->required(),
                                     ]),
                                 Radio::make('allocation_type')
