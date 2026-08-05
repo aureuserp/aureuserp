@@ -26,11 +26,13 @@ use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Security\Support\OwnerSource;
 use Webkul\Security\Traits\HasOwnershipScope;
+use Webkul\Support\Enums\SequenceResetFrequency;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\Support\Traits\ChecksCompanyConsistency;
 
@@ -492,22 +494,28 @@ class Move extends Model implements Sortable
 
     public function computeName()
     {
+        if (filled($this->name)) {
+            return;
+        }
+
         if (! $this->journal) {
             return;
         }
 
-        $prefix = '';
+        $variants = [];
 
         if (
             $this->journal->refund_sequence
             && in_array($this->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND])
         ) {
-            $prefix .= 'R';
+            $variants[] = 'refund';
         }
 
         if ($this->journal->payment_sequence && $this->origin_payment_id) {
-            $prefix .= 'P';
+            $variants[] = 'payment';
         }
+
+        $prefix = implode('', array_map(fn (string $variant): string => strtoupper($variant[0]), $variants));
 
         $this->sequence_prefix = sprintf(
             '%s%s/%s',
@@ -516,7 +524,14 @@ class Move extends Model implements Sortable
             $this->date?->format('Y') ?? now()->format('Y'),
         );
 
-        $this->name = $this->sequence_prefix.'/'.$this->id;
+        $variant = implode('-', $variants);
+
+        $this->name = SequenceService::nextFor($this->journal, $variant, $this->company_id, [
+            'name'            => $variant ? "{$this->journal->name} (".ucwords($variant, '-').')' : $this->journal->name,
+            'prefix'          => $prefix.$this->journal->code.'/%(year)/',
+            'reset_frequency' => SequenceResetFrequency::YEARLY,
+            'initial_from'    => static::withoutGlobalScopes()->where('journal_id', $this->journal_id),
+        ], $this->date);
     }
 
     public function computeCurrencyId()

@@ -34,6 +34,7 @@ use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\Support\Traits\ChecksCompanyConsistency;
 
@@ -246,7 +247,15 @@ class Order extends Model
 
     public function updateName()
     {
-        $this->name = 'SO/'.$this->id;
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::next('sales.order', $this->company_id, [
+            'name'         => 'Sales Order',
+            'prefix'       => 'SO/',
+            'initial_from' => static::withoutGlobalScopes(),
+        ]);
     }
 
     public function handleOrderCreation()
