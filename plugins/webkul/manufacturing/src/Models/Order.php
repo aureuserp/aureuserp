@@ -37,10 +37,11 @@ use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Services\SequenceService;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
+    use BelongsToCompany, HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     protected $table = 'manufacturing_orders';
 

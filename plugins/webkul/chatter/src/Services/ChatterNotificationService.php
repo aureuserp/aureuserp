@@ -182,9 +182,9 @@ class ChatterNotificationService
             $new = is_array($new) ? implode(', ', $new) : $new;
 
             if (isset($change['old_value']) && isset($change['new_value'])) {
-                $rows[] = $label.': '.$old.' → '.$new;
+                $rows[] = e($label).': '.e((string) $old).' → '.e((string) $new);
             } elseif (isset($change['new_value'])) {
-                $rows[] = $label.': '.$new;
+                $rows[] = e($label).': '.e((string) $new);
             }
         }
 

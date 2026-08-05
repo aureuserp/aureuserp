@@ -26,8 +26,11 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Employee\Models\Employee;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
@@ -99,7 +102,13 @@ class MyAllocationResource extends Resource
                                     ->schema([
                                         Select::make('holiday_status_id')
                                             ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.form.fields.time-off-type'))
-                                            ->relationship('holidayStatus', 'name')
+                                            ->relationship(
+                                                'holidayStatus',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where(owned_by_company(
+                                                    Employee::withoutGlobalScope(CompanyScope::class)->where('user_id', Auth::id())->value('company_id')
+                                                )),
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->required(),

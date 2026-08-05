@@ -5,6 +5,8 @@ namespace Webkul\Website;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -26,6 +28,7 @@ class WebsiteServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 '2025_03_10_094011_create_website_pages_table',
                 '2025_03_10_064655_alter_partners_partners_table',
+                '2026_08_03_100000_add_last_login_at_to_partners_partners_table',
             ])
             ->runsMigrations()
             ->hasSeeder('Webkul\\Website\\Database\Seeders\\DatabaseSeeder')
@@ -51,7 +54,19 @@ class WebsiteServiceProvider extends PackageServiceProvider
             Route::get('/', function () {
                 return redirect()->route('filament.admin.auth.login');
             });
+
+            return;
         }
+
+        PortalContributions::register();
+
+        Event::listen(Login::class, function (Login $event): void {
+            if ($event->guard !== 'customer') {
+                return;
+            }
+
+            $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
+        });
     }
 
     public function packageRegistered(): void
