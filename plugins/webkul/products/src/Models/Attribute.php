@@ -42,6 +42,11 @@ class Attribute extends Model implements Sortable
         return $this->hasMany(AttributeOption::class);
     }
 
+    public function productAttributes(): HasMany
+    {
+        return $this->hasMany(ProductAttribute::class);
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
