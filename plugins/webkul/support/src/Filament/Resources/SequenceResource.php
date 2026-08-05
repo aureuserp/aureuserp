@@ -11,10 +11,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Enums\SequenceResetFrequency;
 use Webkul\Support\Filament\Resources\SequenceResource\Pages\ManageSequences;
@@ -60,7 +63,17 @@ class SequenceResource extends Resource
                             ->helperText(__('support::filament/resources/sequence.form.sections.general.fields.code-help'))
                             ->required(fn (?Sequence $record): bool => $record === null)
                             ->maxLength(255)
-                            ->disabled(fn (?Sequence $record): bool => $record !== null),
+                            ->disabled(fn (?Sequence $record): bool => $record !== null)
+                            ->unique(
+                                ignoreRecord: true,
+                                modifyRuleUsing: function (Unique $rule, Get $get): Unique {
+                                    $companyId = $get('company_id');
+
+                                    return $companyId
+                                        ? $rule->where('company_id', $companyId)
+                                        : $rule->whereNull('company_id');
+                                },
+                            ),
                         Select::make('company_id')
                             ->label(__('support::filament/resources/sequence.form.sections.general.fields.company'))
                             ->relationship('company', 'name')
@@ -110,6 +123,7 @@ class SequenceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['company', 'scope']))
             ->columns([
                 TextColumn::make('name')
                     ->label(__('support::filament/resources/sequence.table.columns.name'))

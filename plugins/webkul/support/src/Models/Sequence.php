@@ -35,6 +35,17 @@ class Sequence extends Model
         'reset_frequency' => SequenceResetFrequency::class,
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($sequence) {
+            if ($sequence->exists && $sequence->isDirty('reset_frequency')) {
+                $sequence->period_key = null;
+            }
+        });
+    }
+
     public function scope(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'scope_type', 'scope_id');
@@ -51,7 +62,7 @@ class Sequence extends Model
 
         $periodKey = $this->periodKeyFor($date);
 
-        if ($this->period_key === null) {
+        if ($periodKey === null || $this->period_key === null) {
             $this->period_key = $periodKey;
         } elseif ($periodKey !== $this->period_key) {
             $this->next_number = 1;

@@ -104,6 +104,7 @@ class InventoryServiceProvider extends PackageServiceProvider
                 '2026_05_15_103923_create_inventories_putaway_rule_package_types_table',
                 '2026_06_22_104603_add_additional_column_in_inventories_moves_table',
                 '2026_07_21_130000_provision_company_virtual_locations',
+                '2026_08_03_130000_seed_inventories_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([

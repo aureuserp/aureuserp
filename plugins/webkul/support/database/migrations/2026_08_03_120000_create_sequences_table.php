@@ -29,12 +29,14 @@ return new class extends Migration
             $table->foreignId('company_id')
                 ->nullable()
                 ->constrained('companies')
-                ->cascadeOnDelete();
+                ->restrictOnDelete();
+
+            $table->unsignedBigInteger('company_scope')->storedAs('coalesce(company_id, 0)');
 
             $table->timestamps();
 
-            $table->unique(['code', 'company_id']);
-            $table->unique(['scope_type', 'scope_id', 'variant', 'company_id'], 'sequences_scope_unique');
+            $table->unique(['code', 'company_scope']);
+            $table->unique(['scope_type', 'scope_id', 'variant', 'company_scope'], 'sequences_scope_unique');
         });
     }
 

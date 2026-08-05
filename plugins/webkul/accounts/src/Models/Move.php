@@ -26,7 +26,6 @@ use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Security\Support\OwnerSource;
 use Webkul\Security\Traits\HasOwnershipScope;
-use Webkul\Support\Enums\SequenceResetFrequency;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -526,12 +525,13 @@ class Move extends Model implements Sortable
 
         $variant = implode('-', $variants);
 
-        $this->name = SequenceService::nextFor($this->journal, $variant, $this->company_id, [
-            'name'            => $variant ? "{$this->journal->name} (".ucwords($variant, '-').')' : $this->journal->name,
-            'prefix'          => $prefix.$this->journal->code.'/%(year)/',
-            'reset_frequency' => SequenceResetFrequency::YEARLY,
-            'initial_from'    => static::withoutGlobalScopes()->where('journal_id', $this->journal_id),
-        ], $this->date);
+        $this->name = SequenceService::nextFor(
+            $this->journal,
+            $variant,
+            $this->company_id,
+            $this->journal->sequenceDefaults($variant),
+            $this->date,
+        );
     }
 
     public function computeCurrencyId()

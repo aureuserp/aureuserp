@@ -364,17 +364,12 @@ class Operation extends Model
             return;
         }
 
-        $warehouse = $this->operationType->warehouse;
-
-        $prefix = $warehouse
-            ? $warehouse->code.'/'.$this->operationType->sequence_code.'/'
-            : $this->operationType->sequence_code.'/';
-
-        $this->name = SequenceService::nextFor($this->operationType, '', $this->company_id, [
-            'name'         => $warehouse ? "{$this->operationType->name} ({$warehouse->code})" : $this->operationType->name,
-            'prefix'       => $prefix,
-            'initial_from' => static::withoutGlobalScopes()->where('operation_type_id', $this->operation_type_id),
-        ]);
+        $this->name = SequenceService::nextFor(
+            $this->operationType,
+            '',
+            $this->company_id,
+            $this->operationType->sequenceDefaults(),
+        );
     }
 
     public function updateChildrenNames(): void

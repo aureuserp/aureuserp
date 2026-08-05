@@ -19,6 +19,7 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductSupplier;
+use Webkul\Purchase\Database\Seeders\DatabaseSeeder;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
 use Webkul\Purchase\Listeners\ComputePurchaseOrderFromMoveListener;
 use Webkul\Purchase\Listeners\ComputePurchaseOrderListener;
@@ -59,6 +60,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
                 '2026_04_22_115707_create_purchases_order_line_moves_table_from_purchases',
                 '2026_04_23_043411_add_procurement_group_id_column_in_purchases_orders_table_from_purchases',
                 '2026_04_23_043412_add_procurement_group_id_column_in_purchases_order_lines_table_from_purchases',
+                '2026_08_03_130000_seed_purchases_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -69,10 +71,12 @@ class PurchaseServiceProvider extends PackageServiceProvider
             ->hasDependencies([
                 'invoices',
             ])
+            ->hasSeeder(DatabaseSeeder::class)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()
-                    ->runsMigrations();
+                    ->runsMigrations()
+                    ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
                 $command->endWith(function () {

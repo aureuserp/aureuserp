@@ -5,7 +5,7 @@ namespace Webkul\Support\Services;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Webkul\Support\Enums\SequenceResetFrequency;
 use Webkul\Support\Models\Sequence;
@@ -14,30 +14,72 @@ class SequenceService
 {
     public static function next(string $code, ?int $companyId = null, array $defaults = [], ?CarbonInterface $date = null): string
     {
-        return static::consume([
-            'code'       => $code,
-            'company_id' => $companyId,
-        ], $defaults, $date);
+        $lookups = [['code' => $code, 'company_id' => $companyId]];
+
+        if ($companyId !== null) {
+            $lookups[] = ['code' => $code, 'company_id' => null];
+        }
+
+        return static::consume($lookups, ['code' => $code, 'company_id' => null], $defaults, $date);
     }
 
     public static function nextFor(Model $scope, string $variant = '', ?int $companyId = null, array $defaults = [], ?CarbonInterface $date = null): string
     {
-        return static::consume([
+        $keys = static::scopeKeys($scope, $variant, $companyId);
+
+        return static::consume([$keys], $keys, $defaults, $date);
+    }
+
+    public static function ensure(string $code, ?int $companyId = null, array $defaults = []): Sequence
+    {
+        return static::resolve(['code' => $code, 'company_id' => $companyId], $defaults);
+    }
+
+    public static function ensureFor(Model $scope, string $variant = '', ?int $companyId = null, array $defaults = []): Sequence
+    {
+        return static::resolve(static::scopeKeys($scope, $variant, $companyId), $defaults);
+    }
+
+    public static function initialFromNames(Builder $query, string $column = 'name'): int
+    {
+        $highest = $query->pluck($column)
+            ->map(fn ($name): int => preg_match('/(\d+)\D*$/', (string) $name, $matches) ? (int) $matches[1] : 0)
+            ->max();
+
+        return (int) $highest + 1;
+    }
+
+    protected static function scopeKeys(Model $scope, string $variant, ?int $companyId): array
+    {
+        return [
             'scope_type' => $scope->getMorphClass(),
             'scope_id'   => $scope->getKey(),
             'variant'    => $variant,
             'company_id' => $companyId,
-        ], $defaults, $date);
+        ];
     }
 
-    protected static function consume(array $keys, array $defaults, ?CarbonInterface $date): string
+    protected static function consume(array $lookups, array $createKeys, array $defaults, ?CarbonInterface $date): string
     {
-        return DB::transaction(function () use ($keys, $defaults, $date): string {
-            $sequence = static::lockedQuery($keys)->first();
+        return DB::transaction(function () use ($lookups, $createKeys, $defaults, $date): string {
+            $sequence = null;
 
-            $sequence ??= static::createSequence($keys, $defaults);
+            foreach ($lookups as $keys) {
+                if ($sequence = static::lockedQuery($keys)->first()) {
+                    break;
+                }
+            }
+
+            $sequence ??= static::createSequence($createKeys, $defaults);
 
             return $sequence->consumeNumber($date);
+        });
+    }
+
+    protected static function resolve(array $keys, array $defaults): Sequence
+    {
+        return DB::transaction(function () use ($keys, $defaults): Sequence {
+            return static::lockedQuery($keys)->first() ?? static::createSequence($keys, $defaults);
         });
     }
 
@@ -51,24 +93,15 @@ class SequenceService
     protected static function createSequence(array $keys, array $defaults): Sequence
     {
         try {
-            $sequence = Sequence::create([
+            $sequence = DB::transaction(fn (): Sequence => Sequence::create([
                 ...$keys,
                 ...static::attributes($defaults),
-            ]);
-        } catch (QueryException) {
+            ]));
+        } catch (UniqueConstraintViolationException) {
             return static::lockedQuery($keys)->firstOrFail();
         }
 
         return static::lockedQuery($keys)->whereKey($sequence->getKey())->firstOrFail();
-    }
-
-    public static function initialFromNames(Builder $query, string $column = 'name'): int
-    {
-        $highest = $query->pluck($column)
-            ->map(fn ($name): int => preg_match('/(\d+)\D*$/', (string) $name, $matches) ? (int) $matches[1] : 0)
-            ->max();
-
-        return (int) $highest + 1;
     }
 
     protected static function attributes(array $defaults): array
