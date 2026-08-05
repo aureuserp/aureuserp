@@ -247,6 +247,12 @@ class Warehouse extends Model implements Sortable
         static::updated(function (Warehouse $warehouse) {
             if ($warehouse->wasChanged('code')) {
                 $warehouse->viewLocation?->update(['name' => $warehouse->code]);
+
+                $warehouse->operationTypes()->withTrashed()->get()->each(function (OperationType $operationType) {
+                    $operationType->unsetRelation('warehouse');
+
+                    $operationType->syncSequence();
+                });
             }
 
             if ($warehouse->wasChanged('company_id')) {
