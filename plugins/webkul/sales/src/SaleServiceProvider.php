@@ -62,6 +62,7 @@ class SaleServiceProvider extends PackageServiceProvider
                 '2026_03_11_103613_alter_sales_order_template_products_table',
                 '2026_04_08_043411_add_procurement_group_id_column_in_sales_orders_table_from_sales',
                 '2026_04_08_043511_add_sale_order_id_column_in_inventories_procurement_groups_table_from_sales',
+                '2026_08_03_130000_seed_sales_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([

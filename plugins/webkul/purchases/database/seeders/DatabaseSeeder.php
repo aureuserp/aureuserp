@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Sale\Database\Seeders;
+namespace Webkul\Purchase\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
@@ -12,7 +12,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            SalesTeamSeeder::class,
             SequenceSeeder::class,
         ]);
     }
