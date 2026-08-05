@@ -150,11 +150,7 @@ class WebsitePlugin implements Plugin
 
     protected function getFooterNavigationItems(): Collection
     {
-        $navigationItems = new Collection([
-            NavigationItem::make('Home')
-                ->label(fn () => __('website::filament/app.navigation.footer.home'))
-                ->url('/'),
-        ]);
+        $navigationItems = new Collection;
 
         $pages = Page::where([
             'is_footer_visible' => true,

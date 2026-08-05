@@ -13,6 +13,8 @@ class Homepage extends Page
 
     protected static ?int $navigationSort = -2;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     /**
      * @var view-string
      */
