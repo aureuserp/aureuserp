@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -16,6 +18,7 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Exceptions\ProductInUseException;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Concerns\HasContributedAttributes;
@@ -189,6 +192,48 @@ class Product extends Model implements Sortable
     }
 
     /**
+     * Tables whose rows mean this product has been used on a real document.
+     *
+     * Configuration that simply travels with the product — tags, taxes, routes, pricelists,
+     * reordering rules — is deliberately absent: none of it breaks when the product turns
+     * into a configurable parent.
+     *
+     * @var array<int, string>
+     */
+    protected const USAGE_TABLES = [
+        'sales_order_lines',
+        'sales_order_options',
+        'sales_order_template_products',
+        'purchases_order_lines',
+        'purchases_requisition_lines',
+        'accounts_account_move_lines',
+        'inventories_moves',
+        'inventories_move_lines',
+        'inventories_product_quantities',
+        'inventories_lots',
+        'inventories_scraps',
+        'manufacturing_orders',
+        'manufacturing_work_orders',
+        'manufacturing_unbuild_orders',
+        'manufacturing_bills_of_materials',
+        'manufacturing_bill_of_material_lines',
+        'manufacturing_bill_of_material_byproducts',
+        'manufacturing_consumption_warning_lines',
+        'manufacturing_work_center_capacities',
+    ];
+
+    public function isInUse(): bool
+    {
+        foreach (static::USAGE_TABLES as $table) {
+            if (Schema::hasTable($table) && DB::table($table)->where('product_id', $this->getKey())->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Generate or sync variants based on product attributes
      */
     public function generateVariants(): void
@@ -197,6 +242,10 @@ class Product extends Model implements Sortable
 
         if ($attributes->isEmpty()) {
             return;
+        }
+
+        if (! $this->is_configurable && $this->isInUse()) {
+            throw ProductInUseException::make($this, 'variants');
         }
 
         $existingVariants = $this->variants()->get();

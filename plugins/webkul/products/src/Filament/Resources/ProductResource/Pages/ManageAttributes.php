@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Product\Exceptions\ProductInUseException;
 use Webkul\Product\Filament\Resources\AttributeResource;
 use Webkul\Product\Filament\Resources\ProductResource;
 use Webkul\Product\Filament\Resources\ProductResource\Actions\GenerateVariantsAction;
@@ -98,6 +99,17 @@ class ManageAttributes extends ManageRelatedRecords
                         $data['creator_id'] = Auth::id();
 
                         return $data;
+                    })
+                    ->before(function (CreateAction $action) {
+                        $product = $this->getOwnerRecord();
+
+                        if ($product->is_configurable || ! $product->isInUse()) {
+                            return;
+                        }
+
+                        ProductInUseException::make($product, 'attributes')->notify();
+
+                        $action->cancel();
                     })
                     ->after(function (ProductAttribute $record) {
                         $this->updateOrCreateVariants($record);
