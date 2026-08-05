@@ -76,11 +76,13 @@ class SaleServiceProvider extends PackageServiceProvider
                 'payments',
             ])
             ->hasSeeder('Webkul\\Sale\\Database\Seeders\\DatabaseSeeder')
+            ->hasSampleSeeder('Webkul\\Sale\\Database\Seeders\\SampleDataSeeder')
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()
                     ->runsMigrations()
-                    ->runsSeeders();
+                    ->runsSeeders()
+                    ->askToSeedSampleData('sale orders & order lines');
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
                 $command->endWith(function () {
