@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\TaxFactory;
@@ -15,6 +16,8 @@ use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Exceptions\InvalidTaxFormulaException;
+use Webkul\Account\Services\TaxFormulaEvaluator;
 use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
@@ -39,6 +42,7 @@ class Tax extends Model implements Sortable
         'type_tax_use',
         'tax_scope',
         'amount_type',
+        'formula',
         'price_include_override',
         'tax_exigibility',
         'name',
@@ -138,10 +142,37 @@ class Tax extends Model implements Sortable
 
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
     {
+        if ($this->amount_type === AmountType::CODE) {
+            return $this->evalFormula($rawBase, $evaluationContext);
+        }
+
         if ($this->amount_type === AmountType::FIXED) {
             $sign = $evaluationContext['price_unit'] < 0.0 ? -1 : 1;
 
             return $sign * $evaluationContext['quantity'] * $this->amount;
+        }
+    }
+
+    /**
+     * Returns null when the formula is missing or unusable, so the tax is left
+     * out of the computation instead of breaking the document.
+     */
+    protected function evalFormula($rawBase, array $evaluationContext): ?float
+    {
+        if (blank($this->formula)) {
+            return null;
+        }
+
+        try {
+            return app(TaxFormulaEvaluator::class)->evaluate($this->formula, [
+                'price_unit'     => $evaluationContext['price_unit'],
+                'quantity'       => $evaluationContext['quantity'],
+                'price_subtotal' => $rawBase,
+            ]);
+        } catch (InvalidTaxFormulaException $e) {
+            Log::warning("Tax [{$this->id}] has an invalid formula: {$e->getMessage()}");
+
+            return null;
         }
     }
 
@@ -197,6 +228,12 @@ class Tax extends Model implements Sortable
         });
 
         static::saved(function (self $tax) {
+            // Only group taxes are made of children, so a tax that stops being
+            // one must not keep them around.
+            if ($tax->wasChanged('amount_type') && $tax->amount_type !== AmountType::GROUP) {
+                $tax->childrenTaxes()->detach();
+            }
+
             try {
                 if ($tax->invoiceRepartitionLines()->exists() && $tax->refundRepartitionLines()->exists()) {
                     TaxPartition::validateRepartitionLines($tax->id);

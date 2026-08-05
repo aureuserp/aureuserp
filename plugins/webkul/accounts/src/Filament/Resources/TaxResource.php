@@ -3,6 +3,7 @@
 namespace Webkul\Account\Filament\Resources;
 
 use BackedEnum;
+use Closure;
 use Exception;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -26,11 +27,14 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -39,11 +43,13 @@ use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TaxScope;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Exceptions\InvalidTaxFormulaException;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\CreateTax;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\EditTax;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ListTaxes;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ViewTax;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Services\TaxFormulaEvaluator;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
@@ -58,6 +64,27 @@ class TaxResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+
+    /**
+     * The amount type reaches the schema either as the raw column value or as
+     * the enum the model casts it to, depending on where it is read from.
+     */
+    protected static function normalizeAmountType(mixed $state): ?string
+    {
+        return $state instanceof AmountType ? $state->value : $state;
+    }
+
+    /**
+     * Group taxes take their amount from their children and custom formula
+     * taxes from their formula, so neither of them asks for an amount.
+     */
+    protected static function usesAmount(mixed $state): bool
+    {
+        return ! in_array(static::normalizeAmountType($state), [
+            AmountType::GROUP->value,
+            AmountType::CODE->value,
+        ], true);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -79,6 +106,20 @@ class TaxResource extends Resource
                                     ->native(false)
                                     ->options(AmountType::class)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-computation'))
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, Set $set) {
+                                        $amountType = static::normalizeAmountType($state);
+
+                                        if ($amountType !== AmountType::CODE->value) {
+                                            $set('formula', null);
+                                        }
+
+                                        if ($amountType === AmountType::GROUP->value) {
+                                            $set('amount', 0);
+                                        } else {
+                                            $set('childrenTaxes', []);
+                                        }
+                                    })
                                     ->required(),
                                 Select::make('tax_scope')
                                     ->native(false)
@@ -89,11 +130,50 @@ class TaxResource extends Resource
                                     ->inline(false),
                                 TextInput::make('amount')
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.amount'))
-                                    ->suffix('%')
+                                    ->suffix(fn (Get $get): ?string => static::normalizeAmountType($get('amount_type')) === AmountType::FIXED->value
+                                        ? current_company()?->currency?->symbol
+                                        : '%')
                                     ->numeric()
                                     ->minValue(0)
                                     ->maxValue(99999999999)
-                                    ->required(),
+                                    ->required()
+                                    ->visible(fn (Get $get): bool => static::usesAmount($get('amount_type'))),
+                                TextInput::make('formula')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.fields.formula'))
+                                    ->placeholder('min(price_unit * quantity * 0.18, 500)')
+                                    ->helperText(__('accounts::filament/resources/tax.form.sections.fields.formula-helper-text', [
+                                        'variables' => implode(', ', TaxFormulaEvaluator::VARIABLES),
+                                        'functions' => implode(', ', TaxFormulaEvaluator::FUNCTIONS),
+                                    ]))
+                                    ->maxLength(255)
+                                    ->required()
+                                    ->rules([
+                                        fn (): Closure => function (string $attribute, $value, Closure $fail) {
+                                            try {
+                                                app(TaxFormulaEvaluator::class)->validate($value);
+                                            } catch (InvalidTaxFormulaException $e) {
+                                                $fail($e->getMessage());
+                                            }
+                                        },
+                                    ])
+                                    ->visible(fn (Get $get): bool => static::normalizeAmountType($get('amount_type')) === AmountType::CODE->value)
+                                    ->columnSpanFull(),
+                                Select::make('childrenTaxes')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.fields.children-taxes'))
+                                    ->relationship(
+                                        name: 'childrenTaxes',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query, ?Tax $record) => $query
+                                            ->where('amount_type', '!=', AmountType::GROUP->value)
+                                            ->when($record, fn (Builder $query) => $query->whereKeyNot($record->getKey())),
+                                    )
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable()
+                                    ->required()
+                                    ->helperText(__('accounts::filament/resources/tax.form.sections.fields.children-taxes-helper-text'))
+                                    ->visible(fn (Get $get): bool => static::normalizeAmountType($get('amount_type')) === AmountType::GROUP->value)
+                                    ->columnSpanFull(),
                             ])->columns(2),
                         Fieldset::make(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.title'))
                             ->schema([
@@ -131,6 +211,7 @@ class TaxResource extends Resource
                     ->tabs([
                         Tab::make('Repartition Lines')
                             ->icon('heroicon-o-banknotes')
+                            ->visible(fn (Get $get): bool => static::normalizeAmountType($get('amount_type')) !== AmountType::GROUP->value)
                             ->schema([
                                 Section::make('Invoice & Refund Distribution')
                                     ->description('Define how this tax affects accounts for invoices and refunds.')
@@ -441,7 +522,21 @@ class TaxResource extends Resource
                                         TextEntry::make('amount')
                                             ->icon('heroicon-o-currency-dollar')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.amount'))
-                                            ->suffix('%')
+                                            ->suffix(fn (Tax $record): ?string => $record->amount_type === AmountType::FIXED
+                                                ? current_company()?->currency?->symbol
+                                                : '%')
+                                            ->visible(fn (Tax $record): bool => static::usesAmount($record->amount_type))
+                                            ->placeholder('—'),
+                                        TextEntry::make('formula')
+                                            ->icon('heroicon-o-variable')
+                                            ->label(__('accounts::filament/resources/tax.infolist.sections.entries.formula'))
+                                            ->visible(fn (Tax $record): bool => $record->amount_type === AmountType::CODE)
+                                            ->placeholder('—'),
+                                        TextEntry::make('childrenTaxes.name')
+                                            ->icon('heroicon-o-rectangle-stack')
+                                            ->label(__('accounts::filament/resources/tax.infolist.sections.entries.children-taxes'))
+                                            ->badge()
+                                            ->visible(fn (Tax $record): bool => $record->amount_type === AmountType::GROUP)
                                             ->placeholder('—'),
                                         IconEntry::make('is_active')
                                             ->boolean()
