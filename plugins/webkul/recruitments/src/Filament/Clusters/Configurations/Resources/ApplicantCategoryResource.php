@@ -128,9 +128,7 @@ class ApplicantCategoryResource extends Resource
                                 ->body(__('recruitments::filament/clusters/configurations/resources/applicant-category.table.bulk-actions.delete.notification.body'))
                         ),
                 ]),
-            ])
-            ->reorderable('sort', direction: 'desc')
-            ->defaultSort('sort', 'desc');
+            ]);
     }
 
     public static function infolist(Schema $schema): Schema
