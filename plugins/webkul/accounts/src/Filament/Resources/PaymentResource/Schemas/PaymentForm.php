@@ -18,11 +18,12 @@ use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
+use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 
 class PaymentForm
 {
-    public static function configure(Schema $schema, string $resource, array $customFormFields = []): Schema
+    public static function configure(Schema $schema, array $customFormFields = []): Schema
     {
         return $schema
             ->disabled(fn ($record) => $record && $record->state !== PaymentStatus::DRAFT)
@@ -203,15 +204,15 @@ class PaymentForm
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
                                             })
-                                            ->required(function (Get $get) use ($resource) {
-                                                return $resource::computePayment($get)->require_partner_bank_account
-                                                    && $resource::computePayment($get)->show_partner_bank_account;
+                                            ->required(function (Get $get) {
+                                                return static::computePayment($get)->require_partner_bank_account
+                                                    && static::computePayment($get)->show_partner_bank_account;
                                             })
-                                            ->visible(function (Get $get) use ($resource) {
-                                                return $resource::computePayment($get)->show_partner_bank_account;
+                                            ->visible(function (Get $get) {
+                                                return static::computePayment($get)->show_partner_bank_account;
                                             })
-                                            ->disabled(function (Get $get) use ($resource) {
-                                                return $resource::computePayment($get)->require_partner_bank_account;
+                                            ->disabled(function (Get $get) {
+                                                return static::computePayment($get)->require_partner_bank_account;
                                             })
                                             ->searchable()
                                             ->preload(),
@@ -225,5 +226,37 @@ class PaymentForm
                     ->columns(1),
             ])
             ->columns(1);
+    }
+
+    private static function computePayment($get)
+    {
+        $journal = Journal::find($get('journal_id'));
+
+        $payment = new Payment;
+
+        if (! $journal) {
+            return $payment;
+        }
+
+        $payment->payment_type = $get('payment_type');
+        $payment->journal = $journal;
+        $payment->payment_method_line_id = $get('payment_method_line_id');
+        $payment->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
+        $payment->partner_id = $get('partner_id');
+        $payment->partner = Partner::find($get('partner_id'));
+
+        if (! $payment->paymentMethodLine) {
+            $payment->computePaymentMethodLineId();
+
+            return $payment;
+        }
+
+        if (! $payment->paymentMethodLine) {
+            return $payment;
+        }
+
+        $payment->computeShowRequirePartnerBank();
+
+        return $payment;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Webkul\PluginManager\Filament\Resources\PluginResource\Tables;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use RuntimeException;
 use Throwable;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Filament\Resources\PluginResource;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
@@ -116,7 +118,7 @@ class PluginsTable
                             DB::beginTransaction();
 
                             try {
-                                $phpPath = PluginResource::getPhpExecutablePath();
+                                $phpPath = static::getPhpExecutablePath();
 
                                 $php = escapeshellarg($phpPath);
 
@@ -124,7 +126,7 @@ class PluginsTable
 
                                 $commandName = escapeshellarg("{$record->name}:install");
 
-                                $cmd = PluginResource::buildTimeoutCommand(300, "$php $artisan $commandName --no-interaction 2>&1");
+                                $cmd = static::buildTimeoutCommand(300, "$php $artisan $commandName --no-interaction 2>&1");
 
                                 $output = [];
 
@@ -224,12 +226,149 @@ class PluginsTable
 
                             return view('plugin-manager::uninstall-modal', compact('record', 'dependents', 'installedDependents', 'tables'));
                         })
-                        ->action(fn ($record) => PluginResource::uninstallPlugin($record))
+                        ->action(fn ($record) => static::uninstallPlugin($record))
                         ->after(fn () => redirect(PluginResource::getUrl('index'))),
                 ]),
             ], position: RecordActionsPosition::BeforeColumns)
             ->recordActionsAlignment('end')
             ->defaultSort('sort', 'asc')
             ->paginated([16, 24, 32]);
+    }
+
+    private static function uninstallPlugin($record)
+    {
+        $errors = [];
+
+        $dependents = $record->getDependentsFromConfig();
+
+        $installedDependents = collect($dependents)
+            ->filter(fn ($dependent) => Package::isPluginInstalled($dependent))
+            ->values();
+
+        if ($installedDependents->isNotEmpty()) {
+            Notification::make()
+                ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-blocked.title'))
+                ->body(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-blocked.body', [
+                    'name'       => $record->name,
+                    'dependents' => $installedDependents->map(fn ($dependent) => ucfirst($dependent))->implode(', '),
+                ]))
+                ->danger()
+                ->persistent()
+                ->send();
+
+            return;
+        }
+
+        collect($dependents)
+            ->push($record->name)
+            ->each(function ($pluginName) use (&$errors) {
+                $plugin = Plugin::where('name', $pluginName)->first();
+
+                if (! $plugin?->is_installed) {
+                    return;
+                }
+
+                try {
+                    if (! $plugin->package) {
+                        throw new Exception("Package for '{$pluginName}' not found.");
+                    }
+
+                    $uninstallCommand = static::resolveUninstallCommand($plugin->package);
+
+                    if ($uninstallCommand?->startWith) {
+                        ($uninstallCommand->startWith)($uninstallCommand);
+                    }
+
+                    collect(array_reverse($plugin->package->migrationFileNames))
+                        ->each(function ($migration) use ($plugin) {
+                            $fullPath = $plugin->package->basePath("database/migrations/{$migration}.php");
+
+                            static::downMigration($fullPath, $migration);
+                        });
+
+                    collect($plugin->package->settingFileNames)
+                        ->each(function ($setting) use ($plugin) {
+                            $fullPath = $plugin->package->basePath("database/settings/{$setting}.php");
+
+                            static::downMigration($fullPath, $setting);
+                        });
+
+                    $plugin->update(['is_installed' => false, 'is_active' => false]);
+
+                    if ($uninstallCommand?->endWith) {
+                        ($uninstallCommand->endWith)($uninstallCommand);
+                    }
+                } catch (Throwable $e) {
+                    $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
+                }
+            });
+
+        Package::refreshPluginCaches();
+
+        if (empty($errors)) {
+            Notification::make()
+                ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled.title'))
+                ->body(__('plugin-manager::filament/resources/plugin.notifications.uninstalled.body', ['name' => $record->name]))
+                ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title(__('plugin-manager::filament/resources/plugin.notifications.uninstalled-failed.title'))
+                ->body(implode(' ', $errors))
+                ->danger()
+                ->persistent()
+                ->send();
+        }
+    }
+
+    private static function resolveUninstallCommand(Package $package): ?UninstallCommand
+    {
+        return collect($package->consoleCommands ?? [])
+            ->first(fn ($command) => $command instanceof UninstallCommand);
+    }
+
+    private static function downMigration(string $fullPath, string $migration): void
+    {
+        if (! file_exists($fullPath)) {
+            return;
+        }
+
+        if (! DB::table('migrations')->where('migration', $migration)->exists()) {
+            return;
+        }
+
+        require_once $fullPath;
+
+        $migrationInstance = require $fullPath;
+
+        if (is_object($migrationInstance) && method_exists($migrationInstance, 'down')) {
+            $migrationInstance->down();
+
+            DB::table('migrations')->where('migration', $migration)->delete();
+        }
+    }
+
+    private static function getPhpExecutablePath(): string
+    {
+        return Package::phpBinaryPath();
+    }
+
+    private static function buildTimeoutCommand(int $seconds, string $command): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
+        }
+
+        if (PHP_OS_FAMILY === 'Darwin') {
+            $gtimeout = trim((string) shell_exec('which gtimeout 2>/dev/null'));
+
+            if ($gtimeout !== '') {
+                return "gtimeout {$seconds} {$command}";
+            }
+
+            return $command;
+        }
+
+        return "timeout {$seconds} {$command}";
     }
 }

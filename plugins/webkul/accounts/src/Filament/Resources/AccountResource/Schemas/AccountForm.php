@@ -12,8 +12,9 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Filament\Resources\AccountResource;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\Journal;
 
 class AccountForm
 {
@@ -50,7 +51,7 @@ class AccountForm
                                             return;
                                         }
 
-                                        $journalIds = AccountResource::suggestJournalIdsForAccountType($state);
+                                        $journalIds = static::suggestJournalIdsForAccountType($state);
 
                                         if (! empty($journalIds)) {
                                             $set('invoices_account_journals', $journalIds);
@@ -135,5 +136,34 @@ class AccountForm
                     ->columns(2),
             ])
             ->columns(1);
+    }
+
+    private static function suggestJournalIdsForAccountType(?string $accountType): array
+    {
+        if (! $accountType) {
+            return [];
+        }
+
+        $journalType = match ($accountType) {
+            AccountType::INCOME->value,
+            AccountType::INCOME_OTHER->value,
+            AccountType::ASSET_RECEIVABLE->value       => JournalType::SALE,
+            AccountType::EXPENSE->value,
+            AccountType::EXPENSE_DEPRECIATION->value,
+            AccountType::EXPENSE_DIRECT_COST->value,
+            AccountType::LIABILITY_PAYABLE->value      => JournalType::PURCHASE,
+            AccountType::ASSET_CASH->value             => JournalType::CASH,
+            AccountType::LIABILITY_CREDIT_CARD->value  => JournalType::CREDIT_CARD,
+            default                                    => null,
+        };
+
+        if (! $journalType) {
+            return [];
+        }
+
+        return Journal::query()
+            ->where('type', $journalType->value)
+            ->pluck('id')
+            ->all();
     }
 }

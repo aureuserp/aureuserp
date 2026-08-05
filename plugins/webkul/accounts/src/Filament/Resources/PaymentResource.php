@@ -14,10 +14,7 @@ use Webkul\Account\Filament\Resources\PaymentResource\Pages\ViewPayment;
 use Webkul\Account\Filament\Resources\PaymentResource\Schemas\PaymentForm;
 use Webkul\Account\Filament\Resources\PaymentResource\Schemas\PaymentInfolist;
 use Webkul\Account\Filament\Resources\PaymentResource\Tables\PaymentsTable;
-use Webkul\Account\Models\Journal;
-use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
-use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class PaymentResource extends Resource
@@ -50,7 +47,7 @@ class PaymentResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return PaymentForm::configure($schema, static::class, static::getCustomFormFields());
+        return PaymentForm::configure($schema, static::getCustomFormFields());
     }
 
     public static function table(Table $table): Table
@@ -61,38 +58,6 @@ class PaymentResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return PaymentInfolist::configure($schema, static::getCustomInfolistEntries());
-    }
-
-    public static function computePayment($get)
-    {
-        $journal = Journal::find($get('journal_id'));
-
-        $payment = new Payment;
-
-        if (! $journal) {
-            return $payment;
-        }
-
-        $payment->payment_type = $get('payment_type');
-        $payment->journal = $journal;
-        $payment->payment_method_line_id = $get('payment_method_line_id');
-        $payment->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
-        $payment->partner_id = $get('partner_id');
-        $payment->partner = Partner::find($get('partner_id'));
-
-        if (! $payment->paymentMethodLine) {
-            $payment->computePaymentMethodLineId();
-
-            return $payment;
-        }
-
-        if (! $payment->paymentMethodLine) {
-            return $payment;
-        }
-
-        $payment->computeShowRequirePartnerBank();
-
-        return $payment;
     }
 
     public static function getPages(): array

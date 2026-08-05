@@ -4,6 +4,7 @@ namespace Webkul\Field\Filament\Resources;
 
 use Filament\Facades\Filament;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
 use Webkul\Field\Filament\Resources\FieldResource\Pages\CreateField;
@@ -36,7 +37,7 @@ class FieldResource extends Resource
         return NavigationGroup::Setting;
     }
 
-    public static function form(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
+    public static function form(Schema $schema): Schema
     {
         return FieldForm::configure($schema);
     }
@@ -44,16 +45,6 @@ class FieldResource extends Resource
     public static function table(Table $table): Table
     {
         return FieldsTable::configure($table);
-    }
-
-    public static function getPluginOptions(): array
-    {
-        return collect(static::customizableResources())
-            ->map(fn ($resource) => static::resourcePluginDirectory($resource))
-            ->unique()
-            ->sort()
-            ->mapWithKeys(fn ($plugin) => [$plugin => str($plugin)->headline()->toString()])
-            ->toArray();
     }
 
     protected static function adminPanelResources(): array
@@ -72,7 +63,7 @@ class FieldResource extends Resource
             ->toArray();
     }
 
-    protected static function customizableResources(): array
+    public static function customizableResources(): array
     {
         static $resources = null;
 
@@ -105,7 +96,7 @@ class FieldResource extends Resource
             ->all();
     }
 
-    protected static function resourcePluginDirectory(string $resource): string
+    public static function resourcePluginDirectory(string $resource): string
     {
         static $cache = [];
 
@@ -157,17 +148,6 @@ class FieldResource extends Resource
     protected static function resourceLabel(string $resource): string
     {
         return str(class_basename($resource))->beforeLast('Resource')->headline()->toString();
-    }
-
-    public static function pluginForModel(string $type): ?string
-    {
-        foreach (static::customizableResources() as $resource) {
-            if ($resource::getModel() === $type) {
-                return static::resourcePluginDirectory($resource);
-            }
-        }
-
-        return null;
     }
 
     public static function getPages(): array

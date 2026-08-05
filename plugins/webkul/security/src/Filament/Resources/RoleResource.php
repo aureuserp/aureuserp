@@ -8,7 +8,6 @@ use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource as RolesRoleResourc
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
@@ -19,7 +18,6 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\CreateRole;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\EditRole;
@@ -312,25 +310,6 @@ class RoleResource extends RolesRoleResource
             })
             ->values()
             ->toArray();
-    }
-
-    public static function getSelectAllFormComponent(): Component
-    {
-        // The Toggle uses $wire.$entangle('data.select_all') internally.
-        // We intentionally do NOT call tog.click() or use $watch('$wire.data.select_all')
-        // anywhere — those were the cause of the stuck-loader loop after save.
-        //
-        // Instead, _chk() dispatches window event 'shield-set-state' which the Toggle
-        // catches via x-on:shield-set-state.window and sets its own `state` directly.
-        // Since the binding is deferred (not live), this queues the value for the next
-        // form submit without firing an immediate Livewire network request.
-        return Toggle::make('select_all')
-            ->onIcon('heroicon-s-shield-check')
-            ->offIcon('heroicon-s-shield-exclamation')
-            ->label(__('filament-shield::filament-shield.field.select_all.name'))
-            ->helperText(fn (): HtmlString => new HtmlString(__('filament-shield::filament-shield.field.select_all.message')))
-            ->dehydrated(fn (bool $state): bool => $state)
-            ->extraAlpineAttributes(['x-on:shield-set-state.window' => 'state = $event.detail']);
     }
 
     public static function getCheckboxListFormComponent(

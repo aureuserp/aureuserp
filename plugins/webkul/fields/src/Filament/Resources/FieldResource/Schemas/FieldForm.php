@@ -148,9 +148,9 @@ class FieldForm
                                     ->live()
                                     ->dehydrated(false)
                                     ->disabledOn('edit')
-                                    ->options(fn () => FieldResource::getPluginOptions())
+                                    ->options(fn () => static::getPluginOptions())
                                     ->afterStateHydrated(fn (Set $set, $record) => $record?->customizable_type
-                                        ? $set('plugin', FieldResource::pluginForModel($record->customizable_type))
+                                        ? $set('plugin', static::pluginForModel($record->customizable_type))
                                         : null)
                                     ->afterStateUpdated(fn (Set $set) => $set('customizable_type', null)),
                                 Select::make('customizable_type')
@@ -1077,5 +1077,26 @@ class FieldForm
         };
 
         return array_merge($typeSettings, $commonSettings);
+    }
+
+    private static function getPluginOptions(): array
+    {
+        return collect(FieldResource::customizableResources())
+            ->map(fn ($resource) => FieldResource::resourcePluginDirectory($resource))
+            ->unique()
+            ->sort()
+            ->mapWithKeys(fn ($plugin) => [$plugin => str($plugin)->headline()->toString()])
+            ->toArray();
+    }
+
+    private static function pluginForModel(string $type): ?string
+    {
+        foreach (FieldResource::customizableResources() as $resource) {
+            if ($resource::getModel() === $type) {
+                return FieldResource::resourcePluginDirectory($resource);
+            }
+        }
+
+        return null;
     }
 }
