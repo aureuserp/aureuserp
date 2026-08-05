@@ -55,12 +55,12 @@ class PaymentResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return PaymentsTable::configure($table, static::class, static::getCustomTableColumns(), static::getCustomTableFilters());
+        return PaymentsTable::configure($table, static::getCustomTableColumns(), static::getCustomTableFilters());
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return PaymentInfolist::configure($schema, static::class, static::getCustomInfolistEntries());
+        return PaymentInfolist::configure($schema, static::getCustomInfolistEntries());
     }
 
     public static function computePayment($get)

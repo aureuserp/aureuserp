@@ -22,7 +22,7 @@ use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 
 class PaymentsTable
 {
-    public static function configure(Table $table, string $resource, array $customColumns = [], array $customFilters = []): Table
+    public static function configure(Table $table, array $customColumns = [], array $customFilters = []): Table
     {
         return $table
             ->reorderableColumns()

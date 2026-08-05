@@ -14,7 +14,7 @@ use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgre
 
 class PaymentInfolist
 {
-    public static function configure(Schema $schema, string $resource, array $customInfolistEntries = []): Schema
+    public static function configure(Schema $schema, array $customInfolistEntries = []): Schema
     {
         return $schema
             ->columns(1)

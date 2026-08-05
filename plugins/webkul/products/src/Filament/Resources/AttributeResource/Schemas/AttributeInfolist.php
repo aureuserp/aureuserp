@@ -3,6 +3,7 @@
 namespace Webkul\Product\Filament\Resources\AttributeResource\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
@@ -14,7 +15,7 @@ class AttributeInfolist
     {
         return $schema
             ->components([
-                \Filament\Schemas\Components\Group::make()
+                Group::make()
                     ->schema([
                         Section::make(__('products::filament/resources/attribute.infolist.sections.general.title'))
                             ->schema([
@@ -30,7 +31,7 @@ class AttributeInfolist
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                \Filament\Schemas\Components\Group::make()
+                Group::make()
                     ->schema([
                         Section::make(__('products::filament/resources/attribute.infolist.sections.record-information.title'))
                             ->schema([

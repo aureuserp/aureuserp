@@ -5,18 +5,11 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationRece
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 
 class QuotationReceiptsTable
 {
-    /**
-     * $resource is the calling resource class, so subclasses such as
-     * PurchaseOrderReceiptResource build record URLs against their own routes.
-     *
-     * @param  class-string<resource>  $resource
-     */
     public static function configure(Table $table, string $resource): Table
     {
         return OperationResource::table($table)

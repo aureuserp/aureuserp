@@ -15,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Models\Order;
-use Webkul\Website\Filament\Customer\Clusters\Account;
 
 class OrderInfolist
 {
