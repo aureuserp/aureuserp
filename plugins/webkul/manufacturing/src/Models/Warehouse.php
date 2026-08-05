@@ -138,11 +138,17 @@ class Warehouse extends BaseWarehouse
             $this->sam_loc_id,
         ])->update(['warehouse_id' => $this->id]);
 
-        OperationType::withTrashed()->whereIn('id', [
+        $operationTypeIds = [
             $this->pbm_type_id,
             $this->sam_type_id,
             $this->manu_type_id,
-        ])->update(['warehouse_id' => $this->id]);
+        ];
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->update(['warehouse_id' => $this->id]);
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->get()->each(
+            fn (OperationType $operationType) => $operationType->syncSequence()
+        );
 
         $this->routes()->attach($this->pbm_route_id);
 
