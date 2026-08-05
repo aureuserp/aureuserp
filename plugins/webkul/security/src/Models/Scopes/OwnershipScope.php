@@ -20,7 +20,7 @@ class OwnershipScope implements Scope
 
         $user = auth()->user();
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return;
         }
 

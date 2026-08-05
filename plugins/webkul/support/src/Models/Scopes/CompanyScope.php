@@ -15,11 +15,11 @@ class CompanyScope implements Scope
             return;
         }
 
-        if (! auth()->check()) {
+        $context = app(CompanyContext::class);
+
+        if (! $context->internalUser()) {
             return;
         }
-
-        $context = app(CompanyContext::class);
 
         if ($context->bypassed()) {
             return;
