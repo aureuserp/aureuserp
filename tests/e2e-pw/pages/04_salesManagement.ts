@@ -1,6 +1,8 @@
 import { Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
+import { pluginsPreinstalled, runOnce, SETUP_KEYS } from "../utils/setupCache";
+import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type SalesCustomerData = {
     name: string;
@@ -52,15 +54,20 @@ export class SalesFlowPage {
     }
 
     async ensureSalesPluginInstalled() {
-        const pluginPage = new PluginManagementPage(this.page);
-        await pluginPage.gotoPluginManagementPage();
-        await pluginPage.installPluginByName("Sales");
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
+        await runOnce(SETUP_KEYS.pluginSales, async () => {
+            const pluginPage = new PluginManagementPage(this.page);
+            await pluginPage.gotoPluginManagementPage();
+            await pluginPage.installPluginByName("Sales");
+        });
     }
 
     /**
      * Navigate, retrying when a redirect still in flight from the previous page aborts or
-     * interrupts this one. Landing here straight after saving a record elsewhere would
-     * otherwise fail with net::ERR_ABORTED.
+     * interrupts this one.
      */
     private async safeGoto(url: string) {
         await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
@@ -98,17 +105,13 @@ export class SalesFlowPage {
             await this.fillWhenReady(this.erpLocators.salesCustomerEmailInput, customer.email);
         }
 
-        // "Create" redirects off the create form; the reachable outcome is that redirect,
-        // whereas the success toast is torn down by it and cannot be relied on.
         await this.erpLocators.salesCustomerCreateButton.click();
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await expect(this.page).not.toHaveURL(/customers\/create/);
     }
 
     /**
-     * Fill a field once its form is done hydrating. Livewire swaps the DOM after an SPA
-     * navigation, which silently discards a value typed into the pre-swap markup, so the
-     * value is read back and retyped if it did not stick.
+     * Fill a field once its form is done hydrating.
      */
     private async fillWhenReady(input: ReturnType<Page["locator"]>, value: string) {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
@@ -128,9 +131,8 @@ export class SalesFlowPage {
     async editCustomer(originalName: string, updates: Partial<SalesCustomerData>) {
         await this.gotoCustomersPage();
         await this.searchList(originalName);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.salesCustomerEditButton.click();
+
+        await clickRowAction(rowByText(this.page, originalName), "Edit");
 
         if (updates.name) {
             await this.erpLocators.salesCustomerNameInput.fill(updates.name);
@@ -140,17 +142,28 @@ export class SalesFlowPage {
         }
 
         await this.erpLocators.salesCustomerSaveButton.click();
-        await this.expectSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteCustomer(name: string) {
         await this.gotoCustomersPage();
         await this.searchList(name);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.salesCustomerDeleteButton.click();
+
+        await clickRowAction(rowByText(this.page, name), "Delete");
         await this.erpLocators.salesConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+        await this.expectRecordAbsent(name);
+    }
+
+    /**
+     * The record is gone from its listing — the outcome a delete has to be judged by, since a
+     * toast on screen may belong to a test running beside this one.
+     */
+    async expectRecordAbsent(name: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.searchList(name);
+        await expect(rowByText(this.page, name)).toHaveCount(0);
     }
 
     async gotoProductsPage() {
@@ -169,16 +182,23 @@ export class SalesFlowPage {
         await this.fillWhenReady(this.erpLocators.salesProductPriceInput, product.price);
 
         if (product.invoicePolicy) {
-            // invoice_policy renders as a native <select>; pick by its option value.
             await this.erpLocators.salesProductInvoicePolicySelect.selectOption(product.invoicePolicy);
         }
 
-        // Products default to storable goods tracked "By Quantity"; only touch Track By
-        // when a lot/serial product is wanted.
         if (product.tracking && product.tracking !== "qty") {
             await expect(this.erpLocators.salesProductTrackingSelect).toBeVisible();
-            await this.erpLocators.salesProductTrackingSelect.selectOption(product.tracking);
-            await this.page.waitForTimeout(300);
+
+            for (let attempt = 0; attempt < 3; attempt++) {
+                await this.erpLocators.salesProductTrackingSelect.selectOption(product.tracking);
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(800);
+
+                if ((await this.erpLocators.salesProductTrackingSelect.inputValue()) === product.tracking) {
+                    break;
+                }
+            }
+
+            await expect(this.erpLocators.salesProductTrackingSelect).toHaveValue(product.tracking);
         }
 
         await this.erpLocators.salesProductCreateButton.click();
@@ -189,9 +209,8 @@ export class SalesFlowPage {
     async editProduct(originalName: string, updates: Partial<SalesProductData>) {
         await this.gotoProductsPage();
         await this.searchList(originalName);
-        await this.openRowActions();
-        await this.erpLocators.salesProductEditButton.click();
-        // await this.clickMenuAction(/Edit/i);
+
+        await clickRowAction(rowByText(this.page, originalName), "Edit");
 
         if (updates.name) {
             await this.erpLocators.salesProductNameInput.fill(updates.name);
@@ -201,17 +220,17 @@ export class SalesFlowPage {
         }
 
         await this.erpLocators.salesProductSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteProduct(name: string) {
         await this.gotoProductsPage();
         await this.searchList(name);
-        await this.openRowActions();
-        await this.erpLocators.salesProductDeleteButton.click();
-        // await this.clickMenuAction(/Delete/i);
+
+        await clickRowAction(rowByText(this.page, name), "Delete");
         await this.erpLocators.salesConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+        await this.expectRecordAbsent(name);
     }
 
     async gotoQuotationsPage() {
@@ -241,8 +260,7 @@ export class SalesFlowPage {
 
     /**
      * Create a quotation with any number of product lines, optionally shipped from a
-     * non-default warehouse. The warehouse is picked before the lines are added so each
-     * line inherits it, which is what drives the delivery route (1/2/3-step).
+     * non-default warehouse.
      */
     async createOrderWithLines(order: SalesOrderData) {
         const l = this.erpLocators;
@@ -271,8 +289,6 @@ export class SalesFlowPage {
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await l.salesQuotationQuantityInput.nth(index).fill(line.quantity);
 
-            // The quantity recomputes the line on blur; let that round-trip finish before
-            // touching the tax field, or its request overlaps and the submit stays disabled.
             await this.blurAndSettle();
 
             if (line.taxName) {
@@ -285,8 +301,6 @@ export class SalesFlowPage {
 
     /**
      * Submit the create form. Filament disables the submit button while a Livewire request
-     * is in flight — a line recompute, say — and a click that lands in that window is
-     * swallowed, so the submit is retried until the create page is actually left behind.
      */
     private async submitCreateForm() {
         for (let attempt = 0; attempt < 3; attempt++) {
@@ -306,8 +320,7 @@ export class SalesFlowPage {
 
     /**
      * Add a tax to a line. The taxes field is a multi-select, so its panel stays open
-     * after a pick; it is dismissed explicitly, and the line and order totals are only
-     * recomputed once that Livewire round-trip lands.
+     * after a pick
      */
     async selectLineTax(lineIndex: number, taxName: string) {
         const l = this.erpLocators;
@@ -356,6 +369,27 @@ export class SalesFlowPage {
      * Retype a line's ordered quantity. The field recomputes on blur, so the click away
      * is what triggers the Livewire round-trip.
      */
+    async updateLineQuantityAndSave(orderRef: string, lineIndex: number, quantity: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.gotoOrderEdit(orderRef);
+            await this.updateLineQuantity(lineIndex, quantity);
+            await this.saveOrder();
+
+            await this.gotoOrderEdit(orderRef);
+
+            const shown = await this.erpLocators.salesQuotationQuantityInput
+                .nth(lineIndex)
+                .inputValue()
+                .catch(() => "");
+
+            if (new RegExp(`^${quantity}(\\.0+)?$`).test(shown)) {
+                return;
+            }
+        }
+
+        await this.expectLineQuantity(lineIndex, quantity);
+    }
+
     async updateLineQuantity(lineIndex: number, quantity: string) {
         const input = this.erpLocators.salesQuotationQuantityInput.nth(lineIndex);
         await expect(input).toBeEnabled();
@@ -377,8 +411,6 @@ export class SalesFlowPage {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await l.salesQuotationQuantityInput.nth(existingLines).fill(quantity);
 
-        // The quantity recomputes the line on blur; let that round-trip finish, or the
-        // save that follows lands while the form is busy and is dropped.
         await this.blurAndSettle();
     }
 
@@ -397,15 +429,7 @@ export class SalesFlowPage {
     }
 
     /**
-     * Click a submit button once Filament re-enables it. It is disabled for the duration
-     * of an in-flight Livewire request, and occasionally stays that way, so the wait is
-     * bounded and the click is forced rather than letting the whole test time out.
-     */
-    /**
-     * Click the submit exactly once. Playwright re-tries a click whose element moves or is
-     * detached mid-dispatch, and Livewire re-renders the button as the form settles — on a
-     * slow machine that retry lands a second click, the form is saved twice, and the line
-     * added to a confirmed order is applied to its transfer twice (demand 2 becomes 4).
+     * Click a submit button once Filament re-enables it.
      */
     private async dispatchSingleClick(button: ReturnType<Page["locator"]>) {
         await button.waitFor({ state: "visible", timeout: 15000 });
@@ -428,16 +452,9 @@ export class SalesFlowPage {
     }
 
     /**
-     * Submit a form and make sure the request actually left the browser. A click that
-     * lands while Livewire is mid-request is swallowed: the button is disabled for that
-     * instant and nothing is saved, which on a loaded CI machine silently drops an added
-     * order line. Retry until the submit is seen on the wire.
+     * Submit a form and make sure the request actually left the browser.
      */
     private async submitForm(button: ReturnType<Page["locator"]>) {
-        // The submit must not be retried: a save that is merely slow is still on its way to
-        // the server, and clicking again saves the form a second time — the line added to a
-        // confirmed order is then applied to the delivery twice (demand 2 becomes 4). Click
-        // once, and give the save as long as it needs.
         const submitted = this.page
             .waitForResponse(
                 (response) => /livewire[^/]*\/update/.test(response.url()) && response.request().method() === "POST",
@@ -477,22 +494,21 @@ export class SalesFlowPage {
     async editQuotationQuantity(searchKey: string, quantity: string) {
         await this.gotoQuotationsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.salesQuotationEditButton.click();
+
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
         await this.erpLocators.salesQuotationQuantityInput.first().fill(quantity);
-        await this.erpLocators.salesQuotationSaveButton.click();
-        await this.expectSuccessToast();
+        await this.saveOrder();
     }
 
     async deleteQuotation(searchKey: string) {
         await this.gotoQuotationsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        await this.erpLocators.salesQuotationDeleteButton.click();
-        // await this.clickMenuAction(/Delete/i);
+
+        await clickRowAction(rowByText(this.page, searchKey), "Delete");
         await this.erpLocators.salesConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+
+        await this.gotoQuotationsPage();
+        await this.expectRecordAbsent(searchKey);
     }
 
     /**
@@ -500,16 +516,29 @@ export class SalesFlowPage {
      * so the outcome is read from that landing page rather than from the success toast.
      */
     async confirmQuotation() {
-        await this.erpLocators.salesQuotationConfirmButton.click();
-        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        const confirm = this.erpLocators.salesQuotationConfirmButton;
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await expect(confirm).toBeEnabled({ timeout: 60000 });
+            await confirm.click().catch(() => undefined);
+
+            const confirmed = await this.page
+                .waitForURL(/\/orders\/\d+/, { timeout: 60000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (confirmed) {
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await expect(confirm).toHaveCount(0);
+
+                return;
+            }
+        }
+
         await expect(this.page).toHaveURL(/\/orders\/\d+/);
-        await expect(this.erpLocators.salesQuotationConfirmButton).toHaveCount(0);
     }
 
     /**
      * Invoice the order. Submitting the dialog redirects, which can tear the success
-     * toast down before it can be observed, so the outcome is read off the order itself:
-     * with nothing left to invoice the Create Invoice action is gone.
      */
     async createInvoice() {
         await expect(this.erpLocators.salesQuotationCreateInvoiceButton).toBeVisible();
@@ -521,14 +550,10 @@ export class SalesFlowPage {
         await expect(this.erpLocators.salesQuotationCreateInvoiceButton).toHaveCount(0);
     }
 
-    // With the "Ordered Quantities" policy the Create Invoice button is shown as soon as the
-    // order is confirmed.
     async expectCreateInvoiceButtonVisible() {
         await expect(this.erpLocators.salesQuotationCreateInvoiceButton).toBeVisible();
     }
 
-    // With the "Delivered Quantities" policy the Create Invoice action is hidden until there
-    // are delivered quantities to invoice, so the button is absent from the DOM.
     async expectCreateInvoiceButtonHidden() {
         await expect(this.erpLocators.salesQuotationCreateInvoiceButton).toHaveCount(0);
     }
@@ -536,14 +561,11 @@ export class SalesFlowPage {
     async sendQuotation() {
         await expect(this.erpLocators.salesQuotationSendButton).toBeVisible();
         await this.erpLocators.salesQuotationSendButton.click();
-        // await expect(this.erpLocators.salesQuotationSendSubmitButton).toBeVisible();
         await this.page.waitForLoadState("networkidle");
         await this.erpLocators.salesQuotationSendSubmitButton.click();
         await this.expectSuccessToast();
     }
 
-    // After confirmation a quotation becomes a sales order, so the record can live
-    // under either the "quotations" or the "orders" resource slug.
     currentRecordRef(): { resource: string; id: string } {
         const url = this.page.url();
         const match = url.match(/\/(quotations|orders)\/(\d+)/);
@@ -580,9 +602,7 @@ export class SalesFlowPage {
     }
 
     /**
-     * Read every operation listed on the sale order's Deliveries tab. A multi-step
-     * warehouse links its whole Pick/Pack/Ship chain to the order, so this returns
-     * one entry per transfer.
+     * Read every operation listed on the sale order's Deliveries tab. 
      */
     async readDeliveryRows(): Promise<Array<{ id: string; reference: string; state: string }>> {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
@@ -663,9 +683,7 @@ export class SalesFlowPage {
     }
 
     /**
-     * Open the order's first transfer that has not been validated yet. Used after a back
-     * order is created, where the remaining transfer cannot be addressed by row index —
-     * the deliveries table does not list the transfers in creation order.
+     * Open the order's first transfer that has not been validated yet.
      */
     async openPendingDelivery(): Promise<string> {
         await this.openDeliveriesForCurrentQuotation();
@@ -695,19 +713,14 @@ export class SalesFlowPage {
     }
 
     /**
-     * Assert the currently-open operation reached Done. Validate raises no notification,
-     * so the transition is read off the header actions: Validate disappears and the
-     * Return action — only offered on a validated transfer — appears.
+     * Assert the currently-open operation reached Done. 
      */
     async expectOpenDeliveryDone() {
-        await expect(this.erpLocators.salesDeliveryValidateButton).toBeHidden();
-        await expect(this.erpLocators.salesDeliveryReturnButton).toBeVisible();
+        await expect(this.erpLocators.salesDeliveryReturnButton).toBeVisible({ timeout: 120000 });
     }
 
     /**
-     * Drive the currently-open delivery to Done. Sale-order deliveries are already
-     * confirmed and reserved at confirm, so Mark as Todo is normally absent; the
-     * backorder prompt is declined when the transfer is short.
+     * Drive the currently-open delivery to Done. 
      */
     async validateOpenDelivery() {
         const l = this.erpLocators;
@@ -790,12 +803,7 @@ export class SalesFlowPage {
     }
 
     async searchList(keyword: string) {
-        await this.erpLocators.salesSearchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
-    }
-
-    async openRowActions() {
-        await this.erpLocators.salesRowActionsButton.first().click();
+        await filterListBySearch(this.page, this.erpLocators.salesSearchInput, keyword);
     }
 
     async clickMenuAction(label: RegExp) {

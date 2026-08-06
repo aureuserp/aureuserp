@@ -22,6 +22,14 @@ function ensureAdminAuthStateDirectoryExists(): void {
     fs.mkdirSync(STATE_DIR_PATH, { recursive: true });
 }
 
+async function saveAdminAuthState(context: BrowserContext): Promise<void> {
+    ensureAdminAuthStateDirectoryExists();
+
+    const temporaryPath = `${ADMIN_AUTH_STATE_PATH}.${process.pid}.tmp`;
+    await context.storageState({ path: temporaryPath });
+    fs.renameSync(temporaryPath, ADMIN_AUTH_STATE_PATH);
+}
+
 async function createAdminSession(browser: Browser): Promise<AdminSession> {
     const authExists = fs.existsSync(ADMIN_AUTH_STATE_PATH);
     const context = await browser.newContext(
@@ -31,8 +39,7 @@ async function createAdminSession(browser: Browser): Promise<AdminSession> {
 
     if (!authExists) {
         await loginAsAdmin(page);
-        ensureAdminAuthStateDirectoryExists();
-        await context.storageState({ path: ADMIN_AUTH_STATE_PATH });
+        await saveAdminAuthState(context);
 
         return { context, page };
     }
@@ -42,8 +49,7 @@ async function createAdminSession(browser: Browser): Promise<AdminSession> {
 
     if (page.url().includes("admin/login")) {
         await loginAsAdmin(page);
-        ensureAdminAuthStateDirectoryExists();
-        await context.storageState({ path: ADMIN_AUTH_STATE_PATH });
+        await saveAdminAuthState(context);
     }
 
     return { context, page };

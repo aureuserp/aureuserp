@@ -1,5 +1,6 @@
 import { test, withAdminPage } from "../../setup";
 import { SalesFlowPage } from "../../pages/04_salesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Sales Products E2E", () => {
     test.beforeAll(async ({ browser }) => {
@@ -16,7 +17,7 @@ test.describe("Sales Products E2E", () => {
 
     test("Create Product - Valid Inputs", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await salesPage.createProduct({
             name: `E2E Sales Product ${key}`,
@@ -26,7 +27,7 @@ test.describe("Sales Products E2E", () => {
 
     test("Edit Product - Updates Name", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalName = `E2E Sales Product ${key}`;
         const updatedName = `E2E Sales Product Updated ${key}`;
 
@@ -40,7 +41,7 @@ test.describe("Sales Products E2E", () => {
 
     test("Delete Product - Removes Record", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Sales Product ${key}`;
 
         await salesPage.createProduct({

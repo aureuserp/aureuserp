@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 /**
  * Warehouse step-configuration auto-creation, verified by record presence (not brittle counts).
@@ -10,7 +11,7 @@ test.describe("Inventory Warehouse", () => {
      */
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.ensureInventoriesPluginInstalled();
         await inventoryPage.enableManageWarehousesToggles();
     });
 
@@ -27,7 +28,7 @@ test.describe("Inventory Warehouse", () => {
      */
     test("Create - One Step (Receive / Deliver)", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = {
             name: `WH 1Step ${key}`,
             code: `W1${key}`.slice(-5),
@@ -44,7 +45,7 @@ test.describe("Inventory Warehouse", () => {
      */
     test("Create - Two Steps (Receive Then Store / Pick Then Deliver)", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = {
             name: `WH 2Step ${key}`,
             code: `W2${key}`.slice(-5),
@@ -61,7 +62,7 @@ test.describe("Inventory Warehouse", () => {
      */
     test("Create - Three Steps (Receive, QC, Store / Pick, Pack, Deliver)", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = {
             name: `WH 3Step ${key}`,
             code: `W3${key}`.slice(-5),
@@ -78,7 +79,7 @@ test.describe("Inventory Warehouse", () => {
      */
     test("Create - Asymmetric Steps (Two-Step Receive / One-Step Deliver)", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = {
             name: `WH Mixed ${key}`,
             code: `WX${key}`.slice(-5),
@@ -95,7 +96,7 @@ test.describe("Inventory Warehouse", () => {
      */
     test("Switch From One Step To Three Steps", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = {
             name: `WH Edit ${key}`,
             code: `WE${key}`.slice(-5),
@@ -124,7 +125,7 @@ test.describe("Inventory Location", () => {
      */
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.ensureInventoriesPluginInstalled();
         await inventoryPage.enableManageWarehousesToggles();
     });
 
@@ -141,7 +142,7 @@ test.describe("Inventory Location", () => {
      */
     test("Create Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const name = `E2E Location ${Date.now()}`;
+        const name = `E2E Location ${uniqueKey()}`;
 
         await inventoryPage.createLocation(name);
         await inventoryPage.gotoLocationsPage();
@@ -153,7 +154,7 @@ test.describe("Inventory Location", () => {
      */
     test("Delete Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const name = `E2E Location Del ${Date.now()}`;
+        const name = `E2E Location Del ${uniqueKey()}`;
 
         await inventoryPage.createLocation(name);
         await inventoryPage.deleteLocation(name);
@@ -165,7 +166,7 @@ test.describe("Inventory Location", () => {
     test("Type - Vendor Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc Vendor ${Date.now()}`, "supplier");
+        await inventoryPage.createLocationOfType(`E2E Loc Vendor ${uniqueKey()}`, "supplier");
         await inventoryPage.expectInfolistField("Location Type", "Vendor Location");
     });
 
@@ -175,7 +176,7 @@ test.describe("Inventory Location", () => {
     test("Type - View", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc View ${Date.now()}`, "view");
+        await inventoryPage.createLocationOfType(`E2E Loc View ${uniqueKey()}`, "view");
         await inventoryPage.expectInfolistField("Location Type", "View");
     });
 
@@ -185,7 +186,7 @@ test.describe("Inventory Location", () => {
     test("Type - Internal Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc Internal ${Date.now()}`, "internal");
+        await inventoryPage.createLocationOfType(`E2E Loc Internal ${uniqueKey()}`, "internal");
         await inventoryPage.expectInfolistField("Location Type", "Internal Location");
     });
 
@@ -195,7 +196,7 @@ test.describe("Inventory Location", () => {
     test("Type - Customer Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc Customer ${Date.now()}`, "customer");
+        await inventoryPage.createLocationOfType(`E2E Loc Customer ${uniqueKey()}`, "customer");
         await inventoryPage.expectInfolistField("Location Type", "Customer Location");
     });
 
@@ -205,7 +206,7 @@ test.describe("Inventory Location", () => {
     test("Type - Inventory Loss", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc Inventory ${Date.now()}`, "inventory");
+        await inventoryPage.createLocationOfType(`E2E Loc Inventory ${uniqueKey()}`, "inventory");
         await inventoryPage.expectInfolistField("Location Type", "Inventory Loss");
     });
 
@@ -215,7 +216,7 @@ test.describe("Inventory Location", () => {
     test("Type - Production", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc Production ${Date.now()}`, "production");
+        await inventoryPage.createLocationOfType(`E2E Loc Production ${uniqueKey()}`, "production");
         await inventoryPage.expectInfolistField("Location Type", "Production");
     });
 
@@ -225,7 +226,7 @@ test.describe("Inventory Location", () => {
     test("Type - Transit Location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        await inventoryPage.createLocationOfType(`E2E Loc Transit ${Date.now()}`, "transit");
+        await inventoryPage.createLocationOfType(`E2E Loc Transit ${uniqueKey()}`, "transit");
         await inventoryPage.expectInfolistField("Location Type", "Transit Location");
     });
 
@@ -234,7 +235,7 @@ test.describe("Inventory Location", () => {
      */
     test("Scrap location usable in scrap", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const scrapLocation = `E2E Scrap Loc ${key}`;
         const product = `E2E Scrap Product ${key}`;
 
@@ -251,7 +252,7 @@ test.describe("Inventory Location", () => {
      */
     test("Parent location persists", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const parent = `E2E Parent ${key}`;
         const child = `E2E Child ${key}`;
 
@@ -265,7 +266,7 @@ test.describe("Inventory Location", () => {
      */
     test("Delete blocked when location holds stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const location = `E2E Loc Stock ${key}`;
         const product = `E2E Loc Product ${key}`;
 
@@ -287,7 +288,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.ensureInventoriesPluginInstalled();
         await inventoryPage.enableAllInventorySettings();
     });
 
@@ -296,7 +297,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Type - Receipt", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -317,7 +318,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Type - Delivery", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -338,7 +339,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Type - Internal", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -359,7 +360,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Type - Dropship", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -380,7 +381,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Lots - Create New persists", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -402,7 +403,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Lots - Use Existing persists", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -424,7 +425,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Return type from another operation type", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
         const returnType = `E2E OpType Base ${key}`;
@@ -454,7 +455,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Create backorder policy persists", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E OpSrc ${key}`;
         const destination = `E2E OpDst ${key}`;
 
@@ -476,7 +477,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Product moves through a custom operation type", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const destination = `E2E Move Dst ${key}`;
         const operationType = `E2E Move OpType ${key}`;
         const product = `E2E Move Product ${key}`;
@@ -507,7 +508,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Return uses the custom return type", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const returnDest = `E2E Ret Dest ${key}`;
         const mainDest = `E2E Main Dest ${key}`;
         const returnType = `E2E Ret Type ${key}`;
@@ -552,7 +553,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Create backorder - Ask creates a backorder", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E BO Src ${key}`;
         const product = `E2E BO Product ${key}`;
         const opType = `E2E BO Ask Type ${key}`;
@@ -587,7 +588,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Create backorder - Never skips the backorder", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E BO Src ${key}`;
         const product = `E2E BO Product ${key}`;
         const opType = `E2E BO Never Type ${key}`;
@@ -622,7 +623,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Create backorder - Always creates a backorder without asking", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E BO Src ${key}`;
         const product = `E2E BO Product ${key}`;
         const opType = `E2E BO Always Type ${key}`;
@@ -657,7 +658,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Reservation - At Confirm reserves on confirm", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E Rsv Src ${key}`;
         const product = `E2E Rsv Product ${key}`;
         const opType = `E2E Rsv AtConfirm ${key}`;
@@ -690,7 +691,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Reservation - Manual reserves on Check Availability", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const source = `E2E Rsv Src ${key}`;
         const product = `E2E Rsv Product ${key}`;
         const opType = `E2E Rsv Manual ${key}`;
@@ -725,12 +726,14 @@ test.describe("Inventory Operation Type", () => {
     });
 
     /**
-     * The Dropshipping setting gates the Dropship option on the type select: off
-     * leaves it listed but unselectable, on makes it selectable again. Re-enabling
-     * at the end restores what the suite's beforeAll set up, since the other
-     * operation type scenarios here rely on dropshipping being on.
+     * With dropshipping off, the type field must not offer Dropship (fails until
+     * the app gates the option — the type select currently always lists it).
+     *
+     * Tagged @exclusive: it switches dropshipping off for the whole application, which would
+     * cut the ground from under "Type - Dropship" (and anything else that needs the feature)
+     * if it ran beside them. It is held back until the parallel phase is over.
      */
-    test("Dropship type disabled when dropshipping off", async ({ adminPage }) => {
+    test("Dropship type hidden when dropshipping off @exclusive", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
         await inventoryPage.disableDropshipping();
@@ -754,7 +757,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Receipt - Create New serial", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const opType = `E2E Rcpt CreateNew ${key}`;
         const serial = `SN-CN-${key}`;
@@ -777,7 +780,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Receipt - Use Existing serial", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const seedType = `E2E Rcpt Seed ${key}`;
         const existingType = `E2E Rcpt UseExisting ${key}`;
@@ -800,7 +803,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Receipt - Create New and Use Existing both", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const seedType = `E2E Rcpt Seed ${key}`;
         const bothType = `E2E Rcpt Both ${key}`;
@@ -823,7 +826,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Receipt - No lot options when both off", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const opType = `E2E Rcpt NoLots ${key}`;
 
@@ -845,7 +848,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Delivery - Use Existing serial", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const seedType = `E2E Rcpt Seed ${key}`;
         const outType = `E2E Dlv UseExisting ${key}`;
@@ -867,7 +870,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Delivery - Create New does not add serial", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const seedType = `E2E Rcpt Seed ${key}`;
         const outType = `E2E Dlv CreateNew ${key}`;
@@ -889,7 +892,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Delivery - Both toggles on", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const seedType = `E2E Rcpt Seed ${key}`;
         const outType = `E2E Dlv Both ${key}`;
@@ -911,7 +914,7 @@ test.describe("Inventory Operation Type", () => {
      */
     test("Delivery - Both toggles off still delivers", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const product = `E2E Serial Prod ${key}`;
         const seedType = `E2E Rcpt Seed ${key}`;
         const outType = `E2E Dlv NoLots ${key}`;
@@ -936,7 +939,7 @@ test.describe("Inventory Operation Type", () => {
 test.describe("Inventory Putaway Rules", () => {
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.ensureInventoriesPluginInstalled();
         await inventoryPage.enableAllInventorySettings();
     });
 
@@ -946,7 +949,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - product routed to shelf sub-location", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway A ${key}`, code: `WPA${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelf = `Shelf A ${key}`;
@@ -969,7 +972,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - second product routed to its own shelf", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway B ${key}`, code: `WPB${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelf = `Shelf B ${key}`;
@@ -992,7 +995,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - product-only rule without storage category", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway C ${key}`, code: `WPC${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelf = `Shelf C ${key}`;
@@ -1013,7 +1016,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - lot-tracked product routed to shelf", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway L ${key}`, code: `WPL${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelf = `Shelf L ${key}`;
@@ -1037,7 +1040,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - serial-tracked product routed to shelf", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway S ${key}`, code: `WPS${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelf = `Shelf S ${key}`;
@@ -1062,7 +1065,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - multiple products with different tracking", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway M ${key}`, code: `WPM${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelfQty = `Shelf QM ${key}`;
@@ -1106,7 +1109,7 @@ test.describe("Inventory Putaway Rules", () => {
      */
     test("Putaway - delivery ships from the shelf", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH Putaway D ${key}`, code: `WPD${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const stock = `${warehouse.code}/Stock`;
         const shelf = `Shelf D ${key}`;

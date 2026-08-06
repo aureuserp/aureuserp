@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 /**
  * Enable exactly the inventory settings the operations tests rely on (locations,
@@ -10,7 +11,7 @@ import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement"
  */
 async function enableOperationsSettings(adminPage: import("@playwright/test").Page) {
     const inventoryPage = new InventoriesManagementPage(adminPage);
-    await inventoryPage.ensureBaseDependentPluginsInstalled();
+    await inventoryPage.ensureInventoriesPluginInstalled();
     await inventoryPage.enableManageWarehousesToggles();
     await inventoryPage.enableManageTraceabilityToggles();
     await inventoryPage.enableManageOperationsToggles();
@@ -64,7 +65,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt Full Flow - Create, Validate, Stock Increases", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Receipt Flow ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -85,7 +86,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Two Sequential Receipts - Both Reflect On Product Moves Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Two Receipts ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -117,7 +118,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt Validation Reflects In Product In/Out Tab And Quantities", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Move Flow ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -140,7 +141,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt With Lot - Generate Lot And Validate", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Lot Receipt ${key}`;
         const lotName = `LOT-${key}`;
 
@@ -161,7 +162,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt With Serial - Generate Serials And Validate", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Serial Receipt ${key}`;
         const serialPrefix = `SN-${key}`;
 
@@ -182,7 +183,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt flow - 2-step to stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH 2Step ${key}`;
         const warehouseCode = `R2${key}`;
         const productName = `E2E 2Step Receipt ${key}`;
@@ -209,7 +210,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt flow - 3-step to stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH 3Step ${key}`;
         const warehouseCode = `R3${key}`;
         const productName = `E2E 3Step Receipt ${key}`;
@@ -236,7 +237,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt - multiple products", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productA = `E2E Multi A ${key}`;
         const productB = `E2E Multi B ${key}`;
 
@@ -257,7 +258,7 @@ test.describe("Inventory Operations - Receipts", () => {
      */
     test("Receipt - mixed lot, serial & quantity", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const lotProduct = `E2E Mix Lot ${key}`;
         const serialProduct = `E2E Mix Serial ${key}`;
         const qtyProduct = `E2E Mix Qty ${key}`;
@@ -288,7 +289,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery Full Flow - Create, Validate, Stock Decreases", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Delivery Flow ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -314,7 +315,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery After Receipt - Outgoing Move Row Visible", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Out Move Op ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -346,7 +347,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery Validation Adds An Outgoing Row To Product In/Out Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH Out ${key}`;
         const warehouseCode = `WO${key}`;
         const productName = `E2E Out Move ${key}`;
@@ -385,7 +386,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery flow - 3-step pick, pack, ship", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH Out3Step ${key}`;
         const warehouseCode = `D3${key}`;
         const productName = `E2E 3Step Delivery ${key}`;
@@ -420,7 +421,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery With Lot - Reserve Lot And Validate", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Dlv Lot ${key}`;
         const lotName = `LOT-${key}`;
 
@@ -443,7 +444,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery With Serial - Reserve Serial And Validate", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Dlv Serial ${key}`;
         const serialPrefix = `SN-${key}`;
 
@@ -466,7 +467,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery flow - 2-step pick, ship", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH Out2Step ${key}`;
         const warehouseCode = `D2${key}`;
         const productName = `E2E 2Step Delivery ${key}`;
@@ -501,7 +502,7 @@ test.describe("Inventory Operations - Deliveries", () => {
      */
     test("Delivery - mixed lot, serial & quantity", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const lotProduct = `E2E DlvMix Lot ${key}`;
         const serialProduct = `E2E DlvMix Serial ${key}`;
         const qtyProduct = `E2E DlvMix Qty ${key}`;
@@ -538,7 +539,7 @@ test.describe("Inventory Operations - Internal Transfers", () => {
      */
     test("Internal Transfer - Create And Validate Move", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Internal Flow ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -564,7 +565,7 @@ test.describe("Inventory Operations - Internal Transfers", () => {
      */
     test("Internal Transfer - Move Row Adds To Product Moves Tab", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Internal Moves ${key}`;
 
         await inventoryPage.createInventoryProduct({
@@ -602,7 +603,7 @@ test.describe("Inventory Operations - Packages", () => {
      */
     test("Receipt into package", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Rcpt Pkg Product ${key}`;
         const packageName = `E2E Rcpt Package ${key}`;
 
@@ -619,7 +620,7 @@ test.describe("Inventory Operations - Packages", () => {
      */
     test("Delivery moves package out", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Dlv Pkg Product ${key}`;
         const packageName = `E2E Dlv Package ${key}`;
 
@@ -638,7 +639,7 @@ test.describe("Inventory Operations - Packages", () => {
      */
     test("3-step warehouse - package receipt to delivery", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouseName = `WH Pkg3 ${key}`;
         const warehouseCode = `P3${key}`;
         const productName = `E2E 3S Pkg Product ${key}`;
@@ -676,7 +677,7 @@ test.describe("Inventory Operations - Packages", () => {
      */
     test("Package move - full vs partial delivery", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const fullProduct = `E2E Full Pkg Prod ${key}`;
         const partialProduct = `E2E Part Pkg Prod ${key}`;
         const fullPackage = `E2E Full Package ${key}`;
@@ -708,7 +709,7 @@ test.describe("Inventory Operations - Scrap & Adjustments", () => {
      */
     test("Scrap reduces on-hand stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Scrap Product ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
@@ -725,7 +726,7 @@ test.describe("Inventory Operations - Scrap & Adjustments", () => {
      */
     test("Adjust on-hand quantity", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Adjust Qty ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
@@ -740,7 +741,7 @@ test.describe("Inventory Operations - Scrap & Adjustments", () => {
      */
     test("Tracking change allowed after clearing stock", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Track Adjust ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "10" });
@@ -765,7 +766,7 @@ test.describe("Inventory Operations - Returns", () => {
      */
     test("Return receipt reverses its locations", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Return Receipt ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
@@ -779,7 +780,7 @@ test.describe("Inventory Operations - Returns", () => {
      */
     test("Return validates to done", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Return Validate ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
@@ -793,7 +794,7 @@ test.describe("Inventory Operations - Returns", () => {
      */
     test("Partial return sets its own quantity", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Return Partial ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
@@ -807,7 +808,7 @@ test.describe("Inventory Operations - Returns", () => {
      */
     test("Return delivery reverses its locations", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Return Delivery ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
@@ -822,7 +823,7 @@ test.describe("Inventory Operations - Returns", () => {
      */
     test("Return internal transfer reverses its locations", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const productName = `E2E Return Internal ${key}`;
 
         await inventoryPage.createInventoryProduct({ name: productName, price: "20" });
@@ -849,7 +850,7 @@ test.describe("Inventory Operations - Backorders", () => {
      */
     test("Backorder - Ask creates a backorder", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH BO Ask ${key}`, code: `BOA${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const product = `E2E BO Ask Prod ${key}`;
         const origin = `E2E-BO-ASK-${key}`;
@@ -869,7 +870,7 @@ test.describe("Inventory Operations - Backorders", () => {
      */
     test("Backorder - Never skips the backorder", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH BO Never ${key}`, code: `BON${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const product = `E2E BO Never Prod ${key}`;
         const origin = `E2E-BO-NEVER-${key}`;
@@ -890,7 +891,7 @@ test.describe("Inventory Operations - Backorders", () => {
      */
     test("Backorder - Always creates a backorder without asking", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const warehouse = { name: `WH BO Always ${key}`, code: `BOL${key}`, receptionStep: 3 as const, deliveryStep: 1 as const };
         const product = `E2E BO Always Prod ${key}`;
         const origin = `E2E-BO-ALWAYS-${key}`;

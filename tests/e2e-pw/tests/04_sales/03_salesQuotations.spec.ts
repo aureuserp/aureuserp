@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { SalesFlowPage } from "../../pages/04_salesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Sales Quotations E2E", () => {
     test.beforeEach(async ({ adminPage }) => {
@@ -14,7 +15,7 @@ test.describe("Sales Quotations E2E", () => {
 
     test("Create Quotation - Valid Inputs", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const customerName = `E2E Sales Customer ${key}`;
         const productName = `E2E Sales Product ${key}`;
 
@@ -45,7 +46,7 @@ test.describe("Sales Quotations E2E", () => {
 
     test("Create Quotation - Validation Errors (Missing PaymentTerm)", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const customerName = `E2E Sales Customer ${key}`;
 
         await salesPage.createCustomer({
@@ -62,7 +63,7 @@ test.describe("Sales Quotations E2E", () => {
 
     test("Edit Quotation - Update Quantity", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const customerName = `E2E Sales Customer ${key}`;
         const productName = `E2E Sales Product ${key}`;
 
@@ -87,7 +88,7 @@ test.describe("Sales Quotations E2E", () => {
 
     test("Delete Quotation - Removes Draft", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const customerName = `E2E Sales Customer ${key}`;
         const productName = `E2E Sales Product ${key}`;
 

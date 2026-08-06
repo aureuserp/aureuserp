@@ -1,5 +1,6 @@
 import { Page, expect } from '@playwright/test';
 import { ErpLocators } from '../locator/erp_locator';
+import { invalidateSetup, PLUGIN_SETUP_KEYS } from '../utils/setupCache';
 
 type PluginAction = 'install' | 'uninstall';
 
@@ -37,6 +38,8 @@ export class PluginManagementPage {
      * Uninstall every plugin listed on the "Installed" tab
      */
     async uninstallAllPlugins() {
+        invalidateSetup(...PLUGIN_SETUP_KEYS);
+
         await this.processAllPlugins('uninstall');
     }
 
@@ -76,7 +79,7 @@ export class PluginManagementPage {
     }
 
     /**
-     * Show every plugin on a single page. 
+     * Show every plugin on a single page.
      */
     private async showAllPluginsOnOnePage() {
         if (await this.erpLocators.pluginsPerPageSelect.count() === 0) {

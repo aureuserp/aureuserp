@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { PurchaseFlowPage } from "../../pages/05_purchaseManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Purchase RFQ E2E", () => {
     test.beforeAll(async ({ adminPage }) => {
@@ -14,7 +15,7 @@ test.describe("Purchase RFQ E2E", () => {
 
     test("Create RFQ - Valid Inputs", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Purchase Vendor ${key}`;
         const productName = `E2E Purchase Product ${key}`;
 
@@ -46,7 +47,7 @@ test.describe("Purchase RFQ E2E", () => {
 
     test("Edit RFQ - Update Quantity", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Purchase Vendor ${key}`;
         const productName = `E2E Purchase Product ${key}`;
 
@@ -72,7 +73,7 @@ test.describe("Purchase RFQ E2E", () => {
 
     test("Delete RFQ - Removes Draft", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Purchase Vendor ${key}`;
         const productName = `E2E Purchase Product ${key}`;
 

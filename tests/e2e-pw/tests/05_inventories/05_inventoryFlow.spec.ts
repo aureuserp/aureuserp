@@ -1,10 +1,11 @@
 import { test } from "../../setup";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal Moves -> Validate", () => {
     test.beforeAll(async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        await inventoryPage.ensureBaseDependentPluginsInstalled();
+        await inventoryPage.ensureInventoriesPluginInstalled();
         // Enable everything: locations, multi-step routes, packagings,
         // UoM, traceability, dropshipping. Required for the full 3-step flow.
         await inventoryPage.enableAllInventorySettings();
@@ -12,7 +13,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
 
     test("Three-Step Incoming - Receipt Then Internal Transfers Then Stock Check", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const warehouseName = `WH Flow ${key}`;
         const warehouseCode = `WF${key}`.slice(-5);
@@ -69,7 +70,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
 
     test("One-Step Warehouse - Direct Receipt And Delivery Flow", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const warehouseName = `WH One-Step ${key}`;
         const warehouseCode = `W1${key}`.slice(-5);
@@ -110,7 +111,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
 
     test("Two-Step Incoming - Receipt Then Single Internal Transfer", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const warehouseName = `WH Two-Step ${key}`;
         const warehouseCode = `W2${key}`.slice(-5);
@@ -155,7 +156,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
 
     test("Three-Step Delivery - Validates Out Chain End-To-End", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const warehouseName = `WH Out 3-Step ${key}`;
         const warehouseCode = `WO${key}`.slice(-5);
@@ -201,7 +202,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
 
     test("End-To-End Two-Step - Multiple Products Through Same Warehouse", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const warehouseName = `WH Multi ${key}`;
         const warehouseCode = `WM${key}`.slice(-5);
@@ -255,7 +256,7 @@ test.describe("Inventory End-To-End Flow - 3-Step Warehouse, Receipt -> Internal
 
     test("Warehouse Step Change - Edit One-Step Into Two-Step Incoming", async ({ adminPage }) => {
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const warehouseName = `WH Edit ${key}`;
         const warehouseCode = `WE${key}`.slice(-5);

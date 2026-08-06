@@ -1,6 +1,7 @@
 import { test } from "../../setup";
 import { PurchaseFlowPage } from "../../pages/05_purchaseManagement";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 /** Stock location of the seeded default warehouse, where purchase orders receive into. */
 const DEFAULT_STOCK_LOCATION = "WH/Stock";
@@ -20,7 +21,7 @@ async function enablePurchaseInventorySettings(adminPage: import("@playwright/te
     const inventoryPage = new InventoriesManagementPage(adminPage);
 
     await purchasePage.ensurePurchasesPluginInstalled();
-    await inventoryPage.ensureBaseDependentPluginsInstalled();
+    await inventoryPage.ensureInventoriesPluginInstalled();
     await inventoryPage.enableManageWarehousesToggles();
     await inventoryPage.enableManageTraceabilityToggles();
     await inventoryPage.enableManageOperationsToggles();
@@ -34,7 +35,7 @@ test.describe("Purchase Flow E2E", () => {
 
     test("Purchase Flow - RFQ To Purchase Order", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E Purchase Vendor ${key}`;
         const productName = `E2E Purchase Product ${key}`;
@@ -62,7 +63,7 @@ test.describe("Purchase Flow E2E", () => {
 
     test("Purchase Flow - Confirmed Agreement To Purchase Order", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E Blanket Vendor ${key}`;
         const productName = `E2E Blanket Product ${key}`;
@@ -111,7 +112,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - receive stock and create bill", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Recv Vendor ${key}`;
         const productName = `E2E PO Recv Product ${key}`;
@@ -159,7 +160,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - lot tracked product", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Lot Vendor ${key}`;
         const productName = `E2E PO Lot Product ${key}`;
@@ -195,7 +196,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - serial tracked product", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Serial Vendor ${key}`;
         const productName = `E2E PO Serial Product ${key}`;
@@ -231,7 +232,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - receive into a package", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Pack Vendor ${key}`;
         const productName = `E2E PO Pack Product ${key}`;
@@ -269,7 +270,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - mixed lot, serial & quantity lines", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Mixed Vendor ${key}`;
         const qtyProduct = `E2E PO Mix Qty ${key}`;
@@ -319,7 +320,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - partial receipt creates backorder", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Backorder Vendor ${key}`;
         const productName = `E2E PO Backorder Product ${key}`;
@@ -360,7 +361,7 @@ test.describe("Purchase Flow - Inventory Integration", () => {
     test("Purchase order - return received goods", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Return Vendor ${key}`;
         const productName = `E2E PO Return Product ${key}`;
@@ -403,7 +404,7 @@ test.describe("Purchase Flow - Multi Step Reception", () => {
     test("Purchase order - 2-step reception (input, stock)", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO 2Step Vendor ${key}`;
         const productName = `E2E PO 2Step Product ${key}`;
@@ -447,7 +448,7 @@ test.describe("Purchase Flow - Multi Step Reception", () => {
     test("Purchase order - 3-step reception (input, quality, stock)", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO 3Step Vendor ${key}`;
         const productName = `E2E PO 3Step Product ${key}`;
@@ -496,7 +497,7 @@ test.describe("Purchase Flow - Amounts", () => {
      */
     test("Purchase order - amounts without tax", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Amt NoTax Vendor ${key}`;
         const productName = `E2E PO Amt NoTax Product ${key}`;
@@ -525,7 +526,7 @@ test.describe("Purchase Flow - Amounts", () => {
      */
     test("Purchase order - amounts with 15% tax", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Amt Tax Vendor ${key}`;
         const productName = `E2E PO Amt Tax Product ${key}`;
@@ -561,7 +562,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
     test("Purchase order - increasing quantity after confirm grows the receipt", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Qty Up Vendor ${key}`;
         const productName = `E2E PO Qty Up Product ${key}`;
@@ -580,11 +581,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
         await purchasePage.openReceiptByIndex(0);
         await inventoryPage.expectOperationMoveDemandForProduct(productName, "5");
 
-        await purchasePage.gotoOrderEdit(orderRef);
-        await purchasePage.updateLineQuantity(0, "8");
-        await purchasePage.saveOrder();
-
-        await purchasePage.gotoOrderEdit(orderRef);
+        await purchasePage.updateLineQuantityAndSave(orderRef, 0, "8");
         await purchasePage.expectLineQuantity(0, "8");
 
         await purchasePage.expectReceiptCount(1);
@@ -601,7 +598,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
     test("Purchase order - decreasing quantity after confirm shrinks the receipt", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Qty Down Vendor ${key}`;
         const productName = `E2E PO Qty Down Product ${key}`;
@@ -620,11 +617,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
         await purchasePage.openReceiptByIndex(0);
         await inventoryPage.expectOperationMoveDemandForProduct(productName, "8");
 
-        await purchasePage.gotoOrderEdit(orderRef);
-        await purchasePage.updateLineQuantity(0, "5");
-        await purchasePage.saveOrder();
-
-        await purchasePage.gotoOrderEdit(orderRef);
+        await purchasePage.updateLineQuantityAndSave(orderRef, 0, "5");
         await purchasePage.expectLineQuantity(0, "5");
 
         await purchasePage.expectReceiptCount(1);
@@ -640,7 +633,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
     test("Purchase order - quantity cannot drop below the received quantity", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO Qty Guard Vendor ${key}`;
         const productName = `E2E PO Qty Guard Product ${key}`;
@@ -677,7 +670,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
     test("Purchase order - adding a product after confirm extends the open receipt", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO AddLine Vendor ${key}`;
         const firstProduct = `E2E PO AddLine First ${key}`;
@@ -720,7 +713,7 @@ test.describe("Purchase Flow - Confirmed Order Changes", () => {
     test("Purchase order - adding a product after receipt is done creates a new receipt", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const vendorName = `E2E PO AddAfter Vendor ${key}`;
         const firstProduct = `E2E PO AddAfter First ${key}`;

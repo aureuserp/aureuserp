@@ -1,6 +1,7 @@
 import { test } from "../../setup";
 import { SalesFlowPage } from "../../pages/04_salesManagement";
 import { InventoriesManagementPage } from "../../pages/06_inventoriesManagement";
+import { uniqueKey } from "../../utils/unique";
 
 const DEFAULT_STOCK_LOCATION = "WH/Stock";
 const SALE_TAX_NAME = "15 %";
@@ -13,7 +14,7 @@ async function enableSalesInventorySettings(adminPage: import("@playwright/test"
     const inventoryPage = new InventoriesManagementPage(adminPage);
 
     await salesPage.ensureSalesPluginInstalled();
-    await inventoryPage.ensureBaseDependentPluginsInstalled();
+    await inventoryPage.ensureInventoriesPluginInstalled();
     await inventoryPage.enableManageWarehousesToggles();
     await inventoryPage.enableManageTraceabilityToggles();
     await inventoryPage.enableManageOperationsToggles();
@@ -40,7 +41,7 @@ test.describe("Sales Order Flow E2E", () => {
 
     test("Sales Flow - Customer To Invoice (Ordered Quantities)", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Sales Customer ${key}`;
         const productName = `E2E Sales Product ${key}`;
@@ -84,7 +85,7 @@ test.describe("Sales Order Flow E2E", () => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
 
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Sales Customer ${key}`;
         const productName = `E2E Sales Product ${key}`;
@@ -141,7 +142,7 @@ test.describe("Sales Order Flow E2E", () => {
      */
     test("Sales Flow - Send Quotation By Email", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Sales Customer ${key}`;
         const productName = `E2E Sales Product ${key}`;
@@ -178,7 +179,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - lot tracked product", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO Lot Customer ${key}`;
         const productName = `E2E SO Lot Product ${key}`;
@@ -226,7 +227,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - serial tracked product", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO Serial Customer ${key}`;
         const productName = `E2E SO Serial Product ${key}`;
@@ -271,7 +272,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - delivery packed into a package", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO Pack Customer ${key}`;
         const productName = `E2E SO Pack Product ${key}`;
@@ -312,7 +313,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - mixed lot, serial, package & quantity lines", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO Mixed Customer ${key}`;
         const qtyProduct = `E2E SO Mix Qty ${key}`;
@@ -388,7 +389,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - 2-step delivery warehouse (pick, ship)", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO 2Step Customer ${key}`;
         const productName = `E2E SO 2Step Product ${key}`;
@@ -446,7 +447,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - 3-step delivery warehouse (pick, pack, ship)", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO 3Step Customer ${key}`;
         const productName = `E2E SO 3Step Product ${key}`;
@@ -508,7 +509,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - partial delivery creates backorder", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO Backorder Customer ${key}`;
         const productName = `E2E SO Backorder Product ${key}`;
@@ -555,7 +556,7 @@ test.describe("Sales Flow - Inventory Integration", () => {
     test("Sales order - return delivered goods", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E SO Return Customer ${key}`;
         const productName = `E2E SO Return Product ${key}`;
@@ -602,7 +603,7 @@ test.describe("Sales Flow - Amounts", () => {
      */
     test("Sales order - amounts without tax", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Amt NoTax Customer ${key}`;
         const productName = `E2E Amt NoTax Product ${key}`;
@@ -631,7 +632,7 @@ test.describe("Sales Flow - Amounts", () => {
      */
     test("Sales order - amounts with 15% tax", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Amt Tax Customer ${key}`;
         const productName = `E2E Amt Tax Product ${key}`;
@@ -667,7 +668,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
     test("Sales order - increasing quantity after confirm grows the delivery", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Qty Up Customer ${key}`;
         const productName = `E2E Qty Up Product ${key}`;
@@ -686,11 +687,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
         await salesPage.openDeliveryByIndex(0);
         await inventoryPage.expectOperationMoveDemandForProduct(productName, "5");
 
-        await salesPage.gotoOrderEdit(orderRef);
-        await salesPage.updateLineQuantity(0, "8");
-        await salesPage.saveOrder();
-
-        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.updateLineQuantityAndSave(orderRef, 0, "8");
         await salesPage.expectLineQuantity(0, "8");
 
         await salesPage.expectDeliveryCount(1);
@@ -709,7 +706,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
     test("Sales order - decreasing quantity after confirm shrinks the delivery", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Qty Down Customer ${key}`;
         const productName = `E2E Qty Down Product ${key}`;
@@ -728,11 +725,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
         await salesPage.openDeliveryByIndex(0);
         await inventoryPage.expectOperationMoveDemandForProduct(productName, "8");
 
-        await salesPage.gotoOrderEdit(orderRef);
-        await salesPage.updateLineQuantity(0, "5");
-        await salesPage.saveOrder();
-
-        await salesPage.gotoOrderEdit(orderRef);
+        await salesPage.updateLineQuantityAndSave(orderRef, 0, "5");
         await salesPage.expectLineQuantity(0, "5");
 
         await salesPage.expectDeliveryCount(1);
@@ -750,7 +743,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
     test("Sales order - quantity cannot drop below the delivered quantity", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E Qty Guard Customer ${key}`;
         const productName = `E2E Qty Guard Product ${key}`;
@@ -785,7 +778,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
     test("Sales order - adding a product after confirm extends the open delivery", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E AddLine Customer ${key}`;
         const firstProduct = `E2E AddLine First ${key}`;
@@ -831,7 +824,7 @@ test.describe("Sales Flow - Confirmed Order Changes", () => {
     test("Sales order - adding a product after delivery is done creates a new delivery", async ({ adminPage }) => {
         const salesPage = new SalesFlowPage(adminPage);
         const inventoryPage = new InventoriesManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         const customerName = `E2E AddAfter Customer ${key}`;
         const firstProduct = `E2E AddAfter First ${key}`;
