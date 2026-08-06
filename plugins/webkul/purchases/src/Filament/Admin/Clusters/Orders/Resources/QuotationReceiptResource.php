@@ -2,19 +2,16 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
-use Filament\Actions\ActionGroup;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\ParentResourceRegistration;
 use Filament\Tables\Table;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource as BaseReceiptResource;
 use Webkul\Inventory\Models\Receipt;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationReceiptResource\Pages\EditReceipt;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationReceiptResource\Pages\ManageMoves;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationReceiptResource\Pages\ViewReceipt;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationReceiptResource\Tables\QuotationReceiptsTable;
 
 class QuotationReceiptResource extends BaseReceiptResource
 {
@@ -46,15 +43,7 @@ class QuotationReceiptResource extends BaseReceiptResource
 
     public static function table(Table $table): Table
     {
-        return OperationResource::table($table)
-            ->recordActions([
-                ActionGroup::make([
-                    ViewAction::make()
-                        ->url(fn ($record): string => static::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true)),
-                    EditAction::make()
-                        ->url(fn ($record): string => static::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true)),
-                ]),
-            ]);
+        return QuotationReceiptsTable::configure($table, static::class);
     }
 
     public static function getRecordSubNavigation(Page $page): array
