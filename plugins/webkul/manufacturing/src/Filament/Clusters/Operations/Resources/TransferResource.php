@@ -2,9 +2,6 @@
 
 namespace Webkul\Manufacturing\Filament\Clusters\Operations\Resources;
 
-use Filament\Actions\ActionGroup;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Resource;
@@ -17,6 +14,7 @@ use Webkul\Manufacturing\Filament\Clusters\Operations;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Pages\EditTransfer;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Pages\ManageMoves;
 use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Pages\ViewTransfer;
+use Webkul\Manufacturing\Filament\Clusters\Operations\Resources\TransferResource\Tables\TransfersTable;
 
 class TransferResource extends OperationResource
 {
@@ -66,15 +64,7 @@ class TransferResource extends OperationResource
 
     public static function table(Table $table): Table
     {
-        return OperationResource::table($table)
-            ->recordActions([
-                ActionGroup::make([
-                    ViewAction::make()
-                        ->url(fn ($record): string => static::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true)),
-                    EditAction::make()
-                        ->url(fn ($record): string => static::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true)),
-                ]),
-            ]);
+        return TransfersTable::configure($table);
     }
 
     public static function getRecordSubNavigation(Page $page): array
