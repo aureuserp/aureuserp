@@ -33,13 +33,14 @@
 3. [Why Choose Aureus ERP?](#-why-choose-aureus-erp)
 4. [Requirements](#-requirements)
 5. [Quick Start](#-quick-start)
-6. [Plugin System](#-plugin-system)
-7. [Plugin Installation & Management](#-plugin-installation--management)
-8. [Customization](#-customization)
-9. [Contributing](#-contributing)
-10. [License](#-license)
-11. [Security](#-security)
-12. [Support & Community](#-support--community)
+6. [Running with Docker](#-running-with-docker-laravel-sail)
+7. [Plugin System](#-plugin-system)
+8. [Plugin Installation & Management](#-plugin-installation--management)
+9. [Customization](#-customization)
+10. [Contributing](#-contributing)
+11. [License](#-license)
+12. [Security](#-security)
+13. [Support & Community](#-support--community)
 
 ---
 
@@ -195,6 +196,86 @@ php artisan serve
 ```
 
 Visit `http://localhost:8000` and log in with your admin credentials!
+
+---
+
+## 🐳 Running with Docker (Laravel Sail)
+
+AureusERP ships with a `docker-compose.yml` powered by [Laravel Sail](https://laravel.com/docs/sail), so you can run the full stack in containers without installing PHP, MySQL or Redis locally.
+
+The Compose file defines four services:
+
+| Service | Description | Default Port |
+| ------------- | ---------------------------------------------- | ------------ |
+| `laravel.test` | Application container (PHP 8.4 + web server)    | `80`         |
+| `mysql`        | MySQL 8.0 database                              | `3306`       |
+| `redis`        | Redis cache & queue store                       | `6379`       |
+| `mailpit`      | Local mail catcher (SMTP + web dashboard)       | `1025` / `8025` |
+
+### Step 1: Clone and Configure
+
+```bash
+git clone https://github.com/aureuserp/aureuserp.git
+cd aureuserp
+cp .env.example .env
+```
+
+By default `.env.example` is set up for a local (non-Docker) environment. To make the app talk to the containers defined in `docker-compose.yml`, point the host settings at the service names:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=aureuserp
+DB_USERNAME=sail
+DB_PASSWORD=password
+
+REDIS_HOST=redis
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+```
+
+### Step 2: Install Dependencies
+
+The Sail image is built from `vendor/`, so install Composer dependencies first. If you don't have PHP/Composer locally, you can run Composer through a one-off Docker container:
+
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php84-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+### Step 3: Start the Containers
+
+```bash
+./vendor/bin/sail up -d
+```
+
+> `./vendor/bin/sail` is a thin wrapper around `docker compose`. If you prefer, you can run `docker compose up -d` directly.
+
+### Step 4: Generate the App Key & Run the Installation
+
+```bash
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan erp:install
+```
+
+> `key:generate` is only run automatically when scaffolding via `composer create-project`. Since the steps above use `git clone`, run it manually before installing — otherwise `APP_KEY` stays empty and the app will throw encryption errors.
+
+The `erp:install` command runs migrations and seeders, and prompts for the admin name, email, and password. If it fails with a database connection error on the first try, wait a few seconds for MySQL to finish starting and run it again.
+
+Once the containers are up, the app is available at `http://localhost` and Mailpit's dashboard at `http://localhost:8025`.
+
+To stop the containers:
+
+```bash
+./vendor/bin/sail down
+```
 
 ---
 
