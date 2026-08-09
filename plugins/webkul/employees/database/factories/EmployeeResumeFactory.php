@@ -3,6 +3,7 @@
 namespace Webkul\Employee\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Employee\Enums\ResumeDisplayType;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeResume;
 use Webkul\Employee\Models\EmployeeResumeLineType;
@@ -22,7 +23,7 @@ class EmployeeResumeFactory extends Factory
 
         return [
             'name'                         => fake()->sentence(4),
-            'display_type'                 => null,
+            'display_type'                 => ResumeDisplayType::Classic->value,
             'start_date'                   => $startDate,
             'end_date'                     => $endDate,
             'description'                  => fake()->optional()->paragraph(),

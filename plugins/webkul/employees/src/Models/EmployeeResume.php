@@ -2,13 +2,17 @@
 
 namespace Webkul\Employee\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Employee\Database\Factories\EmployeeResumeFactory;
 use Webkul\Security\Models\User;
 
 class EmployeeResume extends Model
 {
+    use HasFactory;
+
     protected $table = 'employees_employee_resumes';
 
     protected $fillable = [
@@ -36,6 +40,11 @@ class EmployeeResume extends Model
     public function resumeType()
     {
         return $this->belongsTo(EmployeeResumeLineType::class, 'employee_resume_line_type_id');
+    }
+
+    protected static function newFactory(): EmployeeResumeFactory
+    {
+        return EmployeeResumeFactory::new();
     }
 
     protected static function boot()
