@@ -60,5 +60,11 @@ class EmployeeResume extends Model
         static::creating(function ($employeeResume) {
             $employeeResume->creator_id ??= Auth::id();
         });
+
+        static::deleting(function ($employeeResume) {
+            // Deleted one by one on purpose. The database cascade would drop the rows
+            // without firing model events, leaving the uploaded files on disk.
+            $employeeResume->attachments->each->delete();
+        });
     }
 }

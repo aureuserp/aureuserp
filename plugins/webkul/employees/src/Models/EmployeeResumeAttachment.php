@@ -89,5 +89,14 @@ class EmployeeResumeAttachment extends Model
             $attachment->mime_type ??= $disk->mimeType($attachment->file_path);
             $attachment->file_size = $disk->size($attachment->file_path);
         });
+
+        static::deleted(function ($attachment) {
+            if (
+                $attachment->file_path
+                && Storage::disk('public')->exists($attachment->file_path)
+            ) {
+                Storage::disk('public')->delete($attachment->file_path);
+            }
+        });
     }
 }
