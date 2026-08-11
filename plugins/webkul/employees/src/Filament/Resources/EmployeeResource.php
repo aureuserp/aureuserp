@@ -21,6 +21,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
@@ -57,6 +58,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection as SupportCollection;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Employee\Enums\DistanceUnit;
 use Webkul\Employee\Enums\Gender;
@@ -76,12 +79,15 @@ use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\SkillsR
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeJobPosition;
+use Webkul\Employee\Models\EmployeeResume;
+use Webkul\Employee\Models\EmployeeSkill;
 use Webkul\Employee\Models\WorkLocation;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Tables\Infolists\ProgressBarEntry;
 use Webkul\Support\Models\Calendar;
 use Webkul\Support\Models\Country;
 
@@ -1452,6 +1458,19 @@ class EmployeeResource extends Resource
 
                 Tabs::make()
                     ->tabs([
+                        Tab::make(__('employees::filament/resources/employee.infolist.tabs.resume.title'))
+                            ->icon('heroicon-o-clipboard-document-list')
+                            ->schema([
+                                Grid::make(['default' => 1, 'lg' => 2])
+                                    ->schema([
+                                        Group::make()
+                                            ->schema(fn (Employee $record): array => static::getResumeSections($record))
+                                            ->columnSpan(1),
+                                        Group::make()
+                                            ->schema(fn (Employee $record): array => static::getSkillSections($record))
+                                            ->columnSpan(1),
+                                    ]),
+                            ]),
                         Tab::make(__('employees::filament/resources/employee.infolist.tabs.work-information.title'))
                             ->icon('heroicon-o-briefcase')
                             ->schema([
@@ -1755,6 +1774,174 @@ class EmployeeResource extends Resource
                     ])
                     ->columnSpan('full'),
             ]);
+    }
+
+    /**
+     * One resume section, with the lines of each resume line type stacked inside their own
+     * fieldset, ordered by the type's own sort.
+     *
+     * @return array<Section>
+     */
+    protected static function getResumeSections(Employee $record): array
+    {
+        $groups = $record->resumes()
+            ->with('resumeType')
+            ->orderBy('id')
+            ->get()
+            ->sortByDesc(fn (EmployeeResume $resume): string => (string) $resume->start_date)
+            ->groupBy(fn (EmployeeResume $resume): int => $resume->employee_resume_line_type_id ?? 0)
+            ->sortBy(fn (SupportCollection $lines): int => $lines->first()->resumeType?->sort ?? PHP_INT_MAX);
+
+        $heading = __('employees::filament/resources/employee.infolist.tabs.resume.entries.resume.title');
+
+        if ($groups->isEmpty()) {
+            return [
+                static::makeEmptyInfolistSection(
+                    $heading,
+                    __('employees::filament/resources/employee.infolist.tabs.resume.entries.resume.empty'),
+                    'resume',
+                ),
+            ];
+        }
+
+        return [
+            Section::make($heading)
+                ->schema($groups->map(fn (SupportCollection $lines, int|string $typeId): Fieldset => Fieldset::make(
+                    $lines->first()->resumeType?->name
+                        ?? __('employees::filament/resources/employee.infolist.tabs.resume.entries.resume.untyped'),
+                )
+                    ->columns(1)
+                    ->schema([
+                        RepeatableEntry::make('resume_lines_'.$typeId)
+                            ->hiddenLabel()
+                            ->gap(false)
+                            ->contained(false)
+                            ->state($lines->values()->all())
+                            ->schema([
+                                TextEntry::make('duration')
+                                    ->hiddenLabel()
+                                    ->color('gray')
+                                    ->size(TextSize::Small)
+                                    ->state(fn (EmployeeResume $record): ?string => static::formatResumeDuration($record))
+                                    ->hidden(fn (EmployeeResume $record): bool => blank(static::formatResumeDuration($record))),
+                                TextEntry::make('name')
+                                    ->hiddenLabel()
+                                    ->placeholder('—')
+                                    ->weight(FontWeight::Bold),
+                                TextEntry::make('description')
+                                    ->hiddenLabel()
+                                    ->color('gray')
+                                    ->size(TextSize::Small)
+                                    ->hidden(fn (EmployeeResume $record): bool => blank($record->description)),
+                            ]),
+                    ]))->values()->all()),
+        ];
+    }
+
+    /**
+     * One skills section, with the skills of each type listed inside their own fieldset.
+     * The fieldset legend labels the rows, so no column header is needed. Rows run strongest-first.
+     *
+     * @return array<Section>
+     */
+    protected static function getSkillSections(Employee $record): array
+    {
+        $groups = $record->skills()
+            ->with(['skill', 'skillType', 'skillLevel'])
+            ->orderBy('id')
+            ->get()
+            ->sortByDesc(fn (EmployeeSkill $skill): int => $skill->skillLevel?->level ?? 0)
+            ->groupBy(fn (EmployeeSkill $skill): int => $skill->skill_type_id ?? 0)
+            ->sortBy(fn (SupportCollection $skills): string => (string) $skills->first()->skillType?->name);
+
+        $heading = __('employees::filament/resources/employee.infolist.tabs.resume.entries.skills.title');
+
+        if ($groups->isEmpty()) {
+            return [
+                static::makeEmptyInfolistSection(
+                    $heading,
+                    __('employees::filament/resources/employee.infolist.tabs.resume.entries.skills.empty'),
+                    'skills',
+                ),
+            ];
+        }
+
+        return [
+            Section::make($heading)
+                ->schema($groups->map(fn (SupportCollection $skills, int|string $typeId): Fieldset => Fieldset::make(
+                    $skills->first()->skillType?->name
+                        ?? __('employees::filament/resources/employee.infolist.tabs.resume.entries.skills.untyped'),
+                )
+                    ->columns(1)
+                    ->schema([
+                        RepeatableEntry::make('employee_skills_'.$typeId)
+                            ->hiddenLabel()
+                            ->state($skills->values()->all())
+                            ->schema([
+                                Grid::make(['default' => 12])
+                                    ->schema([
+                                        TextEntry::make('skill.name')
+                                            ->hiddenLabel()
+                                            ->placeholder('—')
+                                            ->columnSpan(5),
+                                        TextEntry::make('skillLevel.name')
+                                            ->hiddenLabel()
+                                            ->placeholder('—')
+                                            ->badge()
+                                            ->color(fn (EmployeeSkill $record): string => static::getSkillLevelColor($record->skillLevel?->level))
+                                            ->columnSpan(3),
+                                        ProgressBarEntry::make('skill_level')
+                                            ->hiddenLabel()
+                                            ->state(fn (EmployeeSkill $record): int => $record->skillLevel?->level ?? 0)
+                                            ->color(fn (EmployeeSkill $record): string => static::getSkillLevelColor($record->skillLevel?->level))
+                                            ->columnSpan(4),
+                                    ]),
+                            ]),
+                    ]))->values()->all()),
+        ];
+    }
+
+    protected static function makeEmptyInfolistSection(string $heading, string $message, string $key): Section
+    {
+        return Section::make($heading)
+            ->compact()
+            ->schema([
+                TextEntry::make($key.'_empty')
+                    ->hiddenLabel()
+                    ->color('gray')
+                    ->size(TextSize::Small)
+                    ->state($message),
+            ]);
+    }
+
+    protected static function formatResumeDuration(EmployeeResume $record): ?string
+    {
+        if (blank($record->start_date) && blank($record->end_date)) {
+            return null;
+        }
+
+        $end = filled($record->end_date)
+            ? Carbon::parse($record->end_date)->format('m/Y')
+            : __('employees::filament/resources/employee.infolist.tabs.resume.entries.resume.present');
+
+        if (blank($record->start_date)) {
+            return $end;
+        }
+
+        return Carbon::parse($record->start_date)->format('m/Y').' — '.$end;
+    }
+
+    /**
+     * Mirrors the thresholds used by the skills relation manager so both surfaces read alike.
+     */
+    protected static function getSkillLevelColor(?int $level): string
+    {
+        return match (true) {
+            $level === 100                    => 'success',
+            $level >= 50 && $level < 80       => 'warning',
+            $level === null || $level < 20    => 'danger',
+            default                           => 'info',
+        };
     }
 
     public static function getBankCreateSchema(): array
