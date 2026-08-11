@@ -15,6 +15,7 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Action
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Schemas\InventoryProductSchema;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Support\QuantityResolver;
 use Webkul\Inventory\Filament\Widgets\OperationTypeCardWidget;
+use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
@@ -30,6 +31,7 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Support\ProductUsageRegistry;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
@@ -160,7 +162,24 @@ class InventoryServiceProvider extends PackageServiceProvider
 
         $this->contributeProductSchema();
 
+        $this->contributeProductUsage();
+
         $this->registerLivewireComponents();
+    }
+
+    protected function contributeProductUsage(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductUsageRegistry::register(
+            Move::class,
+            MoveLine::class,
+            ProductQuantity::class,
+            Lot::class,
+            Scrap::class,
+        );
     }
 
     public function registerLivewireComponents(): void

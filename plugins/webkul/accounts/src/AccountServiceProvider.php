@@ -19,6 +19,7 @@ use Webkul\Account\Models\Account;
 use Webkul\Account\Models\CategoryCompanyAccount;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartnerCompanyProperty;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
@@ -36,6 +37,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Support\ProductUsageRegistry;
 
 class AccountServiceProvider extends PackageServiceProvider
 {
@@ -156,6 +158,17 @@ class AccountServiceProvider extends PackageServiceProvider
         $this->contributeProductSchema();
 
         $this->contributePartnerSchema();
+
+        $this->contributeProductUsage();
+    }
+
+    protected function contributeProductUsage(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductUsageRegistry::register(MoveLine::class);
     }
 
     protected function flushCompanyPropertiesOnSave(): void
