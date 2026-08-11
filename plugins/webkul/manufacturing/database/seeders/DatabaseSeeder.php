@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             WorkCenterLossTypeSeeder::class,
             WorkCenterProductivityLossSeeder::class,
+            SequenceSeeder::class,
         ]);
 
         $warehouses = Warehouse::all();

@@ -20,6 +20,7 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
 
 class Scrap extends Model
@@ -152,7 +153,15 @@ class Scrap extends Model
 
     public function updateName()
     {
-        $this->name = 'SP/'.$this->id;
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::next('inventories.scrap', $this->company_id, [
+            'name'         => 'Scrap',
+            'prefix'       => 'SP/',
+            'initial_from' => static::withoutGlobalScopes(),
+        ]);
     }
 
     protected static function newFactory(): ScrapFactory

@@ -36,6 +36,7 @@ use Webkul\Security\Support\OwnerSource;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
 
 class Order extends Model
@@ -387,16 +388,14 @@ class Order extends Model
         });
 
         static::created(function ($order) {
-            $name = 'MO/'.$order->id;
-
             if (! $order->procurement_group_id) {
                 $order->procurement_group_id = $order->procurementGroup()->create([
-                    'name' => $name,
+                    'name' => $order->name,
                 ])->id;
             }
 
             $order->update([
-                'name' => $name,
+                'name' => $order->name,
             ]);
         });
 
@@ -435,7 +434,15 @@ class Order extends Model
 
     public function computeName()
     {
-        $this->name = 'MO/'.$this->id;
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::next('manufacturing.order', $this->company_id, [
+            'name'         => 'Manufacturing Order',
+            'prefix'       => 'MO/',
+            'initial_from' => static::withoutGlobalScopes(),
+        ]);
     }
 
     public function computeProductUOMQty()

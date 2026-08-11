@@ -29,6 +29,7 @@ use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\Support\Traits\ChecksCompanyConsistency;
 
@@ -349,11 +350,26 @@ class Operation extends Model
 
     public function updateName()
     {
-        if (! $this->operationType->warehouse) {
-            $this->name = $this->operationType->sequence_code.'/'.$this->id;
-        } else {
-            $this->name = $this->operationType->warehouse->code.'/'.$this->operationType->sequence_code.'/'.$this->id;
+        if (
+            $this->exists
+            && $this->isDirty('operation_type_id')
+            && ! in_array($this->state, [OperationState::DONE, OperationState::CANCELED])
+        ) {
+            $this->name = null;
+
+            $this->unsetRelation('operationType');
         }
+
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::nextFor(
+            $this->operationType,
+            '',
+            $this->company_id,
+            $this->operationType->sequenceDefaults(),
+        );
     }
 
     public function updateChildrenNames(): void
