@@ -32,6 +32,7 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
+use Webkul\Support\Services\SequenceService;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class ManufacturingServiceProvider extends PackageServiceProvider
@@ -146,6 +147,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     $operationTypeIds = array_values(array_unique($operationTypeIds));
                     $locationIds = array_values(array_unique($locationIds));
                     $routeIds = array_values(array_unique($routeIds));
+
+                    SequenceService::purge(['manufacturing.order']);
+
+                    SequenceService::purgeScoped(OperationType::class, $operationTypeIds);
 
                     if (! empty($operationTypeIds) || ! empty($locationIds) || ! empty($routeIds)) {
                         DB::transaction(function () use ($operationTypeIds, $locationIds, $routeIds) {

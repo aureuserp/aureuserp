@@ -13,6 +13,7 @@ return [
         'sections' => [
             'general' => [
                 'title' => 'General',
+                'description' => 'Sequences for journals, warehouses and operation types are created automatically when those records are created — edit them here. Manual creation is only needed for custom code-based sequences.',
 
                 'fields' => [
                     'name'      => 'Name',
@@ -31,6 +32,7 @@ return [
                     'suffix'          => 'Suffix',
                     'padding'         => 'Number Padding',
                     'next-number'     => 'Next Number',
+                    'next-number-help' => 'Can only be increased. To restart numbering safely, delete the sequence — it will be recreated from the highest existing document number.',
                     'step'            => 'Step',
                     'reset-frequency' => 'Reset Counter',
                 ],

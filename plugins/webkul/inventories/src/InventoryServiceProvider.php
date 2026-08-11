@@ -18,6 +18,7 @@ use Webkul\Inventory\Filament\Widgets\OperationTypeCardWidget;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Scrap;
@@ -33,6 +34,7 @@ use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\SequenceService;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class InventoryServiceProvider extends PackageServiceProvider
@@ -150,6 +152,8 @@ class InventoryServiceProvider extends PackageServiceProvider
 
                 $command->endWith(function () {
                     ChatterCleanupService::purgeForModels([Operation::class, Scrap::class]);
+
+                    SequenceService::purge(['inventories.scrap'], [OperationType::class]);
                 });
             })
             ->icon('inventories');

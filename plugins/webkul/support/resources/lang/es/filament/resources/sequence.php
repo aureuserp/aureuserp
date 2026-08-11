@@ -13,6 +13,7 @@ return [
         'sections' => [
             'general' => [
                 'title' => 'General',
+                'description' => 'Las secuencias de diarios, almacenes y tipos de operación se crean automáticamente al crear esos registros; edítelas aquí. La creación manual solo es necesaria para secuencias personalizadas basadas en código.',
 
                 'fields' => [
                     'name'      => 'Nombre',
@@ -31,6 +32,7 @@ return [
                     'suffix'          => 'Sufijo',
                     'padding'         => 'Relleno del Número',
                     'next-number'     => 'Próximo Número',
+                    'next-number-help' => 'Solo puede aumentarse. Para reiniciar la numeración de forma segura, elimine la secuencia; se recreará a partir del número de documento existente más alto.',
                     'step'            => 'Incremento',
                     'reset-frequency' => 'Reiniciar Contador',
                 ],

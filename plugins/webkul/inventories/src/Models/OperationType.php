@@ -20,6 +20,7 @@ use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\Sequence;
 use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
@@ -174,7 +175,8 @@ class OperationType extends Model implements Sortable
 
         $defaults = $this->sequenceDefaults();
 
-        Sequence::where('scope_type', $this->getMorphClass())
+        Sequence::withoutGlobalScope(CompanyScope::class)
+            ->where('scope_type', $this->getMorphClass())
             ->where('scope_id', $this->id)
             ->get()
             ->each(fn (Sequence $sequence) => $sequence->update([

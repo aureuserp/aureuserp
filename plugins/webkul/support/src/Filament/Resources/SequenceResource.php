@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -54,15 +55,23 @@ class SequenceResource extends Resource
         return $schema
             ->components([
                 Section::make(__('support::filament/resources/sequence.form.sections.general.title'))
+                    ->description(fn (?Sequence $record): ?string => $record === null
+                        ? __('support::filament/resources/sequence.form.sections.general.description')
+                        : null)
                     ->schema([
                         TextInput::make('name')
                             ->label(__('support::filament/resources/sequence.form.sections.general.fields.name'))
                             ->maxLength(255),
+                        TextEntry::make('applies_to')
+                            ->label(__('support::filament/resources/sequence.table.columns.applies-to'))
+                            ->state(fn (Sequence $record): string => (string) static::scopeLabel($record))
+                            ->visible(fn (?Sequence $record): bool => $record !== null && filled($record->scope_type)),
                         TextInput::make('code')
                             ->label(__('support::filament/resources/sequence.form.sections.general.fields.code'))
                             ->helperText(__('support::filament/resources/sequence.form.sections.general.fields.code-help'))
                             ->required(fn (?Sequence $record): bool => $record === null)
                             ->maxLength(255)
+                            ->visible(fn (?Sequence $record): bool => $record === null || filled($record->code))
                             ->disabled(fn (?Sequence $record): bool => $record !== null)
                             ->unique(
                                 ignoreRecord: true,
@@ -100,8 +109,9 @@ class SequenceResource extends Resource
                             ->required(),
                         TextInput::make('next_number')
                             ->label(__('support::filament/resources/sequence.form.sections.format.fields.next-number'))
+                            ->helperText(__('support::filament/resources/sequence.form.sections.format.fields.next-number-help'))
                             ->integer()
-                            ->minValue(1)
+                            ->minValue(fn (?Sequence $record): int => max(1, $record?->next_number ?? 1))
                             ->default(1)
                             ->required(),
                         TextInput::make('step')
@@ -137,19 +147,7 @@ class SequenceResource extends Resource
                     ->placeholder('—'),
                 TextColumn::make('scope')
                     ->label(__('support::filament/resources/sequence.table.columns.applies-to'))
-                    ->state(function (Sequence $record): ?string {
-                        if (! $record->scope_type) {
-                            return null;
-                        }
-
-                        $label = $record->scope?->name ?? "#{$record->scope_id}";
-
-                        if ($record->variant) {
-                            $label .= ' — '.__("support::filament/resources/sequence.table.variants.{$record->variant}");
-                        }
-
-                        return $label;
-                    })
+                    ->state(fn (Sequence $record): ?string => static::scopeLabel($record))
                     ->placeholder('—'),
                 TextColumn::make('company.name')
                     ->label(__('support::filament/resources/sequence.table.columns.company'))
@@ -203,6 +201,21 @@ class SequenceResource extends Resource
                 ]),
             ])
             ->defaultSort('code');
+    }
+
+    public static function scopeLabel(Sequence $record): ?string
+    {
+        if (! $record->scope_type) {
+            return null;
+        }
+
+        $label = $record->scope?->name ?? "#{$record->scope_id}";
+
+        if ($record->variant) {
+            $label .= ' — '.__("support::filament/resources/sequence.table.variants.{$record->variant}");
+        }
+
+        return $label;
     }
 
     public static function getPages(): array

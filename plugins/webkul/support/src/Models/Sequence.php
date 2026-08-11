@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Webkul\Support\Enums\SequenceResetFrequency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Sequence extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'sequences';
 
     protected $fillable = [
@@ -34,6 +37,11 @@ class Sequence extends Model
         'step'            => 'integer',
         'reset_frequency' => SequenceResetFrequency::class,
     ];
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
 
     protected static function boot()
     {

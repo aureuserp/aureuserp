@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Webkul\Support\Enums\SequenceResetFrequency;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\Sequence;
 
 class SequenceService
@@ -83,9 +85,38 @@ class SequenceService
         });
     }
 
+    public static function purge(array $codes = [], array $scopeModels = []): void
+    {
+        if (! Schema::hasTable('sequences')) {
+            return;
+        }
+
+        if ($codes) {
+            Sequence::withoutGlobalScope(CompanyScope::class)->whereIn('code', $codes)->delete();
+        }
+
+        foreach ($scopeModels as $scopeModel) {
+            Sequence::withoutGlobalScope(CompanyScope::class)
+                ->where('scope_type', (new $scopeModel)->getMorphClass())
+                ->delete();
+        }
+    }
+
+    public static function purgeScoped(string $scopeModel, array $scopeIds): void
+    {
+        if (empty($scopeIds) || ! Schema::hasTable('sequences')) {
+            return;
+        }
+
+        Sequence::withoutGlobalScope(CompanyScope::class)
+            ->where('scope_type', (new $scopeModel)->getMorphClass())
+            ->whereIn('scope_id', $scopeIds)
+            ->delete();
+    }
+
     protected static function lockedQuery(array $keys): Builder
     {
-        return Sequence::query()
+        return Sequence::withoutGlobalScope(CompanyScope::class)
             ->where($keys)
             ->lockForUpdate();
     }

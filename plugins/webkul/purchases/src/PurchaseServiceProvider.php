@@ -27,6 +27,7 @@ use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Requisition;
+use Webkul\Support\Services\SequenceService;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -81,6 +82,8 @@ class PurchaseServiceProvider extends PackageServiceProvider
             ->hasUninstallCommand(function (UninstallCommand $command) {
                 $command->endWith(function () {
                     ChatterCleanupService::purgeForModels([Order::class, Requisition::class]);
+
+                    SequenceService::purge(['purchases.order']);
                 });
             })
             ->icon('purchases');

@@ -151,7 +151,7 @@ class Company extends Model implements Sortable
                 return;
             }
 
-            Sequence::where('company_id', $company->id)->get()->each(function (Sequence $sequence) {
+            Sequence::withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->get()->each(function (Sequence $sequence) {
                 try {
                     $sequence->update(['company_id' => null]);
                 } catch (UniqueConstraintViolationException) {
