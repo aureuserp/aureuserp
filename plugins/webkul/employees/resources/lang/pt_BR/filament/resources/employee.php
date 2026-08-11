@@ -319,6 +319,25 @@ return [
         ],
 
         'tabs' => [
+            'resume' => [
+                'title' => 'Currículo',
+
+                'entries' => [
+                    'resume' => [
+                        'title'   => 'Currículo',
+                        'empty'   => 'Ainda não há linhas de currículo.',
+                        'untyped' => 'Outros',
+                        'present' => 'Atual',
+                    ],
+
+                    'skills' => [
+                        'title'   => 'Competências',
+                        'empty'   => 'Ainda não há competências.',
+                        'untyped' => 'Outras',
+                    ],
+                ],
+            ],
+
             'work-information' => [
                 'title' => 'Informações de trabalho',
 

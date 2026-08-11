@@ -16,13 +16,15 @@ class AllowedCompanyScope implements Scope
             return;
         }
 
-        $user = auth()->user();
+        $context = app(CompanyContext::class);
+
+        $user = $context->internalUser();
 
         if (! $user) {
             return;
         }
 
-        if (app(CompanyContext::class)->seesAllCompanies()) {
+        if ($context->seesAllCompanies()) {
             return;
         }
 

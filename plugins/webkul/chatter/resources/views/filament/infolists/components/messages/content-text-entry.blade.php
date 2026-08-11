@@ -161,7 +161,7 @@
                                                     @if($field === 'due_date')
                                                         {{ \Carbon\Carbon::parse($change['old_value'])->format('F j, Y') }}
                                                     @else
-                                                        {!! is_array($change['old_value']) ? implode(', ', $change['old_value']) : $change['old_value'] !!}
+                                                        {{ is_array($change['old_value']) ? implode(', ', $change['old_value']) : $change['old_value'] }}
                                                     @endif
                                                 </span>
                                             @endisset
@@ -178,7 +178,7 @@
                                                     @if($field === 'due_date')
                                                         {{ \Carbon\Carbon::parse($change['new_value'])->format('F j, Y') }}
                                                     @else
-                                                        {!! is_array($change['new_value']) ? implode(', ', $change['new_value']) : $change['new_value'] !!}
+                                                        {{ is_array($change['new_value']) ? implode(', ', $change['new_value']) : $change['new_value'] }}
                                                     @endif
                                                 </span>
                                             @endisset
