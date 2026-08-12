@@ -35,20 +35,20 @@ class CountryController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Country::class);
-        
+
         $countries = QueryBuilder::for(Country::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('code'),
                 AllowedFilter::partial('phone_code'),
                 AllowedFilter::exact('currency_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'code', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'code', 'created_at')
+            ->allowedIncludes(
                 'currency',
                 'states',
-            ])
+            )
             ->paginate();
 
         return CountryResource::collection($countries);
@@ -63,10 +63,10 @@ class CountryController extends Controller
     public function show(string $id)
     {
         $country = QueryBuilder::for(Country::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'currency',
                 'states',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $country);

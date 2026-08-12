@@ -6,4 +6,10 @@ return [
     'navigation' => [
         'title' => 'Invoices',
     ],
+
+    'actions' => [
+        'open-product' => [
+            'tooltip' => 'Open product',
+        ],
+    ],
 ];

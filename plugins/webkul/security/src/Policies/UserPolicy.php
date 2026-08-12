@@ -59,10 +59,6 @@ class UserPolicy
             return false;
         }
 
-        if ($user->id === $record->id) {
-            return false;
-        }
-
         return $this->hasAccess($user, $record, 'creator');
     }
 

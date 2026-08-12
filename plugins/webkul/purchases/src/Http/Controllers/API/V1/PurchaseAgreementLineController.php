@@ -46,12 +46,12 @@ class PurchaseAgreementLineController extends Controller
         Gate::authorize('view', $purchaseAgreementModel);
 
         $lines = QueryBuilder::for(RequisitionLine::where('requisition_id', $purchaseAgreementModel->id))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('product_id'),
-            ])
-            ->allowedSorts(['id', 'qty', 'price_unit', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'qty', 'price_unit', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return RequisitionLineResource::collection($lines);
@@ -71,7 +71,7 @@ class PurchaseAgreementLineController extends Controller
         Gate::authorize('view', $purchaseAgreementModel);
 
         $agreementLine = QueryBuilder::for(RequisitionLine::where('requisition_id', $purchaseAgreementModel->id)->where('id', $line))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         return new RequisitionLineResource($agreementLine);

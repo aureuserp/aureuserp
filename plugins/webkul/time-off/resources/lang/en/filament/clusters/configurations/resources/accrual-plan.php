@@ -43,6 +43,10 @@ return [
     ],
 
     'infolist' => [
+        'sections' => [
+            'basic-information' => 'Basic Information',
+        ],
+
         'entries' => [
             'name'                    => 'Name',
             'is-based-on-worked-time' => 'Is Based on Worked Time',

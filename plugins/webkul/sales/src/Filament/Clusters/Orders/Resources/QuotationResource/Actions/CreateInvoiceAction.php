@@ -2,6 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
+use Closure;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +18,8 @@ use Webkul\Sale\Models\Order;
 
 class CreateInvoiceAction extends Action
 {
+    protected bool|Closure $hasDatabaseTransactions = true;
+
     public static function getDefaultName(): ?string
     {
         return 'orders.sales.create-invoice';
@@ -74,7 +78,18 @@ class CreateInvoiceAction extends Action
                     return;
                 }
 
-                SalesFacade::createInvoice($record, $data);
+                try {
+                    SalesFacade::createInvoice($record, $data);
+                } catch (Exception $e) {
+                    Notification::make()
+                        ->danger()
+                        ->body($e->getMessage())
+                        ->send();
+
+                    $this->halt(shouldRollBackDatabaseTransaction: true);
+
+                    return;
+                }
 
                 Notification::make()
                     ->title(__('sales::filament/clusters/orders/resources/quotation/actions/create-invoice.notification.invoice-created.title'))

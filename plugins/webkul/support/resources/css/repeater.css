@@ -30,6 +30,10 @@
                 & > th {
                     @apply border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-950 first-of-type:rounded-tl-xl last-of-type:rounded-tr-xl dark:border-white/5 dark:bg-white/5 dark:text-white [&:not(:first-of-type)]:border-s [&:not(:last-of-type)]:border-e;
 
+                    &.fi-resizable-column {
+                        @apply relative;
+                    }
+
                     &.fi-align-start,
                     &.fi-align-left {
                         @apply text-start;
@@ -52,6 +56,23 @@
                         @apply w-1;
                     }
                 }
+            }
+        }
+
+        & .fi-fo-table-repeater-header-content {
+            @apply flex items-center gap-1 overflow-hidden;
+        }
+
+        & .fi-fo-table-repeater-resize-handle {
+            @apply absolute top-0 right-0 w-1 h-full cursor-col-resize select-none;
+            @apply bg-transparent transition-colors duration-150;
+
+            &:hover {
+                background-color: color-mix(in srgb, var(--color-gray-400) 50%, transparent);
+            }
+
+            &:active {
+                background-color: color-mix(in srgb, var(--color-gray-500) 70%, transparent);
             }
         }
 

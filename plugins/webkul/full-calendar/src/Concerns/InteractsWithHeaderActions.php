@@ -8,6 +8,11 @@ trait InteractsWithHeaderActions
 {
     protected array $cachedHeaderActions = [];
 
+    public function bootInteractsWithHeaderActions(): void
+    {
+        $this->cacheHeaderActions();
+    }
+
     public function bootedInteractsWithHeaderActions(): void
     {
         $this->cacheHeaderActions();
@@ -15,6 +20,10 @@ trait InteractsWithHeaderActions
 
     protected function cacheHeaderActions(): void
     {
+        if ($this->cachedHeaderActions) {
+            return;
+        }
+
         $actions = $this->headerActions();
 
         foreach ($actions as $action) {

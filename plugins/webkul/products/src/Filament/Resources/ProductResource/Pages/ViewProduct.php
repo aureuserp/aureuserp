@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewProduct extends ViewRecord
@@ -21,9 +22,10 @@ class ViewProduct extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [
+        return array_merge(ProductSchemaRegistry::renderActions('header', $this), [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             Action::make('print')
                 ->label(__('products::filament/resources/product/pages/edit-product.header-actions.print.label'))
                 ->color('gray')
@@ -48,7 +50,7 @@ class ViewProduct extends ViewRecord
                         ->required(),
                 ])
                 ->action(function (array $data, $record) {
-                    $pdf = PDF::loadView('products::filament.resources.products.actions.print', [
+                    $pdf = Pdf::loadView('products::filament.resources.products.actions.print', [
                         'records'  => collect([$record]),
                         'quantity' => $data['quantity'],
                         'format'   => $data['format'],
@@ -72,6 +74,6 @@ class ViewProduct extends ViewRecord
                         ->title(__('products::filament/resources/product/pages/view-product.header-actions.delete.notification.title'))
                         ->body(__('products::filament/resources/product/pages/view-product.header-actions.delete.notification.body')),
                 ),
-        ];
+        ]);
     }
 }

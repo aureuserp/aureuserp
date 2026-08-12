@@ -37,16 +37,16 @@ class IncotermController extends Controller
         Gate::authorize('viewAny', Incoterm::class);
 
         $incoterms = QueryBuilder::for(Incoterm::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('code'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'code', 'name', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'code', 'name', 'created_at')
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->paginate();
 
         return IncotermResource::collection($incoterms);
@@ -79,9 +79,9 @@ class IncotermController extends Controller
     public function show(string $id)
     {
         $incoterm = QueryBuilder::for(Incoterm::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $incoterm);

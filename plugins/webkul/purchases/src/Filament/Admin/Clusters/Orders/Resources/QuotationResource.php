@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 use BackedEnum;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\CreateQuotation;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
@@ -13,6 +14,7 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\P
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\ManageReceipts;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Purchase\Models\Quotation;
+use Webkul\Purchase\Models\RequisitionLine;
 
 class QuotationResource extends OrderResource
 {
@@ -53,12 +55,23 @@ class QuotationResource extends OrderResource
     public static function getPages(): array
     {
         return [
-            'index'    => ListQuotations::route('/'),
-            'create'   => CreateQuotation::route('/create'),
-            'view'     => ViewQuotation::route('/{record}'),
-            'edit'     => EditQuotation::route('/{record}/edit'),
-            'bills'    => ManageBills::route('/{record}/bills'),
-            'receipts' => ManageReceipts::route('/{record}/receipts'),
+            'index'      => ListQuotations::route('/'),
+            'create'     => CreateQuotation::route('/create'),
+            'view'       => ViewQuotation::route('/{record}'),
+            'edit'       => EditQuotation::route('/{record}/edit'),
+            'bills'      => ManageBills::route('/{record}/bills'),
+            'operations' => ManageReceipts::route('/{record}/receipts'),
         ];
+    }
+
+    protected static function getAgreementDefaultQuantity(RequisitionLine $line): float|int
+    {
+        $type = $line->requisition?->type;
+
+        if ($type == RequisitionType::BLANKET_ORDER->value) {
+            return (float) 0;
+        }
+
+        return (float) ($line->ordered_qty ?? 0);
     }
 }

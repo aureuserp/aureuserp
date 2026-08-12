@@ -6,6 +6,7 @@ return [
     ],
 
     'stats' => [
+        'pending-requests'  => 'Pending Requests',
         'valid-until'       => 'Valid until :date',
         'time-off-requests' => 'Time Off Requests',
     ],

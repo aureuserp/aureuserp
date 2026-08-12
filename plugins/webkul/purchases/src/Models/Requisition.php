@@ -18,17 +18,16 @@ use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Requisition extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
 
-    protected $table = 'purchases_requisitions';
+    public const ACTIVITY_PLAN_PLUGIN = 'purchases';
 
-    public function getModelTitle(): string
-    {
-        return __('purchases::models/requisition.title');
-    }
+    protected $table = 'purchases_requisitions';
 
     protected $fillable = [
         'name',
@@ -62,6 +61,11 @@ class Requisition extends Model
         ];
     }
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/requisition.title');
+    }
+
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
@@ -90,6 +94,11 @@ class Requisition extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(RequisitionLine::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 
     public function updateName()

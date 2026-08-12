@@ -15,6 +15,7 @@
     $moveUpAction = $getAction($getMoveUpActionName());
     $reorderAction = $getAction($getReorderActionName());
     $extraItemActions = $getExtraItemActions();
+    $footerActions = $getFooterActions();
 
     $isAddable = $isAddable();
     $isCloneable = $isCloneable();
@@ -32,6 +33,17 @@
     $columnManagerApplyAction = $getColumnManagerApplyAction();
     $columnManagerTriggerAction = $getColumnManagerTriggerAction();
     $hasSummary = $hasAnySummarizers();
+
+    $hasResizableColumns = collect($tableColumns)->contains(fn (TableColumn $col) => $col->isResizable());
+
+    $resizableColumnConfig = collect($tableColumns)->mapWithKeys(function (TableColumn $col) {
+        return [$col->getName() => [
+            'isResizable' => $col->isResizable(),
+            'minWidth'    => $col->getMinWidth(),
+            'maxWidth'    => $col->getMaxWidth(),
+            'width'       => $col->getWidth(),
+        ]];
+    })->toArray();
 @endphp
 
 <x-dynamic-component
@@ -49,7 +61,96 @@
         }}
     >
         @if (count($items))
-            <table class="fi-absolute-positioning-context">
+            <table
+                class="fi-absolute-positioning-context"
+                @if ($hasResizableColumns)
+                    x-data="{
+                        columns: @js($resizableColumnConfig),
+                        columnWidths: {},
+                        resizing: null,
+                        startX: 0,
+                        startWidth: 0,
+
+                        init() {
+                            Object.keys(this.columns).forEach(name => {
+                                const col = this.columns[name];
+                                if (col.width) {
+                                    this.columnWidths[name] = parseInt(col.width, 10) || null;
+                                }
+                            });
+                        },
+
+                        getColumnStyle(name) {
+                            const width = this.columnWidths[name];
+                            const col = this.columns[name];
+
+                            if (!width && col.width) {
+                                return 'width: ' + col.width;
+                            }
+
+                            if (width) {
+                                return 'width: ' + width + 'px';
+                            }
+
+                            return '';
+                        },
+
+                        startResize(event, columnName) {
+                            const th = event.target.closest('th');
+                            if (!th) return;
+
+                            this.resizing = columnName;
+                            this.startX = event.pageX;
+                            this.startWidth = th.offsetWidth;
+
+                            document.body.style.cursor = 'col-resize';
+                            document.body.style.userSelect = 'none';
+
+                            const onMouseMove = (e) => {
+                                if (!this.resizing) return;
+
+                                const diff = e.pageX - this.startX;
+                                let newWidth = this.startWidth + diff;
+                                const col = this.columns[this.resizing];
+
+                                if (col.minWidth) {
+                                    const min = parseInt(col.minWidth, 10);
+                                    if (min && newWidth < min) newWidth = min;
+                                }
+
+                                if (col.maxWidth) {
+                                    const max = parseInt(col.maxWidth, 10);
+                                    if (max && newWidth > max) newWidth = max;
+                                }
+
+                                if (newWidth < 50) newWidth = 50;
+
+                                this.columnWidths[this.resizing] = newWidth;
+                            };
+
+                            const onMouseUp = () => {
+                                this.resizing = null;
+                                document.body.style.cursor = '';
+                                document.body.style.userSelect = '';
+                                document.removeEventListener('mousemove', onMouseMove);
+                                document.removeEventListener('mouseup', onMouseUp);
+                            };
+
+                            document.addEventListener('mousemove', onMouseMove);
+                            document.addEventListener('mouseup', onMouseUp);
+                        },
+
+                        resetColumnWidth(name) {
+                            const col = this.columns[name];
+                            if (col.width) {
+                                this.columnWidths[name] = parseInt(col.width, 10) || null;
+                            } else {
+                                delete this.columnWidths[name];
+                            }
+                        },
+                    }"
+                @endif
+            >
                 <thead>
                     <tr>
                         @if (
@@ -63,25 +164,46 @@
                         @endif
 
                         @foreach ($tableColumns as $tableColumn)
+                            @php
+                                $columnName = $tableColumn->getName();
+                                $isResizable = $tableColumn->isResizable();
+                            @endphp
+
                             <th
                                 @class([
                                     'fi-wrapped' => $tableColumn->canHeaderWrap(),
+                                    'fi-resizable-column' => $isResizable,
                                     (($columnAlignment = $tableColumn->getAlignment()) instanceof Alignment) ? ('fi-align-' . $columnAlignment->value) : $columnAlignment,
                                 ])
-                                @style([
-                                    ('width: ' . ($columnWidth = $tableColumn->getWidth())) => filled($columnWidth),
-                                ])
-                            >
-                                @if (! $tableColumn->isHeaderLabelHidden())
-                                    {{ $tableColumn->getLabel() }}
-
-                                    @if ($tableColumn->isMarkedAsRequired())
-                                        <sup class="fi-fo-table-repeater-header-required-mark">*</sup>
-                                    @endif
+                                @if ($hasResizableColumns && $isResizable)
+                                    x-bind:style="getColumnStyle('{{ $columnName }}')"
+                                    data-column="{{ $columnName }}"
                                 @else
-                                    <span class="fi-sr-only">
+                                    @style([
+                                        ('width: ' . ($columnWidth = $tableColumn->getWidth())) => filled($columnWidth),
+                                    ])
+                                @endif
+                            >
+                                <div class="fi-fo-table-repeater-header-content">
+                                    @if (! $tableColumn->isHeaderLabelHidden())
                                         {{ $tableColumn->getLabel() }}
-                                    </span>
+
+                                        @if ($tableColumn->isMarkedAsRequired())
+                                            <sup class="fi-fo-table-repeater-header-required-mark pt-2">*</sup>
+                                        @endif
+                                    @else
+                                        <span class="fi-sr-only">
+                                            {{ $tableColumn->getLabel() }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                @if ($isResizable && $hasResizableColumns)
+                                    <div
+                                        class="fi-fo-table-repeater-resize-handle"
+                                        x-on:mousedown.prevent="startResize($event, '{{ $columnName }}')"
+                                        x-on:dblclick.prevent="resetColumnWidth('{{ $columnName }}')"
+                                    ></div>
                                 @endif
                             </th>
                         @endforeach
@@ -150,6 +272,13 @@
                         <tr
                             wire:key="{{ $item->getLivewireKey() }}.item"
                             x-sortable-item="{{ $itemKey }}"
+                            x-on:click="
+                                if ($event.target.closest('button, a, input, textarea, select, label, [role=button], [data-no-row-click]')) {
+                                    return;
+                                }
+
+                                $el.querySelector('[data-row-click-action]')?.click();
+                            "
                         >
                             @if (
                                 (count($items) > 1) 
@@ -305,7 +434,7 @@
         @endif
     </div>
 
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center gap-3">
         @if (
             $isAddable 
             && $addAction->isVisible()
@@ -319,5 +448,13 @@
                 {{ $addAction }}
             </div>
         @endif
+
+        @foreach ($footerActions as $footerAction)
+            @if ($footerAction->isVisible())
+                <div class="fi-fo-table-repeater-add">
+                    {{ $footerAction }}
+                </div>
+            @endif
+        @endforeach
     </div>
 </x-dynamic-component>

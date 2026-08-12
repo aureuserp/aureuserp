@@ -4,8 +4,8 @@ namespace Webkul\TableViews\Filament\Components;
 
 use Closure;
 use Filament\Schemas\Components\Tabs\Tab;
-use Webkul\TableViews\Models\TableViewFavorite;
 use Illuminate\Support\Facades\Auth;
+use Webkul\TableViews\Models\TableViewFavorite;
 
 class PresetView extends Tab
 {

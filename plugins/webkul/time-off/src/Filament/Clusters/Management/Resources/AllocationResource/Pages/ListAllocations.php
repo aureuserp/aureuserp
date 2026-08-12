@@ -20,7 +20,7 @@ class ListAllocations extends ListRecords
     public function getPresetTableViews(): array
     {
         return [
-            'waiting_for_me' => PresetView::make(__('Waiting For Me'))
+            'waiting_for_me' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.waiting-for-me'))
                 ->icon('heroicon-o-user-circle')
                 ->favorite()
                 ->setAsDefault()
@@ -28,7 +28,7 @@ class ListAllocations extends ListRecords
                     State::CONFIRM->value,
                     State::VALIDATE_ONE->value,
                 ])),
-            'second_approval' => PresetView::make(__('Second Approval'))
+            'second_approval' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.second-approval'))
                 ->icon('heroicon-o-shield-check')
                 ->favorite()
                 ->setAsDefault()
@@ -36,12 +36,12 @@ class ListAllocations extends ListRecords
                     State::CONFIRM->value,
                     State::VALIDATE_TWO->value,
                 ])),
-            'approved' => PresetView::make(__('Approved'))
+            'approved' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.approved'))
                 ->icon('heroicon-o-check-badge')
                 ->favorite()
                 ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', State::VALIDATE_TWO->value)),
-            'valid' => PresetView::make(__('Currently Valid'))
+            'valid' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.currently-valid'))
                 ->icon('heroicon-o-check')
                 ->modifyQueryUsing(function (Builder $query) {
                     $today = now()->format('Y-m-d');
@@ -53,7 +53,7 @@ class ListAllocations extends ListRecords
                                 ->whereDate('date_to', '>=', $today);
                         });
                 }),
-            'my_team' => PresetView::make(__('My Team'))
+            'my_team' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.my-team'))
                 ->icon('heroicon-o-users')
                 ->modifyQueryUsing(function (Builder $query) {
                     $currentUserId = Auth::user()->id;
@@ -63,7 +63,7 @@ class ListAllocations extends ListRecords
                             ->orWhere('user_id', '=', $currentUserId);
                     });
                 }),
-            'my_department' => PresetView::make(__('My Team'))
+            'my_department' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.my-department'))
                 ->icon('heroicon-o-building-office')
                 ->modifyQueryUsing(function (Builder $query) {
                     $currentUserId = Auth::user()->id;
@@ -74,7 +74,7 @@ class ListAllocations extends ListRecords
                         });
                     });
                 }),
-            'refused' => PresetView::make(__('Refused'))
+            'refused' => PresetView::make(__('time-off::filament/clusters/management/resources/allocation/pages/list-allocations.preset-views.refused'))
                 ->icon('heroicon-o-x-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', State::REFUSE->value)),
         ];

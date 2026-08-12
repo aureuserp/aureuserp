@@ -32,6 +32,12 @@ class TableColumn extends Component
 
     protected bool|Closure $isHeaderLabelHidden = false;
 
+    protected bool|Closure $isResizable = false;
+
+    protected int|string|Closure|null $minWidth = null;
+
+    protected int|string|Closure|null $maxWidth = null;
+
     public function __construct(string $name)
     {
         $this->name($name);
@@ -68,5 +74,51 @@ class TableColumn extends Component
     public function isHeaderLabelHidden(): bool
     {
         return (bool) $this->evaluate($this->isHeaderLabelHidden);
+    }
+
+    public function resizable(bool|Closure $condition = true, int|string|Closure|null $minWidth = null, int|string|Closure|null $maxWidth = null): static
+    {
+        $this->isResizable = $condition;
+
+        $this->minWidth = $minWidth;
+
+        $this->maxWidth = $maxWidth;
+
+        return $this;
+    }
+
+    public function isResizable(): bool
+    {
+        return (bool) $this->evaluate($this->isResizable);
+    }
+
+    public function getMinWidth(): ?string
+    {
+        $minWidth = $this->evaluate($this->minWidth);
+
+        if ($minWidth === null) {
+            return null;
+        }
+
+        if (is_int($minWidth)) {
+            return $minWidth.'px';
+        }
+
+        return $minWidth !== null ? (string) $minWidth : null;
+    }
+
+    public function getMaxWidth(): ?string
+    {
+        $maxWidth = $this->evaluate($this->maxWidth);
+
+        if ($maxWidth === null) {
+            return null;
+        }
+
+        if (is_int($maxWidth)) {
+            return $maxWidth.'px';
+        }
+
+        return $maxWidth !== null ? (string) $maxWidth : null;
     }
 }

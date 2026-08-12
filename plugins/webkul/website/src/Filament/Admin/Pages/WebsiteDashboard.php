@@ -1,0 +1,83 @@
+<?php
+
+namespace Webkul\Website\Filament\Admin\Pages;
+
+use App\Models\User;
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Schemas\Schema;
+use Filament\View\LegacyComponents\Widget;
+use Webkul\PluginManager\Package;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
+use Webkul\Website\Filament\Admin\Widgets\BlogAuthorsChart;
+use Webkul\Website\Filament\Admin\Widgets\BlogChart;
+use Webkul\Website\Filament\Admin\Widgets\BlogStatusPieChart;
+use Webkul\Website\Filament\Admin\Widgets\CategoriesPieChart;
+use Webkul\Website\Filament\Admin\Widgets\RecentBlogsTable;
+use Webkul\Website\Filament\Admin\Widgets\StatsOverview;
+use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
+
+class WebsiteDashboard extends BaseDashboard
+{
+    use HasFiltersForm, HasPageShield;
+
+    protected static string $routePath = 'website';
+
+    protected static string|BackedEnum|null $navigationIcon = null;
+
+    public static function getNavigationIcon(): string|BackedEnum|null
+    {
+        return null;
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Website';
+    }
+
+    public static function getNavigationGroup(): string|\UnitEnum
+    {
+        return NavigationGroup::Dashboard;
+    }
+
+    public function filtersForm(Schema $form): Schema
+    {
+        return $form
+            ->schema([
+                ...DashboardDateRange::make(
+                    label: __('website::filament/admin/pages/dashboard.date-range'),
+                    startKey: 'from_date',
+                    endKey: 'to_date',
+                ),
+
+                Select::make('author_id')
+                    ->label(__('website::filament/admin/pages/dashboard.author'))
+                    ->options(User::query()->pluck('name', 'id'))
+                    ->searchable()
+                    ->placeholder(__('website::filament/admin/pages/dashboard.all-author')),
+            ])
+            ->columns(1);
+    }
+
+    /**
+     * @return array<class-string<Widget>
+     */
+    public function getWidgets(): array
+    {
+        return array_filter([
+            StatsOverview::class,
+            ...(Package::isPluginInstalled('blogs') ? [
+                BlogChart::class,
+                CategoriesPieChart::class,
+                BlogAuthorsChart::class,
+                BlogStatusPieChart::class,
+                TopCategoriesTable::class,
+                RecentBlogsTable::class,
+            ] : []),
+        ]);
+    }
+}

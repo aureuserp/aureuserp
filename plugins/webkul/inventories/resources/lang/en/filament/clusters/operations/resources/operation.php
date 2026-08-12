@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'Destination Location',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'Additional Information',
+            ],
         ],
 
         'tabs' => [
@@ -32,16 +36,23 @@ return [
                 'title' => 'Operations',
 
                 'columns' => [
-                    'product'        => 'Product',
-                    'final-location' => 'Final Location',
-                    'description'    => 'Description',
-                    'scheduled-at'   => 'Scheduled At',
-                    'deadline'       => 'Deadline',
-                    'packaging'      => 'Packaging',
-                    'demand'         => 'Demand',
-                    'quantity'       => 'Quantity',
-                    'unit'           => 'Unit',
-                    'picked'         => 'Picked',
+                    'product'                    => 'Product',
+                    'final-location'             => 'Final Location',
+                    'description'                => 'Description',
+                    'scheduled-at'               => 'Scheduled At',
+                    'deadline'                   => 'Deadline',
+                    'packaging'                  => 'Packaging',
+                    'demand'                     => 'Demand',
+                    'quantity'                   => 'Quantity',
+                    'insufficient-stock-tooltip' => 'Insufficient quantity available',
+                    'unit'                       => 'Unit',
+                    'picked'                     => 'Picked',
+                ],
+
+                'actions' => [
+                    'open-product' => [
+                        'tooltip' => 'Open product',
+                    ],
                 ],
 
                 'fields' => [
@@ -57,16 +68,28 @@ return [
                     'picked'         => 'Picked',
 
                     'lines' => [
-                        'modal-heading' => 'Manage Stock Moves',
-                        'add-line'      => 'Add Line',
+                        'modal-heading'             => 'Manage Stock Moves',
+                        'modal-submit-action-label' => 'Save',
+                        'add-line'                  => 'Add Line',
+
+                        'actions' => [
+                            'generate' => 'Generate Serials/Lots',
+                            'import'   => 'Import Serials/Lots',
+                        ],
 
                         'fields' => [
-                            'lot'       => 'Lot/Serial Number',
-                            'pick-from' => 'Pick From',
-                            'location'  => 'Store To',
-                            'package'   => 'Destination Package',
-                            'quantity'  => 'Quantity',
-                            'uom'       => 'Unit of Measure',
+                            'lot'                => 'Lot/Serial Number',
+                            'pick-from'          => 'Pick From',
+                            'location'           => 'Store To',
+                            'package'            => 'Destination Package',
+                            'quantity'           => 'Quantity',
+                            'uom'                => 'Unit of Measure',
+                            'first-lot'          => 'First Lot Number',
+                            'quantity-per-lot'   => 'Quantity per Lot',
+                            'quantity-received'  => 'Quantity Received',
+                            'keep-current-lines' => 'Keep current lines',
+                            'serials'            => 'Lot/Serial Numbers',
+                            'serials-helper'     => 'One lot/serial number per line.',
                         ],
                     ],
                 ],
@@ -125,6 +148,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'Operation Type',
             'name'                 => 'Name',
             'state'                => 'State',
             'partner'              => 'Partner',
@@ -187,13 +211,21 @@ return [
     ],
 
     'tabs' => [
-        'todo'     => 'To Do',
-        'my'       => 'My Transfers',
-        'starred'  => 'Starred',
-        'draft'    => 'Draft',
-        'waiting'  => 'Waiting',
-        'ready'    => 'Ready',
-        'done'     => 'Done',
-        'canceled' => 'Canceled',
+        'todo'        => 'To Do',
+        'my'          => 'My Transfers',
+        'starred'     => 'Starred',
+        'draft'       => 'Draft',
+        'waiting'     => 'Waiting',
+        'ready'       => 'Ready',
+        'done'        => 'Done',
+        'canceled'    => 'Canceled',
+        'back-orders' => 'Back Orders',
+    ],
+
+    'notifications' => [
+        'uom-precision-warning' => [
+            'title' => 'Unit of Measure Precision Warning',
+            'body'  => 'You are using a unit of measure smaller than the one used to stock this product. This can lead to rounding issues on reserved quantities. Consider using the smallest unit of measure for stock valuation, or reduce the rounding precision of your base unit.',
+        ],
     ],
 ];

@@ -46,7 +46,7 @@ class MyTimeOffWidget extends BaseWidget
 
         $pendingRequests = $this->calculatePendingRequests($employeeId);
 
-        $stats[] = Stat::make(__('Pending Requests'), $pendingRequests)
+        $stats[] = Stat::make(__('time-off::filament/widgets/my-time-off-widget.stats.pending-requests'), $pendingRequests)
             ->description(__('time-off::filament/widgets/my-time-off-widget.stats.time-off-requests'))
             ->color('danger');
 

@@ -4,8 +4,8 @@ namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Support\Database\Factories\StateFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Support\Database\Factories\StateFactory;
 
 class State extends Model
 {

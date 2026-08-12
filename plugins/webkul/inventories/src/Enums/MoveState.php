@@ -11,6 +11,8 @@ enum MoveState: string implements HasColor, HasLabel
 
     case CONFIRMED = 'confirmed';
 
+    case WAITING = 'waiting';
+
     case ASSIGNED = 'assigned';
 
     case PARTIALLY_ASSIGNED = 'partially_assigned';
@@ -24,6 +26,7 @@ enum MoveState: string implements HasColor, HasLabel
         return match ($this) {
             self::DRAFT              => __('inventories::enums/move-state.draft'),
             self::CONFIRMED          => __('inventories::enums/move-state.confirmed'),
+            self::WAITING            => __('inventories::enums/move-state.waiting'),
             self::ASSIGNED           => __('inventories::enums/move-state.assigned'),
             self::PARTIALLY_ASSIGNED => __('inventories::enums/move-state.partially-assigned'),
             self::DONE               => __('inventories::enums/move-state.done'),
@@ -36,6 +39,7 @@ enum MoveState: string implements HasColor, HasLabel
         return match ($this) {
             self::DRAFT              => 'gray',
             self::CONFIRMED          => 'warning',
+            self::WAITING            => 'warning',
             self::ASSIGNED           => 'primary',
             self::PARTIALLY_ASSIGNED => 'primary',
             self::DONE               => 'success',

@@ -38,7 +38,7 @@ class ProjectStageController extends Controller
         Gate::authorize('viewAny', ProjectStage::class);
 
         $stages = QueryBuilder::for(ProjectStage::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('name'),
                 AllowedFilter::exact('is_active'),
@@ -46,9 +46,9 @@ class ProjectStageController extends Controller
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('creator_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return ProjectStageResource::collection($stages);
@@ -78,7 +78,7 @@ class ProjectStageController extends Controller
     public function show(string $id)
     {
         $stage = QueryBuilder::for(ProjectStage::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $stage);

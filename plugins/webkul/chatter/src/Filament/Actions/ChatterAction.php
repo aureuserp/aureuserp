@@ -138,6 +138,23 @@ class ChatterAction extends Action
             return collect($this->activityPlans);
         }
 
+        $record = $this->getRecord();
+
+        if (
+            $record instanceof Model
+            && method_exists($record, 'activityPlans')
+        ) {
+            $plans = $record->activityPlans();
+
+            if ($plans instanceof Collection) {
+                return $plans;
+            }
+
+            if (is_array($plans)) {
+                return collect($plans);
+            }
+        }
+
         return collect();
     }
 
@@ -269,6 +286,7 @@ class ChatterAction extends Action
     {
         $this
             ->slideOver()
+            ->modalAutofocus(false)
             ->hiddenLabel()
             ->icon(Heroicon::ChatBubbleLeftRight)
             ->modalIcon(Heroicon::ChatBubbleLeftRight)

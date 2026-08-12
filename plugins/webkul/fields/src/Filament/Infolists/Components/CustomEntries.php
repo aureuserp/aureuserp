@@ -65,7 +65,7 @@ class CustomEntries extends Component
     protected function getFields(): Collection
     {
         $query = Field::query()
-            ->where('customizable_type', $this->getResourceClass()::getModel());
+            ->whereIn('customizable_type', Field::customizableTypes($this->getResourceClass()::getModel()));
 
         if (! empty($this->include)) {
             $query->whereIn('code', $this->include);
@@ -82,12 +82,12 @@ class CustomEntries extends Component
     {
         $entryClass = match ($field->type) {
             'text', 'textarea', 'select', 'radio' => TextEntry::class,
-            'checkbox', 'toggle' => IconEntry::class,
-            'checkbox_list' => TextEntry::class,
-            'datetime'      => TextEntry::class,
-            'editor', 'markdown' => TextEntry::class,
-            'color' => ColorEntry::class,
-            default => TextEntry::class,
+            'checkbox', 'toggle'                  => IconEntry::class,
+            'checkbox_list'                       => TextEntry::class,
+            'datetime'                            => TextEntry::class,
+            'editor', 'markdown'                  => TextEntry::class,
+            'color'                               => ColorEntry::class,
+            default                               => TextEntry::class,
         };
 
         $entry = $entryClass::make($field->code)

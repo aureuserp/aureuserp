@@ -11,8 +11,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
@@ -23,19 +21,20 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\BalanceSheetExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 
 class BalanceSheet extends Page implements HasForms
 {
     use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.balance-sheet';
 
     protected static ?string $cluster = Reporting::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
-
-    protected static ?string $navigationLabel = 'Balance Sheet';
 
     protected static ?int $navigationSort = 1;
 
@@ -48,19 +47,29 @@ class BalanceSheet extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Statement Reports';
+        return __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title');
     }
 
     public function mount(): void
     {
-        $this->form->fill([]);
+        $this->form->fill();
     }
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('excel')
-                ->label('Export to Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.balance-sheet.actions.export-excel'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->action(function () {
@@ -73,7 +82,7 @@ class BalanceSheet extends Page implements HasForms
                     );
                 }),
             Action::make('pdf')
-                ->label('Export to PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.balance-sheet.actions.export-pdf'))
                 ->icon('heroicon-o-document-text')
                 ->color('danger')
                 ->action(function () {
@@ -99,7 +108,7 @@ class BalanceSheet extends Page implements HasForms
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
-                        ->label('Date Range')
+                        ->label(__('accounting::filament/clusters/reporting.pages.balance-sheet.filters.date-range'))
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
@@ -116,7 +125,7 @@ class BalanceSheet extends Page implements HasForms
                         ->live()
                         ->afterStateUpdated(fn () => null),
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.balance-sheet.filters.journals'))
                         ->multiple()
                         ->options(fn () => Journal::pluck('name', 'id'))
                         ->searchable()
@@ -139,18 +148,18 @@ class BalanceSheet extends Page implements HasForms
         $dateRange = $this->parseDateRange();
         $date = $dateRange ? Carbon::parse($dateRange[1]) : now();
 
-        $companyId = Auth::user()->default_company_id;
+        $rateMap = CompanyRateMap::make(date: $date->toDateString());
         $journalIds = $this->data['journals'] ?? [];
 
         $query = MoveLine::query()
             ->select([
                 'accounts_account_move_lines.account_id',
-                DB::raw('SUM(accounts_account_move_lines.debit) as total_debit'),
-                DB::raw('SUM(accounts_account_move_lines.credit) as total_credit'),
-                DB::raw('SUM(accounts_account_move_lines.balance) as balance'),
+                $rateMap->sum('accounts_account_move_lines.debit', 'total_debit'),
+                $rateMap->sum('accounts_account_move_lines.credit', 'total_credit'),
+                $rateMap->sum('accounts_account_move_lines.balance', 'balance'),
             ])
             ->join('accounts_account_moves', 'accounts_account_moves.id', '=', 'accounts_account_move_lines.move_id')
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', MoveState::POSTED)
             ->whereDate('accounts_account_move_lines.date', '<=', $date)
             ->groupBy('accounts_account_move_lines.account_id');
@@ -169,87 +178,87 @@ class BalanceSheet extends Page implements HasForms
 
         $assets = $this->buildAssetSection($accounts, $balances);
         $liabilities = $this->buildLiabilitySection($accounts, $balances);
-        $equity = $this->buildEquitySection($accounts, $balances, $date, $companyId, $journalIds);
+        $equity = $this->buildEquitySection($accounts, $balances, $date, $rateMap, $journalIds);
 
         return [
             'sections' => [
                 [
-                    'title'       => 'ASSETS',
+                    'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.title'),
                     'subsections' => [
                         [
-                            'title'       => 'Current Assets',
+                            'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.subsections.current-assets.title'),
                             'accounts'    => $assets['current_assets'],
-                            'total_label' => 'Total Current Assets',
+                            'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.subsections.current-assets.total-label'),
                             'total'       => $assets['total_current'],
                         ],
                         [
-                            'title'       => 'Fixed Assets',
+                            'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.subsections.fixed-assets.title'),
                             'accounts'    => $assets['fixed_assets'],
-                            'total_label' => 'Total Fixed Assets',
+                            'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.subsections.fixed-assets.total-label'),
                             'total'       => $assets['total_fixed'],
                         ],
                         [
-                            'title'       => 'Non-current Assets',
+                            'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.subsections.non-current-assets.title'),
                             'accounts'    => $assets['non_current_assets'],
-                            'total_label' => 'Total Non-current Assets',
+                            'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.subsections.non-current-assets.total-label'),
                             'total'       => $assets['total_non_current'],
                         ],
                     ],
-                    'total_label' => 'Total ASSETS',
+                    'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.assets.total-label'),
                     'total'       => $assets['total'],
                 ],
                 [
-                    'title'       => 'LIABILITIES',
+                    'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.liabilities.title'),
                     'subsections' => [
                         [
-                            'title'       => 'Current Liabilities',
+                            'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.liabilities.subsections.current-liabilities.title'),
                             'accounts'    => $liabilities['current_liabilities'],
-                            'total_label' => 'Total Current Liabilities',
+                            'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.liabilities.subsections.current-liabilities.total-label'),
                             'total'       => $liabilities['total_current'],
                         ],
                         [
-                            'title'       => 'Non-current Liabilities',
+                            'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.liabilities.subsections.non-current-liabilities.title'),
                             'accounts'    => $liabilities['non_current_liabilities'],
-                            'total_label' => 'Total Non-current Liabilities',
+                            'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.liabilities.subsections.non-current-liabilities.total-label'),
                             'total'       => $liabilities['total_non_current'],
                         ],
                     ],
-                    'total_label' => 'Total LIABILITIES',
+                    'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.liabilities.total-label'),
                     'total'       => $liabilities['total'],
                 ],
                 [
-                    'title'       => 'EQUITY',
+                    'title'       => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.title'),
                     'subsections' => [
                         [
-                            'title'    => 'Unallocated Earnings',
+                            'title'    => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.subsections.unallocated-earnings.title'),
                             'accounts' => [
                                 [
                                     'code'    => '',
-                                    'name'    => 'Current Year Unallocated Earnings',
+                                    'name'    => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.subsections.unallocated-earnings.current-year'),
                                     'balance' => $equity['current_year_earnings'],
                                 ],
                                 [
                                     'code'    => '',
-                                    'name'    => 'Previous Years Unallocated Earnings',
+                                    'name'    => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.subsections.unallocated-earnings.previous-years'),
                                     'balance' => $equity['previous_years_earnings'],
                                 ],
                             ],
-                            'total_label' => 'Total Unallocated Earnings',
+                            'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.subsections.unallocated-earnings.total-label'),
                             'total'       => $equity['total_unallocated'],
                         ],
                         [
-                            'title'         => 'Retained Earnings',
+                            'title'         => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.subsections.retained-earnings.title'),
                             'accounts'      => array_merge($equity['equity_accounts'], $equity['retained_accounts']),
-                            'total_label'   => 'Total Retained Earnings',
+                            'total_label'   => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.subsections.retained-earnings.total-label'),
                             'total'         => $equity['total_equity'] + $equity['total_retained'],
                             'show_if_empty' => false,
                         ],
                     ],
-                    'total_label' => 'Total EQUITY',
+                    'total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.sections.equity.total-label'),
                     'total'       => $equity['total'],
                 ],
             ],
-            'grand_total_label' => 'LIABILITIES + EQUITY',
+            'grand_total_label' => __('accounting::filament/clusters/reporting.pages.balance-sheet.content.grand-total-label'),
             'grand_total'       => $liabilities['total'] + $equity['total'],
             'date'              => $date,
         ];
@@ -311,13 +320,13 @@ class BalanceSheet extends Page implements HasForms
         ];
     }
 
-    protected function buildEquitySection($accounts, $balances, $date, $companyId, $journalIds): array
+    protected function buildEquitySection($accounts, $balances, $date, CompanyRateMap $rateMap, $journalIds): array
     {
         $currentYearStart = now()->startOfYear();
 
-        $currentYearEarnings = $this->calculateEarnings($companyId, $currentYearStart, $date, $journalIds);
+        $currentYearEarnings = $this->calculateEarnings($rateMap, $currentYearStart, $date, $journalIds);
 
-        $previousYearsEarnings = $this->calculateEarnings($companyId, null, $currentYearStart->copy()->subDay(), $journalIds);
+        $previousYearsEarnings = $this->calculateEarnings($rateMap, null, $currentYearStart->copy()->subDay(), $journalIds);
 
         $equityAccounts = $this->getAccountsByTypes($accounts, $balances, [
             AccountType::EQUITY->value,
@@ -344,13 +353,13 @@ class BalanceSheet extends Page implements HasForms
         ];
     }
 
-    protected function calculateEarnings($companyId, $startDate, $endDate, $journalIds): float
+    protected function calculateEarnings(CompanyRateMap $rateMap, $startDate, $endDate, $journalIds): float
     {
         $query = MoveLine::query()
-            ->select(DB::raw('SUM(accounts_account_move_lines.debit - accounts_account_move_lines.credit) as balance'))
+            ->select($rateMap->sum('accounts_account_move_lines.debit - accounts_account_move_lines.credit', 'balance'))
             ->join('accounts_account_moves', 'accounts_account_moves.id', '=', 'accounts_account_move_lines.move_id')
             ->join('accounts_accounts', 'accounts_accounts.id', '=', 'accounts_account_move_lines.account_id')
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', MoveState::POSTED)
             ->whereIn('accounts_accounts.account_type', array_merge(
                 array_keys(AccountType::income()),

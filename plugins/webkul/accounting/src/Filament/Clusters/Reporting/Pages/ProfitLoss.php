@@ -11,8 +11,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
@@ -23,19 +21,20 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\ProfitAndLossExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 
 class ProfitLoss extends Page implements HasForms
 {
     use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.profit-loss';
 
     protected static ?string $cluster = Reporting::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
-
-    protected static ?string $navigationLabel = 'Profit & Loss';
 
     protected static ?int $navigationSort = 2;
 
@@ -48,19 +47,29 @@ class ProfitLoss extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Statement Reports';
+        return __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title');
     }
 
     public function mount(): void
     {
-        $this->form->fill([]);
+        $this->form->fill();
     }
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('excel')
-                ->label('Export to Excel')
+                ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.actions.export-excel'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->action(function () {
@@ -72,7 +81,7 @@ class ProfitLoss extends Page implements HasForms
                     return Excel::download(new ProfitAndLossExport($data, $dateFrom, $dateTo), $filename);
                 }),
             Action::make('pdf')
-                ->label('Export to PDF')
+                ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.actions.export-pdf'))
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('danger')
                 ->action(function () {
@@ -100,7 +109,7 @@ class ProfitLoss extends Page implements HasForms
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
-                        ->label('Date Range')
+                        ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.filters.date-range'))
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
@@ -117,7 +126,7 @@ class ProfitLoss extends Page implements HasForms
                         ->live()
                         ->afterStateUpdated(fn () => null),
                     Select::make('journals')
-                        ->label('Journals')
+                        ->label(__('accounting::filament/clusters/reporting.pages.profit-loss.filters.journals'))
                         ->multiple()
                         ->options(fn () => Journal::pluck('name', 'id'))
                         ->searchable()
@@ -141,18 +150,18 @@ class ProfitLoss extends Page implements HasForms
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfMonth();
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now()->endOfMonth();
 
-        $companyId = Auth::user()->default_company_id;
+        $rateMap = CompanyRateMap::make(date: $dateTo->toDateString());
         $journalIds = $this->data['journals'] ?? [];
 
         $query = MoveLine::query()
             ->select([
                 'accounts_account_move_lines.account_id',
-                DB::raw('SUM(accounts_account_move_lines.debit) as total_debit'),
-                DB::raw('SUM(accounts_account_move_lines.credit) as total_credit'),
-                DB::raw('SUM(accounts_account_move_lines.balance) as balance'),
+                $rateMap->sum('accounts_account_move_lines.debit', 'total_debit'),
+                $rateMap->sum('accounts_account_move_lines.credit', 'total_credit'),
+                $rateMap->sum('accounts_account_move_lines.balance', 'balance'),
             ])
             ->join('accounts_account_moves', 'accounts_account_moves.id', '=', 'accounts_account_move_lines.move_id')
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', MoveState::POSTED)
             ->whereBetween('accounts_account_moves.date', [$dateFrom, $dateTo])
             ->groupBy('accounts_account_move_lines.account_id');
@@ -175,19 +184,19 @@ class ProfitLoss extends Page implements HasForms
         return [
             'sections' => [
                 [
-                    'title'         => 'REVENUE',
+                    'title'         => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.revenue.title'),
                     'accounts'      => $revenue['accounts'],
-                    'total_label'   => 'Total Revenue',
+                    'total_label'   => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.revenue.total-label'),
                     'total'         => $revenue['total'],
-                    'empty_message' => 'No revenue accounts with transactions in this period',
+                    'empty_message' => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.revenue.empty-message'),
                 ],
                 [
-                    'title'         => 'EXPENSES',
+                    'title'         => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.expenses.title'),
                     'accounts'      => $expenses['accounts'],
-                    'total_label'   => 'Total Expenses',
+                    'total_label'   => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.expenses.total-label'),
                     'total'         => $expenses['total'],
                     'is_expense'    => true,
-                    'empty_message' => 'No expense accounts with transactions in this period',
+                    'empty_message' => __('accounting::filament/clusters/reporting.pages.profit-loss.content.sections.expenses.empty-message'),
                 ],
             ],
             'net_income' => $netIncome,

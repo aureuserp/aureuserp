@@ -7,15 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Database\Factories\RequisitionLineFactory;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class RequisitionLine extends Model
 {
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasFactory;
 
     protected $table = 'purchases_requisition_lines';
+
+    protected $appends = [
+        'ordered_qty',
+    ];
 
     protected $fillable = [
         'qty',
@@ -52,6 +61,21 @@ class RequisitionLine extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getOrderedQtyAttribute(): float
+    {
+        if (! $this->requisition_id || ! $this->product_id) {
+            return 0;
+        }
+
+        return (float) OrderLine::query()
+            ->where('product_id', $this->product_id)
+            ->whereHas('order', fn ($query) => $query
+                ->where('requisition_id', $this->requisition_id)
+                ->whereIn('state', [OrderState::PURCHASE->value, OrderState::DONE->value])
+            )
+            ->sum('product_qty');
+    }
+
     protected static function newFactory(): RequisitionLineFactory
     {
         return RequisitionLineFactory::new();
@@ -64,5 +88,12 @@ class RequisitionLine extends Model
         static::creating(function ($requisitionLine) {
             $requisitionLine->creator_id ??= Auth::id();
         });
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+        ];
     }
 }

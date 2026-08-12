@@ -47,16 +47,16 @@ class LotController extends Controller
         Gate::authorize('viewAny', Lot::class);
 
         $lots = QueryBuilder::for(Lot::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('product_id'),
                 AllowedFilter::partial('reference'),
                 AllowedFilter::exact('location_id'),
                 AllowedFilter::exact('company_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'reference', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'reference', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return LotResource::collection($lots);
@@ -87,7 +87,7 @@ class LotController extends Controller
     public function show(string $id)
     {
         $lot = QueryBuilder::for(Lot::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $lot);

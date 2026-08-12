@@ -5,7 +5,7 @@ namespace Webkul\Account\Database\Factories;
 use Webkul\Account\Models\Move;
 
 /**
- * @extends MoveFactory<\Webkul\Account\Models\Move>
+ * @extends MoveFactory<Move>
  */
 class RefundFactory extends MoveFactory
 {

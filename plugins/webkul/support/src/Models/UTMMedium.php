@@ -17,14 +17,14 @@ class UTMMedium extends Model
 
     protected $fillable = [
         'name',
-        'creator_id'
+        'creator_id',
     ];
 
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
-    
+
     protected static function boot()
     {
         parent::boot();

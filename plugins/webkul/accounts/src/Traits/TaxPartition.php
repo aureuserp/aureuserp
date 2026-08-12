@@ -72,10 +72,8 @@ trait TaxPartition
                 TextColumn::make('company.name')
                     ->label(__('accounts::traits/tax-partition.table.columns.company')),
                 TextColumn::make('repartition_type')
-                    ->formatStateUsing(fn ($state) => RepartitionType::options()[$state])
                     ->label(__('accounts::traits/tax-partition.table.columns.repartition-type')),
                 TextColumn::make('document_type')
-                    ->formatStateUsing(fn ($state) => DocumentType::options()[$state])
                     ->label(__('accounts::traits/tax-partition.table.columns.document-type')),
                 IconColumn::make('use_in_tax_closing')
                     ->boolean()
@@ -104,7 +102,7 @@ trait TaxPartition
 
                         $data['creator_id'] = $user->id;
 
-                        $data['company_id'] = $user->default_company_id;
+                        $data['company_id'] = $this->getOwnerRecord()->company_id ?? current_company_id();
 
                         $data['factor'] = (float) $data['factor_percent'] / 100;
 

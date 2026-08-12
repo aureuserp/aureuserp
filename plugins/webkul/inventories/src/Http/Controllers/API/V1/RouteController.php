@@ -48,7 +48,7 @@ class RouteController extends Controller
         Gate::authorize('viewAny', Route::class);
 
         $routes = QueryBuilder::for(Route::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('company_id'),
@@ -56,9 +56,9 @@ class RouteController extends Controller
                 AllowedFilter::exact('product_category_selectable'),
                 AllowedFilter::exact('warehouse_selectable'),
                 AllowedFilter::exact('packaging_selectable'),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return RouteResource::collection($routes);
@@ -97,7 +97,7 @@ class RouteController extends Controller
     public function show(string $id)
     {
         $route = QueryBuilder::for(Route::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $route);

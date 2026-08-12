@@ -72,7 +72,7 @@ class OrderController extends Controller
         Gate::authorize('viewAny', Order::class);
 
         $orders = QueryBuilder::for(Order::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('partner_id'),
@@ -82,9 +82,9 @@ class OrderController extends Controller
                 AllowedFilter::exact('currency_id'),
                 AllowedFilter::exact('invoice_status'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'state', 'date_order', 'amount_total', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'state', 'date_order', 'amount_total', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return OrderResource::collection($orders);
@@ -134,7 +134,7 @@ class OrderController extends Controller
     public function show(string $id)
     {
         $order = QueryBuilder::for(Order::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $order);

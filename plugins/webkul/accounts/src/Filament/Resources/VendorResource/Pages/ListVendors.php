@@ -3,8 +3,8 @@
 namespace Webkul\Account\Filament\Resources\VendorResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Webkul\Account\Filament\Resources\VendorResource;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\ListPartners;
+use Webkul\Account\Filament\Resources\VendorResource;
 
 class ListVendors extends ListPartners
 {

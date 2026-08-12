@@ -45,7 +45,6 @@ trait FiscalPositionTax
                 TextColumn::make('taxDestination.name')
                     ->searchable()
                     ->sortable()
-                    ->label('Tax Destination')
                     ->label(__('accounts::traits/fiscal-position-tax.table.columns.tax-destination')),
             ])
             ->recordActions([
@@ -79,7 +78,7 @@ trait FiscalPositionTax
 
                         $data['creator_id'] = $user->id;
 
-                        $data['company_id'] = $user?->default_company_id;
+                        $data['company_id'] = $this->getOwnerRecord()->company_id ?? current_company_id();
 
                         return $data;
                     }),

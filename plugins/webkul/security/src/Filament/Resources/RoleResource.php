@@ -6,29 +6,27 @@ use BackedEnum;
 use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource as RolesRoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Facades\Filament;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Unique;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\CreateRole;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\EditRole;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\ListRoles;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\ViewRole;
+use Webkul\Security\Filament\Resources\RoleResource\Schemas\RoleForm;
+use Webkul\Security\Filament\Resources\RoleResource\Tables\RolesTable;
+use Webkul\Security\Models\Role;
+use Webkul\Support\Enums\NavigationGroup;
 
 class RoleResource extends RolesRoleResource
 {
@@ -36,11 +34,18 @@ class RoleResource extends RolesRoleResource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationGroup(): string|\UnitEnum
+    {
+        return NavigationGroup::Setting;
+    }
+
     protected static bool $isGloballySearchable = false;
 
     protected static $permissionsCollection;
 
     public static $permissions = null;
+
+    protected static ?Collection $allFormPermissions = null;
 
     public static function canGloballySearch(): bool
     {
@@ -71,82 +76,12 @@ class RoleResource extends RolesRoleResource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Grid::make()
-                    ->schema([
-                        Section::make()
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label(__('filament-shield::filament-shield.field.name'))
-                                    ->unique(
-                                        ignoreRecord: true,
-                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
-                                    )
-                                    ->required()
-                                    ->maxLength(255),
-
-                                Select::make('guard_name')
-                                    ->label(__('filament-shield::filament-shield.field.guard_name'))
-                                    ->native(false)
-                                    ->selectablePlaceholder(false)
-                                    ->options([
-                                        'web' => __('security::filament/resources/role.form.fields.web'),
-                                        'sanctum' => __('security::filament/resources/role.form.fields.sanctum'),
-                                    ])
-                                    ->default(Utils::getFilamentAuthGuard()),
-
-                                Select::make(config('permission.column_names.team_foreign_key'))
-                                    ->label(__('filament-shield::filament-shield.field.team'))
-                                    ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
-                                    ->default(Filament::getTenant()?->id)
-                                    ->options(fn (): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
-                                    ->hidden(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
-                                    ->dehydrated(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
-                                static::getSelectAllFormComponent(),
-                            ])
-                            ->columns([
-                                'sm' => 2,
-                                'lg' => 3,
-                            ])
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
-                static::getShieldFormComponents(),
-            ]);
+        return RoleForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->badge()
-                    ->label(__('filament-shield::filament-shield.column.name'))
-                    ->formatStateUsing(fn ($state): string => Str::headline($state))
-                    ->colors(['primary'])
-                    ->searchable(),
-                TextColumn::make('guard_name')
-                    ->badge()
-                    ->label(__('filament-shield::filament-shield.column.guard_name')),
-                TextColumn::make('permissions_count')
-                    ->badge()
-                    ->label(__('filament-shield::filament-shield.column.permissions'))
-                    ->counts('permissions')
-                    ->colors(['success']),
-                TextColumn::make('updated_at')
-                    ->label(__('filament-shield::filament-shield.column.updated_at'))
-                    ->dateTime(),
-            ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make()
-                    ->hidden(fn (Model $record) => $record->name == config('filament-shield.panel_user.name')),
-            ])
-            ->toolbarActions([
-                DeleteBulkAction::make(),
-            ])
-            ->defaultSort('created_at', 'asc');
+        return RolesTable::configure($table);
     }
 
     public static function getPages(): array
@@ -194,13 +129,33 @@ class RoleResource extends RolesRoleResource
             ->schema(static::getPluginWidgetEntitiesSchema());
     }
 
+    /**
+     * Returns the full set of permission names that the form checkboxes represent.
+     * Uses the same data sources as the form so "Select All" saves exactly what is shown.
+     */
+    public static function getAllFormPermissions(): Collection
+    {
+        if (static::$allFormPermissions instanceof Collection) {
+            return static::$allFormPermissions;
+        }
+
+        $resourcePermissions = collect(static::getResources())
+            ->flatMap(fn (array $entity): array => array_keys(static::getResourcePermissionOptions($entity)));
+
+        return static::$allFormPermissions = $resourcePermissions
+            ->merge(array_keys(static::getPageOptions()))
+            ->merge(array_keys(static::getWidgetOptions()))
+            ->unique()
+            ->values();
+    }
+
     public static function getPluginResources(): ?array
     {
-        return collect(static::getResources())
+        return once(fn (): array => collect(static::getResources())
             ->groupBy(function ($value, $key) {
                 return explode('\\', $key)[1] ?? 'Unknown';
             })
-            ->toArray();
+            ->toArray());
     }
 
     public static function getResources(): ?array
@@ -255,9 +210,7 @@ class RoleResource extends RolesRoleResource
             ->sortKeys()
             ->map(function ($plugin, $key) {
                 $hasAnyOptions = collect($plugin)->contains(function ($entity) {
-                    $checkbox = static::getCheckBoxListComponentForResource($entity);
-
-                    return ! empty($checkbox->getOptions());
+                    return ! empty(static::getResourcePermissionOptions($entity));
                 });
 
                 if (! $hasAnyOptions) {
@@ -266,15 +219,16 @@ class RoleResource extends RolesRoleResource
 
                 return Section::make($key)
                     ->collapsible()
+                    ->collapsed()
                     ->persistCollapsed()
                     ->schema([
                         Grid::make()
                             ->schema(function () use ($plugin) {
                                 return collect($plugin)
                                     ->flatMap(function ($entity) {
-                                        $checkbox = static::getCheckBoxListComponentForResource($entity);
+                                        $options = static::getResourcePermissionOptions($entity);
 
-                                        if (empty($checkbox->getOptions())) {
+                                        if (empty($options)) {
                                             return [];
                                         }
 
@@ -287,7 +241,7 @@ class RoleResource extends RolesRoleResource
                                         return [
                                             Fieldset::make($fieldsetLabel)
                                                 ->schema([
-                                                    $checkbox->hiddenLabel(),
+                                                    static::getCheckBoxListComponentForResource($entity)->hiddenLabel(),
                                                 ])
                                                 ->columnSpan(static::shield()->getSectionColumnSpan()),
                                         ];
@@ -307,6 +261,7 @@ class RoleResource extends RolesRoleResource
             ->map(function ($plugin, $key) {
                 return Section::make($key)
                     ->collapsible()
+                    ->collapsed()
                     ->persistCollapsed()
                     ->schema([
                         Grid::make()
@@ -335,6 +290,7 @@ class RoleResource extends RolesRoleResource
             ->map(function ($plugin, $key) {
                 return Section::make($key)
                     ->collapsible()
+                    ->collapsed()
                     ->persistCollapsed()
                     ->schema([
                         Grid::make()
@@ -354,6 +310,32 @@ class RoleResource extends RolesRoleResource
             })
             ->values()
             ->toArray();
+    }
+
+    public static function getCheckboxListFormComponent(
+        string $name,
+        array $options,
+        bool $searchable = true,
+        array|int|string|null $columns = null,
+        array|int|string|null $columnSpan = null
+    ): Component {
+        return CheckboxList::make($name)
+            ->hiddenLabel()
+            ->options(fn (): array => $options)
+            ->searchable($searchable)
+            ->bulkToggleable()
+            ->afterStateHydrated(function (Component $component, string $operation, ?Model $record) use ($options): void {
+                static::setPermissionStateForRecordPermissions(
+                    component: $component,
+                    operation: $operation,
+                    permissions: $options,
+                    record: $record
+                );
+            })
+            ->dehydrated(fn ($state): bool => ! blank($state))
+            ->gridDirection('row')
+            ->columns($columns ?? static::shield()->getCheckboxListColumns())
+            ->columnSpan($columnSpan ?? static::shield()->getCheckboxListColumnSpan());
     }
 
     public static function setPermissionStateForRecordPermissions(Component $component, string $operation, array $permissions, ?Model $record): void
@@ -383,5 +365,10 @@ class RoleResource extends RolesRoleResource
         }
 
         return static::$permissions = $record->permissions()->pluck('name');
+    }
+
+    public static function isProtectedRoleRecord(?Model $record): bool
+    {
+        return $record instanceof Role && $record->isSystemRole();
     }
 }

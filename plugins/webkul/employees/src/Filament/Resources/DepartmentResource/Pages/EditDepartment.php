@@ -17,15 +17,6 @@ class EditDepartment extends EditRecord
 
     private bool $updateFailed = false;
 
-    protected function getRedirectUrl(): ?string
-    {
-        if ($this->updateFailed) {
-            return null;
-        }
-
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         if ($this->updateFailed) {
@@ -42,7 +33,8 @@ class EditDepartment extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(

@@ -7,9 +7,12 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreatePaymentTerm extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = PaymentTermResource::class;
 
     public function getSubNavigation(): array
@@ -19,11 +22,6 @@ class CreatePaymentTerm extends CreateRecord
         }
 
         return [];
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getCreatedNotification(): ?Notification
@@ -39,7 +37,7 @@ class CreatePaymentTerm extends CreateRecord
         $user = Auth::user();
 
         $data['creator_id'] = $user->id;
-        $data['company_id'] = $user?->default_company_id;
+        $data['company_id'] = current_company_id();
 
         return $data;
     }

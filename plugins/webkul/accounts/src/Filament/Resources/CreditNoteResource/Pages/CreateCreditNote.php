@@ -7,15 +7,15 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateCreditNote extends CreateRecord
 {
-    protected static string $resource = CreditNoteResource::class;
+    use HandlesCrossCompanyException;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
+    protected ?bool $hasDatabaseTransactions = true;
+
+    protected static string $resource = CreditNoteResource::class;
 
     protected function getCreatedNotification(): ?Notification
     {

@@ -7,19 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Database\Factories\CompanyFactory;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Traits\RestrictToAllowedCompanies;
 
 class Company extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasPermissionScope, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasOwnershipScope, RestrictToAllowedCompanies, SoftDeletes, SortableTrait;
+
+    protected static function ownershipScopeIsGlobal(): bool
+    {
+        return false;
+    }
 
     protected $fillable = [
         'sort',
@@ -99,12 +108,8 @@ class Company extends Model implements Sortable
 
     public function partner()
     {
-        return $this->belongsTo(Partner::class, 'partner_id');
-    }
-
-    protected function getOwnerColumn(): string
-    {
-        return 'creator_id';
+        return $this->belongsTo(Partner::class, 'partner_id')
+            ->withoutGlobalScope(CompanyScope::class);
     }
 
     public function parents()
@@ -141,6 +146,20 @@ class Company extends Model implements Sortable
     {
         parent::boot();
 
+        static::forceDeleting(function ($company) {
+            if (! Schema::hasTable('sequences')) {
+                return;
+            }
+
+            Sequence::withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->get()->each(function (Sequence $sequence) {
+                try {
+                    $sequence->update(['company_id' => null]);
+                } catch (UniqueConstraintViolationException) {
+                    $sequence->delete();
+                }
+            });
+        });
+
         static::creating(function ($company) {
             $company->creator_id ??= Auth::id();
 
@@ -170,8 +189,24 @@ class Company extends Model implements Sortable
             }
         });
 
+        static::saving(function ($company) {
+            $company->currency->update([
+                'active' => true,
+            ]);
+        });
+
+        static::created(function ($company) {
+            if (! $company->creator_id) {
+                return;
+            }
+
+            User::find($company->creator_id)
+                ?->allowedCompanies()
+                ->syncWithoutDetaching([$company->id]);
+        });
+
         static::saved(function ($company) {
-            Partner::updateOrCreate(
+            Partner::withoutGlobalScopes()->updateOrCreate(
                 [
                     'id' => $company->partner_id,
                 ],

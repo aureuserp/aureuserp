@@ -68,11 +68,11 @@ return [
                         'title' => 'Automation',
 
                         'fields' => [
-                            'auto-post-bills' => 'Auto Post Bills',
+                            'auto-post-bills'                => 'Auto Post Bills',
                             'ignore-abnormal-invoice-amount' => 'Ignore Abnormal Invoice Amount',
-                            'ignore-abnormal-invoice-date' => 'Ignore Abnormal Invoice Date',
+                            'ignore-abnormal-invoice-date'   => 'Ignore Abnormal Invoice Date',
                         ],
-                    ]
+                    ],
                 ],
             ],
 
@@ -83,7 +83,7 @@ return [
     ],
 
     'infolist' => [
-        
+
         'tabs' => [
             'sales-purchases' => [
                 'fieldsets' => [
@@ -144,11 +144,11 @@ return [
                         'title' => 'Automation',
 
                         'entries' => [
-                            'auto-post-bills' => 'Auto Post Bills',
+                            'auto-post-bills'                => 'Auto Post Bills',
                             'ignore-abnormal-invoice-amount' => 'Ignore Abnormal Invoice Amount',
-                            'ignore-abnormal-invoice-date' => 'Ignore Abnormal Invoice Date',
+                            'ignore-abnormal-invoice-date'   => 'Ignore Abnormal Invoice Date',
                         ],
-                    ]
+                    ],
                 ],
             ],
 

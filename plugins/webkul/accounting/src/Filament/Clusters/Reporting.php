@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Webkul\Support\Enums\NavigationGroup;
 
 class Reporting extends Cluster
 {
@@ -15,8 +16,13 @@ class Reporting extends Cluster
         return __('accounting::filament/clusters/reporting.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getClusterBreadcrumb(): ?string
     {
-        return __('accounting::filament/clusters/reporting.navigation.group');
+        return __('accounting::filament/clusters/reporting.navigation.title');
+    }
+
+    public static function getNavigationGroup(): string|\UnitEnum
+    {
+        return NavigationGroup::Accounting;
     }
 }

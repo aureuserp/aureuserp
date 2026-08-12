@@ -70,14 +70,14 @@ function makePurchaseLinePayload(array $overrides = []): array
 function purchaseOrderPayload(int $lineCount = 2, array $overrides = []): array
 {
     $currency = Currency::first() ?? Currency::factory()->create();
-    $company = Company::factory()->create(['currency_id' => $currency->id]);
+    $companyId = current_company_id() ?? Company::factory()->create(['currency_id' => $currency->id])->id;
     $partner = Partner::factory()->create();
 
     $payload = [
         'partner_id'  => $partner->id,
         'currency_id' => $currency->id,
         'ordered_at'  => now()->format('Y-m-d'),
-        'company_id'  => $company->id,
+        'company_id'  => $companyId,
         'lines'       => collect(range(1, $lineCount))
             ->map(fn () => makePurchaseLinePayload())
             ->all(),

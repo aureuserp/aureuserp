@@ -61,11 +61,11 @@ class ApplicantChartWidget extends ChartWidget
             COUNT(*) as total,
             SUM(CASE WHEN refuse_reason_id IS NOT NULL THEN 1 ELSE 0 END) as refused,
             SUM(CASE WHEN date_closed IS NOT NULL THEN 1 ELSE 0 END) as hired,
-            SUM(CASE WHEN is_active = 0 OR deleted_at IS NOT NULL THEN 1 ELSE 0 END) as archived,
+            SUM(CASE WHEN is_active = false OR deleted_at IS NOT NULL THEN 1 ELSE 0 END) as archived,
             SUM(CASE
                 WHEN refuse_reason_id IS NULL
                 AND date_closed IS NULL
-                AND is_active = 1
+                AND is_active = true
                 AND deleted_at IS NULL THEN 1
                 ELSE 0
             END) as ongoing
@@ -84,20 +84,30 @@ class ApplicantChartWidget extends ChartWidget
             ],
         };
 
+        $colorMap = [
+            'Ongoing'  => '#3b82f6',
+            'Hired'    => '#22c55e',
+            'Refused'  => '#ef4444',
+            'Archived' => '#94a3b8',
+        ];
+
+        $translatedLabels = array_map(fn ($key) => match ($key) {
+            'Ongoing'  => __('recruitments::filament/widgets/applicant.ongoing'),
+            'Hired'    => __('recruitments::filament/widgets/applicant.hired'),
+            'Refused'  => __('recruitments::filament/widgets/applicant.refused'),
+            'Archived' => __('recruitments::filament/widgets/applicant.archived'),
+            default    => $key,
+        }, array_keys($data));
+
         return [
             'datasets' => [
                 [
                     'label'           => __('recruitments::filament/widgets/applicant.heading.title'),
                     'data'            => array_values($data),
-                    'backgroundColor' => array_map(fn ($key) => match ($key) {
-                        __('recruitments::filament/widgets/applicant.ongoing')  => '#3b82f6',
-                        __('recruitments::filament/widgets/applicant.hired')    => '#22c55e',
-                        __('recruitments::filament/widgets/applicant.refused')  => '#ef4444',
-                        __('recruitments::filament/widgets/applicant.archived') => '#94a3b8',
-                    }, array_keys($data)),
+                    'backgroundColor' => array_map(fn ($key) => $colorMap[$key] ?? '#94a3b8', array_keys($data)),
                 ],
             ],
-            'labels' => array_keys($data),
+            'labels' => $translatedLabels,
         ];
     }
 

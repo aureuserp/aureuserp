@@ -7,8 +7,8 @@ use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Width;
-use Illuminate\Support\Facades\Auth;
 use Guava\IconPicker\Forms\Components\IconPicker;
+use Illuminate\Support\Facades\Auth;
 use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
 

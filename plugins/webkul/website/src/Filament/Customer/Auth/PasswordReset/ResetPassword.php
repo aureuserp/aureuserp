@@ -26,7 +26,7 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 use Livewire\Attributes\Locked;
 
 /**
- * @property \Filament\Schemas\Schema $form
+ * @property Schema $form
  */
 class ResetPassword extends Page
 {

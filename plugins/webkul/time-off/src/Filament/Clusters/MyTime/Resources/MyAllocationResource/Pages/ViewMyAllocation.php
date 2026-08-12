@@ -20,7 +20,8 @@ class ViewMyAllocation extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             EditAction::make(),
             DeleteAction::make()
                 ->successNotification(

@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -150,7 +163,7 @@
                 </div>
 
                 <div class="right-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Delivery Address</div>
+                    <div style="font-weight: bold; margin-bottom: 15px;">{{ __('inventories::app.documents.delivery-address') }}</div>
                     
                     @if($record->partner)
                         <div style="margin-top: 15px;">
@@ -204,14 +217,14 @@
 
             <!-- Delivery Slip Title -->
             <div class="slip-title">
-                Delivery Slip #{{ $record->name }}
+                {{ __('inventories::app.documents.delivery-slip-title', ['name' => $record->name]) }}
             </div>
 
             <!-- Details Table -->
             <table class="details-table">
                 <tr>
                     <td width="25%">
-                        <strong>Shipping Date:</strong><br>
+                        <strong>{{ __('inventories::app.documents.shipping-date') }}</strong><br>
                         {{ $record->scheduled_at }}
                     </td>
                 </tr>
@@ -222,22 +235,29 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Product</th>
+                            <th>{{ __('inventories::app.documents.product') }}</th>
 
-                            @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
-                                <th>Lot/Serial Number</th>
+                            @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
+                                <th>{{ __('inventories::app.documents.lot-serial-number') }}</th>
                             @endif
 
-                            <th>Quantity</th>
+                            <th>{{ __('inventories::app.documents.quantity') }}</th>
                         </tr>
                     </thead>
                     
                     <tbody>
                         @foreach ($record->moveLines as $item)
                             <tr>
-                                <td>{{ $item->product->name }}</td>
+                                <td>
+                                    {{ $item->product->name }}
 
-                                @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
+                                    @if (filled($item->picking_description))
+                                        <br>
+                                        {!! str($item->picking_description)->sanitizeHtml() !!}
+                                    @endif
+                                </td>
+
+                                @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)
                                     <td>{{ $item->lot?->name }}</td>
                                 @endif
                                 

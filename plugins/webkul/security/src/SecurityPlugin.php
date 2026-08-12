@@ -43,7 +43,7 @@ class SecurityPlugin implements Plugin
 
         if (
             ! app()->runningInConsole() &&
-            ! app(UserSettings::class)?->enable_reset_password
+            ! settings(UserSettings::class)?->enable_reset_password
         ) {
             $panel->passwordReset(false);
         }

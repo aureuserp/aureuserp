@@ -35,12 +35,12 @@ class TagController extends Controller
         Gate::authorize('viewAny', Tag::class);
 
         $tags = QueryBuilder::for(Tag::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
-            ])
-            ->allowedSorts(['id', 'name', 'created_at'])
-            ->allowedIncludes(['creator'])
+            )
+            ->allowedSorts('id', 'name', 'created_at')
+            ->allowedIncludes('creator')
             ->paginate();
 
         return TagResource::collection($tags);
@@ -71,7 +71,7 @@ class TagController extends Controller
     public function show(string $id)
     {
         $tag = QueryBuilder::for(Tag::where('id', $id))
-            ->allowedIncludes(['creator'])
+            ->allowedIncludes('creator')
             ->firstOrFail();
 
         Gate::authorize('view', $tag);

@@ -17,11 +17,16 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\State;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Employee extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'employees';
 
     protected $table = 'employees_employees';
 
@@ -152,7 +157,8 @@ class Employee extends Model
 
     public function partner(): BelongsTo
     {
-        return $this->belongsTo(Partner::class, 'partner_id');
+        return $this->belongsTo(Partner::class, 'partner_id')
+            ->withoutGlobalScope(CompanyScope::class);
     }
 
     public function workLocation(): BelongsTo

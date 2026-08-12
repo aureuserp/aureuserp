@@ -10,20 +10,20 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Candidate extends Model
 {
-    use HasChatter, HasLogActivity, SoftDeletes;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasLogActivity, SoftDeletes;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 
     protected $table = 'recruitments_candidates';
-
-    public function getModelTitle(): string
-    {
-        return __('recruitments::models/candidate.title');
-    }
 
     protected $fillable = [
         'message_bounced',
@@ -42,6 +42,11 @@ class Candidate extends Model
         'availability_date',
         'candidate_properties',
         'is_active',
+    ];
+
+    protected $casts = [
+        'candidate_properties' => 'array',
+        'is_active'            => 'boolean',
     ];
 
     public function getLogAttributeLabels(): array
@@ -65,10 +70,10 @@ class Candidate extends Model
         ];
     }
 
-    protected $casts = [
-        'candidate_properties' => 'array',
-        'is_active'            => 'boolean',
-    ];
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/candidate.title');
+    }
 
     public function company()
     {
@@ -140,7 +145,7 @@ class Candidate extends Model
 
             $candidate->creator_id ??= $authUser->id;
 
-            $candidate->company_id ??= $authUser?->default_company_id;
+            $candidate->company_id ??= current_company_id();
         });
 
         static::saved(function (self $candidate) {

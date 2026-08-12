@@ -5,29 +5,29 @@ namespace Webkul\Recruitment\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Traits\HasApplicationStatus;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Applicant extends Model
 {
-    use HasApplicationStatus, HasChatter, HasLogActivity, SoftDeletes;
+    use BelongsToCompany;
+    use HasApplicationStatus, HasChatter, HasCustomFields, HasLogActivity, SoftDeletes;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'recruitments';
 
     protected $table = 'recruitments_applicants';
-
-    public function getModelTitle(): string
-    {
-        return __('recruitments::models/applicant.title');
-    }
 
     protected $fillable = [
         'source_id',
@@ -77,6 +77,15 @@ class Applicant extends Model
     protected $appends = [
         'application_status',
     ];
+
+    public array $notificationData = [];
+
+    public array $interviewerChanges = [];
+
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/applicant.title');
+    }
 
     public function source(): BelongsTo
     {
@@ -236,7 +245,7 @@ class Applicant extends Model
 
         $this->creator_id ??= $authUser->id;
 
-        $this->company_id ??= $authUser?->default_company_id;
+        $this->company_id ??= current_company_id();
     }
 
     public function handleApplicationUpdation(): void

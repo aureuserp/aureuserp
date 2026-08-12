@@ -56,7 +56,7 @@ function productRoute(string $action, mixed $product = null): string
 
 function productPayload(array $overrides = []): array
 {
-    $uom      = UOM::factory()->create();
+    $uom = UOM::factory()->create();
     $category = Category::factory()->create();
 
     return array_replace_recursive([
@@ -146,7 +146,7 @@ it('creates a product', function () {
 it('creates a product with account-specific income and expense accounts', function () {
     actingWithProductPermissions(['create_account_product']);
 
-    $incomeAccount  = Account::factory()->create();
+    $incomeAccount = Account::factory()->create();
     $expenseAccount = Account::factory()->create();
 
     $payload = productPayload([
@@ -166,12 +166,15 @@ it('creates a product with account-specific income and expense accounts', functi
         ->assertJsonPath('data.purchase_ok', true);
 
     $this->assertDatabaseHas('products_products', [
-        'name'                        => $payload['name'],
+        'name'           => $payload['name'],
+        'invoice_policy' => 'order',
+        'sales_ok'       => true,
+        'purchase_ok'    => true,
+    ]);
+
+    $this->assertDatabaseHas('products_product_company_accounts', [
         'property_account_income_id'  => $incomeAccount->id,
         'property_account_expense_id' => $expenseAccount->id,
-        'invoice_policy'              => 'order',
-        'sales_ok'                    => true,
-        'purchase_ok'                 => true,
     ]);
 });
 
@@ -226,7 +229,7 @@ it('returns 404 for a non-existent product', function () {
 it('shows account-specific fields on a product', function () {
     actingWithProductPermissions(['view_account_product']);
 
-    $incomeAccount  = Account::factory()->create();
+    $incomeAccount = Account::factory()->create();
     $expenseAccount = Account::factory()->create();
 
     $product = Product::factory()->create([
@@ -275,8 +278,8 @@ it('updates a product name', function () {
 it('updates account-specific fields on a product', function () {
     actingWithProductPermissions(['update_account_product']);
 
-    $product        = Product::factory()->create();
-    $incomeAccount  = Account::factory()->create();
+    $product = Product::factory()->create();
+    $incomeAccount = Account::factory()->create();
     $expenseAccount = Account::factory()->create();
 
     $this->patchJson(productRoute('update', $product), [
@@ -294,12 +297,16 @@ it('updates account-specific fields on a product', function () {
         ->assertJsonPath('data.purchase_ok', true);
 
     $this->assertDatabaseHas('products_products', [
-        'id'                          => $product->id,
+        'id'             => $product->id,
+        'invoice_policy' => 'delivery',
+        'sales_ok'       => false,
+        'purchase_ok'    => true,
+    ]);
+
+    $this->assertDatabaseHas('products_product_company_accounts', [
+        'product_id'                  => $product->id,
         'property_account_income_id'  => $incomeAccount->id,
         'property_account_expense_id' => $expenseAccount->id,
-        'invoice_policy'              => 'delivery',
-        'sales_ok'                    => false,
-        'purchase_ok'                 => true,
     ]);
 });
 

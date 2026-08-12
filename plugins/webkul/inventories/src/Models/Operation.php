@@ -8,22 +8,39 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
+use Webkul\Inventory\Enums\ProcureMethod;
+use Webkul\Inventory\Facades\Inventory as InventoryFacade;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\Inventory\Models\Concerns\ChecksCrossCompanyTransfer;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Services\SequenceService;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Operation extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use ChecksCrossCompanyTransfer;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'inventories';
 
     protected $table = 'inventories_operations';
 
@@ -50,6 +67,7 @@ class Operation extends Model
         'partner_id',
         'company_id',
         'creator_id',
+        'procurement_group_id',
         'sale_order_id',
     ];
 
@@ -67,7 +85,22 @@ class Operation extends Model
 
     public function getModelTitle(): string
     {
-        return __('inventories::models/operation.title');
+        return match ($this->operationType?->type) {
+            OperationTypeEnum::INCOMING => __('inventories::models/operation.titles.incoming'),
+            OperationTypeEnum::OUTGOING => __('inventories::models/operation.titles.outgoing'),
+            OperationTypeEnum::INTERNAL => __('inventories::models/operation.titles.internal'),
+            OperationTypeEnum::DROPSHIP => __('inventories::models/operation.titles.dropship'),
+            default                     => __('inventories::models/operation.title'),
+        };
+    }
+
+    public function getChatterResourceUrl(): string
+    {
+        try {
+            return OperationResource::getUrl('view', ['record' => $this], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 
     protected function getLogAttributeLabels(): array
@@ -101,6 +134,11 @@ class Operation extends Model
     public function return(): BelongsTo
     {
         return $this->belongsTo(self::class, 'return_id');
+    }
+
+    public function returns(): HasMany
+    {
+        return $this->hasMany(self::class, 'return_id');
     }
 
     public function user(): BelongsTo
@@ -168,6 +206,16 @@ class Operation extends Model
         return $this->hasManyThrough(Package::class, MoveLine::class, 'operation_id', 'id', 'id', 'result_package_id');
     }
 
+    public function packageLevels(): HasMany
+    {
+        return $this->hasMany(PackageLevel::class, 'operation_id');
+    }
+
+    public function procurementGroup(): BelongsTo
+    {
+        return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
+    }
+
     public function purchaseOrders(): BelongsToMany
     {
         return $this->belongsToMany(PurchaseOrder::class, 'purchases_order_operations', 'inventory_operation_id', 'purchase_order_id');
@@ -178,24 +226,37 @@ class Operation extends Model
         return $this->belongsTo(SaleOrder::class, 'sale_order_id');
     }
 
-    public function updateName()
+    public function nextTransfersQuery()
     {
-        if (! $this->operationType->warehouse) {
-            $this->name = $this->operationType->sequence_code.'/'.$this->id;
-        } else {
-            $this->name = $this->operationType->warehouse->code.'/'.$this->operationType->sequence_code.'/'.$this->id;
+        $returnIds = $this->returns()->pluck('id');
+
+        $nextTransferIds = $this->moves()
+            ->with(['moveDestinations:id,operation_id'])
+            ->get()
+            ->flatMap(fn (Move $move) => $move->moveDestinations->pluck('operation_id'))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $query = self::query()
+            ->whereIn('id', $nextTransferIds)
+            ->distinct();
+
+        if ($returnIds->isNotEmpty()) {
+            $query->whereNotIn('id', $returnIds);
         }
+
+        return $query;
     }
 
-    public function updateChildrenNames(): void
+    public function nextTransfers()
     {
-        foreach ($this->moves as $move) {
-            $move->update(['name' => $this->name]);
-        }
+        return $this->nextTransfersQuery()->get();
+    }
 
-        foreach ($this->moveLines as $moveLine) {
-            $moveLine->update(['name' => $this->name]);
-        }
+    public function getShowNextOperationsAttribute(): bool
+    {
+        return $this->nextTransfersQuery()->exists();
     }
 
     protected static function newFactory(): OperationFactory
@@ -209,20 +270,232 @@ class Operation extends Model
 
         static::creating(function ($operation) {
             $operation->creator_id ??= Auth::id();
-        });
 
-        static::saving(function ($operation) {
-            $operation->updateName();
+            $operation->user_id ??= Auth::id();
+
+            $operation->state ??= OperationState::DRAFT;
         });
 
         static::created(function ($operation) {
             $operation->update(['name' => $operation->name]);
         });
 
+        static::updating(function ($operation) {
+            $originalOperationTypeId = $operation->getOriginal('operation_type_id');
+
+            if (
+                $originalOperationTypeId === null
+                || $originalOperationTypeId === $operation->operation_type_id
+            ) {
+                return;
+            }
+
+            $operationType = OperationType::withTrashed()->find($operation->operation_type_id);
+
+            $operation->source_location_id = $operationType?->source_location_id;
+
+            $operation->destination_location_id = $operationType?->destination_location_id;
+        });
+
         static::updated(function ($operation) {
             if ($operation->wasChanged('operation_type_id')) {
                 $operation->updateChildrenNames();
             }
+
+            if (
+                $operation->wasChanged('source_location_id')
+                || $operation->wasChanged('destination_location_id')
+            ) {
+                $operation->moves()->where('is_scraped', false)->get()->each(function ($move) use ($operation) {
+                    $move->source_location_id = $operation->source_location_id ?? $operation->operationType?->source_location_id;
+
+                    $move->destination_location_id = $operation->destination_location_id ?? $operation->operationType?->destination_location_id;
+
+                    $move->save();
+                });
+            }
         });
+
+        static::saving(function ($operation) {
+            $operation->updateName();
+        });
+
+        static::saved(function ($operation) {
+            $operation->computeDeadline();
+
+            $operation->computeScheduledAt();
+
+            $operation->saveQuietly();
+        });
+    }
+
+    public function confirmAdditionalMoves()
+    {
+        if (in_array($this->state, [OperationState::DONE, OperationState::CANCELED])) {
+            return;
+        }
+
+        if ($this->moves->isEmpty() && $this->packageLevels->isEmpty()) {
+            return;
+        }
+
+        if ($this->moves->some(fn (Move $move) => $move->additional)) {
+            InventoryFacade::confirmTransfer($this);
+        }
+
+        InventoryFacade::confirmMoves(
+            $this->moves->filter(fn (Move $move) => $move->state === MoveState::DRAFT && $move->quantity)
+        );
+    }
+
+    public function updateName()
+    {
+        if (
+            $this->exists
+            && $this->isDirty('operation_type_id')
+            && ! in_array($this->state, [OperationState::DONE, OperationState::CANCELED])
+        ) {
+            $this->name = null;
+
+            $this->unsetRelation('operationType');
+        }
+
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::nextFor(
+            $this->operationType,
+            '',
+            $this->company_id,
+            $this->operationType->sequenceDefaults(),
+        );
+    }
+
+    public function updateChildrenNames(): void
+    {
+        foreach ($this->moves as $move) {
+            $move->update(['name' => $this->name]);
+        }
+
+        foreach ($this->moveLines as $moveLine) {
+            $moveLine->update(['name' => $this->name]);
+        }
+    }
+
+    public function computeDeadline(): void
+    {
+        $deadlines = $this->moves->filter(fn ($m) => $m->deadline)->pluck('deadline');
+
+        if ($deadlines->isEmpty()) {
+            $this->deadline = null;
+
+            return;
+        }
+
+        $this->deadline = $this->move_type === 'direct'
+            ? $deadlines->min()
+            : $deadlines->max();
+    }
+
+    public function computeScheduledAt(): void
+    {
+        $movesDates = $this->moves
+            ->filter(fn ($move) => ! in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
+            ->pluck('scheduled_at');
+
+        $defaultDate = $this->scheduled_at ?: now();
+
+        if ($this->move_type === 'direct') {
+            $this->scheduled_at = $movesDates->min() ?? $defaultDate;
+        } else {
+            $this->scheduled_at = $movesDates->max() ?? $defaultDate;
+        }
+    }
+
+    public function computeState()
+    {
+        if (in_array($this->state, [OperationState::DONE, OperationState::CANCELED])) {
+            return;
+        }
+
+        if ($this->moves->isEmpty() || $this->moves->some(fn ($move) => $move->state === MoveState::DRAFT)) {
+            $this->state = OperationState::DRAFT;
+        } elseif ($this->moves->every(fn ($move) => $move->state === MoveState::CANCELED)) {
+            $this->state = OperationState::CANCELED;
+        } elseif ($this->moves->every(fn ($move) => in_array($move->state, [MoveState::CANCELED, MoveState::DONE]))) {
+            $allDoneAreScraped = $this->moves->every(fn ($move) => $move->state === MoveState::DONE ? $move->is_scraped : true);
+
+            $anyCancelNotScrapped = $this->moves->some(fn ($move) => $move->state === MoveState::CANCELED && ! $move->is_scraped);
+
+            $this->state = ($allDoneAreScraped && $anyCancelNotScrapped)
+                ? OperationState::CANCELED
+                : OperationState::DONE;
+        } elseif ($this->moves->every(fn ($move) => $move->state === MoveState::CONFIRMED)) {
+            $this->state = OperationState::CONFIRMED;
+        } elseif (
+            $this->sourceLocation->bypassesReservation() &&
+            $this->moves->every(fn (Move $move) => $move->procure_method === ProcureMethod::MAKE_TO_STOCK)
+        ) {
+            $this->state = OperationState::ASSIGNED;
+        } else {
+            $relevantMoveState = InventoryFacade::relevantMoveState($this->moves);
+
+            $this->state = $relevantMoveState === MoveState::PARTIALLY_ASSIGNED
+                ? OperationState::ASSIGNED
+                : OperationState::from($relevantMoveState->value);
+        }
+    }
+
+    public static function impactedBy(Collection $moves): Collection
+    {
+        $impacted = collect();
+
+        $visited = collect();
+
+        $frontier = $moves;
+
+        while ($frontier->isNotEmpty()) {
+            $next = collect();
+
+            foreach ($frontier as $move) {
+                if ($visited->contains('id', $move->id)) {
+                    continue;
+                }
+
+                $visited->push($move);
+
+                if ($move->operation_id) {
+                    $impacted->push($move->operation);
+                }
+
+                $next = $next->merge($move->moveDestinations);
+            }
+
+            $frontier = $next->filter(fn (Move $move) => ! $visited->contains('id', $move->id));
+        }
+
+        return $impacted->unique('id');
+    }
+
+    public function sharedDestinationLocationId(Collection $moveLines): int|false|null
+    {
+        $locationIds = $moveLines->pluck('destination_location_id')->unique()->values();
+
+        return $locationIds->count() > 1 ? false : $locationIds->first();
+    }
+
+    public function packageFullyMatched(Collection $moveLines, Package $package): bool
+    {
+        return $package->checkMoveLinesMapQuant(
+            $moveLines->filter(fn (MoveLine $line) => $line->product->is_storable)
+        );
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'operation_type_id' => OperationType::class,
+        ];
     }
 }

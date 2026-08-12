@@ -25,14 +25,14 @@ class TopAssigneesWidget extends BaseWidget
         return 'widget_project_top_assignees_widget';
     }
 
-    public function getHeading(): string|Htmlable|null
+    protected function getTableHeading(): string|Htmlable|null
     {
         return __('projects::filament/widgets/top-assignees.heading.title');
     }
 
     public function getTableRecordKey(Model|array $record): string
     {
-        return 'id';
+        return (string) $record['user_id'];
     }
 
     public function table(Table $table): Table
@@ -74,6 +74,7 @@ class TopAssigneesWidget extends BaseWidget
 
         return $table
             ->query($query)
+            ->defaultKeySort(false)
             ->defaultPaginationPageOption(5)
             ->columns([
                 TextColumn::make('user_name')

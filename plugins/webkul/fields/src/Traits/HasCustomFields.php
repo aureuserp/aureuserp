@@ -7,10 +7,6 @@ use Webkul\Field\Models\Field;
 
 trait HasCustomFields
 {
-    protected static mixed $customFillable;
-
-    protected static mixed $customCasts;
-
     /**
      * Boot the trait
      */
@@ -41,20 +37,19 @@ trait HasCustomFields
         try {
             $customFields = $this->getCustomFields();
 
-            $this->mergeFillable(self::$customFillable ??= $customFields->pluck('code')->toArray());
+            $this->mergeFillable($customFields->pluck('code')->all());
 
-            $this->mergeCasts(self::$customCasts ??= $customFields->select('code', 'type', 'is_multiselect')->get());
-        } catch (Exception $e) {
-            // do nothing
+            $this->mergeCasts($customFields);
+        } catch (Exception) {
         }
     }
 
     /**
-     * Get all custom field codes for this model
+     * Get all custom fields for this model.
      */
     protected function getCustomFields()
     {
-        return Field::where('customizable_type', get_class($this));
+        return Field::forCustomizable(static::class);
     }
 
     /**

@@ -5,7 +5,7 @@ namespace Webkul\Account\Database\Factories;
 use Webkul\Account\Models\Invoice;
 
 /**
- * @extends MoveFactory<\Webkul\Account\Models\Invoice>
+ * @extends MoveFactory<Invoice>
  */
 class InvoiceFactory extends MoveFactory
 {

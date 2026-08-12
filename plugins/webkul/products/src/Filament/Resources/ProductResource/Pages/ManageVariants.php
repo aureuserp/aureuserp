@@ -76,7 +76,7 @@ class ManageVariants extends ManageRelatedRecords
                                 ->required(),
                         ])
                         ->action(function (array $data, $record) {
-                            $pdf = PDF::loadView('products::filament.resources.products.actions.print', [
+                            $pdf = Pdf::loadView('products::filament.resources.products.actions.print', [
                                 'records'  => collect([$record]),
                                 'quantity' => $data['quantity'],
                                 'format'   => $data['format'],

@@ -39,18 +39,18 @@ class CashRoundingController extends Controller
         Gate::authorize('viewAny', CashRounding::class);
 
         $cashRoundings = QueryBuilder::for(CashRounding::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('strategy'),
                 AllowedFilter::exact('rounding_method'),
-            ])
-            ->allowedSorts(['id', 'name', 'rounding', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'rounding', 'created_at')
+            ->allowedIncludes(
                 'profitAccount',
                 'lossAccount',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return CashRoundingResource::collection($cashRoundings);
@@ -83,11 +83,11 @@ class CashRoundingController extends Controller
     public function show(string $id)
     {
         $cashRounding = QueryBuilder::for(CashRounding::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'profitAccount',
                 'lossAccount',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $cashRounding);

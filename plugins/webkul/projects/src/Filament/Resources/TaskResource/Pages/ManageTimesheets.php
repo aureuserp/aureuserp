@@ -42,7 +42,7 @@ class ManageTimesheets extends ManageRelatedRecords
             return false;
         }
 
-        if (! app(TimeSettings::class)->enable_timesheets) {
+        if (! settings(TimeSettings::class)->enable_timesheets) {
             return false;
         }
 

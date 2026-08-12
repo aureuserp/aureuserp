@@ -64,8 +64,8 @@ it('creates a currency with valid payload', function () {
     actingWithPermissions(['create_support_currency']);
 
     $payload = Currency::factory()->make([
-        'name' => 'Test Currency ' . uniqid(),
-        'code' => 'TST' . rand(100, 999),
+        'name' => 'Test Currency '.uniqid(),
+        'code' => 'TST'.rand(100, 999),
     ])->toArray();
 
     $this->postJson(currencyRoute('store'), $payload)
@@ -112,9 +112,9 @@ it('updates a currency for authorized users', function () {
     actingWithPermissions(['update_support_currency']);
 
     $currency = Currency::factory()->create([
-        'name' => 'Original Currency ' . uniqid(),
+        'name' => 'Original Currency '.uniqid(),
     ]);
-    $updatedName = 'Updated Currency ' . uniqid();
+    $updatedName = 'Updated Currency '.uniqid();
 
     $this->patchJson(currencyRoute('update', $currency), ['name' => $updatedName])
         ->assertOk()

@@ -13,9 +13,9 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Http\Requests\PartnerRequest;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
-use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
 
 #[Group('Partner API Management')]
@@ -47,7 +47,7 @@ class PartnerController extends Controller
         Gate::authorize('viewAny', Partner::class);
 
         $partners = QueryBuilder::for(Partner::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('account_type'),
                 AllowedFilter::partial('name'),
@@ -61,9 +61,9 @@ class PartnerController extends Controller
                 AllowedFilter::exact('country_id'),
                 AllowedFilter::exact('state_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'email', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'email', 'created_at')
+            ->allowedIncludes(
                 'parent',
                 'country',
                 'state',
@@ -76,7 +76,7 @@ class PartnerController extends Controller
                 'contacts',
                 'bankAccounts',
                 'tags',
-            ])
+            )
             ->paginate();
 
         return PartnerResource::collection($partners);
@@ -107,7 +107,7 @@ class PartnerController extends Controller
     public function show(string $id)
     {
         $partner = QueryBuilder::for(Partner::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'parent',
                 'country',
                 'state',
@@ -120,7 +120,7 @@ class PartnerController extends Controller
                 'contacts',
                 'bankAccounts',
                 'tags',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $partner);

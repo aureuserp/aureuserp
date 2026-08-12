@@ -17,7 +17,7 @@ class UTMSource extends Model
 
     protected $fillable = [
         'name',
-        'creator_id'
+        'creator_id',
     ];
 
     public function creator(): BelongsTo

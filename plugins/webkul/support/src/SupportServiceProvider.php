@@ -7,17 +7,32 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
-use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
+use RuntimeException;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
+use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Database\Dialects\MySqlDialect;
+use Webkul\Support\Database\Dialects\PostgresDialect;
+use Webkul\Support\Http\Controllers\CompanyContextController;
+use Webkul\Support\Livewire\QuickNavigation;
+use Webkul\Support\Services\CompanyContext;
+use Webkul\Support\Traits\HasFilamentDefaults;
+use Webkul\Support\Traits\HasRouterMacros;
+use Webkul\Support\Traits\HasRtlSupport;
 
 class SupportServiceProvider extends PackageServiceProvider
 {
+    use HasFilamentDefaults;
+    use HasRouterMacros;
+    use HasRtlSupport;
+
     public static string $name = 'support';
 
     public static string $viewNamespace = 'support';
@@ -28,7 +43,7 @@ class SupportServiceProvider extends PackageServiceProvider
             ->isCore()
             ->hasViews()
             ->hasTranslations()
-            ->hasRoutes(['api'])
+            ->hasRoutes(['api', 'web'])
             ->hasMigrations([
                 '2024_11_05_105102_create_plugins_table',
                 '2024_11_05_105112_create_plugin_dependencies_table',
@@ -57,21 +72,61 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_08_08_104814_alter_utm_campaigns_table',
                 '2025_10_10_080114_create_currency_rates_table',
                 '2025_11_14_102615_alter_currency_rates_table',
+                '2026_03_18_000001_alter_unit_of_measures_factor_precision',
+                '2026_04_02_000001_create_calendars_table',
+                '2026_04_29_065935_add_resource_columns_in_calendar_leaves_table',
+                '2026_05_01_065935_add_resource_columns_in_calendar_attendances_table',
+                '2026_07_10_000000_fix_unit_of_measures_factor_precision',
+                '2026_07_16_000001_create_quick_navigation_favorites_table',
+                '2026_07_30_110000_null_company_on_utm_campaigns',
+                '2026_08_03_120000_create_sequences_table',
             ])
-            ->runsMigrations();
+            ->runsMigrations()
+            ->hasSettings([
+                '2026_06_12_000001_create_brand_settings',
+            ])
+            ->runsSettings()
+            ->hasSeeder('Webkul\\Support\\Database\\Seeders\\DatabaseSeeder');
     }
 
     public function packageBooted(): void
     {
-        include __DIR__.'/helpers.php';
+        Gate::before(function ($user, string $ability) {
+            if ($ability !== 'bypass_company_scope') {
+                return null;
+            }
+
+            if ($user && method_exists($user, 'hasRole') && $user->hasRole(array_filter([config('filament-shield.super_admin.name'), 'super_admin']))) {
+                return true;
+            }
+
+            return null;
+        });
 
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
+        Route::post('company-context/set', [CompanyContextController::class, 'set'])
+            ->middleware(['web', 'auth'])
+            ->name('company-context.set');
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
+            function (): string {
+                if (filament()->getCurrentPanel()?->getId() !== 'admin') {
+                    return '';
+                }
+
+                return view('support::company-switcher', [
+                    'companies' => app(CompanyContext::class)->allowedCompanies(),
+                    'active'    => app(CompanyContext::class)->activeIds(),
+                ])->render();
+            },
+        );
+
+        Livewire::component('quick-navigation', QuickNavigation::class);
+
         Gate::policy(Role::class, RolePolicy::class);
 
-        /**
-         * Route to access template applied image file
-         */
         $this->app['router']->get('cache/{filename}', [
             'uses' => 'Webkul\Support\Http\Controllers\ImageCacheController@getImage',
             'as'   => 'image_cache',
@@ -80,40 +135,39 @@ class SupportServiceProvider extends PackageServiceProvider
         FilamentAsset::register([
             Css::make('support', __DIR__.'/../resources/dist/support.css'),
         ], 'support');
+
+        $this->registerFilamentDefaults();
+
+        $this->registerRtlSupport();
     }
 
     public function packageRegistered(): void
     {
+        $this->app->scoped(SettingsRegistry::class);
+
+        $this->app->singleton(DatabaseDialect::class, function () {
+            $driver = DB::connection()->getDriverName();
+
+            return match ($driver) {
+                'pgsql'            => new PostgresDialect,
+                'mysql', 'mariadb' => new MySqlDialect,
+                default            => throw new RuntimeException(
+                    "No DatabaseDialect implementation is registered for the [{$driver}] database driver. ".
+                    'Supported drivers: mysql, mariadb, pgsql.'
+                ),
+            };
+        });
+
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(SupportPlugin::make());
         });
 
+        $this->app->scoped(CompanyContext::class);
+
+        $this->registerLanguageSwitch();
+
         $this->registerHooks();
-    }
 
-    protected function registerHooks(): void
-    {
-        $version = '1.3.0-BETA3';
-
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
-            fn (): string => Blade::render(<<<'BLADE'
-                <x-filament::dropdown.list>
-                    <x-filament::dropdown.list.item>
-                        <div class="flex items-center gap-2">
-                            <img
-                                src="{{ url('cache/logo.png') }}"
-                                width="24"
-                                height="24"
-                            />
-
-                            {{ __('support::support.version', ['version' => $version]) }} 
-                        </div>
-                    </x-filament::dropdown.list.item>
-                </x-filament::dropdown.list>
-            BLADE, [
-                'version' => $version,
-            ]),
-        );
+        $this->registerRouterMacros();
     }
 }

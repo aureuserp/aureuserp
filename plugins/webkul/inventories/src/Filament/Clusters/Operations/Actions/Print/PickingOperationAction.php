@@ -19,7 +19,7 @@ class PickingOperationAction extends Action
         $this
             ->label(__('inventories::filament/clusters/operations/actions/print/picking-operations.label'))
             ->action(function ($record) {
-                $pdf = PDF::loadView('inventories::filament.clusters.operations.actions.print-picking-operations', [
+                $pdf = Pdf::loadView('inventories::filament.clusters.operations.actions.print-picking-operations', [
                     'records'  => [$record],
                 ]);
 

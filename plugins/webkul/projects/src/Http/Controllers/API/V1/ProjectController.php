@@ -49,7 +49,7 @@ class ProjectController extends Controller
         Gate::authorize('viewAny', Project::class);
 
         $projects = QueryBuilder::for(Project::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('stage_id'),
                 AllowedFilter::exact('partner_id'),
@@ -61,9 +61,9 @@ class ProjectController extends Controller
                 AllowedFilter::exact('allow_task_dependencies'),
                 AllowedFilter::exact('visibility'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'start_date', 'end_date', 'allocated_hours', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'sort', 'start_date', 'end_date', 'allocated_hours', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return ProjectResource::collection($projects);
@@ -107,7 +107,7 @@ class ProjectController extends Controller
     public function show(string $id)
     {
         $project = QueryBuilder::for(Project::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $project);

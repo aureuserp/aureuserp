@@ -39,22 +39,22 @@ class FiscalPositionController extends Controller
         Gate::authorize('viewAny', FiscalPosition::class);
 
         $fiscalPositions = QueryBuilder::for(FiscalPosition::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('country_id'),
                 AllowedFilter::exact('vat_required'),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at')
+            ->allowedIncludes(
                 'company',
                 'country',
                 'countryGroup',
                 'creator',
                 'taxes',
                 'accounts',
-            ])
+            )
             ->paginate();
 
         return FiscalPositionResource::collection($fiscalPositions);
@@ -109,14 +109,14 @@ class FiscalPositionController extends Controller
     public function show(string $id)
     {
         $fiscalPosition = QueryBuilder::for(FiscalPosition::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'company',
                 'country',
                 'countryGroup',
                 'creator',
                 'taxes',
                 'accounts',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $fiscalPosition);

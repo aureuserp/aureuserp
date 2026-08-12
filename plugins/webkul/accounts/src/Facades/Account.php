@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use Webkul\Account\Models\Move;
 
 /**
- * @method static computeAccountMove(Move $record)
+ * @method static Move computeAccountMove(Move $record)
  */
 class Account extends Facade
 {

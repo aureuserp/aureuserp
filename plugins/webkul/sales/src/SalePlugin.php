@@ -3,10 +3,8 @@
 namespace Webkul\Sale;
 
 use Filament\Contracts\Plugin;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\PluginManager\Package;
-use Webkul\Sale\Filament\Clusters\Settings\Pages\ManageProducts;
 
 class SalePlugin implements Plugin
 {
@@ -44,15 +42,7 @@ class SalePlugin implements Plugin
                     ->discoverWidgets(
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Sale\\Filament\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('sales::app.navigation.settings.label'))
-                            ->url(fn () => ManageProducts::getUrl())
-                            ->group('Sales')
-                            ->sort(4)
-                            ->visible(fn () => ManageProducts::canAccess()),
-                    ]);
+                    );
             });
     }
 

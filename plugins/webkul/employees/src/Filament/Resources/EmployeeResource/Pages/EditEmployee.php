@@ -13,11 +13,6 @@ class EditEmployee extends EditRecord
 {
     protected static string $resource = EmployeeResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): Notification
     {
         return Notification::make()
@@ -44,7 +39,7 @@ class EditEmployee extends EditRecord
 
     private function getActivityPlans(): mixed
     {
-        return ActivityPlan::where('plugin', 'employees')->pluck('name', 'id');
+        return ActivityPlan::employees()->pluck('name', 'id');
     }
 
     protected function mutateFormDataBeforeFill(array $data): array

@@ -2,23 +2,18 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Webkul\Product\Filament\Resources\CategoryResource as CategoryResource;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\CreateProductCategory;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\EditProductCategory;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\ListProductCategories;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\ManageProducts;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\ViewProductCategory;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Schemas\ProductCategoryForm;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Schemas\ProductCategoryInfolist;
 use Webkul\Inventory\Models\Category;
-use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Product\Filament\Resources\CategoryResource;
 
 class ProductCategoryResource extends CategoryResource
 {
@@ -48,82 +43,12 @@ class ProductCategoryResource extends CategoryResource
 
     public static function form(Schema $schema): Schema
     {
-        $schema = CategoryResource::form($schema);
-
-        $components = $schema->getComponents();
-
-        $childComponents = $components[1]->getDefaultChildComponents();
-
-        $childComponents[] = Section::make(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.title'))
-            ->schema([
-                Fieldset::make(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.fieldsets.logistics.title'))
-                    ->schema([
-                        Select::make('routes')
-                            ->label(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.fieldsets.logistics.fields.routes'))
-                            ->relationship('routes', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->multiple(),
-                    ])
-                    ->columns(1),
-            ])
-            ->visible(fn (WarehouseSettings $settings) => $settings->enable_multi_steps_routes);
-
-        $components[1]->childComponents($childComponents);
-
-        $schema->components($components);
-
-        return $schema;
+        return ProductCategoryForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        $schema = CategoryResource::infolist($schema);
-
-        $components = $schema->getComponents();
-
-        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
-
-        $firstGroupChildComponents[] = Section::make(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.title'))
-            ->schema([
-                Section::make(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.title'))
-                    ->schema([
-                        RepeatableEntry::make('routes')
-                            ->label(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.entries.routes'))
-                            ->schema([
-                                TextEntry::make('name')
-                                    ->label(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.entries.route_name'))
-                                    ->icon('heroicon-o-truck'),
-                            ])
-                            ->columns(1),
-                    ])
-                    ->icon('heroicon-o-cog-6-tooth')
-                    ->collapsible(),
-            ])
-            ->visible(fn (WarehouseSettings $settings) => $settings->enable_multi_steps_routes);
-
-        $components[0]->childComponents($firstGroupChildComponents);
-
-        $schema->components($components);
-
-        return $schema;
-    }
-
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        $route = request()->route()?->getName() ?? session('current_route');
-
-        if ($route && $route != 'livewire.update') {
-            session(['current_route' => $route]);
-        } else {
-            $route = session('current_route');
-        }
-
-        if ($route === self::getRouteBaseName().'.index') {
-            return SubNavigationPosition::Start;
-        }
-
-        return SubNavigationPosition::Top;
+        return ProductCategoryInfolist::configure($schema);
     }
 
     public static function getRecordSubNavigation(Page $page): array

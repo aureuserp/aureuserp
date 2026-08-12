@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PartialReconcile extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'accounts_partial_reconciles';

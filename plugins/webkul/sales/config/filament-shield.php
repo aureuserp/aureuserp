@@ -9,6 +9,7 @@ use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResour
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\UOMCategoryResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
@@ -19,30 +20,30 @@ use Webkul\Sale\Filament\Clusters\ToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToUpsellResource;
 
-$permissions = [
-    'BASIC' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
-    'REORDER' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'reorder'],
-    'SOFT_DELETE' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any'],
-    'FULL' => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete', 'force_delete_any', 'restore_any', 'reorder'],
-];
+$basic = ['view_any', 'view', 'create', 'update'];
+$delete = ['delete', 'delete_any'];
+$forceDelete = ['force_delete', 'force_delete_any'];
+$restore = ['restore', 'restore_any'];
+$reorder = ['reorder'];
 
 return [
     'resources' => [
         'manage' => [
-            QuotationResource::class => $permissions['SOFT_DELETE'],
-            OrderResource::class => $permissions['SOFT_DELETE'],
-            OrderToInvoiceResource::class => $permissions['SOFT_DELETE'],
-            OrderToUpsellResource::class => $permissions['SOFT_DELETE'],
-            CustomerResource::class => $permissions['SOFT_DELETE'],
-            ProductResource::class => $permissions['FULL'],
-            ActivityPlanResource::class => $permissions['SOFT_DELETE'],
-            ActivityTypeResource::class => $permissions['FULL'],
-            TeamResource::class => $permissions['FULL'],
-            ProductCategoryResource::class => $permissions['BASIC'],
-            ProductAttributeResource::class => $permissions['FULL'],
-            TagResource::class => $permissions['BASIC'],
-            PackagingResource::class => $permissions['REORDER'],
-            CurrencyResource::class => $permissions['BASIC'],
+            QuotationResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OrderResource::class            => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OrderToInvoiceResource::class   => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            OrderToUpsellResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            CustomerResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ProductResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ActivityPlanResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityTypeResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TeamResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProductCategoryResource::class  => [...$basic, ...$delete],
+            ProductAttributeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TagResource::class              => [...$basic, ...$delete],
+            PackagingResource::class        => [...$basic, ...$delete, ...$reorder],
+            CurrencyResource::class         => [...$basic, ...$delete],
+            UOMCategoryResource::class      => [...$basic, ...$delete],
         ],
         'exclude' => [],
     ],
@@ -55,5 +56,4 @@ return [
             ToInvoice::class,
         ],
     ],
-
 ];

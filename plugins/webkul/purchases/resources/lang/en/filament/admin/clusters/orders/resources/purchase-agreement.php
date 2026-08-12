@@ -122,6 +122,11 @@ return [
                         'title' => 'Purchase Agreement could not be deleted',
                         'body'  => 'The The purchase agreement cannot be deleted because it is currently in use.',
                     ],
+
+                    'warning' => [
+                        'title' => 'Purchase Agreement cannot be deleted',
+                        'body'  => 'Only purchase agreements in Draft or Cancelled state can be deleted.',
+                    ],
                 ],
             ],
         ],
@@ -151,6 +156,11 @@ return [
                     'error' => [
                         'title' => 'Purchase Agreements could not be deleted',
                         'body'  => 'The purchase agreements cannot be deleted because they are currently in use.',
+                    ],
+
+                    'warning' => [
+                        'title' => 'Purchase Agreement cannot be deleted',
+                        'body'  => 'Only purchase agreements in Draft or Cancelled state can be deleted.',
                     ],
                 ],
             ],

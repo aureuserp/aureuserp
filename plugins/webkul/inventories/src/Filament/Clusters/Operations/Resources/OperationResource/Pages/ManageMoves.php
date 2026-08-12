@@ -33,6 +33,10 @@ class ManageMoves extends ManageRelatedRecords
     {
         return $table
             ->columns([
+                TextColumn::make('product.name')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.product'))
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('scheduled_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.date'))
                     ->sortable()
@@ -46,7 +50,7 @@ class ManageMoves extends ManageRelatedRecords
                     ->sortable()
                     ->placeholder('—')
                     ->visible(OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers && $this->getOwnerRecord()->tracking != ProductTracking::QTY),
-                TextColumn::make('package.name')
+                TextColumn::make('resultPackage.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.package'))
                     ->sortable()
                     ->placeholder('—')
@@ -61,6 +65,9 @@ class ManageMoves extends ManageRelatedRecords
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.quantity'))
                     ->sortable()
                     ->color(fn ($record) => $record->destinationLocation->type == LocationType::INTERNAL ? 'success' : 'danger'),
+                TextColumn::make('uom.name')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.unit'))
+                    ->visible(OperationResource::getProductSettings()->enable_uom),
                 TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.state'))
                     ->sortable()

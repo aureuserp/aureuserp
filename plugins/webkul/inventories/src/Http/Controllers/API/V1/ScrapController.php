@@ -17,12 +17,10 @@ use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Inventory\Enums\ScrapState;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource as ProductFilamentResource;
 use Webkul\Inventory\Http\Requests\ScrapRequest;
 use Webkul\Inventory\Http\Resources\V1\ScrapResource;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Product;
-use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\Warehouse;
 
@@ -63,7 +61,7 @@ class ScrapController extends Controller
         Gate::authorize('viewAny', Scrap::class);
 
         $scraps = QueryBuilder::for(Scrap::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('state'),
@@ -77,9 +75,9 @@ class ScrapController extends Controller
                 AllowedFilter::exact('destination_location_id'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('should_replenish'),
-            ])
-            ->allowedSorts(['id', 'name', 'state', 'qty', 'closed_at', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'state', 'qty', 'closed_at', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return ScrapResource::collection($scraps);
@@ -114,7 +112,7 @@ class ScrapController extends Controller
     public function show(string $id)
     {
         $scrap = QueryBuilder::for(Scrap::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $scrap);
@@ -195,62 +193,11 @@ class ScrapController extends Controller
         }
 
         return DB::transaction(function () use ($scrap) {
-            $locationQuantity = ProductQuantity::query()
-                ->where('location_id', $scrap->source_location_id)
-                ->where('product_id', $scrap->product_id)
-                ->where('package_id', $scrap->package_id)
-                ->where('lot_id', $scrap->lot_id)
-                ->first();
-
-            if (! $locationQuantity || $locationQuantity->quantity < $scrap->qty) {
+            if (! $scrap->validate()) {
                 return response()->json([
                     'message' => 'Insufficient source quantity for this scrap.',
                 ], 422);
             }
-
-            $locationQuantity->update([
-                'quantity' => $locationQuantity->quantity - $scrap->qty,
-            ]);
-
-            $destinationQuantity = ProductQuantity::query()
-                ->where('product_id', $scrap->product_id)
-                ->where('location_id', $scrap->destination_location_id)
-                ->first();
-
-            if ($destinationQuantity) {
-                $destinationQuantity->update([
-                    'quantity'                => $destinationQuantity->quantity + $scrap->qty,
-                    'reserved_quantity'       => $destinationQuantity->reserved_quantity + $scrap->qty,
-                    'inventory_diff_quantity' => $destinationQuantity->inventory_diff_quantity - $scrap->qty,
-                ]);
-            } else {
-                ProductQuantity::create([
-                    'product_id'              => $scrap->product_id,
-                    'location_id'             => $scrap->destination_location_id,
-                    'quantity'                => $scrap->qty,
-                    'reserved_quantity'       => $scrap->qty,
-                    'inventory_diff_quantity' => -$scrap->qty,
-                    'incoming_at'             => now(),
-                    'creator_id'              => Auth::id(),
-                    'company_id'              => $scrap->destinationLocation->company_id,
-                ]);
-            }
-
-            $scrap->update([
-                'state'     => ScrapState::DONE,
-                'closed_at' => now(),
-            ]);
-
-            $move = ProductFilamentResource::createMove(
-                $scrap,
-                $scrap->qty,
-                $scrap->source_location_id,
-                $scrap->destination_location_id
-            );
-
-            $move->update([
-                'scrap_id' => $scrap->id,
-            ]);
 
             return (new ScrapResource($scrap->fresh()->load($this->allowedIncludes)))
                 ->additional(['message' => 'Scrap validated successfully.']);
@@ -269,12 +216,16 @@ class ScrapController extends Controller
         }
 
         if (! isset($data['destination_location_id'])) {
+            $sourceCompanyId = Location::query()->find($data['source_location_id'] ?? null)?->company_id;
+
             $data['destination_location_id'] = $existing?->destination_location_id
-                ?? Location::query()->where('is_scrap', true)->value('id');
+                ?? Location::query()->where('is_scrap', true)
+                    ->where('company_id', $sourceCompanyId)
+                    ->value('id');
         }
 
         if (! isset($data['company_id'])) {
-            $data['company_id'] = $existing?->company_id ?? Auth::user()?->default_company_id;
+            $data['company_id'] = $existing?->company_id ?? current_company_id();
         }
 
         if (! isset($data['state']) && ! $existing) {

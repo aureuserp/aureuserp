@@ -12,19 +12,20 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\Inventory\Models\Receipt;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditReceipt extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = ReceiptResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -38,7 +39,8 @@ class EditReceipt extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             OperationActions\TodoAction::make(),
             OperationActions\ValidateAction::make(),
             OperationActions\CancelAction::make(),
@@ -76,11 +78,14 @@ class EditReceipt extends EditRecord
                         ->title(__('inventories::filament/clusters/operations/resources/receipt/pages/edit-receipt.header-actions.delete.notification.success.title'))
                         ->body(__('inventories::filament/clusters/operations/resources/receipt/pages/edit-receipt.header-actions.delete.notification.success.body')),
                 ),
+            OperationActions\NextTransferAction::make(),
         ];
     }
 
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

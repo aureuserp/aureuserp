@@ -1,9 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    <title>General Ledger - {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</title>
+    <title>{{ __('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title'), 'from' => \Carbon\Carbon::parse($data['date_from'])->format('M d, Y'), 'to' => \Carbon\Carbon::parse($data['date_to'])->format('M d, Y')]) }}</title>
     <style>
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         @page {
             margin: 1cm 1cm;
             size: A4 landscape;
@@ -109,20 +122,20 @@
 </head>
 <body>
     <div class="header">
-        <h1>General Ledger</h1>
+        <h1>{{ __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title') }}</h1>
         <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('F j, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('F j, Y') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Account</th>
-                <th>Date</th>
-                <th>Communication</th>
-                <th>Partner</th>
-                <th class="text-right">Debit</th>
-                <th class="text-right">Credit</th>
-                <th class="text-right">Balance</th>
+                <th>{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
+                <th>{{ __('accounting::filament/clusters/reporting.common.date') }}</th>
+                <th>{{ __('accounting::filament/clusters/reporting.common.communication') }}</th>
+                <th>{{ __('accounting::filament/clusters/reporting.common.partner') }}</th>
+                <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
+                <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
+                <th class="text-right">{{ __('accounting::filament/clusters/reporting.common.balance') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -154,7 +167,7 @@
                 {{-- Opening Balance --}}
                 @if($account->opening_balance != 0 && $isExpanded)
                     <tr class="opening-balance">
-                        <td class="move-row">Opening Balance</td>
+                        <td class="move-row">{{ __('accounting::filament/clusters/reporting.common.opening-balance') }}</td>
                         <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('m/d/Y') }}</td>
                         <td></td>
                         <td></td>
@@ -185,7 +198,7 @@
 
             {{-- Totals --}}
             <tr class="total-row">
-                <td>Total</td>
+                <td>{{ __('accounting::filament/clusters/reporting.common.total') }}</td>
                 <td></td>
                 <td></td>
                 <td></td>

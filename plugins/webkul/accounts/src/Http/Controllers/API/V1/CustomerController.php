@@ -42,7 +42,7 @@ class CustomerController extends Controller
 
         $customers = QueryBuilder::for(Partner::class)
             ->where('customer_rank', '>', 0)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('email'),
@@ -51,9 +51,9 @@ class CustomerController extends Controller
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('country_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'email', 'customer_rank', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'email', 'customer_rank', 'created_at')
+            ->allowedIncludes(
                 'parent',
                 'country',
                 'state',
@@ -73,7 +73,7 @@ class CustomerController extends Controller
                 'propertySupplierPaymentTerm',
                 'propertyOutboundPaymentMethodLine',
                 'propertyInboundPaymentMethodLine',
-            ])
+            )
             ->paginate();
 
         return PartnerResource::collection($customers);
@@ -109,7 +109,7 @@ class CustomerController extends Controller
     public function show(string $id)
     {
         $customer = QueryBuilder::for(Partner::where('id', $id)->where('customer_rank', '>', 0))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'parent',
                 'country',
                 'state',
@@ -129,7 +129,7 @@ class CustomerController extends Controller
                 'propertySupplierPaymentTerm',
                 'propertyOutboundPaymentMethodLine',
                 'propertyInboundPaymentMethodLine',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $customer);

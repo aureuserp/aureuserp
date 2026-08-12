@@ -156,7 +156,7 @@ it('rejects check availability when dropship is not confirmed or assigned', func
 
     $this->postJson(dropshipRoute('check-availability', $dropship->id))
         ->assertUnprocessable()
-        ->assertJsonPath('message', 'Only confirmed or assigned operations can check availability.');
+        ->assertJsonPath('message', 'Only waiting, confirmed or assigned operations can check availability.');
 });
 
 it('forbids check availability without update permission', function () {

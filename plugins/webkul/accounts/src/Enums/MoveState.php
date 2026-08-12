@@ -2,9 +2,10 @@
 
 namespace Webkul\Account\Enums;
 
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum MoveState: string implements HasLabel
+enum MoveState: string implements HasColor, HasLabel
 {
     case DRAFT = 'draft';
 
@@ -18,6 +19,15 @@ enum MoveState: string implements HasLabel
             self::DRAFT  => __('accounts::enums/move-state.draft'),
             self::POSTED => __('accounts::enums/move-state.posted'),
             self::CANCEL => __('accounts::enums/move-state.cancel'),
+        };
+    }
+
+    public function getColor(): ?string
+    {
+        return match ($this) {
+            self::DRAFT  => 'gray',
+            self::POSTED => 'success',
+            self::CANCEL => 'danger',
         };
     }
 

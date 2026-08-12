@@ -7,14 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\LotFactory;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Lot extends Model
 {
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'inventories_lots';
@@ -45,9 +51,16 @@ class Lot extends Model
         'alert_date'      => 'datetime',
     ];
 
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id' => Product::class,
+        ];
+    }
+
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom(): BelongsTo
@@ -83,6 +96,50 @@ class Lot extends Model
                     ->where('is_scrap', false);
             })
             ->sum('quantity');
+    }
+
+    public function generateLotNames(string $firstLot, int $count): array
+    {
+        preg_match_all('/\d+/', $firstLot, $matches);
+
+        $caughtInitialNumber = $matches[0];
+
+        if (empty($caughtInitialNumber)) {
+            return $this->generateLotNames($firstLot.'0', $count);
+        }
+
+        $initialNumber = last($caughtInitialNumber);
+
+        $padding = strlen($initialNumber);
+
+        $splitted = preg_split('/'.preg_quote($initialNumber, '/').'/', $firstLot);
+
+        $prefix = implode($initialNumber, array_slice($splitted, 0, -1));
+
+        $suffix = last($splitted);
+
+        $initialNumber = (int) $initialNumber;
+
+        return array_map(fn ($i) => [
+            'lot_name' => sprintf('%s%s%s', $prefix, str_pad($initialNumber + $i, $padding, '0', STR_PAD_LEFT), $suffix),
+        ], range(0, $count - 1));
+    }
+
+    public static function getNextSerial(Company $company, Product $product): string
+    {
+        $lastSerial = static::where(function ($q) use ($company) {
+            $q->where('company_id', $company->id)
+                ->orWhereNull('company_id');
+        })
+            ->where('product_id', $product->id)
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if ($lastSerial) {
+            return (new static)->generateLotNames($lastSerial->name, 2)[1]['lot_name'];
+        }
+
+        return '0001';
     }
 
     protected static function newFactory(): LotFactory

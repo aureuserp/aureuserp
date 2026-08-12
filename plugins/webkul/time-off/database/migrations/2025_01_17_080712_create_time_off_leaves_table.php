@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('employee_company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->foreignId('department_id')->nullable()->constrained('employees_departments')->nullOnDelete();
-            $table->foreignId('calendar_id')->nullable()->constrained('employees_calendars')->nullOnDelete();
+            $table->foreignId('calendar_id')->nullable()->constrained('calendars')->nullOnDelete();
             $table->integer('meeting_id')->nullable();
             $table->foreignId('first_approver_id')->nullable()->constrained('employees_employees')->nullOnDelete();
             $table->foreignId('second_approver_id')->nullable()->constrained('employees_employees')->nullOnDelete();

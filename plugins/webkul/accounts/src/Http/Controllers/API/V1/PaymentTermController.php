@@ -37,18 +37,18 @@ class PaymentTermController extends Controller
         Gate::authorize('viewAny', PaymentTerm::class);
 
         $paymentTerms = QueryBuilder::for(PaymentTerm::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at')
+            ->allowedIncludes(
                 'company',
                 'creator',
                 'dueTerms',
-            ])
+            )
             ->paginate();
 
         return PaymentTermResource::collection($paymentTerms);
@@ -81,11 +81,11 @@ class PaymentTermController extends Controller
     public function show(string $id)
     {
         $paymentTerm = QueryBuilder::for(PaymentTerm::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'company',
                 'creator',
                 'dueTerms',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $paymentTerm);

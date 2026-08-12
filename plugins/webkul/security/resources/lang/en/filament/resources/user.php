@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Users',
-        'group' => 'Settings',
     ],
 
     'global-search' => [
@@ -13,6 +12,11 @@ return [
     ],
 
     'form' => [
+        'validation' => [
+            'cannot-remove-last-admin'   => 'Cannot remove the admin role from the last admin user.',
+            'first-user-must-be-admin'   => 'The first user in the system must be assigned an admin role.',
+        ],
+
         'sections' => [
             'general-information' => [
                 'title'  => 'General Information',
@@ -48,9 +52,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'                       => 'Multi Company',
+                'allowed-companies'           => 'Allowed Companies',
+                'default-company'             => 'Default Company',
+                'default-company-not-allowed' => 'The default company must be one of the allowed companies.',
             ],
         ],
     ],
@@ -90,6 +95,10 @@ return [
                 'notification' => [
                     'title' => 'User deleted',
                     'body'  => 'The user has been deleted successfully.',
+                    'error' => [
+                        'title' => 'User Cannot Be Deleted',
+                        'body'  => 'This is a default user or you cannot delete yourself.',
+                    ],
                 ],
             ],
 
@@ -173,9 +182,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'                       => 'Multi Company',
+                'allowed-companies'           => 'Allowed Companies',
+                'default-company'             => 'Default Company',
+                'default-company-not-allowed' => 'The default company must be one of the allowed companies.',
             ],
         ],
     ],

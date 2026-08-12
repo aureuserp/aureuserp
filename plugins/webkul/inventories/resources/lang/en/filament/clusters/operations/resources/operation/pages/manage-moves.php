@@ -13,6 +13,7 @@ return [
             'source-location'      => 'Source Location',
             'destination-location' => 'Destination Location',
             'quantity'             => 'Quantity',
+            'unit'                 => 'Unit',
             'state'                => 'State',
             'done-by'              => 'Done By',
         ],

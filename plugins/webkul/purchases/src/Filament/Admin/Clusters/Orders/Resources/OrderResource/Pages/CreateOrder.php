@@ -6,11 +6,15 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateOrder extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = OrderResource::class;
 
@@ -38,6 +42,15 @@ class CreateOrder extends CreateRecord
 
     protected function afterCreate(): void
     {
-        PurchaseOrder::computePurchaseOrder($this->getRecord());
+        try {
+            PurchaseOrder::computePurchaseOrder($this->getRecord());
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->body($e->getMessage())
+                ->send();
+
+            $this->halt(shouldRollbackDatabaseTransaction: true);
+        }
     }
 }

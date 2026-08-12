@@ -25,7 +25,8 @@ class JournalChartWidget extends Component
     public function getDashboardData(): array
     {
         $type = $this->journal->type;
-        $baseQuery = Move::where('journal_id', $this->journal->id);
+        $baseQuery = Move::query()
+            ->where('journal_id', $this->journal->id);
 
         $data = [
             'stats'   => [],

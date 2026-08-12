@@ -2,7 +2,6 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Configuration\Resources;
 
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\ProductCategoryResource as BaseProductCategoryResource;
 use Webkul\Invoice\Filament\Clusters\Configuration;
@@ -31,23 +30,6 @@ class ProductCategoryResource extends BaseProductCategoryResource
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/configurations/resources/product-category.navigation.title');
-    }
-
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        $route = request()->route()?->getName() ?? session('current_route');
-
-        if ($route && $route != 'livewire.update') {
-            session(['current_route' => $route]);
-        } else {
-            $route = session('current_route');
-        }
-
-        if ($route === self::getRouteBaseName().'.index') {
-            return SubNavigationPosition::Start;
-        }
-
-        return SubNavigationPosition::Top;
     }
 
     public static function getRecordSubNavigation(Page $page): array
