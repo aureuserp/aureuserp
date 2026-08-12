@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Imposto criado',
-        'body' => 'O imposto foi criado com sucesso.',
+        'body'  => 'O imposto foi criado com sucesso.',
     ],
 ];

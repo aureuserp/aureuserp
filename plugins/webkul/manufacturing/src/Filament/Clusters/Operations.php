@@ -16,7 +16,7 @@ class Operations extends Cluster
         return __('manufacturing::filament/clusters/operations.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Manufacturing;
     }

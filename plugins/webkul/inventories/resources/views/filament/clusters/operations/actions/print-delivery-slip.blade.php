@@ -250,8 +250,11 @@
                             <tr>
                                 <td>
                                     {{ $item->product->name }}
-                                    </br>
-                                    {{ $item->picking_description }}
+
+                                    @if (filled($item->picking_description))
+                                        <br>
+                                        {!! str($item->picking_description)->sanitizeHtml() !!}
+                                    @endif
                                 </td>
 
                                 @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->display_on_delivery_slips)

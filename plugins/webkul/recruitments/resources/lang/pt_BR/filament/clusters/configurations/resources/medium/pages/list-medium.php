@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Meio criado',
-                'body' => 'O meio foi criado com sucesso.',
+                'body'  => 'O meio foi criado com sucesso.',
             ],
         ],
     ],

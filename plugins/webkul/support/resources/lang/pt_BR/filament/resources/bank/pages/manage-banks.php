@@ -7,13 +7,13 @@ return [
 
             'notification' => [
                 'title' => 'Banco criado',
-                'body' => 'O banco foi criado com sucesso.',
+                'body'  => 'O banco foi criado com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

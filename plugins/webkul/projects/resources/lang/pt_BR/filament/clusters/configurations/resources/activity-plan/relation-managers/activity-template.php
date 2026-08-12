@@ -8,8 +8,8 @@ return [
 
                 'fields' => [
                     'activity-type' => 'Tipo de atividade',
-                    'summary' => 'Resumo',
-                    'note' => 'Nota',
+                    'summary'       => 'Resumo',
+                    'note'          => 'Nota',
                 ],
             ],
 
@@ -18,7 +18,7 @@ return [
 
                 'fields' => [
                     'assignment' => 'Atribuição',
-                    'assignee' => 'Responsável',
+                    'assignee'   => 'Responsável',
                 ],
             ],
 
@@ -26,9 +26,9 @@ return [
                 'title' => 'Informações de atraso',
 
                 'fields' => [
-                    'delay-count' => 'Contagem de atraso',
-                    'delay-unit' => 'Unidade de atraso',
-                    'delay-from' => 'Atraso a partir de',
+                    'delay-count'            => 'Contagem de atraso',
+                    'delay-unit'             => 'Unidade de atraso',
+                    'delay-from'             => 'Atraso a partir de',
                     'delay-from-helper-text' => 'Origem do cálculo do atraso',
                 ],
             ],
@@ -38,40 +38,40 @@ return [
     'table' => [
         'columns' => [
             'activity-type' => 'Tipo de atividade',
-            'summary' => 'Resumo',
-            'assignment' => 'Atribuição',
-            'assigned-to' => 'Atribuído a',
-            'interval' => 'Intervalo',
-            'delay-unit' => 'Unidade de atraso',
-            'delay-from' => 'Atraso a partir de',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'summary'       => 'Resumo',
+            'assignment'    => 'Atribuição',
+            'assigned-to'   => 'Atribuído a',
+            'interval'      => 'Intervalo',
+            'delay-unit'    => 'Unidade de atraso',
+            'delay-from'    => 'Atraso a partir de',
+            'created-by'    => 'Criado por',
+            'created-at'    => 'Criado em',
+            'updated-at'    => 'Atualizado em',
         ],
 
         'groups' => [
             'activity-type' => 'Tipo de atividade',
-            'assignment' => 'Atribuição',
-            'assigned-to' => 'Atribuído a',
-            'interval' => 'Intervalo',
-            'delay-unit' => 'Unidade de atraso',
-            'delay-from' => 'Atraso a partir de',
-            'created-by' => 'Criado por',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'assignment'    => 'Atribuição',
+            'assigned-to'   => 'Atribuído a',
+            'interval'      => 'Intervalo',
+            'delay-unit'    => 'Unidade de atraso',
+            'delay-from'    => 'Atraso a partir de',
+            'created-by'    => 'Criado por',
+            'created-at'    => 'Criado em',
+            'updated-at'    => 'Atualizado em',
         ],
 
         'filters' => [
-            'activity-type' => 'Tipo de atividade',
+            'activity-type'   => 'Tipo de atividade',
             'activity-status' => 'Status da atividade',
-            'has-delay' => 'Tem atraso',
+            'has-delay'       => 'Tem atraso',
         ],
 
         'header-actions' => [
             'create' => [
                 'notification' => [
                     'title' => 'Modelo de plano de atividade criado',
-                    'body' => 'O modelo de plano de atividade foi criado com sucesso.',
+                    'body'  => 'O modelo de plano de atividade foi criado com sucesso.',
                 ],
             ],
         ],
@@ -80,14 +80,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Modelo de atividade atualizado',
-                    'body' => 'O modelo de atividade foi atualizado com sucesso.',
+                    'body'  => 'O modelo de atividade foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Modelo de atividade excluído',
-                    'body' => 'O modelo de atividade foi excluído com sucesso.',
+                    'body'  => 'O modelo de atividade foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -96,7 +96,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Modelos de atividade excluídos',
-                    'body' => 'Os modelos de atividade foram excluídos com sucesso.',
+                    'body'  => 'Os modelos de atividade foram excluídos com sucesso.',
                 ],
             ],
         ],

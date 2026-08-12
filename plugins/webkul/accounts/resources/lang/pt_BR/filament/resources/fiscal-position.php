@@ -3,27 +3,27 @@
 return [
     'global-search' => [
         'zip-from' => 'CEP inicial',
-        'zip-to' => 'CEP final',
-        'name' => 'Nome',
+        'zip-to'   => 'CEP final',
+        'name'     => 'Nome',
     ],
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
-            'foreign-vat' => 'IVA estrangeiro',
-            'country' => 'País',
-            'country-group' => 'Grupo de países',
-            'zip-from' => 'CEP inicial',
-            'zip-to' => 'CEP final',
+            'name'                 => 'Nome',
+            'foreign-vat'          => 'IVA estrangeiro',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de países',
+            'zip-from'             => 'CEP inicial',
+            'zip-to'               => 'CEP final',
             'detect-automatically' => 'Detectar automaticamente',
-            'notes' => 'Notas',
-            'company' => 'Empresa',
+            'notes'                => 'Notas',
+            'company'              => 'Empresa',
         ],
         'tabs' => [
             'account-mapping' => [
                 'table' => [
                     'columns' => [
-                        'source-account' => 'Conta de origem',
+                        'source-account'      => 'Conta de origem',
                         'destination-account' => 'Conta de destino',
                     ],
                 ],
@@ -32,7 +32,7 @@ return [
             'tax-mapping' => [
                 'table' => [
                     'columns' => [
-                        'tax-source' => 'Imposto de origem',
+                        'tax-source'      => 'Imposto de origem',
                         'tax-destination' => 'Imposto de destino',
                     ],
                 ],
@@ -42,14 +42,14 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'company' => 'Empresa',
-            'country' => 'País',
-            'country-group' => 'Grupo de países',
-            'created-by' => 'Criado por',
-            'zip-from' => 'CEP inicial',
-            'zip-to' => 'CEP final',
-            'status' => 'Status',
+            'name'                 => 'Nome',
+            'company'              => 'Empresa',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de países',
+            'created-by'           => 'Criado por',
+            'zip-from'             => 'CEP inicial',
+            'zip-to'               => 'CEP final',
+            'status'               => 'Status',
             'detect-automatically' => 'Detectar automaticamente',
         ],
 
@@ -57,7 +57,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Condição de pagamento excluída',
-                    'body' => 'A condição de pagamento foi excluída com sucesso.',
+                    'body'  => 'A condição de pagamento foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -66,7 +66,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Posição fiscal excluída',
-                    'body' => 'A posição fiscal foi excluída com sucesso.',
+                    'body'  => 'A posição fiscal foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -74,14 +74,14 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Nome',
-            'foreign-vat' => 'IVA estrangeiro',
-            'country' => 'País',
-            'country-group' => 'Grupo de países',
-            'zip-from' => 'CEP inicial',
-            'zip-to' => 'CEP final',
+            'name'                 => 'Nome',
+            'foreign-vat'          => 'IVA estrangeiro',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de países',
+            'zip-from'             => 'CEP inicial',
+            'zip-to'               => 'CEP final',
             'detect-automatically' => 'Detectar automaticamente',
-            'notes' => 'Notas',
+            'notes'                => 'Notas',
         ],
     ],
 ];

@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Reembolso excluído',
-                'body' => 'O reembolso foi excluído com sucesso.',
+                'body'  => 'O reembolso foi excluído com sucesso.',
             ],
         ],
     ],

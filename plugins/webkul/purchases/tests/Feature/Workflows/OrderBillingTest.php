@@ -107,8 +107,8 @@ it('nets the billed quantity down when a received quantity is returned and refun
 
     $receipt = $order->refresh()->operations->first();
     $receiptMove = $receipt->moves->first();
-    $return = Inventory::returnTransfer($receipt, [$receiptMove->id => 4]);
-    Inventory::doneTransfer($return->refresh());
+    $return = Inventory::createReturn($receipt, [$receiptMove->id => 4]);
+    Inventory::completeTransfer($return->refresh());
 
     expect($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::TO_INVOICED);
 

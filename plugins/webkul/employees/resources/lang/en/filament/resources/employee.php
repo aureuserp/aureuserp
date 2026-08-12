@@ -319,6 +319,25 @@ return [
         ],
 
         'tabs' => [
+            'resume' => [
+                'title' => 'Resumé',
+
+                'entries' => [
+                    'resume' => [
+                        'title'   => 'Resume',
+                        'empty'   => 'No resume lines yet.',
+                        'untyped' => 'Other',
+                        'present' => 'Present',
+                    ],
+
+                    'skills' => [
+                        'title'   => 'Skills',
+                        'empty'   => 'No skills yet.',
+                        'untyped' => 'Other',
+                    ],
+                ],
+            ],
+
             'work-information' => [
                 'title' => 'Work Information',
 

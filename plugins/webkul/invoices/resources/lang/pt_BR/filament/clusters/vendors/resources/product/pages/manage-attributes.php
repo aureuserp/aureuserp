@@ -5,7 +5,7 @@ return [
 
     'form' => [
         'attribute' => 'Atributo',
-        'values' => 'Valores',
+        'values'    => 'Valores',
     ],
 
     'table' => [
@@ -17,28 +17,28 @@ return [
 
                 'notification' => [
                     'title' => 'Atributo criado',
-                    'body' => 'O atributo foi criado com sucesso.',
+                    'body'  => 'O atributo foi criado com sucesso.',
                 ],
             ],
         ],
 
         'columns' => [
             'attribute' => 'Atributo',
-            'values' => 'Valores',
+            'values'    => 'Valores',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Atributo atualizado',
-                    'body' => 'O atributo foi atualizado com sucesso.',
+                    'body'  => 'O atributo foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Atributo excluído',
-                    'body' => 'O atributo foi excluído com sucesso.',
+                    'body'  => 'O atributo foi excluído com sucesso.',
                 ],
             ],
         ],

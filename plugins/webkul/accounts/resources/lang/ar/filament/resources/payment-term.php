@@ -5,6 +5,8 @@ return [
         'sections' => [
             'fields' => [
                 'payment-term'         => 'شرط الدفع',
+                'company'              => 'الشركة',
+                'company-placeholder'  => 'كل الشركات',
                 'early-discount'       => 'خصم السداد المبكر',
                 'discount-days-prefix' => 'إذا تم الدفع خلال',
                 'discount-days-suffix' => 'أيام',

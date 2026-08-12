@@ -141,7 +141,7 @@ Ensure your development environment meets the following requirements:
 
 ### Server Requirements
 -   **PHP**: 8.3 or higher
--   **Database**: MySQL 8.0+ or SQLite 3.8.3+
+-   **Database**: MySQL 8.0+
 -   **Web Server**: Apache 2.4+ or Nginx 1.18+
 
 ### Development Tools

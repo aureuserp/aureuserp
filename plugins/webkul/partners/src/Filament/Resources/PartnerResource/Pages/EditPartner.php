@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Partner\Filament\Resources\PartnerResource;
+use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditPartner extends EditRecord
@@ -32,10 +33,11 @@ class EditPartner extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
+        return array_merge([
             ChatterAction::make()
                 ->activityPlans($this->getRecord()->activityPlans())
                 ->resource(static::$resource),
+        ], PartnerSchemaRegistry::renderActions('edit.header'), [
             ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(
@@ -44,6 +46,6 @@ class EditPartner extends EditRecord
                         ->title(__('partners::filament/resources/partner/pages/edit-partner.header-actions.delete.notification.title'))
                         ->body(__('partners::filament/resources/partner/pages/edit-partner.header-actions.delete.notification.body')),
                 ),
-        ];
+        ]);
     }
 }

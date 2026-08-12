@@ -28,7 +28,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Webkul\Chatter\Support\ChatterMentions;
 use Throwable;
 use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FileAction;
@@ -42,6 +41,7 @@ use Webkul\Chatter\Filament\Infolists\Components\Activities\TitleTextEntry as Ac
 use Webkul\Chatter\Filament\Infolists\Components\Messages\ContentTextEntry as MessageContentTextEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Messages\MessageRepeatableEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Messages\TitleTextEntry as MessageTitleTextEntry;
+use Webkul\Chatter\Support\ChatterMentions;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
@@ -406,10 +406,10 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             }
 
             return match ($this->sortBy) {
-                'created_at_asc'  => $a->created_at <=> $b->created_at,
-                'updated_at_desc' => $b->updated_at <=> $a->updated_at,
+                'created_at_asc'  => ($a->created_at <=> $b->created_at) ?: ($a->id <=> $b->id),
+                'updated_at_desc' => ($b->updated_at <=> $a->updated_at) ?: ($b->id <=> $a->id),
                 'priority'        => $this->comparePriority($a, $b),
-                default           => $b->created_at <=> $a->created_at,
+                default           => ($b->created_at <=> $a->created_at) ?: ($b->id <=> $a->id),
             };
         })->values();
     }

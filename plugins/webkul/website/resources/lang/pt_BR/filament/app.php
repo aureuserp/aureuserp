@@ -12,7 +12,7 @@ return [
         ],
 
         'top' => [
-            'login' => 'Entrar',
+            'login'    => 'Entrar',
             'register' => 'Cadastrar',
         ],
 
@@ -21,50 +21,50 @@ return [
         ],
 
         'social' => [
-            'facebook' => 'Facebook',
-            'twitter' => 'Twitter',
+            'facebook'  => 'Facebook',
+            'twitter'   => 'Twitter',
             'instagram' => 'Instagram',
-            'youtube' => 'YouTube',
-            'linkedin' => 'LinkedIn',
+            'youtube'   => 'YouTube',
+            'linkedin'  => 'LinkedIn',
             'pinterest' => 'Pinterest',
-            'tiktok' => 'TikTok',
-            'github' => 'GitHub',
-            'whatsapp' => 'WhatsApp',
-            'slack' => 'Slack',
+            'tiktok'    => 'TikTok',
+            'github'    => 'GitHub',
+            'whatsapp'  => 'WhatsApp',
+            'slack'     => 'Slack',
         ],
     ],
 
     'homepage' => [
-        'title' => 'Página inicial',
+        'title'            => 'Página inicial',
         'navigation_label' => 'Início',
     ],
 
     'footer' => [
-        'description' => 'Projetado para otimizar e simplificar as operações do negócio, o Aureus ERP é adequado para empresas de todos os portes.',
+        'description'   => 'Projetado para otimizar e simplificar as operações do negócio, o Aureus ERP é adequado para empresas de todos os portes.',
         'description_2' => 'A plataforma enfatiza relatórios para insights, segurança, flexibilidade de localização e integração com CRMs, ferramentas de BI e APIs.',
-        'useful_links' => 'Links úteis',
-        'contact_us' => 'Fale Conosco',
-        'follow_us' => 'Siga-nos',
-        'copyright' => 'Direitos autorais',
-        'powered_by' => 'Desenvolvido por',
+        'useful_links'  => 'Links úteis',
+        'contact_us'    => 'Fale Conosco',
+        'follow_us'     => 'Siga-nos',
+        'copyright'     => 'Direitos autorais',
+        'powered_by'    => 'Desenvolvido por',
     ],
 
     'pages' => [
         'about_us' => [
-            'title' => 'Sobre nós',
+            'title'      => 'Sobre nós',
             'meta_title' => 'Sobre nós',
         ],
     ],
 
     'page_titles' => [
-        'home' => 'Início',
-        'about-us' => 'Sobre nós',
-        'privacy-policy' => 'Política de Privacidade',
-        'terms-conditions' => 'Termos e condições',
+        'home'               => 'Início',
+        'about-us'           => 'Sobre nós',
+        'privacy-policy'     => 'Política de Privacidade',
+        'terms-conditions'   => 'Termos e condições',
         'news-announcements' => 'Notícias e Anúncios',
-        'blog' => 'Blog',
-        'blogs' => 'Blogs',
-        'contact' => 'Contato',
-        'contact-us' => 'Fale Conosco',
+        'blog'               => 'Blog',
+        'blogs'              => 'Blogs',
+        'contact'            => 'Contato',
+        'contact-us'         => 'Fale Conosco',
     ],
 ];

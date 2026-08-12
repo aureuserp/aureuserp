@@ -5,7 +5,6 @@ return [
         'sections' => [
             'fields' => [
                 'title'        => 'Título',
-                'type'         => 'Tipo',
                 'name'         => 'Nombre',
                 'type'         => 'Tipo',
                 'create-type'  => 'Crear tipo',
@@ -50,22 +49,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Nivel de competencia actualizado',
-                    'body'  => 'El nivel de competencia se ha actualizado correctamente.',
+                    'title' => 'Currículum actualizado',
+                    'body'  => 'El currículum se ha actualizado correctamente.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Nivel de competencia creado',
-                    'body'  => 'El nivel de competencia se ha creado correctamente.',
+                    'title' => 'Currículum creado',
+                    'body'  => 'El currículum se ha creado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Nivel de competencia eliminado',
-                    'body'  => 'El nivel de competencia se ha eliminado correctamente.',
+                    'title' => 'Currículum eliminado',
+                    'body'  => 'El currículum se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -73,8 +72,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Competencias eliminadas',
-                    'body'  => 'Las competencias se han eliminado correctamente.',
+                    'title' => 'Currículums eliminados',
+                    'body'  => 'Los currículums se han eliminado correctamente.',
                 ],
             ],
         ],

@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Descarte atualizado',
-        'body' => 'O descarte foi atualizado com sucesso.',
+        'body'  => 'O descarte foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
@@ -13,12 +13,12 @@ return [
             'notification' => [
                 'warning' => [
                     'title' => 'Estoque insuficiente',
-                    'body' => 'O descarte tem estoque insuficiente para validação.',
+                    'body'  => 'O descarte tem estoque insuficiente para validação.',
                 ],
 
                 'success' => [
                     'title' => 'Descarte marcado como concluído',
-                    'body' => 'O descarte foi marcado como concluído com sucesso.',
+                    'body'  => 'O descarte foi marcado como concluído com sucesso.',
                 ],
             ],
         ],
@@ -27,12 +27,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Descarte excluído',
-                    'body' => 'O descarte foi excluído com sucesso.',
+                    'body'  => 'O descarte foi excluído com sucesso.',
                 ],
 
                 'error' => [
                     'title' => 'Não foi possível excluir os descartes',
-                    'body' => 'Os descartes não podem ser excluídos porque estão em uso.',
+                    'body'  => 'Os descartes não podem ser excluídos porque estão em uso.',
                 ],
             ],
         ],

@@ -7,7 +7,7 @@ return [
         'notification' => [
             'success' => [
                 'title' => 'Data de recebimento do pedido confirmada',
-                'body' => 'A data de recebimento do pedido foi confirmada com sucesso.',
+                'body'  => 'A data de recebimento do pedido foi confirmada com sucesso.',
             ],
         ],
     ],

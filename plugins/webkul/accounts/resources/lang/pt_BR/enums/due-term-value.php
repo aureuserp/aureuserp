@@ -2,5 +2,5 @@
 
 return [
     'percent' => 'Percentual',
-    'fixed' => 'Fixo',
+    'fixed'   => 'Fixo',
 ];

@@ -126,7 +126,7 @@ class ReturnAction extends Action
                 }
 
                 try {
-                    $newRecord = Inventory::returnTransfer($record, $moveQuantities);
+                    $newRecord = Inventory::createReturn($record, $moveQuantities);
 
                     $livewire->updateForm();
 

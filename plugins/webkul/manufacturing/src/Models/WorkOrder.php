@@ -68,11 +68,11 @@ class WorkOrder extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    protected array $context = [];
+    protected bool $skipDependentCascade = false;
 
-    public function setContext(array $context)
+    public function withoutDependentCascade(): static
     {
-        $this->context = array_merge($this->context, $context);
+        $this->skipDependentCascade = true;
 
         return $this;
     }
@@ -148,32 +148,32 @@ class WorkOrder extends Model implements Sortable
 
     public function getWorkingStateAttribute()
     {
-        return $this->workCenter->working_state;
+        return $this->workCenter?->working_state;
     }
 
     public function getProductionStateAttribute()
     {
-        return $this->manufacturingOrder->state;
+        return $this->manufacturingOrder?->state;
     }
 
     public function getProductTrackingAttribute()
     {
-        return $this->product->tracking;
+        return $this->product?->tracking;
     }
 
     public function getQuantityProductionAttribute()
     {
-        return $this->manufacturingOrder->quantity;
+        return $this->manufacturingOrder?->quantity;
     }
 
     public function getQuantityProducingAttribute()
     {
-        return $this->manufacturingOrder->quantity_producing;
+        return $this->manufacturingOrder?->quantity_producing;
     }
 
     public function getQuantityRemainingAttribute()
     {
-        if (! $this->manufacturingOrder->uom_id) {
+        if (! $this->manufacturingOrder?->uom_id) {
             return 0;
         }
 
@@ -203,13 +203,7 @@ class WorkOrder extends Model implements Sortable
 
     public function getDisplayNameAttribute()
     {
-        $displayName = "{$this->manufacturingOrder->name} - {$this->name}";
-
-        if ($this->context['prefix_product'] ?? false) {
-            $displayName = "{$this->product->name} - {$this->manufacturingOrder->name} - {$this->name}";
-        }
-
-        return $displayName;
+        return "{$this->manufacturingOrder->name} - {$this->name}";
     }
 
     public function getExpectedDuration(?WorkCenter $alternativeWorkCenter = null, float $ratio = 1): float
@@ -232,7 +226,7 @@ class WorkOrder extends Model implements Sortable
                 $qtyRatio = 1;
             }
 
-            return $this->workCenter->getExpectedDuration($this->product)
+            return $this->workCenter->setupAndCleanupTime($this->product)
                 + $durationExpectedWorking * $qtyRatio * $ratio * 100.0 / $this->workCenter->time_efficiency;
         }
 
@@ -241,29 +235,29 @@ class WorkOrder extends Model implements Sortable
             $this->manufacturingOrder->product->uom
         );
 
-        $capacity = $this->workCenter->getCapacity($this->product);
+        $capacity = $this->workCenter->capacityFor($this->product);
 
         $cycleNumber = float_round($qtyProduction / $capacity, precisionDigits: 0, roundingMethod: 'UP');
 
         if ($alternativeWorkCenter) {
-            $durationExpectedWorking = ($this->expected_duration - $this->workCenter->getExpectedDuration($this->product))
+            $durationExpectedWorking = ($this->expected_duration - $this->workCenter->setupAndCleanupTime($this->product))
                 * $this->workCenter->time_efficiency / (100.0 * $cycleNumber);
 
             if ($durationExpectedWorking < 0) {
                 $durationExpectedWorking = 0;
             }
 
-            $alternativeCapacity = $alternativeWorkCenter->getCapacity($this->product);
+            $alternativeCapacity = $alternativeWorkCenter->capacityFor($this->product);
 
             $alternativeCycleNb = float_round($qtyProduction / $alternativeCapacity, precisionDigits: 0, roundingMethod: 'UP');
 
-            return $alternativeWorkCenter->getExpectedDuration($this->product)
+            return $alternativeWorkCenter->setupAndCleanupTime($this->product)
                 + $alternativeCycleNb * $durationExpectedWorking * 100.0 / $alternativeWorkCenter->time_efficiency;
         }
 
         $timeCycle = $this->operation->time_cycle;
 
-        return $this->workCenter->getExpectedDuration($this->product)
+        return $this->workCenter->setupAndCleanupTime($this->product)
             + $cycleNumber * $timeCycle * 100.0 / $this->workCenter->time_efficiency;
     }
 
@@ -308,7 +302,7 @@ class WorkOrder extends Model implements Sortable
         static::updated(function ($workOrder) {
             if ($workOrder->wasChanged('state') || $workOrder->wasChanged('production_availability')) {
                 $workOrder->dependentWorkOrders->each(function ($dependentWorkOrder) {
-                    $dependentWorkOrder->setContext(['no_recursion' => true]);
+                    $dependentWorkOrder->withoutDependentCascade();
 
                     $dependentWorkOrder->computeState();
 
@@ -396,17 +390,17 @@ class WorkOrder extends Model implements Sortable
             $dateStart = $endDate->clone()->subSeconds($floatDurationToSecond($deltaDuration));
 
             if ($this->expected_duration >= $newOrderDuration || $oldOrderDuration >= $this->expected_duration) {
-                $values = $this->prepareTimelineVals($newOrderDuration, $dateStart, $endDate);
+                $values = $this->buildProductivityLogAttributes($newOrderDuration, $dateStart, $endDate);
 
                 WorkCenterProductivityLog::create($values);
             } else {
                 $maxDate = $endDate->clone()->subMinutes($newOrderDuration - $this->expected_duration);
 
-                $values = $this->prepareTimelineVals($this->expected_duration, $dateStart, $maxDate);
+                $values = $this->buildProductivityLogAttributes($this->expected_duration, $dateStart, $maxDate);
 
                 WorkCenterProductivityLog::create($values);
 
-                $values = $this->prepareTimelineVals($newOrderDuration, $maxDate, $endDate);
+                $values = $this->buildProductivityLogAttributes($newOrderDuration, $maxDate, $endDate);
 
                 WorkCenterProductivityLog::create($values);
             }
@@ -455,7 +449,7 @@ class WorkOrder extends Model implements Sortable
             return;
         }
 
-        if ($this->context['no_recursion'] ?? false) {
+        if ($this->skipDependentCascade) {
             return;
         }
 
@@ -506,9 +500,7 @@ class WorkOrder extends Model implements Sortable
 
     public function calculateDateFinished(?Carbon $startedAt = null): Carbon
     {
-        $workCenter = ($this->context['new_work_center_id'] ?? false)
-            ? WorkCenter::find($this->context['new_work_center_id'])
-            : $this->workCenter;
+        $workCenter = $this->workCenter;
 
         $start = $startedAt ?? Carbon::parse($this->started_at);
 
@@ -522,7 +514,7 @@ class WorkOrder extends Model implements Sortable
             $this->expected_duration / 60.0,
             $start,
             computeLeaves: true,
-            filters: [['time_type', 'in', ['leave', 'other']]]
+            filter: fn ($query) => $query->whereIn('time_type', ['leave', 'other'])
         );
     }
 
@@ -539,7 +531,7 @@ class WorkOrder extends Model implements Sortable
         $interval = $this->workCenter->calendar->getWorkDurationData(
             $start,
             $finished,
-            filters: [['time_type', 'in', ['leave', 'other']]]
+            filter: fn ($query) => $query->whereIn('time_type', ['leave', 'other'])
         );
 
         return $interval['hours'] * 60;
@@ -575,7 +567,7 @@ class WorkOrder extends Model implements Sortable
         }
 
         if ($this->shouldStartTimer()) {
-            WorkCenterProductivityLog::create($this->prepareTimelineVals($this->duration, now()));
+            WorkCenterProductivityLog::create($this->buildProductivityLogAttributes($this->duration, now()));
         }
 
         if ($this->manufacturingOrder->state !== ManufacturingOrderState::PROGRESS) {
@@ -674,7 +666,7 @@ class WorkOrder extends Model implements Sortable
                 ? $this->expected_duration
                 : $this->getExpectedDuration(alternativeWorkCenter: $workCenter);
 
-            [$fromDate, $toDate] = $workCenter->getFirstAvailableSlot($dateStart, $expectedDuration);
+            [$fromDate, $toDate] = $workCenter->findFirstAvailableSlot($dateStart, $expectedDuration);
 
             if (! $fromDate) {
                 continue;
@@ -739,7 +731,7 @@ class WorkOrder extends Model implements Sortable
                     precisionRounding: $move->uom->rounding
                 );
 
-                $move->setQuantityDone($newQty);
+                $move->distributeQuantityAcrossLines($newQty);
             }
         }
 
@@ -775,10 +767,10 @@ class WorkOrder extends Model implements Sortable
             $query->where('assigned_user_id', Auth::id())->limit(1);
         }
 
-        $query->get()->each(fn ($log) => $log->closeTimer());
+        $query->get()->each(fn ($log) => $log->stop());
     }
 
-    public function prepareTimelineVals(float $duration, Carbon $dateStart, ?Carbon $dateEnd = null): array
+    public function buildProductivityLogAttributes(float $duration, Carbon $dateStart, ?Carbon $dateEnd = null): array
     {
         if (! $this->expected_duration || $duration <= $this->expected_duration) {
             $lossId = WorkCenterProductivityLoss::where('loss_type', 'productive')->first();

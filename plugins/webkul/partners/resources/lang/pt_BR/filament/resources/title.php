@@ -2,13 +2,13 @@
 
 return [
     'form' => [
-        'name' => 'Nome',
+        'name'       => 'Nome',
         'short-name' => 'Nome curto',
     ],
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'short-name' => 'Nome curto',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
@@ -22,14 +22,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Título atualizado',
-                    'body' => 'O título foi atualizado com sucesso.',
+                    'body'  => 'O título foi atualizado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Título excluído',
-                    'body' => 'O título foi excluído com sucesso.',
+                    'body'  => 'O título foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -38,7 +38,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Títulos excluídos',
-                    'body' => 'Os títulos foram excluídos com sucesso.',
+                    'body'  => 'Os títulos foram excluídos com sucesso.',
                 ],
             ],
         ],

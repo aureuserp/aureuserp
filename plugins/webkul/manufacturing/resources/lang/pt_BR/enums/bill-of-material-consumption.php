@@ -2,6 +2,6 @@
 
 return [
     'flexible' => 'Permitido',
-    'warning' => 'Permitido com aviso',
-    'strict' => 'Bloqueado',
+    'warning'  => 'Permitido com aviso',
+    'strict'   => 'Bloqueado',
 ];

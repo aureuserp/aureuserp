@@ -8,9 +8,12 @@ use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\OperationType;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeResource;
 use Webkul\Inventory\Models\Location;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateOperationType extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = OperationTypeResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;

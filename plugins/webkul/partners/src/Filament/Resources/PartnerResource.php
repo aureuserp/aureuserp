@@ -14,11 +14,10 @@ use Webkul\Partner\Filament\Resources\PartnerResource\Schemas\PartnerInfolist;
 use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
 use Webkul\Partner\Filament\Resources\PartnerResource\Tables\PartnersTable;
 use Webkul\Partner\Models\Partner;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class PartnerResource extends Resource
 {
-    use HasCustomFields, HasResourcePermissionQuery;
+    use HasCustomFields;
 
     protected static ?string $model = Partner::class;
 
@@ -89,7 +88,7 @@ class PartnerResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->ownership();
 
         if ($eagerLoads = PartnerSchemaRegistry::eagerLoads()) {
             $query->with($eagerLoads);

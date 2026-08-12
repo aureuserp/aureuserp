@@ -8,7 +8,7 @@ return [
             'error' => [
                 'invalid-state' => [
                     'title' => 'Estado do lançamento contábil inválido',
-                    'body' => 'Somente lançamentos contábeis publicados ou cancelados podem ser redefinidos para rascunho.',
+                    'body'  => 'Somente lançamentos contábeis publicados ou cancelados podem ser redefinidos para rascunho.',
                 ],
             ],
         ],

@@ -45,7 +45,6 @@ class ProductsTable
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->columns(array_merge(static::columns(), Registry::renderTable('columns')))
             ->groups(array_merge(static::groups(), Registry::renderTable('groups')))
             ->reorderable('sort', direction: 'desc')
@@ -233,7 +232,7 @@ class ProductsTable
                 ->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('company.name')
                 ->label(__('products::filament/resources/product.table.columns.company'))
-                ->numeric()
+                ->placeholder(__('products::filament/resources/product.table.columns.company-placeholder'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('price')

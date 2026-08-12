@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Support\Database\Factories\CurrencyFactory;
@@ -72,11 +71,20 @@ class Currency extends Model
             return 1;
         }
 
-        $company = $company ?? Auth::user()?->defaultCompany;
+        $company = $company ?? current_company();
 
         $date = $date ?? now()->toDateString();
 
-        $toRateRecord = $toCurrency->rates()
+        $fromRate = $this->resolveRate($fromCurrency, $company, $date);
+
+        $toRate = $this->resolveRate($toCurrency, $company, $date);
+
+        return $toRate / $fromRate;
+    }
+
+    protected function resolveRate(self $currency, ?Company $company, string $date): float
+    {
+        $rate = $currency->rates()
             ->where(function ($query) use ($company) {
                 $query->whereNull('company_id');
 
@@ -86,9 +94,9 @@ class Currency extends Model
             })
             ->whereDate('name', '<=', $date)
             ->orderByDesc('name')
-            ->first();
+            ->value('rate');
 
-        return $toRateRecord->rate ?? 1.0;
+        return $rate > 0 ? (float) $rate : 1.0;
     }
 
     public function round(float $amount): float

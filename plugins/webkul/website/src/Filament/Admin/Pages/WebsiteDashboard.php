@@ -11,6 +11,8 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 use Webkul\Website\Filament\Admin\Widgets\BlogAuthorsChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogStatusPieChart;
@@ -18,8 +20,6 @@ use Webkul\Website\Filament\Admin\Widgets\CategoriesPieChart;
 use Webkul\Website\Filament\Admin\Widgets\RecentBlogsTable;
 use Webkul\Website\Filament\Admin\Widgets\StatsOverview;
 use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
-use Webkul\Support\Enums\NavigationGroup;
-use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 
 class WebsiteDashboard extends BaseDashboard
 {
@@ -39,7 +39,7 @@ class WebsiteDashboard extends BaseDashboard
         return 'Website';
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Dashboard;
     }

@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,19 +11,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\LocationFactory;
 use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
-use Webkul\Inventory\Enums\SubLocation;
-use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
+use Webkul\Inventory\Enums\SubLocation;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Location extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'inventories_locations';
@@ -112,54 +115,53 @@ class Location extends Model
             || ($this->parent_id && $this->parent->is_stock_location);
     }
 
-    public function getInternalChildLocations()
+    public function scopeDescendantsOf(Builder $query, self $location): Builder
     {
-        return static::where('type', LocationType::INTERNAL)
-            ->whereRaw('parent_path LIKE ?', [$this->parent_path . '%'])
-            ->get();
+        return $query->where('parent_path', 'like', $location->parent_path.'%');
+    }
+
+    public function scopeInternal(Builder $query): Builder
+    {
+        return $query->where('type', LocationType::INTERNAL);
+    }
+
+    public function internalDescendants(): Collection
+    {
+        return static::query()
+            ->internal()
+            ->descendantsOf($this)
+            ->get()
+            ->toBase();
     }
 
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($category) {
-            $category->creator_id ??= Auth::id();
+        static::creating(function (Location $location) {
+            $location->creator_id ??= Auth::id();
 
-            if ($category->parent_id) {
-                $parentLocation = Location::find($category->parent_id);
-                $category->warehouse_id = $parentLocation?->warehouse_id;
-            } else {
-                $category->warehouse_id = null;
-            }
+            $location->warehouse_id = $location->parent_id
+                ? Location::find($location->parent_id)?->warehouse_id
+                : null;
 
-            if (! empty($category->cyclic_inventory_frequency)) {
-                $category->next_inventory_date = now()->addDays(
-                    (int) $category->cyclic_inventory_frequency
-                );
-            } else {
-                $category->next_inventory_date = null;
-            }
+            $location->refreshNextInventoryDate();
         });
 
-        static::created(function ($category) {
-            $category->updateParentPath();
+        static::created(function (Location $location) {
+            $location->updateParentPath();
 
-            $category->updateFullName();
+            $location->updateFullName();
 
-            $category->saveQuietly();
+            $location->saveQuietly();
         });
 
-        static::saving(function ($category) {
-            if (! empty($category->cyclic_inventory_frequency)) {
-                $category->next_inventory_date = now()->addDays((int) $category->cyclic_inventory_frequency);
-            } else {
-                $category->next_inventory_date = null;
-            }
+        static::saving(function (Location $location) {
+            $location->refreshNextInventoryDate();
 
-            $category->updateParentPath();
+            $location->updateParentPath();
 
-            $category->updateFullName();
+            $location->updateFullName();
         });
 
         static::updating(function (Location $location) {
@@ -181,12 +183,12 @@ class Location extends Model
                     ->where('destination_location_id', $location->id)->exists();
 
                 if ($usedByMrp) {
-                    throw new \Exception("You cannot set a location as a scrap location when it is assigned as a destination location for a manufacturing type operation.");
+                    throw new \Exception('You cannot set a location as a scrap location when it is assigned as a destination location for a manufacturing type operation.');
                 }
             }
 
             if ($location->isDirty('company_id')) {
-                throw new \Exception("Changing the company of this record is forbidden at this point, you should rather archive it and create a new one.");
+                throw new \Exception('Changing the company of this record is forbidden at this point, you should rather archive it and create a new one.');
             }
 
             if (
@@ -208,19 +210,19 @@ class Location extends Model
             }
         });
 
-        static::updated(function ($category) {
-            $category->updateChildrenParentPaths();
+        static::updated(function (Location $location) {
+            $location->updateChildrenParentPaths();
 
-            if ($category->wasChanged('full_name')) {
-                $category->updateChildrenFullNames();
+            if ($location->wasChanged('full_name')) {
+                $location->updateChildrenFullNames();
             }
         });
 
         static::deleting(function (Location $location) {
             $warehouse = Warehouse::where(function ($q) use ($location) {
-                    $q->where('lot_stock_location_id', $location->id)
-                        ->orWhere('view_location_id', $location->id);
-                })
+                $q->where('lot_stock_location_id', $location->id)
+                    ->orWhere('view_location_id', $location->id);
+            })
                 ->first();
 
             if ($warehouse) {
@@ -230,346 +232,407 @@ class Location extends Model
                 ]));
             }
 
-            $childrenLocations = Location::withTrashed()
-                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
-                ->where('id', '!=', $location->id)
+            $descendants = $location->trashedAwareDescendants();
+
+            $stockedLocationIds = $descendants
+                ->filter(fn (Location $descendant) => $descendant->type === LocationType::INTERNAL)
+                ->pluck('id')
+                ->push($location->id)
+                ->all();
+
+            $remainingStock = ProductQuantity::query()
+                ->where(fn ($query) => $query->where('quantity', '!=', 0)->orWhere('reserved_quantity', '!=', 0))
+                ->whereIn('location_id', $stockedLocationIds)
                 ->get();
 
-            $internalChildrenLocationIds = $childrenLocations->filter(
-                fn ($childLocation) => $childLocation->type === LocationType::INTERNAL
-            )->pluck('id')->push($location->id)->all();
-
-            $childrenQuantities = ProductQuantity::where(function ($q) {
-                    $q->where('quantity', '!=', 0)
-                        ->orWhere('reserved_quantity', '!=', 0);
-                })
-                ->whereIn('location_id', $internalChildrenLocationIds)
-                ->get();
-
-            if ($childrenQuantities->isNotEmpty()) {
-                $locationNames = $childrenQuantities->pluck('location.name')->unique()->implode(', ');
-
+            if ($remainingStock->isNotEmpty()) {
                 throw new \Exception(__("You can't disable locations :locations because they still contain products.", [
-                    'locations' => $locationNames,
+                    'locations' => $remainingStock->pluck('location.name')->unique()->implode(', '),
                 ]));
             }
 
-            $childrenLocations->each(fn ($childLocation) => $childLocation->delete());
+            $descendants->each(fn (Location $descendant) => $descendant->delete());
         });
 
         static::forceDeleting(function (Location $location) {
-            Location::withTrashed()
-                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
-                ->where('id', '!=', $location->id)
-                ->get()
-                ->each(fn ($childLocation) => $childLocation->forceDelete());
+            $location->trashedAwareDescendants()->each(fn (Location $descendant) => $descendant->forceDelete());
         });
 
         static::restored(function (Location $location) {
-            Location::withTrashed()
-                ->whereRaw('parent_path LIKE ?', [$location->parent_path . '%'])
-                ->where('id', '!=', $location->id)
-                ->get()
-                ->each(fn ($childLocation) => $childLocation->restore());
+            $location->trashedAwareDescendants()->each(fn (Location $descendant) => $descendant->restore());
         });
     }
 
-    public function getPutawayStrategy(
+    protected function trashedAwareDescendants(): Collection
+    {
+        return static::withTrashed()
+            ->descendantsOf($this)
+            ->whereKeyNot($this->id)
+            ->get()
+            ->toBase();
+    }
+
+    protected function refreshNextInventoryDate(): void
+    {
+        $this->next_inventory_date = empty($this->cyclic_inventory_frequency)
+            ? null
+            : now()->addDays((int) $this->cyclic_inventory_frequency);
+    }
+
+    public function resolvePutawayLocation(
         ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         ?Packaging $packaging = null,
-        ?array $additionalQty = null,
+        ?array $reservedPerLocation = null,
         array $excludeMoveLineIds = [],
         ?Collection $products = null
     ): Location {
-        $packageType = $package?->packageType ?? $packaging?->packageType;
+        $products = collect([$product])
+            ->merge($products ?? collect())
+            ->filter()
+            ->unique('id')
+            ->values();
 
-        $productSet = collect();
+        $candidates = $this->internalDescendants();
 
-        if ($product) {
-            $productSet->push($product);
+        $rules = $this->applicablePutawayRules($products, $package?->packageType ?? $packaging?->packageType);
+
+        $target = $rules->isEmpty()
+            ? null
+            : $this->firstAvailablePutawayLocation(
+                $rules,
+                $product,
+                $quantity,
+                $package,
+                $packaging,
+                $this->occupancyPerLocation($candidates, $product, $package, $reservedPerLocation, $excludeMoveLineIds),
+            );
+
+        if ($target) {
+            return $target;
         }
 
-        if ($products) {
-            $productSet = $productSet->merge($products);
-        }
+        return $candidates->isNotEmpty() && $this->type === LocationType::VIEW
+            ? $candidates->first()
+            : $this;
+    }
 
-        $productSet = $productSet->filter()->unique('id')->values();
+    protected function applicablePutawayRules(Collection $products, ?PackageType $packageType): Collection
+    {
+        $productIds = $products->pluck('id');
 
-        $productIds = $productSet->pluck('id');
+        $categoryIds = $this->categoryAncestry($products);
 
-        $categoryIds = collect();
-
-        $distinctCategoryIds = $productSet->pluck('category_id')->filter()->unique();
-
-        if ($distinctCategoryIds->count() === 1) {
-            $current = Category::find($distinctCategoryIds->first());
-
-            while ($current) {
-                $categoryIds->push($current->id);
-
-                $current = $current->parent_id ? $current->parent : null;
-            }
-        }
-
-        $putawayRules = $this->putawayRules
+        return $this->putawayRules
             ->filter(fn ($rule) => (! $rule->product_id || $productIds->contains($rule->product_id))
                 && (! $rule->category_id || $categoryIds->contains($rule->category_id))
-                && (! $rule->packageTypes->isNotEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id)))
+                && ($rule->packageTypes->isEmpty() || ($packageType && $rule->packageTypes->contains('id', $packageType->id)))
             )
             ->sortByDesc(fn ($rule) => [
                 $rule->packageTypes->isNotEmpty() ? 1 : 0,
                 $rule->product_id ? 1 : 0,
                 $rule->category_id === $categoryIds->first() ? 1 : 0,
                 $rule->category_id ? 1 : 0,
-            ]);
-
-        $locations = $this->getInternalChildLocations();
-
-        $putawayLocation = null;
-
-        if ($putawayRules->isNotEmpty()) {
-            $qtyByLocation = [];
-
-            if ($locations->pluck('storage_category_id')->filter()->isNotEmpty()) {
-                if ($package && $package->package_type_id) {
-                    $qtyByLocation = MoveLine::whereNotIn('id', $excludeMoveLineIds)
-                        ->whereHas('resultPackage', fn ($query) => $query->where('package_type_id', $packageType?->id))
-                        ->whereNotIn('state', [MoveState::DRAFT, MoveState::CANCELED, MoveState::DONE])
-                        ->groupBy('destination_location_id')
-                        ->selectRaw('destination_location_id, COUNT(DISTINCT result_package_id) as count')
-                        ->pluck('count', 'destination_location_id')
-                        ->all();
-
-                    $packageQuantities = ProductQuantity::whereHas('package', fn ($query) => $query->where('package_type_id', $packageType?->id))
-                        ->whereIn('location_id', $locations->pluck('id'))
-                        ->groupBy('location_id')
-                        ->selectRaw('location_id, COUNT(DISTINCT package_id) as count')
-                        ->pluck('count', 'location_id')
-                        ->all();
-
-                    foreach ($packageQuantities as $locationId => $count) {
-                        $qtyByLocation[$locationId] = ($qtyByLocation[$locationId] ?? 0) + $count;
-                    }
-                } elseif ($product) {
-                    $qtyByLocation = ProductQuantity::where('product_id', $product->id)
-                        ->whereIn('location_id', $locations->pluck('id'))
-                        ->groupBy('location_id')
-                        ->selectRaw('location_id, SUM(quantity) as total')
-                        ->pluck('total', 'location_id')
-                        ->all();
-
-                    $moveLines = MoveLine::whereNotIn('id', $excludeMoveLineIds)
-                        ->where('product_id', $product->id)
-                        ->whereIn('destination_location_id', $locations->pluck('id'))
-                        ->whereNotIn('state', [MoveState::DRAFT, MoveState::DONE, MoveState::CANCELED])
-                        ->get();
-
-                    foreach ($moveLines as $moveLine) {
-                        $currentQty = $moveLine->uom->computeQuantity($moveLine->quantity, $product->uom);
-
-                        $qtyByLocation[$moveLine->destination_location_id] = ($qtyByLocation[$moveLine->destination_location_id] ?? 0) + $currentQty;
-                    }
-                }
-            }
-
-            foreach ($additionalQty ?? [] as $locationId => $qty) {
-                $qtyByLocation[$locationId] = ($qtyByLocation[$locationId] ?? 0) + $qty;
-            }
-
-            $putawayLocation = $this->getPutawayLocation($putawayRules, $product, $quantity, $package, $packaging, $qtyByLocation);
-        }
-
-        return $putawayLocation
-            ?? (($locations->isNotEmpty() && $this->type === LocationType::VIEW) ? $locations->first() : $this);
+            ])
+            ->values();
     }
 
-    public function getPutawayLocation(
-        mixed $putawayRules,
+    protected function categoryAncestry(Collection $products): Collection
+    {
+        $categoryIds = $products->pluck('category_id')->filter()->unique();
+
+        if ($categoryIds->count() !== 1) {
+            return collect();
+        }
+
+        $ancestry = collect();
+
+        $category = Category::find($categoryIds->first());
+
+        while ($category) {
+            $ancestry->push($category->id);
+
+            $category = $category->parent_id ? $category->parent : null;
+        }
+
+        return $ancestry;
+    }
+
+    protected function occupancyPerLocation(
+        Collection $candidates,
         ?Product $product,
-        float $quantity = 0,
-        ?Package $package = null,
-        ?Packaging $packaging = null,
-        array $qtyByLocation = []
+        ?Package $package,
+        ?array $reservedPerLocation,
+        array $excludeMoveLineIds
+    ): array {
+        $occupancy = [];
+
+        if ($candidates->pluck('storage_category_id')->filter()->isNotEmpty()) {
+            $occupancy = $package?->package_type_id
+                ? $this->packageOccupancy($candidates, $package->package_type_id, $excludeMoveLineIds)
+                : ($product ? $this->productOccupancy($candidates, $product, $excludeMoveLineIds) : []);
+        }
+
+        foreach ($reservedPerLocation ?? [] as $locationId => $reserved) {
+            $occupancy[$locationId] = ($occupancy[$locationId] ?? 0) + $reserved;
+        }
+
+        return $occupancy;
+    }
+
+    protected function packageOccupancy(Collection $candidates, int $packageTypeId, array $excludeMoveLineIds): array
+    {
+        $occupancy = MoveLine::query()
+            ->whereNotIn('id', $excludeMoveLineIds)
+            ->whereHas('resultPackage', fn ($query) => $query->where('package_type_id', $packageTypeId))
+            ->whereNotIn('state', [MoveState::DRAFT, MoveState::CANCELED, MoveState::DONE])
+            ->groupBy('destination_location_id')
+            ->selectRaw('destination_location_id, COUNT(DISTINCT result_package_id) as count')
+            ->pluck('count', 'destination_location_id')
+            ->all();
+
+        $stored = ProductQuantity::query()
+            ->whereHas('package', fn ($query) => $query->where('package_type_id', $packageTypeId))
+            ->whereIn('location_id', $candidates->pluck('id'))
+            ->groupBy('location_id')
+            ->selectRaw('location_id, COUNT(DISTINCT package_id) as count')
+            ->pluck('count', 'location_id')
+            ->all();
+
+        foreach ($stored as $locationId => $count) {
+            $occupancy[$locationId] = ($occupancy[$locationId] ?? 0) + $count;
+        }
+
+        return $occupancy;
+    }
+
+    protected function productOccupancy(Collection $candidates, Product $product, array $excludeMoveLineIds): array
+    {
+        $occupancy = ProductQuantity::query()
+            ->where('product_id', $product->id)
+            ->whereIn('location_id', $candidates->pluck('id'))
+            ->groupBy('location_id')
+            ->selectRaw('location_id, SUM(quantity) as total')
+            ->pluck('total', 'location_id')
+            ->all();
+
+        $incoming = MoveLine::query()
+            ->whereNotIn('id', $excludeMoveLineIds)
+            ->where('product_id', $product->id)
+            ->whereIn('destination_location_id', $candidates->pluck('id'))
+            ->whereNotIn('state', [MoveState::DRAFT, MoveState::DONE, MoveState::CANCELED])
+            ->get();
+
+        foreach ($incoming as $moveLine) {
+            $occupancy[$moveLine->destination_location_id] = ($occupancy[$moveLine->destination_location_id] ?? 0)
+                + $moveLine->uom->computeQuantity($moveLine->quantity, $product->uom);
+        }
+
+        return $occupancy;
+    }
+
+    protected function firstAvailablePutawayLocation(
+        Collection $rules,
+        ?Product $product,
+        float $quantity,
+        ?Package $package,
+        ?Packaging $packaging,
+        array $occupancy
     ): ?Location {
         $packageType = $package?->packageType ?? $packaging?->packageType;
 
-        $checkedLocations = collect();
+        $rejected = collect();
 
-        foreach ($putawayRules as $putawayRule) {
-            $outLocation = $putawayRule->outLocation;
+        foreach ($rules as $rule) {
+            $target = $this->putawayRuleTarget($rule, $product);
 
-            if ($putawayRule->sub_location === SubLocation::LAST_USED) {
-                $lastUsedLocation = MoveLine::where('state', MoveState::DONE)
-                    ->when($product, fn ($query) => $query->where('product_id', $product->id))
-                    ->whereHas('destinationLocation', fn ($q) => $q->where('id', $this->locationOut->id)
-                        ->orWhereRaw('parent_path LIKE ?', [$this->locationOut->parent_path . '%'])
-                    )
-                    ->when($putawayRule->packageTypes->isNotEmpty(), function ($query) use ($putawayRule) {
-                        $query->whereHas('resultPackage', fn ($q) => $q->whereIn('package_type_id', $putawayRule->packageTypes->pluck('id')->all()));
-                    })
-                    ->orderBy('scheduled_at', 'desc')
-                    ->first()
-                    ?->destinationLocation;
-                
-                $outLocation = $lastUsedLocation ?? $outLocation;
-            }
-
-            $childLocations = $outLocation->getInternalChildLocations();
-
-            if (! $putawayRule->storage_category_id) {
-                if ($checkedLocations->contains('id', $outLocation->id)) {
+            if (! $rule->storage_category_id) {
+                if ($rejected->contains('id', $target->id)) {
                     continue;
                 }
 
-                if ($outLocation->canBeUsed($product, $quantity, $package, $qtyByLocation[$outLocation->id] ?? 0)) {
-                    return $outLocation;
+                if ($target->acceptsStorageOf($product, $quantity, $package, $occupancy[$target->id] ?? 0)) {
+                    return $target;
                 }
 
                 continue;
             }
 
-            $childLocations = $childLocations->filter(
-                fn ($location) => $location->storage_category_id === $putawayRule->storage_category_id
-            );
+            $shelves = $target->internalDescendants()
+                ->filter(fn (Location $shelf) => $shelf->storage_category_id === $rule->storage_category_id);
 
-            foreach ($childLocations as $location) {
-                if ($checkedLocations->contains('id', $location->id)) {
+            foreach ($shelves as $shelf) {
+                if ($rejected->contains('id', $shelf->id) || ! $this->alreadyStocks($shelf, $packageType, $product, $occupancy)) {
                     continue;
                 }
 
-                if ($packageType) {
-                    $hasPackageType = $location->quantities->some(
-                        fn ($quantity) => $quantity->package_id && $quantity->package?->package_type_id === $packageType->id
-                    );
-
-                    if ($hasPackageType) {
-                        if ($location->canBeUsed($product, $quantity, package: $package, locationQty: $qtyByLocation[$location->id] ?? 0)) {
-                            return $location;
-                        }
-
-                        $checkedLocations->push($location);
-                    }
-                } elseif (float_compare($qtyByLocation[$location->id] ?? 0, 0, precisionRounding: $product?->uom->rounding ?? 0.01) > 0) {
-                    if ($location->canBeUsed($product, $quantity, locationQty: $qtyByLocation[$location->id] ?? 0)) {
-                        return $location;
-                    }
-
-                    $checkedLocations->push($location);
+                if ($shelf->acceptsStorageOf($product, $quantity, $packageType ? $package : null, $occupancy[$shelf->id] ?? 0)) {
+                    return $shelf;
                 }
+
+                $rejected->push($shelf);
             }
 
-            foreach ($childLocations->filter(fn ($location) => $location->storage_category_id === $putawayRule->storage_category_id) as $location) {
-                if ($checkedLocations->contains('id', $location->id)) {
+            foreach ($shelves as $shelf) {
+                if ($rejected->contains('id', $shelf->id)) {
                     continue;
                 }
 
-                if ($location->canBeUsed($product, $quantity, $package, $qtyByLocation[$location->id] ?? 0)) {
-                    return $location;
+                if ($shelf->acceptsStorageOf($product, $quantity, $package, $occupancy[$shelf->id] ?? 0)) {
+                    return $shelf;
                 }
 
-                $checkedLocations->push($location);
+                $rejected->push($shelf);
             }
         }
 
         return null;
     }
 
-    public function canBeUsed(
+    protected function putawayRuleTarget(PutawayRule $rule, ?Product $product): Location
+    {
+        $target = $rule->outLocation;
+
+        if ($rule->sub_location !== SubLocation::LAST_USED) {
+            return $target;
+        }
+
+        $lastUsed = MoveLine::query()
+            ->where('state', MoveState::DONE)
+            ->when($product, fn ($query) => $query->where('product_id', $product->id))
+            ->whereHas('destinationLocation', fn ($query) => $query
+                ->whereKey($target->id)
+                ->orWhere('parent_path', 'like', $target->parent_path.'%'))
+            ->when($rule->packageTypes->isNotEmpty(), fn ($query) => $query
+                ->whereHas('resultPackage', fn ($package) => $package
+                    ->whereIn('package_type_id', $rule->packageTypes->pluck('id')->all())))
+            ->orderByDesc('scheduled_at')
+            ->first()
+            ?->destinationLocation;
+
+        return $lastUsed ?? $target;
+    }
+
+    protected function alreadyStocks(Location $shelf, ?PackageType $packageType, ?Product $product, array $occupancy): bool
+    {
+        if ($packageType) {
+            return $shelf->quantities->some(
+                fn ($stock) => $stock->package_id && $stock->package?->package_type_id === $packageType->id
+            );
+        }
+
+        return float_compare(
+            $occupancy[$shelf->id] ?? 0,
+            0,
+            precisionRounding: $product?->uom->rounding ?? 0.01
+        ) > 0;
+    }
+
+    public function acceptsStorageOf(
         ?Product $product,
         float $quantity = 0,
         ?Package $package = null,
         float $locationQty = 0,
         array $excludeMoveLineIds = []
-    ): bool
-    {
+    ): bool {
         if (! $this->storage_category_id) {
             return true;
         }
 
-        $currentWeight = $this->quantities
-            ->sum(fn ($quantity) => ($quantity->quantity ?? 0) * ($quantity->product?->weight ?? 0));
+        if (! $this->withinWeightLimit($product, $quantity, $package, $excludeMoveLineIds)) {
+            return false;
+        }
 
-        $incomingWeight = MoveLine::whereNotIn('id', $excludeMoveLineIds)
+        if (! $this->withinCapacityLimit($product, $quantity, $package, $locationQty)) {
+            return false;
+        }
+
+        return $this->acceptsProductMix($product);
+    }
+
+    protected function withinWeightLimit(?Product $product, float $quantity, ?Package $package, array $excludeMoveLineIds): bool
+    {
+        $maxWeight = $this->storageCategory->max_weight;
+
+        if (! $maxWeight) {
+            return true;
+        }
+
+        $storedWeight = $this->quantities->sum(
+            fn ($stock) => ($stock->quantity ?? 0) * ($stock->product?->weight ?? 0)
+        );
+
+        $incomingWeight = MoveLine::query()
+            ->whereNotIn('id', $excludeMoveLineIds)
             ->where('destination_location_id', $this->id)
             ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
             ->get()
             ->sum(fn ($moveLine) => $moveLine->qty * ($moveLine->product?->weight ?? 0));
 
-        $forecastWeight = $currentWeight + $incomingWeight;
-
-        if ($package && $package->package_type_id) {
-            $packageWeight = MoveLine::where('result_package_id', $package->id)
+        $addedWeight = $package?->package_type_id
+            ? MoveLine::query()
+                ->where('result_package_id', $package->id)
                 ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
                 ->get()
-                ->sum(fn ($moveLine) => $moveLine->qty * ($moveLine->product?->weight ?? 0));
+                ->sum(fn ($moveLine) => $moveLine->qty * ($moveLine->product?->weight ?? 0))
+            : ($product?->weight ?? 0) * $quantity;
 
-            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + $packageWeight) {
-                return false;
-            }
+        return $maxWeight >= $storedWeight + $incomingWeight + $addedWeight;
+    }
 
-            $packageCapacity = $this->storageCategory->storageCategoryCapacitiesByPackageType
-                ->first(fn ($pc) => $pc->package_type_id === $package->package_type_id);
+    protected function withinCapacityLimit(?Product $product, float $quantity, ?Package $package, float $locationQty): bool
+    {
+        if ($package?->package_type_id) {
+            $capacity = $this->storageCategory->storageCategoryCapacitiesByPackageType
+                ->first(fn ($entry) => $entry->package_type_id === $package->package_type_id);
 
-            if ($packageCapacity && $locationQty >= $packageCapacity->qty) {
-                return false;
-            }
-        } else {
-            if ($this->storageCategory->max_weight && $this->storageCategory->max_weight < $forecastWeight + ($product?->weight ?? 0) * $quantity) {
-                return false;
-            }
-
-            $productCapacity = $this->storageCategory->storageCategoryCapacitiesByProduct
-                ->first(fn ($pc) => $pc->product_id === $product?->id);
-
-            if ($productCapacity && $locationQty >= $productCapacity->qty) {
-                return false;
-            }
-
-            if ($productCapacity && $quantity + $locationQty > $productCapacity->qty) {
-                return false;
-            }
+            return ! $capacity || $locationQty < $capacity->qty;
         }
 
-        $positiveQuantities = $this->quantities->filter(
-            fn ($quantity) => float_compare($quantity->quantity ?? 0, 0, precisionRounding: $quantity->product?->uom?->rounding ?? 0.01) > 0
+        $capacity = $this->storageCategory->storageCategoryCapacitiesByProduct
+            ->first(fn ($entry) => $entry->product_id === $product?->id);
+
+        if (! $capacity) {
+            return true;
+        }
+
+        return $locationQty < $capacity->qty && $quantity + $locationQty <= $capacity->qty;
+    }
+
+    protected function acceptsProductMix(?Product $product): bool
+    {
+        $policy = $this->storageCategory->allow_new_products;
+
+        if ($policy !== AllowNewProduct::EMPTY && $policy !== AllowNewProduct::SAME) {
+            return true;
+        }
+
+        $stocked = $this->quantities->filter(
+            fn ($stock) => float_compare($stock->quantity ?? 0, 0, precisionRounding: $stock->product?->uom?->rounding ?? 0.01) > 0
         );
 
-        if (
-            $this->storageCategory->allow_new_products === AllowNewProduct::EMPTY
-            && $positiveQuantities->isNotEmpty()
-        ) {
+        if ($policy === AllowNewProduct::EMPTY) {
+            return $stocked->isEmpty();
+        }
+
+        if ($stocked->contains(fn ($stock) => $stock->product_id !== $product->id)) {
             return false;
         }
 
-        if ($this->storageCategory->allow_new_products === AllowNewProduct::SAME) {
-            if (
-                $positiveQuantities->isNotEmpty()
-                && $positiveQuantities->filter(fn ($quantity) => $quantity->product_id !== $product->id)->isNotEmpty()
-            ) {
-                return false;
-            }
-
-            $hasDifferentProduct = MoveLine::where('product_id', '!=', $product->id)
-                ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
-                ->where('destination_location_id', $this->id)
-                ->exists();
-
-            if ($hasDifferentProduct) {
-                return false;
-            }
-        }
-
-        return true;
+        return ! MoveLine::query()
+            ->where('product_id', '!=', $product->id)
+            ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
+            ->where('destination_location_id', $this->id)
+            ->exists();
     }
 
-    public function isChildOf(self $otherLocation): bool
+    public function isDescendantOf(self $ancestor): bool
     {
-        return Str::startsWith($this->parent_path, $otherLocation->parent_path);
+        return Str::startsWith($this->parent_path, $ancestor->parent_path);
     }
 
-    public function shouldBypassReservation(): bool
+    public function bypassesReservation(): bool
     {
         return in_array($this->type, [
             LocationType::SUPPLIER,

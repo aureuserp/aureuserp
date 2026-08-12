@@ -40,7 +40,7 @@ function validatedReceiptLeg($warehouse, $product, float $demand, ?float $picked
         InventoryHelper::pick($operation->refresh()->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     return $operation->refresh();
 }
@@ -124,7 +124,7 @@ it('moves the quantity from input into stock when the storage leg is validated',
 
     $storage = storageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect($storage->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->input))->toBe(0.0)
@@ -137,7 +137,7 @@ it('stops pushing once the goods reach stock', function () {
 
     $storage = storageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect($storage->refresh()->moves->first()->moveDestinations)->toHaveCount(0)
         ->and(InventoryHelper::operationCount($this->warehouse))->toBe(2);
@@ -161,7 +161,7 @@ it('merges the second push into the existing storage move when the receipt backo
 
     $backorder = InventoryHelper::backorderOf($operation);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
     $storage = storageOperation($this->warehouse);
 
@@ -172,14 +172,14 @@ it('merges the second push into the existing storage move when the receipt backo
         ->and(InventoryHelper::reserved($this->product, $this->input))->toBe(10.0);
 });
 
-it('creates no receipt backorder when validating with cancelBackOrder', function () {
+it('creates no receipt backorder when validating with cancelBackorder', function () {
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
 
     Inventory::confirmTransfer($operation);
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh(), cancelBackOrder: true);
+    Inventory::completeTransfer($operation->refresh(), cancelBackorder: true);
 
     expect(InventoryHelper::backorderOf($operation->refresh()))->toBeNull()
         ->and((float) storageOperation($this->warehouse)->moves->first()->product_uom_qty)->toBe(4.0);
@@ -192,7 +192,7 @@ it('backorders the storage leg when it is partially validated', function () {
 
     InventoryHelper::pick($storage->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     $backorder = InventoryHelper::backorderOf($storage->refresh());
 
@@ -236,7 +236,7 @@ it('unreserves the storage move and drops it back to confirmed', function () {
 
     $storage = storageOperation($this->warehouse);
 
-    Inventory::unreserveMoves($storage->refresh()->moves);
+    Inventory::releaseMoves($storage->refresh()->moves);
 
     $move = $storage->refresh()->moves->first();
 
@@ -255,7 +255,7 @@ it('returns the receipt leg back to the supplier and unreserves the storage move
 
     expect($storageMove->state)->toBe(MoveState::ASSIGNED);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
     expect($return->return_id)->toBe($operation->id)
         ->and($return->source_location_id)->toBe($this->input->id)
@@ -268,9 +268,9 @@ it('returns the receipt leg back to the supplier and unreserves the storage move
 it('removes the returned quantity from input when the receipt return is validated', function () {
     $operation = validatedReceiptLeg($this->warehouse, $this->product, 10);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect($return->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->input))->toBe(6.0);
@@ -281,17 +281,17 @@ it('returns the storage leg from stock back into input', function () {
 
     $storage = storageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     $storage->refresh();
 
-    $return = Inventory::returnTransfer($storage, [$storage->moves->first()->id => 3]);
+    $return = Inventory::createReturn($storage, [$storage->moves->first()->id => 3]);
 
     expect($return->return_id)->toBe($storage->id)
         ->and($return->source_location_id)->toBe($this->stock->id)
         ->and($return->destination_location_id)->toBe($this->input->id);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(7.0)
         ->and(InventoryHelper::onHand($this->product, $this->input))->toBe(3.0);
@@ -314,7 +314,7 @@ it('creates one storage move per product on a multi product receipt', function (
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $storage = storageOperation($this->warehouse);
 
@@ -343,7 +343,7 @@ it('pushes a dozen received as twelve units through to storage', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->input))->toBe(12.0)
         ->and((float) storageOperation($this->warehouse)->moves->first()->product_qty)->toBe(12.0);
@@ -360,7 +360,7 @@ it('creates the lot at the receipt leg and carries it into stock through storage
 
     InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A'])
         ->and(InventoryHelper::onHand($product, $this->input))->toBe(10.0);
@@ -370,7 +370,7 @@ it('creates the lot at the receipt leg and carries it into stock through storage
 
     expect($storageLine->lot_id)->not->toBeNull();
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     $stockQuant = InventoryHelper::quantOf($product, $this->stock, $storageLine->lot_id);
 
@@ -390,13 +390,13 @@ it('keeps two lots apart as they flow through the storage leg into stock', funct
 
         InventoryHelper::nameLines($operation->refresh()->moves->first(), [$name]);
 
-        Inventory::doneTransfer($operation->refresh());
+        Inventory::completeTransfer($operation->refresh());
     }
 
     Operation::query()
         ->where('operation_type_id', $this->warehouse->store_type_id)
         ->get()
-        ->each(fn ($storage) => Inventory::doneTransfer($storage->refresh()));
+        ->each(fn ($storage) => Inventory::completeTransfer($storage->refresh()));
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A', 'LOT-B'])
         ->and(InventoryHelper::onHand($product, $this->stock))->toBe(14.0)
@@ -430,13 +430,13 @@ it('stores each serial number in stock through the whole chain', function () {
 
     InventoryHelper::nameLines($operation->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $storage = storageOperation($this->warehouse);
 
     expect($storage->moves->first()->lines)->toHaveCount(3);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])
         ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0)
@@ -476,7 +476,7 @@ it('releases the reservation when a reserved storage move line is deleted', func
 it('deletes the input quant when the storage leg empties it', function () {
     validatedReceiptLeg($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer(storageOperation($this->warehouse)->refresh());
+    Inventory::completeTransfer(storageOperation($this->warehouse)->refresh());
 
     expect(InventoryHelper::quantOf($this->product, $this->input))->toBeNull()
         ->and((float) InventoryHelper::quantOf($this->product, $this->stock)?->quantity)->toBe(10.0);
@@ -501,7 +501,7 @@ it('lands the stored quantity in the putaway sublocation when validated', functi
 
     validatedReceiptLeg($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer(storageOperation($this->warehouse)->refresh());
+    Inventory::completeTransfer(storageOperation($this->warehouse)->refresh());
 
     expect((float) InventoryHelper::quantOf($this->product, $shelf)?->quantity)->toBe(10.0)
         ->and(InventoryHelper::quantOf($this->product, $this->stock))->toBeNull();
@@ -530,7 +530,6 @@ it('applies a product agnostic putaway rule to any product', function () {
 
     expect($storageLine->destination_location_id)->toBe($shelf->id);
 });
-
 
 it('consolidates goods into a storage category location that has spare capacity', function () {
     $category = InventoryHelper::storageCategory();

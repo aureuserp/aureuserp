@@ -11,8 +11,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
@@ -23,11 +21,14 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\BalanceSheetExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 
 class BalanceSheet extends Page implements HasForms
 {
     use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.balance-sheet';
 
@@ -61,7 +62,7 @@ class BalanceSheet extends Page implements HasForms
 
     public function mount(): void
     {
-        $this->form->fill([]);
+        $this->form->fill();
     }
 
     protected function getHeaderActions(): array
@@ -147,18 +148,18 @@ class BalanceSheet extends Page implements HasForms
         $dateRange = $this->parseDateRange();
         $date = $dateRange ? Carbon::parse($dateRange[1]) : now();
 
-        $companyId = Auth::user()->default_company_id;
+        $rateMap = CompanyRateMap::make(date: $date->toDateString());
         $journalIds = $this->data['journals'] ?? [];
 
         $query = MoveLine::query()
             ->select([
                 'accounts_account_move_lines.account_id',
-                DB::raw('SUM(accounts_account_move_lines.debit) as total_debit'),
-                DB::raw('SUM(accounts_account_move_lines.credit) as total_credit'),
-                DB::raw('SUM(accounts_account_move_lines.balance) as balance'),
+                $rateMap->sum('accounts_account_move_lines.debit', 'total_debit'),
+                $rateMap->sum('accounts_account_move_lines.credit', 'total_credit'),
+                $rateMap->sum('accounts_account_move_lines.balance', 'balance'),
             ])
             ->join('accounts_account_moves', 'accounts_account_moves.id', '=', 'accounts_account_move_lines.move_id')
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', MoveState::POSTED)
             ->whereDate('accounts_account_move_lines.date', '<=', $date)
             ->groupBy('accounts_account_move_lines.account_id');
@@ -177,7 +178,7 @@ class BalanceSheet extends Page implements HasForms
 
         $assets = $this->buildAssetSection($accounts, $balances);
         $liabilities = $this->buildLiabilitySection($accounts, $balances);
-        $equity = $this->buildEquitySection($accounts, $balances, $date, $companyId, $journalIds);
+        $equity = $this->buildEquitySection($accounts, $balances, $date, $rateMap, $journalIds);
 
         return [
             'sections' => [
@@ -319,13 +320,13 @@ class BalanceSheet extends Page implements HasForms
         ];
     }
 
-    protected function buildEquitySection($accounts, $balances, $date, $companyId, $journalIds): array
+    protected function buildEquitySection($accounts, $balances, $date, CompanyRateMap $rateMap, $journalIds): array
     {
         $currentYearStart = now()->startOfYear();
 
-        $currentYearEarnings = $this->calculateEarnings($companyId, $currentYearStart, $date, $journalIds);
+        $currentYearEarnings = $this->calculateEarnings($rateMap, $currentYearStart, $date, $journalIds);
 
-        $previousYearsEarnings = $this->calculateEarnings($companyId, null, $currentYearStart->copy()->subDay(), $journalIds);
+        $previousYearsEarnings = $this->calculateEarnings($rateMap, null, $currentYearStart->copy()->subDay(), $journalIds);
 
         $equityAccounts = $this->getAccountsByTypes($accounts, $balances, [
             AccountType::EQUITY->value,
@@ -352,13 +353,13 @@ class BalanceSheet extends Page implements HasForms
         ];
     }
 
-    protected function calculateEarnings($companyId, $startDate, $endDate, $journalIds): float
+    protected function calculateEarnings(CompanyRateMap $rateMap, $startDate, $endDate, $journalIds): float
     {
         $query = MoveLine::query()
-            ->select(DB::raw('SUM(accounts_account_move_lines.debit - accounts_account_move_lines.credit) as balance'))
+            ->select($rateMap->sum('accounts_account_move_lines.debit - accounts_account_move_lines.credit', 'balance'))
             ->join('accounts_account_moves', 'accounts_account_moves.id', '=', 'accounts_account_move_lines.move_id')
             ->join('accounts_accounts', 'accounts_accounts.id', '=', 'accounts_account_move_lines.account_id')
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', MoveState::POSTED)
             ->whereIn('accounts_accounts.account_type', array_merge(
                 array_keys(AccountType::income()),

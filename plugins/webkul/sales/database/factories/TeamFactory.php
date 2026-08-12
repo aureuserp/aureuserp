@@ -4,6 +4,7 @@ namespace Webkul\Sale\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Sale\Models\Team;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Team>
@@ -15,6 +16,8 @@ class TeamFactory extends Factory
      *
      * @var string
      */
+    use HasCompanyDefault;
+
     protected $model = Team::class;
 
     /**
@@ -26,7 +29,6 @@ class TeamFactory extends Factory
     {
         return [
             'sort'            => fake()->randomNumber(),
-            'company_id'      => null,
             'user_id'         => null,
             'color'           => fake()->hexColor,
             'creator_id'      => null,

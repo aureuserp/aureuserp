@@ -21,6 +21,7 @@ return [
                     'name-placeholder'       => 'e.g. LOT/0001/20121',
                     'product'                => 'Product',
                     'product-hint-tooltip'   => 'The product associated with this lot/serial number. It cannot be changed if it has already been moved.',
+                    'company'                => 'Company',
                     'reference'              => 'Reference',
                     'reference-hint-tooltip' => 'An internal reference number, if different from the manufacturer\'s lot/serial number.',
                     'description'            => 'Description',

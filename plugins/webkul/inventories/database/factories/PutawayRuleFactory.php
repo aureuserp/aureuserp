@@ -9,13 +9,15 @@ use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<PutawayRule>
  */
 class PutawayRuleFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -38,7 +40,6 @@ class PutawayRuleFactory extends Factory
             'storage_category_id' => null,
             'in_location_id'      => Location::factory(),
             'out_location_id'     => Location::factory(),
-            'company_id'          => Company::factory(),
             'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }

@@ -44,7 +44,7 @@ it('debits the supplier and credits the customer when the dropship is validated'
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect($operation->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $supplier))->toBe(-10.0)

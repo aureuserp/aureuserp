@@ -8,19 +8,19 @@ return [
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title' => 'Informações contábeis',
+                        'title'  => 'Informações contábeis',
                         'fields' => [
                             'dedicated-credit-note-sequence' => 'Sequência dedicada de nota de crédito',
-                            'dedicated-payment-sequence' => 'Sequência dedicada de pagamento',
-                            'sort-code-placeholder' => 'Informe o código do diário',
-                            'sort-code' => 'Ordenar',
-                            'currency' => 'Moeda',
-                            'color' => 'Cor',
-                            'default-account' => 'Conta padrão',
-                            'profit-account' => 'Conta de lucro',
-                            'loss-account' => 'Conta de perda',
-                            'suspense-account' => 'Conta transitória',
-                            'bank-account' => 'Conta bancária',
+                            'dedicated-payment-sequence'     => 'Sequência dedicada de pagamento',
+                            'sort-code-placeholder'          => 'Informe o código do diário',
+                            'sort-code'                      => 'Ordenar',
+                            'currency'                       => 'Moeda',
+                            'color'                          => 'Cor',
+                            'default-account'                => 'Conta padrão',
+                            'profit-account'                 => 'Conta de lucro',
+                            'loss-account'                   => 'Conta de perda',
+                            'suspense-account'               => 'Conta transitória',
+                            'bank-account'                   => 'Conta bancária',
                         ],
                     ],
 
@@ -31,27 +31,27 @@ return [
             ],
 
             'incoming-payments' => [
-                'title' => 'Pagamentos recebidos',
+                'title'            => 'Pagamentos recebidos',
                 'add-action-label' => 'Adicionar linha',
 
                 'fields' => [
-                    'payment-method' => 'Método de pagamento',
-                    'display-name' => 'Nome de exibição',
-                    'account-number' => 'Contas de recebimentos pendentes',
-                    'relation-notes' => 'Notas de relacionamento',
+                    'payment-method'             => 'Método de pagamento',
+                    'display-name'               => 'Nome de exibição',
+                    'account-number'             => 'Contas de recebimentos pendentes',
+                    'relation-notes'             => 'Notas de relacionamento',
                     'relation-notes-placeholder' => 'Informe os detalhes do relacionamento',
                 ],
             ],
 
             'outgoing-payments' => [
-                'title' => 'Pagamentos enviados',
+                'title'            => 'Pagamentos enviados',
                 'add-action-label' => 'Adicionar linha',
 
                 'fields' => [
-                    'payment-method' => 'Método de pagamento',
-                    'display-name' => 'Nome de exibição',
-                    'account-number' => 'Contas de pagamentos pendentes',
-                    'relation-notes' => 'Notas de relacionamento',
+                    'payment-method'             => 'Método de pagamento',
+                    'display-name'               => 'Nome de exibição',
+                    'account-number'             => 'Contas de pagamentos pendentes',
+                    'relation-notes'             => 'Notas de relacionamento',
                     'relation-notes-placeholder' => 'Informe os detalhes do relacionamento',
                 ],
             ],
@@ -60,11 +60,11 @@ return [
                 'title' => 'Configurações avançadas',
 
                 'fields' => [
-                    'allowed-accounts' => 'Contas permitidas',
-                    'control-access' => 'Controle de acesso',
-                    'payment-communication' => 'Comunicação de pagamento',
-                    'auto-check-on-post' => 'Verificação automática ao publicar',
-                    'communication-type' => 'Tipo de comunicação',
+                    'allowed-accounts'       => 'Contas permitidas',
+                    'control-access'         => 'Controle de acesso',
+                    'payment-communication'  => 'Comunicação de pagamento',
+                    'auto-check-on-post'     => 'Verificação automática ao publicar',
+                    'communication-type'     => 'Tipo de comunicação',
                     'communication-standard' => 'Padrão de comunicação',
                 ],
             ],
@@ -74,8 +74,8 @@ return [
             'title' => 'Informações gerais',
 
             'fields' => [
-                'name' => 'Nome',
-                'type' => 'Tipo',
+                'name'    => 'Nome',
+                'type'    => 'Tipo',
                 'company' => 'Empresa',
             ],
         ],
@@ -83,12 +83,12 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'type' => 'Tipo',
-            'code' => 'Código',
-            'currency' => 'Moeda',
+            'name'       => 'Nome',
+            'type'       => 'Tipo',
+            'code'       => 'Código',
+            'currency'   => 'Moeda',
             'created-by' => 'Criado por',
-            'status' => 'Status',
+            'status'     => 'Status',
         ],
 
         'actions' => [
@@ -96,12 +96,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Diário excluído',
-                        'body' => 'O diário foi excluído com sucesso.',
+                        'body'  => 'O diário foi excluído com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Falha ao excluir diário',
-                        'body' => 'O diário não pode ser excluído porque está em uso no momento.',
+                        'body'  => 'O diário não pode ser excluído porque está em uso no momento.',
                     ],
                 ],
             ],
@@ -112,12 +112,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Diário excluído',
-                        'body' => 'O diário foi excluído com sucesso.',
+                        'body'  => 'O diário foi excluído com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Falha ao excluir diários',
-                        'body' => 'Os diários não podem ser excluídos porque estão em uso no momento.',
+                        'body'  => 'Os diários não podem ser excluídos porque estão em uso no momento.',
                     ],
                 ],
             ],
@@ -135,15 +135,15 @@ return [
 
                         'entries' => [
                             'dedicated-credit-note-sequence' => 'Sequência dedicada de nota de crédito',
-                            'dedicated-payment-sequence' => 'Sequência dedicada de pagamento',
-                            'sort-code-placeholder' => 'Informe o código do diário',
-                            'sort-code' => 'Ordenar',
-                            'currency' => 'Moeda',
-                            'color' => 'Cor',
-                            'default-account' => 'Conta padrão',
-                            'profit-account' => 'Conta de lucro',
-                            'loss-account' => 'Conta de perda',
-                            'suspense-account' => 'Conta transitória',
+                            'dedicated-payment-sequence'     => 'Sequência dedicada de pagamento',
+                            'sort-code-placeholder'          => 'Informe o código do diário',
+                            'sort-code'                      => 'Ordenar',
+                            'currency'                       => 'Moeda',
+                            'color'                          => 'Cor',
+                            'default-account'                => 'Conta padrão',
+                            'profit-account'                 => 'Conta de lucro',
+                            'loss-account'                   => 'Conta de perda',
+                            'suspense-account'               => 'Conta transitória',
                         ],
                     ],
 
@@ -161,10 +161,10 @@ return [
                 'title' => 'Pagamentos recebidos',
 
                 'entries' => [
-                    'payment-method' => 'Método de pagamento',
-                    'display-name' => 'Nome de exibição',
-                    'account-number' => 'Contas de recebimentos pendentes',
-                    'relation-notes' => 'Notas de relacionamento',
+                    'payment-method'             => 'Método de pagamento',
+                    'display-name'               => 'Nome de exibição',
+                    'account-number'             => 'Contas de recebimentos pendentes',
+                    'relation-notes'             => 'Notas de relacionamento',
                     'relation-notes-placeholder' => 'Informe os detalhes do relacionamento',
                 ],
             ],
@@ -173,10 +173,10 @@ return [
                 'title' => 'Pagamentos enviados',
 
                 'entries' => [
-                    'payment-method' => 'Método de pagamento',
-                    'display-name' => 'Nome de exibição',
-                    'account-number' => 'Contas de pagamentos pendentes',
-                    'relation-notes' => 'Notas de relacionamento',
+                    'payment-method'             => 'Método de pagamento',
+                    'display-name'               => 'Nome de exibição',
+                    'account-number'             => 'Contas de pagamentos pendentes',
+                    'relation-notes'             => 'Notas de relacionamento',
                     'relation-notes-placeholder' => 'Informe os detalhes do relacionamento',
                 ],
             ],
@@ -188,8 +188,8 @@ return [
                     'title' => 'Contas permitidas',
 
                     'entries' => [
-                        'allowed-accounts' => 'Contas permitidas',
-                        'control-access' => 'Controle de acesso',
+                        'allowed-accounts'   => 'Contas permitidas',
+                        'control-access'     => 'Controle de acesso',
                         'auto-check-on-post' => 'Verificação automática ao publicar',
                     ],
                 ],
@@ -198,7 +198,7 @@ return [
                     'title' => 'Comunicação de pagamento',
 
                     'entries' => [
-                        'communication-type' => 'Tipo de comunicação',
+                        'communication-type'     => 'Tipo de comunicação',
                         'communication-standard' => 'Padrão de comunicação',
                     ],
                 ],
@@ -209,8 +209,8 @@ return [
             'title' => 'Informações gerais',
 
             'entries' => [
-                'name' => 'Nome',
-                'type' => 'Tipo',
+                'name'    => 'Nome',
+                'type'    => 'Tipo',
                 'company' => 'Empresa',
             ],
         ],

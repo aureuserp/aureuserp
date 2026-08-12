@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Lot;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -15,6 +15,8 @@ use Webkul\Support\Models\UOM;
  */
 class LotFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Lot::class;
 
     public function definition(): array
@@ -34,7 +36,6 @@ class LotFactory extends Factory
             'product_id'  => Product::factory(),
             'uom_id'      => UOM::factory(),
             'location_id' => null,
-            'company_id'  => Company::factory(),
             'creator_id'  => User::query()->value('id') ?? User::factory(),
         ];
     }

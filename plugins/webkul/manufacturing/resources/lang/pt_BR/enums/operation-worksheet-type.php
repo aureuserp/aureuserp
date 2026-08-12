@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'pdf' => 'PDF',
+    'pdf'          => 'PDF',
     'google-slide' => 'Google Slide',
-    'text' => 'Texto',
+    'text'         => 'Texto',
 ];
