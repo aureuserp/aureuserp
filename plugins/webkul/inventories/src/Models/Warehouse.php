@@ -247,6 +247,12 @@ class Warehouse extends Model implements Sortable
         static::updated(function (Warehouse $warehouse) {
             if ($warehouse->wasChanged('code')) {
                 $warehouse->viewLocation?->update(['name' => $warehouse->code]);
+
+                $warehouse->operationTypes()->withTrashed()->get()->each(function (OperationType $operationType) {
+                    $operationType->unsetRelation('warehouse');
+
+                    $operationType->syncSequence();
+                });
             }
 
             if ($warehouse->wasChanged('company_id')) {
@@ -964,7 +970,7 @@ class Warehouse extends Model implements Sortable
             $this->pack_stock_location_id,
         ])->update(['warehouse_id' => $this->id]);
 
-        OperationType::withTrashed()->whereIn('id', [
+        $operationTypeIds = [
             $this->in_type_id,
             $this->out_type_id,
             $this->pick_type_id,
@@ -973,7 +979,13 @@ class Warehouse extends Model implements Sortable
             $this->store_type_id,
             $this->internal_type_id,
             $this->xdock_type_id,
-        ])->update(['warehouse_id' => $this->id]);
+        ];
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->update(['warehouse_id' => $this->id]);
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->get()->each(
+            fn (OperationType $operationType) => $operationType->syncSequence()
+        );
 
         $this->routes()->sync([
             $this->reception_route_id,

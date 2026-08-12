@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ManageResume;
 use Webkul\Employee\Models\EmployeeResumeAttachment;
@@ -10,6 +11,11 @@ require_once __DIR__.'/../../Helpers/EmployeeHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('employees');
+
+    // The page renders links to sibling resources, and those named routes are not
+    // registered when only this plugin is installed. Same guard the accounting
+    // Filament tests use.
+    URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
     FilamentHelper::actingAs([
         'view_any_employee_employee',

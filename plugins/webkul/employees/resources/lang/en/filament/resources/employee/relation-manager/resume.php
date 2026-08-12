@@ -5,7 +5,6 @@ return [
         'sections' => [
             'fields' => [
                 'title'            => 'Title',
-                'type'             => 'Type',
                 'name'             => 'Name',
                 'type'             => 'Type',
                 'create-type'      => 'Create Type',
@@ -56,22 +55,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill Level updated',
-                    'body'  => 'The skill level has been updated successfully.',
+                    'title' => 'Resume updated',
+                    'body'  => 'The resume has been updated successfully.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Level created',
-                    'body'  => 'The skill level has been created successfully.',
+                    'title' => 'Resume created',
+                    'body'  => 'The resume has been created successfully.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Level deleted',
-                    'body'  => 'The skill level has been deleted successfully.',
+                    'title' => 'Resume deleted',
+                    'body'  => 'The resume has been deleted successfully.',
                 ],
             ],
         ],
@@ -79,8 +78,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'Resumes deleted',
+                    'body'  => 'The resumes have been deleted successfully.',
                 ],
             ],
         ],

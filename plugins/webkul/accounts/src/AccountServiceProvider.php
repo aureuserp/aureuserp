@@ -18,6 +18,7 @@ use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\CategoryCompanyAccount;
 use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\PartnerCompanyProperty;
 use Webkul\Account\Models\Payment;
@@ -36,6 +37,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
+use Webkul\Support\Services\SequenceService;
 
 class AccountServiceProvider extends PackageServiceProvider
 {
@@ -119,6 +121,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_07_30_090000_create_products_product_company_accounts_table',
                 '2026_07_30_120000_create_products_category_company_accounts_table',
                 '2026_07_30_120001_create_partners_partner_company_properties_table',
+                '2026_08_03_130000_seed_accounts_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -140,6 +143,8 @@ class AccountServiceProvider extends PackageServiceProvider
             ->hasUninstallCommand(function (UninstallCommand $command) {
                 $command->endWith(function () {
                     ChatterCleanupService::purgeForModels([Move::class, Payment::class]);
+
+                    SequenceService::purge(scopeModels: [Journal::class]);
                 });
             });
     }

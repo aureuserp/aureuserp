@@ -3,7 +3,6 @@
 namespace Webkul\Purchase\Filament\Admin\Clusters\Products\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -19,6 +18,7 @@ use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\P
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Tables\ProductsTable;
 use Webkul\Purchase\Models\Product;
 
 class ProductResource extends BaseProductResource
@@ -46,18 +46,7 @@ class ProductResource extends BaseProductResource
 
     public static function table(Table $table): Table
     {
-        $table = parent::table($table);
-
-        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
-            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
-            ->all();
-
-        $table = $table->filters([
-            QueryBuilder::make()
-                ->constraints($filtered),
-        ]);
-
-        return $table;
+        return ProductsTable::configure(parent::table($table));
     }
 
     public static function getRecordSubNavigation(Page $page): array

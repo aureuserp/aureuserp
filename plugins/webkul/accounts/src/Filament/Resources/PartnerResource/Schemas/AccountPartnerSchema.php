@@ -13,13 +13,13 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\AutoPostBills;
 use Webkul\Account\Enums\InvoiceFormat;
 use Webkul\Account\Enums\InvoiceSendingMethod;
 use Webkul\Account\Enums\PartyIdentificationScheme;
 use Webkul\Account\Enums\PaymentType;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Models\Account;
 
 class AccountPartnerSchema
