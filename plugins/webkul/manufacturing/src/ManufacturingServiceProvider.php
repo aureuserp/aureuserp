@@ -37,6 +37,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Support\ProductUsageRegistry;
+use Webkul\Support\Services\SequenceService;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class ManufacturingServiceProvider extends PackageServiceProvider
@@ -87,6 +88,7 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                 '2026_04_02_000002_alter_inventories_warehouses_table',
                 '2026_04_02_000003_alter_inventories_moves_table',
                 '2026_04_02_000004_alter_inventories_move_lines_table',
+                '2026_08_03_130000_seed_manufacturing_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -150,6 +152,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     $operationTypeIds = array_values(array_unique($operationTypeIds));
                     $locationIds = array_values(array_unique($locationIds));
                     $routeIds = array_values(array_unique($routeIds));
+
+                    SequenceService::purge(['manufacturing.order']);
+
+                    SequenceService::purgeScoped(OperationType::class, $operationTypeIds);
 
                     if (! empty($operationTypeIds) || ! empty($locationIds) || ! empty($routeIds)) {
                         DB::transaction(function () use ($operationTypeIds, $locationIds, $routeIds) {

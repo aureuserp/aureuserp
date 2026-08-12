@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             TaxGroupSeeder::class,
             TaxSeeder::class,
             TaxPartitionSeeder::class,
+            SequenceSeeder::class,
         ]);
     }
 }

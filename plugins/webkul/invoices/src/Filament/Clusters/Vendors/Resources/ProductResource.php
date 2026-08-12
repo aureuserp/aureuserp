@@ -3,7 +3,6 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -18,6 +17,7 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\Man
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ViewProduct;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Tables\ProductsTable;
 use Webkul\Invoice\Models\Product;
 use Webkul\PluginManager\Package;
 
@@ -69,18 +69,7 @@ class ProductResource extends BaseProductResource
 
     public static function table(Table $table): Table
     {
-        $table = parent::table($table);
-
-        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
-            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
-            ->all();
-
-        $table = $table->filters([
-            QueryBuilder::make()
-                ->constraints($filtered),
-        ]);
-
-        return $table;
+        return ProductsTable::configure(parent::table($table));
     }
 
     public static function getPages(): array

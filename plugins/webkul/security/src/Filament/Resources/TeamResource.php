@@ -2,19 +2,14 @@
 
 namespace Webkul\Security\Filament\Resources;
 
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Security\Filament\Resources\TeamResource\Pages\ManageTeams;
+use Webkul\Security\Filament\Resources\TeamResource\Schemas\TeamForm;
+use Webkul\Security\Filament\Resources\TeamResource\Schemas\TeamInfolist;
+use Webkul\Security\Filament\Resources\TeamResource\Tables\TeamsTable;
 use Webkul\Security\Models\Team;
 use Webkul\Support\Enums\NavigationGroup;
 
@@ -41,69 +36,17 @@ class TeamResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextInput::make('name')
-                    ->label(__('security::filament/resources/team.form.fields.name'))
-                    ->required()
-                    ->maxLength(255),
-            ]);
+        return TeamForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label(__('security::filament/resources/team.table.columns.name'))
-                    ->searchable()
-                    ->limit(50)
-                    ->sortable(),
-                TextColumn::make('creator.name')
-                    ->label(__('security::filament/resources/team.table.columns.created-by'))
-                    ->searchable()
-                    ->limit(50)
-                    ->sortable(),
-            ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('security::filament/resources/team.table.actions.edit.notification.title'))
-                            ->body(__('security::filament/resources/team.table.actions.edit.notification.body'))
-                    ),
-                DeleteAction::make()
-                    ->hidden(fn (Team $record): bool => $record->users?->isNotEmpty())
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('security::filament/resources/team.table.actions.delete.notification.title'))
-                            ->body(__('security::filament/resources/team.table.actions.delete.notification.body'))
-                    ),
-            ])
-            ->emptyStateActions([
-                CreateAction::make()
-                    ->icon('heroicon-o-plus-circle')
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('security::filament/resources/team.table.empty-state-actions.create.notification.title'))
-                            ->body(__('security::filament/resources/team.table.empty-state-actions.create.notification.body'))
-                    ),
-            ]);
+        return TeamsTable::configure($table);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                TextEntry::make('name')
-                    ->icon('heroicon-o-user')
-                    ->placeholder('—')
-                    ->label(__('security::filament/resources/team.infolist.entries.name')),
-            ]);
+        return TeamInfolist::configure($schema);
     }
 
     public static function getPages(): array

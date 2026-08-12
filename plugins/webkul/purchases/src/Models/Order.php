@@ -29,6 +29,7 @@ use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Services\SequenceService;
 use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\Support\Traits\ChecksCompanyConsistency;
 
@@ -246,7 +247,15 @@ class Order extends Model
 
     public function updateName()
     {
-        $this->name = 'PO/'.$this->id;
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::next('purchases.order', $this->company_id, [
+            'name'         => 'Purchase Order',
+            'prefix'       => 'PO/',
+            'initial_from' => static::withoutGlobalScopes(),
+        ]);
     }
 
     protected static function newFactory(): OrderFactory
