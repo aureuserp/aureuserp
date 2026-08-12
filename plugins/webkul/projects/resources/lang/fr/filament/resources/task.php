@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Tâches',
-        'group' => 'Projet',
     ],
 
     'global-search' => [
@@ -113,6 +112,10 @@ return [
         ],
 
         'actions' => [
+            'update-state' => [
+                'modal-heading' => 'Mettre à Jour l\'État de la Tâche',
+            ],
+
             'restore' => [
                 'notification' => [
                     'title' => 'Tâche restaurée',

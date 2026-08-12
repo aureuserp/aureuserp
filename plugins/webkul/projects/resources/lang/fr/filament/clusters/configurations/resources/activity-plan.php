@@ -2,48 +2,48 @@
 
 return [
     'navigation' => [
-        'title' => 'Activity Plans',
+        'title' => 'Plans d\'Activité',
     ],
 
     'form' => [
-        'name'   => 'Name',
-        'status' => 'Status',
+        'name'   => 'Nom',
+        'status' => 'Statut',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'status'     => 'Status',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nom',
+            'status'     => 'Statut',
+            'created-at' => 'Créé le',
+            'updated-at' => 'Mis à Jour le',
         ],
 
         'groups' => [
-            'name'       => 'Name',
-            'status'     => 'Status',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nom',
+            'status'     => 'Statut',
+            'created-at' => 'Créé le',
+            'updated-at' => 'Mis à Jour le',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity Plan restored',
-                    'body'  => 'The activity plan has been restored successfully.',
+                    'title' => 'Plan d\'activité restauré',
+                    'body'  => 'Le plan d\'activité a été restauré avec succès.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity Plan deleted',
-                    'body'  => 'The activity plan has been deleted successfully.',
+                    'title' => 'Plan d\'activité supprimé',
+                    'body'  => 'Le plan d\'activité a été supprimé avec succès.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity Plan force deleted',
-                    'body'  => 'The activity plan has been force deleted successfully.',
+                    'title' => 'Plan d\'activité supprimé définitivement',
+                    'body'  => 'Le plan d\'activité a été supprimé définitivement avec succès.',
                 ],
             ],
         ],
@@ -51,22 +51,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity Plans restored',
-                    'body'  => 'The activity plans has been restored successfully.',
+                    'title' => 'Plans d\'activité restaurés',
+                    'body'  => 'Les plans d\'activité ont été restaurés avec succès.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity Plans deleted',
-                    'body'  => 'The activity plans has been deleted successfully.',
+                    'title' => 'Plans d\'activité supprimés',
+                    'body'  => 'Les plans d\'activité ont été supprimés avec succès.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity Plans force deleted',
-                    'body'  => 'The activity plans has been force deleted successfully.',
+                    'title' => 'Plans d\'activité supprimés définitivement',
+                    'body'  => 'Les plans d\'activité ont été supprimés définitivement avec succès.',
                 ],
             ],
         ],
@@ -74,15 +74,15 @@ return [
         'empty-state' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Activity Plan created',
-                    'body'  => 'The activity plan has been created successfully.',
+                    'title' => 'Plan d\'activité créé',
+                    'body'  => 'Le plan d\'activité a été créé avec succès.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'   => 'Name',
-        'status' => 'Status',
+        'name'   => 'Nom',
+        'status' => 'Statut',
     ],
 ];

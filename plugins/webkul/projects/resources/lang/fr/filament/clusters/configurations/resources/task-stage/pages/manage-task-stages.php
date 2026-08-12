@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Task Stage',
+            'label' => 'Nouvelle Étape de Tâche',
 
             'notification' => [
-                'title' => 'Task stage created',
-                'body'  => 'The task stage has been created successfully.',
+                'title' => 'Étape de tâche créée',
+                'body'  => 'L\'étape de tâche a été créée avec succès.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Tous',
+        'archived' => 'Archivés',
     ],
 ];

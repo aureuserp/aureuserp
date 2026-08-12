@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title'          => 'Project',
+    'title'          => 'Projet',
 
     'log-attributes' => [
         'name'                     => 'Nom',

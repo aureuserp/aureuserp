@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Tous',
+        'archived' => 'Archivés',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Activity Plan',
+            'label' => 'Nouveau Plan d\'Activité',
 
             'notification' => [
-                'title' => 'Activity Plan created',
-                'body'  => 'The activity plan has been created successfully.',
+                'title' => 'Plan d\'activité créé',
+                'body'  => 'Le plan d\'activité a été créé avec succès.',
             ],
         ],
     ],

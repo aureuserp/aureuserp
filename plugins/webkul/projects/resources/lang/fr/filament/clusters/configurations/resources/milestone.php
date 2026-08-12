@@ -2,53 +2,53 @@
 
 return [
     'navigation' => [
-        'title' => 'Milestones',
+        'title' => 'Jalons',
     ],
 
     'form' => [
-        'name'         => 'Name',
-        'deadline'     => 'Deadline',
-        'is-completed' => 'Is Completed',
-        'project'      => 'Project',
+        'name'         => 'Nom',
+        'deadline'     => 'Échéance',
+        'is-completed' => 'Est Complété',
+        'project'      => 'Projet',
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'deadline'     => 'Deadline',
-            'is-completed' => 'Is Completed',
-            'completed-at' => 'Completed At',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'Nom',
+            'deadline'     => 'Échéance',
+            'is-completed' => 'Est Complété',
+            'completed-at' => 'Complété le',
+            'project'      => 'Projet',
+            'creator'      => 'Créateur',
+            'created-at'   => 'Créé le',
+            'updated-at'   => 'Mis à Jour le',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'created-at'   => 'Created At',
+            'name'         => 'Nom',
+            'is-completed' => 'Est Complété',
+            'project'      => 'Projet',
+            'created-at'   => 'Créé le',
         ],
 
         'filters' => [
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
+            'is-completed' => 'Est Complété',
+            'project'      => 'Projet',
+            'creator'      => 'Créateur',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Milestone update',
-                    'body'  => 'The milestone has been update successfully.',
+                    'title' => 'Jalon mis à jour',
+                    'body'  => 'Le jalon a été mis à jour avec succès.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Milestone deleted',
-                    'body'  => 'The milestone has been deleted successfully.',
+                    'title' => 'Jalon supprimé',
+                    'body'  => 'Le jalon a été supprimé avec succès.',
                 ],
             ],
         ],
@@ -56,8 +56,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Milestones deleted',
-                    'body'  => 'The milestones has been deleted successfully.',
+                    'title' => 'Jalons supprimés',
+                    'body'  => 'Les jalons ont été supprimés avec succès.',
                 ],
             ],
         ],

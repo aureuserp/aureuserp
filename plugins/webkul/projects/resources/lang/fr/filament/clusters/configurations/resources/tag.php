@@ -2,48 +2,48 @@
 
 return [
     'navigation' => [
-        'title' => 'Tags',
+        'title' => 'Étiquettes',
     ],
 
     'form' => [
-        'name'  => 'Name',
-        'color' => 'Color',
+        'name'  => 'Nom',
+        'color' => 'Couleur',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'color'      => 'Color',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'Nom',
+            'color'      => 'Couleur',
+            'created-at' => 'Créé le',
+            'updated-at' => 'Mis à Jour le',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tag updated',
-                    'body'  => 'The tag has been updated successfully.',
+                    'title' => 'Étiquette mise à jour',
+                    'body'  => 'L\'étiquette a été mise à jour avec succès.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Tag restored',
-                    'body'  => 'The tag has been restored successfully.',
+                    'title' => 'Étiquette restaurée',
+                    'body'  => 'L\'étiquette a été restaurée avec succès.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tag deleted',
-                    'body'  => 'The tag has been deleted successfully.',
+                    'title' => 'Étiquette supprimée',
+                    'body'  => 'L\'étiquette a été supprimée avec succès.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tag force deleted',
-                    'body'  => 'The tag has been force deleted successfully.',
+                    'title' => 'Étiquette supprimée définitivement',
+                    'body'  => 'L\'étiquette a été supprimée définitivement avec succès.',
                 ],
             ],
         ],
@@ -51,22 +51,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Tags restored',
-                    'body'  => 'The tags has been restored successfully.',
+                    'title' => 'Étiquettes restaurées',
+                    'body'  => 'Les étiquettes ont été restaurées avec succès.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'Étiquettes supprimées',
+                    'body'  => 'Les étiquettes ont été supprimées avec succès.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tags force deleted',
-                    'body'  => 'The tags has been force deleted successfully.',
+                    'title' => 'Étiquettes supprimées définitivement',
+                    'body'  => 'Les étiquettes ont été supprimées définitivement avec succès.',
                 ],
             ],
         ],

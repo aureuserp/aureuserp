@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Milestone',
+            'label' => 'Nouveau Jalon',
 
             'notification' => [
-                'title' => 'Milestone created',
-                'body'  => 'The milestone has been created successfully.',
+                'title' => 'Jalon créé',
+                'body'  => 'Le jalon a été créé avec succès.',
             ],
         ],
     ],

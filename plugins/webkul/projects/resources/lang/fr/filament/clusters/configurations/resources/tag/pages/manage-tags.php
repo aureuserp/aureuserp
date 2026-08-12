@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Tag',
+            'label' => 'Nouvelle Étiquette',
 
             'notification' => [
-                'title' => 'Tag created',
-                'body'  => 'The tag has been created successfully.',
+                'title' => 'Étiquette créée',
+                'body'  => 'L\'étiquette a été créée avec succès.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'Tous',
+        'archived' => 'Archivés',
     ],
 ];

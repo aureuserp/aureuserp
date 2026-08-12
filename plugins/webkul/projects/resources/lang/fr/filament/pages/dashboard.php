@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Projet',
-        'group' => 'Tableau de Bord',
     ],
 
     'filters-form' => [
@@ -12,6 +11,7 @@ return [
         'tags'       => 'Étiquettes',
         'customer'   => 'Client',
         'start-date' => 'Date de Début',
+        'date-range' => 'Plage de Dates',
         'end-date'   => 'Date de Fin',
     ],
 ];
