@@ -121,6 +121,12 @@ return [
             'flag'   => 'br',
             'rtl'    => false,
         ],
+        'fr' => [
+            'label'  => 'French',
+            'native' => 'Français',
+            'flag'   => 'fr',
+            'rtl'    => false,
+        ],
     ],
 
     /*
