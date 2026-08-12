@@ -13,6 +13,8 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\AttributeFactory;
 use Webkul\Product\Enums\AttributeType;
+use Webkul\Product\Exceptions\VariantInUseException;
+use Webkul\Product\Support\VariantUsage;
 use Webkul\Security\Models\User;
 
 class Attribute extends Model implements Sortable
@@ -58,6 +60,18 @@ class Attribute extends Model implements Sortable
 
         static::creating(function ($attribute) {
             $attribute->creator_id ??= Auth::id();
+        });
+
+        static::deleting(function (self $attribute) {
+            // Soft deleting cascades nothing; a force delete takes the options — and with them
+            // the product values and combinations — down at the database level.
+            if (! $attribute->isForceDeleting()) {
+                return;
+            }
+
+            if (VariantUsage::optionsHaveVariantsInUse($attribute->options()->pluck('id'))) {
+                throw VariantInUseException::make('values');
+            }
         });
     }
 }

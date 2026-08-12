@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\AttributeOptionFactory;
+use Webkul\Product\Exceptions\VariantInUseException;
+use Webkul\Product\Support\VariantUsage;
 use Webkul\Security\Models\User;
 
 class AttributeOption extends Model implements Sortable
@@ -52,6 +54,12 @@ class AttributeOption extends Model implements Sortable
 
         static::creating(function ($attributeOption) {
             $attributeOption->creator_id ??= Auth::id();
+        });
+
+        static::deleting(function (self $attributeOption) {
+            if (VariantUsage::optionsHaveVariantsInUse([$attributeOption->getKey()])) {
+                throw VariantInUseException::make('values');
+            }
         });
     }
 }

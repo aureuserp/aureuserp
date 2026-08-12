@@ -3,6 +3,7 @@
 namespace Webkul\Product\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class ProductUsageRegistry
@@ -31,6 +32,23 @@ class ProductUsageRegistry
 
     public static function isProductInUse(int|string $productId): bool
     {
+        return static::isAnyProductInUse([$productId]);
+    }
+
+    /**
+     * One existence check per registered model rather than one per product, so this stays cheap
+     * for a product with many variants.
+     *
+     * @param  array<int, int|string>|Collection  $productIds
+     */
+    public static function isAnyProductInUse($productIds): bool
+    {
+        $productIds = collect($productIds)->all();
+
+        if ($productIds === []) {
+            return false;
+        }
+
         foreach (static::$models as $model) {
             $query = $model::query()->withoutGlobalScopes();
 
@@ -38,7 +56,7 @@ class ProductUsageRegistry
                 continue;
             }
 
-            if ($query->where('product_id', $productId)->exists()) {
+            if ($query->whereIn('product_id', $productIds)->exists()) {
                 return true;
             }
         }
