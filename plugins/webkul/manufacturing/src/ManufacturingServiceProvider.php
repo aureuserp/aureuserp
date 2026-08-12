@@ -246,11 +246,6 @@ class ManufacturingServiceProvider extends PackageServiceProvider
         $this->contributeProductUsage();
     }
 
-    /**
-     * Only manufacturing's own tables are registered here. Its Move, MoveLine and Lot
-     * models are subclasses sitting on the inventories tables, which the inventories
-     * plugin already contributes.
-     */
     protected function contributeProductUsage(): void
     {
         if (! Package::isPluginInstalled(static::$name)) {

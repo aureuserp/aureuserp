@@ -19,8 +19,6 @@ beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('inventories');
     SecurityHelper::disableUserEvents();
 
-    // The registry is static and filled at boot by every installed plugin. Snapshot it
-    // so these tests can register in isolation without leaking into the rest of the suite.
     $this->registeredModels = ProductUsageRegistry::models();
 });
 
@@ -83,8 +81,6 @@ it('skips a registered model whose table is missing', function () {
 
     Lot::factory()->create(['product_id' => $product->id]);
 
-    // A plugin uninstalled after boot, or a partially migrated database, must not
-    // take the whole check down with a "table doesn't exist" query exception.
     expect($product->fresh()->isInUse())->toBeTrue();
 });
 
@@ -106,8 +102,6 @@ it('reports a product as in use even when the document belongs to another compan
 
     CompanyHelper::actingAsCompanyUser($companyA);
 
-    // Company A cannot see the lot, but the product is still in use: generating
-    // variants on it would corrupt company B's document.
     expect(Lot::query()->pluck('id'))->not->toContain($lot->id)
         ->and($product->fresh()->isInUse())->toBeTrue();
 });

@@ -190,14 +190,6 @@ class Product extends Model implements Sortable
         }
     }
 
-    /**
-     * Determine whether this product has been used on a real document.
-     *
-     * Every plugin contributes its own models to the registry, so an uninstalled
-     * plugin is never queried.
-     *
-     * @see ProductUsageRegistry
-     */
     public function isInUse(): bool
     {
         return ProductUsageRegistry::isProductInUse($this->getKey());
