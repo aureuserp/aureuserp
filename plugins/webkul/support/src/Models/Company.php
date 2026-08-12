@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -143,6 +145,20 @@ class Company extends Model implements Sortable
     protected static function boot()
     {
         parent::boot();
+
+        static::forceDeleting(function ($company) {
+            if (! Schema::hasTable('sequences')) {
+                return;
+            }
+
+            Sequence::withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->get()->each(function (Sequence $sequence) {
+                try {
+                    $sequence->update(['company_id' => null]);
+                } catch (UniqueConstraintViolationException) {
+                    $sequence->delete();
+                }
+            });
+        });
 
         static::creating(function ($company) {
             $company->creator_id ??= Auth::id();

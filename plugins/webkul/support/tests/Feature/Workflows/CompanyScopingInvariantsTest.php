@@ -2,6 +2,7 @@
 
 use Webkul\Support\Models\ActivityPlan;
 use Webkul\Support\Models\Calendar;
+use Webkul\Support\Models\Sequence;
 use Webkul\Support\Models\UtmCampaign;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/CompanyScopeHelper.php';
@@ -12,6 +13,7 @@ $plugin = 'support';
 $shared = [
     ActivityPlan::class,
     Calendar::class,
+    Sequence::class,
     UtmCampaign::class,
 ];
 

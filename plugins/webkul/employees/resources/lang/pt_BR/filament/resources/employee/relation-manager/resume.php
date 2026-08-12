@@ -5,7 +5,6 @@ return [
         'sections' => [
             'fields' => [
                 'title'        => 'Título',
-                'type'         => 'Tipo',
                 'name'         => 'Nome',
                 'type'         => 'Tipo',
                 'create-type'  => 'Criar tipo',
@@ -50,22 +49,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Nível de habilidade atualizado',
-                    'body'  => 'O nível de habilidade foi atualizado com sucesso.',
+                    'title' => 'Currículo atualizado',
+                    'body'  => 'O currículo foi atualizado com sucesso.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Nível de habilidade criado',
-                    'body'  => 'O nível de habilidade foi criado com sucesso.',
+                    'title' => 'Currículo criado',
+                    'body'  => 'O currículo foi criado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Nível de habilidade excluído',
-                    'body'  => 'O nível de habilidade foi excluído com sucesso.',
+                    'title' => 'Currículo excluído',
+                    'body'  => 'O currículo foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -73,8 +72,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Habilidades excluídas',
-                    'body'  => 'As habilidades foram excluídas com sucesso.',
+                    'title' => 'Currículos excluídos',
+                    'body'  => 'Os currículos foram excluídos com sucesso.',
                 ],
             ],
         ],

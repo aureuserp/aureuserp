@@ -4,6 +4,7 @@ namespace Webkul\Support\Services;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class CompanyContext
@@ -21,13 +22,20 @@ class CompanyContext
         return Gate::allows('bypass_company_scope');
     }
 
+    public function internalUser(): ?User
+    {
+        $user = auth()->user();
+
+        return $user instanceof User ? $user : null;
+    }
+
     public function allowedCompanies(): Collection
     {
         if ($this->allowed !== null) {
             return $this->allowed;
         }
 
-        $user = auth()->user();
+        $user = $this->internalUser();
 
         if (! $user) {
             return collect();
@@ -52,7 +60,7 @@ class CompanyContext
 
     public function defaultId(): ?int
     {
-        return auth()->user()?->default_company_id;
+        return $this->internalUser()?->default_company_id;
     }
 
     public function activeIds(): array
