@@ -217,6 +217,7 @@ return [
         'draft'       => 'Brouillon',
         'waiting'     => 'En attente',
         'ready'       => 'Prêt',
+        'late'        => 'En retard',
         'done'        => 'Terminé',
         'canceled'    => 'Annulé',
         'back-orders' => 'Reliquats',
