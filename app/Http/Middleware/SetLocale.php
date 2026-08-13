@@ -23,26 +23,17 @@ class SetLocale
             ?? $this->pick(config('app.fallback_locale'), $supported)
             ?? ($supported[0] ?? 'en');
 
-        $queryLang = $this->pick($request->get('lang'), $supported);
+        $queryLang = $this->pick($request->query('lang'), $supported);
 
         $user = $request->user();
 
-        if ($user !== null) {
-            $locale = $queryLang
-                ?? $this->pick($user->language ?? null, $supported)
-                ?? $fallback;
+        $locale = $queryLang
+            ?? $this->pick(Session::get('locale'), $supported)
+            ?? $this->pick($user?->language ?? null, $supported)
+            ?? $fallback;
 
-            if (Session::has('locale')) {
-                Session::forget('locale');
-            }
-        } else {
-            $locale = $queryLang
-                ?? $this->pick(Session::get('locale'), $supported)
-                ?? $fallback;
-
-            if ($queryLang !== null && Session::get('locale') !== $locale) {
-                Session::put('locale', $locale);
-            }
+        if ($queryLang !== null && Session::get('locale') !== $queryLang) {
+            Session::put('locale', $queryLang);
         }
 
         if (App::getLocale() !== $locale) {
