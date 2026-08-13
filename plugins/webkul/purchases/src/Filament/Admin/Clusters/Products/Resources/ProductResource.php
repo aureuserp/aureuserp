@@ -3,8 +3,6 @@
 namespace Webkul\Purchase\Filament\Admin\Clusters\Products\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Schema;
-use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -14,11 +12,13 @@ use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\P
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\EditProduct;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ListProducts;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageBillsOfMaterials;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
+use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Tables\ProductsTable;
 use Webkul\Purchase\Models\Product;
 
 class ProductResource extends BaseProductResource
@@ -44,42 +44,9 @@ class ProductResource extends BaseProductResource
         return __('purchases::filament/admin/clusters/products/resources/product.navigation.title');
     }
 
-    public static function form(Schema $schema): Schema
-    {
-        $schema = BaseProductResource::form($schema);
-
-        $components = $schema->getComponents();
-
-        $schema->components($components);
-
-        return $schema;
-    }
-
     public static function table(Table $table): Table
     {
-        $table = parent::table($table);
-
-        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
-            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
-            ->all();
-
-        $table = $table->filters([
-            QueryBuilder::make()
-                ->constraints($filtered),
-        ]);
-
-        return $table;
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        $schema = BaseProductResource::infolist($schema);
-
-        $components = $schema->getComponents();
-
-        $schema->components($components);
-
-        return $schema;
+        return ProductsTable::configure(parent::table($table));
     }
 
     public static function getRecordSubNavigation(Page $page): array
@@ -91,6 +58,10 @@ class ProductResource extends BaseProductResource
             ManageVariants::class,
             ManageVendors::class,
         ];
+
+        if (Package::isPluginInstalled('manufacturing')) {
+            $items[] = ManageBillsOfMaterials::class;
+        }
 
         if (Package::isPluginInstalled('inventories')) {
             $items[] = ManageQuantities::class;
@@ -111,6 +82,10 @@ class ProductResource extends BaseProductResource
             'variants'   => ManageVariants::route('/{record}/variants'),
             'vendors'    => ManageVendors::route('/{record}/vendors'),
         ];
+
+        if (Package::isPluginInstalled('manufacturing')) {
+            $pages['boms'] = ManageBillsOfMaterials::route('/{record}/boms');
+        }
 
         if (Package::isPluginInstalled('inventories')) {
             $pages['quantities'] = ManageQuantities::route('/{record}/quantities');

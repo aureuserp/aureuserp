@@ -10,13 +10,17 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\TimeOff\Enums\AllocationType;
 
 class LeaveAllocation extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
     public const ACTIVITY_PLAN_PLUGIN = 'time-off';
 
@@ -31,6 +35,7 @@ class LeaveAllocation extends Model
         'holiday_status_id',
         'employee_id',
         'employee_company_id',
+        'company_id',
         'manager_id',
         'approver_id',
         'second_approver_id',
@@ -151,7 +156,14 @@ class LeaveAllocation extends Model
 
             $leaveAllocation->creator_id = $authUser->id;
 
-            $leaveAllocation->employee_company_id ??= $authUser?->default_company_id;
+            $leaveAllocation->employee_company_id ??= Employee::withoutGlobalScope(CompanyScope::class)->find($leaveAllocation->employee_id)?->company_id ?? current_company_id();
+
+            $leaveAllocation->company_id ??= $leaveAllocation->employee_company_id;
         });
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 }

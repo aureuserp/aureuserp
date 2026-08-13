@@ -134,7 +134,7 @@ class ReverseAction extends Action
             'invoice_date'      => $move->isInvoice(true) ? $moveReversal->date : null,
             'journal_id'        => $moveReversal->journal_id,
             'invoice_user_id'   => $move->invoice_user_id,
-            'auto_post'         => 0,
+            'auto_post'         => false,
         ];
     }
 }

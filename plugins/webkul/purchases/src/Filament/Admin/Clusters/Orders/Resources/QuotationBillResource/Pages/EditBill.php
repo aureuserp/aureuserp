@@ -8,9 +8,4 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationBillResour
 class EditBill extends BaseEditBill
 {
     protected static string $resource = QuotationBillResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()], shouldGuessMissingParameters: true);
-    }
 }

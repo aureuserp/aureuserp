@@ -17,6 +17,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Facades\Tax as TaxFacade;
+use Webkul\Account\Models\Tax;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Product;
 use Webkul\Purchase\Enums\OrderState;
@@ -393,18 +394,22 @@ class PurchaseOrderController extends Controller
 
     protected function computeLineAmounts(float $priceUnit, float $quantity, float $discount, array $taxIds): array
     {
-        $subTotal = $priceUnit * $quantity;
+        $discountedUnit = $discount > 0 ? $priceUnit * (1 - ($discount / 100)) : $priceUnit;
 
-        if ($discount > 0) {
-            $subTotal -= ($subTotal * ($discount / 100));
+        $taxes = Tax::whereIn('id', $taxIds)->get();
+
+        if ($taxes->isEmpty()) {
+            $subTotal = round($discountedUnit * $quantity, 4);
+
+            return [$subTotal, 0.0, $subTotal];
         }
 
-        [$subTotalAfterTax, $taxAmount] = TaxFacade::collect($taxIds, $subTotal, $quantity);
+        $taxResult = TaxFacade::computeAll($taxes, $discountedUnit, null, $quantity);
 
         return [
-            round($subTotalAfterTax, 4),
-            round($taxAmount, 4),
-            round($subTotalAfterTax + $taxAmount, 4),
+            round($taxResult['total_excluded'], 4),
+            round($taxResult['total_included'] - $taxResult['total_excluded'], 4),
+            round($taxResult['total_included'], 4),
         ];
     }
 

@@ -6,6 +6,11 @@ use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
+use Webkul\Account\Events\MoveCancelled;
+use Webkul\Account\Events\MoveConfirmed;
+use Webkul\Account\Events\MoveDrafted;
+use Webkul\Account\Events\MoveReversed;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Events\OperationBackOrdered;
 use Webkul\Inventory\Events\OperationDone;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -14,10 +19,15 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductSupplier;
+use Webkul\Purchase\Database\Seeders\DatabaseSeeder;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Purchase\Listeners\ComputePurchaseOrderFromMoveListener;
 use Webkul\Purchase\Listeners\ComputePurchaseOrderListener;
 use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\OrderSummary;
+use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\Requisition;
+use Webkul\Support\Services\SequenceService;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -51,6 +61,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
                 '2026_04_22_115707_create_purchases_order_line_moves_table_from_purchases',
                 '2026_04_23_043411_add_procurement_group_id_column_in_purchases_orders_table_from_purchases',
                 '2026_04_23_043412_add_procurement_group_id_column_in_purchases_order_lines_table_from_purchases',
+                '2026_08_03_130000_seed_purchases_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -61,12 +72,20 @@ class PurchaseServiceProvider extends PackageServiceProvider
             ->hasDependencies([
                 'invoices',
             ])
+            ->hasSeeder(DatabaseSeeder::class)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()
-                    ->runsMigrations();
+                    ->runsMigrations()
+                    ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Order::class, Requisition::class]);
+
+                    SequenceService::purge(['purchases.order']);
+                });
+            })
             ->icon('purchases');
     }
 
@@ -78,7 +97,10 @@ class PurchaseServiceProvider extends PackageServiceProvider
 
         Event::listen([OperationDone::class, OperationBackOrdered::class], ComputePurchaseOrderListener::class);
 
-        // \Webkul\Account\Models\Move::observe(\Webkul\Purchase\Observers\AccountMoveObserver::class);
+        Event::listen(
+            [MoveConfirmed::class, MoveCancelled::class, MoveDrafted::class, MoveReversed::class],
+            ComputePurchaseOrderFromMoveListener::class,
+        );
 
         $this->contributeProductSchema();
     }

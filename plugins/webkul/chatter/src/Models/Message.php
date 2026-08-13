@@ -7,12 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Webkul\Chatter\Services\ChatterNotificationService;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Message extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'chatter_messages';
 
     protected $fillable = [
@@ -90,6 +94,14 @@ class Message extends Model
                 $data->causer_id = $user->id;
             });
         }
+
+        static::created(function (Message $message) {
+            app()->terminating(function () use ($message) {
+                $message->unsetRelation('messageable');
+
+                app(ChatterNotificationService::class)->notifyFollowers($message);
+            });
+        });
     }
 
     public function attachments()

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             OperationTypeSeeder::class,
             RuleSeeder::class,
             WarehouseSeeder::class,
+            SequenceSeeder::class,
         ]);
     }
 }

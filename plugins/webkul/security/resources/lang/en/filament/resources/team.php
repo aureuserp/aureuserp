@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Teams',
-        'group' => 'Settings',
     ],
 
     'form' => [

@@ -57,13 +57,14 @@ return [
     ],
 
     'page_titles' => [
-        'home'             => 'الرئيسية',
-        'about-us'         => 'من نحن',
-        'privacy-policy'   => 'سياسة الخصوصية',
-        'terms-conditions' => 'الشروط والأحكام',
-        'blog'             => 'المدونة',
-        'blogs'            => 'المدونات',
-        'contact'          => 'اتصل بنا',
-        'contact-us'       => 'اتصل بنا',
+        'home'               => 'الرئيسية',
+        'about-us'           => 'من نحن',
+        'privacy-policy'     => 'سياسة الخصوصية',
+        'terms-conditions'   => 'الشروط والأحكام',
+        'news-announcements' => 'الأخبار والإعلانات',
+        'blog'               => 'المدونة',
+        'blogs'              => 'المدونات',
+        'contact'            => 'اتصل بنا',
+        'contact-us'         => 'اتصل بنا',
     ],
 ];

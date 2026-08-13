@@ -2,8 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationInvoiceResource\Pages\EditInvoice;
@@ -25,6 +25,13 @@ class QuotationInvoiceResource extends BaseInvoiceResource
 
     protected static ?string $cluster = Orders::class;
 
+    public static function canAccess(): bool
+    {
+        $parentResource = static::$parentResource;
+
+        return $parentResource::canAccess();
+    }
+
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
     {
         return QuotationResource::asParent()
@@ -44,8 +51,8 @@ class QuotationInvoiceResource extends BaseInvoiceResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewInvoice::route('/{record}/view'),
-            'edit' => EditInvoice::route('/{record}/edit'),
+            'view'     => ViewInvoice::route('/{record}/view'),
+            'edit'     => EditInvoice::route('/{record}/edit'),
             'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }

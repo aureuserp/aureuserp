@@ -11,10 +11,12 @@ use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Accounting\Filament\Concerns\GatesAccountingSetup;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class ManageDefaultAccounts extends SettingsPage
 {
+    use GatesAccountingSetup;
     use HasPageShield;
 
     protected static ?string $slug = 'accounting/manage-default-accounts';
@@ -53,6 +55,10 @@ class ManageDefaultAccounts extends SettingsPage
 
     public function form(Schema $schema): Schema
     {
+        if (! $this->isAccountingSetUp()) {
+            return $this->accountingSetupCallout($schema);
+        }
+
         return $schema
             ->components([
                 Fieldset::make(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.exchange-difference-entries.label'))

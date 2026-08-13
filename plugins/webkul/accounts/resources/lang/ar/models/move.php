@@ -3,6 +3,13 @@
 return [
     'title'          => 'الحركة',
 
+    'titles'         => [
+        'invoice'     => 'الفاتورة',
+        'credit-note' => 'إشعار دائن',
+        'bill'        => 'الفاتورة',
+        'refund'      => 'استرجاع',
+    ],
+
     'log-attributes' => [
         'name'                  => 'مرجع الفاتورة',
         'reference'             => 'المرجع',

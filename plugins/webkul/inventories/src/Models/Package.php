@@ -12,9 +12,11 @@ use Webkul\Inventory\Database\Factories\PackageFactory;
 use Webkul\Inventory\Enums\PackageUse;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Package extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_packages';
@@ -102,7 +104,7 @@ class Package extends Model
 
             $package->creator_id ??= $authUser?->id;
 
-            $package->company_id ??= $authUser?->default_company_id;
+            $package->company_id ??= current_company_id();
         });
     }
 

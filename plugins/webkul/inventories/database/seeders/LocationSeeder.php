@@ -5,7 +5,9 @@ namespace Webkul\Inventory\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Services\CompanyLocationProvisioner;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
 
 class LocationSeeder extends Seeder
 {
@@ -327,5 +329,11 @@ class LocationSeeder extends Seeder
                 'updated_at'   => now(),
             ],
         ]);
+
+        db_dialect()->syncSequences();
+
+        $provisioner = app(CompanyLocationProvisioner::class);
+
+        Company::query()->each(fn (Company $company) => $provisioner->provision($company));
     }
 }

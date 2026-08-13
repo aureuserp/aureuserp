@@ -59,8 +59,8 @@ return new class extends Migration
             $table->string('access_token')->nullable()->comment('Access Token');
             $table->string('code')->nullable()->comment('Code');
             $table->string('type')->comment('Type');
-            $table->string('invoice_reference_type')->comment('Communication Type');
-            $table->string('invoice_reference_model')->comment('Communication Standard');
+            $table->string('invoice_reference_type')->default('invoice')->comment('Communication Type');
+            $table->string('invoice_reference_model')->default('aureus')->comment('Communication Standard');
             $table->string('bank_statements_source')->nullable()->comment('Bank Statements Source');
             $table->string('name')->comment('Name');
             $table->text('order_override_regex')->nullable()->comment('Sequence Override Regex');

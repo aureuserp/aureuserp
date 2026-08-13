@@ -2,20 +2,16 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages\ManagePackagings;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Schemas\PackagingForm;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Schemas\PackagingInfolist;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Tables\PackagingsTable;
 use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
-use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\PackagingResource as BasePackagingResource;
 use Webkul\Product\Settings\ProductSettings;
 
@@ -56,120 +52,32 @@ class PackagingResource extends BasePackagingResource
 
     public static function form(Schema $schema): Schema
     {
-        $schema = BasePackagingResource::form($schema);
-
-        $components = $schema->getComponents();
-
-        $components[2] = Select::make('product_id')
-            ->label(__('products::filament/resources/packaging.form.product'))
-            ->relationship(
-                'product',
-                'name',
-                fn ($query) => $query->where('type', ProductType::GOODS)->whereNull('is_configurable'),
-            )
-            ->required()
-            ->searchable()
-            ->preload();
-
-        $components[] = Select::make('package_type_id')
-            ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.package-type'))
-            ->relationship('packageType', 'name')
-            ->searchable()
-            ->preload()
-            ->visible(static::getOperationSettings()->enable_packages);
-
-        $components[] = Select::make('routes')
-            ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.routes'))
-            ->relationship('routes', 'name')
-            ->searchable()
-            ->preload()
-            ->multiple()
-            ->visible(static::getWarehouseSettings()->enable_multi_steps_routes);
-
-        $schema->components($components);
-
-        return $schema;
+        return PackagingForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        $table = BasePackagingResource::table($table);
-
-        $columns = $table->getColumns();
-
-        $filters = $table->getFilters();
-
-        $columns[] = TextColumn::make('packageType.name')
-            ->label(__('inventories::filament/clusters/configurations/resources/packaging.table.columns.package-type'))
-            ->numeric()
-            ->sortable()
-            ->visible(static::getOperationSettings()->enable_packages);
-
-        $filters[] = SelectFilter::make('packageType')
-            ->label(__('inventories::filament/clusters/configurations/resources/packaging.table.filters.package-type'))
-            ->relationship('packageType', 'name')
-            ->searchable()
-            ->preload()
-            ->visible(static::getOperationSettings()->enable_packages);
-
-        $table->columns($columns);
-
-        $table->filters($filters);
-
-        return $table;
+        return PackagingsTable::configure($table);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        $schema = BasePackagingResource::infolist($schema);
-
-        $components = $schema->getComponents();
-
-        $firstSectionChildComponents = $components[0]->getDefaultChildComponents();
-
-        $firstSectionChildComponents[] = TextEntry::make('packageType.name')
-            ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.general.entries.package_type'))
-            ->icon('heroicon-o-archive-box')
-            ->placeholder('—')
-            ->visible(static::getOperationSettings()->enable_packages);
-
-        $components[0]->childComponents($firstSectionChildComponents);
-
-        array_splice($components, 1, 0, [
-            Section::make(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.title'))
-                ->schema([
-                    RepeatableEntry::make('routes')
-                        ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.entries.routes'))
-                        ->schema([
-                            TextEntry::make('name')
-                                ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.entries.route_name'))
-                                ->icon('heroicon-o-truck'),
-                        ])
-                        ->placeholder('—')
-                        ->columns(1),
-                ])
-                ->collapsible()
-                ->visible(static::getWarehouseSettings()->enable_multi_steps_routes),
-        ]);
-
-        $schema->components($components);
-
-        return $schema;
+        return PackagingInfolist::configure($schema);
     }
 
     public static function getOperationSettings(): OperationSettings
     {
-        return once(fn () => app(OperationSettings::class));
+        return settings(OperationSettings::class);
     }
 
     public static function getProductSettings(): ProductSettings
     {
-        return once(fn () => app(ProductSettings::class));
+        return settings(ProductSettings::class);
     }
 
     public static function getWarehouseSettings(): WarehouseSettings
     {
-        return once(fn () => app(WarehouseSettings::class));
+        return settings(WarehouseSettings::class);
     }
 
     public static function getPages(): array

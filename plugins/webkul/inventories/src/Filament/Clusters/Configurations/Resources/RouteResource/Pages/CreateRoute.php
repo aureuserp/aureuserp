@@ -6,10 +6,15 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateRoute extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = RouteResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
@@ -23,11 +28,6 @@ class CreateRoute extends CreateRecord
         }
 
         return [];
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getCreatedNotification(): Notification

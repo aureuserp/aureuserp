@@ -11,12 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\WarehouseFactory;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ReceptionStep;
@@ -27,10 +29,15 @@ use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Warehouse extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    public const MTO_ROUTE_NAME = 'Replenish on Order (MTO)';
+
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_warehouses';
 
@@ -80,7 +87,7 @@ class Warehouse extends Model implements Sortable
 
     public function locations(): HasMany
     {
-        return $this->hasMany(Location::class, 'parent_id');
+        return $this->hasMany(Location::class, 'warehouse_id');
     }
 
     public function company(): BelongsTo
@@ -178,6 +185,11 @@ class Warehouse extends Model implements Sortable
         return $this->belongsTo(OperationType::class, 'xdock_type_id');
     }
 
+    public function operationTypes(): HasMany
+    {
+        return $this->hasMany(OperationType::class, 'warehouse_id');
+    }
+
     public function crossdockRoute(): BelongsTo
     {
         return $this->belongsTo(Route::class, 'crossdock_route_id');
@@ -228,22 +240,153 @@ class Warehouse extends Model implements Sortable
 
         static::created(function (Warehouse $warehouse) {
             $warehouse->finalizeWarehouseCreation();
+
+            $warehouse->enableLocationsForMultiWarehouse();
         });
 
         static::updated(function (Warehouse $warehouse) {
             if ($warehouse->wasChanged('code')) {
-                $warehouse->viewLocation->update(['name' => $warehouse->code]);
+                $warehouse->viewLocation?->update(['name' => $warehouse->code]);
+
+                $warehouse->operationTypes()->withTrashed()->get()->each(function (OperationType $operationType) {
+                    $operationType->unsetRelation('warehouse');
+
+                    $operationType->syncSequence();
+                });
+            }
+
+            if ($warehouse->wasChanged('company_id')) {
+                $warehouse->enableLocationsForMultiWarehouse();
             }
 
             $warehouse->syncWarehouseConfiguration();
         });
+
+        static::deleted(function (Warehouse $warehouse) {
+            if ($warehouse->isForceDeleting()) {
+                return;
+            }
+
+            $operationTypes = $warehouse->operationTypes;
+
+            $moves = Move::whereIn('operation_type_id', $operationTypes->pluck('id')->all())
+                ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
+                ->get();
+
+            if ($moves->isNotEmpty()) {
+                throw new \Exception("You still have ongoing operations for operation types {$operationTypes->implode(', ')} in warehouse {$warehouse->name}");
+            } else {
+                $operationTypes->each(fn ($operationType) => $operationType->delete());
+            }
+
+            $viewLocation = $warehouse->viewLocation;
+
+            $childLocationIds = $viewLocation
+                ? Location::query()
+                    ->whereRaw('parent_path LIKE ?', [$viewLocation->parent_path.'%'])
+                    ->where('id', '!=', $viewLocation->id)
+                    ->pluck('id')
+                : collect();
+
+            $blocking = OperationType::query()
+                ->whereDoesntHave('warehouse', fn ($q) => $q->whereKey($warehouse->id))
+                ->where(fn ($q) => $q
+                    ->whereIn('source_location_id', $childLocationIds)
+                    ->orWhereIn('destination_location_id', $childLocationIds))
+                ->where('deleted_at', null)
+                ->pluck('id');
+
+            $blocking = OperationType::where(
+                fn ($q) => $q
+                    ->whereIn('source_location_id', $childLocationIds)
+                    ->orWhereIn('destination_location_id', $childLocationIds)
+            )
+                ->whereNotIn('id', $operationTypes->pluck('id')->all())
+                ->get()
+                ->pluck('id');
+
+            if ($blocking->isNotEmpty()) {
+                throw new \Exception("{$blocking->implode(', ')} have default source or destination locations within warehouse {$warehouse->name}, therefore you cannot archive it.");
+            }
+
+            $viewLocation?->delete();
+
+            $rules = Rule::where('warehouse_id', $warehouse->id)->get();
+
+            $routes = $warehouse->routes
+                ->filter(fn ($route) => $route->warehouses()->withTrashed()->count() === 1);
+
+            $routes->each(fn ($route) => $route->delete());
+
+            $rules->each(fn ($rule) => $rule->delete());
+        });
+
+        static::forceDeleted(function (Warehouse $warehouse) {
+            $warehouse->viewLocation()->withTrashed()->first()?->forceDelete();
+        });
+
+        static::restoring(function (Warehouse $warehouse) {
+            $warehouse->viewLocation()->withTrashed()->first()->restore();
+
+            $rules = Rule::withTrashed()
+                ->where('warehouse_id', $warehouse->id)
+                ->get();
+
+            $routes = $warehouse->routes()
+                ->withTrashed()
+                ->get()
+                ->filter(fn ($route) => $route->warehouses()->withTrashed()->count() === 1);
+
+            $routes->each(fn ($route) => $route->restore());
+
+            $rules->each(fn ($rule) => $rule->restore());
+        });
+
+        static::restored(function (Warehouse $warehouse) {
+            $warehouse->syncWarehouseConfiguration();
+        });
+    }
+
+    public static function maxPerCompany(): int
+    {
+        return (int) static::query()
+            ->withoutGlobalScope(CompanyScope::class)
+            ->selectRaw('company_id, count(*) as aggregate')
+            ->groupBy('company_id')
+            ->pluck('aggregate')
+            ->max();
+    }
+
+    public static function countForCompany(?int $companyId): int
+    {
+        return static::query()
+            ->withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $companyId)
+            ->count();
+    }
+
+    protected function enableLocationsForMultiWarehouse(): void
+    {
+        $settings = settings(WarehouseSettings::class);
+
+        if ($settings->enable_locations) {
+            return;
+        }
+
+        if (static::countForCompany($this->company_id) <= 1) {
+            return;
+        }
+
+        $settings->enable_locations = true;
+
+        $settings->save();
     }
 
     protected function handleWarehouseCreation(): void
     {
         $this->creator_id ??= Auth::id();
 
-        $this->company_id ??= Auth::user()?->default_company_id;
+        $this->company_id ??= current_company_id();
 
         $this->reception_steps ??= ReceptionStep::ONE_STEP;
 
@@ -508,7 +651,7 @@ class Warehouse extends Model implements Sortable
             'destination_location_id' => $this->lot_stock_location_id,
             'company_id'              => $this->company_id,
             'creator_id'              => $this->creator_id,
-            'deleted_at'              => app(WarehouseSettings::class)->enable_locations ? null : now(),
+            'deleted_at'              => settings(WarehouseSettings::class)->enable_locations ? null : now(),
         ])->id;
 
         $this->xdock_type_id = OperationType::create([
@@ -675,7 +818,7 @@ class Warehouse extends Model implements Sortable
             'propagate_carrier'        => true,
             'source_location_id'       => $this->lot_stock_location_id,
             'destination_location_id'  => $customerLocation->id,
-            'route_id'                 => 1,
+            'route_id'                 => $this->resolveMtoRouteId(),
             'operation_type_id'        => $this->out_type_id,
             'creator_id'               => $this->creator_id,
             'company_id'               => $this->company_id,
@@ -792,7 +935,7 @@ class Warehouse extends Model implements Sortable
             'operation_type_id'        => $this->store_type_id,
             'creator_id'               => $this->creator_id,
             'company_id'               => $this->company_id,
-            'deleted_at'               => $this->delivery_steps === ReceptionStep::TWO_STEPS ? null : now(),
+            'deleted_at'               => $this->reception_steps === ReceptionStep::TWO_STEPS ? null : now(),
         ])->id;
 
         $this->ruleIds[] = Rule::create([
@@ -827,7 +970,7 @@ class Warehouse extends Model implements Sortable
             $this->pack_stock_location_id,
         ])->update(['warehouse_id' => $this->id]);
 
-        OperationType::withTrashed()->whereIn('id', [
+        $operationTypeIds = [
             $this->in_type_id,
             $this->out_type_id,
             $this->pick_type_id,
@@ -836,7 +979,13 @@ class Warehouse extends Model implements Sortable
             $this->store_type_id,
             $this->internal_type_id,
             $this->xdock_type_id,
-        ])->update(['warehouse_id' => $this->id]);
+        ];
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->update(['warehouse_id' => $this->id]);
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->get()->each(
+            fn (OperationType $operationType) => $operationType->syncSequence()
+        );
 
         $this->routes()->sync([
             $this->reception_route_id,
@@ -1130,11 +1279,19 @@ class Warehouse extends Model implements Sortable
         $actions = $steps[$currentStep];
 
         if (isset($actions['archive'])) {
-            Location::withTrashed()->whereIn('id', $actions['archive'])->update(['deleted_at' => now()]);
+            Location::withTrashed()
+                ->whereIn('id', $actions['archive'])
+                ->whereNull('deleted_at')
+                ->get()
+                ->each(fn (Location $location) => $location->delete());
         }
 
         if (isset($actions['restore'])) {
-            Location::withTrashed()->whereIn('id', $actions['restore'])->update(['deleted_at' => null]);
+            Location::withTrashed()
+                ->whereIn('id', $actions['restore'])
+                ->whereNotNull('deleted_at')
+                ->get()
+                ->each(fn (Location $location) => $location->restore());
         }
     }
 
@@ -1191,5 +1348,29 @@ class Warehouse extends Model implements Sortable
     protected static function newFactory(): WarehouseFactory
     {
         return WarehouseFactory::new();
+    }
+
+    protected function resolveMtoRouteId(): int
+    {
+        $query = fn () => Route::withoutGlobalScopes()->where('name', static::MTO_ROUTE_NAME);
+
+        $route = $query()->where('company_id', $this->company_id)->first()
+            ?? $query()->whereNull('company_id')->first();
+
+        if ($route) {
+            return $route->id;
+        }
+
+        return Route::create([
+            'sort'                        => 1,
+            'name'                        => static::MTO_ROUTE_NAME,
+            'product_selectable'          => true,
+            'product_category_selectable' => false,
+            'warehouse_selectable'        => false,
+            'packaging_selectable'        => false,
+            'company_id'                  => $this->company_id,
+            'creator_id'                  => $this->creator_id,
+            'deleted_at'                  => now(),
+        ])->id;
     }
 }

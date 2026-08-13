@@ -9,11 +9,6 @@ class CreateByEmployee extends BaseCreateTimeOff
 {
     protected static string $resource = ByEmployeeResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data = parent::mutateFormDataBeforeCreate($data);

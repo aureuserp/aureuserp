@@ -12,9 +12,11 @@ use Webkul\Manufacturing\Enums\UnbuildOrderState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class UnbuildOrder extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'manufacturing_unbuild_orders';
@@ -102,7 +104,7 @@ class UnbuildOrder extends Model
             $authUser = Auth::user();
 
             $unbuildOrder->creator_id ??= $authUser?->id;
-            $unbuildOrder->company_id ??= $authUser?->default_company_id;
+            $unbuildOrder->company_id ??= current_company_id();
             $unbuildOrder->state ??= UnbuildOrderState::DRAFT;
         });
     }

@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -185,7 +198,7 @@
         @if ($record->assignedUser)
             <table class="meta-table">
                 <tr>
-                    <td class="meta-label">Responsible:</td>
+                    <td class="meta-label">{{ __('manufacturing::app.documents.responsible') }}</td>
                     <td>{{ $record->assignedUser->name }}</td>
                 </tr>
             </table>
@@ -195,16 +208,16 @@
         <table class="product-info-table">
             <tr>
                 <td>
-                    <span class="label">Product:</span>
+                    <span class="label">{{ __('manufacturing::app.documents.product') }}</span>
                     {{ $record->product?->name ?? '—' }}
                 </td>
                 <td>
-                    <span class="label">Quantity to Produce:</span>
+                    <span class="label">{{ __('manufacturing::app.documents.quantity-to-produce') }}</span>
                     {{ number_format((float) $record->quantity, 2) }} {{ $record->uom?->name ?? '' }}
                 </td>
                 @if ($record->quantity_producing !== null)
                     <td>
-                        <span class="label">Quantity Producing:</span>
+                        <span class="label">{{ __('manufacturing::app.documents.quantity-producing') }}</span>
                         {{ number_format((float) $record->quantity_producing, 2) }} {{ $record->uom?->name ?? '' }}
                     </td>
                 @endif
@@ -213,15 +226,15 @@
 
         {{-- Work Orders / Operations Done --}}
         @if ($record->workOrders->isNotEmpty())
-            <div class="section-title">Operations Done</div>
+            <div class="section-title">{{ __('manufacturing::app.documents.operations-done') }}</div>
 
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>Operation</th>
-                        <th>WorkCenter</th>
-                        <th>Duration (minutes)</th>
-                        <th>Barcode</th>
+                        <th>{{ __('manufacturing::app.documents.operation') }}</th>
+                        <th>{{ __('manufacturing::app.documents.work-center') }}</th>
+                        <th>{{ __('manufacturing::app.documents.duration-minutes') }}</th>
+                        <th>{{ __('manufacturing::app.documents.barcode') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -245,14 +258,14 @@
 
         {{-- Components --}}
         @if ($record->rawMaterialMoves->isNotEmpty())
-            <div class="section-title">Components</div>
+            <div class="section-title">{{ __('manufacturing::app.documents.components') }}</div>
 
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th class="text-right">Consumed</th>
-                        <th class="text-right">To Consume</th>
+                        <th>{{ __('manufacturing::app.documents.product') }}</th>
+                        <th class="text-right">{{ __('manufacturing::app.documents.consumed') }}</th>
+                        <th class="text-right">{{ __('manufacturing::app.documents.to-consume') }}</th>
                     </tr>
                 </thead>
                 <tbody>

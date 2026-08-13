@@ -37,10 +37,10 @@ class ManageQuantities extends ManageRelatedRecords
             return false;
         }
 
-        return app(OperationSettings::class)->enable_packages
-            || app(WarehouseSettings::class)->enable_locations
+        return static::getOperationSettings()->enable_packages
+            || static::getWarehouseSettings()->enable_locations
             || (
-                app(TraceabilitySettings::class)->enable_lots_serial_numbers
+                static::getTraceabilitySettings()->enable_lots_serial_numbers
                 && $parameters['record']->tracking != ProductTracking::QTY
             );
     }
@@ -60,14 +60,14 @@ class ManageQuantities extends ManageRelatedRecords
                     ->searchable(),
                 TextColumn::make('location.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.location'))
-                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 TextColumn::make('storageCategory.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.storage-category'))
                     ->placeholder('—'),
                 TextColumn::make('package.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.package'))
                     ->placeholder('—')
-                    ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
+                    ->visible(static::getOperationSettings()->enable_packages),
                 TextInputColumn::make('quantity')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.on-hand'))
                     ->searchable()
@@ -99,7 +99,7 @@ class ManageQuantities extends ManageRelatedRecords
                 TextColumn::make('product.uom.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.unit'))
                     ->placeholder('—')
-                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                    ->visible(static::getProductSettings()->enable_uom),
             ])
             ->recordActions([
                 DeleteAction::make()
@@ -111,5 +111,25 @@ class ManageQuantities extends ManageRelatedRecords
                     ),
             ])
             ->paginated(false);
+    }
+
+    public static function getOperationSettings(): OperationSettings
+    {
+        return settings(OperationSettings::class);
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return settings(ProductSettings::class);
+    }
+
+    public static function getTraceabilitySettings(): TraceabilitySettings
+    {
+        return settings(TraceabilitySettings::class);
+    }
+
+    public static function getWarehouseSettings(): WarehouseSettings
+    {
+        return settings(WarehouseSettings::class);
     }
 }

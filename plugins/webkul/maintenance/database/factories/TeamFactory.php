@@ -5,13 +5,15 @@ namespace Webkul\Maintenance\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Maintenance\Models\Team;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Team>
  */
 class TeamFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Team::class;
 
     public function definition(): array
@@ -19,7 +21,6 @@ class TeamFactory extends Factory
         return [
             'name'       => fake()->company().' Maintenance',
             'creator_id' => User::query()->value('id') ?? User::factory(),
-            'company_id' => Company::query()->value('id') ?? Company::factory(),
         ];
     }
 

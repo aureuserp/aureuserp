@@ -33,13 +33,8 @@ class OrderToInvoiceResource extends QuotationResource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
-
-        $query = static::getModel()::applyPermissionScope($query);
-
-        return $query
-            ->where('invoice_status', InvoiceStatus::TO_INVOICE)
-            ->orderByDesc('id');
+        return parent::getEloquentQuery()
+            ->where('invoice_status', InvoiceStatus::TO_INVOICE);
     }
 
     public static function getRecordSubNavigation(Page $page): array

@@ -25,6 +25,10 @@ return [
                     'destination-location' => 'موقع الوجهة',
                 ],
             ],
+
+            'additional-fields' => [
+                'title' => 'معلومات إضافية',
+            ],
         ],
 
         'tabs' => [
@@ -45,6 +49,12 @@ return [
                     'picked'                     => 'تم الانتقاء',
                 ],
 
+                'actions' => [
+                    'open-product' => [
+                        'tooltip' => 'فتح المنتج',
+                    ],
+                ],
+
                 'fields' => [
                     'product'        => 'المنتج',
                     'final-location' => 'الموقع النهائي',
@@ -58,16 +68,28 @@ return [
                     'picked'         => 'تم الانتقاء',
 
                     'lines' => [
-                        'modal-heading' => 'إدارة حركات المخزون',
-                        'add-line'      => 'إضافة سطر',
+                        'modal-heading'             => 'إدارة حركات المخزون',
+                        'modal-submit-action-label' => 'حفظ',
+                        'add-line'                  => 'إضافة سطر',
+
+                        'actions' => [
+                            'generate' => 'توليد الأرقام التسلسلية/الدفعات',
+                            'import'   => 'استيراد الأرقام التسلسلية/الدفعات',
+                        ],
 
                         'fields' => [
-                            'lot'       => 'الدفعة/الرقم التسلسلي',
-                            'pick-from' => 'الانتقاء من',
-                            'location'  => 'التخزين في',
-                            'package'   => 'طرد الوجهة',
-                            'quantity'  => 'الكمية',
-                            'uom'       => 'وحدة القياس',
+                            'lot'                => 'الدفعة/الرقم التسلسلي',
+                            'pick-from'          => 'الانتقاء من',
+                            'location'           => 'التخزين في',
+                            'package'            => 'طرد الوجهة',
+                            'quantity'           => 'الكمية',
+                            'uom'                => 'وحدة القياس',
+                            'first-lot'          => 'رقم الدفعة الأول',
+                            'quantity-per-lot'   => 'الكمية لكل دفعة',
+                            'quantity-received'  => 'الكمية المستلمة',
+                            'keep-current-lines' => 'الإبقاء على السطور الحالية',
+                            'serials'            => 'الأرقام التسلسلية/الدفعات',
+                            'serials-helper'     => 'رقم تسلسلي/دفعة واحد لكل سطر.',
                         ],
                     ],
                 ],
@@ -126,6 +148,7 @@ return [
         ],
 
         'filters' => [
+            'operation-type'       => 'نوع العملية',
             'name'                 => 'الاسم',
             'state'                => 'الحالة',
             'partner'              => 'الشريك',
@@ -194,6 +217,7 @@ return [
         'draft'       => 'مسودة',
         'waiting'     => 'في الانتظار',
         'ready'       => 'جاهز',
+        'late'        => 'متأخر',
         'done'        => 'منجز',
         'canceled'    => 'ملغي',
         'back-orders' => 'الطلبات المتأخرة',

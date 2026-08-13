@@ -11,13 +11,15 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<OrderPoint>
  */
 class OrderPointFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = OrderPoint::class;
 
     public function definition(): array
@@ -37,7 +39,6 @@ class OrderPointFactory extends Factory
             'warehouse_id'        => Warehouse::factory(),
             'location_id'         => Location::factory(),
             'route_id'            => null,
-            'company_id'          => Company::factory(),
             'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }

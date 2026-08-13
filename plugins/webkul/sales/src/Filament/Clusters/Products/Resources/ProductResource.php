@@ -3,7 +3,6 @@
 namespace Webkul\Sale\Filament\Clusters\Products\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\ProductResource as BaseProductResource;
 use Webkul\PluginManager\Package;
@@ -12,11 +11,13 @@ use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\Creat
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\EditProduct;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ListProducts;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageBillsOfMaterials;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Tables\ProductsTable;
 use Webkul\Sale\Models\Product;
 
 class ProductResource extends BaseProductResource
@@ -38,6 +39,10 @@ class ProductResource extends BaseProductResource
             ManageVariants::class,
         ];
 
+        if (Package::isPluginInstalled('manufacturing')) {
+            $items[] = ManageBillsOfMaterials::class;
+        }
+
         if (Package::isPluginInstalled('purchases')) {
             $items[] = ManageVendors::class;
         }
@@ -52,18 +57,7 @@ class ProductResource extends BaseProductResource
 
     public static function table(Table $table): Table
     {
-        $table = parent::table($table);
-
-        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
-            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
-            ->all();
-
-        $table = $table->filters([
-            QueryBuilder::make()
-                ->constraints($filtered),
-        ]);
-
-        return $table;
+        return ProductsTable::configure(parent::table($table));
     }
 
     public static function getPages(): array
@@ -76,6 +70,10 @@ class ProductResource extends BaseProductResource
             'attributes' => ManageAttributes::route('/{record}/attributes'),
             'variants'   => ManageVariants::route('/{record}/variants'),
         ];
+
+        if (Package::isPluginInstalled('manufacturing')) {
+            $pages['boms'] = ManageBillsOfMaterials::route('/{record}/boms');
+        }
 
         if (Package::isPluginInstalled('purchases')) {
             $pages['vendors'] = ManageVendors::route('/{record}/vendors');

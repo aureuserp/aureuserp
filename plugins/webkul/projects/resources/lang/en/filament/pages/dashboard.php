@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Project',
-        'group' => 'Dashboard',
     ],
 
     'filters-form' => [
@@ -12,6 +11,7 @@ return [
         'tags'       => 'Tags',
         'customer'   => 'Customer',
         'start-date' => 'Start Date',
+        'date-range' => 'Date Range',
         'end-date'   => 'End Date',
     ],
 ];

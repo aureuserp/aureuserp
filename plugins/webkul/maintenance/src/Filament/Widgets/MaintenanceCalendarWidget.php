@@ -225,7 +225,7 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
     public function createMaintenanceRequest(array $data): void
     {
         $stageId = Stage::query()->orderBy('sort')->value('id');
-        $teamId = Team::query()->value('id');
+        $teamId = Team::query()->where('company_id', current_company_id())->value('id');
 
         if (! $stageId || ! $teamId) {
             Notification::make()
@@ -245,7 +245,7 @@ class MaintenanceCalendarWidget extends FullCalendarWidget
             'stage_id'            => $stageId,
             'user_id'             => Auth::id(),
             'maintenance_team_id' => $teamId,
-            'company_id'          => Auth::user()?->default_company_id,
+            'company_id'          => current_company_id(),
         ]);
 
         Notification::make()

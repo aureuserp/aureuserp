@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Blog\Database\Factories\CategoryFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 
 class Category extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'blogs_categories';
 

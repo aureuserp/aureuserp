@@ -4,7 +4,7 @@ namespace Webkul\TimeOff\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\TimeOff\Models\LeaveMandatoryDay;
 
 /**
@@ -12,6 +12,8 @@ use Webkul\TimeOff\Models\LeaveMandatoryDay;
  */
 class LeaveMandatoryDayFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = LeaveMandatoryDay::class;
 
     /**
@@ -25,7 +27,6 @@ class LeaveMandatoryDayFactory extends Factory
         $endDate = fake()->dateTimeBetween($startDate, '+7 days');
 
         return [
-            'company_id' => Company::factory(),
             'creator_id' => User::query()->value('id') ?? User::factory(),
             'color'      => fake()->numberBetween(1, 10),
             'name'       => fake()->words(3, true),

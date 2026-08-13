@@ -30,9 +30,13 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class OrderLine extends Model implements Sortable
 {
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
     use HasFactory, SortableTrait;
 
     protected $table = 'sales_order_lines';
@@ -87,6 +91,7 @@ class OrderLine extends Model implements Sortable
     protected $casts = [
         'state'                => OrderState::class,
         'qty_delivered_method' => QtyDeliveredMethod::class,
+        'customer_lead'        => 'float',
     ];
 
     public $sortable = [
@@ -195,12 +200,20 @@ class OrderLine extends Model implements Sortable
         });
 
         static::created(function ($orderLine) {
+            $orderLine->linkMatchingOptions();
+
             if ($orderLine->order->state === OrderState::SALE) {
                 SaleOrderFacade::applyInventoryRules(collect([$orderLine]));
             }
         });
 
         static::updated(function ($orderLine) {
+            if ($orderLine->wasChanged('product_id')) {
+                OrderOption::where('line_id', $orderLine->id)->update(['line_id' => null]);
+
+                $orderLine->linkMatchingOptions();
+            }
+
             if (
                 $orderLine->wasChanged('product_uom_qty')
                 && $orderLine->state === OrderState::SALE
@@ -211,6 +224,18 @@ class OrderLine extends Model implements Sortable
                 SaleOrderFacade::applyInventoryRules(collect([$orderLine]), previousProductUOMQty: $previousProductUomQty);
             }
         });
+    }
+
+    public function linkMatchingOptions(): void
+    {
+        if (! $this->product_id || $this->display_type) {
+            return;
+        }
+
+        OrderOption::where('order_id', $this->order_id)
+            ->where('product_id', $this->product_id)
+            ->whereNull('line_id')
+            ->update(['line_id' => $this->id]);
     }
 
     public function computeWarehouseId()
@@ -245,5 +270,13 @@ class OrderLine extends Model implements Sortable
     protected static function newFactory()
     {
         return OrderLineFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'product_id'   => Product::class,
+            'warehouse_id' => Warehouse::class,
+        ];
     }
 }

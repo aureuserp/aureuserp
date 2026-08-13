@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'الموعد النهائي للطلب',
                     'expected-arrival'         => 'تاريخ الوصول المتوقع',
                     'confirmed-by-vendor'      => 'مؤكد من المورد',
+                    'deliver-to'               => 'تسليم إلى',
                 ],
             ],
         ],
@@ -81,6 +82,12 @@ return [
                             'error' => [
                                 'title' => 'لا يمكن حذف المنتج',
                                 'body'  => 'لا يمكن حذف المنتجات من أمر شراء مؤكد.',
+                            ],
+                        ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'فتح المنتج',
                             ],
                         ],
                     ],
@@ -195,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'الضريبة',
     ],
 
     'infolist' => [

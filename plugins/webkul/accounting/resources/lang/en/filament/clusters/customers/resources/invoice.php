@@ -13,4 +13,20 @@ return [
         'due-date' => 'Due Date',
         'amount'   => 'Amount',
     ],
+
+    'form' => [
+        'tabs' => [
+            'invoice-lines' => [
+                'repeater' => [
+                    'products' => [
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Open product',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
 ];

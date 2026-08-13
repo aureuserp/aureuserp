@@ -3,10 +3,13 @@
 namespace Webkul\Recruitment;
 
 use Filament\Panel;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Recruitment\Models\Applicant;
+use Webkul\Recruitment\Models\Candidate;
 
 class RecruitmentServiceProvider extends PackageServiceProvider
 {
@@ -46,7 +49,11 @@ class RecruitmentServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Applicant::class, Candidate::class]);
+                });
+            })
             ->icon('recruitments');
     }
 

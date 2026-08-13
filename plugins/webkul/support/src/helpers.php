@@ -1,6 +1,28 @@
 <?php
 
+use ArPHP\I18N\Arabic;
+use Filament\Forms\Components\Field;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
+use Webkul\Support\Database\Dialects\DatabaseDialect;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Services\CompanyContext;
+use Webkul\Support\SettingsRegistry;
+use Webkul\Support\SupportServiceProvider;
+
+if (! function_exists('settings')) {
+    function settings(string $settings): object
+    {
+        return app(SettingsRegistry::class)->get($settings);
+    }
+}
+
+if (! function_exists('db_dialect')) {
+    function db_dialect(): DatabaseDialect
+    {
+        return app(DatabaseDialect::class);
+    }
+}
 
 if (! function_exists('money')) {
     function money(float|Closure $amount, string|Closure|null $currency = null, int $divideBy = 0, string|Closure|null $locale = null): string
@@ -13,6 +35,14 @@ if (! function_exists('money')) {
 
         if ($divideBy > 0) {
             $amount /= $divideBy;
+        }
+
+        if (SupportServiceProvider::isRtl()) {
+            return Number::currency($amount, $currency, 'en');
+        }
+
+        if (! str_contains($locale, '-u-nu-')) {
+            $locale .= '-u-nu-latn';
         }
 
         return Number::currency($amount, $currency, $locale);
@@ -56,6 +86,53 @@ if (! function_exists('money')) {
                 ),
             };
         }
+    }
+}
+
+if (! function_exists('prepare_rtl_html')) {
+    function prepare_rtl_html(string $html): string
+    {
+        $dom = new DOMDocument('1.0', 'UTF-8');
+
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="UTF-8">'.$html);
+        libxml_clear_errors();
+
+        $xpath = new DOMXPath($dom);
+
+        foreach ($xpath->query('//tr') as $row) {
+            $cells = [];
+
+            foreach ($row->childNodes as $child) {
+                if (! $child instanceof DOMElement || ! in_array(strtolower($child->nodeName), ['td', 'th'], true)) {
+                    continue;
+                }
+
+                if ($child->hasAttribute('colspan') || $child->hasAttribute('rowspan')) {
+                    continue 2;
+                }
+
+                $cells[] = $child;
+            }
+
+            for ($i = count($cells) - 1; $i > 0; $i--) {
+                $row->insertBefore($cells[$i], $cells[0]);
+            }
+        }
+
+        if (class_exists(Arabic::class)) {
+            $arabic = new Arabic;
+
+            foreach ($xpath->query('//text()[not(ancestor::style) and not(ancestor::script)]') as $node) {
+                if (trim($node->nodeValue) === '' || ! preg_match('/\p{Arabic}/u', $node->nodeValue)) {
+                    continue;
+                }
+
+                $node->nodeValue = $arabic->utf8Glyphs($node->nodeValue, PHP_INT_MAX, false);
+            }
+        }
+
+        return preg_replace('/<\?xml[^>]*>\s*/', '', $dom->saveHTML());
     }
 }
 
@@ -212,24 +289,122 @@ if (! function_exists('float_round')) {
 }
 
 if (! function_exists('make_aware')) {
-    /**
-     * Return $dt with an explicit timezone, together with a callable to
-     * convert a Carbon back to the same timezone as $dt.
-     *
-     * Mirrors Python's make_aware(dt):
-     *   if dt.tzinfo → return dt, lambda val: val.astimezone(dt.tzinfo)
-     *   else          → return dt.replace(tzinfo=utc), lambda val: val.astimezone(utc)
-     *
-     * Carbon always carries a timezone, so the first branch always applies.
-     * The second branch (naive datetime → UTC) is handled by ensuring the
-     * caller passes a UTC Carbon when no explicit timezone is intended.
-     *
-     * @return array{0: Carbon\Carbon, 1: callable(Carbon\Carbon): Carbon\Carbon}
-     */
     function make_aware(Carbon\Carbon $dt): array
     {
         $tz = $dt->getTimezone();
 
         return [$dt, fn (Carbon\Carbon $val) => $val->clone()->setTimezone($tz)];
+    }
+}
+
+if (! function_exists('current_company')) {
+    function current_company(): ?Company
+    {
+        return app(CompanyContext::class)->currentCompany();
+    }
+}
+
+if (! function_exists('current_company_id')) {
+    function current_company_id(): ?int
+    {
+        return app(CompanyContext::class)->currentId();
+    }
+}
+
+if (! function_exists('owned_by_company')) {
+    function owned_by_company($companyId = null): Closure
+    {
+        $companyId = $companyId ?: current_company_id();
+
+        return function ($query) use ($companyId) {
+            $model = $query->getModel();
+
+            if (method_exists($model, 'companyScopeRelation')) {
+                $relation = $model->companyScopeRelation();
+
+                return $query
+                    ->whereHas($relation, fn ($related) => $related->where('companies.id', $companyId))
+                    ->orWhereDoesntHave($relation);
+            }
+
+            $column = $model->getTable().'.company_id';
+
+            return $query->whereNull($column)->orWhere($column, $companyId);
+        };
+    }
+}
+
+if (! function_exists('reapply_company_defaults')) {
+    function reapply_company_defaults($component, array $fields): void
+    {
+        $container = $component->getContainer();
+
+        $prefix = $container->getStatePath();
+
+        $root = $component->getRootContainer();
+
+        foreach ($fields as $field) {
+            $path = filled($prefix) ? $prefix.'.'.$field : $field;
+
+            $target = $root->getComponent(
+                fn ($candidate) => $candidate instanceof Field
+                    && $candidate->getStatePath() === $path,
+                withHidden: true,
+            );
+
+            $target?->state($target->getDefaultState());
+        }
+    }
+}
+
+if (! function_exists('clear_foreign_company_values')) {
+    function clear_foreign_company_values($set, $get, array $fields, $companyId = null): void
+    {
+        $companyId = $companyId ?: current_company_id();
+
+        foreach ($fields as $field => $model) {
+            $state = $get($field);
+
+            if (blank($state)) {
+                continue;
+            }
+
+            $keyName = (new $model)->getKeyName();
+
+            $allowed = $model::query()
+                ->withoutGlobalScopes()
+                ->whereKey($state)
+                ->where(owned_by_company($companyId))
+                ->pluck($keyName)
+                ->all();
+
+            if (is_array($state)) {
+                $kept = array_values(array_filter($state, fn ($key) => in_array($key, $allowed)));
+
+                if (count($kept) !== count($state)) {
+                    $set($field, $kept);
+                }
+
+                continue;
+            }
+
+            if (! in_array($state, $allowed)) {
+                $set($field, null);
+            }
+        }
+    }
+}
+
+if (! function_exists('allowed_companies')) {
+    function allowed_companies(): Collection
+    {
+        return app(CompanyContext::class)->allowedCompanies();
+    }
+}
+
+if (! function_exists('allowed_company_ids')) {
+    function allowed_company_ids(): array
+    {
+        return app(CompanyContext::class)->allowedIds();
     }
 }

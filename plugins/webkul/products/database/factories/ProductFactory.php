@@ -7,7 +7,7 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -15,6 +15,8 @@ use Webkul\Support\Models\UOM;
  */
 class ProductFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -46,7 +48,6 @@ class ProductFactory extends Factory
             'uom_id'               => UOM::factory(),
             'uom_po_id'            => UOM::factory(),
             'creator_id'           => User::query()->value('id') ?? User::factory(),
-            'company_id'           => Company::factory(),
         ];
     }
 }

@@ -8,13 +8,15 @@ use Webkul\Partner\Models\Industry;
 use Webkul\Partner\Models\Partner;
 use Webkul\Partner\Models\Title;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Partner>
  */
 class PartnerFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -44,7 +46,6 @@ class PartnerFactory extends Factory
             'creator_id'       => User::query()->value('id') ?? User::factory(),
             'user_id'          => User::query()->value('id') ?? User::factory(),
             'title_id'         => Title::factory(),
-            'company_id'       => Company::factory(),
             'industry_id'      => Industry::factory(),
         ];
     }

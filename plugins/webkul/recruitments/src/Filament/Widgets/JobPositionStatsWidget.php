@@ -81,7 +81,7 @@ class JobPositionStatsWidget extends BaseWidget
         $jobStats = $query->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
                 COUNT(*) as total_jobs,
-                SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active_jobs
+                SUM(CASE WHEN is_active = true THEN 1 ELSE 0 END) as active_jobs
             ')
             ->first();
 

@@ -6,10 +6,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateOrder extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected ?bool $hasDatabaseTransactions = true;

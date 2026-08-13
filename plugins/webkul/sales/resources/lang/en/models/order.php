@@ -3,6 +3,11 @@
 return [
     'title'          => 'Sales Order',
 
+    'titles'         => [
+        'quotation'   => 'Quotation',
+        'sales-order' => 'Sales Order',
+    ],
+
     'log-attributes' => [
         'state'           => 'Order Status',
         'locked'          => 'Locked',
