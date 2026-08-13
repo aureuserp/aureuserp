@@ -312,20 +312,18 @@ export class WebsiteManagementPage {
         await this.openBlogPostEditPage(title);
 
         const publishButton = this.page.getByRole("button", { name: /publish/i }).first();
-        if (await publishButton.isVisible().catch(() => false)) {
-            await publishButton.click();
-            await this.expectBlogPostSuccessToast();
-        }
+        await expect(publishButton).toBeVisible();
+        await publishButton.click();
+        await this.expectBlogPostSuccessToast();
     }
 
     async draftBlogPost(title: string): Promise<void> {
         await this.openBlogPostEditPage(title);
 
         const draftButton = this.page.getByRole("button", { name: /draft/i }).first();
-        if (await draftButton.isVisible().catch(() => false)) {
-            await draftButton.click();
-            await this.expectBlogPostSuccessToast();
-        }
+        await expect(draftButton).toBeVisible();
+        await draftButton.click();
+        await this.expectBlogPostSuccessToast();
     }
 
     async searchBlogPost(keyword: string): Promise<void> {
@@ -517,13 +515,13 @@ export class WebsiteManagementPage {
         await this.openRowActions();
         await this.erpLocators.websitePagesEditButton.click();
 
+        await expect(this.page).toHaveURL(/website\/pages\/.+\/edit/);
         await this.page.waitForLoadState("networkidle");
 
         const publishButton = this.page.getByRole("button", { name: /publish/i }).first();
-        if (await publishButton.isVisible().catch(() => false)) {
-            await publishButton.click();
-            await this.expectSuccessToast();
-        }
+        await expect(publishButton).toBeVisible();
+        await publishButton.click();
+        await this.expectSuccessToast();
     }
 
     async draftPage(title: string): Promise<void> {
@@ -532,14 +530,14 @@ export class WebsiteManagementPage {
         await this.openRowActions();
         await this.erpLocators.websitePagesEditButton.click();
 
+        await expect(this.page).toHaveURL(/website\/pages\/.+\/edit/);
         await this.page.waitForLoadState("networkidle");
 
         const draftButton = this.page.getByRole("button", { name: /draft/i }).first();
-        if (await draftButton.isVisible().catch(() => false)) {
-            await draftButton.click();
-            await this.expectSuccessToast();
-            await this.erpLocators.websitePagesSaveButton.click();
-        }
+        await expect(draftButton).toBeVisible();
+        await draftButton.click();
+        await this.expectSuccessToast();
+        await this.erpLocators.websitePagesSaveButton.click();
     }
 
     async checkPageOnFrontend(slug: string, expectedContent: string, headerVisible: boolean, footerVisible: boolean, pageTitle?: string): Promise<void> {
