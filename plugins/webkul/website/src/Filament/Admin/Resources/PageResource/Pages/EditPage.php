@@ -7,13 +7,13 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
+use Webkul\Support\Filament\Concerns\TranslatableEditRecord;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
 use Webkul\Website\Models\Page;
 
 class EditPage extends EditRecord
 {
-    use Translatable;
+    use TranslatableEditRecord;
 
     protected static string $resource = PageResource::class;
 

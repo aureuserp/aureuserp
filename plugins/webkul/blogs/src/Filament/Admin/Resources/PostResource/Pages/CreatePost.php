@@ -5,12 +5,12 @@ namespace Webkul\Blog\Filament\Admin\Resources\PostResource\Pages;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
+use Webkul\Support\Filament\Concerns\TranslatableCreateRecord;
 
 class CreatePost extends CreateRecord
 {
-    use Translatable;
+    use TranslatableCreateRecord;
 
     protected static string $resource = PostResource::class;
 

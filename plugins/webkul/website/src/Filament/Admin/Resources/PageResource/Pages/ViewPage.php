@@ -6,12 +6,12 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\ViewRecord\Concerns\Translatable;
+use Webkul\Support\Filament\Concerns\TranslatableViewRecord;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
 
 class ViewPage extends ViewRecord
 {
-    use Translatable;
+    use TranslatableViewRecord;
 
     protected static string $resource = PageResource::class;
 

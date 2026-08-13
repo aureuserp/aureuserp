@@ -8,13 +8,13 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
 use Webkul\Blog\Models\Post;
+use Webkul\Support\Filament\Concerns\TranslatableEditRecord;
 
 class EditPost extends EditRecord
 {
-    use Translatable;
+    use TranslatableEditRecord;
 
     protected static string $resource = PostResource::class;
 
