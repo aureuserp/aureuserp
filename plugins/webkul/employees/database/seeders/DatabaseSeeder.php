@@ -23,8 +23,6 @@ class DatabaseSeeder extends Seeder
             WorkLocationSeeder::class,
             EmployeeCategorySeeder::class,
             DepartureReasonSeeder::class,
-            CalendarSeeder::class,
-            CalendarAttendanceSeeder::class,
             ActivityPlanTemplateSeeder::class,
             EmployeeSeeder::class,
             DepartmentSeeder::class,

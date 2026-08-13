@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\RuleFactory;
 use Webkul\Inventory\Enums\GroupPropagation;
 use Webkul\Inventory\Enums\ProcureMethod;
@@ -17,10 +18,12 @@ use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Rule extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_rules';
 
@@ -46,6 +49,7 @@ class Rule extends Model implements Sortable
         'propagate_warehouse_id',
         'company_id',
         'creator_id',
+        'procurement_group_id',
         'deleted_at',
     ];
 
@@ -99,6 +103,11 @@ class Rule extends Model implements Sortable
         return $this->belongsTo(Partner::class);
     }
 
+    public function procurementGroup(): BelongsTo
+    {
+        return $this->belongsTo(ProcurementGroup::class, 'procurement_group_id');
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -107,6 +116,50 @@ class Rule extends Model implements Sortable
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getLeadDays($product, array $values = []): array
+    {
+        $delays = ['total_delay' => 0.0];
+
+        $delay = $this->filter(function ($rule) {
+            return in_array($rule->action, [RuleAction::PULL, RuleAction::PULL_PUSH], true);
+        })->sum('delay');
+
+        $delays['total_delay'] += $delay;
+
+        $globalVisibilityDays = (int) ($this->context['global_visibility_days'] ?? 0);
+
+        if ($globalVisibilityDays) {
+            $delays['total_delay'] += $globalVisibilityDays;
+        }
+
+        if (! empty($this->context['bypass_delay_description'])) {
+            $delayDescription = [];
+        } else {
+            $delayDescription = [];
+
+            foreach ($this as $rule) {
+                if (
+                    in_array($rule->action, [RuleAction::PULL, RuleAction::PULL_PUSH], true)
+                    && $rule->delay
+                ) {
+                    $delayDescription[] = [
+                        __('inventories::system.rule.delay-on', ['name' => $rule->name]),
+                        __('inventories::system.rule.days', ['days' => $rule->delay]),
+                    ];
+                }
+            }
+        }
+
+        if ($globalVisibilityDays) {
+            $delayDescription[] = [
+                __('inventories::system.rule.time-horizon'),
+                __('inventories::system.rule.days', ['days' => $globalVisibilityDays]),
+            ];
+        }
+
+        return [$delays, $delayDescription];
     }
 
     protected static function newFactory(): RuleFactory
@@ -123,7 +176,11 @@ class Rule extends Model implements Sortable
 
             $rule->creator_id ??= $authUser->id;
 
-            $rule->company_id ??= $authUser?->default_company_id;
+            $rule->company_id ??= current_company_id();
+
+            $rule->warehouse_id ??= $rule->operationType?->warehouse_id;
+
+            $rule->group_propagation_option ??= GroupPropagation::PROPAGATE;
         });
     }
 }

@@ -3,7 +3,7 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Stage',
+            'label' => 'مرحلة جديدة',
         ],
     ],
 ];

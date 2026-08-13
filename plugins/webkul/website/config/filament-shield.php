@@ -14,8 +14,8 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            PageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            PartnerResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PageResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            PartnerResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             WebsitePageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
         ],
         'exclude' => [],

@@ -5,11 +5,9 @@ return [
 
     'navigation' => [
         'title' => 'الأقسام',
-        'group' => 'الموظفون',
     ],
 
     'global-search' => [
-        'name'               => 'القسم',
         'department-manager' => 'المدير',
         'company'            => 'الشركة',
     ],

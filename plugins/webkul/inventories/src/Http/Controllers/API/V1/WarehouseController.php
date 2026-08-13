@@ -46,15 +46,15 @@ class WarehouseController extends Controller
         Gate::authorize('viewAny', Warehouse::class);
 
         $warehouses = QueryBuilder::for(Warehouse::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('code'),
                 AllowedFilter::exact('company_id'),
                 AllowedFilter::exact('partner_address_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'code', 'sort', 'reception_steps', 'delivery_steps', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'code', 'sort', 'reception_steps', 'delivery_steps', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return WarehouseResource::collection($warehouses);
@@ -93,7 +93,7 @@ class WarehouseController extends Controller
     public function show(string $id)
     {
         $warehouse = QueryBuilder::for(Warehouse::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $warehouse);

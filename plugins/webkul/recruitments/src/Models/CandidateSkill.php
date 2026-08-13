@@ -9,7 +9,6 @@ use Webkul\Employee\Models\Skill;
 use Webkul\Employee\Models\SkillLevel;
 use Webkul\Employee\Models\SkillType;
 use Webkul\Security\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 class CandidateSkill extends Model
 {

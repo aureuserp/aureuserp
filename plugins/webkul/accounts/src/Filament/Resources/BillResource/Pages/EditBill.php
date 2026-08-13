@@ -12,12 +12,19 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditBill extends EditRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = BillResource::class;
 
@@ -29,11 +36,6 @@ class EditBill extends EditRecord
     public static function getReverseResource(): string
     {
         return static::$reverseResource;
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getSavedNotification(): ?Notification
@@ -48,7 +50,8 @@ class EditBill extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource($this->getResource()),
+                ->resource($this->getResource())
+                ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\PreviewAction::make()
                 ->setTemplate('accounts::bill/actions/preview.index'),
             BaseActions\PayAction::make(),
@@ -56,6 +59,7 @@ class EditBill extends EditRecord
             BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\ReverseAction::make()
+                ->setResource(static::getReverseResource())
                 ->label(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),
@@ -73,5 +77,14 @@ class EditBill extends EditRecord
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+
+        $this->refreshRecordState();
+    }
+
+    public function refreshFormData(array $statePaths): void
+    {
+        parent::refreshFormData($statePaths);
+
+        $this->rememberData();
     }
 }

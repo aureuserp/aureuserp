@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\UtmCampaignFactory;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class UtmCampaign extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'utm_campaigns';
@@ -54,6 +56,11 @@ class UtmCampaign extends Model
         static::creating(function ($utmCampaign) {
             $utmCampaign->creator_id ??= Auth::id();
         });
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 
     protected static function newFactory()

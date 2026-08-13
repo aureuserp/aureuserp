@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
+use Closure;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -15,6 +16,9 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Livewire\Component;
+use Throwable;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
@@ -26,6 +30,8 @@ use Webkul\Accounting\Models\Journal;
 
 class PayAction extends Action
 {
+    protected bool|Closure $hasDatabaseTransactions = true;
+
     public static function getDefaultName(): ?string
     {
         return 'customers.invoice.pay';
@@ -39,9 +45,9 @@ class PayAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
             ->schema(function (Schema $schema) {
-                try {
-                    $paymentRegister = (new PaymentRegister);
+                $paymentRegister = new PaymentRegister;
 
+                try {
                     $paymentRegister->lines = $this->getRecord()->lines;
                     $paymentRegister->company = $this->getRecord()->company;
                     $paymentRegister->currency = $this->getRecord()->currency;
@@ -117,6 +123,7 @@ class PayAction extends Action
                                         $query->whereIn('id', $paymentMethodLineIds);
                                     }
                                 )
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                 ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
                                     $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
@@ -127,10 +134,10 @@ class PayAction extends Action
                                 ->relationship(
                                     'partnerBank',
                                     'account_number',
-                                     modifyQueryUsing: function (Builder $query, Get $get) {
-                                        $companyId = $get('company_id') ?? filament()->auth()->user()->default_company_id;
+                                    modifyQueryUsing: function (Builder $query, Get $get) {
+                                        $companyId = $get('company_id') ?? current_company_id();
 
-                                        $bankAccountIds = \Webkul\Account\Models\Journal::where('type', \Webkul\Account\Enums\JournalType::BANK)
+                                        $bankAccountIds = \Webkul\Account\Models\Journal::where('type', JournalType::BANK)
                                             ->where('company_id', $companyId)
                                             ->pluck('bank_account_id')
                                             ->filter();
@@ -292,23 +299,40 @@ class PayAction extends Action
                 ])
                     ->columns(2);
             })
-            ->action(function (Move $record, $data): void {
-                $lineIds = $record->paymentTermLines
-                    ->filter(fn ($line) => ! $line->reconciled)
-                    ->pluck('id')
-                    ->toArray();
+            ->action(function (Move $record, $data, Component $livewire): void {
+                try {
+                    $lineIds = $record->paymentTermLines
+                        ->filter(fn ($line) => ! $line->reconciled)
+                        ->pluck('id')
+                        ->toArray();
 
-                $paymentRegister = PaymentRegister::create($data);
+                    $paymentRegister = PaymentRegister::create($data);
 
-                $paymentRegister->lines()->sync($lineIds);
+                    $paymentRegister->lines()->sync($lineIds);
 
-                $paymentRegister->refresh();
+                    $paymentRegister->refresh();
 
-                $paymentRegister->computeFromLines();
+                    $paymentRegister->computeFromLines();
 
-                $paymentRegister->save();
+                    $paymentRegister->save();
 
-                AccountFacade::createPayments($paymentRegister);
+                    AccountFacade::createPayments($paymentRegister);
+
+                    $record->refresh();
+
+                    if (method_exists($livewire, 'refreshFormData')) {
+                        $livewire->refreshFormData(['state', 'payment_state', 'amount_residual']);
+                    }
+
+                    $livewire->dispatch('refreshInvoiceSummary');
+                } catch (Throwable $e) {
+                    Notification::make()
+                        ->danger()
+                        ->body($e->getMessage())
+                        ->send();
+
+                    $this->halt(shouldRollBackDatabaseTransaction: true);
+                }
             })
             ->hidden(function (Move $record) {
                 return $record->state != MoveState::POSTED

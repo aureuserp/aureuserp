@@ -6,6 +6,10 @@ return [
         'group' => 'التحويلات',
     ],
 
+    'global-search' => [
+        'origin' => 'المصدر',
+    ],
+
     'table' => [
         'actions' => [
             'delete' => [

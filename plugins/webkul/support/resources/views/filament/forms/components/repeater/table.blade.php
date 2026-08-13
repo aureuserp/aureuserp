@@ -15,6 +15,7 @@
     $moveUpAction = $getAction($getMoveUpActionName());
     $reorderAction = $getAction($getReorderActionName());
     $extraItemActions = $getExtraItemActions();
+    $footerActions = $getFooterActions();
 
     $isAddable = $isAddable();
     $isCloneable = $isCloneable();
@@ -271,6 +272,13 @@
                         <tr
                             wire:key="{{ $item->getLivewireKey() }}.item"
                             x-sortable-item="{{ $itemKey }}"
+                            x-on:click="
+                                if ($event.target.closest('button, a, input, textarea, select, label, [role=button], [data-no-row-click]')) {
+                                    return;
+                                }
+
+                                $el.querySelector('[data-row-click-action]')?.click();
+                            "
                         >
                             @if (
                                 (count($items) > 1) 
@@ -426,7 +434,7 @@
         @endif
     </div>
 
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center gap-3">
         @if (
             $isAddable 
             && $addAction->isVisible()
@@ -440,5 +448,13 @@
                 {{ $addAction }}
             </div>
         @endif
+
+        @foreach ($footerActions as $footerAction)
+            @if ($footerAction->isVisible())
+                <div class="fi-fo-table-repeater-add">
+                    {{ $footerAction }}
+                </div>
+            @endif
+        @endforeach
     </div>
 </x-dynamic-component>

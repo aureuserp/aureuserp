@@ -2,7 +2,6 @@
 
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\DepartureReasonResource;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmployeeCategoryResource;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource;
@@ -23,17 +22,16 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            EmployeeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            DepartmentResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            EmployeeSkillResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            ActivityPlanResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            CalendarResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            DepartureReasonResource::class => [...$basic, ...$delete, ...$reorder],
+            EmployeeResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            DepartmentResource::class       => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            EmployeeSkillResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityPlanResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            DepartureReasonResource::class  => [...$basic, ...$delete, ...$reorder],
             EmployeeCategoryResource::class => [...$basic, ...$delete],
-            WorkLocationResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            SkillTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            EmploymentTypeResource::class => [...$basic, ...$delete, ...$reorder],
-            JobPositionResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            WorkLocationResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            SkillTypeResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            EmploymentTypeResource::class   => [...$basic, ...$delete, ...$reorder],
+            JobPositionResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [],
     ],

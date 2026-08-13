@@ -5,11 +5,9 @@ return [
 
     'navigation' => [
         'title' => 'الموظفون',
-        'group' => 'الموظفون',
     ],
 
     'global-search' => [
-        'name'       => 'اسم الموظف',
         'department' => 'القسم',
         'work-email' => 'البريد الإلكتروني للعمل',
         'work-phone' => 'هاتف العمل',
@@ -321,6 +319,25 @@ return [
         ],
 
         'tabs' => [
+            'resume' => [
+                'title' => 'السيرة الذاتية',
+
+                'entries' => [
+                    'resume' => [
+                        'title'   => 'السيرة الذاتية',
+                        'empty'   => 'لا توجد سطور سيرة ذاتية بعد.',
+                        'untyped' => 'أخرى',
+                        'present' => 'حتى الآن',
+                    ],
+
+                    'skills' => [
+                        'title'   => 'المهارات',
+                        'empty'   => 'لا توجد مهارات بعد.',
+                        'untyped' => 'أخرى',
+                    ],
+                ],
+            ],
+
             'work-information' => [
                 'title' => 'معلومات العمل',
 

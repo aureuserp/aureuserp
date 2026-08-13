@@ -3,19 +3,22 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Webkul\Account\Database\Factories\TaxGroupFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\TaxGroupFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class TaxGroup extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_tax_groups';
 

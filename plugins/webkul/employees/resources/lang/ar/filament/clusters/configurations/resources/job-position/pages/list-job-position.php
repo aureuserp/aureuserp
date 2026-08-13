@@ -2,13 +2,13 @@
 
 return [
     'tabs' => [
-        'my-department' => 'My Department',
-        'archived'      => 'Archived',
+        'my-department' => 'قسمي',
+        'archived'      => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'Job Position',
+            'label' => 'منصب وظيفي',
         ],
     ],
 ];

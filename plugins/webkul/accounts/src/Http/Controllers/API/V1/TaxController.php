@@ -50,7 +50,7 @@ class TaxController extends Controller
         Gate::authorize('viewAny', Tax::class);
 
         $taxes = QueryBuilder::for(Tax::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('company_id'),
@@ -61,9 +61,9 @@ class TaxController extends Controller
                 AllowedFilter::exact('tax_scope'),
                 AllowedFilter::exact('price_include_override'),
                 AllowedFilter::exact('is_active'),
-            ])
-            ->allowedSorts(['id', 'name', 'amount', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'amount', 'sort', 'created_at')
+            ->allowedIncludes(
                 'company',
                 'taxGroup',
                 'cashBasisTransitionAccount',
@@ -72,7 +72,7 @@ class TaxController extends Controller
                 'childrenTaxes',
                 'invoiceRepartitionLines',
                 'refundRepartitionLines',
-            ])
+            )
             ->paginate();
 
         return TaxResource::collection($taxes);
@@ -139,7 +139,7 @@ class TaxController extends Controller
     public function show(string $id)
     {
         $tax = QueryBuilder::for(Tax::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'company',
                 'taxGroup',
                 'cashBasisTransitionAccount',
@@ -148,7 +148,7 @@ class TaxController extends Controller
                 'childrenTaxes',
                 'invoiceRepartitionLines',
                 'refundRepartitionLines',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $tax);

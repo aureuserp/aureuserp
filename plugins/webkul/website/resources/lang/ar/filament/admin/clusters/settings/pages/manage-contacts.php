@@ -1,33 +1,33 @@
 <?php
 
 return [
-    'title' => 'Manage Contacts',
+    'title' => 'إدارة جهات الاتصال',
 
     'form' => [
         'sections' => [
             'contacts' => [
-                'title' => 'Contacts',
+                'title' => 'جهات الاتصال',
 
                 'fields' => [
-                    'email' => 'Email',
-                    'phone' => 'Phone',
+                    'email' => 'البريد الإلكتروني',
+                    'phone' => 'الهاتف',
                 ],
             ],
 
             'social-links' => [
-                'title' => 'Social Links',
+                'title' => 'روابط التواصل الاجتماعي',
 
                 'fields' => [
-                    'twitter'   => 'Twitter',
-                    'facebook'  => 'Facebook',
-                    'instagram' => 'Instagram',
-                    'linkedin'  => 'LinkedIn',
-                    'pinterest' => 'Pinterest',
-                    'tiktok'    => 'TikTok',
-                    'github'    => 'GitHub',
-                    'slack'     => 'Slack',
-                    'whatsapp'  => 'WhatsApp',
-                    'youtube'   => 'YouTube',
+                    'twitter'   => 'تويتر',
+                    'facebook'  => 'فيسبوك',
+                    'instagram' => 'إنستغرام',
+                    'linkedin'  => 'لينكد إن',
+                    'pinterest' => 'بنترست',
+                    'tiktok'    => 'تيك توك',
+                    'github'    => 'غيت هب',
+                    'slack'     => 'سلاك',
+                    'whatsapp'  => 'واتساب',
+                    'youtube'   => 'يوتيوب',
                 ],
             ],
         ],

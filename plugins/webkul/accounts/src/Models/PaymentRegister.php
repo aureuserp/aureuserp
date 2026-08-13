@@ -17,9 +17,11 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PaymentRegister extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'accounts_payment_registers';
@@ -54,6 +56,11 @@ class PaymentRegister extends Model
     protected $casts = [
         'payment_type' => PaymentType::class,
     ];
+
+    public function getPaymentDifferenceAttribute(): float
+    {
+        return (float) $this->source_amount - (float) $this->amount;
+    }
 
     public function journal()
     {
@@ -301,6 +308,10 @@ class PaymentRegister extends Model
 
     public function computePaymentDifferenceHandling()
     {
+        if (! is_null($this->payment_difference_handling)) {
+            return;
+        }
+
         if ($this->is_single_batch) {
             $this->payment_difference_handling = 'open';
         } else {

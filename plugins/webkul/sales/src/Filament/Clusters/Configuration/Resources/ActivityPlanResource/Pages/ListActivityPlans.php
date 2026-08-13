@@ -47,12 +47,10 @@ class ListActivityPlans extends ListRecords
     {
         return [
             'all' => Tab::make(__('sales::filament/clusters/configurations/resources/activity-plan/pages/list-activity-plan.tabs.all'))
-                ->badge(ActivityPlan::where('plugin', static::getPluginName())->count()),
+                ->badge(ActivityPlan::forPlugin(static::getPluginName())->count()),
             'archived' => Tab::make(__('sales::filament/clusters/configurations/resources/activity-plan/pages/list-activity-plan.tabs.archived'))
-                ->badge(ActivityPlan::where('plugin', static::getPluginName())->onlyTrashed()->count())
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('plugin', static::getPluginName())->onlyTrashed();
-                }),
+                ->badge(ActivityPlan::forPlugin(static::getPluginName())->onlyTrashed()->count())
+                ->modifyQueryUsing(fn ($query) => $query->forPlugin(static::getPluginName())->onlyTrashed()),
         ];
     }
 }

@@ -36,8 +36,8 @@ return [
                 'title' => 'عناصر اليومية',
 
                 'repeater' => [
-                    'title'    => 'العناصر',
-                    'add-item' => 'إضافة عنصر',
+                    'title'       => 'العناصر',
+                    'add-item'    => 'إضافة عنصر',
 
                     'columns' => [
                         'account'                  => 'الحساب',
@@ -66,7 +66,7 @@ return [
             ],
 
             'other-information' => [
-                'title' => 'معلومات أخرى',
+                'title'    => 'معلومات أخرى',
 
                 'fields' => [
                     'checked'         => 'تم التحقق',
@@ -111,14 +111,14 @@ return [
         ],
 
         'filters' => [
-            'number'                        => 'الرقم',
-            'invoice-partner-display-name'  => 'اسم شريك الفاتورة المعروض',
-            'invoice-date'                  => 'تاريخ الفاتورة',
-            'invoice-due-date'              => 'تاريخ استحقاق الفاتورة',
-            'invoice-origin'                => 'مصدر الفاتورة',
-            'reference'                     => 'المرجع',
-            'created-at'                    => 'تاريخ الإنشاء',
-            'updated-at'                    => 'تاريخ التحديث',
+            'number'                       => 'الرقم',
+            'invoice-partner-display-name' => 'اسم شريك الفاتورة المعروض',
+            'invoice-date'                 => 'تاريخ الفاتورة',
+            'invoice-due-date'             => 'تاريخ استحقاق الفاتورة',
+            'invoice-origin'               => 'مصدر الفاتورة',
+            'reference'                    => 'المرجع',
+            'created-at'                   => 'تاريخ الإنشاء',
+            'updated-at'                   => 'تاريخ التحديث',
         ],
 
         'actions' => [
@@ -197,4 +197,5 @@ return [
             ],
         ],
     ],
+
 ];

@@ -1,17 +1,23 @@
 <?php
 
 return [
-    'title' => 'استرجاع',
+    'title' => 'استرداد',
+
     'navigation' => [
-        'title' => 'الاسترجاعات',
+        'title' => 'المستردات',
     ],
+
     'global-search' => [
         'vendor' => 'المورد',
         'amount' => 'المبلغ',
     ],
+
     'form' => [
-        'biller' => 'المصدر',
-        'reference' => 'المرجع',
+        'biller'            => 'المصدر',
+        'name'              => 'إشعار دائن المورد',
+        'name-placeholder'  => 'RBILL/2025/02/0001',
+        'reference'         => 'المرجع',
         'payment-reference' => 'مرجع الدفع',
+        'date'              => 'التاريخ المحاسبي',
     ],
 ];

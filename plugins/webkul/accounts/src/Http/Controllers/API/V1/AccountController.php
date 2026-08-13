@@ -41,7 +41,7 @@ class AccountController extends Controller
         Gate::authorize('viewAny', Account::class);
 
         $accounts = QueryBuilder::for(Account::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('code'),
@@ -49,9 +49,9 @@ class AccountController extends Controller
                 AllowedFilter::exact('currency_id'),
                 AllowedFilter::exact('deprecated'),
                 AllowedFilter::exact('reconcile'),
-            ])
-            ->allowedSorts(['id', 'code', 'name', 'account_type', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'code', 'name', 'account_type', 'created_at')
+            ->allowedIncludes(
                 'currency',
                 'creator',
                 'taxes',
@@ -59,7 +59,7 @@ class AccountController extends Controller
                 'journals',
                 'moveLines',
                 'companies',
-            ])
+            )
             ->paginate();
 
         return AccountResource::collection($accounts);
@@ -92,7 +92,7 @@ class AccountController extends Controller
     public function show(string $id)
     {
         $account = QueryBuilder::for(Account::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'currency',
                 'creator',
                 'taxes',
@@ -100,7 +100,7 @@ class AccountController extends Controller
                 'journals',
                 'moveLines',
                 'companies',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $account);

@@ -11,6 +11,7 @@ return [
             'quantity'         => 'الكمية',
             'package'          => 'الطرد',
             'on-hand'          => 'الكمية المتاحة',
+            'unit'             => 'الوحدة',
         ],
 
         'actions' => [

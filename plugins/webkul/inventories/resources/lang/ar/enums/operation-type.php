@@ -1,8 +1,9 @@
 <?php
 
 return [
-    'incoming' => 'استلام',
-    'outgoing' => 'تسليم',
-    'internal' => 'داخلي',
-    'dropship' => 'شحن مباشر',
+    'incoming'     => 'استلام',
+    'outgoing'     => 'تسليم',
+    'internal'     => 'داخلي',
+    'dropship'     => 'شحن مباشر',
+    'manufacture'  => 'تصنيع',
 ];

@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Database\Factories\PartnerFactory;
 use Webkul\Partner\Database\Factories\PartnerFactory as BasePartnerFactory;
 use Webkul\Partner\Models\Partner as BasePartner;
@@ -39,6 +40,11 @@ class Partner extends BasePartner
         ]);
 
         parent::__construct($attributes);
+    }
+
+    public function companyPropertyValue(string $field, ?int $companyId = null): mixed
+    {
+        return CompanyProperty::valueFor($this, PartnerCompanyProperty::class, 'partner_id', $field, $companyId);
     }
 
     public function propertyAccountPayable()

@@ -6,13 +6,12 @@ use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\CreateVendor;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\EditVendor;
-use Webkul\Account\Filament\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\ListVendors;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\ManageAddresses;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\ManageBankAccounts;
 use Webkul\Account\Filament\Resources\VendorResource\Pages\ManageContacts;
+use Webkul\Account\Filament\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Account\Models\Vendor;
-use Webkul\Account\Filament\Resources\PartnerResource;
 
 class VendorResource extends PartnerResource
 {

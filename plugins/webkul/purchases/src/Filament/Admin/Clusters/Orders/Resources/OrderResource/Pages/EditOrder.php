@@ -13,19 +13,20 @@ use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions as OrderActions;
 use Webkul\Purchase\Models\Order;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditOrder extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = OrderResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected function getSavedNotification(): Notification
     {
@@ -55,7 +56,8 @@ class EditOrder extends EditRecord
         return [
             ChatterAction::make()
                 ->record(Order::find($this->getRecord()->id))
-                ->resource(self::$resource),
+                ->resource(self::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             OrderActions\SendEmailAction::make(),
             OrderActions\SendPOEmailAction::make(),
             OrderActions\PrintRFQAction::make(),
@@ -104,11 +106,24 @@ class EditOrder extends EditRecord
 
     protected function afterSave(): void
     {
-        PurchaseOrder::computePurchaseOrder($this->getRecord());
+        try {
+            PurchaseOrder::computePurchaseOrder($this->getRecord());
+
+            $this->refreshRecordState();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->body($e->getMessage())
+                ->send();
+
+            $this->halt(shouldRollbackDatabaseTransaction: true);
+        }
     }
 
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

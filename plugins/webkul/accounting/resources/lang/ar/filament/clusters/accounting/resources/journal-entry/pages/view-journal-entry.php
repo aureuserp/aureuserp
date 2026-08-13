@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'title' => 'عرض قيد يومي',
-
     'header-actions' => [
         'delete' => [
             'notification' => [

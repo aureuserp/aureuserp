@@ -51,7 +51,7 @@ class RuleController extends Controller
         Gate::authorize('viewAny', Rule::class);
 
         $rules = QueryBuilder::for(Rule::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('action'),
@@ -60,9 +60,9 @@ class RuleController extends Controller
                 AllowedFilter::exact('route_id'),
                 AllowedFilter::exact('operation_type_id'),
                 AllowedFilter::exact('company_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'action', 'sort', 'route_sort', 'delay', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'action', 'sort', 'route_sort', 'delay', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return RuleResource::collection($rules);
@@ -93,7 +93,7 @@ class RuleController extends Controller
     public function show(string $id)
     {
         $rule = QueryBuilder::for(Rule::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $rule);

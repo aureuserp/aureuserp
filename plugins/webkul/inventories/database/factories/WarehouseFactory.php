@@ -8,27 +8,28 @@ use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Warehouse>
  */
 class WarehouseFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Warehouse::class;
 
     public function definition(): array
     {
         return [
-            'name'            => fake()->company(),
-            'code'            => strtoupper(fake()->lexify('WH???')),
+            'name'            => fake()->unique()->company(),
+            'code'            => strtoupper(fake()->unique()->lexify('WH???')),
             'sort'            => 1,
             'reception_steps' => ReceptionStep::ONE_STEP,
             'delivery_steps'  => DeliveryStep::ONE_STEP,
 
             // Relationships
             'partner_address_id'       => null,
-            'company_id'               => Company::factory(),
             'creator_id'               => User::query()->value('id') ?? User::factory(),
             'view_location_id'         => null,
             'lot_stock_location_id'    => null,

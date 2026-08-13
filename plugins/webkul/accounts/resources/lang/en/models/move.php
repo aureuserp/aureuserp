@@ -3,6 +3,13 @@
 return [
     'title'          => 'Move',
 
+    'titles'         => [
+        'invoice'     => 'Invoice',
+        'credit-note' => 'Credit Note',
+        'bill'        => 'Bill',
+        'refund'      => 'Refund',
+    ],
+
     'log-attributes' => [
         'name'                  => 'Invoice Reference',
         'reference'             => 'Reference',

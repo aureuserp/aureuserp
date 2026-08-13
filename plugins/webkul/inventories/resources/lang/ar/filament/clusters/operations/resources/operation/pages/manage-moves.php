@@ -13,6 +13,7 @@ return [
             'source-location'      => 'موقع المصدر',
             'destination-location' => 'موقع الوجهة',
             'quantity'             => 'الكمية',
+            'unit'                 => 'الوحدة',
             'state'                => 'الحالة',
             'done-by'              => 'تم بواسطة',
         ],

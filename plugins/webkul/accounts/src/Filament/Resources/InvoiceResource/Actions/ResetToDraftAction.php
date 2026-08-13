@@ -2,15 +2,19 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
+use Closure;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Livewire\Component;
+use Throwable;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 
 class ResetToDraftAction extends Action
 {
+    protected bool|Closure $hasDatabaseTransactions = true;
+
     public static function getDefaultName(): ?string
     {
         return 'customers.invoice.reset-to-draft';
@@ -29,11 +33,22 @@ class ResetToDraftAction extends Action
                     return;
                 }
 
-                $record = AccountFacade::resetToDraftMove($record);
+                try {
+                    $record = AccountFacade::resetToDraftMove($record);
 
-                $record->save();
+                    $record->save();
 
-                $livewire->refreshFormData(['state', 'parent_state']);
+                    $livewire->refreshFormData(['state', 'parent_state']);
+
+                    $livewire->dispatch('refreshInvoiceSummary');
+                } catch (Throwable $e) {
+                    Notification::make()
+                        ->warning()
+                        ->body($e->getMessage())
+                        ->send();
+
+                    $this->halt(shouldRollBackDatabaseTransaction: true);
+                }
             })
             ->visible(function (Move $record) {
                 return

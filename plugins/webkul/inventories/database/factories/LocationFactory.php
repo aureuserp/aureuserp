@@ -9,13 +9,15 @@ use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Product\Enums\ProductRemoval;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Location>
  */
 class LocationFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Location::class;
 
     public function definition(): array
@@ -40,7 +42,6 @@ class LocationFactory extends Factory
             'parent_id'                  => null,
             'storage_category_id'        => null,
             'warehouse_id'               => null,
-            'company_id'                 => Company::factory(),
             'creator_id'                 => User::query()->value('id') ?? User::factory(),
         ];
     }

@@ -19,7 +19,7 @@ class DeliverySlipAction extends Action
         $this
             ->label(__('inventories::filament/clusters/operations/actions/print/delivery-slip.label'))
             ->action(function ($record) {
-                $pdf = PDF::loadView('inventories::filament.clusters.operations.actions.print-delivery-slip', [
+                $pdf = Pdf::loadView('inventories::filament.clusters.operations.actions.print-delivery-slip', [
                     'records'  => [$record],
                 ]);
 

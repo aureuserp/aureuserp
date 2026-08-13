@@ -47,15 +47,15 @@ class PackageController extends Controller
         Gate::authorize('viewAny', Package::class);
 
         $packages = QueryBuilder::for(Package::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('package_type_id'),
                 AllowedFilter::exact('location_id'),
                 AllowedFilter::exact('company_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'pack_date', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'pack_date', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return PackageResource::collection($packages);
@@ -86,7 +86,7 @@ class PackageController extends Controller
     public function show(string $id)
     {
         $package = QueryBuilder::for(Package::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $package);

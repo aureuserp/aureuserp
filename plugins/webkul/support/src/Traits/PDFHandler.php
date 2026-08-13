@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Webkul\Support\SupportServiceProvider;
 
 trait PDFHandler
 {
@@ -13,15 +14,19 @@ trait PDFHandler
      * Generate a PDF from HTML content.
      *
      * @param  string  $html  HTML content to convert to PDF.
-     * @return PDF Returns the generated PDF instance.
+     * @return Pdf Returns the generated PDF instance.
      */
     protected function generatePDF(string $html)
     {
         $html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
 
+        if (SupportServiceProvider::isRtl()) {
+            $html = prepare_rtl_html($html);
+        }
+
         return Pdf::loadHTML($html)
             ->setPaper('A4', 'portrait')
-            ->setOption('defaultFont', 'Arial')
+            ->setOption('defaultFont', 'DejaVu Sans')
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isRemoteEnabled', true);
     }

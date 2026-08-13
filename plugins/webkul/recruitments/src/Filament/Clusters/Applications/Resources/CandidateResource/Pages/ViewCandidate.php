@@ -40,7 +40,8 @@ class ViewCandidate extends ViewRecord
                     return redirect(EmployeeResource::getUrl('edit', ['record' => $employee]));
                 }),
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

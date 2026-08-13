@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'model-label' => 'سمة المنتج',
-    'navigation'  => [
+    'navigation' => [
         'title' => 'سمات المنتج',
         'group' => 'المنتجات',
     ],

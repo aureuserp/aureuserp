@@ -13,4 +13,10 @@ return [
         'payment-reference' => 'Payment Reference',
         'date'              => 'Date',
     ],
+
+    'actions' => [
+        'open-product' => [
+            'tooltip' => 'Open product',
+        ],
+    ],
 ];

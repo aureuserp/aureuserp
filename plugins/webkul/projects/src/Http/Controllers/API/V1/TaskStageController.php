@@ -40,7 +40,7 @@ class TaskStageController extends Controller
         Gate::authorize('viewAny', TaskStage::class);
 
         $stages = QueryBuilder::for(TaskStage::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('name'),
                 AllowedFilter::exact('project_id'),
@@ -50,9 +50,9 @@ class TaskStageController extends Controller
                 AllowedFilter::exact('is_active'),
                 AllowedFilter::exact('is_collapsed'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return TaskStageResource::collection($stages);
@@ -82,7 +82,7 @@ class TaskStageController extends Controller
     public function show(string $id)
     {
         $stage = QueryBuilder::for(TaskStage::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $stage);

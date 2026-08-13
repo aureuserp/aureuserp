@@ -23,9 +23,10 @@ return [
                     'automatic-move-hint-tooltip' => 'عملية يدوية: ينشئ حركة مخزون منفصلة بعد الحالية.<br/>تلقائي بدون خطوة إضافية: يستبدل الموقع مباشرة في الحركة الأصلية دون إضافة خطوة إضافية.',
 
                     'action-information' => [
-                        'pull' => 'عندما تكون المنتجات مطلوبة في <b>:sourceLocation</b>، يتم إنشاء :operation من <b>:destinationLocation</b> لتلبية الطلب.',
-                        'push' => 'عندما تصل المنتجات إلى <b>:sourceLocation</b>،</br>يتم إنشاء <b>:operation</b> لنقلها إلى <b>:destinationLocation</b>.',
-                        'buy'  => 'عندما تكون المنتجات مطلوبة في <b>:destinationLocation</b>، يتم إنشاء طلب عرض أسعار لتلبية الحاجة.',
+                        'pull'        => 'عندما تكون المنتجات مطلوبة في <b>:sourceLocation</b>، يتم إنشاء :operation من <b>:destinationLocation</b> لتلبية الطلب.',
+                        'push'        => 'عندما تصل المنتجات إلى <b>:sourceLocation</b>،</br>يتم إنشاء <b>:operation</b> لنقلها إلى <b>:destinationLocation</b>.',
+                        'buy'         => 'عندما تكون المنتجات مطلوبة في <b>:destinationLocation</b>، يتم إنشاء طلب عرض أسعار لتلبية الحاجة.',
+                        'manufacture' => 'When products are needed in <b>:destinationLocation</b>, a manufacturing order is created to fulfill the need.',
                     ],
                 ],
             ],

@@ -9,22 +9,24 @@ return [
     ],
 
     'global-search' => [
-        'number'           => 'الرقم',
-        'customer'         => 'العميل',
-        'invoice-date'     => 'تاريخ الفاتورة',
-        'invoice-due-date' => 'تاريخ استحقاق الفاتورة',
+        'customer' => 'العميل',
+        'date'     => 'التاريخ',
+        'due-date' => 'تاريخ الاستحقاق',
     ],
 
     'form' => [
         'section' => [
             'general' => [
                 'title'  => 'عام',
+
                 'fields' => [
                     'customer-invoice' => 'فاتورة العميل',
                     'customer'         => 'العميل',
                     'invoice-date'     => 'تاريخ الفاتورة',
                     'due-date'         => 'تاريخ الاستحقاق',
                     'payment-term'     => 'شروط الدفع',
+                    'journal'          => 'دفتر اليومية',
+                    'currency'         => 'العملة',
                 ],
             ],
         ],
@@ -63,9 +65,11 @@ return [
 
             'other-information' => [
                 'title'    => 'معلومات أخرى',
+
                 'fieldset' => [
                     'invoice' => [
                         'title'  => 'الفاتورة',
+
                         'fields' => [
                             'customer-reference' => 'مرجع العميل',
                             'sales-person'       => 'مندوب المبيعات',
@@ -78,29 +82,17 @@ return [
                     'accounting' => [
                         'title' => 'المحاسبة',
 
-                        'fieldset' => [
-                            'incoterm'          => 'شروط التجارة',
-                            'incoterm-location' => 'موقع شروط التجارة',
-                            'payment-method'    => 'طريقة الدفع',
-                            'auto-post'         => 'ترحيل تلقائي',
-                            'checked'           => 'تم التحقق',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'  => 'معلومات إضافية',
                         'fields' => [
-                            'company'  => 'الشركة',
-                            'currency' => 'العملة',
-                        ],
-                    ],
-
-                    'marketing' => [
-                        'title'  => 'التسويق',
-                        'fields' => [
-                            'campaign' => 'الحملة',
-                            'medium'   => 'الوسيط',
-                            'source'   => 'المصدر',
+                            'company'                 => 'الشركة',
+                            'incoterm'                => 'شروط التجارة',
+                            'incoterm-location'       => 'موقع شروط التجارة',
+                            'fiscal-position'         => 'الموقف المالي',
+                            'fiscal-position-tooltip' => 'تُستخدم المواقف المالية لتعديل الضرائب والحسابات بناءً على موقع العميل.',
+                            'cash-rounding'           => 'طريقة التقريب النقدي',
+                            'cash-rounding-tooltip'   => 'تحدد أصغر وحدة نقدية قابلة للدفع من العملة.',
+                            'payment-method'          => 'طريقة الدفع',
+                            'auto-post'               => 'ترحيل تلقائي',
+                            'checked'                 => 'تم التحقق',
                         ],
                     ],
                 ],
@@ -158,6 +150,22 @@ return [
             'invoice-due-date'             => 'تاريخ استحقاق الفاتورة',
             'invoice-origin'               => 'مصدر الفاتورة',
             'reference'                    => 'المرجع',
+            'payment-reference'            => 'مرجع الدفع',
+            'narration'                    => 'البيان',
+            'partner'                      => 'الشريك',
+            'journal'                      => 'دفتر اليومية',
+            'fiscal-position'              => 'الموقف المالي',
+            'currency'                     => 'العملة',
+            'company'                      => 'الشركة',
+            'date'                         => 'تاريخ المحاسبة',
+            'delivery-date'                => 'تاريخ التسليم',
+            'amount-untaxed'               => 'المبلغ بدون ضريبة',
+            'amount-tax'                   => 'مبلغ الضريبة',
+            'amount-total'                 => 'المبلغ الإجمالي',
+            'amount-residual'              => 'المبلغ المستحق',
+            'checked'                      => 'تم التحقق',
+            'posted-before'                => 'مُرحّل قبل',
+            'is-move-sent'                 => 'تم الإرسال',
             'created-at'                   => 'تاريخ الإنشاء',
             'updated-at'                   => 'تاريخ التحديث',
         ],
@@ -197,6 +205,8 @@ return [
                     'invoice-date'     => 'تاريخ الفاتورة',
                     'due-date'         => 'تاريخ الاستحقاق',
                     'payment-term'     => 'شروط الدفع',
+                    'journal'          => 'دفتر اليومية',
+                    'currency'         => 'العملة',
                 ],
             ],
         ],
@@ -227,6 +237,7 @@ return [
                 'fieldset' => [
                     'invoice' => [
                         'title'   => 'الفاتورة',
+
                         'entries' => [
                             'customer-reference' => 'مرجع العميل',
                             'sales-person'       => 'مندوب المبيعات',
@@ -239,30 +250,15 @@ return [
                     'accounting' => [
                         'title' => 'المحاسبة',
 
-                        'fieldset' => [
+                        'entries' => [
+                            'company'           => 'الشركة',
                             'incoterm'          => 'شروط التجارة',
                             'incoterm-location' => 'موقع شروط التجارة',
                             'payment-method'    => 'طريقة الدفع',
+                            'cash-rounding'     => 'طريقة التقريب النقدي',
+                            'fiscal-position'   => 'الموقف المالي',
                             'auto-post'         => 'ترحيل تلقائي',
                             'checked'           => 'تم التحقق',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'   => 'معلومات إضافية',
-
-                        'entries' => [
-                            'company'  => 'الشركة',
-                            'currency' => 'العملة',
-                        ],
-                    ],
-
-                    'marketing' => [
-                        'title'   => 'التسويق',
-                        'entries' => [
-                            'campaign' => 'الحملة',
-                            'medium'   => 'الوسيط',
-                            'source'   => 'المصدر',
                         ],
                     ],
                 ],
@@ -270,6 +266,35 @@ return [
 
             'term-and-conditions' => [
                 'title' => 'الشروط والأحكام',
+            ],
+
+            'journal-items' => [
+                'title' => 'بنود اليومية',
+
+                'repeater' => [
+                    'entries' => [
+                        'account'  => 'الحساب',
+                        'partner'  => 'الشريك',
+                        'label'    => 'التسمية',
+                        'currency' => 'العملة',
+                        'due-date' => 'تاريخ الاستحقاق',
+                        'taxes'    => 'الضرائب',
+                        'debit'    => 'مدين',
+                        'credit'   => 'دائن',
+                    ],
+                ],
+            ],
+        ],
+    ],
+
+    'summary' => [
+        'actions' => [
+            'reconcile' => [
+                'label' => 'إضافة',
+            ],
+
+            'unreconcile' => [
+                'label' => 'إلغاء الربط',
             ],
         ],
     ],

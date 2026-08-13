@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'fifo'           => 'First In First Out (FIFO)',
-    'lifo'           => 'Last In First Out (LIFO)',
-    'closest'        => 'Closest Location',
-    'least-packages' => 'Least Packages',
-    'fefo'           => 'First Expiry First Out (FEFO)',
+    'fifo'           => 'الوارد أولاً يصرف أولاً (FIFO)',
+    'lifo'           => 'الوارد أخيراً يصرف أولاً (LIFO)',
+    'closest'        => 'أقرب موقع',
+    'least-packages' => 'أقل عدد طرود',
+    'fefo'           => 'الأقرب انتهاءً يصرف أولاً (FEFO)',
 ];

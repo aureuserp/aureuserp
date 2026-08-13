@@ -2,19 +2,22 @@
 
 return [
     'title' => 'الفاتورة',
+
     'navigation' => [
         'title' => 'الفواتير',
     ],
+
     'global-search' => [
-        'vendor' => 'المورد',
-        'date' => 'التاريخ',
+        'vendor'   => 'المورد',
+        'date'     => 'التاريخ',
         'due-date' => 'تاريخ الاستحقاق',
-        'amount' => 'المبلغ',
+        'amount'   => 'المبلغ',
     ],
+
     'form' => [
-        'biller' => 'المصدر',
-        'reference' => 'المرجع',
+        'biller'            => 'المصدر',
+        'reference'         => 'المرجع',
         'payment-reference' => 'مرجع الدفع',
-        'date' => 'التاريخ',
+        'date'              => 'التاريخ',
     ],
 ];

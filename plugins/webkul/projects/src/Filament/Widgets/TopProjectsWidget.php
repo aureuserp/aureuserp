@@ -25,14 +25,14 @@ class TopProjectsWidget extends BaseWidget
         return 'widget_project_top_projects_widget';
     }
 
-    public function getHeading(): string|Htmlable|null
+    protected function getTableHeading(): string|Htmlable|null
     {
         return __('projects::filament/widgets/top-projects.heading.title');
     }
 
     public function getTableRecordKey(Model|array $record): string
     {
-        return 'id';
+        return (string) $record['project_id'];
     }
 
     public function table(Table $table): Table
@@ -80,6 +80,7 @@ class TopProjectsWidget extends BaseWidget
 
         return $table
             ->query($query)
+            ->defaultKeySort(false)
             ->defaultPaginationPageOption(5)
             ->columns([
                 TextColumn::make('project_name')

@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Activities',
+        'group' => 'الأنشطة',
     ],
 ];

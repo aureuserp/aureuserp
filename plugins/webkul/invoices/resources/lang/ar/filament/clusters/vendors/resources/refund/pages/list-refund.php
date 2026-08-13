@@ -2,6 +2,6 @@
 
 return [
     'tabs' => [
-        'refund' => 'Refund',
+        'refund' => 'استرداد',
     ],
 ];

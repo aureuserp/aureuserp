@@ -7,25 +7,23 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
-use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Scrap;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditScrap extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected static string $resource = ScrapResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -39,69 +37,20 @@ class EditScrap extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             Action::make('validate')
                 ->label(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.label'))
                 ->color('gray')
                 ->action(function (Scrap $record) {
-                    $baseQty = $record->uom && $record->product?->uom
-                        ? $record->uom->computeQuantity($record->qty, $record->product->uom, false)
-                        : $record->qty;
-
-                    $locationQuantity = ProductQuantity::where('location_id', $record->source_location_id)
-                        ->where('product_id', $record->product_id)
-                        ->where('package_id', $record->package_id ?? null)
-                        ->where('lot_id', $record->lot_id ?? null)
-                        ->first();
-
-                    if (! $locationQuantity || $locationQuantity->quantity < $baseQty) {
+                    if (! $record->validate()) {
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.notification.warning.title'))
                             ->body(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.notification.warning.body'))
                             ->warning()
                             ->send();
-
-                        return;
                     }
-
-                    $locationQuantity->update([
-                        'quantity' => $locationQuantity->quantity - $baseQty,
-                    ]);
-
-                    $destinationQuantity = ProductQuantity::where('product_id', $record->product_id)
-                        ->where('location_id', $record->destination_location_id)
-                        ->first();
-
-                    if ($destinationQuantity) {
-                        $destinationQuantity->update([
-                            'quantity'                => $destinationQuantity->quantity + $baseQty,
-                            'reserved_quantity'       => $destinationQuantity->reserved_quantity + $baseQty,
-                            'inventory_diff_quantity' => $destinationQuantity->inventory_diff_quantity - $baseQty,
-                        ]);
-                    } else {
-                        ProductQuantity::create([
-                            'product_id'              => $record->product_id,
-                            'location_id'             => $record->destination_location_id,
-                            'quantity'                => $baseQty,
-                            'reserved_quantity'       => $baseQty,
-                            'inventory_diff_quantity' => -$baseQty,
-                            'incoming_at'             => now(),
-                            'creator_id'              => Auth::id(),
-                            'company_id'              => $record->destinationLocation->company_id,
-                        ]);
-                    }
-
-                    $record->update([
-                        'state'     => ScrapState::DONE,
-                        'closed_at' => now(),
-                    ]);
-
-                    $move = ProductResource::createMove($record, $baseQty, $record->source_location_id, $record->destination_location_id);
-
-                    $move->update([
-                        'scrap_id' => $record->id,
-                    ]);
                 })
                 ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE),
             DeleteAction::make()

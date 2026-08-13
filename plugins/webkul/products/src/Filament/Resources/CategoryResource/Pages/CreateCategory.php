@@ -11,11 +11,6 @@ class CreateCategory extends CreateRecord
 {
     protected static string $resource = CategoryResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     public function create(bool $another = false): void
     {
         try {

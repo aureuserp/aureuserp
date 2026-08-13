@@ -2,6 +2,6 @@
 
 return [
     'tabs' => [
-        'bills' => 'Bills',
+        'bills' => 'فواتير الموردين',
     ],
 ];

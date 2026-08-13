@@ -2,6 +2,7 @@
 
 use Webkul\Support\Filament\Resources\ActivityTypeResource;
 use Webkul\Support\Filament\Resources\BankResource;
+use Webkul\Support\Filament\Resources\CalendarResource;
 use Webkul\Support\Filament\Resources\CompanyResource;
 use Webkul\Support\Filament\Resources\CountryResource;
 use Webkul\Support\Filament\Resources\CurrencyResource;
@@ -18,12 +19,13 @@ return [
     'resources' => [
         'manage' => [
             ActivityTypeResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            BankResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            CompanyResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            CountryResource::class => [...$basic, ...$delete],
-            CurrencyResource::class => [...$basic, ...$delete],
-            StateResource::class => [...$basic, ...$delete],
-            UOMCategoryResource::class => [...$basic, ...$delete],
+            CalendarResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            BankResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            CompanyResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            CountryResource::class      => [...$basic, ...$delete],
+            CurrencyResource::class     => [...$basic, ...$delete],
+            StateResource::class        => [...$basic, ...$delete],
+            UOMCategoryResource::class  => [...$basic, ...$delete],
         ],
         'exclude' => [],
     ],

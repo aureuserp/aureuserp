@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Manage Distribution For Invoice',
+        'title' => 'إدارة التوزيع للفاتورة',
     ],
 ];

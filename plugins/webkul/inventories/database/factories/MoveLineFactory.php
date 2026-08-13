@@ -13,7 +13,7 @@ use Webkul\Inventory\Models\Package;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -21,6 +21,8 @@ use Webkul\Support\Models\UOM;
  */
 class MoveLineFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = MoveLine::class;
 
     public function definition(): array
@@ -47,7 +49,6 @@ class MoveLineFactory extends Factory
             'partner_id'              => null,
             'source_location_id'      => Location::factory(),
             'destination_location_id' => Location::factory(),
-            'company_id'              => Company::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }

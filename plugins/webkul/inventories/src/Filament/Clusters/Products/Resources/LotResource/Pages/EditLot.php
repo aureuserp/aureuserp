@@ -10,13 +10,17 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Models\Lot;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLot extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
 
     protected static string $resource = LotResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     protected function getSavedNotification(): Notification
     {
@@ -34,7 +38,7 @@ class EditLot extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->action(function (Lot $record) {
-                    $pdf = PDF::loadView('inventories::filament.clusters.products.lots.actions.print', [
+                    $pdf = Pdf::loadView('inventories::filament.clusters.products.lots.actions.print', [
                         'records' => collect([$record]),
                     ]);
 

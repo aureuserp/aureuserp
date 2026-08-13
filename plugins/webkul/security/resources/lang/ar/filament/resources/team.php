@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'الفرق',
-        'group' => 'الإعدادات',
     ],
 
     'form' => [
@@ -16,7 +15,8 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'الاسم',
+            'name'       => 'الاسم',
+            'created-by' => 'أُنشئ بواسطة',
         ],
 
         'actions' => [
@@ -51,7 +51,7 @@ return [
                 'name'          => 'الاسم',
                 'job-title'     => 'المسمى الوظيفي',
                 'work-email'    => 'البريد الإلكتروني للعمل',
-                'work-mobile'   => 'جوال العمل',
+                'work-mobile'   => 'الجوال للعمل',
                 'work-phone'    => 'هاتف العمل',
                 'manager'       => 'المدير',
                 'department'    => 'القسم',

@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'global-search' => [
+        'email' => 'البريد الإلكتروني',
+        'phone' => 'الهاتف',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -58,6 +63,8 @@ return [
     'table' => [
         'columns' => [
             'parent'     => 'الأصل',
+            'work-email' => 'البريد الإلكتروني للعمل',
+            'work-phone' => 'هاتف العمل',
         ],
 
         'groups' => [

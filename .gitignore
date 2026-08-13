@@ -13,6 +13,7 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+skills-lock.json
 Homestead.json
 Homestead.yaml
 auth.json
@@ -23,7 +24,13 @@ yarn-error.log
 /.vscode
 /.agents
 /.zed
+/.codex
+/.claude
 boost.json
 opencode.json
 /playwright-report
 /test-results
+/nativephp
+
+# Credential files (keystores, private keys, etc.)
+/credentials/

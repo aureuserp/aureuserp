@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Webkul\Product\Http\Controllers\API\V1\AttributeController;
 use Webkul\Product\Http\Controllers\API\V1\AttributeOptionController;
 use Webkul\Product\Http\Controllers\API\V1\CategoryController;
+use Webkul\Product\Http\Controllers\API\V1\PackagingController;
 use Webkul\Product\Http\Controllers\API\V1\ProductAttributeController;
 use Webkul\Product\Http\Controllers\API\V1\ProductController;
 use Webkul\Product\Http\Controllers\API\V1\ProductVariantController;
-use Webkul\Product\Http\Controllers\API\V1\PackagingController;
 use Webkul\Product\Http\Controllers\API\V1\TagController;
 
 // Protected routes (require authentication)

@@ -9,10 +9,17 @@ return [
     'header-actions' => [
         'confirm' => [
             'label' => 'Confirm',
+
+            'notification' => [
+                'unable' => [
+                    'title' => 'Unable to confirm purchase agreement',
+                    'body'  => 'Add at least one product line before confirming this purchase agreement.',
+                ],
+            ],
         ],
 
         'close' => [
-            'label' => 'Close',
+            'label'        => 'Close',
             'notification' => [
                 'warning' => [
                     'title' => 'Unable to close purchase agreement',

@@ -6,6 +6,11 @@ return [
         'group' => 'المخزون',
     ],
 
+    'global-search' => [
+        'ref'     => 'المرجع',
+        'product' => 'المنتج',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -16,6 +21,7 @@ return [
                     'name-placeholder'       => 'مثال: LOT/0001/20121',
                     'product'                => 'المنتج',
                     'product-hint-tooltip'   => 'المنتج المرتبط بهذه الدفعة/الرقم التسلسلي. لا يمكن تغييره إذا تم نقله بالفعل.',
+                    'company'                => 'الشركة',
                     'reference'              => 'المرجع',
                     'reference-hint-tooltip' => 'رقم مرجع داخلي، إذا كان مختلفاً عن رقم الدفعة/التسلسلي الخاص بالشركة المصنعة.',
                     'description'            => 'الوصف',

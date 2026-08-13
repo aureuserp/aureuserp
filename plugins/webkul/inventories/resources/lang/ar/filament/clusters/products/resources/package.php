@@ -6,6 +6,12 @@ return [
         'group' => 'المخزون',
     ],
 
+    'global-search' => [
+        'name'         => 'الاسم',
+        'package-type' => 'نوع الطرد',
+        'location'     => 'الموقع',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

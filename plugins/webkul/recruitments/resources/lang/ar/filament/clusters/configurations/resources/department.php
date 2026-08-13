@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'group' => 'Employees',
+        'group' => 'الموظفون',
     ],
 ];

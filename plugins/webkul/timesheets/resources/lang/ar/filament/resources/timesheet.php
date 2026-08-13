@@ -5,7 +5,12 @@ return [
 
     'navigation' => [
         'title' => 'سجلات الوقت',
-        'group' => 'المشروع',
+    ],
+
+    'global-search' => [
+        'project' => 'المشروع',
+        'task'    => 'المهمة',
+        'date'    => 'التاريخ',
     ],
 
     'form' => [

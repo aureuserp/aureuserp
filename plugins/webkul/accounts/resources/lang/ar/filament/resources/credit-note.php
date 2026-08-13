@@ -8,13 +8,6 @@ return [
         'group' => 'الفواتير',
     ],
 
-    'global-search' => [
-        'number'           => 'الرقم',
-        'customer'         => 'العميل',
-        'invoice-date'     => 'تاريخ الفاتورة',
-        'invoice-due-date' => 'تاريخ استحقاق الفاتورة',
-    ],
-
     'form' => [
         'section' => [
             'general' => [

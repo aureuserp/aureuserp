@@ -126,7 +126,7 @@ return [
                     'warning' => [
                         'title' => 'Purchase Agreement cannot be deleted',
                         'body'  => 'Only purchase agreements in Draft or Cancelled state can be deleted.',
-                    ]
+                    ],
                 ],
             ],
         ],
@@ -161,7 +161,7 @@ return [
                     'warning' => [
                         'title' => 'Purchase Agreement cannot be deleted',
                         'body'  => 'Only purchase agreements in Draft or Cancelled state can be deleted.',
-                    ]
+                    ],
                 ],
             ],
         ],

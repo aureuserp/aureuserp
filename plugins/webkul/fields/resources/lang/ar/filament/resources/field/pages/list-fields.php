@@ -2,13 +2,13 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'Create Field',
+            'label' => 'إنشاء حقل',
         ],
     ],
 ];

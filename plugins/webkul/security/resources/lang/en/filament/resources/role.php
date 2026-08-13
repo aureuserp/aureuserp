@@ -3,8 +3,8 @@
 return [
     'form' => [
         'fields' => [
-            'web' => 'Web',
-            'sanctum' => 'Sanctum'
+            'web'     => 'Web',
+            'sanctum' => 'Sanctum',
         ],
     ],
 

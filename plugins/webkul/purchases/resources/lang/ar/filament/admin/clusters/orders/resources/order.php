@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'global-search' => [
+        'vendor'    => 'المورد',
+        'reference' => 'المرجع',
+        'amount'    => 'المبلغ',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -16,6 +22,7 @@ return [
                     'order-deadline'           => 'الموعد النهائي للطلب',
                     'expected-arrival'         => 'تاريخ الوصول المتوقع',
                     'confirmed-by-vendor'      => 'مؤكد من المورد',
+                    'deliver-to'               => 'تسليم إلى',
                 ],
             ],
         ],
@@ -44,6 +51,18 @@ return [
                             'amount'              => 'المبلغ',
                         ],
 
+                        'notifications' => [
+                            'quantity-below-received' => [
+                                'title' => 'لا يمكن تقليل الكمية',
+                                'body'  => 'لا يمكنك تقليل الكمية إلى أقل من الكمية المستلمة (:qty).',
+                            ],
+
+                            'blanket-order-qty-limit' => [
+                                'title' => 'الكمية تتجاوز حد الطلب الشامل',
+                                'body'  => 'كمية المنتج (:product_qty) تتجاوز الكمية المتاحة (:available_qty) من الطلب الشامل.',
+                            ],
+                        ],
+
                         'columns' => [
                             'product'             => 'المنتج',
                             'expected-arrival'    => 'تاريخ الوصول المتوقع',
@@ -58,20 +77,31 @@ return [
                             'unit-price'          => 'سعر الوحدة',
                             'amount'              => 'المبلغ',
                         ],
+
+                        'delete-action' => [
+                            'error' => [
+                                'title' => 'لا يمكن حذف المنتج',
+                                'body'  => 'لا يمكن حذف المنتجات من أمر شراء مؤكد.',
+                            ],
+                        ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'فتح المنتج',
+                            ],
+                        ],
                     ],
 
                     'section' => [
                         'title' => 'إضافة قسم',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
 
                     'note' => [
                         'title' => 'إضافة ملاحظة',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
                 ],
             ],
@@ -112,8 +142,8 @@ return [
             'total-amount'     => 'المبلغ الإجمالي',
             'status'           => 'الحالة',
             'billing-status'   => 'حالة الفوترة',
+            'receipt-status'   => 'حالة الاستلام',
             'currency'         => 'العملة',
-            'billing-status'   => 'حالة الفوترة',
         ],
 
         'groups' => [
@@ -172,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'الضريبة',
     ],
 
     'infolist' => [

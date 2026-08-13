@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'breadcrumb'             => 'Internal Communication: You have been assigned to the Applicant :applicant.',
-    'greeting'               => 'Dear :interviewer,',
-    'assignment_message'     => 'You have been assigned to the Applicant',
-    'internal_communication' => 'Internal communication:',
-    'internal_note'          => 'Replying will post an internal note. Followers won’t receive any email notification.',
-    'view_applicant'         => 'View Applicant',
+    'breadcrumb'             => 'تواصل داخلي: تم تعيينك للمتقدم :applicant.',
+    'greeting'               => 'عزيزي :interviewer،',
+    'assignment_message'     => 'تم تعيينك للمتقدم',
+    'internal_communication' => 'تواصل داخلي:',
+    'internal_note'          => 'سيؤدي الرد إلى نشر ملاحظة داخلية. لن يتلقى المتابعون أي إشعار بالبريد الإلكتروني.',
+    'view_applicant'         => 'عرض المتقدم',
 ];

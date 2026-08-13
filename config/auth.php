@@ -1,5 +1,8 @@
 <?php
 
+use Webkul\Security\Models\User;
+use Webkul\Website\Models\Partner;
+
 return [
 
     /*
@@ -67,12 +70,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model'  => env('AUTH_MODEL', Webkul\Security\Models\User::class),
+            'model'  => env('AUTH_MODEL', User::class),
         ],
 
         'customers' => [
             'driver' => 'eloquent',
-            'model'  => env('AUTH_MODEL', Webkul\Website\Models\Partner::class),
+            'model'  => env('AUTH_MODEL', Partner::class),
         ],
 
         // 'users' => [

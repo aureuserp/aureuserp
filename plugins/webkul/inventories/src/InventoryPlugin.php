@@ -3,9 +3,7 @@
 namespace Webkul\Inventory;
 
 use Filament\Contracts\Plugin;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageOperations;
 use Webkul\PluginManager\Package;
 
 class InventoryPlugin implements Plugin
@@ -44,15 +42,7 @@ class InventoryPlugin implements Plugin
                     ->discoverWidgets(
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Inventory\\Filament\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('inventories::app.navigation.settings.label'))
-                            ->url(fn () => ManageOperations::getUrl())
-                            ->group('Inventory')
-                            ->sort(4)
-                            ->visible(fn () => ManageOperations::canAccess()),
-                    ]);
+                    );
             });
     }
 

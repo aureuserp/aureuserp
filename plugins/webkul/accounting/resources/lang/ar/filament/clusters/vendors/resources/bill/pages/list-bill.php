@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'navigation' => [
-        'title' => 'الفواتير',
+    'tabs' => [
+        'bills' => 'فواتير الموردين',
     ],
 ];

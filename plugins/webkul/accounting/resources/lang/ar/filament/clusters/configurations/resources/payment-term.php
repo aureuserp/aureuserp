@@ -2,7 +2,8 @@
 
 return [
     'model-label' => 'شروط الدفع',
-    'navigation'  => [
+
+    'navigation' => [
         'title' => 'شروط الدفع',
         'group' => 'الفوترة',
     ],

@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
                 UtmCampaignSeeder::class,
                 UTMMediumSeeder::class,
                 UTMSourceSeeder::class,
+                CalendarSeeder::class,
+                CalendarAttendanceSeeder::class,
             ]);
         });
     }

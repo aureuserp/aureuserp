@@ -30,6 +30,7 @@ return [
             'package'            => 'الطرد',
             'last-counted-at'    => 'آخر جرد في',
             'on-hand'            => 'الكمية المتاحة',
+            'uom'                => 'UOM',
             'counted'            => 'الكمية المحسوبة',
             'difference'         => 'الفرق',
             'scheduled-at'       => 'موعد الجدولة',

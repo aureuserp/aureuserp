@@ -7,7 +7,7 @@ return [
         'header-actions' => [
             'create' => [
                 'title' => 'New Bank Account',
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 ];

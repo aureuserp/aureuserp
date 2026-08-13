@@ -11,20 +11,20 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Sale\Database\Factories\TeamFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Team extends Model implements Sortable
 {
-    use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'sales';
 
     protected $table = 'sales_teams';
-
-    public function getModelTitle(): string
-    {
-        return __('sales::models/team.title');
-    }
 
     protected $fillable = [
         'sort',
@@ -52,6 +52,11 @@ class Team extends Model implements Sortable
             'is_active'          => __('sales::models/team.log-attributes.status'),
             'invoiced_target'    => __('sales::models/team.log-attributes.invoiced_target'),
         ];
+    }
+
+    public function getModelTitle(): string
+    {
+        return __('sales::models/team.title');
     }
 
     public function company()

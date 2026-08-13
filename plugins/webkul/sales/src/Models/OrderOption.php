@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,33 @@ class OrderOption extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
+    protected $appends = [
+        'is_present',
+    ];
+
+    public function isPresent(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): bool => ! is_null($this->line_id),
+        );
+    }
+
+    public function linkMatchingLine(): void
+    {
+        $lineId = OrderLine::where('order_id', $this->order_id)
+            ->where('product_id', $this->product_id)
+            ->whereNull('display_type')
+            ->value('id');
+
+        if ($this->line_id == $lineId) {
+            return;
+        }
+
+        $this->line_id = $lineId;
+
+        $this->saveQuietly();
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
@@ -65,6 +93,22 @@ class OrderOption extends Model implements Sortable
 
         static::creating(function ($orderOption) {
             $orderOption->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($orderOption) {
+            if (blank($orderOption->name)) {
+                $orderOption->name = $orderOption->product?->name;
+            }
+        });
+
+        static::created(function ($orderOption) {
+            $orderOption->linkMatchingLine();
+        });
+
+        static::updated(function ($orderOption) {
+            if ($orderOption->wasChanged('product_id')) {
+                $orderOption->linkMatchingLine();
+            }
         });
     }
 }

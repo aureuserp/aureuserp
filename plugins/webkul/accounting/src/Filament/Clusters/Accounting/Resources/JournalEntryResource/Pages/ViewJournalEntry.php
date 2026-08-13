@@ -24,14 +24,12 @@ class ViewJournalEntry extends ViewRecord
     {
         parent::mount($record);
 
-        // Redirect to InvoiceResource for customer invoices and credit notes
         if (in_array($this->record->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_REFUND])) {
             $this->redirect(InvoiceResource::getUrl('view', ['record' => $this->record]));
 
             return;
         }
 
-        // Redirect to BillResource for vendor bills and refunds
         if (in_array($this->record->move_type, [MoveType::IN_INVOICE, MoveType::IN_REFUND])) {
             $this->redirect(BillResource::getUrl('view', ['record' => $this->record]));
 
@@ -43,7 +41,8 @@ class ViewJournalEntry extends ViewRecord
     {
         return [
             ChatterActions\ChatterAction::make()
-                ->resource($this->getResource()),
+                ->resource($this->getResource())
+                ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
             BaseActions\ReverseAction::make(),

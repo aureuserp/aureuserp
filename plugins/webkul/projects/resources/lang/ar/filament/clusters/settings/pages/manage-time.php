@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Manage Time',
+    'title' => 'إدارة الوقت',
 
     'form' => [
-        'enable-timesheets'             => 'Enable Timesheets',
-        'enable-timesheets-helper-text' => 'Track time spent on projects and tasks',
+        'enable-timesheets'             => 'تفعيل الجداول الزمنية',
+        'enable-timesheets-helper-text' => 'تتبع الوقت المستغرق في المشاريع والمهام',
     ],
 ];

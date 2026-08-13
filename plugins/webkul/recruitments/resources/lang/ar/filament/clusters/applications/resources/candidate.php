@@ -7,6 +7,13 @@ return [
         'title' => 'المرشحون',
     ],
 
+    'global-search' => [
+        'email-from' => 'البريد الإلكتروني من',
+        'phone'      => 'الهاتف',
+        'company'    => 'الشركة',
+        'degree'     => 'الدرجة العلمية',
+    ],
+
     'form' => [
         'sections' => [
             'basic-information' => [

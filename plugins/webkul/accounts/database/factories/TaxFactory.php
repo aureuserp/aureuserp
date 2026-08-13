@@ -9,18 +9,19 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Models\TaxGroup;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Country;
 
 class TaxFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Tax::class;
 
     public function definition(): array
     {
         return [
             'sort'                             => 0,
-            'company_id'                       => Company::factory(),
             'tax_group_id'                     => TaxGroup::factory(),
             'cash_basis_transition_account_id' => null,
             'country_id'                       => null,

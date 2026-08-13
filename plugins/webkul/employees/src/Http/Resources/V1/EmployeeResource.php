@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Partner\Http\Resources\V1\BankAccountResource;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
+use Webkul\Support\Http\Resources\V1\CalendarResource;
 use Webkul\Support\Http\Resources\V1\CompanyResource;
 use Webkul\Support\Http\Resources\V1\CountryResource;
 use Webkul\Support\Http\Resources\V1\StateResource;

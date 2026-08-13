@@ -9,14 +9,34 @@ return [
 
     'form' => [
         'fields' => [
-            'name'                 => 'الاسم',
-            'foreign-vat'          => 'ضريبة القيمة المضافة الأجنبية',
-            'country'              => 'البلد',
-            'country-group'        => 'مجموعة البلدان',
-            'zip-from'             => 'الرمز البريدي من',
-            'zip-to'               => 'الرمز البريدي إلى',
-            'detect-automatically' => 'اكتشاف تلقائي',
-            'notes'                => 'ملاحظات',
+            'name'                   => 'الاسم',
+            'foreign-vat'            => 'ضريبة القيمة المضافة الأجنبية',
+            'country'                => 'البلد',
+            'country-group'          => 'مجموعة البلدان',
+            'zip-from'               => 'الرمز البريدي من',
+            'zip-to'                 => 'الرمز البريدي إلى',
+            'detect-automatically'   => 'اكتشاف تلقائي',
+            'notes'                  => 'ملاحظات',
+            'company'                => 'الشركة',
+        ],
+        'tabs' => [
+            'account-mapping' => [
+                'table' => [
+                    'columns' => [
+                        'source-account'      => 'الحساب المصدر',
+                        'destination-account' => 'الحساب الوجهة',
+                    ],
+                ],
+
+            ],
+            'tax-mapping' => [
+                'table' => [
+                    'columns' => [
+                        'tax-source'      => 'مصدر الضريبة',
+                        'tax-destination' => 'وجهة الضريبة',
+                    ],
+                ],
+            ],
         ],
     ],
 

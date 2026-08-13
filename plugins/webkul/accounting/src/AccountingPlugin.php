@@ -3,9 +3,7 @@
 namespace Webkul\Accounting;
 
 use Filament\Contracts\Plugin;
-use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts;
 use Webkul\PluginManager\Package;
 
 class AccountingPlugin implements Plugin
@@ -43,15 +41,7 @@ class AccountingPlugin implements Plugin
                     ->discoverWidgets(
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Accounting\\Filament\\Widgets'
-                    )
-                    ->navigationItems([
-                        NavigationItem::make('settings')
-                            ->label(fn () => __('accounting::app.navigation.settings.label'))
-                            ->url(fn () => ManageProducts::getUrl())
-                            ->group(fn () => __('accounting::app.navigation.settings.group'))
-                            ->sort(7)
-                            ->visible(fn () => ManageProducts::canAccess()),
-                    ]);
+                    );
             });
     }
 

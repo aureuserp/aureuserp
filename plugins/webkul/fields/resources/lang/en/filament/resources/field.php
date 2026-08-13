@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Custom Fields',
-        'group' => 'Settings',
     ],
 
     'form' => [
@@ -425,6 +424,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Thin',
                         'extra-light' => 'Extra Light',
                         'light'       => 'Light',
                         'normal'      => 'Normal',
@@ -432,6 +432,7 @@ return [
                         'semi-bold'   => 'Semi Bold',
                         'bold'        => 'Bold',
                         'extra-bold'  => 'Extra Bold',
+                        'black'       => 'Black',
                     ],
 
                     'icon-position-options' => [
@@ -521,6 +522,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Thin',
                         'extra-light' => 'Extra Light',
                         'light'       => 'Light',
                         'normal'      => 'Normal',
@@ -528,6 +530,7 @@ return [
                         'semi-bold'   => 'Semi Bold',
                         'bold'        => 'Bold',
                         'extra-bold'  => 'Extra Bold',
+                        'black'       => 'Black',
                     ],
 
                     'icon-position-options' => [
@@ -667,6 +670,7 @@ return [
                 'title' => 'Resource',
 
                 'fields' => [
+                    'plugin'   => 'Plugin',
                     'resource' => 'Resource',
                 ],
             ],

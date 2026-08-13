@@ -1,93 +1,86 @@
 <?php
 
 return [
-    'title' => 'Invoice',
+    'title' => 'فاتورة',
 
     'navigation' => [
-        'title' => 'Invoices',
-        'group' => 'Invoices',
-    ],
-
-    'global-search' => [
-        'number'           => 'Number',
-        'customer'         => 'Customer',
-        'invoice-date'     => 'Invoice Date',
-        'invoice-due-date' => 'Invoice Due Date',
+        'title' => 'الفواتير',
+        'group' => 'الفواتير',
     ],
 
     'form' => [
         'section' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
                 'fields' => [
-                    'vendor-credit-note' => 'Vendor Credit Note',
-                    'vendor'             => 'Vendor',
-                    'bill-date'          => 'Bill Date',
-                    'bill-reference'     => 'Bill Reference',
-                    'accounting-date'    => 'Accounting Date',
-                    'payment-reference'  => 'Payment Reference',
-                    'recipient-bank'     => 'Recipient Bank',
-                    'due-date'           => 'Due Date',
-                    'payment-term'       => 'Payment Term',
+                    'vendor-credit-note' => 'إشعار دائن المورد',
+                    'vendor'             => 'المورد',
+                    'bill-date'          => 'تاريخ الفاتورة',
+                    'bill-reference'     => 'مرجع الفاتورة',
+                    'accounting-date'    => 'التاريخ المحاسبي',
+                    'payment-reference'  => 'مرجع الدفع',
+                    'recipient-bank'     => 'بنك المستفيد',
+                    'due-date'           => 'تاريخ الاستحقاق',
+                    'payment-term'       => 'شروط الدفع',
                 ],
             ],
         ],
 
         'tabs' => [
             'invoice-lines' => [
-                'title' => 'Invoice Lines',
+                'title' => 'بنود الفاتورة',
 
                 'repeater' => [
                     'products' => [
-                        'title'       => 'Products',
-                        'add-product' => 'Add Product',
+                        'title'       => 'المنتجات',
+                        'add-product' => 'إضافة منتج',
 
                         'fields' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
+                            'product'             => 'المنتج',
+                            'quantity'            => 'الكمية',
+                            'unit'                => 'الوحدة',
+                            'taxes'               => 'الضرائب',
+                            'discount-percentage' => 'نسبة الخصم',
+                            'unit-price'          => 'سعر الوحدة',
+                            'sub-total'           => 'المجموع الفرعي',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'معلومات أخرى',
                 'fieldset' => [
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'المحاسبة',
 
                         'fields' => [
-                            'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
+                            'incoterm'          => 'شروط التجارة الدولية',
+                            'incoterm-location' => 'موقع شروط التجارة الدولية',
                         ],
                     ],
 
                     'secured' => [
-                        'title'  => 'Secured',
+                        'title'  => 'مؤمّن',
                         'fields' => [
-                            'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
-                            'checked'        => 'Checked',
+                            'payment-method' => 'طريقة الدفع',
+                            'auto-post'      => 'ترحيل تلقائي',
+                            'checked'        => 'تم التحقق',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title'  => 'Additional Information',
+                        'title'  => 'معلومات إضافية',
                         'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'  => 'الشركة',
+                            'currency' => 'العملة',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'الشروط والأحكام',
             ],
         ],
     ],
@@ -95,76 +88,76 @@ return [
     'infolist' => [
         'section' => [
             'general' => [
-                'title'   => 'General',
+                'title'   => 'عام',
                 'entries' => [
-                    'vendor-invoice'    => 'Vendor Invoice',
-                    'vendor'            => 'Vendor',
-                    'bill-date'         => 'Bill Date',
-                    'bill-reference'    => 'Bill Reference',
-                    'accounting-date'   => 'Accounting Date',
-                    'payment-reference' => 'Payment Reference',
-                    'recipient-bank'    => 'Recipient Bank',
-                    'due-date'          => 'Due Date',
-                    'payment-term'      => 'Payment Term',
+                    'vendor-invoice'    => 'فاتورة المورد',
+                    'vendor'            => 'المورد',
+                    'bill-date'         => 'تاريخ الفاتورة',
+                    'bill-reference'    => 'مرجع الفاتورة',
+                    'accounting-date'   => 'التاريخ المحاسبي',
+                    'payment-reference' => 'مرجع الدفع',
+                    'recipient-bank'    => 'بنك المستفيد',
+                    'due-date'          => 'تاريخ الاستحقاق',
+                    'payment-term'      => 'شروط الدفع',
                 ],
             ],
         ],
 
         'tabs' => [
             'invoice-lines' => [
-                'title' => 'Invoice Lines',
+                'title' => 'بنود الفاتورة',
 
                 'repeater' => [
                     'products' => [
-                        'title'       => 'Products',
-                        'add-product' => 'Add Product',
+                        'title'       => 'المنتجات',
+                        'add-product' => 'إضافة منتج',
 
                         'entries' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
+                            'product'             => 'المنتج',
+                            'quantity'            => 'الكمية',
+                            'unit'                => 'الوحدة',
+                            'taxes'               => 'الضرائب',
+                            'discount-percentage' => 'نسبة الخصم',
+                            'unit-price'          => 'سعر الوحدة',
+                            'sub-total'           => 'المجموع الفرعي',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'معلومات أخرى',
                 'fieldset' => [
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'المحاسبة',
 
                         'entries' => [
-                            'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
+                            'incoterm'          => 'شروط التجارة الدولية',
+                            'incoterm-location' => 'موقع شروط التجارة الدولية',
                         ],
                     ],
 
                     'secured' => [
-                        'title'   => 'Secured',
+                        'title'   => 'مؤمّن',
                         'entries' => [
-                            'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
-                            'checked'        => 'Checked',
+                            'payment-method' => 'طريقة الدفع',
+                            'auto-post'      => 'ترحيل تلقائي',
+                            'checked'        => 'تم التحقق',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title'   => 'Additional Information',
+                        'title'   => 'معلومات إضافية',
                         'entries' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'  => 'الشركة',
+                            'currency' => 'العملة',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'الشروط والأحكام',
             ],
         ],
     ],

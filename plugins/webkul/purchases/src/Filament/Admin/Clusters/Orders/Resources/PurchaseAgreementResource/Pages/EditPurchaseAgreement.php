@@ -11,20 +11,22 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Purchase\Models\Requisition;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditPurchaseAgreement extends EditRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = PurchaseAgreementResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -38,7 +40,8 @@ class EditPurchaseAgreement extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->resource(static::$resource),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             Action::make('confirm')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.label'))
                 ->color('primary')
@@ -48,8 +51,8 @@ class EditPurchaseAgreement extends EditRecord
                     if (! PurchaseAgreementResource::canBeConfirmed($record)) {
                         Notification::make()
                             ->danger()
-                            ->title('Unable to confirm purchase agreement')
-                            ->body('Add at least one product line before confirming this purchase agreement.')
+                            ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.notification.unable.title'))
+                            ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.notification.unable.body'))
                             ->send();
 
                         return;
@@ -61,7 +64,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     $this->fillForm();
                 })
-                ->visible(fn() => $this->getRecord()->state == RequisitionState::DRAFT),
+                ->visible(fn () => $this->getRecord()->state == RequisitionState::DRAFT),
             Action::make('close')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.close.label'))
                 ->color('primary')
@@ -84,7 +87,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     $this->fillForm();
                 })
-                ->visible(fn() => $this->getRecord()->state == RequisitionState::CONFIRMED),
+                ->visible(fn () => $this->getRecord()->state == RequisitionState::CONFIRMED),
             Action::make('cancelRecord')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.cancel.label'))
                 ->color('gray')
@@ -95,7 +98,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     $this->fillForm();
                 })
-                ->visible(fn() => ! in_array($this->getRecord()->state, [
+                ->visible(fn () => ! in_array($this->getRecord()->state, [
                     RequisitionState::CLOSED,
                     RequisitionState::CANCELED,
                 ])),
@@ -104,7 +107,7 @@ class EditPurchaseAgreement extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->action(function (Requisition $record) {
-                    $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.purchase-agreements.print', [
+                    $pdf = Pdf::loadView('purchases::filament.admin.clusters.orders.purchase-agreements.print', [
                         'records' => collect([$record]),
                     ]);
 
@@ -112,7 +115,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'Purchase Agreement-' . str_replace('/', '_', $record->name) . '.pdf');
+                    }, 'Purchase Agreement-'.str_replace('/', '_', $record->name).'.pdf');
                 }),
             DeleteAction::make()
                 ->successNotification(

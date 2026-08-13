@@ -2,8 +2,8 @@
 
 namespace Webkul\Sale\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -60,13 +60,13 @@ class OrderDeliveryController extends Controller
         }
 
         $deliveries = QueryBuilder::for($orderModel->operations())
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('state'),
                 AllowedFilter::exact('move_type'),
-            ])
-            ->allowedSorts(['id', 'name', 'state', 'scheduled_at', 'closed_at', 'created_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'state', 'scheduled_at', 'closed_at', 'created_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return OperationResource::collection($deliveries);

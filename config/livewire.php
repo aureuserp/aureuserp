@@ -129,14 +129,14 @@ return [
     */
 
     'temporary_file_upload' => [
-        'disk'          => env('LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK'),
+        'disk'          => env('LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK', 'local'),
         'rules'         => [
             'file',
             'mimes:jpg,jpeg,png,gif,bmp,svg,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,mp4,mov,avi,wmv,mp3,m4a,wav,mpga,wma',
             'mimetypes:image/*,video/*,audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv,application/zip',
         ],
         'directory'     => null,
-        'middleware'    => null,
+        'middleware'    => 'auth',
         'preview_mimes' => [
             'png',
             'gif',
@@ -292,7 +292,7 @@ return [
 
     'payload' => [
         'max_size'          => 1024 * 1024,   // 1MB - maximum request payload size in bytes
-        'max_nesting_depth' => 10,   // Maximum depth of dot-notation property paths
+        'max_nesting_depth' => 30,   // Maximum depth of dot-notation property paths
         'max_calls'         => 200,          // Maximum method calls per request
         'max_components'    => 20,      // Maximum components per batch request
     ],

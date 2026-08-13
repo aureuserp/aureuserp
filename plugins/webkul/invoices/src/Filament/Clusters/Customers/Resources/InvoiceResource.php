@@ -14,13 +14,10 @@ use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource\Pages\M
 use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Invoice;
-use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends BaseInvoiceResource
 {
-    use HasResourcePermissionQuery;
-
     protected static ?string $model = Invoice::class;
 
     protected static bool $shouldRegisterNavigation = true;
@@ -60,7 +57,7 @@ class InvoiceResource extends BaseInvoiceResource
         return parent::getProductRepeater()
             ->extraItemActions([
                 Action::make('openProduct')
-                    ->tooltip('Open product')
+                    ->tooltip(__('invoices::filament/clusters/customers/resources/invoice.actions.open-product.tooltip'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
                         'record' => $get("products.{$arguments['item']}.product_id"),

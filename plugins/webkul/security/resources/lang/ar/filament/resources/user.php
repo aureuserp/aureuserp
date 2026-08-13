@@ -5,15 +5,18 @@ return [
 
     'navigation' => [
         'title' => 'المستخدمون',
-        'group' => 'الإعدادات',
     ],
 
     'global-search' => [
-        'name'  => 'الاسم',
         'email' => 'البريد الإلكتروني',
     ],
 
     'form' => [
+        'validation' => [
+            'cannot-remove-last-admin'   => 'لا يمكن إزالة دور المسؤول من آخر مستخدم مسؤول.',
+            'first-user-must-be-admin'   => 'يجب تعيين دور المسؤول لأول مستخدم في النظام.',
+        ],
+
         'sections' => [
             'general-information' => [
                 'title'  => 'معلومات عامة',
@@ -28,10 +31,11 @@ return [
             'permissions' => [
                 'title'  => 'الصلاحيات',
                 'fields' => [
-                    'roles'               => 'الأدوار',
-                    'permissions'         => 'الصلاحيات',
-                    'resource-permission' => 'صلاحية المورد',
-                    'teams'               => 'الفرق',
+                    'roles'                                    => 'الأدوار',
+                    'permissions'                              => 'الصلاحيات',
+                    'resource-permission'                      => 'صلاحية المورد',
+                    'resource-permission-self-change-disabled' => 'لا يمكنك تغيير صلاحية المورد الخاصة بك. اطلب من مسؤول آخر تحديثها.',
+                    'teams'                                    => 'الفرق',
                 ],
             ],
 
@@ -48,9 +52,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'تعدد الشركات',
-                'allowed-companies' => 'الشركات المسموحة',
-                'default-company'   => 'الشركة الافتراضية',
+                'title'                       => 'تعدد الشركات',
+                'allowed-companies'           => 'الشركات المسموحة',
+                'default-company'             => 'الشركة الافتراضية',
+                'default-company-not-allowed' => 'يجب أن تكون الشركة الافتراضية إحدى الشركات المسموحة.',
             ],
         ],
     ],
@@ -65,6 +70,7 @@ return [
             'resource-permission' => 'صلاحية المورد',
             'default-company'     => 'الشركة الافتراضية',
             'allowed-company'     => 'الشركة المسموحة',
+            'created-by'          => 'أُنشئ بواسطة',
             'created-at'          => 'تاريخ الإنشاء',
             'updated-at'          => 'تاريخ التحديث',
         ],
@@ -89,6 +95,10 @@ return [
                 'notification' => [
                     'title' => 'تم حذف المستخدم',
                     'body'  => 'تم حذف المستخدم بنجاح.',
+                    'error' => [
+                        'title' => 'لا يمكن حذف المستخدم',
+                        'body'  => 'هذا مستخدم افتراضي أو لا يمكنك حذف نفسك.',
+                    ],
                 ],
             ],
 
@@ -172,9 +182,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'تعدد الشركات',
-                'allowed-companies' => 'الشركات المسموحة',
-                'default-company'   => 'الشركة الافتراضية',
+                'title'                       => 'تعدد الشركات',
+                'allowed-companies'           => 'الشركات المسموحة',
+                'default-company'             => 'الشركة الافتراضية',
+                'default-company-not-allowed' => 'يجب أن تكون الشركة الافتراضية إحدى الشركات المسموحة.',
             ],
         ],
     ],

@@ -22,6 +22,7 @@ return [
                     'order-deadline'           => 'Order Deadline',
                     'expected-arrival'         => 'Expected Arrival',
                     'confirmed-by-vendor'      => 'Confirmed by Vendor',
+                    'deliver-to'               => 'Deliver To',
                 ],
             ],
         ],
@@ -55,7 +56,7 @@ return [
                                 'title' => 'Cannot Reduce Quantity',
                                 'body'  => 'You cannot reduce the quantity below the received quantity (:qty).',
                             ],
-                            
+
                             'blanket-order-qty-limit' => [
                                 'title' => 'Quantity Exceeds Blanket Order Limit',
                                 'body'  => 'The product quantity (:product_qty) exceeds the available quantity (:available_qty) from the blanket order.',
@@ -81,6 +82,12 @@ return [
                             'error' => [
                                 'title' => 'Cannot Delete Product',
                                 'body'  => 'Products cannot be deleted from a confirmed purchase order.',
+                            ],
+                        ],
+
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'Open product',
                             ],
                         ],
                     ],
@@ -135,6 +142,7 @@ return [
             'total-amount'     => 'Total Amount',
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
+            'receipt-status'   => 'Receipt Status',
             'currency'         => 'Currency',
         ],
 
@@ -194,6 +202,10 @@ return [
                 ],
             ],
         ],
+    ],
+
+    'summary' => [
+        'tax' => 'Tax',
     ],
 
     'infolist' => [

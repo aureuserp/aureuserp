@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Customers\Resources;
 
 use Filament\Resources\Pages\Page;
+use Webkul\Account\Filament\Resources\CustomerResource as BaseCustomerResource;
 use Webkul\Accounting\Filament\Clusters\Customers;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\CreateCustomer;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\EditCustomer;
@@ -12,7 +13,6 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pag
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ManageContacts;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\Accounting\Models\Customer;
-use Webkul\Account\Filament\Resources\CustomerResource as BaseCustomerResource;
 
 class CustomerResource extends BaseCustomerResource
 {

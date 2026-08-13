@@ -41,16 +41,16 @@ class ProductVariantController extends Controller
         Gate::authorize('viewAny', Product::class);
 
         $variants = QueryBuilder::for(Product::where('parent_id', $product))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('type'),
                 AllowedFilter::exact('enable_sales'),
                 AllowedFilter::exact('enable_purchase'),
                 AllowedFilter::exact('category_id'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'price', 'cost', 'created_at', 'sort'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'price', 'cost', 'created_at', 'sort')
+            ->allowedIncludes(
                 'parent',
                 'uom',
                 'uomPO',
@@ -60,7 +60,7 @@ class ProductVariantController extends Controller
                 'attribute_values',
                 'company',
                 'creator',
-            ])
+            )
             ->paginate();
 
         return ProductResource::collection($variants);
@@ -93,7 +93,7 @@ class ProductVariantController extends Controller
     public function show(string $product, string $variant)
     {
         $variantModel = QueryBuilder::for(Product::where('id', $variant)->where('parent_id', $product))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'parent',
                 'uom',
                 'uomPO',
@@ -103,7 +103,7 @@ class ProductVariantController extends Controller
                 'attribute_values',
                 'company',
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $variantModel);

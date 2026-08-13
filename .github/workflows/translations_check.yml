@@ -1,0 +1,41 @@
+name: Translations Check
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  translations_check:
+    runs-on: ubuntu-latest
+
+    name: Check translation files consistency
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, fileinfo, gd, intl, mbstring, openssl, pdo, pdo_mysql, tokenizer, zip
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Setting Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run translations consistency check
+        run: php artisan translations:check --details

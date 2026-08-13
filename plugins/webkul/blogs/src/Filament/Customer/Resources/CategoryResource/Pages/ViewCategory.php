@@ -36,12 +36,12 @@ class ViewCategory extends ViewRecord
     {
         $query = Post::with(['category', 'creator', 'tags'])
             ->where('category_id', $this->getRecord()->id)
-            ->where('is_published', 1);
+            ->where('is_published', true);
 
         if (request()->has('search') && $search = request()->input('search')) {
             $query->where(function (Builder $query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('content', 'like', "%{$search}%");
+                $query->whereLike('title', "%{$search}%")
+                    ->orWhereLike('content', "%{$search}%");
             });
         }
 

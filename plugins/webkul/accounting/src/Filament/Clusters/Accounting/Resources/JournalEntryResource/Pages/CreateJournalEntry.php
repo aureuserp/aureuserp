@@ -6,14 +6,18 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Journal;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateJournalEntry extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     use HasRepeaterColumnManager;
 
     public function getSubNavigation(): array
@@ -26,11 +30,6 @@ class CreateJournalEntry extends CreateRecord
     }
 
     protected static string $resource = JournalEntryResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getCreatedNotification(): ?Notification
     {
@@ -45,7 +44,7 @@ class CreateJournalEntry extends CreateRecord
         parent::mount();
 
         $journal = Journal::where('type', JournalType::GENERAL)
-            ->where('company_id', Auth::user()->default_company_id)
+            ->where('company_id', current_company_id())
             ->first();
 
         $this->data['move_type'] ??= MoveType::ENTRY->value;

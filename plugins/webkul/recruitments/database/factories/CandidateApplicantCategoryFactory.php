@@ -17,7 +17,7 @@ class CandidateApplicantCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'candidate_id' => Candidate::factory(),
+            'candidate_id'          => Candidate::factory(),
             'applicant_category_id' => ApplicantCategory::factory(),
         ];
     }

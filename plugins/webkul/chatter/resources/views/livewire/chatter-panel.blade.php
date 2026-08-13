@@ -8,13 +8,19 @@
 
             .chatter-panel > .fi-modal-header {
                 display: flex;
-                padding: 20px 24px !important;
-                margin-top: -73px;
+                padding: 15px 24px !important;
+                margin-top: -64px;
                 background-color: var(--color-white);
                 position: absolute;
                 width: 100%;
                 padding-bottom: calc(var(--spacing)*6);
                 position: sticky;
+                top: 0;
+                z-index: 11;
+            }
+
+            :where(.dark) .chatter-panel > .fi-modal-header {
+                background-color: var(--gray-900);
             }
         </style>
     @else
@@ -37,6 +43,10 @@
                 --tw-font-weight: var(--font-weight-semibold);
                 font-weight: var(--font-weight-semibold);
                 color: var(--gray-950);
+            }
+
+            :where(.dark) .fi-modal-heading {
+                color: var(--color-white);
             }
         </style>
     @endif

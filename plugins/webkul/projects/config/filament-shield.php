@@ -18,13 +18,13 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            MilestoneResource::class => [...$basic, ...$delete],
-            TagResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            MilestoneResource::class    => [...$basic, ...$delete],
+            TagResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             ActivityPlanResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             ProjectStageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            TaskStageResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            ProjectResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            TaskResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TaskStageResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ProjectResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            TaskResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
         ],
         'exclude' => [],
     ],

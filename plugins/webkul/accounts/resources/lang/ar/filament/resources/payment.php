@@ -48,27 +48,27 @@ return [
         ],
 
         'groups' => [
-            'name'                 => 'الاسم',
-            'company'              => 'الشركة',
-            'journal'              => 'اليومية',
-            'partner'              => 'الشريك',
-            'payment-method-line'  => 'بند طريقة الدفع',
-            'payment-method'       => 'طريقة الدفع',
-            'partner-bank-account' => 'الحساب البنكي للشريك',
-            'created-at'           => 'تاريخ الإنشاء',
-            'updated-at'           => 'تاريخ التحديث',
+            'name'                             => 'الاسم',
+            'company'                          => 'الشركة',
+            'journal'                          => 'اليومية',
+            'partner'                          => 'الشريك',
+            'payment-method-line'              => 'بند طريقة الدفع',
+            'payment-method'                   => 'طريقة الدفع',
+            'partner-bank-account'             => 'الحساب البنكي للشريك',
+            'created-at'                       => 'تاريخ الإنشاء',
+            'updated-at'                       => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'company'               => 'الشركة',
-            'journal'               => 'اليومية',
-            'customer-bank-account' => 'الحساب البنكي للعميل',
-            'payment-method'        => 'طريقة الدفع',
-            'currency'              => 'العملة',
-            'partner'               => 'الشريك',
-            'payment-method-line'   => 'بند طريقة الدفع',
-            'created-at'            => 'تاريخ الإنشاء',
-            'updated-at'            => 'تاريخ التحديث',
+            'company'                          => 'الشركة',
+            'journal'                          => 'اليومية',
+            'customer-bank-account'            => 'الحساب البنكي للعميل',
+            'payment-method'                   => 'طريقة الدفع',
+            'currency'                         => 'العملة',
+            'partner'                          => 'الشريك',
+            'payment-method-line'              => 'بند طريقة الدفع',
+            'created-at'                       => 'تاريخ الإنشاء',
+            'updated-at'                       => 'تاريخ التحديث',
         ],
 
         'actions' => [
@@ -116,4 +116,5 @@ return [
             ],
         ],
     ],
+
 ];

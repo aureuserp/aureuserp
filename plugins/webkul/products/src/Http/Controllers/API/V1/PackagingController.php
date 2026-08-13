@@ -36,17 +36,17 @@ class PackagingController extends Controller
         Gate::authorize('viewAny', Packaging::class);
 
         $packagings = QueryBuilder::for(Packaging::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('product_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'sort', 'created_at')
+            ->allowedIncludes(
                 'product',
                 'creator',
                 'company',
-            ])
+            )
             ->paginate();
 
         return PackagingResource::collection($packagings);
@@ -77,11 +77,11 @@ class PackagingController extends Controller
     public function show(string $id)
     {
         $packaging = QueryBuilder::for(Packaging::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'product',
                 'creator',
                 'company',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $packaging);

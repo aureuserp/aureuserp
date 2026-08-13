@@ -7,7 +7,7 @@ return [
 
     'modal-actions' => [
         'edit' => [
-            'title' => 'تعديل',
+            'title'        => 'تعديل',
             'notification' => [
                 'title' => 'تم تحديث الإجازة',
                 'body'  => 'تم تحديث طلب الإجازة بنجاح.',

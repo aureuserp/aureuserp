@@ -1,30 +1,30 @@
 <?php
 
 return [
-    'title' => 'Job Position',
+    'title' => 'الوظيفة',
 
     'navigation' => [
-        'title' => 'Job Positions',
+        'title' => 'الوظائف',
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
+            'name'         => 'الاسم',
+            'manager-name' => 'المدير',
+            'company-name' => 'الشركة',
         ],
 
         'actions' => [
             'applications' => [
-                'new-applications' => ':count New Applications',
+                'new-applications' => ':count طلبات جديدة',
             ],
 
             'to-recruitment' => [
-                'to-recruitment' => ':count To Recruitment',
+                'to-recruitment' => ':count للتوظيف',
             ],
 
             'total-application' => [
-                'total-application' => ':count Applications',
+                'total-application' => ':count طلبات',
             ],
         ],
     ],

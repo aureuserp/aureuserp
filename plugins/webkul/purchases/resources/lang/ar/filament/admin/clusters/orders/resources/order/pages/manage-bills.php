@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Vendor Bills',
+        'title' => 'فواتير الموردين',
     ],
 ];

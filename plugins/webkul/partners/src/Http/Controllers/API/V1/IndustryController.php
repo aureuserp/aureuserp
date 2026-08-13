@@ -36,15 +36,15 @@ class IndustryController extends Controller
         Gate::authorize('viewAny', Industry::class);
 
         $industries = QueryBuilder::for(Industry::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::trashed(),
-            ])
-            ->allowedSorts(['id', 'name', 'created_at'])
-            ->allowedIncludes([
+            )
+            ->allowedSorts('id', 'name', 'created_at')
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->paginate();
 
         return IndustryResource::collection($industries);
@@ -75,9 +75,9 @@ class IndustryController extends Controller
     public function show(string $id)
     {
         $industry = QueryBuilder::for(Industry::where('id', $id))
-            ->allowedIncludes([
+            ->allowedIncludes(
                 'creator',
-            ])
+            )
             ->firstOrFail();
 
         Gate::authorize('view', $industry);

@@ -14,10 +14,10 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            TeamResource::class => [...$basic, ...$delete],
-            UserResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TeamResource::class    => [...$basic, ...$delete],
+            UserResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             CompanyResource::class => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            RoleResource::class => [...$basic, ...$delete],
+            RoleResource::class    => [...$basic, ...$delete],
         ],
         'exclude' => [],
     ],

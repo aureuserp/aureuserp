@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Project\Filament\Resources\ProjectResource;
-use Webkul\Support\Models\ActivityPlan;
 
 class ViewProject extends ViewRecord
 {
@@ -17,8 +16,8 @@ class ViewProject extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource)
-                ->setActivityPlans($this->getActivityPlans()),
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()
@@ -27,10 +26,5 @@ class ViewProject extends ViewRecord
                         ->body(__('projects::filament/resources/project/pages/view-project.header-actions.delete.notification.body')),
                 ),
         ];
-    }
-
-    private function getActivityPlans(): mixed
-    {
-        return ActivityPlan::where('plugin', 'projects')->pluck('name', 'id');
     }
 }

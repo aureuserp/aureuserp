@@ -9,6 +9,13 @@ return [
         'title' => 'الإجازات',
     ],
 
+    'global-search' => [
+        'employee'      => 'الموظف',
+        'time-off-type' => 'نوع الإجازة',
+        'date-from'     => 'التاريخ من',
+        'date-to'       => 'التاريخ إلى',
+    ],
+
     'form' => [
         'fields' => [
             'employee-name'     => 'اسم الموظف',

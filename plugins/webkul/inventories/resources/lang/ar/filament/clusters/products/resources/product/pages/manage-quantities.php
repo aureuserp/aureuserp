@@ -31,6 +31,7 @@ return [
             'quantity'          => 'الكمية',
             'package'           => 'الطرد',
             'on-hand'           => 'الكمية المتاحة',
+            'unit'              => 'الوحدة',
             'reserved-quantity' => 'الكمية المحجوزة',
 
             'on-hand-before-state-updated' => [

@@ -12,6 +12,22 @@ return [
                 'amount'          => 'المبلغ',
             ],
 
+            'repeater' => [
+                'invoice-repartition-lines' => [
+                    'label' => 'بنود تقسيم الفاتورة',
+                ],
+
+                'refund-repartition-lines' => [
+                    'label' => 'بنود تقسيم الاسترداد',
+                ],
+
+                'fields' => [
+                    'type'           => 'النوع',
+                    'factor-percent' => 'النسبة المئوية للعامل',
+                    'account'        => 'الحساب',
+                ],
+            ],
+
             'field-set' => [
                 'advanced-options' => [
                     'title' => 'خيارات متقدمة',
@@ -91,6 +107,24 @@ return [
                     'error' => [
                         'title' => 'تعذر حذف الضرائب',
                         'body'  => 'لا يمكن حذف الضرائب لأنها قيد الاستخدام حالياً.',
+                    ],
+                ],
+            ],
+        ],
+
+        'pages' => [
+            'create' => [
+                'notifications' => [
+                    'invalid-repartition-lines' => [
+                        'title' => 'بنود تقسيم غير صالحة',
+                    ],
+                ],
+            ],
+
+            'edit' => [
+                'notifications' => [
+                    'invalid-repartition-lines' => [
+                        'title' => 'بنود تقسيم غير صالحة',
                     ],
                 ],
             ],

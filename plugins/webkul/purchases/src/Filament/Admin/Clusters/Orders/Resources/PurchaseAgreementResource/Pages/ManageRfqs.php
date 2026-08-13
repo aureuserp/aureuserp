@@ -6,7 +6,6 @@ use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;

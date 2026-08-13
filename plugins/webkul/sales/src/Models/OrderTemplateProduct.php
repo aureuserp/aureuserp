@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class OrderTemplateProduct extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'sales_order_template_products';
 
     protected $fillable = [
@@ -54,7 +57,7 @@ class OrderTemplateProduct extends Model
         parent::boot();
 
         static::creating(function ($orderTemplateProduct) {
-            $orderTemplateProduct->company_id ??= Company::first()?->id;
+            $orderTemplateProduct->company_id ??= current_company_id();
             $orderTemplateProduct->product_id ??= Product::first()?->id;
             $orderTemplateProduct->product_uom_id ??= UOM::first()?->id;
             $orderTemplateProduct->creator_id ??= Auth::id();

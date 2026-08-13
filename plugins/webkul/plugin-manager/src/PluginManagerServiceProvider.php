@@ -6,6 +6,7 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Event;
+use Webkul\PluginManager\Console\Commands\FindMissingTranslations;
 use Webkul\PluginManager\Console\Commands\InstallERP;
 
 class PluginManagerServiceProvider extends PackageServiceProvider
@@ -28,6 +29,7 @@ class PluginManagerServiceProvider extends PackageServiceProvider
             ->runsSeeders()
             ->hasCommands([
                 InstallERP::class,
+                FindMissingTranslations::class,
             ]);
     }
 

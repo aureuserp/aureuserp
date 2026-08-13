@@ -20,24 +20,27 @@ class ActivityTypeSeeder extends Seeder
     {
         $creator = User::find(1);
 
+        $meetingActivityType = [
+            'sort'                   => 1,
+            'delay_count'            => 1,
+            'triggered_next_type_id' => null,
+            'default_user_id'        => null,
+            'creator_id'             => $creator?->id,
+            'delay_unit'             => ActivityDelayUnit::DAYS->value,
+            'delay_from'             => ActivityDelayFrom::CURRENT_DATE->value,
+            'icon'                   => 'heroicon-c-arrow-up',
+            'decoration_type'        => ActivityDecorationType::ALERT->value,
+            'chaining_type'          => ActivityChainingType::SUGGEST->value,
+            'category'               => ActivityTypeAction::MEETING->value,
+            'name'                   => 'Meeting',
+            'plugin'                 => 'support',
+            'summary'                => 'Meeting',
+            'is_active'              => true,
+        ];
+
+        $meetingId = DB::table('activity_types')->insertGetId($meetingActivityType);
+
         $activityTypes = [
-            [
-                'sort'                   => 1,
-                'delay_count'            => 1,
-                'triggered_next_type_id' => 1,
-                'default_user_id'        => null,
-                'creator_id'             => $creator?->id,
-                'delay_unit'             => ActivityDelayUnit::DAYS->value,
-                'delay_from'             => ActivityDelayFrom::CURRENT_DATE->value,
-                'icon'                   => 'heroicon-c-arrow-up',
-                'decoration_type'        => ActivityDecorationType::ALERT->value,
-                'chaining_type'          => ActivityChainingType::SUGGEST->value,
-                'category'               => ActivityTypeAction::MEETING->value,
-                'name'                   => 'Meeting',
-                'plugin'                 => 'support',
-                'summary'                => 'Meeting',
-                'is_active'              => true,
-            ],
             [
                 'sort'                   => 1,
                 'delay_count'            => 1,
@@ -92,5 +95,9 @@ class ActivityTypeSeeder extends Seeder
         ];
 
         DB::table('activity_types')->insert($activityTypes);
+
+        DB::table('activity_types')
+            ->where('id', $meetingId)
+            ->update(['triggered_next_type_id' => $meetingId]);
     }
 }

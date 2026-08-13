@@ -1,0 +1,30 @@
+{
+    "name": "webkul/maintenance",
+    "description": "Maintenance management",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Maintenance\\MaintenanceServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Maintenance\\": "src/",
+            "Webkul\\Maintenance\\Database\\Factories\\": "database/factories/",
+            "Webkul\\Maintenance\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Maintenance\\Tests\\": "tests/"
+        }
+    }
+}

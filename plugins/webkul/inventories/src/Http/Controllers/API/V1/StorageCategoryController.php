@@ -42,14 +42,14 @@ class StorageCategoryController extends Controller
         Gate::authorize('viewAny', StorageCategory::class);
 
         $storageCategories = QueryBuilder::for(StorageCategory::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::exact('allow_new_products'),
                 AllowedFilter::exact('company_id'),
-            ])
-            ->allowedSorts(['id', 'name', 'sort', 'max_weight', 'created_at', 'updated_at'])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedSorts('id', 'name', 'sort', 'max_weight', 'created_at', 'updated_at')
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return StorageCategoryResource::collection($storageCategories);
@@ -80,7 +80,7 @@ class StorageCategoryController extends Controller
     public function show(string $id)
     {
         $storageCategory = QueryBuilder::for(StorageCategory::where('id', $id))
-            ->allowedIncludes($this->allowedIncludes)
+            ->allowedIncludes(...$this->allowedIncludes)
             ->firstOrFail();
 
         Gate::authorize('view', $storageCategory);

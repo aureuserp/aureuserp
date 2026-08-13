@@ -22,6 +22,7 @@ class PaymentMethodLineResource extends JsonResource
             'payment_account_id'   => $this->payment_account_id,
             'journal_id'           => $this->journal_id,
             'name'                 => $this->name,
+            'display_name'         => $this->display_name,
             'creator_id'           => $this->creator_id,
             'created_at'           => $this->created_at,
             'updated_at'           => $this->updated_at,

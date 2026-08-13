@@ -10,32 +10,26 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Uses a correlated subquery (rather than MySQL's UPDATE...JOIN...SET) so the
+        // same statement is portable across MySQL and PostgreSQL.
         DB::statement("
             UPDATE partners_partners p
-            LEFT JOIN (
-                SELECT
-                    partner_id,
-                    COUNT(*) AS total
-                FROM accounts_account_moves
-                WHERE partner_id IS NOT NULL
-                  AND move_type IN ('out_invoice', 'out_refund')
-                GROUP BY partner_id
-            ) m ON m.partner_id = p.id
-            SET p.customer_rank = COALESCE(m.total, 0)
+            SET customer_rank = COALESCE((
+                SELECT COUNT(*)
+                FROM accounts_account_moves m
+                WHERE m.partner_id = p.id
+                  AND m.move_type IN ('out_invoice', 'out_refund')
+            ), 0)
         ");
 
         DB::statement("
             UPDATE partners_partners p
-            LEFT JOIN (
-                SELECT
-                    partner_id,
-                    COUNT(*) AS total
-                FROM accounts_account_moves
-                WHERE partner_id IS NOT NULL
-                  AND move_type IN ('in_invoice', 'in_refund')
-                GROUP BY partner_id
-            ) m ON m.partner_id = p.id
-            SET p.supplier_rank = COALESCE(m.total, 0)
+            SET supplier_rank = COALESCE((
+                SELECT COUNT(*)
+                FROM accounts_account_moves m
+                WHERE m.partner_id = p.id
+                  AND m.move_type IN ('in_invoice', 'in_refund')
+            ), 0)
         ");
     }
 

@@ -2,13 +2,31 @@
 
 return [
     'title' => 'الفاتورة',
+
     'navigation' => [
         'title' => 'الفواتير',
     ],
+
     'global-search' => [
         'customer' => 'العميل',
-        'date' => 'التاريخ',
+        'date'     => 'التاريخ',
         'due-date' => 'تاريخ الاستحقاق',
-        'amount' => 'المبلغ',
+        'amount'   => 'المبلغ',
+    ],
+
+    'form' => [
+        'tabs' => [
+            'invoice-lines' => [
+                'repeater' => [
+                    'products' => [
+                        'actions' => [
+                            'open-product' => [
+                                'tooltip' => 'فتح المنتج',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
     ],
 ];

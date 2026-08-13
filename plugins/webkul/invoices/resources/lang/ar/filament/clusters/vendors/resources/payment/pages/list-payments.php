@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'navigation' => [
-        'title' => 'المدفوعات',
+    'tabs' => [
+        'vendor-payments' => 'دفعات الموردين',
     ],
 ];

@@ -8,13 +8,8 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
-use Webkul\Inventory\Models\Location;
-use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
@@ -42,10 +37,10 @@ class ManageQuantities extends ManageRelatedRecords
             return false;
         }
 
-        return app(OperationSettings::class)->enable_packages
-            || app(WarehouseSettings::class)->enable_locations
+        return static::getOperationSettings()->enable_packages
+            || static::getWarehouseSettings()->enable_locations
             || (
-                app(TraceabilitySettings::class)->enable_lots_serial_numbers
+                static::getTraceabilitySettings()->enable_lots_serial_numbers
                 && $parameters['record']->tracking != ProductTracking::QTY
             );
     }
@@ -65,14 +60,14 @@ class ManageQuantities extends ManageRelatedRecords
                     ->searchable(),
                 TextColumn::make('location.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.location'))
-                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 TextColumn::make('storageCategory.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.storage-category'))
                     ->placeholder('—'),
                 TextColumn::make('package.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.package'))
                     ->placeholder('—')
-                    ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
+                    ->visible(static::getOperationSettings()->enable_packages),
                 TextInputColumn::make('quantity')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.on-hand'))
                     ->searchable()
@@ -89,45 +84,11 @@ class ManageQuantities extends ManageRelatedRecords
                             return;
                         }
 
-                        $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
-                            ->where('is_scrap', false)
-                            ->first();
-
-                        $currentQuantity = $state - $previousQuantity;
-
-                        if ($currentQuantity < 0) {
-                            $sourceLocationId = $record->location_id;
-
-                            $destinationLocationId = $adjustmentLocation->id;
-                        } else {
-                            $sourceLocationId = $adjustmentLocation->id;
-
-                            $destinationLocationId = $record->location_id;
-                        }
-
-                        ProductResource::createMove($record, $currentQuantity, $sourceLocationId, $destinationLocationId);
+                        $record->update([
+                            'inventory_diff_quantity' => $state - $previousQuantity,
+                        ]);
                     })
                     ->afterStateUpdated(function ($record, $state) {
-                        $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
-                            ->where('is_scrap', false)
-                            ->first();
-
-                        $data['inventory_quantity_set'] = false;
-
-                        ProductQuantity::updateOrCreate(
-                            [
-                                'location_id' => $adjustmentLocation->id,
-                                'product_id'  => $record->product_id,
-                                'lot_id'      => $record->lot_id,
-                            ], [
-                                'quantity'               => -$record->product->on_hand_quantity,
-                                'company_id'             => $record->company_id,
-                                'creator_id'             => Auth::id(),
-                                'incoming_at'            => now(),
-                                'inventory_quantity_set' => false,
-                            ]
-                        );
-
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/resources/task.table.actions.delete.notification.title'))
@@ -138,7 +99,7 @@ class ManageQuantities extends ManageRelatedRecords
                 TextColumn::make('product.uom.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.unit'))
                     ->placeholder('—')
-                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                    ->visible(static::getProductSettings()->enable_uom),
             ])
             ->recordActions([
                 DeleteAction::make()
@@ -150,5 +111,25 @@ class ManageQuantities extends ManageRelatedRecords
                     ),
             ])
             ->paginated(false);
+    }
+
+    public static function getOperationSettings(): OperationSettings
+    {
+        return settings(OperationSettings::class);
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return settings(ProductSettings::class);
+    }
+
+    public static function getTraceabilitySettings(): TraceabilitySettings
+    {
+        return settings(TraceabilitySettings::class);
+    }
+
+    public static function getWarehouseSettings(): WarehouseSettings
+    {
+        return settings(WarehouseSettings::class);
     }
 }

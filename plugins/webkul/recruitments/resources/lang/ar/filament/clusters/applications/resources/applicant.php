@@ -7,6 +7,12 @@ return [
         'title' => 'المتقدمون',
     ],
 
+    'global-search' => [
+        'department' => 'القسم',
+        'work-email' => 'البريد الإلكتروني للعمل',
+        'work-phone' => 'هاتف العمل',
+    ],
+
     'form' => [
         'sections' => [
             'general-information' => [

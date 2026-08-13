@@ -23,6 +23,7 @@ class ViewQuotation extends ViewRecord
     {
         return [
             ChatterAction::make()
+                ->activityPlans($this->getRecord()->activityPlans())
                 ->resource($this->getResource()),
             BaseActions\BackToQuotationAction::make(),
             BaseActions\CancelQuotationAction::make(),

@@ -43,6 +43,10 @@ return [
     ],
 
     'infolist' => [
+        'sections' => [
+            'basic-information' => 'المعلومات الأساسية',
+        ],
+
         'entries' => [
             'name'                    => 'الاسم',
             'is-based-on-worked-time' => 'بناءً على وقت العمل',

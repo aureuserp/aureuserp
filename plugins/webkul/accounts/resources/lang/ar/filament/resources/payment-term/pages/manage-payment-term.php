@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Manage Due Terms',
+        'title' => 'إدارة شروط الاستحقاق',
     ],
 ];

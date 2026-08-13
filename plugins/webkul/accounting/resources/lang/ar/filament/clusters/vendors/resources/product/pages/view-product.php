@@ -1,7 +1,12 @@
 <?php
 
 return [
-    'navigation' => [
-        'title' => 'عرض المنتج',
+    'header-actions' => [
+        'delete' => [
+            'notification' => [
+                'title' => 'تم حذف المنتج',
+                'body'  => 'تم حذف المنتج بنجاح.',
+            ],
+        ],
     ],
 ];

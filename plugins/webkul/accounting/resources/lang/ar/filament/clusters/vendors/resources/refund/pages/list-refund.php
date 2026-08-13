@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'navigation' => [
-        'title' => 'الاسترجاعات',
+    'tabs' => [
+        'refund' => 'استرداد',
     ],
 ];

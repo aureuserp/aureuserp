@@ -55,7 +55,7 @@ class MoveController extends Controller
         abort_unless(auth()->user()?->can('view_any_inventory_move'), 403);
 
         $moves = QueryBuilder::for(MoveLine::class)
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('move_id'),
                 AllowedFilter::exact('operation_id'),
@@ -85,8 +85,8 @@ class MoveController extends Controller
 
                     $query->whereHas('move', fn ($query) => $query->whereIn('scrap_id', $scrapIds));
                 }),
-            ])
-            ->allowedSorts([
+            )
+            ->allowedSorts(
                 'id',
                 'scheduled_at',
                 'reference',
@@ -95,8 +95,8 @@ class MoveController extends Controller
                 'state',
                 'created_at',
                 'updated_at',
-            ])
-            ->allowedIncludes($this->allowedIncludes)
+            )
+            ->allowedIncludes(...$this->allowedIncludes)
             ->paginate();
 
         return MoveLineResource::collection($moves);

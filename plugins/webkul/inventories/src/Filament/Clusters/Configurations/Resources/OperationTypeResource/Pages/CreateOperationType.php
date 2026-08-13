@@ -5,10 +5,15 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationT
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateOperationType extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = OperationTypeResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     public function getSubNavigation(): array
     {
@@ -17,11 +22,6 @@ class CreateOperationType extends CreateRecord
         }
 
         return [];
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getCreatedNotification(): Notification

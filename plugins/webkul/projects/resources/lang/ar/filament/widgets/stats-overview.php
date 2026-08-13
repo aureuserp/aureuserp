@@ -8,4 +8,7 @@ return [
     'total-tasks'          => 'إجمالي المهام',
     'total-hours-spent'    => 'إجمالي الساعات المُنفقة',
     'total-time-remaining' => 'إجمالي الوقت المتبقي',
+
+    'increase' => 'زيادة',
+    'decrease' => 'انخفاض',
 ];

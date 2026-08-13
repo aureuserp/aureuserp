@@ -5,9 +5,9 @@ namespace Webkul\Employee\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -15,10 +15,14 @@ use Webkul\Employee\Database\Factories\DepartmentFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Department extends Model
 {
+    use BelongsToCompany;
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+
+    public const ACTIVITY_PLAN_PLUGIN = 'employees';
 
     protected $table = 'employees_departments';
 
@@ -162,11 +166,14 @@ class Department extends Model
     protected static function getCompleteName($department)
     {
         $names = [];
+
         $names[] = $department->name;
 
         $currentDepartment = $department;
+
         while ($currentDepartment->parent_id) {
             $currentDepartment = static::find($currentDepartment->parent_id);
+
             array_unshift($names, $currentDepartment->name);
         }
 
