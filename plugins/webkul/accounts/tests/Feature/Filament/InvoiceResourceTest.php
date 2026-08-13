@@ -6,6 +6,7 @@ use Livewire\Livewire;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\CancelAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ConfirmAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\PayAction;
@@ -152,4 +153,40 @@ it('registers a full payment and marks the invoice paid through the action', fun
         ->assertActionHidden(PayAction::class);
 
     expect($invoice->refresh()->payment_state)->toBe(PaymentState::PAID);
+
+    expect($invoice->matchedPayments)->toHaveCount(1);
+
+    expect($invoice->matchedPayments->first()->state)->toBe(PaymentStatus::PAID);
+});
+
+it('marks all payments paid once the invoice is fully paid in installments', function () {
+    FilamentHelper::actingAs(['view_any_account_invoice', 'update_account_invoice']);
+
+    AccountHelper::bankJournal();
+
+    $invoice = postedInvoiceRecord();
+
+    Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        ->assertOk()
+        ->callAction(PayAction::class, data: ['amount' => 100]);
+
+    $invoice->refresh();
+
+    expect($invoice->payment_state)->toBe(PaymentState::PARTIAL);
+
+    expect($invoice->matchedPayments->first()->state)->toBe(PaymentStatus::IN_PROCESS);
+
+    Livewire::test(EditInvoice::class, ['record' => $invoice->id])
+        ->assertOk()
+        ->callAction(PayAction::class, data: ['amount' => 100]);
+
+    $invoice->refresh();
+
+    expect($invoice->payment_state)->toBe(PaymentState::PAID);
+
+    expect($invoice->matchedPayments)->toHaveCount(2);
+
+    $invoice->matchedPayments->each(
+        fn ($payment) => expect($payment->state)->toBe(PaymentStatus::PAID)
+    );
 });

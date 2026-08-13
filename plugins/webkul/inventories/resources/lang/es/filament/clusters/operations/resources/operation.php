@@ -217,6 +217,7 @@ return [
         'draft'       => 'Borrador',
         'waiting'     => 'En espera',
         'ready'       => 'Listo',
+        'late'        => 'Atrasado',
         'done'        => 'Realizado',
         'canceled'    => 'Cancelado',
         'back-orders' => 'Pedidos pendientes',
