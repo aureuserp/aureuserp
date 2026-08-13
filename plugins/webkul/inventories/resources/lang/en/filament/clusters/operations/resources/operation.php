@@ -217,6 +217,7 @@ return [
         'draft'       => 'Draft',
         'waiting'     => 'Waiting',
         'ready'       => 'Ready',
+        'late'        => 'Late',
         'done'        => 'Done',
         'canceled'    => 'Canceled',
         'back-orders' => 'Back Orders',
