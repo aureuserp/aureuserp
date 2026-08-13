@@ -7,14 +7,14 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
+use Webkul\Support\Filament\Concerns\TranslatableListRecords;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ListPosts extends ListRecords
 {
-    use HasTableViews, Translatable;
+    use HasTableViews, TranslatableListRecords;
 
     protected static string $resource = PostResource::class;
 

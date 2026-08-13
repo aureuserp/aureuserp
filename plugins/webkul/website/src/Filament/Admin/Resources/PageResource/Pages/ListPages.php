@@ -5,14 +5,14 @@ namespace Webkul\Website\Filament\Admin\Resources\PageResource\Pages;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
+use Webkul\Support\Filament\Concerns\TranslatableListRecords;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
 
 class ListPages extends ListRecords
 {
-    use HasTableViews, Translatable;
+    use HasTableViews, TranslatableListRecords;
 
     protected static string $resource = PageResource::class;
 

@@ -89,20 +89,26 @@ it('ignores unsupported locale stored in session', function () {
     expect(runSetLocale([], ['locale' => 'fr']))->toBe('en');
 });
 
-it('uses authenticated user language preference over session', function () {
+it('prefers explicit session locale over authenticated user language preference', function () {
     $user = User::withoutEvents(fn () => User::factory()->create(['language' => 'ar']));
     Auth::login($user);
 
-    expect(runSetLocale([], ['locale' => 'en']))->toBe('ar');
+    expect(runSetLocale([], ['locale' => 'en']))->toBe('en');
 });
 
-it('clears stale session locale on authenticated requests', function () {
+it('uses authenticated user language preference when no session locale exists', function () {
+    $user = User::withoutEvents(fn () => User::factory()->create(['language' => 'ar']));
+    Auth::login($user);
+
+    expect(runSetLocale())->toBe('ar');
+});
+
+it('keeps session locale across authenticated requests', function () {
     $user = User::withoutEvents(fn () => User::factory()->create(['language' => null]));
     Auth::login($user);
 
-    runSetLocale([], ['locale' => 'ar']);
-
-    expect(Session::has('locale'))->toBeFalse();
+    expect(runSetLocale([], ['locale' => 'ar']))->toBe('ar')
+        ->and(Session::get('locale'))->toBe('ar');
 });
 
 it('does not persist ?lang= into the user language column', function () {
@@ -122,10 +128,11 @@ it('gives authenticated users config fallback when their language is null', func
     expect(runSetLocale())->toBe('ar');
 });
 
-it('lets ?lang= override user preference for the current request only', function () {
+it('lets ?lang= override user preference and persists the choice in session', function () {
     $user = User::withoutEvents(fn () => User::factory()->create(['language' => 'ar']));
     Auth::login($user);
 
     expect(runSetLocale(['lang' => 'en']))->toBe('en')
+        ->and(Session::get('locale'))->toBe('en')
         ->and($user->fresh()->language)->toBe('ar');
 });

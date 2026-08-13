@@ -3,10 +3,16 @@
 namespace Webkul\Support\Filament\Concerns;
 
 use LaraZeus\SpatieTranslatable\Resources\Pages\ViewRecord\Concerns\Translatable;
+use Webkul\Support\Filament\TranslatableContentDriver;
 
 trait TranslatableViewRecord
 {
     use Translatable;
+
+    public function getFilamentTranslatableContentDriver(): ?string
+    {
+        return TranslatableContentDriver::class;
+    }
 
     protected function fillForm(): void
     {

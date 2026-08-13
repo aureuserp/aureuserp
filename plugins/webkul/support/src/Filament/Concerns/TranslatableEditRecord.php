@@ -5,11 +5,17 @@ namespace Webkul\Support\Filament\Concerns;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use LaraZeus\SpatieTranslatable\Resources\Pages\EditRecord\Concerns\Translatable;
+use Webkul\Support\Filament\TranslatableContentDriver;
 
 trait TranslatableEditRecord
 {
     use HasTranslationFallback;
     use Translatable;
+
+    public function getFilamentTranslatableContentDriver(): ?string
+    {
+        return TranslatableContentDriver::class;
+    }
 
     protected function fillForm(): void
     {
