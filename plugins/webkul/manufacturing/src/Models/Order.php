@@ -9,12 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Chatter\Traits\HasChatter;
+use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ProductTracking;
+use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
@@ -28,13 +32,16 @@ use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Enums\WorkOrderState;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\SequenceService;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Order extends Model
 {
-    use HasFactory, HasPermissionScope;
+    use BelongsToCompany, HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope;
 
     protected $table = 'manufacturing_orders';
 
@@ -79,28 +86,38 @@ class Order extends Model
         'is_locked'          => 'boolean',
         'quantity'           => 'decimal:4',
         'quantity_producing' => 'decimal:4',
+        'product_uom_qty'    => 'decimal:4',
         'deadline_at'        => 'datetime',
         'started_at'         => 'datetime',
         'finished_at'        => 'datetime',
     ];
 
-    protected array $context = [];
-
-    protected function getAssignmentColumn(): ?string
+    public function ownershipSources(): array
     {
-        return 'assigned_user_id';
-    }
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('assigned_user_id'),
+        ];
     }
 
     public function getModelTitle(): string
     {
         return __('manufacturing::models/order.title');
+    }
+
+    public function getChatterResponsibles(): array
+    {
+        return ['assignedUser'];
+    }
+
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'quantity_producing' => __('manufacturing::models/order.log-attributes.product-qty'),
+            'state'              => __('manufacturing::models/order.log-attributes.state'),
+            'reservation_state'  => __('manufacturing::models/order.log-attributes.reservation-state'),
+            'assignedUser.name'  => __('manufacturing::models/order.log-attributes.assigned-user'),
+        ];
     }
 
     public function product(): BelongsTo
@@ -347,7 +364,7 @@ class Order extends Model
 
             $order->creator_id ??= $authUser?->id;
 
-            $order->company_id ??= $authUser?->default_company_id;
+            $order->company_id ??= current_company_id();
 
             $order->computeState();
 
@@ -371,16 +388,14 @@ class Order extends Model
         });
 
         static::created(function ($order) {
-            $name = 'MO/'.$order->id;
-
             if (! $order->procurement_group_id) {
                 $order->procurement_group_id = $order->procurementGroup()->create([
-                    'name' => $name,
+                    'name' => $order->name,
                 ])->id;
             }
 
             $order->update([
-                'name' => $name,
+                'name' => $order->name,
             ]);
         });
 
@@ -419,7 +434,15 @@ class Order extends Model
 
     public function computeName()
     {
-        $this->name = 'MO/'.$this->id;
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::next('manufacturing.order', $this->company_id, [
+            'name'         => 'Manufacturing Order',
+            'prefix'       => 'MO/',
+            'initial_from' => static::withoutGlobalScopes(),
+        ]);
     }
 
     public function computeProductUOMQty()
@@ -519,7 +542,7 @@ class Order extends Model
             return;
         }
 
-        $relevantMoveState = Move::getRelevantStateAmongMoves(
+        $relevantMoveState = InventoryFacade::relevantMoveState(
             $this->rawMaterialMoves->filter(fn ($move) => ! $move->is_picked)
         );
 
@@ -541,10 +564,6 @@ class Order extends Model
 
     public function computeStartedAt()
     {
-        if ($defaultDateDeadline = ($this->context['default_deadline'] ?? false)) {
-            return Carbon::parse($defaultDateDeadline)->subHour();
-        }
-
         return now();
     }
 
@@ -727,7 +746,7 @@ class Order extends Model
                 $byproduct->uom_id,
                 $byproduct->operation_id,
                 $byproduct->id,
-                $byproduct->cost_share
+                $byproduct->cost_share ?? 0
             );
         }
 
@@ -985,7 +1004,7 @@ class Order extends Model
                 precisionRounding: $move->uom->rounding
             );
 
-            $move->setQuantityDone($newQty);
+            $move->distributeQuantityAcrossLines($newQty);
 
             if (! $move->manual_consumption || $pickManualConsumptionMoves) {
                 $move->update(['is_picked' => true]);
@@ -1149,10 +1168,6 @@ class Order extends Model
 
     public function getConsumptionIssues(): array
     {
-        if ($this->context['skip_consumption'] ?? false) {
-            return [];
-        }
-
         $issues = [];
 
         if (
@@ -1168,9 +1183,9 @@ class Order extends Model
         $expectedQtyByProduct = [];
 
         foreach ($expectedMoveValues as $moveValues) {
-            $moveProduct = Product::find($moveValues['product_id']);
+            $moveProduct = Product::withTrashed()->find($moveValues['product_id']);
 
-            $moveUom = UOM::find($moveValues['uom_id']);
+            $moveUom = UOM::withTrashed()->find($moveValues['uom_id']);
 
             $moveProductQty = $moveUom->computeQuantity($moveValues['product_uom_qty'], $moveProduct->uom);
 
@@ -1183,7 +1198,7 @@ class Order extends Model
         $doneQtyByProduct = [];
 
         foreach ($this->rawMaterialMoves as $move) {
-            $quantity = $move->uom->computeQuantity($move->getPickedQuantity(), $move->product->uom);
+            $quantity = $move->uom->computeQuantity($move->pickedQuantity(), $move->product->uom);
 
             $rounding = $move->product->uom->rounding;
 
@@ -1204,7 +1219,7 @@ class Order extends Model
         }
 
         foreach ($expectedQtyByProduct as $productId => $qtyToConsume) {
-            $product = Product::find($productId);
+            $product = Product::withTrashed()->find($productId);
 
             $quantity = $doneQtyByProduct[$productId] ?? 0.0;
 
@@ -1219,10 +1234,6 @@ class Order extends Model
     public function getQuantityProducedIssues(): array
     {
         $quantityIssues = [];
-
-        if ($this->context['skip_back_order'] ?? false) {
-            return $quantityIssues;
-        }
 
         if (! float_is_zero($this->getQuantityToBackOrder(), precisionRounding: $this->uom->rounding)) {
             $quantityIssues[] = $this;

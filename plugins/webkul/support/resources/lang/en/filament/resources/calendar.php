@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Working Schedules',
-        'group' => 'Employee',
     ],
 
     'groups' => [

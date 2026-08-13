@@ -52,7 +52,7 @@ return [
     ],
 
     'mark-as-done' => [
-        'title' => 'Mark as done',
+        'title'   => 'Mark as done',
         'actions' => [
             'done' => [
                 'label' => 'Done',

@@ -7,11 +7,6 @@ use Webkul\Inventory\Enums\OperationState;
 
 class Delivery extends Operation
 {
-    public function getModelTitle(): string
-    {
-        return __('inventories::models/delivery.title');
-    }
-
     protected static function boot()
     {
         parent::boot();

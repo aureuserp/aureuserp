@@ -29,7 +29,7 @@ class CheckAvailabilityAction extends Action
             ->label(__('inventories::filament/clusters/operations/actions/check-availability.label'))
             ->action(function (Operation $record, Component $livewire): void {
                 try {
-                    $record = Inventory::assignTransfer($record);
+                    $record = Inventory::reserveTransfer($record);
 
                     $livewire->updateForm();
                 } catch (Throwable $e) {
@@ -44,11 +44,12 @@ class CheckAvailabilityAction extends Action
                 }
             })
             ->hidden(function () {
-                if (! in_array($this->getRecord()->state, [OperationState::CONFIRMED, OperationState::ASSIGNED])) {
+                if (! in_array($this->getRecord()->state, [OperationState::WAITING, OperationState::CONFIRMED, OperationState::ASSIGNED])) {
                     return true;
                 }
 
                 return ! $this->getRecord()->moves->contains(fn ($move) => in_array($move->state, [
+                    MoveState::WAITING,
                     MoveState::CONFIRMED,
                     MoveState::PARTIALLY_ASSIGNED,
                 ]));

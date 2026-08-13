@@ -413,7 +413,7 @@ class Operation extends Component
                 $this->syncCountedMoveLineQuantitiesForValidation($operation);
             }
 
-            return Inventory::doneTransfer($operation->fresh(), $cancelBackOrder);
+            return Inventory::completeTransfer($operation->fresh(), $cancelBackOrder);
         });
     }
 
@@ -454,7 +454,7 @@ class Operation extends Component
 
         $lot = Lot::query()
             ->where('product_id', $moveLine->product_id)
-            ->where('name', $lotName)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$lotName])
             ->where(function ($query) use ($moveLine) {
                 $query->whereNull('company_id')
                     ->orWhere('company_id', $moveLine->company_id);
@@ -506,7 +506,7 @@ class Operation extends Component
             return [];
         }
 
-        [$quantLocationScope] = $moveLine->product->getLocationFilters();
+        $stockScopes = $moveLine->product->resolveStockScopes();
         $sourceLocationScopeId = $moveLine->move?->source_location_id ?? $moveLine->source_location_id;
 
         return ProductQuantity::query()
@@ -517,7 +517,7 @@ class Operation extends Component
                     ->orWhere('parent_id', $sourceLocationScopeId);
             })
             ->where('quantity', '>', 0)
-            ->where(fn ($query) => $quantLocationScope($query))
+            ->where(fn ($query) => $stockScopes->quantities($query))
             ->get()
             ->mapWithKeys(function (ProductQuantity $quantity): array {
                 $nameParts = array_filter([
@@ -707,7 +707,7 @@ class Operation extends Component
             return [];
         }
 
-        [$quantLocationScope] = $moveLine->product->getLocationFilters();
+        $stockScopes = $moveLine->product->resolveStockScopes();
         $sourceLocationScopeId = $moveLine->move?->source_location_id ?? $moveLine->source_location_id;
 
         return ProductQuantity::query()
@@ -718,7 +718,7 @@ class Operation extends Component
                     ->orWhere('parent_id', $sourceLocationScopeId);
             })
             ->where('quantity', '>', 0)
-            ->where(fn ($query) => $quantLocationScope($query))
+            ->where(fn ($query) => $stockScopes->quantities($query))
             ->get()
             ->map(function (ProductQuantity $quantity) use ($moveLine): array {
                 return [
@@ -737,8 +737,8 @@ class Operation extends Component
     private function findProduct(string $barcode): ?Product
     {
         return Product::query()
-            ->where('barcode', $barcode)
-            ->orWhere('reference', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
+            ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
     }
 
@@ -746,7 +746,7 @@ class Operation extends Component
     {
         return Packaging::query()
             ->with('product')
-            ->where('barcode', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('barcode'), [$barcode])
             ->first();
     }
 
@@ -754,15 +754,15 @@ class Operation extends Component
     {
         return Lot::query()
             ->with('product')
-            ->where('name', $barcode)
-            ->orWhere('reference', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$barcode])
+            ->orWhereRaw(db_dialect()->caseInsensitiveEquals('reference'), [$barcode])
             ->first();
     }
 
     private function findPackage(string $barcode): ?Package
     {
         return Package::query()
-            ->where('name', $barcode)
+            ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$barcode])
             ->first();
     }
 

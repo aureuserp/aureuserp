@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Calendar;
-use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Models\Leave;
@@ -18,6 +18,8 @@ use Webkul\TimeOff\Models\LeaveType;
  */
 class LeaveFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Leave::class;
 
     /**
@@ -37,7 +39,6 @@ class LeaveFactory extends Factory
             'holiday_status_id'        => LeaveType::factory(),
             'employee_id'              => Employee::factory(),
             'employee_company_id'      => null,
-            'company_id'               => Company::factory(),
             'department_id'            => null,
             'calendar_id'              => null,
             'meeting_id'               => null,

@@ -100,7 +100,7 @@ class InternalTransferController extends OperationController
     #[Endpoint('Check internal transfer availability', 'Compute and refresh internal transfer availability')]
     #[UrlParam('id', 'integer', 'The internal transfer ID', required: true, example: 1)]
     #[ResponseFromApiResource(InternalTransferResource::class, InternalTransfer::class, additional: ['message' => 'Internal transfer availability checked successfully.'])]
-    #[Response(status: 422, description: 'Only confirmed or assigned operations can check availability.')]
+    #[Response(status: 422, description: 'Only waiting, confirmed or assigned operations can check availability.')]
     #[Response(status: 404, description: 'Internal transfer not found')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function checkAvailability(string $id)

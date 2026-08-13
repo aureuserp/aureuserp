@@ -10,22 +10,21 @@ use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditQuotation extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = QuotationResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): ?Notification
     {
@@ -63,6 +62,8 @@ class EditQuotation extends EditRecord
     {
         try {
             SaleOrder::computeSaleOrder($this->getRecord());
+
+            $this->refreshRecordState();
         } catch (\Exception $e) {
             Notification::make()
                 ->danger()
@@ -71,5 +72,12 @@ class EditQuotation extends EditRecord
 
             $this->halt(shouldRollbackDatabaseTransaction: true);
         }
+    }
+
+    public function refreshFormData(array $statePaths): void
+    {
+        parent::refreshFormData($statePaths);
+
+        $this->rememberData();
     }
 }

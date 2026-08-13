@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -296,7 +309,7 @@
                             <th>{{ __('inventories::app.documents.quantity') }}</th>
                             <th>{{ __('inventories::app.documents.to') }}</th>
                             
-                            @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
+                            @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
                                 <th>{{ __('inventories::app.documents.lot-serial-number') }}</th>
                             @endif
                             
@@ -317,7 +330,7 @@
                                     @endif
                                 </td>
 
-                                @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
+                                @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers)
                                     <td>
                                         @if ($item->lot)
                                         <div class="barcode-container">

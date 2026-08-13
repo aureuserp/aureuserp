@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\UOMFactory;
+use Webkul\Support\Enums\UOMType;
 
 class UOM extends Model
 {
@@ -21,10 +22,58 @@ class UOM extends Model
         'type',
         'name',
         'factor',
+        'ratio',
         'rounding',
         'category_id',
         'creator_id',
     ];
+
+    protected $casts = [
+        'type' => UOMType::class,
+    ];
+
+    protected $appends = [
+        'ratio',
+    ];
+
+    protected ?float $pendingRatio = null;
+
+    /**
+     * The ratio expressed against the reference unit of the category, as shown to the user.
+     *
+     * Bigger units are stored as a fraction of the reference, so their ratio is the inverse
+     * of the stored factor.
+     */
+    public function getRatioAttribute(): float
+    {
+        return match ($this->type) {
+            UOMType::REFERENCE => 1.0,
+            UOMType::BIGGER    => (float) $this->factor ? 1 / (float) $this->factor : 0.0,
+            default            => (float) $this->factor,
+        };
+    }
+
+    public function setRatioAttribute($ratio): void
+    {
+        $this->pendingRatio = $ratio === null || $ratio === '' ? null : (float) $ratio;
+    }
+
+    protected function applyPendingRatio(): void
+    {
+        if ($this->pendingRatio === null) {
+            return;
+        }
+
+        $ratio = $this->pendingRatio;
+
+        $this->factor = match ($this->type) {
+            UOMType::REFERENCE => 1.0,
+            UOMType::BIGGER    => $ratio ? 1 / $ratio : 0.0,
+            default            => $ratio,
+        };
+
+        $this->pendingRatio = null;
+    }
 
     public function category(): BelongsTo
     {
@@ -146,6 +195,28 @@ class UOM extends Model
 
         static::creating(function ($uom) {
             $uom->creator_id ??= Auth::id();
+        });
+
+        static::saving(function (self $uom) {
+            $uom->applyPendingRatio();
+        });
+
+        static::deleting(function (self $uom) {
+            if ($uom->type !== UOMType::REFERENCE) {
+                return;
+            }
+
+            $hasSiblings = static::query()
+                ->where('category_id', $uom->category_id)
+                ->whereKeyNot($uom->getKey())
+                ->exists();
+
+            if ($hasSiblings) {
+                throw new Exception(__('support::models/uom.reference-in-use', [
+                    'uom'      => $uom->name,
+                    'category' => $uom->category?->name,
+                ]));
+            }
         });
     }
 }

@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'جداول العمل',
-        'group' => 'الموظف',
     ],
 
     'groups' => [

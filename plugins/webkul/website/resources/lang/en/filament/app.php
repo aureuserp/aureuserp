@@ -57,13 +57,14 @@ return [
     ],
 
     'page_titles' => [
-        'home'             => 'Home',
-        'about-us'         => 'About Us',
-        'privacy-policy'   => 'Privacy Policy',
-        'terms-conditions' => 'Terms & Conditions',
-        'blog'             => 'Blog',
-        'blogs'            => 'Blogs',
-        'contact'          => 'Contact',
-        'contact-us'       => 'Contact Us',
+        'home'               => 'Home',
+        'about-us'           => 'About Us',
+        'privacy-policy'     => 'Privacy Policy',
+        'terms-conditions'   => 'Terms & Conditions',
+        'news-announcements' => 'News & Announcements',
+        'blog'               => 'Blog',
+        'blogs'              => 'Blogs',
+        'contact'            => 'Contact',
+        'contact-us'         => 'Contact Us',
     ],
 ];

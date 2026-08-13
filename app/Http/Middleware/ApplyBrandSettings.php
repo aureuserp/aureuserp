@@ -54,7 +54,7 @@ class ApplyBrandSettings
         }
 
         try {
-            $brand = app(BrandSettings::class);
+            $brand = settings(BrandSettings::class);
 
             $panelDefaultColors = array_merge(
                 ColorManager::DEFAULT_COLORS,

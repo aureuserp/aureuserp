@@ -17,14 +17,17 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Project\Database\Factories\TaskFactory;
 use Webkul\Project\Enums\TaskState;
-use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Task extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'projects';
 
@@ -58,7 +61,6 @@ class Task extends Model implements Sortable
     ];
 
     protected $casts = [
-        'is_active'           => 'boolean',
         'deadline'            => 'datetime',
         'priority'            => 'boolean',
         'is_active'           => 'boolean',
@@ -80,15 +82,9 @@ class Task extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function __construct(array $attributes = [])
+    public static function autoAssignsCompany(): bool
     {
-        parent::__construct($attributes);
-
-        $this->setPivotTable('projects_task_users');
-
-        $this->setPivotForeignKey('task_id');
-
-        $this->setPivotRelatedKey('user_id');
+        return false;
     }
 
     protected function getLogAttributeLabels(): array
@@ -158,6 +154,11 @@ class Task extends Model implements Sortable
         return $this->belongsToMany(User::class, 'projects_task_users');
     }
 
+    public function chatterResponsibles(): array
+    {
+        return ['users'];
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -173,9 +174,13 @@ class Task extends Model implements Sortable
         return $this->hasMany(Timesheet::class);
     }
 
-    protected static function booted()
+    public function ownershipSources(): array
     {
-        static::addGlobalScope(new UserPermissionScope('users'));
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::relation('users'),
+            OwnerSource::followers(),
+        ];
     }
 
     protected static function boot()
@@ -187,7 +192,7 @@ class Task extends Model implements Sortable
 
             $task->creator_id ??= $authUser->id;
 
-            $task->company_id ??= $authUser?->default_company_id;
+            $task->company_id = Project::withoutGlobalScope(CompanyScope::class)->find($task->project_id)?->company_id ?? current_company_id();
         });
 
         static::updated(function ($task) {

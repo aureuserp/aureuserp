@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
@@ -193,6 +194,8 @@ class InstallERP extends Command
 
         Artisan::call('db:seed', [], $this->getOutput());
 
+        Package::syncPostgresSequences();
+
         $this->info('✅ Seeders completed successfully.');
     }
 
@@ -241,6 +244,8 @@ class InstallERP extends Command
 
         $adminUser = $userModel::updateOrCreate(['email' => $adminData['email']], $adminData);
 
+        $adminUser->allowedCompanies()->syncWithoutDetaching([$defaultCompany->id]);
+
         $defaultCompany->update(['creator_id' => $adminUser->id]);
 
         $adminRoleName = $this->getAdminRoleName();
@@ -248,6 +253,8 @@ class InstallERP extends Command
         if (! $adminUser->hasRole($adminRoleName)) {
             $adminUser->assignRole($adminRoleName);
         }
+
+        $adminUser->allowedCompanies()->syncWithoutDetaching(Company::pluck('id')->all());
 
         $this->backfillMissingCreatorIds($adminUser);
 

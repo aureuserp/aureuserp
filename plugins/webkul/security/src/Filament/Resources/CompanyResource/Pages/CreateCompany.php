@@ -2,24 +2,10 @@
 
 namespace Webkul\Security\Filament\Resources\CompanyResource\Pages;
 
-use Filament\Notifications\Notification;
-use Filament\Resources\Pages\CreateRecord;
 use Webkul\Security\Filament\Resources\CompanyResource;
+use Webkul\Support\Filament\Resources\CompanyResource\Pages\CreateCompany as BaseCreateCompany;
 
-class CreateCompany extends CreateRecord
+class CreateCompany extends BaseCreateCompany
 {
     protected static string $resource = CompanyResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
-    protected function getCreatedNotification(): ?Notification
-    {
-        return Notification::make()
-            ->success()
-            ->title(__('security::filament/resources/company/pages/create-company.notification.title'))
-            ->body(__('security::filament/resources/company/pages/create-company.notification.body'));
-    }
 }

@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Empleados',
-        'group' => 'Empleados',
     ],
 
     'global-search' => [
@@ -320,6 +319,25 @@ return [
         ],
 
         'tabs' => [
+            'resume' => [
+                'title' => 'Currículum',
+
+                'entries' => [
+                    'resume' => [
+                        'title'   => 'Currículum',
+                        'empty'   => 'Todavía no hay líneas de currículum.',
+                        'untyped' => 'Otros',
+                        'present' => 'Actualidad',
+                    ],
+
+                    'skills' => [
+                        'title'   => 'Habilidades',
+                        'empty'   => 'Todavía no hay habilidades.',
+                        'untyped' => 'Otras',
+                    ],
+                ],
+            ],
+
             'work-information' => [
                 'title' => 'Información laboral',
 

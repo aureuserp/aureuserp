@@ -3,6 +3,7 @@
 namespace Webkul\Support\Models;
 
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,9 +12,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\CalendarFactory;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Calendar extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'calendars';
@@ -31,6 +34,11 @@ class Calendar extends Model
         'creator_id',
         'company_id',
     ];
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
 
     public function creator(): BelongsTo
     {
@@ -61,12 +69,12 @@ class Calendar extends Model
         return CalendarFactory::new();
     }
 
-    public function planHours(float $hours, Carbon $dayDt, bool $computeLeaves = false, ?array $filters = null, $resource = null): Carbon|false
+    public function planHours(float $hours, Carbon $dayDt, bool $computeLeaves = false, ?Closure $filter = null, $resource = null): Carbon|false
     {
         [$dayDt, $revert] = make_aware($dayDt);
 
         if ($computeLeaves) {
-            $getIntervals = fn ($start, $end) => $this->getWorkIntervalsBatch($start, $end, resources: $resource, filters: $filters);
+            $getIntervals = fn ($start, $end) => $this->getWorkIntervalsBatch($start, $end, resources: $resource, filter: $filter);
             $resourceId = $resource?->id;
         } else {
             $getIntervals = fn ($start, $end) => $this->getAttendanceIntervalsBatch($start, $end);
@@ -134,12 +142,12 @@ class Calendar extends Model
         Carbon $fromDatetime,
         Carbon $toDatetime,
         bool $computeLeaves = true,
-        ?array $filters = null
+        ?Closure $filter = null
     ): array {
         if ($computeLeaves) {
-            $intervals = $this->getWorkIntervalsBatch($fromDatetime, $toDatetime, filters: $filters)[null];
+            $intervals = $this->getWorkIntervalsBatch($fromDatetime, $toDatetime, filter: $filter)[null];
         } else {
-            $intervals = $this->getAttendanceIntervalsBatch($fromDatetime, $toDatetime, filters: $filters)[null];
+            $intervals = $this->getAttendanceIntervalsBatch($fromDatetime, $toDatetime, filter: $filter)[null];
         }
 
         return $this->getAttendanceIntervalsDaysData($intervals);
@@ -149,7 +157,7 @@ class Calendar extends Model
         Carbon $startDt,
         Carbon $endDt,
         mixed $resources = null,
-        ?array $filters = null,
+        ?Closure $filter = null,
         ?string $timezone = null,
         bool $computeLeaves = true
     ): array {
@@ -162,7 +170,7 @@ class Calendar extends Model
         $attendanceIntervals = $this->getAttendanceIntervalsBatch($startDt, $endDt, $resources, timezone: $timezone);
 
         if ($computeLeaves) {
-            $leaveIntervals = $this->getLeaveIntervalsBatch($startDt, $endDt, $resources, $filters, timezone: $timezone);
+            $leaveIntervals = $this->getLeaveIntervalsBatch($startDt, $endDt, $resources, $filter, timezone: $timezone);
 
             $result = [];
 
@@ -190,7 +198,7 @@ class Calendar extends Model
         Carbon $startDt,
         Carbon $endDt,
         mixed $resources = null,
-        ?array $filters = null,
+        ?Closure $filter = null,
         ?string $timezone = null,
         bool $lunch = false
     ): array {
@@ -207,7 +215,7 @@ class Calendar extends Model
             ->all();
 
         $attendances = CalendarAttendance::query()
-            ->where(fn ($q) => $this->applyFilters($q, $filters ?? []))
+            ->when($filter, fn ($q) => $q->where($filter))
             ->where('calendar_id', $this->id)
             ->where(function ($q) use ($resourcesByType) {
                 $q->whereNull('resource_id');
@@ -363,7 +371,7 @@ class Calendar extends Model
         Carbon $startDt,
         Carbon $endDt,
         mixed $resources = null,
-        ?array $filters = null,
+        ?Closure $filter = null,
         ?string $timezone = null,
         bool $anyCalendar = false
     ): array {
@@ -373,9 +381,7 @@ class Calendar extends Model
             $resourcesList = is_array($resources) ? array_merge($resources, [null]) : [$resources, null];
         }
 
-        if ($filters === null) {
-            $filters = [['time_type', '=', 'leave']];
-        }
+        $filter ??= fn ($query) => $query->where('time_type', 'leave');
 
         $resourcesByType = collect($resourcesList)
             ->filter()
@@ -384,7 +390,7 @@ class Calendar extends Model
             ->all();
 
         $allLeaves = CalendarLeave::query()
-            ->where(fn ($q) => $this->applyFilters($q, $filters))
+            ->where(fn ($q) => $filter($q))
             ->when(! $anyCalendar, fn ($q) => $q->where(fn ($q) => $q->whereNull('calendar_id')->orWhere('calendar_id', $this->id)))
             ->where(function ($q) use ($resourcesByType) {
                 $q->whereNull('resource_id');
@@ -464,23 +470,6 @@ class Calendar extends Model
         }
 
         return $finalResult;
-    }
-
-    protected function applyFilters($query, array $filters): void
-    {
-        foreach ($filters as $condition) {
-            if (! is_array($condition)) {
-                continue;
-            }
-
-            [$column, $operator, $value] = $condition;
-
-            match ($operator) {
-                'in'     => $query->whereIn($column, $value),
-                'not in' => $query->whereNotIn($column, $value),
-                default  => $query->where($column, $operator, $value),
-            };
-        }
     }
 
     protected function subtractIntervals($attendance, $leaves): array

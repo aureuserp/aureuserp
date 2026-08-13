@@ -2,6 +2,7 @@
 
 return [
     'title'          => 'Producto',
+    'plural-title'   => 'Productos',
 
     'log-attributes' => [
         'type'                => 'Tipo',

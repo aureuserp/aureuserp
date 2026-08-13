@@ -23,12 +23,14 @@ use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Enums\PermissionType;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
 
 class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasEmailAuthentication
 {
-    use HasPermissionScope,
+    use HasOwnershipScope,
         HasRoles,
         InteractsWithAppAuthentication,
         InteractsWithAppAuthenticationRecovery,
@@ -57,9 +59,17 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
         parent::__construct($attributes);
     }
 
-    protected function getAssignmentColumn(): ?string
+    protected static function ownershipScopeIsGlobal(): bool
     {
-        return 'id';
+        return false;
+    }
+
+    public function ownershipSources(): array
+    {
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('id'),
+        ];
     }
 
     protected $guard_name = ['web', 'sanctum'];
@@ -101,7 +111,8 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
 
     public function partner(): BelongsTo
     {
-        return $this->belongsTo(Partner::class, 'partner_id');
+        return $this->belongsTo(Partner::class, 'partner_id')
+            ->withoutGlobalScope(CompanyScope::class);
     }
 
     public function allowedCompanies(): BelongsToMany
@@ -135,6 +146,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
     {
         $partner = $user->partner()->create([
             'creator_id' => Auth::user()->id ?? $user->id,
+            'company_id' => $user->default_company_id,
             'user_id'    => $user->id,
             'sub_type'   => 'partner',
             ...Arr::except($user->toArray(), ['id', 'partner_id', 'email_verified_at']),
@@ -146,10 +158,11 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
 
     private function handlePartnerUpdation(self $user)
     {
-        $partner = Partner::updateOrCreate(
+        $partner = Partner::withoutGlobalScopes()->updateOrCreate(
             ['id' => $user->partner_id],
             [
                 'creator_id' => Auth::user()->id ?? $user->id,
+                'company_id' => $user->default_company_id,
                 'user_id'    => $user->id,
                 'sub_type'   => 'partner',
                 ...Arr::except($user->toArray(), ['id', 'partner_id', 'email_verified_at']),

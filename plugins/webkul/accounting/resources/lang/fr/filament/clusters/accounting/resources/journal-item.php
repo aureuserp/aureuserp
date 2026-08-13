@@ -1,0 +1,97 @@
+<?php
+
+return [
+    'title' => 'Éléments comptables',
+
+    'navigation' => [
+        'title' => 'Éléments comptables',
+    ],
+
+    'table' => [
+        'total'   => 'Total',
+        'columns' => [
+            'number'          => 'Numéro',
+            'date'            => 'Date',
+            'account'         => 'Compte',
+            'partner'         => 'Partenaire',
+            'label'           => 'Libellé',
+            'reference'       => 'Référence',
+            'journal'         => 'Journal',
+            'debit'           => 'Débit',
+            'credit'          => 'Crédit',
+            'balance'         => 'Solde',
+            'currency'        => 'Devise',
+            'company'         => 'Société',
+            'status'          => 'Statut',
+            'amount-currency' => 'Montant en devise',
+            'amount-residual' => 'Montant résiduel',
+            'reconciled'      => 'Lettré',
+            'due-date'        => 'Date d\'échéance',
+        ],
+
+        'groups' => [
+            'journal-entry' => 'Écriture comptable',
+            'account'       => 'Compte',
+            'partner'       => 'Partenaire',
+            'journal'       => 'Journal',
+            'date'          => 'Date',
+            'invoice-date'  => 'Date de facture',
+            'matching'      => 'Rapprochement',
+            'status'        => 'Statut',
+            'company'       => 'Société',
+        ],
+
+        'filters' => [
+            'number'          => 'Numéro',
+            'label'           => 'Libellé',
+            'reference'       => 'Référence',
+            'matching-number' => 'Numéro de rapprochement',
+            'account'         => 'Compte',
+            'partner'         => 'Partenaire',
+            'journal'         => 'Journal',
+            'currency'        => 'Devise',
+            'company'         => 'Société',
+            'date'            => 'Date',
+            'invoice-date'    => 'Date de facture',
+            'due-date'        => 'Date d\'échéance',
+            'discount-date'   => 'Date de remise',
+            'debit'           => 'Débit',
+            'credit'          => 'Crédit',
+            'balance'         => 'Solde',
+            'amount-currency' => 'Montant en devise',
+            'amount-residual' => 'Montant résiduel',
+            'quantity'        => 'Quantité',
+            'price-unit'      => 'Prix unitaire',
+            'discount'        => 'Remise',
+            'reconciled'      => 'Lettré',
+            'imported'        => 'Importé',
+            'down-payment'    => 'Acompte',
+            'created-at'      => 'Créé le',
+            'updated-at'      => 'Mis à jour le',
+        ],
+
+        'saved-filters' => [
+            'label'         => 'Filtres enregistrés',
+            'unposted'      => 'Non comptabilisé',
+            'posted'        => 'Comptabilisé',
+            'to-check'      => 'À vérifier',
+            'unreconciled'  => 'Non lettré',
+            'with-residual' => 'Avec montant résiduel',
+            'sales'         => 'Ventes',
+            'purchases'     => 'Achats',
+            'bank'          => 'Banque',
+            'cash'          => 'Caisse',
+            'credit'        => 'Crédit',
+            'miscellaneous' => 'Divers',
+            'payable'       => 'Fournisseur',
+            'receivable'    => 'Client',
+            'pl-accounts'   => 'Comptes de résultat',
+        ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Exporter',
+            ],
+        ],
+    ],
+];

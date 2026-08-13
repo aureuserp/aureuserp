@@ -1,3 +1,183 @@
+# 🚀 CHANGELOG — v1.5.0
+
+### 🧩 Features
+
+* Added multi-company (multi-tenancy) support with company scoping, allowed-companies access control, cross-company transfer guards, and a company switcher
+* Added Maintenance module
+* Added Putaway Rules for inventory operations
+* Added Time-off dashboard widget
+* Added Inventory dashboard widgets
+* Added quick "next transfer" navigation across chained inventory operations
+* Added a system-wide command palette (Ctrl+K / Cmd+K) for keyboard-only search and navigation across records, pages, and actions
+* Added native barcode scanning support (Barcode plugin)
+* Added PostgreSQL database support
+* Added Inventory Reporting cluster and UOM Category resource
+* Added Filament database and email notifications for chatter activity (mentions, assignments, and record updates)
+* Unified Settings pages across plugins
+* Unified Product resource across plugins
+* Implemented nested order resources (Deliveries, Invoices, Receipts, Bills under Orders)
+* Added bulk lot/serial number generation
+* Added consolidated Spanish (es) locale
+* Added Brazilian Portuguese (pt-BR) locale
+* Added Arabic localization for the Plugins resource
+* Added branding settings and middleware for dynamic panel customization
+* Added dashboard date-range filter widget
+* Integrated custom fields functionality across Accounting, Products, Projects, Recruitment, Sales, Security, Time-off, Timesheets, and Website resources
+* Blocked plugin uninstall when dependent plugins exist
+* Added customer Portal Access management for partners (grant/revoke access, change or send portal password reset from the admin panel)
+
+### ✨ Improvements
+
+* Added `trustProxies` middleware for improved proxy handling
+* Added Docker setup for the production environment
+* Simplified Docker image publishing logic and enhanced tag handling
+* Added Playwright tests for the Website plugin
+* Added pull request template
+* Updated README
+* Removed redundant Arabic translation file
+* General code refactor
+* Added picking description to inventory operation moves
+* Added reusable column-manager traits for repeaters
+* Hardened `WarehouseFactory` to ensure unique warehouse names/codes
+* Updated default company seeding and admin user setup on install
+* Fixed failing test suite
+* Enhanced availability check to include the WAITING state
+* Dashboard date filters now default to the start of the year
+* Removed a redundant redirect
+* Upgraded Filament to v5.7.3
+* Upgraded Filament to v5.7.1
+* Added on-hand and forecasted quantity columns to the products table
+* Added an excess-quantity tooltip to the return action form
+* Added more test coverage
+* Updated `IN_PROCESS` payment status color for consistency
+* Added unit test coverage for the Accounting plugin
+* Added unit test cases
+* Refactored plugin navigation system
+* Refactored settings retrieval into a centralized function
+* Fixed duplicate DB queries in the plugin manager's `isPluginInstalled` check
+* General performance optimization
+* Removed stray comments
+* Localized hardcoded UI strings in plugin resources and reports
+* Refactored code and related fixes
+* Refresh caches on plugin install/uninstall
+* Refactored `ApplyBrandSettings` middleware
+* Refactored branding asset URL handling
+* Updated delivery and receipt status handling
+* Added UOM suffix to the quantity field
+* Removed unnecessary theme
+* Added Help section
+* Refactored quantity field handling, added insufficient-stock tooltip
+* Refactored product repeater disabled condition
+* Added view-page actions to match edit pages
+* Added create-option form for customer selection in quotations
+* Normalized path separators in `translations:check` for Windows
+* Added component availability status for Manufacturing Orders and MO readiness
+* Added Playwright tests for the Inventory plugin
+* Fixed missing `timeout` command handling on macOS/Windows
+* Added authorization policy for inventory move lines and page-level access control for the Barcode launch page
+* Improved badge wrapping in the Partners table
+
+### 🐛 Fixes
+
+* #1459 [fixed] - Removed static title on Website homepage/view pages
+* #1458 [fixed] - Fixed Website content and RichEditor rendering issue
+* #1456 [fixed] - Fixed default Time-off leave types not being shared across companies
+* #1455 [fixed] - Fixed Project milestone company filter
+* #1454 [fixed] - Fixed chatter message sorting issue
+* #1453 [fixed] - Fixed Employee reporting company filter
+* #1452 [fixed] - Fixed bank account company scope issue
+* #1451 [fixed] - Fixed duplicate records on the Project dashboard widgets
+* #1448 [fixed] - Fixed chatter auto-scroll issue
+* #1447 [fixed] - Issue #1445 resolved - Fixed print delivery slip issue
+* #1444 [fixed] - Fixed Accounts plugin uninstallation issue
+* #1443 [fixed] - [Security] Removed publicly accessible `adminer.php` database admin tool from the public directory
+* #1245 [fixed] - Job Title and Title fields now hidden for company-type partners (shown only for individuals)
+* #1231 [fixed] - Fixed broken Facebook social link URL in Website plugin
+* #1229 [fixed] - Archived records appearing in the "All" tab for Manufacturing Operations, Work Centers, and Bills of Materials
+* #1225 [fixed] - Fixed inventory operation cancellation on sales orders
+* #1220 [fixed] - Linked purchase order receipts to their order operations
+* #1219 [fixed] - Navigation group labels now update correctly on locale switch
+* #1216 [fixed] - Removed duplicate Auth import in LeaveAccrualLevel model
+* #1442 [fixed] - Fixed missing pt_BR translations for field and operation resources
+* #1441 [fixed] - Fixed bill of materials resource issue
+* #1393 [fixed] - Fixed manufacturing plugin uninstall cleanup and reinstall consistency
+* #1387 [fixed] - Fixed Arabic RTL PDF rendering issues (DomPDF + DejaVu font, weight/currency handling)
+* #1296 [fixed] - Fixed manufacturing order consumption check for soft-deleted products and UOMs
+* #1440 [fixed] - Fixed missing translations across the app
+* #1437 [fixed] - Fixed a translation issue
+* #1435 [fixed] - Issue #839 resolved
+* #1434 [fixed] - Fixed chatter message issues
+* #1426 [fixed] - Fixed chained inventory operations issue
+* #1424 [fixed] - Fixed duplicate notification issue
+* #1421 [fixed] - Fixed work order's custom operation name issue
+* #1417 [fixed] - Fixed "Destination to Scrap Location" Playwright test
+* #1413 [fixed] - Fixed product table reorder saving in inverted order
+* #1412 [fixed] - Fixed create-button grouping issue
+* #1410 [fixed] - Corrected scrap view label to "Scrap Location"
+* #1408 [fixed] - Re-fixed issue #1397
+* #1407 [fixed] - Fixed refund redirect to 404 page
+* #1403 [fixed] - Fixed miscellaneous issues
+* #1402 [fixed] - Purged orphaned chatter records on plugin uninstall
+* #1401 [fixed] - Issue #1400 resolved
+* #1395 [fixed] - Fixed a location issue
+* #1394 [fixed] - Fixed a backorder issue
+* #1391 [fixed] - Issue #1348 resolved
+* #1390 [fixed] - Issue #1353 resolved
+* #1389 [fixed] - Issue #1329 resolved
+* #1384 [fixed] - Issue #1330 resolved
+* #1383 [fixed] - Fixed broken blog image resizing issue
+* #1382 [fixed] - [Security] Prevented unauthorized viewing/editing of chatter messages (IDOR)
+* #1378 [fixed] - Fixed chatter issues
+* #1376 [fixed] - Issue #1374 resolved
+* #1375 [fixed] - Issue #1373 resolved
+* #1366 [fixed] - Fixed a receipt issue
+* #1365 [fixed] - Fixed an issue
+* #1362 [fixed] - Issue #1353 resolved
+* #1361 [fixed] - Issue #1326 resolved
+* #1360 [fixed] - Issue #1333 resolved
+* #1359 [fixed] - Issue #1335 resolved
+* #1358 [fixed] - Issue #1347 resolved
+* #1356 [fixed] - Issue #1350 resolved
+* #1355 [fixed] - Issues #1348 and #1346 resolved
+* #1344 [fixed] - Fixed an operation update issue
+* #1342 [fixed] - Fixed a chatter UI issue
+* #1340 [fixed] - Hid "Pick from" field when inventory is not tracked
+* #1337 [fixed] - Fixed package selection issues in quantity creation
+* #1324 [fixed] - Fixed an issue
+* #1323 [fixed] - Fixed a customer authentication issue
+* #1321 [fixed] - Fixed chatter issues
+* #1320 [fixed] - Fixed location validation issues
+* #1319 [fixed] - Issue #1235 resolved
+* #1314 [fixed] - Issue #1233 resolved
+* #1311 [fixed] - Issue #1236 resolved
+* #1300 [fixed] - Issue #1230 resolved
+* #1299 [fixed] - Fixed a package issue
+* #1298 [fixed] - Fixed a package location issue
+* #1297 [fixed] - Fixed an invoice policy issue
+* #1295 [fixed] - Issue #1294 resolved
+* #1291 [fixed] - Fixed chatter issues
+* #1290 [fixed] - Fixed quotation messaging issues
+* #1288 [fixed] - Fixed inventory warning issue when changing warehouse
+* #1283 [fixed] - Fixed purchase order issues
+* #1282 [fixed] - Fixed an issue
+* #1281 [fixed] - Fixed validation issues
+* #1280 [fixed] - Fixed sale order issues
+* #1279 [fixed] - Fixed non-tracking product issues
+* #1276 [fixed] - Fixed nested resource issues
+* #1268 [fixed] - Fixed an inventory rule issue
+* #1266 [fixed] - Fixed issues
+* #1265 [fixed] - Fixed dropship print issue
+* #1263 [fixed] - Validated BOM component product
+* #1261 [fixed] - Fixed issues
+* #1260 [fixed] - Fixed backorder settings issue
+* #1259 [fixed] - Fixed issues
+* #1258 [fixed] - Fixed backorder issues
+* #1257 [fixed] - Fixed a backorder issue
+* #1256 [fixed] - Fixed issues
+* #1255 [fixed] - Fixed sale order warehouse selection
+* #1252 [fixed] - Fixed inventory document creation issue when confirming sale order
+* #1186 [fixed] - Issue #1170 resolved
+
 # 🚀 CHANGELOG — v1.4.0
 
 ### 🧩 Features

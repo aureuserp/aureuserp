@@ -4,10 +4,15 @@ namespace Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Page
 
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateLot extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = LotResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     public function getSubNavigation(): array
     {

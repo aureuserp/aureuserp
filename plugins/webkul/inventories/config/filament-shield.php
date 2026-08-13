@@ -10,6 +10,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryR
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\UOMCategoryResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
 use Webkul\Inventory\Filament\Clusters\Operations;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
@@ -54,6 +55,7 @@ return [
             RouteResource::class            => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             ReplenishmentResource::class    => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             ProductResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            UOMCategoryResource::class      => [...$basic, ...$delete],
         ],
         'exclude' => [
             OperationResource::class,

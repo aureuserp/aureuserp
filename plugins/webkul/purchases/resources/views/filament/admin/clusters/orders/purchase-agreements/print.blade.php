@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -235,7 +248,7 @@
                             <th>{{ __('purchases::app.documents.product') }}</th>
                             <th>{{ __('purchases::app.documents.quantity') }}</th>
 
-                            @if (app(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
+                            @if (settings(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
                                 <th>{{ __('purchases::app.documents.unit') }}</th>
                             @endif
                             
@@ -249,7 +262,7 @@
                             <td>{{ $item->product->name }}</td>
                             <td>{{ number_format($item->qty) }}</td>
 
-                            @if (app(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
+                            @if (settings(\Webkul\Purchase\Settings\ProductSettings::class)->enable_uom)
                                 <td>{{ $item->product->uom->name }}</td>
                             @endif
 

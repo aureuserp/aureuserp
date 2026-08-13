@@ -12,11 +12,14 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\AutoPostBills;
 use Webkul\Account\Enums\InvoiceFormat;
 use Webkul\Account\Enums\InvoiceSendingMethod;
 use Webkul\Account\Enums\PartyIdentificationScheme;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Account;
 
 class AccountPartnerSchema
@@ -32,7 +35,14 @@ class AccountPartnerSchema
                         ->searchable()
                         ->label(__('accounts::filament/resources/partner.form.tabs.sales-purchases.fieldsets.sales.fields.payment-terms')),
                     Select::make('property_inbound_payment_method_line_id')
-                        ->relationship('propertyInboundPaymentMethodLine', 'name')
+                        ->relationship(
+                            'propertyInboundPaymentMethodLine',
+                            'name',
+                            modifyQueryUsing: fn ($query, ?Model $record) => $query
+                                ->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::RECEIVE))
+                                ->whereHas('journal', owned_by_company($record?->company_id)),
+                        )
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                         ->preload()
                         ->searchable()
                         ->label(__('accounts::filament/resources/partner.form.tabs.sales-purchases.fieldsets.sales.fields.payment-method')),
@@ -54,7 +64,14 @@ class AccountPartnerSchema
                                 ->searchable()
                                 ->preload(),
                             Select::make('property_outbound_payment_method_line_id')
-                                ->relationship('propertyOutboundPaymentMethodLine', 'name')
+                                ->relationship(
+                                    'propertyOutboundPaymentMethodLine',
+                                    'name',
+                                    modifyQueryUsing: fn ($query, ?Model $record) => $query
+                                        ->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::SEND))
+                                        ->whereHas('journal', owned_by_company($record?->company_id)),
+                                )
+                                ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                                 ->preload()
                                 ->searchable()
                                 ->label(__('accounts::filament/resources/partner.form.tabs.sales-purchases.fieldsets.purchase.fields.payment-method')),
@@ -109,18 +126,32 @@ class AccountPartnerSchema
                     ->schema([
                         Select::make('property_account_receivable_id')
                             ->label(__('accounts::filament/resources/partner.form.tabs.invoicing.fieldsets.accounting-entries.fields.account-receivable'))
-                            ->relationship('propertyAccountReceivable', 'name')
+                            ->relationship(
+                                'propertyAccountReceivable',
+                                'name',
+                                modifyQueryUsing: fn (Builder $query, ?Model $record) => $query
+                                    ->where('account_type', AccountType::ASSET_RECEIVABLE)
+                                    ->where('deprecated', false)
+                                    ->where(fn ($q) => $q->whereHas('companies', fn ($c) => $c->where('companies.id', $record?->company_id ?? current_company_id()))->orWhereDoesntHave('companies'))
+                            )
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->default(Account::where('account_type', AccountType::ASSET_RECEIVABLE)->where('deprecated', false)->first()?->id),
+                            ->default(Account::where('account_type', AccountType::ASSET_RECEIVABLE)->where('deprecated', false)->where(fn ($q) => $q->whereHas('companies', fn ($c) => $c->where('companies.id', current_company_id()))->orWhereDoesntHave('companies'))->first()?->id),
                         Select::make('property_account_payable_id')
                             ->label(__('accounts::filament/resources/partner.form.tabs.invoicing.fieldsets.accounting-entries.fields.account-payable'))
-                            ->relationship('propertyAccountPayable', 'name')
+                            ->relationship(
+                                'propertyAccountPayable',
+                                'name',
+                                modifyQueryUsing: fn (Builder $query, ?Model $record) => $query
+                                    ->where('account_type', AccountType::LIABILITY_PAYABLE)
+                                    ->where('deprecated', false)
+                                    ->where(fn ($q) => $q->whereHas('companies', fn ($c) => $c->where('companies.id', $record?->company_id ?? current_company_id()))->orWhereDoesntHave('companies'))
+                            )
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->default(Account::where('account_type', AccountType::LIABILITY_PAYABLE)->where('deprecated', false)->first()?->id),
+                            ->default(Account::where('account_type', AccountType::LIABILITY_PAYABLE)->where('deprecated', false)->where(fn ($q) => $q->whereHas('companies', fn ($c) => $c->where('companies.id', current_company_id()))->orWhereDoesntHave('companies'))->first()?->id),
                     ]),
 
                 Fieldset::make(__('accounts::filament/resources/partner.form.tabs.invoicing.fieldsets.automation.title'))

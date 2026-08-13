@@ -10,13 +10,15 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<ProductQuantity>
  */
 class ProductQuantityFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = ProductQuantity::class;
 
     public function definition(): array
@@ -39,7 +41,6 @@ class ProductQuantityFactory extends Factory
             'package_id'          => null,
             'partner_id'          => null,
             'user_id'             => null,
-            'company_id'          => Company::factory(),
             'creator_id'          => User::query()->value('id') ?? User::factory(),
         ];
     }

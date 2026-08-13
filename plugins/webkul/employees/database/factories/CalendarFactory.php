@@ -5,10 +5,12 @@ namespace Webkul\Employee\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Calendar;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class CalendarFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -28,11 +30,10 @@ class CalendarFactory extends Factory
             'tz'                        => fake()->timezone,
             'hours_per_day'             => fake()->randomFloat(2, 0, 24),
             'status'                    => 1,
-            'two_weeks_calendar'        => 0,
-            'flexible_hours'            => 0,
+            'two_weeks_calendar'        => false,
+            'flexible_hours'            => false,
             'full_time_required_hours'  => 0,
             'user_id'                   => User::query()->value('id') ?? User::factory(),
-            'company_id'                => Company::factory(),
         ];
     }
 }

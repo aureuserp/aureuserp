@@ -9,6 +9,7 @@ use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResour
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\UOMCategoryResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
@@ -42,6 +43,7 @@ return [
             TagResource::class              => [...$basic, ...$delete],
             PackagingResource::class        => [...$basic, ...$delete, ...$reorder],
             CurrencyResource::class         => [...$basic, ...$delete],
+            UOMCategoryResource::class      => [...$basic, ...$delete],
         ],
         'exclude' => [],
     ],

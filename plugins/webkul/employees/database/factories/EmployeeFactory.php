@@ -9,12 +9,14 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Employee\Models\WorkLocation;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 
 class EmployeeFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -30,7 +32,6 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id'                     => Company::factory(),
             'user_id'                        => User::query()->value('id') ?? User::factory(),
             'creator_id'                     => User::query()->value('id') ?? User::factory(),
             'calendar_id'                    => null,

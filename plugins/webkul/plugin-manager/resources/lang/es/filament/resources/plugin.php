@@ -2,10 +2,6 @@
 
 return [
 
-    'navigation' => [
-        'group' => 'Complementos',
-    ],
-
     'title' => 'Plugin',
 
     'table' => [
@@ -58,6 +54,10 @@ return [
         ],
         'uninstalled-failed' => [
             'title' => 'Error en la desinstalación',
+        ],
+        'uninstalled-blocked' => [
+            'title' => 'No se puede desinstalar el plugin',
+            'body'  => "El plugin ':name' tiene dependientes instalados que deben desinstalarse primero: :dependents.",
         ],
     ],
 

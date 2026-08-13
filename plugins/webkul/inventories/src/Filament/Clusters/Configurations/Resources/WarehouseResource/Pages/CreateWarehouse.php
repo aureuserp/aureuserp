@@ -6,9 +6,12 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateWarehouse extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = WarehouseResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;
@@ -25,11 +28,6 @@ class CreateWarehouse extends CreateRecord
         }
 
         return [];
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getCreatedNotification(): Notification

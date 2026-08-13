@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
@@ -24,17 +25,24 @@ use Webkul\Sale\Database\Factories\OrderFactory;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Support\Services\SequenceService;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'sales';
 
@@ -111,7 +119,10 @@ class Order extends Model
 
     public function getModelTitle(): string
     {
-        return __('sales::models/order.title');
+        return match ($this->state) {
+            OrderState::SALE => __('sales::models/order.titles.sales-order'),
+            default          => __('sales::models/order.titles.quotation'),
+        };
     }
 
     public function company()
@@ -236,7 +247,15 @@ class Order extends Model
 
     public function updateName()
     {
-        $this->name = 'SO/'.$this->id;
+        if (filled($this->name)) {
+            return;
+        }
+
+        $this->name = SequenceService::next('sales.order', $this->company_id, [
+            'name'         => 'Sales Order',
+            'prefix'       => 'SO/',
+            'initial_from' => static::withoutGlobalScopes(),
+        ]);
     }
 
     public function handleOrderCreation()
@@ -245,7 +264,7 @@ class Order extends Model
 
         $this->creator_id ??= $authUser->id;
         $this->user_id ??= $authUser->id;
-        $this->company_id ??= $authUser?->default_company_id;
+        $this->company_id ??= current_company_id();
 
         $this->state ??= OrderState::DRAFT;
 
@@ -279,6 +298,19 @@ class Order extends Model
         });
     }
 
+    public function getChatterResourceUrl(): string
+    {
+        $resource = $this->state === OrderState::SALE
+            ? OrderResource::class
+            : QuotationResource::class;
+
+        try {
+            return $resource::getUrl('view', ['record' => $this->getKey()], panel: 'admin');
+        } catch (Throwable $e) {
+            return '';
+        }
+    }
+
     public function computeWarehouseId()
     {
         if (! Package::isPluginInstalled('inventories')) {
@@ -291,5 +323,15 @@ class Order extends Model
     protected static function newFactory(): OrderFactory
     {
         return OrderFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'warehouse_id'       => Warehouse::class,
+            'fiscal_position_id' => FiscalPosition::class,
+            'payment_term_id'    => PaymentTerm::class,
+            'journal_id'         => Journal::class,
+        ];
     }
 }

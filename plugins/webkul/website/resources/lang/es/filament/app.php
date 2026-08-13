@@ -57,13 +57,14 @@ return [
     ],
 
     'page_titles' => [
-        'home'             => 'Inicio',
-        'about-us'         => 'Sobre nosotros',
-        'privacy-policy'   => 'Política de privacidad',
-        'terms-conditions' => 'Términos y condiciones',
-        'blog'             => 'Blog',
-        'blogs'            => 'Blogs',
-        'contact'          => 'Contacto',
-        'contact-us'       => 'Contáctanos',
+        'home'               => 'Inicio',
+        'about-us'           => 'Sobre nosotros',
+        'privacy-policy'     => 'Política de privacidad',
+        'terms-conditions'   => 'Términos y condiciones',
+        'news-announcements' => 'Noticias y anuncios',
+        'blog'               => 'Blog',
+        'blogs'              => 'Blogs',
+        'contact'            => 'Contacto',
+        'contact-us'         => 'Contáctanos',
     ],
 ];

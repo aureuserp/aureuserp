@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class EmployeeJobPositionFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -34,7 +36,6 @@ class EmployeeJobPositionFactory extends Factory
             'status'             => true,
             'no_of_recruitment'  => fake()->randomNumber(),
             'department_id'      => Department::factory(),
-            'company_id'         => Company::factory(),
             'open_date'          => fake()->date(),
             'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];

@@ -10,13 +10,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Project\Database\Factories\TaskStageFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class TaskStage extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'projects_task_stages';
 
@@ -40,6 +43,11 @@ class TaskStage extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
 
     public function project(): BelongsTo
     {
@@ -72,6 +80,8 @@ class TaskStage extends Model implements Sortable
 
         static::creating(function ($taskStage) {
             $taskStage->creator_id ??= Auth::id();
+
+            $taskStage->company_id ??= $taskStage->project?->company_id;
         });
     }
 

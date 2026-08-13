@@ -12,7 +12,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Webkul\Account\Enums\AccountType;
@@ -20,12 +19,15 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\AgedPayableExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 use Webkul\Partner\Models\Partner;
 
 class AgedPayable extends Page implements HasForms
 {
     use HasPageShield, InteractsWithForms;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.aged-payable';
 
@@ -261,7 +263,7 @@ class AgedPayable extends Page implements HasForms
         $asOfDate = Carbon::parse($state['as_of_date'] ?? now());
         $basis = $state['basis'] ?? 'due_date';
         $period = $state['period'] ?? 30;
-        $companyId = Auth::user()->default_company_id;
+        $rateMap = CompanyRateMap::make(date: $asOfDate->toDateString());
         $postedOnly = ($state['posted_entries'] ?? 'posted') === 'posted';
 
         $query = MoveLine::select(
@@ -270,13 +272,14 @@ class AgedPayable extends Page implements HasForms
             'accounts_account_moves.invoice_date_due',
             'accounts_account_moves.reference',
             'accounts_journals.name as journal_name',
-            'accounts_account_move_lines.amount_residual'
+            'accounts_account_move_lines.amount_residual',
+            'accounts_account_moves.company_id as move_company_id'
         )
             ->join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
             ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')
             ->leftJoin('accounts_journals', 'accounts_account_moves.journal_id', '=', 'accounts_journals.id')
             ->where('accounts_accounts.account_type', AccountType::LIABILITY_PAYABLE)
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_move_lines.amount_residual', '!=', 0)
             ->where('accounts_account_move_lines.partner_id', $partnerId)
             ->orderBy('accounts_account_moves.invoice_date');
@@ -294,7 +297,7 @@ class AgedPayable extends Page implements HasForms
                 : Carbon::parse($line->invoice_date);
 
             $daysOverdue = $referenceDate->diffInDays($asOfDate, false);
-            $amount = -(float) $line->amount_residual;
+            $amount = -(float) $line->amount_residual * $rateMap->rateFor((int) $line->move_company_id);
 
             $lineData = [
                 'move_name'        => $line->move_name,
@@ -341,7 +344,7 @@ class AgedPayable extends Page implements HasForms
         $journalIds = $state['journals'] ?? [];
         $partnerIds = $state['partners'] ?? [];
         $postedOnly = ($state['posted_entries'] ?? 'posted') === 'posted';
-        $companyId = Auth::user()->default_company_id;
+        $rateMap = CompanyRateMap::make(date: $asOfDate->toDateString());
 
         $query = MoveLine::select(
             'accounts_account_move_lines.*',
@@ -352,14 +355,15 @@ class AgedPayable extends Page implements HasForms
             'accounts_account_moves.state',
             'accounts_journals.name as journal_name',
             'partners_partners.name as partner_name',
-            'partners_partners.id as partner_id'
+            'partners_partners.id as partner_id',
+            'accounts_account_moves.company_id as move_company_id'
         )
             ->join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
             ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')
             ->leftJoin('accounts_journals', 'accounts_account_moves.journal_id', '=', 'accounts_journals.id')
             ->leftJoin('partners_partners', 'accounts_account_move_lines.partner_id', '=', 'partners_partners.id')
             ->where('accounts_accounts.account_type', AccountType::LIABILITY_PAYABLE)
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_move_lines.amount_residual', '!=', 0)
             ->whereNotNull('accounts_account_move_lines.partner_id');
 
@@ -403,7 +407,7 @@ class AgedPayable extends Page implements HasForms
                 : Carbon::parse($line->invoice_date);
 
             $daysOverdue = $referenceDate->diffInDays($asOfDate, false);
-            $amount = -(float) $line->amount_residual;
+            $amount = -(float) $line->amount_residual * $rateMap->rateFor((int) $line->move_company_id);
 
             if ($daysOverdue < 0) {
                 $partnerData[$partnerId]['at_date'] += $amount;
@@ -427,7 +431,7 @@ class AgedPayable extends Page implements HasForms
         $hasUnposted = MoveLine::join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
             ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')
             ->where('accounts_accounts.account_type', AccountType::LIABILITY_PAYABLE)
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', '!=', MoveState::POSTED)
             ->exists();
 

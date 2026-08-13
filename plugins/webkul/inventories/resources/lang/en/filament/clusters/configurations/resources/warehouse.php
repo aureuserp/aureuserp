@@ -11,13 +11,14 @@ return [
             'general' => [
                 'title'  => 'General',
                 'fields' => [
-                    'name'               => 'Name',
-                    'name-placeholder'   => 'eg. Central Warehouse',
-                    'code'               => 'Short Name',
-                    'code-placeholder'   => 'eg. CW',
-                    'code-hint-tooltip'  => 'The short name serves as an identifier for the warehouse.',
-                    'company'            => 'Company',
-                    'address'            => 'Address',
+                    'name'                    => 'Name',
+                    'name-placeholder'        => 'eg. Central Warehouse',
+                    'code'                    => 'Short Name',
+                    'code-placeholder'        => 'eg. CW',
+                    'code-hint-tooltip'       => 'The short name serves as an identifier for the warehouse.',
+                    'company'                 => 'Company',
+                    'multi-warehouse-warning' => 'Creating a new warehouse will automatically activate the Storage Locations setting.',
+                    'address'                 => 'Address',
                 ],
             ],
 

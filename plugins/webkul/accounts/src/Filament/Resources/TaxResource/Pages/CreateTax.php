@@ -21,11 +21,6 @@ class CreateTax extends CreateRecord
         return [];
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -38,7 +33,7 @@ class CreateTax extends CreateRecord
     {
         $user = Auth::user();
 
-        $data['company_id'] = $user->default_company_id;
+        $data['company_id'] = current_company_id();
         $data['creator_id'] = $user->id;
 
         return $data;

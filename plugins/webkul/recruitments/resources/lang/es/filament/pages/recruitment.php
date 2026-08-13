@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'Reclutamiento',
-        'group' => 'Panel de control',
     ],
 
     'filters-form' => [
@@ -23,6 +22,7 @@ return [
         ],
 
         'start-date' => 'Fecha de inicio',
+        'date-range' => 'Rango de fechas',
         'end-date'   => 'Fecha de fin',
     ],
 ];

@@ -5,8 +5,11 @@ namespace Webkul\Manufacturing\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move as BaseMove;
+use Webkul\Inventory\Support\ProcurementOptions;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 
 class Move extends BaseMove
@@ -88,7 +91,7 @@ class Move extends BaseMove
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function warehouse(): BelongsTo
@@ -111,11 +114,9 @@ class Move extends BaseMove
         return $this->belongsToMany(self::class, 'inventories_move_destinations', 'origin_move_id', 'destination_move_id');
     }
 
-    public function shouldBeAssigned()
+    public function needsOperation()
     {
-        $shouldBeAssigned = parent::shouldBeAssigned();
-
-        return $shouldBeAssigned && ! ($this->order_id or $this->raw_material_order_id);
+        return parent::needsOperation() && ! ($this->order_id or $this->raw_material_order_id);
     }
 
     public function shouldBypassSetQtyProducing(): bool
@@ -193,28 +194,42 @@ class Move extends BaseMove
 
         static::saving(function ($move) {
             $move->warehouse_id = $move->operationType?->warehouse_id;
-            
+
             $move->mo_operation_id = $move->bomLine?->operation_id;
+        });
+
+        static::created(function ($move) {
+            $order = $move->rawMaterialOrder ?? $move->order;
+
+            if (
+                ! $order
+                || in_array($order->state, [ManufacturingOrderState::DRAFT, ManufacturingOrderState::DONE, ManufacturingOrderState::CANCEL])
+                || in_array($move->state, [MoveState::DONE, MoveState::CANCELED])
+            ) {
+                return;
+            }
+
+            if ($move->raw_material_order_id) {
+                $move->resolveProcureMethod();
+            }
+
+            InventoryFacade::confirmMoves(collect([$move]));
         });
     }
 
     public function runProcurement() {}
 
-    public function keyAssignOperation(): array
+    public function operationGroupingKey(): array
     {
-        $keys = parent::keyAssignOperation();
+        $keys = parent::operationGroupingKey();
 
         $keys[] = $this->created_order_id;
 
         return $keys;
     }
 
-    public function prepareProcurementValues(): array
+    public function buildProcurementOptions(): ProcurementOptions
     {
-        $values = parent::prepareProcurementValues();
-
-        $values['bom_line_id'] = $this->bom_line_id;
-
-        return $values;
+        return parent::buildProcurementOptions()->linkBomLine($this->bom_line_id);
     }
 }

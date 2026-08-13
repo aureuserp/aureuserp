@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -109,6 +122,15 @@
             background: #1e1e1e;
         }
 
+        .options-title {
+            clear: both;
+            font-size: 18px;
+            color: #1a4587;
+            margin-top: 30px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1a4587;
+        }
+
         .summary {
             width: 100%;
             display: inline-block;
@@ -145,7 +167,7 @@
         }
 
         .payment-info-title {
-            font-weight: 600;
+            font-weight: {{ $isRtl ? 'bold' : '600' }};
             margin-bottom: 10px;
         }
     </style>
@@ -292,7 +314,7 @@
                         <th>{{ __('sales::app.documents.product') }}</th>
                         <th>{{ __('sales::app.documents.quantity') }}</th>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <th>{{ __('sales::app.documents.unit') }}</th>
                         @endif
 
@@ -306,12 +328,47 @@
                         <td>{{ $item->product->name }}</td>
                         <td>{{ number_format($item->product_uom_qty) }}</td>
 
-                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 
                         <td>{{ number_format($item->price_unit, 2) }}</td>
                     </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
+        <!-- Optional Products Table -->
+        @if (in_array($record->state, [\Webkul\Sale\Enums\OrderState::DRAFT, \Webkul\Sale\Enums\OrderState::SENT]) && ! $record->optionalLines->isEmpty())
+            <div class="options-title">{{ __('sales::app.documents.options') }}</div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('sales::app.documents.product') }}</th>
+                        <th>{{ __('sales::app.documents.quantity') }}</th>
+
+                        @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                            <th>{{ __('sales::app.documents.unit') }}</th>
+                        @endif
+
+                        <th>{{ __('sales::app.documents.unit-price') }}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($record->optionalLines as $option)
+                        <tr>
+                            <td>{{ filled($option->name) ? $option->name : $option->product->name }}</td>
+                            <td>{{ number_format($option->quantity) }}</td>
+
+                            @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
+                                <td>{{ $option->uom?->name ?? $option->product->uom->name }}</td>
+                            @endif
+
+                            <td>{{ number_format($option->price_unit, 2) }}</td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>

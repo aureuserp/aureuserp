@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Monedas',
-        'group' => 'Configuración',
     ],
 
     'form' => [
@@ -96,6 +95,13 @@ return [
                         'title' => 'No se pudo eliminar la moneda',
                         'body'  => 'La moneda no se puede eliminar porque está actualmente en uso.',
                     ],
+                ],
+            ],
+
+            'deactivate' => [
+                'notification' => [
+                    'title' => 'La moneda no se puede desactivar',
+                    'body'  => 'Esta moneda está siendo utilizada por una o más empresas y no se puede desactivar.',
                 ],
             ],
         ],

@@ -8,6 +8,7 @@ use Filament\Resources\RelationManagers\RelationGroup;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
+use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\CreatePartner;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\EditPartner;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\ListPartners;
@@ -31,9 +32,9 @@ class PartnerResource extends BasePartnerResource
         return __('website::filament/admin/resources/partner.navigation.title');
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string|\UnitEnum
     {
-        return __('website::filament/admin/resources/partner.navigation.group');
+        return NavigationGroup::Website;
     }
 
     public static function getRecordSubNavigation(Page $page): array

@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\TimeOff\Enums\AccruedGainTime;
 use Webkul\TimeOff\Enums\CarryoverDate;
 use Webkul\TimeOff\Enums\CarryoverDay;
@@ -15,6 +17,8 @@ use Webkul\TimeOff\Enums\CarryoverMonth;
 
 class LeaveAccrualPlan extends Model
 {
+    use BelongsToCompany;
+    use HasCustomFields;
     use HasFactory;
 
     protected $table = 'time_off_leave_accrual_plans';
@@ -70,7 +74,7 @@ class LeaveAccrualPlan extends Model
 
             $leaveAccrualPlan->creator_id = $authUser->id;
 
-            $leaveAccrualPlan->company_id ??= $authUser?->default_company_id;
+            $leaveAccrualPlan->company_id ??= current_company_id();
         });
     }
 }

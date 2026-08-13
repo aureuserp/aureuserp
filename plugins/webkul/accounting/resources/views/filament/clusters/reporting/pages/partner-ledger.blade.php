@@ -3,6 +3,8 @@
         {{-- Filters --}}
         {{ $this->form }}
 
+        @include('accounting::filament.clusters.reporting.pages.partials.currency-notice')
+
         {{-- Report Header --}}
         <x-filament::section>
             @php

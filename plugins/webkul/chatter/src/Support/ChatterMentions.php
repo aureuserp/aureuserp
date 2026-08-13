@@ -15,7 +15,7 @@ class ChatterMentions
         return MentionProvider::make('@')
             ->getSearchResultsUsing(fn (string $search): array => User::query()
                 ->where('is_active', true)
-                ->where('name', 'like', "%{$search}%")
+                ->whereLike('name', "%{$search}%")
                 ->orderBy('name')
                 ->limit(10)
                 ->pluck('name', 'id')

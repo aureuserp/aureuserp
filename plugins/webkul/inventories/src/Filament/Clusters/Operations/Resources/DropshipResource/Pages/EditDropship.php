@@ -12,20 +12,20 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\Dropship;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditDropship extends EditRecord
 {
-    use HasRecordNavigationTabs;
+    use HandlesCrossCompanyException;
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+    use RefreshesRecordState;
 
     protected static string $resource = DropshipResource::class;
 
     protected ?bool $hasDatabaseTransactions = true;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
@@ -85,5 +85,7 @@ class EditDropship extends EditRecord
     public function updateForm(): void
     {
         $this->fillForm();
+
+        $this->rememberData();
     }
 }

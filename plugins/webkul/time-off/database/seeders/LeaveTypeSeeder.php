@@ -47,7 +47,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'sort'                                => 1,
                 'color'                               => random_color(),
-                'company_id'                          => $company?->id,
+                'company_id'                          => null,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
                 'leave_validation_type'               => 'both',
@@ -89,7 +89,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'sort'                                => 4,
                 'color'                               => random_color(),
-                'company_id'                          => $company?->id,
+                'company_id'                          => null,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
                 'leave_validation_type'               => 'manager',
@@ -110,7 +110,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'sort'                                => 5,
                 'color'                               => random_color(),
-                'company_id'                          => $company?->id,
+                'company_id'                          => null,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
                 'leave_validation_type'               => 'both',
@@ -131,7 +131,7 @@ class LeaveTypeSeeder extends Seeder
             [
                 'sort'                                => 6,
                 'color'                               => random_color(),
-                'company_id'                          => $company?->id,
+                'company_id'                          => null,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
                 'leave_validation_type'               => 'both',

@@ -97,18 +97,18 @@ class ManageMoves extends ManageRelatedRecords
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.lot'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (TraceabilitySettings $settings) => $settings->enable_lots_serial_numbers && $this->getOwnerRecord()->tracking != ProductTracking::QTY),
+                    ->visible(static::getTraceabilitySettings()->enable_lots_serial_numbers && $this->getOwnerRecord()->tracking != ProductTracking::QTY),
                 TextColumn::make('resultPackage.name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.package'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
+                    ->visible(static::getOperationSettings()->enable_packages),
                 TextColumn::make('sourceLocation.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.source-location'))
-                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 TextColumn::make('destinationLocation.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.destination-location'))
-                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
+                    ->visible(static::getWarehouseSettings()->enable_locations),
                 TextColumn::make('uom_qty')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.quantity'))
                     ->sortable()
@@ -117,7 +117,7 @@ class ManageMoves extends ManageRelatedRecords
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.unit'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                    ->visible(static::getProductSettings()->enable_uom),
                 TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-moves.table.columns.state'))
                     ->sortable()
@@ -140,5 +140,25 @@ class ManageMoves extends ManageRelatedRecords
             ->modifyQueryUsing(function (Builder $query) {
                 $query->where('state', MoveState::DONE);
             });
+    }
+
+    public static function getOperationSettings(): OperationSettings
+    {
+        return settings(OperationSettings::class);
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return settings(ProductSettings::class);
+    }
+
+    public static function getTraceabilitySettings(): TraceabilitySettings
+    {
+        return settings(TraceabilitySettings::class);
+    }
+
+    public static function getWarehouseSettings(): WarehouseSettings
+    {
+        return settings(WarehouseSettings::class);
     }
 }

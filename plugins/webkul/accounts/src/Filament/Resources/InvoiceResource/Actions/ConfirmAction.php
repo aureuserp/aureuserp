@@ -35,6 +35,8 @@ class ConfirmAction extends Action
                     $record = AccountFacade::confirmMove($record);
 
                     $livewire->refreshFormData(['state', 'parent_state']);
+
+                    $livewire->dispatch('refreshInvoiceSummary');
                 } catch (Throwable $e) {
                     Notification::make()
                         ->warning()

@@ -10,11 +10,6 @@ class CreateCashRounding extends CreateRecord
 {
     protected static string $resource = CashRoundingResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

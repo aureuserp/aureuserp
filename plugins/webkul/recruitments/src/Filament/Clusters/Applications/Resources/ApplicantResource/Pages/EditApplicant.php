@@ -38,11 +38,6 @@ class EditApplicant extends EditRecord
 
     protected array $interviewerChanges = [];
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -234,7 +229,7 @@ class EditApplicant extends EditRecord
 
         $messageData = [
             'from' => [
-                'company' => Auth::user()->defaultCompany->toArray(),
+                'company' => current_company()->toArray(),
             ],
             'body' => view($viewName, ['payload' => $data])->render(),
             'type' => 'comment',
