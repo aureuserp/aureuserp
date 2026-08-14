@@ -2,8 +2,8 @@
 
 namespace Webkul\Account\Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use Webkul\Security\Models\User;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\PaymentType;
 
