@@ -27,6 +27,7 @@ class BlogServiceProvider extends PackageServiceProvider
                 '2025_03_07_065635_create_blogs_tags_table',
                 '2025_03_07_065715_create_blogs_post_tags_table',
                 '2025_09_03_070414_alter_blogs_posts_table',
+                '2026_08_13_000002_make_blogs_posts_translatable',
             ])
             ->runsMigrations()
             ->hasSettings([

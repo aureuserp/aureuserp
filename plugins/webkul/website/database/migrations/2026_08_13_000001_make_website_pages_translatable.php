@@ -47,26 +47,38 @@ return new class extends Migration
                 }
             });
 
-        Schema::table('website_pages', function (Blueprint $table) {
-            $table->json('title')->change();
-            $table->json('content')->change();
-            $table->json('meta_title')->nullable()->change();
-            $table->json('meta_keywords')->nullable()->change();
-            $table->json('meta_description')->nullable()->change();
-        });
+        if (DB::getDriverName() === 'pgsql') {
+            foreach ($this->columns as $column) {
+                DB::statement("ALTER TABLE website_pages ALTER COLUMN {$column} TYPE json USING {$column}::json");
+            }
+        } else {
+            Schema::table('website_pages', function (Blueprint $table) {
+                $table->json('title')->change();
+                $table->json('content')->change();
+                $table->json('meta_title')->nullable()->change();
+                $table->json('meta_keywords')->nullable()->change();
+                $table->json('meta_description')->nullable()->change();
+            });
+        }
     }
 
     public function down(): void
     {
         $locale = config('app.fallback_locale', 'en');
 
-        Schema::table('website_pages', function (Blueprint $table) {
-            $table->text('title')->change();
-            $table->text('content')->change();
-            $table->text('meta_title')->nullable()->change();
-            $table->text('meta_keywords')->nullable()->change();
-            $table->text('meta_description')->nullable()->change();
-        });
+        if (DB::getDriverName() === 'pgsql') {
+            foreach ($this->columns as $column) {
+                DB::statement("ALTER TABLE website_pages ALTER COLUMN {$column} TYPE text USING {$column}::text");
+            }
+        } else {
+            Schema::table('website_pages', function (Blueprint $table) {
+                $table->text('title')->change();
+                $table->text('content')->change();
+                $table->text('meta_title')->nullable()->change();
+                $table->text('meta_keywords')->nullable()->change();
+                $table->text('meta_description')->nullable()->change();
+            });
+        }
 
         DB::table('website_pages')
             ->orderBy('id')
@@ -88,8 +100,12 @@ return new class extends Migration
                 }
             });
 
-        Schema::table('website_pages', function (Blueprint $table) {
-            $table->string('title')->change();
-        });
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE website_pages ALTER COLUMN title TYPE varchar(255) USING title::varchar(255)');
+        } else {
+            Schema::table('website_pages', function (Blueprint $table) {
+                $table->string('title')->change();
+            });
+        }
     }
 };
