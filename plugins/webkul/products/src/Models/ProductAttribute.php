@@ -65,7 +65,7 @@ class ProductAttribute extends Model implements Sortable
         });
 
         static::deleting(function ($attribute) {
-            $attribute->product->variants()->forceDelete();
+            $attribute->product->variants()->get()->each->deleteOrArchive();
         });
     }
 
