@@ -2,14 +2,16 @@
 
 namespace Webkul\Employee\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Employee\Database\Factories\EmployeeResumeLineTypeFactory;
 
 class EmployeeResumeLineType extends Model implements Sortable
 {
-    use SortableTrait;
+    use HasFactory, SortableTrait;
 
     protected $table = 'employees_employee_resume_line_types';
 
@@ -27,6 +29,11 @@ class EmployeeResumeLineType extends Model implements Sortable
     public function resume()
     {
         return $this->hasMany(EmployeeResume::class);
+    }
+
+    protected static function newFactory(): EmployeeResumeLineTypeFactory
+    {
+        return EmployeeResumeLineTypeFactory::new();
     }
 
     protected static function boot()
