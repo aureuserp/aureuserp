@@ -32,8 +32,8 @@ class SaleStatsOverview extends BaseWidget
         return [
             Stat::make(__('sales::filament/widgets/sales-dashboard.stats.total-quotations'), $totalQuotations),
             Stat::make(__('sales::filament/widgets/sales-dashboard.stats.total-sales-orders'), $totalSalesOrders),
-            Stat::make(__('sales::filament/widgets/sales-dashboard.stats.total-revenue'), money($totalRevenue)),
-            Stat::make(__('sales::filament/widgets/sales-dashboard.stats.average-revenue'), money($averageRevenue)),
+            Stat::make(__('sales::filament/widgets/sales-dashboard.stats.total-revenue'), money($totalRevenue, current_company()?->currency?->name)),
+            Stat::make(__('sales::filament/widgets/sales-dashboard.stats.average-revenue'), money($averageRevenue, current_company()?->currency?->name)),
         ];
     }
 }

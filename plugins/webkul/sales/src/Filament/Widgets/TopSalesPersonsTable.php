@@ -3,15 +3,24 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
+use Webkul\Security\Filament\Resources\UserResource;
 
 class TopSalesPersonsTable extends TableWidget
 {
     use HasSaleDashboardFilters;
 
     protected static ?int $sort = 10;
+
+    public function table(Table $table): Table
+    {
+        return $table->recordUrl(fn ($record): ?string => UserResource::canAccess()
+            ? UserResource::getUrl('view', ['record' => $record->id])
+            : null);
+    }
 
     public function getHeading(): ?string
     {
@@ -32,7 +41,7 @@ class TopSalesPersonsTable extends TableWidget
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('SUM(sales_orders.amount_total) as revenue')
             ->orderByDesc('revenue')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -45,7 +54,7 @@ class TopSalesPersonsTable extends TableWidget
                 ->numeric(),
             Tables\Columns\TextColumn::make('revenue')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-sales-persons.columns.revenue'))
-                ->formatStateUsing(fn ($state) => money($state ?? 0)),
+                ->formatStateUsing(fn ($state) => money($state ?? 0, current_company()?->currency?->name)),
         ];
     }
 }

@@ -33,7 +33,7 @@ class TopCountriesTable extends TableWidget
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('SUM(sales_orders.amount_total) as revenue')
             ->orderByDesc('revenue')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -46,7 +46,7 @@ class TopCountriesTable extends TableWidget
                 ->numeric(),
             Tables\Columns\TextColumn::make('revenue')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-countries.columns.revenue'))
-                ->formatStateUsing(fn ($state) => money($state ?? 0)),
+                ->formatStateUsing(fn ($state) => money($state ?? 0, current_company()?->currency?->name)),
         ];
     }
 }

@@ -3,8 +3,10 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 
 class TopSalesOrdersTable extends TableWidget
@@ -12,6 +14,13 @@ class TopSalesOrdersTable extends TableWidget
     use HasSaleDashboardFilters;
 
     protected static ?int $sort = 4;
+
+    public function table(Table $table): Table
+    {
+        return $table->recordUrl(fn ($record): ?string => OrderResource::canAccess()
+            ? OrderResource::getUrl('view', ['record' => $record->id])
+            : null);
+    }
 
     public function getHeading(): ?string
     {
@@ -28,7 +37,7 @@ class TopSalesOrdersTable extends TableWidget
         return $this->saleOrders()
             ->with(['partner', 'currency'])
             ->orderByDesc('amount_total')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -41,7 +50,7 @@ class TopSalesOrdersTable extends TableWidget
                 ->placeholder('-'),
             Tables\Columns\TextColumn::make('amount_total')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.amount'))
-                ->money(fn ($record) => $record->currency?->code),
+                ->money(fn ($record) => $record->currency?->name),
         ];
     }
 }

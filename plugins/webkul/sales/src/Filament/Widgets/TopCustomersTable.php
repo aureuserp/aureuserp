@@ -3,8 +3,10 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 
 class TopCustomersTable extends TableWidget
@@ -12,6 +14,13 @@ class TopCustomersTable extends TableWidget
     use HasSaleDashboardFilters;
 
     protected static ?int $sort = 7;
+
+    public function table(Table $table): Table
+    {
+        return $table->recordUrl(fn ($record): ?string => CustomerResource::canAccess()
+            ? CustomerResource::getUrl('view', ['record' => $record->id])
+            : null);
+    }
 
     public function getHeading(): ?string
     {
@@ -32,7 +41,7 @@ class TopCustomersTable extends TableWidget
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('SUM(sales_orders.amount_total) as revenue')
             ->orderByDesc('revenue')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -45,7 +54,7 @@ class TopCustomersTable extends TableWidget
                 ->numeric(),
             Tables\Columns\TextColumn::make('revenue')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.revenue'))
-                ->formatStateUsing(fn ($state) => money($state ?? 0)),
+                ->formatStateUsing(fn ($state) => money($state ?? 0, current_company()?->currency?->name)),
         ];
     }
 }

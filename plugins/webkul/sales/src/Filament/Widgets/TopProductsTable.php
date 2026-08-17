@@ -3,8 +3,10 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 use Webkul\Sale\Models\OrderLine;
 
@@ -13,6 +15,13 @@ class TopProductsTable extends TableWidget
     use HasSaleDashboardFilters;
 
     protected static ?int $sort = 6;
+
+    public function table(Table $table): Table
+    {
+        return $table->recordUrl(fn ($record): ?string => ProductResource::canAccess()
+            ? ProductResource::getUrl('view', ['record' => $record->id])
+            : null);
+    }
 
     public function getHeading(): ?string
     {
@@ -34,7 +43,7 @@ class TopProductsTable extends TableWidget
             ->selectRaw('SUM(sales_order_lines.product_uom_qty) as quantity')
             ->selectRaw('SUM(sales_order_lines.price_total) as revenue')
             ->orderByDesc('revenue')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -47,7 +56,7 @@ class TopProductsTable extends TableWidget
                 ->numeric(),
             Tables\Columns\TextColumn::make('revenue')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-products.columns.revenue'))
-                ->formatStateUsing(fn ($state) => money($state ?? 0)),
+                ->formatStateUsing(fn ($state) => money($state ?? 0, current_company()?->currency?->name)),
         ];
     }
 }
