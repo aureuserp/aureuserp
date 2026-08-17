@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as SupportCollection;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeResume;
+use Webkul\Employee\Models\EmployeeResumeAttachment;
 use Webkul\Employee\Models\EmployeeSkill;
 use Webkul\Support\Filament\Tables\Infolists\ProgressBarEntry;
 
@@ -425,7 +426,7 @@ class EmployeeInfolist
     protected static function getResumeSections(Employee $record): array
     {
         $groups = $record->resumes()
-            ->with('resumeType')
+            ->with(['resumeType', 'attachments'])
             ->orderBy('id')
             ->get()
             ->sortByDesc(fn (EmployeeResume $resume): string => (string) $resume->start_date)
@@ -473,6 +474,25 @@ class EmployeeInfolist
                                     ->color('gray')
                                     ->size(TextSize::Small)
                                     ->hidden(fn (EmployeeResume $record): bool => blank($record->description)),
+                                TextEntry::make('attachments')
+                                    ->hiddenLabel()
+                                    ->badge()
+                                    ->color('info')
+                                    ->icon('heroicon-o-paper-clip')
+                                    // The badge already reads as a link, so drop the browser's
+                                    // default underline on the anchor it wraps.
+                                    ->extraAttributes(['class' => '[&_a]:no-underline [&_a:hover]:no-underline'])
+                                    ->listWithLineBreaks()
+                                    ->state(fn (EmployeeResume $record): array => $record->attachments
+                                        ->map(fn (EmployeeResumeAttachment $attachment): array => [
+                                            'label' => $attachment->name ?: $attachment->original_file_name,
+                                            'url'   => $attachment->url,
+                                        ])
+                                        ->all())
+                                    ->formatStateUsing(fn (array $state): string => $state['label'])
+                                    ->url(fn (array $state): string => $state['url'])
+                                    ->openUrlInNewTab()
+                                    ->hidden(fn (EmployeeResume $record): bool => $record->attachments->isEmpty()),
                             ]),
                     ]))->values()->all()),
         ];
