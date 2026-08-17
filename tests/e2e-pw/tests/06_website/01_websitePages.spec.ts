@@ -1,5 +1,6 @@
 import { test, expect } from "../../setup";
 import { WebsiteManagementPage } from "../../pages/06_websiteManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Website Pages - Listing", () => {
     test.beforeAll(async ({ adminPage }) => {
@@ -15,7 +16,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Create Website Page - Valid Inputs", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const title = `E2E Website Page ${key}`;
 
         await websitePage.createWebsitePage({
@@ -35,7 +36,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Edit Website Page - Updates Title and Metadata", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalTitle = `E2E Website Page ${key}`;
         const updatedTitle = `E2E Website Page Updated ${key}`;
 
@@ -60,7 +61,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Publish Website Page - Makes Page Visible on Frontend", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const title = `E2E Published Page ${key}`;
         const content = `Published content for ${title}`;
 
@@ -81,7 +82,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Draft Website Page - Hides Page from Frontend", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const title = `E2E Draft Page ${key}`;
         const content = `Draft content for ${title}`;
 
@@ -102,7 +103,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Website Page Header and Footer Visibility - Header Only", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const title = `E2E Header Only Page ${key}`;
         const content = `Content for header only page ${title}`;
 
@@ -121,7 +122,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Website Page Header and Footer Visibility - Footer Only", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const title = `E2E Footer Only Page ${key}`;
         const content = `Content for footer only page ${title}`;
 
@@ -140,7 +141,7 @@ test.describe("Website Pages - Listing", () => {
 
     test("Website Page Header and Footer Visibility - Neither Visible", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const title = `E2E No Header Footer Page ${key}`;
         const content = `Content for no header footer page ${title}`;
 

@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { PurchaseFlowPage } from "../../pages/05_purchaseManagement";
+import { uniqueKey } from "../../utils/unique";
 
 test.describe("Purchase Vendors E2E", () => {
     test.beforeAll(async ({ adminPage }) => {
@@ -14,7 +15,7 @@ test.describe("Purchase Vendors E2E", () => {
 
     test("Create Vendor - Valid Inputs", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
 
         await purchasePage.createVendor({
             name: `E2E Purchase Vendor ${key}`,
@@ -24,7 +25,7 @@ test.describe("Purchase Vendors E2E", () => {
 
     test("Edit Vendor - Updates Name", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalName = `E2E Purchase Vendor ${key}`;
         const updatedName = `E2E Purchase Vendor Updated ${key}`;
 
@@ -41,7 +42,7 @@ test.describe("Purchase Vendors E2E", () => {
 
     test("Delete Vendor - Removes Record", async ({ adminPage }) => {
         const purchasePage = new PurchaseFlowPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const vendorName = `E2E Purchase Vendor ${key}`;
 
         await purchasePage.createVendor({

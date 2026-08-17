@@ -1,5 +1,6 @@
 import { test } from "../../setup";
 import { WebsiteManagementPage } from "../../pages/06_websiteManagement";
+import { uniqueKey } from "../../utils/unique";
 
 const slugify = (value: string): string =>
     value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -20,7 +21,7 @@ test.describe("Website Blogs", () => {
 
     test("Create Blog Category - Valid Inputs", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const categoryName = `E2E Blog Category ${key}`;
 
         await websitePage.createBlogCategory({
@@ -36,7 +37,7 @@ test.describe("Website Blogs", () => {
 
     test("Edit Blog Category - Updates Name and Subtitle", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalCategoryName = `E2E Blog Category ${key}`;
         const updatedCategoryName = `E2E Blog Category Updated ${key}`;
 
@@ -57,7 +58,7 @@ test.describe("Website Blogs", () => {
 
     test("Delete Blog Category - Removes Record", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const categoryName = `E2E Blog Category Delete ${key}`;
 
         await websitePage.createBlogCategory({
@@ -78,7 +79,7 @@ test.describe("Website Blogs", () => {
 
     test("Create Blog Post - Valid Inputs", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const categoryName = `E2E Blog Category ${key}`;
         const postTitle = `E2E Blog Post ${key}`;
 
@@ -104,7 +105,7 @@ test.describe("Website Blogs", () => {
 
     test("Edit Blog Post - Updates Title, Category, and Metadata", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const originalCategoryName = `E2E Blog Category ${key}`;
         const updatedCategoryName = `E2E Blog Category Updated ${key}`;
         const originalPostTitle = `E2E Blog Post ${key}`;
@@ -135,7 +136,7 @@ test.describe("Website Blogs", () => {
 
     test("Publish Blog Post - Shows on Frontend", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const categoryName = `E2E Frontend Category ${key}`;
         const postTitle = `E2E Published Blog ${key}`;
         const postContent = `Frontend blog content for ${postTitle}`;
@@ -169,7 +170,7 @@ test.describe("Website Blogs", () => {
 
     test("Draft Blog Post - Hides Post From Frontend Listings", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const categoryName = `E2E Draft Category ${key}`;
         const postTitle = `E2E Draft Blog ${key}`;
 
@@ -192,7 +193,7 @@ test.describe("Website Blogs", () => {
 
     test("Delete Blog Post - Removes Record", async ({ adminPage }) => {
         const websitePage = new WebsiteManagementPage(adminPage);
-        const key = Date.now();
+        const key = uniqueKey();
         const categoryName = `E2E Delete Category ${key}`;
         const postTitle = `E2E Delete Blog ${key}`;
 

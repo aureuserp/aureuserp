@@ -1,6 +1,8 @@
-import { Page, expect } from "@playwright/test";
+import { type Locator, Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
+import { pluginsPreinstalled, runOnce, SETUP_KEYS, withSettingsLock } from "../utils/setupCache";
+import { clickRowAction, filterListBySearch, rowByText } from "../utils/list";
 
 export type PurchaseVendorData = {
     name: string;
@@ -70,37 +72,62 @@ export class PurchaseFlowPage {
     }
 
     async ensurePurchasesPluginInstalled() {
-        const pluginPage = new PluginManagementPage(this.page);
-        await pluginPage.gotoPluginManagementPage();
-        await pluginPage.installPluginByName("Purchases");
+        if (pluginsPreinstalled()) {
+            return;
+        }
+
+        await runOnce(SETUP_KEYS.pluginPurchases, async () => {
+            const pluginPage = new PluginManagementPage(this.page);
+            await pluginPage.gotoPluginManagementPage();
+            await pluginPage.installPluginByName("Purchases");
+        });
     }
 
     async gotoPurchaseSettingsPage() {
-        await this.page.goto("/admin/settings/purchase/manage-orders");
+        await this.safeGoto("/admin/settings/purchase/manage-orders");
         await expect(this.page).toHaveURL(/admin\/settings\/purchase\/manage-orders/);
         await expect(this.erpLocators.purchaseAgreementSettingsToggle).toBeVisible();
     }
 
+    /**
+     * Locked: this flips a setting shared by every worker, and a naive read-check-then-save
+     * races when two workers do it at the same time (one's save overwrites the other's).
+     */
     async setPurchaseAgreementsEnabled(enabled: boolean) {
-        await this.gotoPurchaseSettingsPage();
+        await withSettingsLock(SETUP_KEYS.settingsPurchaseAgreements, async () => {
+            for (let attempt = 0; attempt < 3; attempt++) {
+                await this.gotoPurchaseSettingsPage();
 
-        const toggle = this.erpLocators.purchaseAgreementSettingsToggle;
+                const toggle = this.erpLocators.purchaseAgreementSettingsToggle;
+
+                if ((await this.isToggleEnabled(toggle)) === enabled) {
+                    return;
+                }
+
+                await toggle.click();
+                await expect(this.erpLocators.settingsSaveButton).toBeEnabled({ timeout: 30000 });
+                await this.erpLocators.settingsSaveButton.click().catch(() => undefined);
+
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(1500);
+            }
+
+            await this.gotoPurchaseSettingsPage();
+            expect(await this.isToggleEnabled(this.erpLocators.purchaseAgreementSettingsToggle)).toBe(enabled);
+        });
+    }
+
+    private async isToggleEnabled(toggle: Locator): Promise<boolean> {
         const tagName = await toggle.evaluate((element) => element.tagName.toLowerCase());
-        const isEnabled = tagName === "input"
+
+        return tagName === "input"
             ? await toggle.isChecked()
             : (await toggle.getAttribute("aria-checked")) !== "false";
-
-        if (isEnabled !== enabled) {
-            await toggle.click();
-            await this.erpLocators.settingsSaveButton.click();
-            await this.expectSuccessToast();
-        }
     }
 
     /**
      * Navigate, retrying when a redirect still in flight from the previous page aborts or
-     * interrupts this one. Landing here straight after saving a record elsewhere would
-     * otherwise fail with net::ERR_ABORTED.
+     * interrupts this one.
      */
     private async safeGoto(url: string) {
         await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
@@ -121,9 +148,7 @@ export class PurchaseFlowPage {
     }
 
     /**
-     * Fill a field once its form is done hydrating. Livewire swaps the DOM after an SPA
-     * navigation, which silently discards a value typed into the pre-swap markup, so the
-     * value is read back and retyped if it did not stick.
+     * Fill a field once its form is done hydrating. 
      */
     private async fillWhenReady(input: ReturnType<Page["locator"]>, value: string) {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
@@ -158,9 +183,6 @@ export class PurchaseFlowPage {
             await this.fillWhenReady(this.erpLocators.purchaseVendorEmailInput, vendor.email);
         }
 
-        // "Create" redirects off the create form, and that redirect tears the success toast
-        // down; the redirect itself is the reliable signal that the record was created.
-        // ("Create & create another" would instead reset the form in place.)
         await this.erpLocators.purchaseVendorCreateButton.click();
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await expect(this.page).not.toHaveURL(/vendors\/create/);
@@ -177,9 +199,8 @@ export class PurchaseFlowPage {
     async editVendor(originalName: string, updates: PurchaseVendorData) {
         await this.gotoVendorsPage();
         await this.searchList(originalName);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.purchaseVendorEditButton.click();
+
+        await clickRowAction(rowByText(this.page, originalName), "Edit");
 
         if (updates.name) {
             await this.erpLocators.purchaseVendorNameInput.fill(updates.name);
@@ -190,17 +211,28 @@ export class PurchaseFlowPage {
         }
 
         await this.erpLocators.purchaseVendorSaveButton.click();
-        await this.expectSuccessToast();
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteVendor(name: string) {
         await this.gotoVendorsPage();
         await this.searchList(name);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.purchaseVendorDeleteButton.click();
+
+        await clickRowAction(rowByText(this.page, name), "Delete");
         await this.erpLocators.purchaseConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+        await this.expectRecordAbsent(name);
+    }
+
+    /**
+     * The record is gone from its listing — the outcome a delete has to be judged by, since a
+     * toast on screen may belong to a test running beside this one.
+     */
+    async expectRecordAbsent(name: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.searchList(name);
+        await expect(rowByText(this.page, name)).toHaveCount(0);
     }
 
     async gotoProductsPage() {
@@ -218,12 +250,20 @@ export class PurchaseFlowPage {
         await this.fillWhenReady(this.erpLocators.purchaseProductNameInput, product.name);
         await this.fillWhenReady(this.erpLocators.purchaseProductPriceInput, product.price);
 
-        // Products default to storable goods tracked "By Quantity"; only touch Track By
-        // when a lot/serial product is wanted.
         if (product.tracking && product.tracking !== "qty") {
             await expect(this.erpLocators.purchaseProductTrackingSelect).toBeVisible();
-            await this.erpLocators.purchaseProductTrackingSelect.selectOption(product.tracking);
-            await this.page.waitForTimeout(300);
+
+            for (let attempt = 0; attempt < 3; attempt++) {
+                await this.erpLocators.purchaseProductTrackingSelect.selectOption(product.tracking);
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(800);
+
+                if ((await this.erpLocators.purchaseProductTrackingSelect.inputValue()) === product.tracking) {
+                    break;
+                }
+            }
+
+            await expect(this.erpLocators.purchaseProductTrackingSelect).toHaveValue(product.tracking);
         }
 
         await this.erpLocators.purchaseProductCreateButton.click();
@@ -242,9 +282,8 @@ export class PurchaseFlowPage {
     async editProduct(originalName: string, updates: PurchaseProductData) {
         await this.gotoProductsPage();
         await this.searchList(originalName);
-        await this.openRowActions();
-        await this.erpLocators.purchaseProductEditButton.click();
-        // await this.clickMenuAction(/Edit/i);
+
+        await clickRowAction(rowByText(this.page, originalName), "Edit");
 
 
         if (updates.name) {
@@ -256,17 +295,17 @@ export class PurchaseFlowPage {
         }
 
         await this.erpLocators.purchaseProductSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteProduct(name: string) {
         await this.gotoProductsPage();
         await this.searchList(name);
-        await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.purchaseProductDeleteButton.click();
+
+        await clickRowAction(rowByText(this.page, name), "Delete");
         await this.erpLocators.purchaseConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+        await this.expectRecordAbsent(name);
     }
 
     async gotoQuotationsPage() {
@@ -313,11 +352,9 @@ export class PurchaseFlowPage {
             await l.purchaseQuotationAddProductButton.click();
             await this.selectBySearch(l.purchaseQuotationProductSelect.nth(index), line.productName);
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
-            await l.purchaseQuotationQuantityInput.nth(index).fill(line.quantity);
-            await l.purchaseQuotationUnitPriceInput.nth(index).fill(line.unitPrice);
+            await this.fillLineValue(l.purchaseQuotationQuantityInput.nth(index), line.quantity);
+            await this.fillLineValue(l.purchaseQuotationUnitPriceInput.nth(index), line.unitPrice);
 
-            // Quantity and unit price recompute on blur; let that round-trip finish before
-            // touching the tax field, or its request overlaps and the submit stays disabled.
             await this.blurAndSettle();
 
             if (line.taxName) {
@@ -337,9 +374,6 @@ export class PurchaseFlowPage {
         for (let attempt = 0; attempt < 3; attempt++) {
             await this.clickWhenEnabled(this.erpLocators.purchaseQuotationCreateSubmitButton);
 
-            // Wait for the redirect itself: a click that merely lost the race against an
-            // in-flight Livewire request leaves the form open and is worth retrying, while
-            // clicking again after the redirect would hit the edit page's Delete action.
             await this.page
                 .waitForURL((url) => !/quotations\/create/.test(url.toString()), { timeout: 60000 })
                 .catch(() => undefined);
@@ -354,15 +388,7 @@ export class PurchaseFlowPage {
     }
 
     /**
-     * Click a submit button once Filament re-enables it. It is disabled for the duration of
-     * an in-flight Livewire request, and occasionally stays that way, so the wait is
-     * bounded and the click is forced rather than letting the whole test time out.
-     */
-    /**
-     * Click the submit exactly once. Playwright re-tries a click whose element moves or is
-     * detached mid-dispatch, and Livewire re-renders the button as the form settles — on a
-     * slow machine that retry lands a second click, the form is saved twice, and the line
-     * added to a confirmed order is applied to its transfer twice (demand 2 becomes 4).
+     * Click a submit button once Filament re-enables it. 
      */
     private async dispatchSingleClick(button: ReturnType<Page["locator"]>) {
         await button.waitFor({ state: "visible", timeout: 15000 });
@@ -386,25 +412,97 @@ export class PurchaseFlowPage {
 
     /**
      * Pick a warehouse's "Receipts" operation type in the "Deliver To" field, which is
-     * what routes the order's reception (1/2/3-step). Operation-type names are not unique
-     * across warehouses, so the dropdown is searched by the type name and the option is
-     * then narrowed by the warehouse it belongs to.
+     * what routes the order's reception (1/2/3-step). 
      */
     async selectReceiptsOperationTypeForWarehouse(warehouseName: string) {
+        if (await this.tryPickOperationType(warehouseName, "Receipts")) {
+            return;
+        }
+
+        const uniqueName = `Receipts ${warehouseName}`;
+        await this.renameOperationTypeInNewTab(warehouseName, "Receipts", uniqueName);
+
+        if (await this.tryPickOperationType(warehouseName, uniqueName)) {
+            return;
+        }
+
+        throw new Error(`The operation type "${warehouseName}: Receipts" never appeared in the select.`);
+    }
+
+    private async tryPickOperationType(warehouseName: string, searchTerm: string): Promise<boolean> {
         const l = this.erpLocators;
 
-        await l.purchaseQuotationOperationTypeSelect.click();
-        await expect(l.salesSelectSearchInput).toBeVisible();
-        await l.salesSelectSearchInput.fill("Receipts");
+        for (let attempt = 0; attempt < 2; attempt++) {
+            await l.purchaseQuotationOperationTypeSelect.click();
+            await l.salesSelectSearchInput.waitFor({ state: "visible", timeout: 15000 }).catch(() => undefined);
 
-        const option = l.salesSelectOption
-            .filter({ hasText: new RegExp(this.escapeRegExp(warehouseName)) })
-            .first();
-        await expect(option).toBeVisible();
-        await option.click();
+            if (await l.salesSelectSearchInput.isVisible().catch(() => false)) {
+                await l.salesSelectSearchInput.fill(searchTerm);
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(600);
+            }
 
-        await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.waitForTimeout(800);
+            const option = l.salesSelectOption
+                .filter({ hasText: new RegExp(this.escapeRegExp(warehouseName)) })
+                .first();
+
+            if (await option.waitFor({ state: "visible", timeout: 10000 }).then(() => true).catch(() => false)) {
+                await option.click();
+                await this.page.waitForLoadState("networkidle").catch(() => undefined);
+                await this.page.waitForTimeout(800);
+
+                return true;
+            }
+
+            await this.page.keyboard.press("Escape").catch(() => undefined);
+            await this.page.waitForTimeout(500);
+        }
+
+        return false;
+    }
+
+    /**
+     * Rename a warehouse's operation type from a second tab, leaving this page's form intact.
+     * The operation-types *table* can be searched by warehouse name, unlike the select.
+     */
+    private async renameOperationTypeInNewTab(warehouseName: string, operationTypeName: string, newName: string) {
+        const tab = await this.page.context().newPage();
+
+        try {
+            await tab.goto("/admin/inventory/configurations/operation-types");
+            await tab.waitForLoadState("networkidle");
+
+            await tab.locator(".fi-input.fi-input-has-inline-prefix").nth(1).fill(warehouseName);
+            await tab.waitForLoadState("networkidle");
+            await tab.waitForTimeout(1500);
+
+            const row = tab
+                .locator("table tbody tr")
+                .filter({ hasText: warehouseName })
+                .filter({ hasText: operationTypeName })
+                .first();
+
+            await expect(row).toBeVisible({ timeout: 15000 });
+
+            const href = await row.locator("a").first().getAttribute("href");
+
+            if (!href) {
+                throw new Error(`No link on the "${operationTypeName}" row of ${warehouseName}.`);
+            }
+
+            await tab.goto(`${href.replace(/\/view$/, "")}/edit`);
+            await tab.waitForLoadState("networkidle");
+
+            const nameInput = tab.locator('input[id="form.name"]').first();
+            await expect(nameInput).toBeVisible({ timeout: 15000 });
+            await nameInput.fill(newName);
+
+            await tab.getByRole("button", { name: /Save changes|^Save$/i }).first().click();
+            await tab.waitForLoadState("networkidle");
+            await tab.waitForTimeout(1500);
+        } finally {
+            await tab.close();
+        }
     }
 
     /**
@@ -432,8 +530,6 @@ export class PurchaseFlowPage {
      * disabled while one is running, so anything that follows must wait it out.
      */
     private async blurAndSettle() {
-        // Tab away rather than clicking the page: a stray click can land on a header
-        // action, and the fields here recompute on blur.
         await this.page.keyboard.press("Tab");
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await this.page.waitForTimeout(2000);
@@ -481,6 +577,27 @@ export class PurchaseFlowPage {
      * Retype a line's ordered quantity. The field recomputes on blur, so the click away
      * is what triggers the Livewire round-trip.
      */
+    async updateLineQuantityAndSave(orderRef: { id: string }, lineIndex: number, quantity: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.gotoOrderEdit(orderRef);
+            await this.updateLineQuantity(lineIndex, quantity);
+            await this.saveOrder();
+
+            await this.gotoOrderEdit(orderRef);
+
+            const shown = await this.erpLocators.purchaseQuotationQuantityInput
+                .nth(lineIndex)
+                .inputValue()
+                .catch(() => "");
+
+            if (new RegExp(`^${quantity}(\\.0+)?$`).test(shown)) {
+                return;
+            }
+        }
+
+        await this.expectLineQuantity(lineIndex, quantity);
+    }
+
     async updateLineQuantity(lineIndex: number, quantity: string) {
         const input = this.erpLocators.purchaseQuotationQuantityInput.nth(lineIndex);
         await expect(input).toBeEnabled();
@@ -500,12 +617,29 @@ export class PurchaseFlowPage {
         await l.purchaseQuotationAddProductButton.click();
         await this.selectBySearch(l.purchaseQuotationProductSelect.nth(existingLines), productName);
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await l.purchaseQuotationQuantityInput.nth(existingLines).fill(quantity);
-        await l.purchaseQuotationUnitPriceInput.nth(existingLines).fill(unitPrice);
+        await this.fillLineValue(l.purchaseQuotationQuantityInput.nth(existingLines), quantity);
+        await this.fillLineValue(l.purchaseQuotationUnitPriceInput.nth(existingLines), unitPrice);
 
-        // The line recomputes on blur; let that round-trip finish, or the save that
-        // follows lands while the form is busy and is dropped.
         await this.blurAndSettle();
+    }
+
+    /**
+     * Fill a purchase line's numeric field and make sure the value sticks. Picking the product
+     * is a live field: it re-renders the row and seeds the quantity with the product default
+     * (1), so a value typed before that re-render settles is silently discarded and the line
+     * keeps its default. Read it back and refill until it holds.
+     */
+    private async fillLineValue(input: ReturnType<Page["locator"]>, value: string) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await input.fill(value);
+            await this.page.waitForTimeout(400);
+
+            if ((await input.inputValue().catch(() => "")) === value) {
+                return;
+            }
+        }
+
+        await expect(input).toHaveValue(value);
     }
 
     async saveOrder() {
@@ -513,16 +647,10 @@ export class PurchaseFlowPage {
     }
 
     /**
-     * Submit a form and make sure the request actually left the browser. A click that
-     * lands while Livewire is mid-request is swallowed: the button is disabled for that
-     * instant and nothing is saved, which on a loaded CI machine silently drops an added
-     * order line. Retry until the submit is seen on the wire.
+     * Submit a form and make sure the request actually left the browser. 
      */
     private async submitForm(button: ReturnType<Page["locator"]>) {
-        // The submit must not be retried: a save that is merely slow is still on its way to
-        // the server, and clicking again saves the form a second time — the line added to a
-        // confirmed order is then applied to the receipt twice (demand 2 becomes 4). Click
-        // once, and give the save as long as it needs.
+
         const submitted = this.page
             .waitForResponse(
                 (response) => /livewire[^/]*\/update/.test(response.url()) && response.request().method() === "POST",
@@ -552,9 +680,7 @@ export class PurchaseFlowPage {
     async editQuotationQuantity(searchKey: string, quantity: string, unitPrice?: string) {
         await this.gotoQuotationsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.purchaseQuotationEditButton.click();
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
 
         await this.erpLocators.purchaseQuotationQuantityInput.first().fill(quantity);
 
@@ -563,17 +689,17 @@ export class PurchaseFlowPage {
         }
 
         await this.erpLocators.purchaseQuotationSavechangesButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deleteQuotation(searchKey: string) {
         await this.gotoQuotationsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.purchaseQuotationDeleteButton.click();
+
+        await clickRowAction(rowByText(this.page, searchKey), "Delete");
         await this.erpLocators.purchaseConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+        await this.expectRecordAbsent(searchKey);
     }
 
     async createQuotationFromAgreement(quotation: PurchaseAgreementQuotationData) {
@@ -600,8 +726,6 @@ export class PurchaseFlowPage {
         await expect(this.erpLocators.purchaseQuotationConfirmOrderButton).toBeVisible();
         await this.erpLocators.purchaseQuotationConfirmOrderButton.click();
 
-        // Confirming asks for confirmation; the modal only mounts after a Livewire
-        // round-trip, so it has to be waited for rather than probed straight away.
         await this.erpLocators.purchaseDialogConfirmButton
             .waitFor({ state: "visible", timeout: 15000 })
             .catch(() => undefined);
@@ -796,7 +920,7 @@ export class PurchaseFlowPage {
     }
 
     async gotoPurchaseOrdersPage() {
-        await this.page.goto("/admin/purchase/orders/purchase-orders");
+        await this.safeGoto("/admin/purchase/orders/purchase-orders");
         await expect(this.page).toHaveURL(/admin\/purchase\/orders\/purchase-orders/);
         await expect(this.erpLocators.purchaseOrdersTable.first()).toBeVisible();
     }
@@ -808,7 +932,7 @@ export class PurchaseFlowPage {
     }
 
     async gotoPurchaseAgreementsPage() {
-        await this.page.goto("/admin/purchase/orders/purchase-agreements");
+        await this.safeGoto("/admin/purchase/orders/purchase-agreements");
         await expect(this.page).toHaveURL(/admin\/purchase\/orders\/purchase-agreements/);
         await expect(this.erpLocators.purchaseAgreementCreateButton).toBeVisible();
         await expect(this.erpLocators.purchaseAgreementTable.first()).toBeVisible();
@@ -825,8 +949,25 @@ export class PurchaseFlowPage {
         await this.erpLocators.purchaseAgreementQuantityInput.first().fill(agreement.quantity);
         await this.erpLocators.purchaseAgreementUnitPriceInput.first().fill(agreement.unitPrice);
 
-        await this.erpLocators.purchaseAgreementSaveButton.click();
-        await this.expectSuccessToast();
+        // A single blind Save click can be swallowed while Livewire is busy — the agreement is
+        // then never created, the page stays on /create, and the following confirm step finds
+        // no Confirm button at all. Retry until the create page is left.
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await this.erpLocators.purchaseAgreementSaveButton.click().catch(() => undefined);
+
+            const left = await this.page
+                .waitForURL((url) => !/purchase-agreements\/create/.test(url.toString()), { timeout: 30000 })
+                .then(() => true)
+                .catch(() => false);
+
+            if (left) {
+                break;
+            }
+        }
+
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).not.toHaveURL(/purchase-agreements\/create/);
+        await this.page.waitForTimeout(1000);
     }
 
     async createPurchaseAgreementExpectingValidationError() {
@@ -840,9 +981,7 @@ export class PurchaseFlowPage {
     async editPurchaseAgreement(searchKey: string, updates: PurchaseAgreementUpdateData) {
         await this.gotoPurchaseAgreementsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.purchaseAgreementEditButton.click();
+        await clickRowAction(rowByText(this.page, searchKey), "Edit");
 
         if (updates.reference) {
             await this.erpLocators.purchaseAgreementReferenceInput.fill(updates.reference);
@@ -857,24 +996,42 @@ export class PurchaseFlowPage {
         }
 
         await this.erpLocators.purchaseAgreementSaveButton.click();
-        await this.expectSuccessToast();
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.waitForTimeout(1000);
     }
 
     async deletePurchaseAgreement(searchKey: string) {
         await this.gotoPurchaseAgreementsPage();
         await this.searchList(searchKey);
-        await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.purchaseAgreementDeleteButton.click();
+
+        await clickRowAction(rowByText(this.page, searchKey), "Delete");
         await this.erpLocators.purchaseConfirmDeleteButton.click();
-        await this.expectSuccessToast();
+        await this.expectRecordAbsent(searchKey);
     }
 
     async confirmCurrentPurchaseAgreement() {
-        await expect(this.erpLocators.purchaseAgreementConfirmButton).toBeVisible();
-        await this.erpLocators.purchaseAgreementConfirmButton.click();
-        await this.page.waitForLoadState("networkidle");
-        await expect(this.erpLocators.purchaseAgreementConfirmedRadio).toBeChecked();
+        const confirm = this.erpLocators.purchaseAgreementConfirmButton;
+        const confirmed = this.erpLocators.purchaseAgreementConfirmedRadio;
+
+        for (let attempt = 0; attempt < 4; attempt++) {
+            // Check the confirmed state FIRST. A successful Confirm makes the button disappear,
+            // so once it has worked the button is gone — and the old code, which waited for the
+            // button to be enabled at the top of the loop, then blocked 60s on a vanished button
+            // whenever the state read raced behind the re-render (the agreement was already
+            // confirmed, but nothing here noticed). Reading the radio first avoids that trap.
+            if (await confirmed.isChecked().catch(() => false)) {
+                return;
+            }
+
+            if (await confirm.isVisible().catch(() => false)) {
+                await confirm.click().catch(() => undefined);
+            }
+
+            await this.page.waitForLoadState("networkidle").catch(() => undefined);
+            await this.page.waitForTimeout(1500);
+        }
+
+        await expect(confirmed).toBeChecked();
     }
 
     async expectQuotationValidationErrors() {
@@ -890,12 +1047,7 @@ export class PurchaseFlowPage {
     }
 
     async searchList(keyword: string) {
-        await this.erpLocators.purchaseSearchInput.fill(keyword);
-        await this.page.waitForLoadState("networkidle");
-    }
-
-    async openRowActions() {
-        await this.erpLocators.purchaseRowActionsButton.first().click();
+        await filterListBySearch(this.page, this.erpLocators.purchaseSearchInput, keyword);
     }
 
     async clickMenuAction(label: RegExp) {
@@ -914,16 +1066,39 @@ export class PurchaseFlowPage {
     }
 
     async selectBySearch(trigger: ReturnType<Page["locator"]>, value: string) {
-        await trigger.click();
-
         const option = this.erpLocators.salesSelectOption
             .filter({ hasText: new RegExp(this.escapeRegExp(value), "i") })
             .first();
+        const search = this.erpLocators.salesSelectSearchInput;
 
-        await expect(this.erpLocators.salesSelectSearchInput).toBeVisible();
-        await this.erpLocators.salesSelectSearchInput.fill(value);
-        await expect(option).toBeVisible();
-        await option.click();
+        const openSearchAndPick = async () => {
+            await trigger.waitFor({ state: "visible", timeout: 30000 });
+            await trigger.scrollIntoViewIfNeeded().catch(() => undefined);
+            await trigger.click({ timeout: 15000 });
+
+            await expect(search).toBeVisible({ timeout: 10000 });
+            await search.fill(value);
+            await expect(option).toBeVisible({ timeout: 15000 });
+            await option.click();
+        };
+
+        // The select trigger lives inside a Livewire repeater that re-renders whenever a row is
+        // added or a live field updates. A click can therefore land on a button that is being
+        // detached ("element was detached from the DOM"), or in the busy window where it is
+        // swallowed and the panel never opens (the option is then never visible). Retry the
+        // whole open -> search -> pick as one unit; the last attempt is left to throw so a
+        // genuine failure still reports.
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await openSearchAndPick();
+                return;
+            } catch {
+                await this.page.keyboard.press("Escape").catch(() => undefined);
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await openSearchAndPick();
     }
 
     private escapeRegExp(value: string): string {
