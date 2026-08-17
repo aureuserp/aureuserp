@@ -4,11 +4,9 @@ namespace Webkul\Sale\Filament\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\Support\Htmlable;
@@ -26,6 +24,8 @@ use Webkul\Sale\Filament\Widgets\TopSalesTeamsTable;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 use Webkul\Support\Models\Country;
 
 class SalesDashboard extends BaseDashboard
@@ -45,9 +45,9 @@ class SalesDashboard extends BaseDashboard
         return __('sales::filament/pages/sales-dashboard.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string|\UnitEnum
     {
-        return __('sales::filament/pages/sales-dashboard.navigation.group');
+        return NavigationGroup::Dashboard;
     }
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
@@ -61,17 +61,9 @@ class SalesDashboard extends BaseDashboard
             ->components([
                 Section::make()
                     ->schema([
-                        DatePicker::make('startDate')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters.start-date'))
-                            ->maxDate(fn (Get $get) => $get('endDate') ?: now())
-                            ->default(now()->subYear()->startOfMonth())
-                            ->native(false),
-                        DatePicker::make('endDate')
-                            ->label(__('sales::filament/pages/sales-dashboard.filters.end-date'))
-                            ->minDate(fn (Get $get) => $get('startDate') ?: null)
-                            ->maxDate(now())
-                            ->default(now())
-                            ->native(false),
+                        ...DashboardDateRange::make(
+                            __('sales::filament/pages/sales-dashboard.filters.date-range'),
+                        ),
                         Select::make('countries')
                             ->label(__('sales::filament/pages/sales-dashboard.filters.countries'))
                             ->multiple()
@@ -108,7 +100,7 @@ class SalesDashboard extends BaseDashboard
                         'default' => 1,
                         'sm'      => 2,
                         'md'      => 3,
-                        'xl'      => 7,
+                        'xl'      => 6,
                     ]),
             ]);
     }

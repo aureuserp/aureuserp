@@ -7,8 +7,7 @@ return [
     ],
 
     'filters' => [
-        'start-date'    => 'تاريخ البداية',
-        'end-date'      => 'تاريخ النهاية',
+        'date-range'    => 'النطاق الزمني',
         'countries'     => 'الدولة',
         'products'      => 'المنتجات',
         'categories'    => 'الفئة',

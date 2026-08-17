@@ -7,8 +7,7 @@ return [
     ],
 
     'filters' => [
-        'start-date'    => 'Data de Início',
-        'end-date'      => 'Data de Fim',
+        'date-range'    => 'Intervalo de datas',
         'countries'     => 'País',
         'products'      => 'Produtos',
         'categories'    => 'Categoria',
