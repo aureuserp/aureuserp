@@ -17,6 +17,11 @@ return [
                 'title' => 'E-mail envoyé',
                 'body'  => 'L\'e-mail a été envoyé avec succès.',
             ],
+
+            'warning' => [
+                'title' => 'Certains e-mails n\'ont pas été envoyés',
+                'body'  => 'Adresse e-mail manquante pour :vendors.',
+            ],
         ],
     ],
 ];

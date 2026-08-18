@@ -51,14 +51,28 @@ class OrderWorkflow
         return $record;
     }
 
+    public function vendorsWithoutEmail(array $vendorIds): string
+    {
+        $vendors = Partner::whereIn('id', $vendorIds)
+            ->where(fn ($query) => $query->whereNull('email')->orWhere('email', ''))
+            ->pluck('name');
+
+        $names = $vendors->take(3)->join(', ');
+
+        return $vendors->count() > 3
+            ? $names.' (+'.($vendors->count() - 3).')'
+            : $names;
+    }
+
     protected function mailVendors(array $data, string $pdfPath): void
     {
-        foreach ($data['vendors'] as $vendorId) {
-            $vendor = Partner::find($vendorId);
+        $vendors = Partner::whereIn('id', $data['vendors'])
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->get();
 
-            if ($vendor?->email) {
-                Mail::to($vendor->email)->send(new VendorPurchaseOrderMail($data['subject'], $data['message'], $pdfPath));
-            }
+        foreach ($vendors as $vendor) {
+            Mail::to($vendor->email)->send(new VendorPurchaseOrderMail($data['subject'], $data['message'], $pdfPath));
         }
     }
 

@@ -17,6 +17,11 @@ return [
                 'title' => 'Email sent',
                 'body'  => 'The email has been sent successfully.',
             ],
+
+            'warning' => [
+                'title' => 'Some emails were not sent',
+                'body'  => 'Missing email address for :vendors.',
+            ],
         ],
     ],
 ];
