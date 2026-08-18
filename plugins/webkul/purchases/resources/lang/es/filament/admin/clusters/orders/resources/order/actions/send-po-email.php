@@ -20,7 +20,7 @@ return [
 
             'warning' => [
                 'title' => 'Algunos correos electrónicos no se enviaron',
-                'body'  => 'Falta la dirección de correo electrónico de :vendors.',
+                'body'  => 'Algunos proveedores no recibirán el correo electrónico porque su dirección de correo electrónico no está disponible.',
             ],
         ],
     ],

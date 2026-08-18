@@ -51,17 +51,11 @@ class OrderWorkflow
         return $record;
     }
 
-    public function vendorsWithoutEmail(array $vendorIds): string
+    public function hasVendorsWithoutEmail(array $vendorIds): bool
     {
-        $vendors = Partner::whereIn('id', $vendorIds)
+        return Partner::whereIn('id', $vendorIds)
             ->where(fn ($query) => $query->whereNull('email')->orWhere('email', ''))
-            ->pluck('name');
-
-        $names = $vendors->take(3)->join(', ');
-
-        return $vendors->count() > 3
-            ? $names.' (+'.($vendors->count() - 3).')'
-            : $names;
+            ->exists();
     }
 
     protected function mailVendors(array $data, string $pdfPath): void

@@ -109,13 +109,11 @@ MD;
 
                 $livewire->updateForm();
 
-                $skipped = PurchaseOrder::vendorsWithoutEmail($data['vendors']);
-
-                $status = $skipped ? 'warning' : 'success';
+                $status = PurchaseOrder::hasVendorsWithoutEmail($data['vendors']) ? 'warning' : 'success';
 
                 Notification::make()
                     ->title(__("purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.{$status}.title"))
-                    ->body(__("purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.{$status}.body", ['vendors' => $skipped]))
+                    ->body(__("purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.{$status}.body"))
                     ->status($status)
                     ->send();
             })

@@ -36,9 +36,9 @@ class PurchaseOrder
         return $this->workflow->sendOrder($record, $data);
     }
 
-    public function vendorsWithoutEmail(array $vendorIds): string
+    public function hasVendorsWithoutEmail(array $vendorIds): bool
     {
-        return $this->workflow->vendorsWithoutEmail($vendorIds);
+        return $this->workflow->hasVendorsWithoutEmail($vendorIds);
     }
 
     public function confirmPurchaseOrder(Order $record): Order

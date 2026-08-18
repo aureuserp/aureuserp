@@ -21,7 +21,7 @@ return [
 
             'warning' => [
                 'title' => 'Alguns e-mails não foram enviados',
-                'body'  => 'Endereço de e-mail ausente para :vendors.',
+                'body'  => 'Alguns fornecedores não receberão o e-mail porque o endereço de e-mail deles não está disponível.',
             ],
         ],
     ],

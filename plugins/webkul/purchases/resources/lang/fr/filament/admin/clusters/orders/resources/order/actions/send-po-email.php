@@ -20,7 +20,7 @@ return [
 
             'warning' => [
                 'title' => 'Certains e-mails n\'ont pas été envoyés',
-                'body'  => 'Adresse e-mail manquante pour :vendors.',
+                'body'  => 'Certains fournisseurs ne recevront pas l\'e-mail car leur adresse e-mail n\'est pas disponible.',
             ],
         ],
     ],

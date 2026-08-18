@@ -21,7 +21,7 @@ return [
 
             'warning' => [
                 'title' => 'Some emails were not sent',
-                'body'  => 'Missing email address for :vendors.',
+                'body'  => 'Some vendors will not get the email because their email address is not available.',
             ],
         ],
     ],
