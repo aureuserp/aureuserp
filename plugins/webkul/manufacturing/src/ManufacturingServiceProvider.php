@@ -22,8 +22,12 @@ use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
 use Webkul\Manufacturing\Models\BillOfMaterial;
+use Webkul\Manufacturing\Models\BillOfMaterialByproduct;
 use Webkul\Manufacturing\Models\BillOfMaterialLine;
 use Webkul\Manufacturing\Models\Order;
+use Webkul\Manufacturing\Models\UnbuildOrder;
+use Webkul\Manufacturing\Models\WorkCenterCapacity;
+use Webkul\Manufacturing\Models\WorkOrder;
 use Webkul\Manufacturing\Observers\MoveObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -32,6 +36,7 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Support\ProductUsageRegistry;
 use Webkul\Support\Services\SequenceService;
 use Webkul\TableViews\Filament\Components\PresetView;
 
@@ -237,6 +242,25 @@ class ManufacturingServiceProvider extends PackageServiceProvider
         $this->registerModelObservers();
 
         $this->contributeProductSchema();
+
+        $this->contributeProductUsage();
+    }
+
+    protected function contributeProductUsage(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductUsageRegistry::register(
+            Order::class,
+            WorkOrder::class,
+            UnbuildOrder::class,
+            BillOfMaterial::class,
+            BillOfMaterialLine::class,
+            BillOfMaterialByproduct::class,
+            WorkCenterCapacity::class,
+        );
     }
 
     protected function contributeProductSchema(): void
