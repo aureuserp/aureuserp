@@ -4,12 +4,17 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'الاسم',
-                'tax-type'        => 'نوع الضريبة',
-                'tax-computation' => 'حساب الضريبة',
-                'tax-scope'       => 'نطاق الضريبة',
-                'status'          => 'الحالة',
-                'amount'          => 'المبلغ',
+                'name'                         => 'الاسم',
+                'tax-type'                     => 'نوع الضريبة',
+                'tax-computation'              => 'حساب الضريبة',
+                'tax-scope'                    => 'نطاق الضريبة',
+                'status'                       => 'الحالة',
+                'amount'                       => 'المبلغ',
+                'formula'                      => 'الصيغة',
+                'formula-helper-text'          => 'العمليات الحسابية فقط: الأرقام و + - * / ( ) والدوال :functions وهذه المتغيرات: :variables',
+                'children-taxes'               => 'الضرائب الفرعية',
+                'children-taxes-helper-text'   => 'مبلغ هذه الضريبة هو مجموع ضرائبها الفرعية.',
+                'children-taxes-type-mismatch' => 'يجب أن تكون الضرائب الفرعية من نوع الضريبة :type أو بدون نوع ضريبة. هذه ليست كذلك: :taxes',
             ],
 
             'repeater' => [
@@ -140,6 +145,8 @@ return [
                 'tax-scope'       => 'نطاق الضريبة',
                 'status'          => 'الحالة',
                 'amount'          => 'المبلغ',
+                'formula'         => 'الصيغة',
+                'children-taxes'  => 'الضرائب الفرعية',
             ],
 
             'field-set' => [

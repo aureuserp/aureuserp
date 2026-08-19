@@ -4,12 +4,17 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'Nom',
-                'tax-type'        => 'Type de taxe',
-                'tax-computation' => 'Calcul de la taxe',
-                'tax-scope'       => 'Champ d\'application de la taxe',
-                'status'          => 'Statut',
-                'amount'          => 'Montant',
+                'name'                         => 'Nom',
+                'tax-type'                     => 'Type de taxe',
+                'tax-computation'              => 'Calcul de la taxe',
+                'tax-scope'                    => 'Champ d\'application de la taxe',
+                'status'                       => 'Statut',
+                'amount'                       => 'Montant',
+                'formula'                      => 'Formule',
+                'formula-helper-text'          => 'Arithmétique uniquement : nombres, + - * / ( ), les fonctions :functions et ces variables : :variables',
+                'children-taxes'               => 'Taxes enfants',
+                'children-taxes-helper-text'   => 'Le montant de cette taxe est la somme de ses taxes enfants.',
+                'children-taxes-type-mismatch' => 'Les taxes enfants doivent être du type de taxe :type ou n\'avoir aucun type de taxe. Ce n\'est pas le cas de : :taxes',
             ],
 
             'repeater' => [
@@ -140,6 +145,8 @@ return [
                 'tax-scope'       => 'Champ d\'application de la taxe',
                 'status'          => 'Statut',
                 'amount'          => 'Montant',
+                'formula'         => 'Formule',
+                'children-taxes'  => 'Taxes enfants',
             ],
 
             'field-set' => [

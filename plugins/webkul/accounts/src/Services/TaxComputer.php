@@ -73,7 +73,7 @@ class TaxComputer
         string|bool $specialMode = false,
         ?array $manualTaxAmounts = null,
     ): array {
-        $batching = $this->flattenTaxGroups($taxes);
+        $batching = $this->flattenTaxGroups($taxes, $specialMode);
 
         $sortedTaxes = $batching['sorted_taxes'];
 
@@ -236,20 +236,20 @@ class TaxComputer
         ];
     }
 
-    public function flattenTaxGroups(mixed $taxes): array
+    public function flattenTaxGroups(mixed $taxes, string|bool $specialMode = false): array
     {
         $sorted = collect();
 
         $groupPerTax = [];
 
-        foreach ($taxes->sortBy('sort') as $tax) {
+        foreach ($taxes->sortBy(fn ($tax) => [$tax->sort, $tax->id]) as $tax) {
             if ($tax->amount_type !== AmountType::GROUP) {
                 $sorted->push($tax);
 
                 continue;
             }
 
-            $children = $tax->childrenTaxes()->orderBy('sort')->get();
+            $children = $tax->childrenTaxes()->orderBy('sort')->orderBy('id')->get();
 
             $sorted = $sorted->merge($children);
 
@@ -258,17 +258,63 @@ class TaxComputer
             }
         }
 
-        $batchPerTax = [];
-
-        foreach ($sorted as $tax) {
-            $batchPerTax[$tax->id] = [$tax];
-        }
+        $sorted = $sorted->values();
 
         return [
-            'batch_per_tax' => $batchPerTax,
+            'batch_per_tax' => $this->batchTaxes($sorted, $specialMode),
             'group_per_tax' => $groupPerTax,
             'sorted_taxes'  => $sorted,
         ];
+    }
+
+    protected function batchTaxes(Collection $sortedTaxes, string|bool $specialMode): array
+    {
+        $priceIncludes = $sortedTaxes->mapWithKeys(fn ($tax) => [$tax->id => (bool) $tax->price_include])->all();
+
+        $batchPerTax = [];
+
+        $batch = [];
+
+        $isBaseAffected = false;
+
+        $flush = function () use (&$batch, &$batchPerTax) {
+            foreach ($batch as $batchedTax) {
+                $batchPerTax[$batchedTax->id] = $batch;
+            }
+
+            $batch = [];
+        };
+
+        foreach ($sortedTaxes->reverse() as $tax) {
+            if ($batch !== [] && ! $this->sharesBatch($tax, $batch[0], $priceIncludes, $isBaseAffected, $specialMode)) {
+                $flush();
+            }
+
+            $isBaseAffected = (bool) $tax->is_base_affected;
+
+            $batch[] = $tax;
+        }
+
+        $flush();
+
+        return $batchPerTax;
+    }
+
+    protected function sharesBatch($tax, $reference, array $priceIncludes, bool $isBaseAffected, string|bool $specialMode): bool
+    {
+        if ($tax->amount_type !== $reference->amount_type) {
+            return false;
+        }
+
+        if (! $specialMode && $priceIncludes[$tax->id] !== $priceIncludes[$reference->id]) {
+            return false;
+        }
+
+        if ((bool) $tax->include_base_amount !== (bool) $reference->include_base_amount) {
+            return false;
+        }
+
+        return ! $tax->include_base_amount || ! $isBaseAffected;
     }
 
     public function propagateBaseAdjustments(Collection $taxes, $tax, array &$taxesData, string|bool $specialMode = false): void

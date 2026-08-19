@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Http\Requests;
 
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,8 @@ use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TaxScope;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Exceptions\InvalidTaxFormulaException;
+use Webkul\Account\Services\TaxFormulaEvaluator;
 
 class TaxRequest extends FormRequest
 {
@@ -32,11 +35,33 @@ class TaxRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
         $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
+        $amountType = $this->input('amount_type');
+
+        // Group taxes take their amount from their children and custom formula
+        // taxes from their formula, so neither of them asks for an amount.
+        $usesAmount = ! in_array($amountType, [AmountType::GROUP->value, AmountType::CODE->value], true);
+
         return [
             'name'                                           => [...$requiredRule, 'string', 'max:255'],
             'type_tax_use'                                   => [...$requiredRule, 'string', Rule::enum(TypeTaxUse::class)],
             'amount_type'                                    => [...$requiredRule, 'string', Rule::enum(AmountType::class)],
-            'amount'                                         => [...$requiredRule, 'numeric', 'min:0'],
+            'amount'                                         => $usesAmount ? [...$requiredRule, 'numeric', 'min:0'] : ['nullable', 'numeric', 'min:0'],
+            'formula'                                        => [
+                $amountType === AmountType::CODE->value ? 'required' : 'nullable',
+                'string',
+                'max:255',
+                function (string $attribute, $value, Closure $fail) {
+                    if (blank($value)) {
+                        return;
+                    }
+
+                    try {
+                        app(TaxFormulaEvaluator::class)->validate($value);
+                    } catch (InvalidTaxFormulaException $e) {
+                        $fail($e->getMessage());
+                    }
+                },
+            ],
             'tax_group_id'                                   => [...$requiredRule, 'integer', 'exists:accounts_tax_groups,id'],
             'company_id'                                     => ['nullable', 'integer', 'exists:companies,id'],
             'country_id'                                     => ['nullable', 'integer', 'exists:countries,id'],
@@ -125,8 +150,12 @@ class TaxRequest extends FormRequest
                 'example'     => AmountType::PERCENT->value,
             ],
             'amount' => [
-                'description' => 'Tax amount/percentage',
+                'description' => 'Tax amount/percentage. Not used when the computation is "group" or "code"',
                 'example'     => 20.00,
+            ],
+            'formula' => [
+                'description' => 'Arithmetic formula used when the computation is "code". Supports numbers, + - * / ( ), the functions '.implode(', ', TaxFormulaEvaluator::FUNCTIONS).' and the variables '.implode(', ', TaxFormulaEvaluator::VARIABLES),
+                'example'     => 'min(price_unit * quantity * 0.2, 500)',
             ],
             'tax_group_id' => [
                 'description' => 'Tax group ID',

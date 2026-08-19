@@ -55,6 +55,10 @@ class EditTax extends EditRecord
     {
         $data = $this->data;
 
+        if (! TaxResource::requiresRepartitionLines($data['amount_type'] ?? null)) {
+            return;
+        }
+
         try {
             TaxResource::validateRepartitionData(
                 $data['invoiceRepartitionLines'] ?? [],

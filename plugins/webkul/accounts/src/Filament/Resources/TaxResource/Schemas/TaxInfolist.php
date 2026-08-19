@@ -8,6 +8,9 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Filament\Resources\TaxResource;
+use Webkul\Account\Models\Tax;
 
 class TaxInfolist
 {
@@ -40,7 +43,21 @@ class TaxInfolist
                                         TextEntry::make('amount')
                                             ->icon('heroicon-o-currency-dollar')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.amount'))
-                                            ->suffix('%')
+                                            ->suffix(fn (Tax $record): ?string => $record->amount_type === AmountType::FIXED
+                                                ? current_company()?->currency?->symbol
+                                                : '%')
+                                            ->visible(fn (Tax $record): bool => TaxResource::usesAmount($record->amount_type))
+                                            ->placeholder('—'),
+                                        TextEntry::make('formula')
+                                            ->icon('heroicon-o-variable')
+                                            ->label(__('accounts::filament/resources/tax.infolist.sections.entries.formula'))
+                                            ->visible(fn (Tax $record): bool => $record->amount_type === AmountType::CODE)
+                                            ->placeholder('—'),
+                                        TextEntry::make('childrenTaxes.name')
+                                            ->icon('heroicon-o-rectangle-stack')
+                                            ->label(__('accounts::filament/resources/tax.infolist.sections.entries.children-taxes'))
+                                            ->badge()
+                                            ->visible(fn (Tax $record): bool => $record->amount_type === AmountType::GROUP)
                                             ->placeholder('—'),
                                         IconEntry::make('is_active')
                                             ->boolean()
