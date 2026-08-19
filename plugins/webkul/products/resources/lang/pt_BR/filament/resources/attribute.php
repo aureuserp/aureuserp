@@ -67,7 +67,8 @@ return [
 
                     'error' => [
                         'title' => 'Atributo não pôde ser excluído',
-                        'body'  => 'O atributo não pode ser excluído porque está em uso no momento.',
+                        'body'  => 'O atributo não pode ser excluído porque está em uso pelo produto: :products',
+                        'more'  => '... +:count mais',
                     ],
                 ],
             ],
@@ -95,9 +96,9 @@ return [
                         'body'  => 'Os atributos foram excluídos permanentemente com sucesso.',
                     ],
 
-                    'error' => [
-                        'title' => 'Atributos não puderam ser excluídos',
-                        'body'  => 'Os atributos não podem ser excluídos porque estão em uso no momento.',
+                    'partial' => [
+                        'title' => 'Alguns atributos não puderam ser excluídos',
+                        'body'  => 'O atributo ":attributes" não pode ser excluído porque está em uso pelo produto: :products',
                     ],
                 ],
             ],
