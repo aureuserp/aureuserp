@@ -342,6 +342,10 @@ class PaymentRegistrar
                     $move->computePaymentState();
 
                     $move->save();
+
+                    $move->matchedPayments()
+                        ->get()
+                        ->each(fn (Payment $matchedPayment) => $matchedPayment->save());
                 });
         }
     }

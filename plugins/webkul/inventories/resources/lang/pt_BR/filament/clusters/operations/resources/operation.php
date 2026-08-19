@@ -217,6 +217,7 @@ return [
         'draft'       => 'Rascunho',
         'waiting'     => 'Aguardando',
         'ready'       => 'Pronto',
+        'late'        => 'Atrasado',
         'done'        => 'Concluído',
         'canceled'    => 'Cancelado',
         'back-orders' => 'Pedidos pendentes',

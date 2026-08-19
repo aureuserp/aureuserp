@@ -144,6 +144,16 @@ class OperationResource extends Resource
                 ->favorite()
                 ->icon('heroicon-s-play-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::ASSIGNED)),
+            'late' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.late'))
+                ->favorite()
+                ->icon('heroicon-s-exclamation-triangle')
+                ->modifyQueryUsing(fn (Builder $query) => $query
+                    ->whereIn('state', [OperationState::ASSIGNED, OperationState::WAITING, OperationState::CONFIRMED])
+                    ->where(function (Builder $query) {
+                        $query->where('has_deadline_issue', true)
+                            ->orWhereDate('deadline', '<', today())
+                            ->orWhereDate('scheduled_at', '<', today());
+                    })),
             'done' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.done'))
                 ->favorite()
                 ->icon('heroicon-s-check-circle')
