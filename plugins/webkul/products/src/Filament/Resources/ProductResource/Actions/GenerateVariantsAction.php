@@ -3,11 +3,12 @@
 namespace Webkul\Product\Filament\Resources\ProductResource\Actions;
 
 use Closure;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
+use Throwable;
+use Webkul\Product\Exceptions\ProductInUseException;
 use Webkul\Product\Filament\Resources\ProductResource\Pages\ManageAttributes;
 
 class GenerateVariantsAction extends Action
@@ -40,7 +41,13 @@ class GenerateVariantsAction extends Action
                         ->title(__('products::filament/resources/product/actions/generate-variants.notification.success.title'))
                         ->body(__('products::filament/resources/product/actions/generate-variants.notification.success.body'))
                         ->send();
-                } catch (Exception $e) {
+                } catch (ProductInUseException $e) {
+                    $e->notify();
+                } catch (Throwable $e) {
+                    // Without this the real cause never reaches the logs and the notification
+                    // below is all anyone ever sees.
+                    report($e);
+
                     Notification::make()
                         ->danger()
                         ->title(__('products::filament/resources/product/actions/generate-variants.notification.error.title'))

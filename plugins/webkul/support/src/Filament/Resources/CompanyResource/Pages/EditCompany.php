@@ -2,8 +2,8 @@
 
 namespace Webkul\Support\Filament\Resources\CompanyResource\Pages;
 
-use App\Models\User;
 use Filament\Actions\DeleteAction;
+use Webkul\Security\Models\User;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;

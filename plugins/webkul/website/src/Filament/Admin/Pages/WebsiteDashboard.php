@@ -2,8 +2,8 @@
 
 namespace Webkul\Website\Filament\Admin\Pages;
 
-use App\Models\User;
 use BackedEnum;
+use Webkul\Security\Models\User;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;

@@ -17,12 +17,16 @@ use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Support\ProductUsageRegistry;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Sale\Listeners\ComputeSaleOrderFromMoveListener;
 use Webkul\Sale\Listeners\ComputeSaleOrderListener;
 use Webkul\Sale\Listeners\SendSMSNotificationListener;
 use Webkul\Sale\Livewire\QuotationSummary;
 use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderLine;
+use Webkul\Sale\Models\OrderOption;
+use Webkul\Sale\Models\OrderTemplateProduct;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Services\SequenceService;
 
@@ -105,6 +109,21 @@ class SaleServiceProvider extends PackageServiceProvider
         Event::listen(
             [MoveConfirmed::class, MoveCancelled::class, MoveDrafted::class, MoveReversed::class],
             ComputeSaleOrderFromMoveListener::class,
+        );
+
+        $this->contributeProductUsage();
+    }
+
+    protected function contributeProductUsage(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductUsageRegistry::register(
+            OrderLine::class,
+            OrderOption::class,
+            OrderTemplateProduct::class,
         );
     }
 

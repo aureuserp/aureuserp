@@ -17,6 +17,8 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Exceptions\ProductInUseException;
+use Webkul\Product\Support\ProductUsageRegistry;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Concerns\HasContributedAttributes;
@@ -199,6 +201,11 @@ class Product extends Model implements Sortable
         }
     }
 
+    public function isInUse(): bool
+    {
+        return ProductUsageRegistry::isProductInUse($this->getKey());
+    }
+
     /**
      * Generate or sync variants based on product attributes
      */
@@ -208,6 +215,10 @@ class Product extends Model implements Sortable
 
         if ($attributes->isEmpty()) {
             return;
+        }
+
+        if (! $this->is_configurable && $this->isInUse()) {
+            throw ProductInUseException::make($this, 'variants');
         }
 
         $existingVariants = $this->variants()->get();

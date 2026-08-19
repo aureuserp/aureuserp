@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\ProductAttributeFactory;
+use Webkul\Product\Exceptions\VariantInUseException;
+use Webkul\Product\Support\VariantUsage;
 use Webkul\Security\Models\User;
 
 class ProductAttribute extends Model implements Sortable
@@ -65,7 +67,15 @@ class ProductAttribute extends Model implements Sortable
         });
 
         static::deleting(function ($attribute) {
-            $attribute->product->variants()->get()->each->deleteOrArchive();
+            if (! $attribute->product) {
+                return;
+            }
+
+            if (VariantUsage::productHasVariantsInUse($attribute->product_id)) {
+                throw VariantInUseException::make('attribute');
+            }
+
+            $attribute->product->variants()->forceDelete();
         });
     }
 
