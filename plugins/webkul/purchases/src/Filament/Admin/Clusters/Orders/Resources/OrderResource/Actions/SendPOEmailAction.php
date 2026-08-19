@@ -94,7 +94,13 @@ MD;
 
                 $livewire->updateForm();
 
-                $status = PurchaseOrder::hasVendorsWithoutEmail($data['vendors']) ? 'warning' : 'success';
+                $missing = PurchaseOrder::countVendorsWithoutEmail($data['vendors']);
+
+                $status = match (true) {
+                    $missing === count($data['vendors']) => 'danger',
+                    $missing === 0                       => 'success',
+                    default                              => 'warning',
+                };
 
                 Notification::make()
                     ->title(__("purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.action.notification.{$status}.title"))

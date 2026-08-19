@@ -23,6 +23,11 @@ return [
                 'title' => 'Some emails were not sent',
                 'body'  => 'Some vendors will not get the email because their email address is not available.',
             ],
+
+            'danger' => [
+                'title' => 'Email not sent',
+                'body'  => 'Please add an email address to the selected vendors and try again.',
+            ],
         ],
     ],
 ];

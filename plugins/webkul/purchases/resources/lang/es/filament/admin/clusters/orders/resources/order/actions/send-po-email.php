@@ -22,6 +22,11 @@ return [
                 'title' => 'Algunos correos electrónicos no se enviaron',
                 'body'  => 'Algunos proveedores no recibirán el correo electrónico porque su dirección de correo electrónico no está disponible.',
             ],
+
+            'danger' => [
+                'title' => 'Correo electrónico no enviado',
+                'body'  => 'Agregue una dirección de correo electrónico a los proveedores seleccionados e inténtelo de nuevo.',
+            ],
         ],
     ],
 ];

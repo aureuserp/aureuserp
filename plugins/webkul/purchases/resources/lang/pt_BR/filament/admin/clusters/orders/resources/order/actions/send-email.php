@@ -23,6 +23,11 @@ return [
                 'title' => 'Alguns e-mails não foram enviados',
                 'body'  => 'Alguns fornecedores não receberão o e-mail porque o endereço de e-mail deles não está disponível.',
             ],
+
+            'danger' => [
+                'title' => 'E-mail não enviado',
+                'body'  => 'Adicione um endereço de e-mail aos fornecedores selecionados e tente novamente.',
+            ],
         ],
     ],
 ];
