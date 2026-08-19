@@ -49,11 +49,13 @@ class EditUser extends EditRecord
                 ->schema([
                     TextInput::make('new_password')
                         ->password()
+                        ->revealable()
                         ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.form.new-password'))
                         ->required()
                         ->rule(Password::default()),
                     TextInput::make('new_password_confirmation')
                         ->password()
+                        ->revealable()
                         ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.form.confirm-new-password'))
                         ->rule('required', fn ($get) => (bool) $get('new_password'))
                         ->same('new_password'),
