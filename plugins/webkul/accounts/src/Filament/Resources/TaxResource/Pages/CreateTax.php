@@ -42,6 +42,11 @@ class CreateTax extends CreateRecord
     protected function beforeCreate(): void
     {
         $data = $this->data;
+
+        if (! TaxResource::requiresRepartitionLines($data['amount_type'] ?? null)) {
+            return;
+        }
+
         try {
             TaxResource::validateRepartitionData(
                 $data['invoiceRepartitionLines'] ?? [],

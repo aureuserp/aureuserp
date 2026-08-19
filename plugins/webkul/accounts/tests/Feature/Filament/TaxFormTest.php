@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\CreateTax;
+use Webkul\Account\Filament\Resources\TaxResource\Pages\EditTax;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Models\TaxGroup;
 use Webkul\Account\Services\TaxComputer;
@@ -29,7 +31,7 @@ beforeEach(function () {
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
-    FilamentHelper::actingAs(['create_account_tax', 'view_any_account_tax']);
+    FilamentHelper::actingAs(['create_account_tax', 'view_any_account_tax', 'update_account_tax']);
 });
 
 function taxForm(string $amountType)
@@ -146,4 +148,129 @@ it('caps the computed amount when the formula uses min', function () {
 
     expect($computation['taxes_data'][0]['tax_amount'])->toBe(20.0)
         ->and($computation['total_included'])->toBe(320.0);
+});
+
+it('saves a group tax from the edit form', function () {
+    $group = AccountHelper::groupTax([AccountHelper::tax(10)]);
+
+    $component = Livewire::test(EditTax::class, ['record' => $group->id])
+        ->fillForm(['name' => 'Renamed group']);
+
+    $component->call('save');
+
+    expect(Tax::query()->whereKey($group->id)->value('name'))->toBe('Renamed group');
+});
+
+it('refuses children taxes that do not share the group tax type', function () {
+    $taxGroup = TaxGroup::query()->firstOrCreate(['name' => 'Children Type Test Group']);
+
+    $purchaseChild = AccountHelper::tax(10, AmountType::PERCENT, TaxIncludeOverride::TAX_EXCLUDED, TypeTaxUse::PURCHASE);
+
+    Livewire::test(CreateTax::class)
+        ->fillForm([
+            'name'          => 'Mixed group',
+            'type_tax_use'  => TypeTaxUse::SALE->value,
+            'amount_type'   => AmountType::GROUP->value,
+            'tax_group_id'  => $taxGroup->id,
+            'childrenTaxes' => [$purchaseChild->id],
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['childrenTaxes']);
+
+    expect(Tax::query()->where('name', 'Mixed group')->exists())->toBeFalse();
+});
+
+it('saves a group tax whose children share its tax type', function () {
+    $taxGroup = TaxGroup::query()->firstOrCreate(['name' => 'Children Type Test Group']);
+
+    $saleChild = AccountHelper::tax(10, AmountType::PERCENT, TaxIncludeOverride::TAX_EXCLUDED, TypeTaxUse::SALE);
+
+    Livewire::test(CreateTax::class)
+        ->fillForm([
+            'name'          => 'Sale group',
+            'type_tax_use'  => TypeTaxUse::SALE->value,
+            'amount_type'   => AmountType::GROUP->value,
+            'tax_group_id'  => $taxGroup->id,
+            'childrenTaxes' => [$saleChild->id],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $group = Tax::query()->where('name', 'Sale group')->first();
+
+    expect($group)->not->toBeNull()
+        ->and($group->childrenTaxes()->pluck('id')->all())->toBe([$saleChild->id]);
+});
+
+it('only offers children taxes the group can hold', function () {
+    $saleChild = AccountHelper::tax(10, AmountType::PERCENT, TaxIncludeOverride::TAX_EXCLUDED, TypeTaxUse::SALE);
+    $noneChild = AccountHelper::tax(10, AmountType::PERCENT, TaxIncludeOverride::TAX_EXCLUDED, TypeTaxUse::NONE);
+    $purchaseChild = AccountHelper::tax(10, AmountType::PERCENT, TaxIncludeOverride::TAX_EXCLUDED, TypeTaxUse::PURCHASE);
+
+    $options = Livewire::test(CreateTax::class)
+        ->fillForm([
+            'type_tax_use' => TypeTaxUse::SALE->value,
+            'amount_type'  => AmountType::GROUP->value,
+        ])
+        ->instance()
+        ->getSchemaComponent('form.childrenTaxes')
+        ->getOptions();
+
+    expect(array_keys($options))->toContain($saleChild->id)
+        ->and(array_keys($options))->toContain($noneChild->id)
+        ->and(array_keys($options))->not->toContain($purchaseChild->id);
+});
+
+it('accepts a none type child in a group of any tax type', function () {
+    $taxGroup = TaxGroup::query()->firstOrCreate(['name' => 'None Child Test Group']);
+
+    $noneChild = AccountHelper::tax(10, AmountType::PERCENT, TaxIncludeOverride::TAX_EXCLUDED, TypeTaxUse::NONE);
+
+    Livewire::test(CreateTax::class)
+        ->fillForm([
+            'name'          => 'Sale group with none child',
+            'type_tax_use'  => TypeTaxUse::SALE->value,
+            'amount_type'   => AmountType::GROUP->value,
+            'tax_group_id'  => $taxGroup->id,
+            'childrenTaxes' => [$noneChild->id],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $group = Tax::query()->where('name', 'Sale group with none child')->first();
+
+    expect($group)->not->toBeNull()
+        ->and($group->childrenTaxes()->pluck('id')->all())->toBe([$noneChild->id]);
+});
+
+it('hides the children taxes field on a none type group', function () {
+    taxForm(AmountType::GROUP->value)
+        ->fillForm(['type_tax_use' => TypeTaxUse::NONE->value])
+        ->assertFormFieldHidden('childrenTaxes');
+});
+
+it('still holds back a non group tax whose repartition lines do not add up', function () {
+    $taxGroup = TaxGroup::query()->firstOrCreate(['name' => 'Repartition Guard Group']);
+
+    $account = AccountHelper::account('income');
+
+    $lines = fn (string $documentType) => [
+        ['document_type' => $documentType, 'repartition_type' => 'base', 'factor_percent' => null, 'account_id' => null],
+        ['document_type' => $documentType, 'repartition_type' => 'tax', 'factor_percent' => 40, 'account_id' => $account->id],
+    ];
+
+    $component = Livewire::test(CreateTax::class)
+        ->fillForm([
+            'name'                    => 'Lopsided percent tax',
+            'type_tax_use'            => TypeTaxUse::SALE->value,
+            'amount_type'             => AmountType::PERCENT->value,
+            'amount'                  => 18,
+            'tax_group_id'            => $taxGroup->id,
+            'invoiceRepartitionLines' => $lines('invoice'),
+            'refundRepartitionLines'  => $lines('refund'),
+        ]);
+
+    $component->call('create');
+
+    expect(Tax::query()->where('name', 'Lopsided percent tax')->exists())->toBeFalse();
 });

@@ -47,6 +47,7 @@ class TaxForm
                                     ->options(TypeTaxUse::class)
                                     ->native(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-type'))
+                                    ->live()
                                     ->required(),
                                 Select::make('amount_type')
                                     ->native(false)
@@ -109,16 +110,48 @@ class TaxForm
                                     ->relationship(
                                         name: 'childrenTaxes',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query, ?Tax $record) => $query
-                                            ->where('amount_type', '!=', AmountType::GROUP->value)
-                                            ->when($record, fn (Builder $query) => $query->whereKeyNot($record->getKey())),
+                                        modifyQueryUsing: function (Builder $query, Get $get, ?Tax $record): Builder {
+                                            $query
+                                                ->where('amount_type', '!=', AmountType::GROUP->value)
+                                                ->when($record, fn (Builder $query) => $query->whereKeyNot($record->getKey()));
+
+                                            if (filled($typeTaxUse = TaxResource::normalizeTypeTaxUse($get('type_tax_use')))) {
+                                                $selected = array_filter((array) $get('childrenTaxes'));
+
+                                                $query->where(fn (Builder $query) => $query
+                                                    ->whereIn('type_tax_use', TaxResource::allowedChildTaxTypes($typeTaxUse))
+                                                    ->when($selected, fn (Builder $query) => $query->orWhereIn($query->getModel()->getQualifiedKeyName(), $selected)));
+                                            }
+
+                                            return $query;
+                                        },
                                     )
                                     ->multiple()
                                     ->preload()
                                     ->searchable()
                                     ->required()
+                                    ->rules([
+                                        fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                            if (blank($typeTaxUse = TaxResource::normalizeTypeTaxUse($get('type_tax_use'))) || blank($value)) {
+                                                return;
+                                            }
+
+                                            $mismatched = Tax::query()
+                                                ->whereKey(array_filter((array) $value))
+                                                ->whereNotIn('type_tax_use', TaxResource::allowedChildTaxTypes($typeTaxUse))
+                                                ->pluck('name');
+
+                                            if ($mismatched->isNotEmpty()) {
+                                                $fail(__('accounts::filament/resources/tax.form.sections.fields.children-taxes-type-mismatch', [
+                                                    'type'  => TypeTaxUse::from($typeTaxUse)->getLabel(),
+                                                    'taxes' => $mismatched->join(', '),
+                                                ]));
+                                            }
+                                        },
+                                    ])
                                     ->helperText(__('accounts::filament/resources/tax.form.sections.fields.children-taxes-helper-text'))
-                                    ->visible(fn (Get $get): bool => TaxResource::normalizeAmountType($get('amount_type')) === AmountType::GROUP->value)
+                                    ->visible(fn (Get $get): bool => TaxResource::normalizeAmountType($get('amount_type')) === AmountType::GROUP->value
+                                        && TaxResource::normalizeTypeTaxUse($get('type_tax_use')) !== TypeTaxUse::NONE->value)
                                     ->columnSpanFull(),
                             ])->columns(2),
                         Fieldset::make(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.title'))

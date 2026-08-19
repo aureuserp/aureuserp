@@ -9,6 +9,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\CreateTax;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\EditTax;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ListTaxes;
@@ -40,6 +41,15 @@ class TaxResource extends Resource
     }
 
     /**
+     * The tax type reaches the schema either as the raw column value or as the
+     * enum the model casts it to, depending on where it is read from.
+     */
+    public static function normalizeTypeTaxUse(mixed $state): ?string
+    {
+        return $state instanceof TypeTaxUse ? $state->value : $state;
+    }
+
+    /**
      * Group taxes take their amount from their children and custom formula
      * taxes from their formula, so neither of them asks for an amount.
      */
@@ -49,6 +59,30 @@ class TaxResource extends Resource
             AmountType::GROUP->value,
             AmountType::CODE->value,
         ], true);
+    }
+
+    /**
+     * A group holds taxes of its own type plus the type-less ones, which exist
+     * to be grouped in the first place. Mirrors the children_tax_ids domain of
+     * Odoo: [('type_tax_use', 'in', ('none', type_tax_use))].
+     *
+     * @return array<int, string>
+     */
+    public static function allowedChildTaxTypes(mixed $typeTaxUse): array
+    {
+        return array_values(array_unique(array_filter([
+            static::normalizeTypeTaxUse($typeTaxUse),
+            TypeTaxUse::NONE->value,
+        ])));
+    }
+
+    /**
+     * Group taxes take their amount from their children, so they carry no
+     * repartition lines of their own and must not be checked against any.
+     */
+    public static function requiresRepartitionLines(mixed $amountType): bool
+    {
+        return static::normalizeAmountType($amountType) !== AmountType::GROUP->value;
     }
 
     public static function form(Schema $schema): Schema
