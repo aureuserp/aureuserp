@@ -8,6 +8,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\CreatePost;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\EditPost;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ListPosts;
@@ -21,7 +22,7 @@ use Webkul\Support\Enums\NavigationGroup;
 
 class PostResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, Translatable;
 
     protected static ?string $model = Post::class;
 

@@ -7,6 +7,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\CreatePage;
@@ -20,7 +21,7 @@ use Webkul\Website\Models\Page as PageModel;
 
 class PageResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, Translatable;
 
     protected static ?string $model = PageModel::class;
 
