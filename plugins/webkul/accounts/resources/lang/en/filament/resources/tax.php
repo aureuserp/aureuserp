@@ -4,12 +4,17 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'                         => 'Name',
+                'tax-type'                     => 'Tax Type',
+                'tax-computation'              => 'Tax Computation',
+                'tax-scope'                    => 'Tax Scope',
+                'status'                       => 'Status',
+                'amount'                       => 'Amount',
+                'formula'                      => 'Formula',
+                'formula-helper-text'          => 'Arithmetic only: numbers, + - * / ( ), the functions :functions and these variables: :variables',
+                'children-taxes'               => 'Children Taxes',
+                'children-taxes-helper-text'   => 'The amount of this tax is the sum of its children taxes.',
+                'children-taxes-type-mismatch' => 'The children taxes must be of the :type tax type or have no tax type. These do not: :taxes',
             ],
 
             'repeater' => [
@@ -140,6 +145,8 @@ return [
                 'tax-scope'       => 'Tax Scope',
                 'status'          => 'Status',
                 'amount'          => 'Amount',
+                'formula'         => 'Formula',
+                'children-taxes'  => 'Children Taxes',
             ],
 
             'field-set' => [

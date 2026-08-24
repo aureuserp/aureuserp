@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Schemas;
 
+use Closure;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -12,13 +13,20 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TaxScope;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Exceptions\InvalidTaxFormulaException;
 use Webkul\Account\Filament\Resources\TaxGroupResource;
+use Webkul\Account\Filament\Resources\TaxResource;
+use Webkul\Account\Models\Tax;
+use Webkul\Account\Services\TaxFormulaEvaluator;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
@@ -39,11 +47,26 @@ class TaxForm
                                     ->options(TypeTaxUse::class)
                                     ->native(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-type'))
+                                    ->live()
                                     ->required(),
                                 Select::make('amount_type')
                                     ->native(false)
                                     ->options(AmountType::class)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-computation'))
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, Set $set) {
+                                        $amountType = TaxResource::normalizeAmountType($state);
+
+                                        if ($amountType !== AmountType::CODE->value) {
+                                            $set('formula', null);
+                                        }
+
+                                        if ($amountType === AmountType::GROUP->value) {
+                                            $set('amount', 0);
+                                        } else {
+                                            $set('childrenTaxes', []);
+                                        }
+                                    })
                                     ->required(),
                                 Select::make('tax_scope')
                                     ->native(false)
@@ -54,11 +77,82 @@ class TaxForm
                                     ->inline(false),
                                 TextInput::make('amount')
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.amount'))
-                                    ->suffix('%')
+                                    ->suffix(fn (Get $get): ?string => TaxResource::normalizeAmountType($get('amount_type')) === AmountType::FIXED->value
+                                        ? current_company()?->currency?->symbol
+                                        : '%')
                                     ->numeric()
                                     ->minValue(0)
                                     ->maxValue(99999999999)
-                                    ->required(),
+                                    ->required()
+                                    ->visible(fn (Get $get): bool => TaxResource::usesAmount($get('amount_type'))),
+                                TextInput::make('formula')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.fields.formula'))
+                                    ->placeholder('min(price_unit * quantity * 0.18, 500)')
+                                    ->helperText(__('accounts::filament/resources/tax.form.sections.fields.formula-helper-text', [
+                                        'variables' => implode(', ', TaxFormulaEvaluator::VARIABLES),
+                                        'functions' => implode(', ', TaxFormulaEvaluator::FUNCTIONS),
+                                    ]))
+                                    ->maxLength(255)
+                                    ->required()
+                                    ->rules([
+                                        fn (): Closure => function (string $attribute, $value, Closure $fail) {
+                                            try {
+                                                app(TaxFormulaEvaluator::class)->validate($value);
+                                            } catch (InvalidTaxFormulaException $e) {
+                                                $fail($e->getMessage());
+                                            }
+                                        },
+                                    ])
+                                    ->visible(fn (Get $get): bool => TaxResource::normalizeAmountType($get('amount_type')) === AmountType::CODE->value)
+                                    ->columnSpanFull(),
+                                Select::make('childrenTaxes')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.fields.children-taxes'))
+                                    ->relationship(
+                                        name: 'childrenTaxes',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: function (Builder $query, Get $get, ?Tax $record): Builder {
+                                            $query
+                                                ->where('amount_type', '!=', AmountType::GROUP->value)
+                                                ->when($record, fn (Builder $query) => $query->whereKeyNot($record->getKey()));
+
+                                            if (filled($typeTaxUse = TaxResource::normalizeTypeTaxUse($get('type_tax_use')))) {
+                                                $selected = array_filter((array) $get('childrenTaxes'));
+
+                                                $query->where(fn (Builder $query) => $query
+                                                    ->whereIn('type_tax_use', TaxResource::allowedChildTaxTypes($typeTaxUse))
+                                                    ->when($selected, fn (Builder $query) => $query->orWhereIn($query->getModel()->getQualifiedKeyName(), $selected)));
+                                            }
+
+                                            return $query;
+                                        },
+                                    )
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable()
+                                    ->required()
+                                    ->rules([
+                                        fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                            if (blank($typeTaxUse = TaxResource::normalizeTypeTaxUse($get('type_tax_use'))) || blank($value)) {
+                                                return;
+                                            }
+
+                                            $mismatched = Tax::query()
+                                                ->whereKey(array_filter((array) $value))
+                                                ->whereNotIn('type_tax_use', TaxResource::allowedChildTaxTypes($typeTaxUse))
+                                                ->pluck('name');
+
+                                            if ($mismatched->isNotEmpty()) {
+                                                $fail(__('accounts::filament/resources/tax.form.sections.fields.children-taxes-type-mismatch', [
+                                                    'type'  => TypeTaxUse::from($typeTaxUse)->getLabel(),
+                                                    'taxes' => $mismatched->join(', '),
+                                                ]));
+                                            }
+                                        },
+                                    ])
+                                    ->helperText(__('accounts::filament/resources/tax.form.sections.fields.children-taxes-helper-text'))
+                                    ->visible(fn (Get $get): bool => TaxResource::normalizeAmountType($get('amount_type')) === AmountType::GROUP->value
+                                        && TaxResource::normalizeTypeTaxUse($get('type_tax_use')) !== TypeTaxUse::NONE->value)
+                                    ->columnSpanFull(),
                             ])->columns(2),
                         Fieldset::make(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.title'))
                             ->schema([
@@ -96,6 +190,7 @@ class TaxForm
                     ->tabs([
                         Tab::make('Repartition Lines')
                             ->icon('heroicon-o-banknotes')
+                            ->visible(fn (Get $get): bool => TaxResource::normalizeAmountType($get('amount_type')) !== AmountType::GROUP->value)
                             ->schema([
                                 Section::make('Invoice & Refund Distribution')
                                     ->description('Define how this tax affects accounts for invoices and refunds.')
