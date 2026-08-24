@@ -49,7 +49,7 @@ return new class extends Migration
 
         if (DB::getDriverName() === 'pgsql') {
             foreach ($this->columns as $column) {
-                DB::statement("ALTER TABLE website_pages ALTER COLUMN {$column} TYPE json USING {$column}::json");
+                DB::statement("ALTER TABLE website_pages ALTER COLUMN {$column} TYPE jsonb USING {$column}::jsonb");
             }
         } else {
             Schema::table('website_pages', function (Blueprint $table) {
