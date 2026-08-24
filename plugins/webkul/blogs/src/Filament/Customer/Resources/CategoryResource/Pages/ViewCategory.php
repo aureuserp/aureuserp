@@ -39,9 +39,13 @@ class ViewCategory extends ViewRecord
             ->where('is_published', true);
 
         if (request()->has('search') && $search = request()->input('search')) {
-            $query->where(function (Builder $query) use ($search) {
-                $query->whereLike('title', "%{$search}%")
-                    ->orWhereLike('content', "%{$search}%");
+            $locales = array_unique([app()->getLocale(), config('app.fallback_locale', 'en')]);
+
+            $query->where(function (Builder $query) use ($search, $locales) {
+                foreach ($locales as $locale) {
+                    $query->orWhereLike("title->{$locale}", "%{$search}%")
+                        ->orWhereLike("content->{$locale}", "%{$search}%");
+                }
             });
         }
 

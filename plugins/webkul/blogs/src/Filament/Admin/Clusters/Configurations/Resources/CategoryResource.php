@@ -5,6 +5,7 @@ namespace Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource\Pages\ManageCategories;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource\Schemas\CategoryForm;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource\Tables\CategoriesTable;
@@ -13,6 +14,8 @@ use Webkul\Website\Filament\Admin\Clusters\Configurations;
 
 class CategoryResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $cluster = Configurations::class;

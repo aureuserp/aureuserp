@@ -7,15 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Translatable\HasTranslations;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Website\Database\Factories\PageFactory;
 
 class Page extends Model
 {
-    use HasCustomFields, HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, HasTranslations, SoftDeletes;
 
     protected $table = 'website_pages';
+
+    public array $translatable = [
+        'title',
+        'content',
+        'meta_title',
+        'meta_keywords',
+        'meta_description',
+    ];
 
     protected $fillable = [
         'title',

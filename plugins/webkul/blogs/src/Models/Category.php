@@ -9,15 +9,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Translatable\HasTranslations;
 use Webkul\Blog\Database\Factories\CategoryFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 
 class Category extends Model
 {
-    use HasCustomFields, HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, HasTranslations, SoftDeletes;
 
     protected $table = 'blogs_categories';
+
+    public array $translatable = [
+        'name',
+        'sub_title',
+        'meta_title',
+        'meta_keywords',
+        'meta_description',
+    ];
 
     protected $fillable = [
         'name',

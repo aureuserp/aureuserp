@@ -29,6 +29,7 @@ class WebsiteServiceProvider extends PackageServiceProvider
                 '2025_03_10_094011_create_website_pages_table',
                 '2025_03_10_064655_alter_partners_partners_table',
                 '2026_08_03_100000_add_last_login_at_to_partners_partners_table',
+                '2026_08_13_000001_make_website_pages_translatable',
             ])
             ->runsMigrations()
             ->hasSeeder('Webkul\\Website\\Database\Seeders\\DatabaseSeeder')

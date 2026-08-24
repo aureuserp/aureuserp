@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Translatable\HasTranslations;
 use Webkul\Blog\Database\Factories\PostFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
@@ -16,9 +17,18 @@ use Webkul\Support\Services\ImageService;
 
 class Post extends Model
 {
-    use HasCustomFields, HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, HasTranslations, SoftDeletes;
 
     protected $table = 'blogs_posts';
+
+    public array $translatable = [
+        'title',
+        'sub_title',
+        'content',
+        'meta_title',
+        'meta_keywords',
+        'meta_description',
+    ];
 
     protected $fillable = [
         'title',
