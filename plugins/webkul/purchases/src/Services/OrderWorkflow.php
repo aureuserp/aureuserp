@@ -29,7 +29,9 @@ class OrderWorkflow
     {
         $pdfPath = $this->documents->requestForQuotationPdf($record);
 
-        $this->mailVendors($data, $pdfPath);
+        if (! $this->mailVendors($data, $pdfPath)) {
+            return $record;
+        }
 
         $record->update(['state' => PurchaseEnums\OrderState::SENT]);
 
@@ -44,22 +46,32 @@ class OrderWorkflow
     {
         $pdfPath = $this->documents->purchaseOrderPdf($record);
 
-        $this->mailVendors($data, $pdfPath);
-
-        $this->attachToChatter($record, $data, $pdfPath);
+        if ($this->mailVendors($data, $pdfPath)) {
+            $this->attachToChatter($record, $data, $pdfPath);
+        }
 
         return $record;
     }
 
-    protected function mailVendors(array $data, string $pdfPath): void
+    public function countVendorsWithoutEmail(array $vendorIds): int
     {
-        foreach ($data['vendors'] as $vendorId) {
-            $vendor = Partner::find($vendorId);
+        return Partner::whereIn('id', $vendorIds)
+            ->where(fn ($query) => $query->whereNull('email')->orWhere('email', ''))
+            ->count();
+    }
 
-            if ($vendor?->email) {
-                Mail::to($vendor->email)->send(new VendorPurchaseOrderMail($data['subject'], $data['message'], $pdfPath));
-            }
+    protected function mailVendors(array $data, string $pdfPath): int
+    {
+        $vendors = Partner::whereIn('id', $data['vendors'])
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->get();
+
+        foreach ($vendors as $vendor) {
+            Mail::to($vendor->email)->send(new VendorPurchaseOrderMail($data['subject'], $data['message'], $pdfPath));
         }
+
+        return $vendors->count();
     }
 
     protected function attachToChatter(Order $record, array $data, string $pdfPath): void
