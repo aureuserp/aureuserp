@@ -15,10 +15,10 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Throwable;
-use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
@@ -35,6 +35,32 @@ class PayAction extends Action
     public static function getDefaultName(): ?string
     {
         return 'customers.invoice.pay';
+    }
+
+    protected function getAvailablePartnerBanks(PaymentRegister $paymentRegister, $journalId): Collection
+    {
+        $batch = data_get($paymentRegister->batches, '0');
+
+        $journal = $journalId ? Journal::find($journalId) : null;
+
+        if (! $batch || ! $journal) {
+            return collect();
+        }
+
+        return $paymentRegister->getBatchAvailablePartnerBanks($batch, $journal);
+    }
+
+    protected function resolvePartnerBankId(PaymentRegister $paymentRegister, $journalId): ?int
+    {
+        $availablePartnerBanks = $this->getAvailablePartnerBanks($paymentRegister, $journalId);
+
+        $partnerBankId = data_get($paymentRegister->batches, '0.payment_values.partner_bank_id');
+
+        if ($partnerBankId && $availablePartnerBanks->pluck('id')->contains($partnerBankId)) {
+            return $partnerBankId;
+        }
+
+        return $availablePartnerBanks->first()?->id;
     }
 
     protected function setUp(): void
@@ -94,7 +120,7 @@ class PayAction extends Action
                                     $paymentRegister->computePaymentMethodLineId();
 
                                     $set('payment_method_line_id', $paymentRegister->payment_method_line_id);
-                                    $set('partner_bank_id', null);
+                                    $set('partner_bank_id', $this->resolvePartnerBankId($paymentRegister, $get('journal_id')));
                                 }),
 
                             Select::make('payment_method_line_id')
@@ -134,24 +160,20 @@ class PayAction extends Action
                                 ->relationship(
                                     'partnerBank',
                                     'account_number',
-                                    modifyQueryUsing: function (Builder $query, Get $get) {
-                                        $companyId = $get('company_id') ?? current_company_id();
-
-                                        $bankAccountIds = \Webkul\Account\Models\Journal::where('type', JournalType::BANK)
-                                            ->where('company_id', $companyId)
-                                            ->pluck('bank_account_id')
-                                            ->filter();
-
-                                        $query->whereIn('id', $bankAccountIds);
+                                    modifyQueryUsing: function (Builder $query, Get $get) use ($paymentRegister) {
+                                        $query
+                                            ->withTrashed()
+                                            ->whereIn('id', $this->getAvailablePartnerBanks($paymentRegister, $get('journal_id'))->pluck('id'));
                                     }
                                 )
                                 ->getOptionLabelFromRecordUsing(function ($record): string {
-                                    return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                    return $record->account_number.' - '.$record->bank?->name.($record->trashed() ? ' (Deleted)' : '');
                                 })
                                 ->disableOptionWhen(function ($label) {
                                     return str_contains($label, ' (Deleted)');
                                 })
-                                ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.partner-bank-account'))
+                                ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.recipient-bank-account'))
+                                ->default(fn () => $this->resolvePartnerBankId($paymentRegister, $paymentRegister->journal_id))
                                 ->searchable()
                                 ->preload()
                                 ->required(function (Get $get) use ($paymentRegister) {
@@ -192,25 +214,8 @@ class PayAction extends Action
 
                                     return $paymentRegister->show_partner_bank_account;
                                 })
-                                ->disabled(function (Get $get) use ($paymentRegister) {
-                                    $journal = Journal::find($get('journal_id'));
-
-                                    if (! $journal) {
-                                        return true;
-                                    }
-
-                                    $paymentRegister->journal = $journal;
-                                    $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
-                                    $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
-
-                                    if (! $paymentRegister->paymentMethodLine) {
-                                        return true;
-                                    }
-
-                                    $paymentRegister->computeShowRequirePartnerBank();
-
-                                    return ! $paymentRegister->require_partner_bank_account;
-                                }),
+                                ->disabled($this->getRecord()->isInbound(true))
+                                ->dehydrated(),
                         ]),
 
                     Group::make()
