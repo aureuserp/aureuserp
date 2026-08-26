@@ -44,7 +44,7 @@ class AccountHelper
 {
     public static function company(): Company
     {
-        return Company::query()->firstOrFail();
+        return Company::query()->orderBy('id')->firstOrFail();
     }
 
     public static function actingAsAdmin(): User
