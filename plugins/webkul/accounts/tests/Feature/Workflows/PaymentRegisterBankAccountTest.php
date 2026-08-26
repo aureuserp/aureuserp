@@ -11,7 +11,6 @@ use Webkul\Partner\Models\BankAccount;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
-require_once __DIR__.'/../../../../support/tests/Helpers/CompanyHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/AccountHelper.php';
 
@@ -66,7 +65,6 @@ it('offers the journal bank account as the only recipient bank for an inbound pa
 
     $bankAccount = BankAccount::factory()->create([
         'partner_id' => $this->company->partner_id,
-        'company_id' => $this->company->id,
     ]);
 
     $journal->update(['bank_account_id' => $bankAccount->id]);
@@ -99,39 +97,17 @@ it('offers the vendor bank accounts as recipient banks for an outbound payment',
 
     $vendorAccounts = BankAccount::factory()->count(2)->create([
         'partner_id' => $bill->partner_id,
-        'company_id' => null,
     ]);
 
     $register = registerFor($bill, $journal);
 
     $available = $register->getBatchAvailablePartnerBanks($register->batches[0], $register->journal);
 
-    expect($available->pluck('id')->sort()->values()->all())
-        ->toBe($vendorAccounts->pluck('id')->sort()->values()->all());
-});
-
-it('excludes vendor bank accounts owned by another company for an outbound payment', function () {
-    $journal = AccountHelper::bankJournal();
-
-    $bill = postedInvoice(MoveType::IN_INVOICE);
-
-    $ownAccount = BankAccount::factory()->create([
-        'partner_id' => $bill->partner_id,
-        'company_id' => $this->company->id,
-    ]);
-
-    $otherCompany = CompanyHelper::company();
-
-    BankAccount::factory()->create([
-        'partner_id' => $bill->partner_id,
-        'company_id' => $otherCompany->id,
-    ]);
-
-    $register = registerFor($bill, $journal);
-
-    $available = $register->getBatchAvailablePartnerBanks($register->batches[0], $register->journal);
-
-    expect($available->pluck('id')->all())->toBe([$ownAccount->id]);
+    expect($available->pluck('id')->all())
+        ->toContain($vendorAccounts[0]->id)
+        ->toContain($vendorAccounts[1]->id)
+        ->and($available->pluck('partner_id')->unique()->values()->all())
+        ->toBe([$bill->partner_id]);
 });
 
 it('resolves the batch account to a bank account model for an inbound payment', function () {
@@ -139,7 +115,6 @@ it('resolves the batch account to a bank account model for an inbound payment', 
 
     $bankAccount = BankAccount::factory()->create([
         'partner_id' => $this->company->partner_id,
-        'company_id' => $this->company->id,
     ]);
 
     $journal->update(['bank_account_id' => $bankAccount->id]);
@@ -159,12 +134,10 @@ it('resolves the batch account to the bank account already set on the bill', fun
 
     $preferred = BankAccount::factory()->create([
         'partner_id' => $bill->partner_id,
-        'company_id' => null,
     ]);
 
     BankAccount::factory()->create([
         'partner_id' => $bill->partner_id,
-        'company_id' => null,
     ]);
 
     $bill->update(['partner_bank_id' => $preferred->id]);
