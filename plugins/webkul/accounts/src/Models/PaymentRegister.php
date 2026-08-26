@@ -97,6 +97,16 @@ class PaymentRegister extends Model
         return $this->belongsTo(Partner::class, 'partner_id');
     }
 
+    public function getCompanyCurrencyAttribute(): ?Currency
+    {
+        return $this->company?->currency;
+    }
+
+    public function getCompanyCurrencyIdAttribute(): ?int
+    {
+        return $this->company?->currency_id;
+    }
+
     public function paymentMethodLine()
     {
         return $this->belongsTo(PaymentMethodLine::class, 'payment_method_line_id');
