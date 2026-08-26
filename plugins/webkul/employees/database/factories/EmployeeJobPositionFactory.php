@@ -33,10 +33,9 @@ class EmployeeJobPositionFactory extends Factory
             'requirements'       => fake()->text,
             'expected_employees' => fake()->randomNumber(),
             'no_of_employee'     => fake()->randomNumber(),
-            'status'             => true,
+            'is_active'          => true,
             'no_of_recruitment'  => fake()->randomNumber(),
             'department_id'      => Department::factory(),
-            'open_date'          => fake()->date(),
             'creator_id'         => User::query()->value('id') ?? User::factory(),
         ];
     }

@@ -3,6 +3,7 @@
 namespace Webkul\Employee\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Employee\Models\Calendar;
 use Webkul\Employee\Models\CalendarAttendance;
 use Webkul\Security\Models\User;
 
@@ -23,7 +24,7 @@ class CalendarAttendanceFactory extends Factory
     public function definition(): array
     {
         return [
-            'sequence'          => fake()->randomNumber(),
+            'sort'              => fake()->randomNumber(),
             'name'              => fake()->word,
             'day_of_week'       => fake()->randomElement(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']),
             'day_period'        => fake()->randomElement(['morning', 'afternoon', 'evening']),
@@ -33,9 +34,9 @@ class CalendarAttendanceFactory extends Factory
             'date_to'           => fake()->date(),
             'hour_from'         => fake()->time(),
             'hour_to'           => fake()->time(),
-            'durations_days'    => fake()->randomNumber(),
-            'calendar_id'       => fake()->randomNumber(),
-            'user_id'           => User::query()->value('id') ?? User::factory(),
+            'duration_days'     => fake()->randomNumber(),
+            'calendar_id'       => Calendar::factory(),
+            'creator_id'        => User::query()->value('id') ?? User::factory(),
         ];
     }
 }
