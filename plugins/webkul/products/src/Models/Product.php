@@ -190,7 +190,7 @@ class Product extends Model implements Sortable
             return $this->hasMany(ProductSupplier::class);
         }
     }
-    
+
     public function deleteOrArchive(): void
     {
         try {

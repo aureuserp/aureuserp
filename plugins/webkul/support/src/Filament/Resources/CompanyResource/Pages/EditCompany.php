@@ -3,10 +3,10 @@
 namespace Webkul\Support\Filament\Resources\CompanyResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Webkul\Security\Models\User;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Webkul\Security\Models\User;
 use Webkul\Support\Filament\Resources\CompanyResource;
 
 class EditCompany extends EditRecord

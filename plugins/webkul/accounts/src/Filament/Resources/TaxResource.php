@@ -63,8 +63,7 @@ class TaxResource extends Resource
 
     /**
      * A group holds taxes of its own type plus the type-less ones, which exist
-     * to be grouped in the first place. Mirrors the children_tax_ids domain of
-     * Odoo: [('type_tax_use', 'in', ('none', type_tax_use))].
+     * to be grouped in the first place.
      *
      * @return array<int, string>
      */
