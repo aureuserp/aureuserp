@@ -34,7 +34,8 @@ class InstallERP extends Command
         {--admin-name= : Admin user name}
         {--admin-email= : Admin user email}
         {--admin-password= : Admin user password}
-        {--country= : Country name or two letter code used to derive the default currency}';
+        {--country= : Country name or two letter code used to derive the default currency}
+        {--currency= : Currency ISO code for the default company, overrides the country}';
 
     /**
      * The console command description.
@@ -247,7 +248,7 @@ class InstallERP extends Command
 
         $country = $this->resolveCountry();
 
-        $currency = Currency::resolveDefault($country);
+        $currency = $this->resolveCurrencyOption() ?? Currency::resolveDefault($country);
 
         if (! $currency) {
             $this->warn('⚠️  No currency could be resolved. Keeping the seeded default.');
@@ -263,6 +264,38 @@ class InstallERP extends Command
         $this->defaultCurrencyId = $currency->id;
 
         $this->info("✅ Default currency set to {$currency->full_name} ({$currency->name}).");
+    }
+
+    /**
+     * Resolve the currency explicitly requested on the command line.
+     */
+    protected function resolveCurrencyOption(): ?Currency
+    {
+        $code = $this->option('currency');
+
+        if (blank($code)) {
+            return null;
+        }
+
+        $currency = Currency::findByCode($code);
+
+        if (! $currency) {
+            $this->error("Unknown currency: {$code}");
+
+            exit(1);
+        }
+
+        return $currency;
+    }
+
+    /**
+     * Determine whether the command can safely render an interactive prompt.
+     */
+    protected function canPrompt(): bool
+    {
+        return $this->input->isInteractive()
+            && defined('STDIN')
+            && stream_isatty(STDIN);
     }
 
     /**
@@ -287,7 +320,7 @@ class InstallERP extends Command
             return $country;
         }
 
-        if (! $this->input->isInteractive()) {
+        if (filled($this->option('currency')) || ! $this->canPrompt()) {
             return null;
         }
 
