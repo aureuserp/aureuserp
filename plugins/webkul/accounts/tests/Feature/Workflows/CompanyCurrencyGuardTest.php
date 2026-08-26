@@ -92,7 +92,9 @@ it('allows editing other company fields once journal items exist', function () {
 it('blocks changing a parent company currency when only a branch has journal items', function () {
     $parent = CompanyHelper::company();
 
-    $this->company->update(['parent_id' => $parent->id]);
+    DB::table('companies')
+        ->where('id', $this->company->id)
+        ->update(['parent_id' => $parent->id]);
 
     postAnInvoice();
 
@@ -101,7 +103,13 @@ it('blocks changing a parent company currency when only a branch has journal ite
 });
 
 it('blocks changing a branch currency when only the parent has journal items', function () {
-    $branch = CompanyHelper::company(['parent_id' => $this->company->id]);
+    $branch = CompanyHelper::company();
+
+    DB::table('companies')
+        ->where('id', $branch->id)
+        ->update(['parent_id' => $this->company->id]);
+
+    $branch->refresh();
 
     postAnInvoice();
 
