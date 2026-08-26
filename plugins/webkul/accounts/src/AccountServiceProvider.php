@@ -27,6 +27,7 @@ use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\ProductCompanyAccount;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Observers\CompanyObserver;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
@@ -39,6 +40,7 @@ use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegis
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Support\ProductUsageRegistry;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Services\SequenceService;
 
 class AccountServiceProvider extends PackageServiceProvider
@@ -158,6 +160,8 @@ class AccountServiceProvider extends PackageServiceProvider
 
         $this->registerCustomCss();
 
+        $this->registerObservers();
+
         $this->flushCompanyPropertiesOnSave();
 
         $this->contributeProductSchema();
@@ -174,6 +178,15 @@ class AccountServiceProvider extends PackageServiceProvider
         }
 
         ProductUsageRegistry::register(MoveLine::class);
+    }
+
+    protected function registerObservers(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Company::observe(CompanyObserver::class);
     }
 
     protected function flushCompanyPropertiesOnSave(): void
