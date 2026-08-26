@@ -255,7 +255,7 @@ class InvoiceForm
                                             ->relationship(
                                                 'partnerBank',
                                                 'account_number',
-                                                modifyQueryUsing: function (Builder $query, Get $get) {
+                                                modifyQueryUsing: function (Builder $query, Get $get, $state) {
                                                     $companyId = $get('company_id') ?? current_company_id();
 
                                                     $bankAccountIds = Journal::where('type', JournalType::BANK)
@@ -263,11 +263,22 @@ class InvoiceForm
                                                         ->pluck('bank_account_id')
                                                         ->filter();
 
-                                                    $query->whereIn('id', $bankAccountIds);
+                                                    $query
+                                                        ->withTrashed()
+                                                        ->where(function (Builder $query) use ($bankAccountIds, $state) {
+                                                            $query->whereIn('id', $bankAccountIds);
+
+                                                            if ($state) {
+                                                                $query->orWhere('id', $state);
+                                                            }
+                                                        });
                                                 }
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->account_number.' - '.$record->bank?->name.($record->trashed() ? ' (Deleted)' : '');
+                                            })
+                                            ->disableOptionWhen(function ($label) {
+                                                return str_contains($label, ' (Deleted)');
                                             })
                                             ->searchable()
                                             ->preload()
