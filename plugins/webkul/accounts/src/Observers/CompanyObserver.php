@@ -39,22 +39,29 @@ class CompanyObserver
 
     protected function companyTreeIds(Company $company): array
     {
-        $root = $company;
+        $rootId = $company->id;
 
-        while ($root->parent) {
-            $root = $root->parent;
+        $parentId = $company->parent_id;
+
+        while ($parentId) {
+            $rootId = $parentId;
+
+            $parentId = Company::withoutGlobalScopes()->whereKey($parentId)->value('parent_id');
         }
 
-        return $this->descendantIds($root)->push($root->id)->unique()->all();
+        return $this->descendantIds($rootId)->push($rootId)->unique()->all();
     }
 
-    protected function descendantIds(Company $company): Collection
+    protected function descendantIds(int $companyId): Collection
     {
-        return $company->branches->reduce(
-            fn (Collection $ids, Company $branch) => $ids
-                ->push($branch->id)
-                ->merge($this->descendantIds($branch)),
-            collect(),
-        );
+        return Company::withoutGlobalScopes()
+            ->where('parent_id', $companyId)
+            ->pluck('id')
+            ->reduce(
+                fn (Collection $ids, int $branchId) => $ids
+                    ->push($branchId)
+                    ->merge($this->descendantIds($branchId)),
+                collect(),
+            );
     }
 }

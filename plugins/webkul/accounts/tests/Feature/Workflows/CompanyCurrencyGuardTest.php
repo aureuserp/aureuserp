@@ -90,15 +90,13 @@ it('allows editing other company fields once journal items exist', function () {
 });
 
 it('blocks changing a parent company currency when only a branch has journal items', function () {
-    $branch = CompanyHelper::company(['parent_id' => $this->company->id]);
+    $parent = CompanyHelper::company();
 
-    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, overrides: ['company_id' => $branch->id]);
+    $this->company->update(['parent_id' => $parent->id]);
 
-    AccountHelper::productLine($invoice, AccountHelper::account('income'), 1, 500);
+    postAnInvoice();
 
-    AccountHelper::post(AccountHelper::compute($invoice));
-
-    expect(fn () => $this->company->update(['currency_id' => $this->otherCurrency->id]))
+    expect(fn () => $parent->update(['currency_id' => $this->otherCurrency->id]))
         ->toThrow(ValidationException::class);
 });
 
@@ -114,13 +112,9 @@ it('blocks changing a branch currency when only the parent has journal items', f
 it('ignores journal items belonging to an unrelated company', function () {
     $unrelated = CompanyHelper::company();
 
-    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, overrides: ['company_id' => $unrelated->id]);
+    postAnInvoice();
 
-    AccountHelper::productLine($invoice, AccountHelper::account('income'), 1, 500);
+    $unrelated->update(['currency_id' => $this->otherCurrency->id]);
 
-    AccountHelper::post(AccountHelper::compute($invoice));
-
-    $this->company->update(['currency_id' => $this->otherCurrency->id]);
-
-    expect($this->company->refresh()->currency_id)->toBe($this->otherCurrency->id);
+    expect($unrelated->refresh()->currency_id)->toBe($this->otherCurrency->id);
 });
