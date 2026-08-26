@@ -15,9 +15,11 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Country;
 use Webkul\Support\Models\Currency;
 
 use function Laravel\Prompts\password;
+use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
 
 class InstallERP extends Command
@@ -31,7 +33,8 @@ class InstallERP extends Command
         {--force : Force reinstallation without confirmation}
         {--admin-name= : Admin user name}
         {--admin-email= : Admin user email}
-        {--admin-password= : Admin user password}';
+        {--admin-password= : Admin user password}
+        {--country= : Country name or two letter code used to derive the default currency}';
 
     /**
      * The console command description.
@@ -43,6 +46,8 @@ class InstallERP extends Command
     /**
      * Execute the console command.
      */
+    protected ?int $defaultCurrencyId = null;
+
     public function handle()
     {
         if (
@@ -65,6 +70,8 @@ class InstallERP extends Command
         $this->storageLink();
 
         $this->runSeeder();
+
+        $this->configureLocalisation();
 
         $this->createAdminUser();
 
@@ -221,6 +228,82 @@ class InstallERP extends Command
         $adminRole->syncPermissions($permissions);
 
         $this->info('✅ Roles and permissions generated and assigned successfully.');
+    }
+
+    /**
+     * Apply the country and its currency to the default company.
+     */
+    protected function configureLocalisation(): void
+    {
+        $this->info('🌍 Configuring the default country and currency...');
+
+        $company = Company::first();
+
+        if (! $company) {
+            $this->warn('⚠️  No default company found. Skipping country and currency configuration.');
+
+            return;
+        }
+
+        $country = $this->resolveCountry();
+
+        $currency = Currency::resolveDefault($country);
+
+        if (! $currency) {
+            $this->warn('⚠️  No currency could be resolved. Keeping the seeded default.');
+
+            return;
+        }
+
+        $company->update([
+            'country_id'  => $country?->id ?? $company->country_id,
+            'currency_id' => $currency->id,
+        ]);
+
+        $this->defaultCurrencyId = $currency->id;
+
+        $this->info("✅ Default currency set to {$currency->full_name} ({$currency->name}).");
+    }
+
+    /**
+     * Resolve the country from the command option or an interactive prompt.
+     */
+    protected function resolveCountry(): ?Country
+    {
+        $input = $this->option('country');
+
+        if (filled($input)) {
+            $country = Country::query()
+                ->whereRaw('LOWER(code) = ?', [strtolower($input)])
+                ->orWhereRaw('LOWER(name) = ?', [strtolower($input)])
+                ->first();
+
+            if (! $country) {
+                $this->error("Unknown country: {$input}");
+
+                exit(1);
+            }
+
+            return $country;
+        }
+
+        if (! $this->input->isInteractive()) {
+            return null;
+        }
+
+        $countryId = search(
+            label: 'Which country is your business based in?',
+            options: fn (string $value) => Country::query()
+                ->when($value !== '', fn ($query) => $query->where('name', 'like', "%{$value}%"))
+                ->orderBy('name')
+                ->limit(20)
+                ->pluck('name', 'id')
+                ->all(),
+            placeholder: 'Search for a country...',
+            hint: 'The default currency is derived from the country you pick.',
+        );
+
+        return Country::find($countryId);
     }
 
     /**
@@ -430,7 +513,7 @@ class InstallERP extends Command
             [
                 'group'   => 'currency',
                 'name'    => 'default_currency_id',
-                'payload' => Currency::active()->first()?->id,
+                'payload' => $this->defaultCurrencyId ?? Currency::active()->first()?->id,
             ],
         ];
 
