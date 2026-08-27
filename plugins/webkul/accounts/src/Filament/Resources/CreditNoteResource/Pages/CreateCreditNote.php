@@ -17,28 +17,17 @@ class CreateCreditNote extends CreateRecord
 
     protected static string $resource = CreditNoteResource::class;
 
+    protected function getMoveType(): MoveType
+    {
+        return MoveType::OUT_REFUND;
+    }
+
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
             ->success()
             ->title(__('accounts::filament/resources/credit-note/pages/create-credit-note.notification.title'))
             ->body(__('accounts::filament/resources/credit-note/pages/create-credit-note.notification.body'));
-    }
-
-    public function mount(): void
-    {
-        parent::mount();
-
-        $this->data['move_type'] ??= MoveType::OUT_REFUND->value;
-
-        $this->form->fill($this->data);
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['move_type'] ??= MoveType::OUT_REFUND;
-
-        return $data;
     }
 
     protected function afterCreate(): void
