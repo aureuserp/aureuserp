@@ -111,6 +111,11 @@ return [
                 'notification' => [
                     'title' => 'Currencies deleted',
                     'body'  => 'The currencies have been deleted successfully.',
+
+                    'error' => [
+                        'title' => 'Currencies could not be deleted',
+                        'body'  => 'Some of the selected currencies are in use and cannot be deleted.',
+                    ],
                 ],
             ],
         ],
