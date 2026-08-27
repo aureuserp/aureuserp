@@ -440,8 +440,15 @@ class QuotationForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
+                            ->where(function (Builder $q) use ($state) {
+                                $q->whereNull('deleted_at');
+
+                                if (filled($state)) {
+                                    $q->orWhere('id', $state);
+                                }
+                            })
                             ->whereNull('is_configurable')
                             ->where(owned_by_company($get('../../company_id'))),
                     )
@@ -783,9 +790,16 @@ class QuotationForm
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query, Get $get) => $query
+                        fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
-                            ->where('is_configurable', null)
+                            ->where(function (Builder $q) use ($state) {
+                                $q->whereNull('deleted_at');
+
+                                if (filled($state)) {
+                                    $q->orWhere('id', $state);
+                                }
+                            })
+                            ->whereNull('is_configurable')
                             ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->searchable()
