@@ -365,17 +365,7 @@ class InstallERP extends Command
 
         $repoUrl = 'https://github.com/aureuserp/aureuserp';
 
-        if (PHP_OS_FAMILY == 'Darwin') {
-            exec("open {$repoUrl}");
-        }
-
-        if (PHP_OS_FAMILY == 'Windows') {
-            exec("start {$repoUrl}");
-        }
-
-        if (PHP_OS_FAMILY == 'Linux') {
-            exec("xdg-open {$repoUrl}");
-        }
+        Package::openInBrowser($repoUrl);
     }
 
     /**
