@@ -22,10 +22,14 @@ class ViewCurrency extends ViewRecord
         return [
             EditAction::make(),
             DeleteAction::make()
-                ->action(function (Currency $record) {
+                ->action(function (Currency $record, DeleteAction $action) {
                     try {
                         $record->delete();
+
+                        $action->success();
                     } catch (QueryException $e) {
+                        $action->failure();
+
                         Notification::make()
                             ->danger()
                             ->title(__('support::filament/resources/currency/pages/view-currency.header-actions.delete.notification.error.title'))

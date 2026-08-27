@@ -103,16 +103,14 @@ class CurrenciesTable
                                 ->title(__('support::filament/resources/currency.table.actions.delete.notification.title'))
                                 ->body(__('support::filament/resources/currency.table.actions.delete.notification.body')),
                         )
-                        ->action(function (Currency $record) {
+                        ->action(function (Currency $record, DeleteAction $action) {
                             try {
                                 $record->delete();
 
-                                Notification::make()
-                                    ->success()
-                                    ->title(__('support::filament/resources/currency.table.actions.delete.notification.success.title'))
-                                    ->body(__('support::filament/resources/currency.table.actions.delete.notification.success.body'))
-                                    ->send();
+                                $action->success();
                             } catch (QueryException $e) {
+                                $action->failure();
+
                                 Notification::make()
                                     ->danger()
                                     ->title(__('support::filament/resources/currency.table.actions.delete.notification.error.title'))
