@@ -1282,6 +1282,7 @@ class QuotationForm
             'grandTotal'       => 0,
             'margin'           => 0,
             'marginPercentage' => 0,
+            'currency_id'      => $get('currency_id'),
         ];
 
         $products = $get('products') ?? [];
@@ -1316,6 +1317,7 @@ class QuotationForm
             'grandTotal'       => round($grandTotal, 2),
             'margin'           => round($margin, 2),
             'marginPercentage' => round($marginPercentage, 2),
+            'currency_id'      => $get('currency_id'),
         ];
 
         $livewire->dispatch('itemUpdated', $totals);

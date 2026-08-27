@@ -979,6 +979,7 @@ class OrderForm
             'subtotal'         => 0,
             'totalTax'         => 0,
             'grandTotal'       => 0,
+            'currency_id'      => $get('currency_id'),
         ];
 
         $products = $get('products') ?? [];
@@ -1007,6 +1008,7 @@ class OrderForm
             'subtotal'         => round($subtotal, 2),
             'totalTax'         => round($totalTax, 2),
             'grandTotal'       => round($grandTotal, 2),
+            'currency_id'      => $get('currency_id'),
         ];
 
         $livewire->dispatch('itemUpdated', $totals);
