@@ -49,6 +49,14 @@ class InstallERP extends Command
      */
     protected ?int $defaultCurrencyId = null;
 
+    protected ?string $countryCode = null;
+
+    /** @var array<int, array<string, mixed>>|null */
+    protected ?array $countryData = null;
+
+    /** @var array<int, array<string, mixed>>|null */
+    protected ?array $currencyData = null;
+
     public function handle()
     {
         if (
@@ -70,9 +78,11 @@ class InstallERP extends Command
 
         $this->storageLink();
 
+        $this->resolveLocalisation();
+
         $this->runSeeder();
 
-        $this->configureLocalisation();
+        $this->applyLocalisation();
 
         $this->createAdminUser();
 
@@ -232,12 +242,31 @@ class InstallERP extends Command
     }
 
     /**
-     * Apply the country and its currency to the default company.
+     * Resolve the country and currency before the seeders run, so the default
+     * company and everything seeded from it use the right currency.
      */
-    protected function configureLocalisation(): void
+    protected function resolveLocalisation(): void
     {
-        $this->info('🌍 Configuring the default country and currency...');
+        $this->info('🌍 Resolving the default country and currency...');
 
+        $this->countryCode = $this->resolveCountryCode();
+
+        $currencyCode = $this->option('currency') ?: $this->currencyCodeForCountry($this->countryCode);
+
+        if (blank($currencyCode)) {
+            return;
+        }
+
+        config(['app.currency' => $currencyCode]);
+
+        $this->info("✅ Using {$currencyCode} as the default currency.");
+    }
+
+    /**
+     * Stamp the resolved country and currency onto the seeded default company.
+     */
+    protected function applyLocalisation(): void
+    {
         $company = Company::first();
 
         if (! $company) {
@@ -246,9 +275,7 @@ class InstallERP extends Command
             return;
         }
 
-        $country = $this->resolveCountry();
-
-        $currency = $this->resolveCurrencyOption() ?? Currency::resolveDefault($country);
+        $currency = $this->resolveCurrencyOption() ?? Currency::resolveDefault();
 
         if (! $currency) {
             $this->warn('⚠️  No currency could be resolved. Keeping the seeded default.');
@@ -256,19 +283,105 @@ class InstallERP extends Command
             return;
         }
 
+        $country = $this->countryCode
+            ? Country::query()->whereRaw('LOWER(code) = ?', [strtolower($this->countryCode)])->first()
+            : null;
+
         $company->update([
             'country_id'  => $country?->id ?? $company->country_id,
             'currency_id' => $currency->id,
         ]);
 
         $this->defaultCurrencyId = $currency->id;
-
-        $this->info("✅ Default currency set to {$currency->full_name} ({$currency->name}).");
     }
 
     /**
-     * Resolve the currency explicitly requested on the command line.
+     * Resolve the two letter country code from the command option or a prompt.
+     *
+     * The countries table is not seeded yet at this point, so the shipped data
+     * file is the source of truth here.
      */
+    protected function resolveCountryCode(): ?string
+    {
+        $countries = $this->countryData();
+
+        $input = $this->option('country');
+
+        if (filled($input)) {
+            $match = collect($countries)->first(fn (array $country) => strcasecmp($country['code'], $input) === 0
+                || strcasecmp($country['name'], $input) === 0);
+
+            if (! $match) {
+                $this->error("Unknown country: {$input}");
+
+                exit(1);
+            }
+
+            return $match['code'];
+        }
+
+        if (filled($this->option('currency')) || ! $this->canPrompt()) {
+            return null;
+        }
+
+        return search(
+            label: 'Which country is your business based in?',
+            options: fn (string $value) => collect($countries)
+                ->when($value !== '', fn ($collection) => $collection->filter(
+                    fn (array $country) => str_contains(strtolower($country['name']), strtolower($value))
+                ))
+                ->sortBy('name')
+                ->take(20)
+                ->pluck('name', 'code')
+                ->all(),
+            placeholder: 'Search for a country...',
+            hint: 'The default currency is derived from the country you pick.',
+        );
+    }
+
+    /**
+     * Map a country code to its currency ISO code using the shipped data files.
+     */
+    protected function currencyCodeForCountry(?string $countryCode): ?string
+    {
+        if (blank($countryCode)) {
+            return null;
+        }
+
+        $country = collect($this->countryData())
+            ->first(fn (array $country) => strcasecmp($country['code'], $countryCode) === 0);
+
+        $currencyId = (int) ($country['currency_id'] ?? 0);
+
+        if (! $currencyId) {
+            return null;
+        }
+
+        return $this->currencyData()[$currencyId - 1]['name'] ?? null;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function countryData(): array
+    {
+        return $this->countryData ??= json_decode(
+            File::get(base_path('plugins/webkul/security/src/Data/countries.json')),
+            true,
+        ) ?: [];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function currencyData(): array
+    {
+        return $this->currencyData ??= json_decode(
+            File::get(base_path('plugins/webkul/security/src/Data/currencies.json')),
+            true,
+        ) ?: [];
+    }
+
     protected function resolveCurrencyOption(): ?Currency
     {
         $code = $this->option('currency');
