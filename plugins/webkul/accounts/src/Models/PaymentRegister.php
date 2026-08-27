@@ -97,6 +97,16 @@ class PaymentRegister extends Model
         return $this->belongsTo(Partner::class, 'partner_id');
     }
 
+    public function getCompanyCurrencyAttribute(): ?Currency
+    {
+        return $this->company?->currency;
+    }
+
+    public function getCompanyCurrencyIdAttribute(): ?int
+    {
+        return $this->company?->currency_id;
+    }
+
     public function paymentMethodLine()
     {
         return $this->belongsTo(PaymentMethodLine::class, 'payment_method_line_id');
@@ -497,7 +507,9 @@ class PaymentRegister extends Model
         $paymentValues = $batch['payment_values'];
 
         if ($paymentValues['payment_type'] == PaymentType::RECEIVE) {
-            return collect($journal->bankAccount);
+            return $journal?->bankAccount
+                ? collect([$journal->bankAccount])
+                : collect();
         }
 
         $company = $batch['lines']
@@ -505,8 +517,9 @@ class PaymentRegister extends Model
             ->first()
             ->company;
 
-        return $batch['lines']->first()->partner->bankAccounts
-            ->filter(fn ($bankAccount) => ! $bankAccount->company_id || $bankAccount->company_id == $company->id);
+        return collect($batch['lines']->first()->partner?->bankAccounts ?? [])
+            ->filter(fn ($bankAccount) => ! $bankAccount->company_id || $bankAccount->company_id == $company->id)
+            ->values();
     }
 
     public function getTotalAmountsToPay($batchResults)

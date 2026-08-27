@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package as BasePackage;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Throwable;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -226,27 +227,10 @@ class Package extends BasePackage
 
     public static function phpBinaryPath(): string
     {
-        $php = trim((string) @shell_exec('which php 2>/dev/null'));
+        $php = (new PhpExecutableFinder)->find();
 
-        if ($php !== '' && is_file($php)) {
+        if ($php && is_file($php)) {
             return $php;
-        }
-
-        if (! str_contains(PHP_BINARY, 'fpm') && is_file(PHP_BINARY)) {
-            return PHP_BINARY;
-        }
-
-        $candidates = [
-            '/usr/local/bin/php',
-            '/usr/bin/php',
-            '/opt/homebrew/bin/php',
-            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
-        ];
-
-        foreach ($candidates as $path) {
-            if (is_file($path)) {
-                return $path;
-            }
         }
 
         return 'php';
