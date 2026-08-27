@@ -3,6 +3,7 @@
 namespace Webkul\Purchase\Livewire;
 
 use Livewire\Component;
+use Webkul\Support\Models\Currency;
 
 class OrderSummary extends Component
 {
@@ -26,6 +27,10 @@ class OrderSummary extends Component
         $this->totalTax = $totals['totalTax'];
         $this->grandTotal = $totals['grandTotal'];
         $this->amountTax = $totals['totalTax'];
+
+        if (array_key_exists('currency_id', $totals) && $totals['currency_id']) {
+            $this->currency = Currency::find($totals['currency_id']);
+        }
     }
 
     public function render()

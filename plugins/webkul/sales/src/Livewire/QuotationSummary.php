@@ -3,6 +3,7 @@
 namespace Webkul\Sale\Livewire;
 
 use Livewire\Component;
+use Webkul\Support\Models\Currency;
 
 class QuotationSummary extends Component
 {
@@ -34,6 +35,10 @@ class QuotationSummary extends Component
         $this->amountTax = $totals['totalTax'];
         $this->margin = $totals['margin'] ?? 0;
         $this->marginPercentage = $totals['marginPercentage'] ?? 0;
+
+        if (array_key_exists('currency_id', $totals) && $totals['currency_id']) {
+            $this->currency = Currency::find($totals['currency_id']);
+        }
     }
 
     public function render()
