@@ -15,6 +15,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Security\Settings\CurrencySettings;
+use Webkul\Support\Models\Country;
 use Webkul\Support\Models\Currency;
 
 class CompanyForm
@@ -77,7 +79,15 @@ class CompanyForm
                                                 Select::make('country_id')
                                                     ->label(__('support::filament/resources/company.form.sections.address-information.fields.country'))
                                                     ->relationship(name: 'country', titleAttribute: 'name')
-                                                    ->afterStateUpdated(fn (Set $set) => $set('state_id', null))
+                                                    ->afterStateUpdated(function (Set $set, $state) {
+                                                        $set('state_id', null);
+
+                                                        $currencyId = Country::find($state)?->currency_id;
+
+                                                        if ($currencyId) {
+                                                            $set('currency_id', $currencyId);
+                                                        }
+                                                    })
                                                     ->searchable()
                                                     ->preload()
                                                     ->live(),
@@ -127,7 +137,7 @@ class CompanyForm
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::active()->first()?->id)
+                                            ->default(fn () => settings(CurrencySettings::class)->default_currency_id ?? Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([

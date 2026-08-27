@@ -28,9 +28,30 @@ class Currency extends Model
         'active' => 'boolean',
     ];
 
+    public function getCodeAttribute(): ?string
+    {
+        return $this->name;
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
+    }
+
+    public static function findByCode(?string $code): ?self
+    {
+        if (blank($code)) {
+            return null;
+        }
+
+        return static::query()->where('name', $code)->first();
+    }
+
+    public static function resolveDefault(?Country $country = null): ?self
+    {
+        return $country?->currency
+            ?? static::findByCode(config('app.currency'))
+            ?? static::query()->first();
     }
 
     public function rates(): HasMany

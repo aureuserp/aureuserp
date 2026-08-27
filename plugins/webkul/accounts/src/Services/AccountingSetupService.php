@@ -36,7 +36,6 @@ class AccountingSetupService
         'suspense_account_id',
         'profit_account_id',
         'loss_account_id',
-        'bank_account_id',
     ];
 
     public function isSetUp(Company $company): bool
@@ -140,7 +139,10 @@ class AccountingSetupService
         $map = [];
 
         foreach (DB::table('accounts_journals')->where('company_id', $templateId)->get() as $row) {
-            $overrides = ['company_id' => $company->id];
+            $overrides = [
+                'company_id'      => $company->id,
+                'bank_account_id' => null,
+            ];
 
             foreach (self::JOURNAL_ACCOUNT_COLUMNS as $column) {
                 $overrides[$column] = $this->remap($row->{$column} ?? null, $accountMap);
@@ -185,6 +187,10 @@ class AccountingSetupService
         unset($data['id'], $data['created_at'], $data['updated_at']);
 
         $data['creator_id'] = Auth::id() ?? $company->creator_id;
+
+        if (array_key_exists('currency_id', $data) && $data['currency_id'] !== null) {
+            $data['currency_id'] = $company->currency_id ?? $data['currency_id'];
+        }
 
         $data = array_merge($data, $overrides);
 

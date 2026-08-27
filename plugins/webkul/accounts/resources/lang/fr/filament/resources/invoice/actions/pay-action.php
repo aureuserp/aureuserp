@@ -5,13 +5,13 @@ return [
 
     'form' => [
         'fields' => [
-            'journal'              => 'Journal',
-            'amount'               => 'Montant',
-            'currency'             => 'Devise',
-            'payment-method-line'  => 'Ligne de mode de paiement',
-            'payment-date'         => 'Date de paiement',
-            'partner-bank-account' => 'Compte bancaire du partenaire',
-            'communication'        => 'Mémo',
+            'journal'                => 'Journal',
+            'amount'                 => 'Montant',
+            'currency'               => 'Devise',
+            'payment-method-line'    => 'Ligne de mode de paiement',
+            'payment-date'           => 'Date de paiement',
+            'recipient-bank-account' => 'Compte bancaire du bénéficiaire',
+            'communication'          => 'Mémo',
         ],
     ],
 

@@ -15,6 +15,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Webkul\Support\Models\Currency;
 
@@ -101,16 +103,14 @@ class CurrenciesTable
                                 ->title(__('support::filament/resources/currency.table.actions.delete.notification.title'))
                                 ->body(__('support::filament/resources/currency.table.actions.delete.notification.body')),
                         )
-                        ->action(function (Currency $record) {
+                        ->action(function (Currency $record, DeleteAction $action) {
                             try {
                                 $record->delete();
 
-                                Notification::make()
-                                    ->success()
-                                    ->title(__('support::filament/resources/currency.table.actions.delete.notification.success.title'))
-                                    ->body(__('support::filament/resources/currency.table.actions.delete.notification.success.body'))
-                                    ->send();
+                                $action->success();
                             } catch (QueryException $e) {
+                                $action->failure();
+
                                 Notification::make()
                                     ->danger()
                                     ->title(__('support::filament/resources/currency.table.actions.delete.notification.error.title'))
@@ -123,6 +123,21 @@ class CurrenciesTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
+                        ->action(function (Collection $records, DeleteBulkAction $action) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+
+                                $action->success();
+                            } catch (QueryException $e) {
+                                $action->failure();
+
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('support::filament/resources/currency.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('support::filament/resources/currency.table.bulk-actions.delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()

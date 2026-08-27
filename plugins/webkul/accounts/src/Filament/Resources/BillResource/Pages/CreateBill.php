@@ -39,6 +39,11 @@ class CreateBill extends CreateRecord
             ->body(__('accounts::filament/resources/bill/pages/create-bill.notification.body'));
     }
 
+    protected function getMoveType(): MoveType
+    {
+        return MoveType::IN_INVOICE;
+    }
+
     public function mount(): void
     {
         parent::mount();
@@ -47,7 +52,7 @@ class CreateBill extends CreateRecord
             ->where('company_id', current_company_id())
             ->first();
 
-        $this->data['move_type'] ??= MoveType::IN_INVOICE->value;
+        $this->data['move_type'] ??= $this->getMoveType()->value;
 
         $this->data['journal_id'] = $journal?->id;
 
@@ -56,7 +61,7 @@ class CreateBill extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['move_type'] ??= MoveType::IN_INVOICE;
+        $data['move_type'] ??= $this->getMoveType();
 
         $data['date'] = now();
 

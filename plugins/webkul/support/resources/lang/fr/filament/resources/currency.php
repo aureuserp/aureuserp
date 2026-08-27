@@ -101,7 +101,7 @@ return [
             'deactivate' => [
                 'notification' => [
                     'title' => 'La devise ne peut pas être désactivée',
-                    'body'  => "Cette devise est utilisée par une ou plusieurs sociétés et ne peut pas être désactivée.",
+                    'body'  => 'Cette devise est utilisée par une ou plusieurs sociétés et ne peut pas être désactivée.',
                 ],
             ],
         ],
@@ -111,6 +111,11 @@ return [
                 'notification' => [
                     'title' => 'Devises supprimées',
                     'body'  => 'Les devises ont été supprimées avec succès.',
+
+                    'error' => [
+                        'title' => 'Impossible de supprimer les devises',
+                        'body'  => 'Certaines des devises sélectionnées sont utilisées et ne peuvent pas être supprimées.',
+                    ],
                 ],
             ],
         ],

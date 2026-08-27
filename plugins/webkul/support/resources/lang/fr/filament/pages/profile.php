@@ -5,7 +5,7 @@ return [
     'heading'                 => 'Profil',
     'subheading'              => 'Gérez les paramètres et préférences de votre compte.',
     'information_section'     => 'Informations du profil',
-    'information_description' => "Mettez à jour les informations du profil de votre compte et votre adresse e-mail.",
+    'information_description' => 'Mettez à jour les informations du profil de votre compte et votre adresse e-mail.',
 
     'notification' => [
         'success' => [

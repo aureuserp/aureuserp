@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Support;
 
+use Illuminate\Support\Collection;
 use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductAttributeValue;
 use Webkul\Product\Models\ProductCombination;
@@ -28,7 +29,7 @@ class VariantUsage
      * from them — and a database cascade fires no model events, so this has to be checked before
      * the option itself goes.
      *
-     * @param  array<int, int|string>|\Illuminate\Support\Collection  $attributeOptionIds
+     * @param  array<int, int|string>|Collection  $attributeOptionIds
      */
     public static function optionsHaveVariantsInUse($attributeOptionIds): bool
     {
