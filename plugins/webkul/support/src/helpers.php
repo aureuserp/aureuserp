@@ -4,8 +4,10 @@ use ArPHP\I18N\Arabic;
 use Filament\Forms\Components\Field;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
+use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Currency;
 use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\SettingsRegistry;
 use Webkul\Support\SupportServiceProvider;
@@ -14,6 +16,26 @@ if (! function_exists('settings')) {
     function settings(string $settings): object
     {
         return app(SettingsRegistry::class)->get($settings);
+    }
+}
+
+if (! function_exists('default_currency_code')) {
+    /**
+     * The ISO code money amounts are displayed in when no currency is given.
+     */
+    function default_currency_code(): string
+    {
+        return once(function (): string {
+            try {
+                $currencyId = settings(CurrencySettings::class)->default_currency_id;
+
+                $code = $currencyId ? Currency::find($currencyId)?->code : null;
+            } catch (Throwable) {
+                $code = null;
+            }
+
+            return $code ?? config('app.currency') ?? 'USD';
+        });
     }
 }
 
