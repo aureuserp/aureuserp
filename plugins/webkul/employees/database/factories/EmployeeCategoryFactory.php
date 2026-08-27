@@ -23,9 +23,9 @@ class EmployeeCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'    => fake()->name,
-            'color'   => fake()->hexColor,
-            'user_id' => User::query()->value('id') ?? User::factory(),
+            'name'       => fake()->name,
+            'color'      => fake()->hexColor,
+            'creator_id' => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

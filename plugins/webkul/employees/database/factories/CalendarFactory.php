@@ -27,13 +27,13 @@ class CalendarFactory extends Factory
     {
         return [
             'name'                      => fake()->name,
-            'tz'                        => fake()->timezone,
+            'timezone'                  => fake()->timezone,
             'hours_per_day'             => fake()->randomFloat(2, 0, 24),
-            'status'                    => 1,
+            'is_active'                 => true,
             'two_weeks_calendar'        => false,
             'flexible_hours'            => false,
             'full_time_required_hours'  => 0,
-            'user_id'                   => User::query()->value('id') ?? User::factory(),
+            'creator_id'                => User::query()->value('id') ?? User::factory(),
         ];
     }
 }

@@ -8,10 +8,9 @@ class EmployeeHelper
     /**
      * Create a minimal employee.
      *
-     * Employee::factory() is deliberately avoided here. Its definition builds a
-     * Department, which in turn builds an Employee as its manager, so resolving it
-     * recurses until the process dies. Every column on employees_employees is
-     * nullable or defaulted, so a direct create is both sufficient and cheap.
+     * Employee::factory() builds a department, a job position and a work location
+     * along with it. Every column on employees_employees is nullable or defaulted, so
+     * a direct create stays cheaper for tests that only need the row.
      */
     public static function employee(array $attributes = []): Employee
     {

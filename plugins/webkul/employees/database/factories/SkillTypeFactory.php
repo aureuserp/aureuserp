@@ -22,9 +22,9 @@ class SkillTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'   => fake()->word,
-            'color'  => fake()->hexColor,
-            'status' => 1,
+            'name'      => fake()->word,
+            'color'     => fake()->hexColor,
+            'is_active' => true,
         ];
     }
 }
