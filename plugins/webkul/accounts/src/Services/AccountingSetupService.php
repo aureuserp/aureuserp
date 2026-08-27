@@ -36,10 +36,7 @@ class AccountingSetupService
         'suspense_account_id',
         'profit_account_id',
         'loss_account_id',
-        'bank_account_id',
     ];
-
-    protected ?int $templateCurrencyId = null;
 
     public function isSetUp(Company $company): bool
     {
@@ -61,8 +58,6 @@ class AccountingSetupService
         if ($templateId === null || $templateId === (int) $company->id) {
             return false;
         }
-
-        $this->templateCurrencyId = DB::table('companies')->where('id', $templateId)->value('currency_id');
 
         DB::transaction(function () use ($company, $templateId) {
             $groupMap = $this->copyTaxGroups($company, $templateId);
@@ -144,7 +139,10 @@ class AccountingSetupService
         $map = [];
 
         foreach (DB::table('accounts_journals')->where('company_id', $templateId)->get() as $row) {
-            $overrides = ['company_id' => $company->id];
+            $overrides = [
+                'company_id'      => $company->id,
+                'bank_account_id' => null,
+            ];
 
             foreach (self::JOURNAL_ACCOUNT_COLUMNS as $column) {
                 $overrides[$column] = $this->remap($row->{$column} ?? null, $accountMap);
@@ -190,8 +188,8 @@ class AccountingSetupService
 
         $data['creator_id'] = Auth::id() ?? $company->creator_id;
 
-        if (array_key_exists('currency_id', $data)) {
-            $data['currency_id'] = $this->currencyFor($data['currency_id'], $company);
+        if (array_key_exists('currency_id', $data) && $data['currency_id'] !== null) {
+            $data['currency_id'] = $company->currency_id ?? $data['currency_id'];
         }
 
         $data = array_merge($data, $overrides);
@@ -200,19 +198,6 @@ class AccountingSetupService
         $data['updated_at'] = now();
 
         return $data;
-    }
-
-    protected function currencyFor($currencyId, Company $company)
-    {
-        if ($currencyId === null) {
-            return null;
-        }
-
-        if ($this->templateCurrencyId !== null && (int) $currencyId !== $this->templateCurrencyId) {
-            return $currencyId;
-        }
-
-        return $company->currency_id ?? $currencyId;
     }
 
     protected function remap($value, array $map)
