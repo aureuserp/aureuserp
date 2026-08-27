@@ -12,7 +12,7 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'Général',
+                'title'       => 'Général',
                 'description' => 'Les séquences pour les journaux, entrepôts et types d\'opération sont créées automatiquement lors de la création de ces enregistrements — modifiez-les ici. La création manuelle n\'est nécessaire que pour les séquences personnalisées basées sur un code.',
 
                 'fields' => [
@@ -27,14 +27,14 @@ return [
                 'title' => 'Numérotation',
 
                 'fields' => [
-                    'prefix'          => 'Préfixe',
-                    'prefix-help'     => 'Espaces réservés : %(year), %(y), %(month), %(day). Exemple : INV/%(year)/',
-                    'suffix'          => 'Suffixe',
-                    'padding'         => 'Remplissage des chiffres',
-                    'next-number'     => 'Numéro suivant',
+                    'prefix'           => 'Préfixe',
+                    'prefix-help'      => 'Espaces réservés : %(year), %(y), %(month), %(day). Exemple : INV/%(year)/',
+                    'suffix'           => 'Suffixe',
+                    'padding'          => 'Remplissage des chiffres',
+                    'next-number'      => 'Numéro suivant',
                     'next-number-help' => 'Ne peut être qu\'augmenté. Pour redémarrer la numérotation en toute sécurité, supprimez la séquence — elle sera recréée à partir du numéro de document existant le plus élevé.',
-                    'step'            => 'Pas',
-                    'reset-frequency' => 'Réinitialisation du compteur',
+                    'step'             => 'Pas',
+                    'reset-frequency'  => 'Réinitialisation du compteur',
                 ],
             ],
         ],

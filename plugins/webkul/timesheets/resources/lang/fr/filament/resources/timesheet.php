@@ -45,7 +45,7 @@ return [
 
         'filters' => [
             'date-from'  => 'Date de début',
-            'date-until' => "Date de fin",
+            'date-until' => 'Date de fin',
             'employee'   => 'Employé',
             'project'    => 'Projet',
             'task'       => 'Tâche',

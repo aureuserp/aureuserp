@@ -268,7 +268,6 @@ class Employee extends Model
             'phone'        => $employee?->work_phone,
             'mobile'       => $employee?->mobile_phone,
             'color'        => $employee?->color,
-            'parent_id'    => $employee?->parent_id,
             'company_id'   => $employee?->company_id,
             'user_id'      => $employee?->user_id,
         ]);
@@ -291,7 +290,6 @@ class Employee extends Model
                 'phone'        => $employee?->work_phone,
                 'mobile'       => $employee?->mobile_phone,
                 'color'        => $employee?->color,
-                'parent_id'    => $employee?->parent_id,
                 'company_id'   => $employee?->company_id,
                 'user_id'      => $employee?->user_id,
             ]

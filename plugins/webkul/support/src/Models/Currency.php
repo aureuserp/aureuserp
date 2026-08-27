@@ -28,6 +28,11 @@ class Currency extends Model
         'active' => 'boolean',
     ];
 
+    public function getCodeAttribute(): ?string
+    {
+        return $this->name;
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);

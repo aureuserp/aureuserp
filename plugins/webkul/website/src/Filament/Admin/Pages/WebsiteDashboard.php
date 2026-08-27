@@ -3,7 +3,6 @@
 namespace Webkul\Website\Filament\Admin\Pages;
 
 use BackedEnum;
-use Webkul\Security\Models\User;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -11,6 +10,7 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
 use Webkul\PluginManager\Package;
+use Webkul\Security\Models\User;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Support\Filament\Forms\Components\DashboardDateRange;
 use Webkul\Website\Filament\Admin\Widgets\BlogAuthorsChart;

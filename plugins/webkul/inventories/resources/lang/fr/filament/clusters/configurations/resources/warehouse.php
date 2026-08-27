@@ -26,7 +26,7 @@ return [
                 'title'  => 'Paramètres',
 
                 'fields' => [
-                    'shipment-management'              => 'Gestion des expéditions',
+                    'shipment-management'               => 'Gestion des expéditions',
                     'incoming-shipments'                => 'Expéditions entrantes',
                     'incoming-shipments-hint-tooltip'   => 'Route entrante par défaut à suivre',
                     'outgoing-shipments'                => 'Expéditions sortantes',

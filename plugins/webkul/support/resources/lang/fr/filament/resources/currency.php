@@ -101,7 +101,7 @@ return [
             'deactivate' => [
                 'notification' => [
                     'title' => 'La devise ne peut pas être désactivée',
-                    'body'  => "Cette devise est utilisée par une ou plusieurs sociétés et ne peut pas être désactivée.",
+                    'body'  => 'Cette devise est utilisée par une ou plusieurs sociétés et ne peut pas être désactivée.',
                 ],
             ],
         ],
