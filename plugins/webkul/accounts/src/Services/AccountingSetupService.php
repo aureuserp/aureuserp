@@ -39,6 +39,8 @@ class AccountingSetupService
         'bank_account_id',
     ];
 
+    protected ?int $templateCurrencyId = null;
+
     public function isSetUp(Company $company): bool
     {
         return DB::table('accounts_journals')
@@ -59,6 +61,8 @@ class AccountingSetupService
         if ($templateId === null || $templateId === (int) $company->id) {
             return false;
         }
+
+        $this->templateCurrencyId = DB::table('companies')->where('id', $templateId)->value('currency_id');
 
         DB::transaction(function () use ($company, $templateId) {
             $groupMap = $this->copyTaxGroups($company, $templateId);
@@ -186,12 +190,29 @@ class AccountingSetupService
 
         $data['creator_id'] = Auth::id() ?? $company->creator_id;
 
+        if (array_key_exists('currency_id', $data)) {
+            $data['currency_id'] = $this->currencyFor($data['currency_id'], $company);
+        }
+
         $data = array_merge($data, $overrides);
 
         $data['created_at'] = now();
         $data['updated_at'] = now();
 
         return $data;
+    }
+
+    protected function currencyFor($currencyId, Company $company)
+    {
+        if ($currencyId === null) {
+            return null;
+        }
+
+        if ($this->templateCurrencyId !== null && (int) $currencyId !== $this->templateCurrencyId) {
+            return $currencyId;
+        }
+
+        return $company->currency_id ?? $currencyId;
     }
 
     protected function remap($value, array $map)

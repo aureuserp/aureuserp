@@ -38,12 +38,14 @@ use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Invoice;
 use Webkul\Account\Models\Journal;
+use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Partner\Models\BankAccount;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -57,6 +59,7 @@ class InvoiceForm
     {
         return $schema
             ->components([
+                Hidden::make('move_type'),
                 FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
@@ -103,7 +106,7 @@ class InvoiceForm
                                             ->searchable()
                                             ->preload()
                                             ->live()
-                                            ->afterStateUpdated(function (Set $set, $state) {
+                                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
                                                 $partner = $state ? Partner::find($state) : null;
 
                                                 $set('invoice_user_id', $partner?->user_id);
@@ -111,6 +114,8 @@ class InvoiceForm
                                                 $set('preferred_payment_method_line_id', $partner?->property_inbound_payment_method_line_id);
 
                                                 $set('invoice_payment_term_id', $partner?->property_payment_term_id);
+
+                                                $set('partner_bank_id', static::getDefaultRecipientBankId($get('move_type'), $get('company_id'), $state));
                                             })
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
@@ -255,20 +260,31 @@ class InvoiceForm
                                             ->relationship(
                                                 'partnerBank',
                                                 'account_number',
-                                                modifyQueryUsing: function (Builder $query, Get $get) {
-                                                    $companyId = $get('company_id') ?? current_company_id();
+                                                modifyQueryUsing: function (Builder $query, Get $get, $state) {
+                                                    $partnerId = Move::resolveBankPartnerId(
+                                                        $get('move_type'),
+                                                        $get('company_id'),
+                                                        $get('partner_id'),
+                                                    );
 
-                                                    $bankAccountIds = Journal::where('type', JournalType::BANK)
-                                                        ->where('company_id', $companyId)
-                                                        ->pluck('bank_account_id')
-                                                        ->filter();
+                                                    $query
+                                                        ->withTrashed()
+                                                        ->where(function (Builder $query) use ($partnerId, $state) {
+                                                            $query->where('partner_id', $partnerId);
 
-                                                    $query->whereIn('id', $bankAccountIds);
+                                                            if ($state) {
+                                                                $query->orWhere('id', $state);
+                                                            }
+                                                        });
                                                 }
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->account_number.' - '.$record->bank?->name.($record->trashed() ? ' (Deleted)' : '');
                                             })
+                                            ->disableOptionWhen(function ($label) {
+                                                return str_contains($label, ' (Deleted)');
+                                            })
+                                            ->default(fn (Get $get) => static::getDefaultRecipientBankId($get('move_type'), $get('company_id'), $get('partner_id')))
                                             ->searchable()
                                             ->preload()
                                             ->createOptionForm(fn (Schema $schema, Get $get) => BankAccountResource::form($schema)->fill([
@@ -316,7 +332,7 @@ class InvoiceForm
                                                     'fiscal_position_id' => FiscalPosition::class,
                                                 ], $company?->id);
 
-                                                $set('partner_bank_id', null);
+                                                $set('partner_bank_id', static::getDefaultRecipientBankId($get('move_type'), $company?->id, $get('partner_id')));
                                             }),
                                         Select::make('invoice_incoterm_id')
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm'))
@@ -379,6 +395,21 @@ class InvoiceForm
                     ->columns(2),
             ])
             ->columns(1);
+    }
+
+    public static function getDefaultRecipientBankId($moveType, ?int $companyId, ?int $customerId = null): ?int
+    {
+        $partnerId = Move::resolveBankPartnerId($moveType, $companyId, $customerId);
+
+        if (! $partnerId) {
+            return null;
+        }
+
+        return BankAccount::query()
+            ->where('partner_id', $partnerId)
+            ->orderByDesc('can_send_money')
+            ->orderBy('id')
+            ->value('id');
     }
 
     public static function getProductRepeater(): Repeater

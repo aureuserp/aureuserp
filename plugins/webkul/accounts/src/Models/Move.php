@@ -308,6 +308,19 @@ class Move extends Model implements Sortable
         return in_array($this->move_type, $this->getInboundTypes($includeReceipts));
     }
 
+    public static function resolveBankPartnerId($moveType, ?int $companyId, ?int $partnerId): ?int
+    {
+        if (is_string($moveType)) {
+            $moveType = MoveType::tryFrom($moveType);
+        }
+
+        if (! in_array($moveType, (new static)->getInboundTypes(true))) {
+            return $partnerId;
+        }
+
+        return Company::find($companyId ?? current_company_id())?->partner_id;
+    }
+
     public function getInboundTypes($includeReceipts = true): array
     {
         $types = [MoveType::OUT_INVOICE, MoveType::IN_REFUND];
