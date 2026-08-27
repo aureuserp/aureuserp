@@ -125,7 +125,7 @@ class Equipment extends Model
             $equipment->effective_date ??= now()->toDateString();
 
             $equipment->maintenance_count ??= 0;
-            
+
             $equipment->maintenance_open_count ??= 0;
         });
     }

@@ -18,4 +18,13 @@ class ListVendors extends ListPartners
                 ->icon('heroicon-o-plus-circle'),
         ];
     }
+
+    public function getPresetTableViews(): array
+    {
+        $views = parent::getPresetTableViews();
+
+        unset($views['employees'], $views['customers'], $views['vendors']);
+
+        return $views;
+    }
 }

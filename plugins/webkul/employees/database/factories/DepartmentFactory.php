@@ -4,7 +4,6 @@ namespace Webkul\Employee\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Department;
-use Webkul\Employee\Models\Employee;
 use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class DepartmentFactory extends Factory
@@ -27,7 +26,7 @@ class DepartmentFactory extends Factory
     {
         return [
             'name'       => fake()->name,
-            'manager_id' => Employee::factory(),
+            'manager_id' => null,
             'color'      => fake()->hexColor,
         ];
     }
