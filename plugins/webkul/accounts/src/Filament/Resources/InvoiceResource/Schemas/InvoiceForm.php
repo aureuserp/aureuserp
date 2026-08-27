@@ -44,6 +44,7 @@ use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Partner\Models\BankAccount;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -256,17 +257,12 @@ class InvoiceForm
                                                 'partnerBank',
                                                 'account_number',
                                                 modifyQueryUsing: function (Builder $query, Get $get, $state) {
-                                                    $companyId = $get('company_id') ?? current_company_id();
-
-                                                    $bankAccountIds = Journal::where('type', JournalType::BANK)
-                                                        ->where('company_id', $companyId)
-                                                        ->pluck('bank_account_id')
-                                                        ->filter();
+                                                    $partnerId = Company::find($get('company_id') ?? current_company_id())?->partner_id;
 
                                                     $query
                                                         ->withTrashed()
-                                                        ->where(function (Builder $query) use ($bankAccountIds, $state) {
-                                                            $query->whereIn('id', $bankAccountIds);
+                                                        ->where(function (Builder $query) use ($partnerId, $state) {
+                                                            $query->where('partner_id', $partnerId);
 
                                                             if ($state) {
                                                                 $query->orWhere('id', $state);
@@ -280,6 +276,7 @@ class InvoiceForm
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
                                             })
+                                            ->default(fn (Get $get) => static::getDefaultRecipientBankId($get('company_id')))
                                             ->searchable()
                                             ->preload()
                                             ->createOptionForm(fn (Schema $schema, Get $get) => BankAccountResource::form($schema)->fill([
@@ -327,7 +324,7 @@ class InvoiceForm
                                                     'fiscal_position_id' => FiscalPosition::class,
                                                 ], $company?->id);
 
-                                                $set('partner_bank_id', null);
+                                                $set('partner_bank_id', static::getDefaultRecipientBankId($company?->id));
                                             }),
                                         Select::make('invoice_incoterm_id')
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm'))
@@ -390,6 +387,21 @@ class InvoiceForm
                     ->columns(2),
             ])
             ->columns(1);
+    }
+
+    public static function getDefaultRecipientBankId(?int $companyId): ?int
+    {
+        $partnerId = Company::find($companyId ?? current_company_id())?->partner_id;
+
+        if (! $partnerId) {
+            return null;
+        }
+
+        return BankAccount::query()
+            ->where('partner_id', $partnerId)
+            ->orderByDesc('can_send_money')
+            ->orderBy('id')
+            ->value('id');
     }
 
     public static function getProductRepeater(): Repeater
