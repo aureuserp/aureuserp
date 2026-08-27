@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package as BasePackage;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Throwable;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -227,13 +228,38 @@ class Package extends BasePackage
 
     public static function phpBinaryPath(): string
     {
-        $php = (new PhpExecutableFinder)->find();
+        return (new PhpExecutableFinder)->find(false) ?: 'php';
+    }
 
-        if ($php && is_file($php)) {
-            return $php;
+    public static function buildTimeoutCommand(int $seconds, string $command): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
         }
 
-        return 'php';
+        if (PHP_OS_FAMILY === 'Darwin') {
+            return (new ExecutableFinder)->find('gtimeout')
+                ? "gtimeout {$seconds} {$command}"
+                : $command;
+        }
+
+        return "timeout {$seconds} {$command}";
+    }
+
+    public static function openInBrowser(string $url): void
+    {
+        $opener = match (PHP_OS_FAMILY) {
+            'Darwin'  => 'open',
+            'Windows' => 'start',
+            'Linux'   => 'xdg-open',
+            default   => null,
+        };
+
+        if ($opener === null) {
+            return;
+        }
+
+        exec("{$opener} {$url}");
     }
 
     public static function syncPostgresSequences(): void
