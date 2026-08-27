@@ -1,3 +1,51 @@
+# 🚀 CHANGELOG — v1.6.0
+
+### 🧩 Features
+
+* Added document/certificate resume attachments to the Employee resource, with a Resume & Skills infolist section
+* Added translatable Pages and Posts for the Website plugin with a locale switcher (Spatie Translatable)
+* Added a custom sequence feature for document numbering
+* Added Employee/Customer/Vendor type filters to Partner-based resources
+* Enhanced tax computation with custom tax formulas, batching logic, and validation
+* Added French (fr) locale support, including Project plugin translations
+
+### ✨ Improvements
+
+* Refactored resource folder/file structure across all plugins for consistency
+* Upgraded Filament packages to v5.7.6
+* Increased Livewire `max_nesting_depth` from 10 to 30 to fix deeply nested repeater errors
+* Removed SQLite from the local test/dev setup
+* [Security] Escaped HTML entities in chatter change summaries to prevent XSS
+* Refactored to use the Webkul `User` model instead of the base `App\Models\User`
+* Added a show/hide toggle for password fields in the Edit User form
+* Notify when a vendor's email is missing before sending purchase order emails
+* Applied Pint code-style fixes across the codebase
+* General code refactor
+
+### 🐛 Fixes
+
+* #1500 [fixed] - Prevented changing company currency after accounting entries already exist
+* #1501 [fixed] - Setup process now asks for country/currency instead of always defaulting to a fixed USD company
+* #1514 [fixed] - Fixed exception error when deleting an active currency
+* #1497 [fixed] - Fixed currency conversion not working in RFQ / Purchase Order
+* #1481 [fixed] - Fixed blank and mislabeled "Partner Bank Account" field in the Pay modal
+* #1474 [fixed] - Fixed Employees plugin factories (infinite recursion, invalid enum value, nonexistent column)
+* #1491 [fixed] - Fixed foreign key violation on `partners_partners.parent_id` when editing an Employee
+* #1490 [fixed] - Fixed Saved Filter Views throwing a `LogicException` across list resources
+* #1489 [fixed] - Missing Employee/Customer/Vendor type filters on Partner-based resources
+* #1487 [fixed] - Restored missing Resume view section on the Employee resource
+* #1478 [fixed] - Fixed payment state not updating after an invoice is paid
+* #1187 [fixed] - Fixed product name being replaced by ID after creating variants
+* #193 [fixed] - Added validation to prevent deleting attributes still in use by products
+* #153 [fixed] - Fixed tax computation selection not updating input fields
+* #1506 [fixed] - Fixed plugin installation failing on Windows
+* #1485 [fixed] - Fixed SQL error during seeding by filtering partner attributes
+* #1471 [fixed] - Fixed employee resume notification strings incorrectly referring to skill levels
+* #792 [fixed] - Added a custom sequence feature to control invoice number/counter
+* [fixed] - Fixed applicant categories listing error caused by sort-based reordering
+* [fixed] - Fixed inventory dashboard issues
+* [fixed] - Fixed several failing tests, including PostgreSQL compatibility and employee factories
+
 # 🚀 CHANGELOG — v1.5.0
 
 ### 🧩 Features
