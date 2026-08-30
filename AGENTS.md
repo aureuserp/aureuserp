@@ -9,18 +9,18 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.3.21
-- filament/filament (FILAMENT) - v4
-- laravel/framework (LARAVEL) - v11
+- php - 8.3.33
+- filament/filament (FILAMENT) - v5.7.6
+- laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
 - laravel/sanctum (SANCTUM) - v4
-- livewire/livewire (LIVEWIRE) - v3
+- livewire/livewire (LIVEWIRE) - v4.3.3
 - laravel/mcp (MCP) - v0
-- laravel/pint (PINT) - v1
-- laravel/sail (SAIL) - v1
+- laravel/pint (PINT) - v1.27
+- laravel/sail (SAIL) - v1.26
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
-- tailwindcss (TAILWINDCSS) - v4
+- tailwindcss (TAILWINDCSS) - v4.3.0
 
 ## Skills Activation
 
