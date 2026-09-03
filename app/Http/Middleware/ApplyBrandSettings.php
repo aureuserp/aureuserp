@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Support\Colors\Color;
+use Filament\Support\Colors\ColorManager;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,14 +15,8 @@ use Webkul\Support\Settings\BrandSettings;
 
 class ApplyBrandSettings
 {
-    protected const ANCHOR_SHADE = 500;
+    protected const ANCHOR_SHADE = 600;
 
-    /**
-     * Filament's reference lightness per shade (see Color::generatePalette),
-     * used as the ramp's shape on each side of the 500/600 anchor band.
-     *
-     * @var array<int, float>
-     */
     protected const LIGHTNESS = [
         50  => 0.97718,
         100 => 0.95035,
@@ -36,12 +31,6 @@ class ApplyBrandSettings
         950 => 0.27788,
     ];
 
-    /**
-     * Filament's reference chroma per shade, normalised so the anchor band
-     * carries the picked color's exact saturation and tapers toward the ends.
-     *
-     * @var array<int, float>
-     */
     protected const CHROMA = [
         50  => 0.01395,
         100 => 0.03273,
@@ -65,20 +54,31 @@ class ApplyBrandSettings
         }
 
         try {
-            $brand = app(BrandSettings::class);
+            $brand = settings(BrandSettings::class);
 
-            $panelDefaultColors = $panel->getColors();
+            $panelDefaultColors = array_merge(
+                ColorManager::DEFAULT_COLORS,
+                $panel->getColors(),
+            );
 
             $colorKeys = ['primary', 'success', 'danger', 'warning', 'info', 'gray'];
 
             $brandColors = [];
 
             foreach ($colorKeys as $colorKey) {
-                $seed = $brand->{$colorKey.'_color'} ?: ($panelDefaultColors[$colorKey][600] ?? null);
+                $brandValue = $brand->{$colorKey.'_color'};
 
-                if ($seed) {
-                    $brandColors[$colorKey] = $this->paletteFromHex($seed);
+                if (empty($brandValue)) {
+                    continue;
                 }
+
+                $default = $panelDefaultColors[$colorKey][600] ?? null;
+
+                if ($default !== null && $this->isSameColor($brandValue, $default)) {
+                    continue;
+                }
+
+                $brandColors[$colorKey] = $this->paletteFromHex($brandValue);
             }
 
             if ($brandColors !== []) {
@@ -117,6 +117,11 @@ class ApplyBrandSettings
         }
 
         return asset($path);
+    }
+
+    protected function isSameColor(string $a, string $b): bool
+    {
+        return Color::convertToHex($a) === Color::convertToHex($b);
     }
 
     protected function paletteFromHex(string $seed): array

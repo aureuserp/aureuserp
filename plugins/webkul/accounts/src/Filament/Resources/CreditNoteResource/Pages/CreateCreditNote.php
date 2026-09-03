@@ -7,14 +7,19 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateCreditNote extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = CreditNoteResource::class;
 
-    protected function getRedirectUrl(): string
+    protected function getMoveType(): MoveType
     {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+        return MoveType::OUT_REFUND;
     }
 
     protected function getCreatedNotification(): ?Notification
@@ -23,22 +28,6 @@ class CreateCreditNote extends CreateRecord
             ->success()
             ->title(__('accounts::filament/resources/credit-note/pages/create-credit-note.notification.title'))
             ->body(__('accounts::filament/resources/credit-note/pages/create-credit-note.notification.body'));
-    }
-
-    public function mount(): void
-    {
-        parent::mount();
-
-        $this->data['move_type'] ??= MoveType::OUT_REFUND->value;
-
-        $this->form->fill($this->data);
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['move_type'] ??= MoveType::OUT_REFUND;
-
-        return $data;
     }
 
     protected function afterCreate(): void

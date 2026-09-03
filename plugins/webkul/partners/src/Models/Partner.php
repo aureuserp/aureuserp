@@ -15,22 +15,30 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Database\Factories\PartnerFactory;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Security\Models\User;
-use Webkul\Security\Traits\HasPermissionScope;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Partner extends Authenticatable implements FilamentUser
 {
-    use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, HasPermissionScope, Notifiable, SoftDeletes;
+    use BelongsToCompany;
+    use HasChatter,HasContributedAttributes, HasCustomFields, HasFactory, HasLogActivity, HasOwnershipScope, Notifiable, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'partners';
 
     protected $table = 'partners_partners';
+
+    protected static function ownershipScopeIsGlobal(): bool
+    {
+        return false;
+    }
 
     protected $fillable = [
         'account_type',
@@ -73,11 +81,6 @@ class Partner extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
-    }
-
-    protected function getOwnerColumn(): string
-    {
-        return 'creator_id';
     }
 
     public function getAvatarUrlAttribute()
@@ -163,5 +166,10 @@ class Partner extends Authenticatable implements FilamentUser
         static::creating(function ($partner) {
             $partner->creator_id ??= Auth::id();
         });
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 }

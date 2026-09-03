@@ -20,11 +20,6 @@ class CreatePartner extends CreateRecord
         return [];
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     public function getTitle(): string|Htmlable
     {
         return __('partners::filament/resources/partner/pages/create-partner.title');

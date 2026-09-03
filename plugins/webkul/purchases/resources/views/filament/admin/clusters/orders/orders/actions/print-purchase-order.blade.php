@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -207,7 +220,7 @@
 
             <!-- PO Number -->
             <div class="po-number">
-                Purchase Order #{{ $record->name }}
+                {{ __('purchases::app.documents.purchase-order-title', ['name' => $record->name]) }}
             </div>
 
             <!-- Details Table -->
@@ -215,28 +228,28 @@
                 <tr>
                     @if ($record->user_id)
                         <td width="25%">
-                            <strong>Buyer</strong><br>
+                            <strong>{{ __('purchases::app.documents.buyer') }}</strong><br>
                             {{ $record->user->name }}
                         </td>
                     @endif
                     
                     @if ($record->partner_reference)
                         <td width="25%">
-                            <strong>Order Reference</strong><br>
+                            <strong>{{ __('purchases::app.documents.order-reference') }}</strong><br>
                             {{ $record->partner_reference }}
                         </td>
                     @endif
 
                     @if ($record->ordered_at)
                         <td width="25%">
-                            <strong>Order Deadline</strong><br>
+                            <strong>{{ __('purchases::app.documents.order-deadline') }}</strong><br>
                             {{ $record->ordered_at }}
                         </td>
                     @endif
 
                     @if ($record->planned_at)
                         <td width="25%">
-                            <strong>Expected Arrival</strong><br>
+                            <strong>{{ __('purchases::app.documents.expected-arrival') }}</strong><br>
                             {{ $record->planned_at }}
                         </td>
                     @endif
@@ -248,12 +261,12 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Discount</th>
-                            <th>Taxes</th>
-                            <th>Amount</th>
+                            <th>{{ __('purchases::app.documents.description') }}</th>
+                            <th>{{ __('purchases::app.documents.quantity') }}</th>
+                            <th>{{ __('purchases::app.documents.unit-price') }}</th>
+                            <th>{{ __('purchases::app.documents.discount') }}</th>
+                            <th>{{ __('purchases::app.documents.taxes') }}</th>
+                            <th>{{ __('purchases::app.documents.amount') }}</th>
                         </tr>
                     </thead>
 
@@ -274,17 +287,17 @@
                 <!-- Summary Table -->
                 <table class="summary-table">
                     <tr>
-                        <td>Untaxed Amount</td>
+                        <td>{{ __('purchases::app.documents.untaxed-amount') }}</td>
                         <td style="text-align: right;">{{ money($record->untaxed_amount, $record->currency->name) }}</td>
                     </tr>
 
                     <tr>
-                        <td>Tax</td>
+                        <td>{{ __('purchases::app.documents.tax') }}</td>
                         <td style="text-align: right;">{{ money($record->tax_amount, $record->currency->name) }}</td>
                     </tr>
 
                     <tr class="total-row">
-                        <td>Total</td>
+                        <td>{{ __('purchases::app.documents.total') }}</td>
                         <td style="text-align: right;">{{ money($record->total_amount, $record->currency->name) }}</td>
                     </tr>
                 </table>
@@ -294,7 +307,7 @@
 
             @if ($record->payment_term_id)
                 <div class="terms">
-                    <strong>Payment Terms:</strong><br>
+                    <strong>{{ __('purchases::app.documents.payment-terms') }}</strong><br>
                     {{ $record->paymentTerm->name }}
                 </div>
             @endif

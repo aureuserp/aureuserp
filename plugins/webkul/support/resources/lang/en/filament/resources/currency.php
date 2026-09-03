@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Currencies',
-        'group' => 'Settings',
     ],
 
     'form' => [
@@ -98,6 +97,13 @@ return [
                     ],
                 ],
             ],
+
+            'deactivate' => [
+                'notification' => [
+                    'title' => 'Currency cannot be deactivated',
+                    'body'  => 'This currency is in use by one or more companies and cannot be deactivated.',
+                ],
+            ],
         ],
 
         'bulk-actions' => [
@@ -105,6 +111,11 @@ return [
                 'notification' => [
                     'title' => 'Currencies deleted',
                     'body'  => 'The currencies have been deleted successfully.',
+
+                    'error' => [
+                        'title' => 'Currencies could not be deleted',
+                        'body'  => 'Some of the selected currencies are in use and cannot be deleted.',
+                    ],
                 ],
             ],
         ],

@@ -11,18 +11,20 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Support\Traits\RefreshesRecordState;
 
 class EditRefund extends EditRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     use HasRecordNavigationTabs;
+    use RefreshesRecordState;
 
     protected static string $resource = RefundResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): ?Notification
     {
@@ -59,5 +61,14 @@ class EditRefund extends EditRecord
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+
+        $this->refreshRecordState();
+    }
+
+    public function refreshFormData(array $statePaths): void
+    {
+        parent::refreshFormData($statePaths);
+
+        $this->rememberData();
     }
 }

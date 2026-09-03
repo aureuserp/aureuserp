@@ -116,7 +116,7 @@ return [
                     'package'              => 'Package',
                     'owner'                => 'Owner',
                     'source-location'      => 'Source Location',
-                    'destination-location' => 'Destination Location',
+                    'destination-location' => 'Scrap Location',
                     'source-document'      => 'Source Document',
                     'company'              => 'Company',
                 ],

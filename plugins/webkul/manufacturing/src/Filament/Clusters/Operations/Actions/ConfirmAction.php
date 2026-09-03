@@ -28,26 +28,26 @@ class ConfirmAction extends Action
             ->label(__('manufacturing::filament/clusters/operations/actions/confirm.label'))
             ->requiresConfirmation()
             ->action(function (Order $record, Component $livewire): void {
-                try {
-                    ManufacturingFacade::confirmManufacturingOrder($record);
+                // try {
+                ManufacturingFacade::confirmManufacturingOrder($record);
 
-                    $record->refresh();
+                $record->refresh();
 
-                    $livewire->updateForm();
+                $livewire->updateForm();
 
-                    Notification::make()
-                        ->success()
-                        ->title(__('manufacturing::filament/clusters/operations/actions/confirm.notification.success.title'))
-                        ->body(__('manufacturing::filament/clusters/operations/actions/confirm.notification.success.body'))
-                        ->send();
-                } catch (Throwable $e) {
-                    Notification::make()
-                        ->danger()
-                        ->body($e->getMessage())
-                        ->send();
+                Notification::make()
+                    ->success()
+                    ->title(__('manufacturing::filament/clusters/operations/actions/confirm.notification.success.title'))
+                    ->body(__('manufacturing::filament/clusters/operations/actions/confirm.notification.success.body'))
+                    ->send();
+                // } catch (Throwable $e) {
+                //     Notification::make()
+                //         ->danger()
+                //         ->body($e->getMessage())
+                //         ->send();
 
-                    $this->halt(shouldRollBackDatabaseTransaction: true);
-                }
+                //     $this->halt(shouldRollBackDatabaseTransaction: true);
+                // }
             })
             ->hidden(fn () => $this->getRecord()->state !== ManufacturingOrderState::DRAFT);
     }

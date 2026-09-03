@@ -6,17 +6,16 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use Webkul\Support\Filament\Concerns\TranslatableEditRecord;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
 use Webkul\Website\Models\Page;
 
 class EditPage extends EditRecord
 {
-    protected static string $resource = PageResource::class;
+    use TranslatableEditRecord;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
+    protected static string $resource = PageResource::class;
 
     protected function getSavedNotification(): Notification
     {
@@ -29,6 +28,7 @@ class EditPage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            LocaleSwitcher::make(),
             Action::make('publish')
                 ->label(__('website::filament/admin/resources/page/pages/edit-record.header-actions.publish.label'))
                 ->icon('heroicon-o-check-circle')

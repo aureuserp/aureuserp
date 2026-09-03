@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
@@ -70,7 +83,7 @@
             color: white;
             padding: 12px;
             text-align: left;
-            font-weight: 600;
+            font-weight: {{ $isRtl ? 'bold' : '600' }};
         }
 
         .items-table td {
@@ -116,14 +129,14 @@
                     <tr>
                         @if ($record->package_type_id)
                             <td width="50%">
-                                <strong>Package Type:</strong><br>
+                                <strong>{{ __('inventories::app.documents.package-type') }}</strong><br>
                                 {{ $record->packageType->name }}
                             </td>
                         @endif
 
                         @if ($record->pack_date)
                             <td width="50%">
-                                <strong>Pack Date:</strong><br>
+                                <strong>{{ __('inventories::app.documents.pack-date') }}</strong><br>
                                 {{ $record->pack_date }}
                             </td>
                         @endif
@@ -136,9 +149,9 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th>Barcode</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
+                            <th>{{ __('inventories::app.documents.barcode') }}</th>
+                            <th>{{ __('inventories::app.documents.product') }}</th>
+                            <th>{{ __('inventories::app.documents.quantity') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,12 +170,12 @@
                                 <td>{{ number_format($item->quantity) }} {{ $item->product->uom->name }}</td>
                             </tr>
 
-                            @if (app(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && $item->lot)
+                            @if (settings(\Webkul\Inventory\Settings\TraceabilitySettings::class)->enable_lots_serial_numbers && $item->lot)
                                 <tr>
                                     <td colspan="3">
                                         <div class="lot-info">
                                             <div style="margin-bottom: 8px">
-                                                <strong>Lot/Serial:</strong> {{ $item->lot->name }}
+                                                <strong>{{ __('inventories::app.documents.lot-serial') }}</strong> {{ $item->lot->name }}
                                             </div>
                                             
                                             <div class="barcode-container">

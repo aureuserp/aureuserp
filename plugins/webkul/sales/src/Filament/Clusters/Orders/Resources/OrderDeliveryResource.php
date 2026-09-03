@@ -2,8 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages\EditDelivery;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages\ManageMoves;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderDeliveryResource\Pages\ViewDelivery;
@@ -33,8 +33,8 @@ class OrderDeliveryResource extends QuotationDeliveryResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewDelivery::route('/{record}/view'),
-            'edit' => EditDelivery::route('/{record}/edit'),
+            'view'  => ViewDelivery::route('/{record}/view'),
+            'edit'  => EditDelivery::route('/{record}/edit'),
             'moves' => ManageMoves::route('/{record}/moves'),
         ];
     }

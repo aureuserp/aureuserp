@@ -168,7 +168,7 @@ it('rejects check availability when receipt is not confirmed or assigned', funct
 
     $this->postJson(receiptRoute('check-availability', $receipt->id))
         ->assertUnprocessable()
-        ->assertJsonPath('message', 'Only confirmed or assigned operations can check availability.');
+        ->assertJsonPath('message', 'Only waiting, confirmed or assigned operations can check availability.');
 });
 
 it('forbids check availability without update permission', function () {

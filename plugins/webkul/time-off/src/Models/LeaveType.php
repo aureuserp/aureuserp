@@ -9,13 +9,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 use Webkul\TimeOff\Enums\LeaveValidationType;
 
 class LeaveType extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'time_off_leave_types';
 
@@ -74,7 +77,7 @@ class LeaveType extends Model implements Sortable
 
             $leaveType->creator_id = $authUser->id;
 
-            $leaveType->company_id ??= $authUser?->default_company_id;
+            $leaveType->company_id ??= current_company_id();
         });
     }
 }

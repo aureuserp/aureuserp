@@ -11,10 +11,13 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Fieldset;
@@ -28,6 +31,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums\ResumeDisplayType;
+use Webkul\Employee\Models\EmployeeResumeAttachment;
 
 trait EmployeeResumeRelation
 {
@@ -37,7 +41,6 @@ trait EmployeeResumeRelation
             ->components([
                 Section::make([
                     TextInput::make('name')
-                        ->label('Title')
                         ->label(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.title'))
                         ->required()
                         ->reactive(),
@@ -86,6 +89,31 @@ trait EmployeeResumeRelation
                         ->reactive(),
                     Textarea::make('description')
                         ->label(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.description')),
+                    Repeater::make('attachments')
+                        ->label(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.attachments'))
+                        ->relationship()
+                        ->schema([
+                            FileUpload::make('file_path')
+                                ->label(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.file'))
+                                ->disk('public')
+                                ->directory(EmployeeResumeAttachment::UPLOAD_DIRECTORY)
+                                ->visibility('public')
+                                ->downloadable()
+                                ->openable()
+                                ->previewable(true)
+                                ->storeFileNamesIn('original_file_name')
+                                ->acceptedFileTypes(EmployeeResumeAttachment::ACCEPTED_MIME_TYPES)
+                                ->maxSize(EmployeeResumeAttachment::MAX_UPLOAD_SIZE)
+                                ->required()
+                                ->helperText(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.file-helper-text')),
+                            TextInput::make('name')
+                                ->label(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.attachment-name'))
+                                ->maxLength(255),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(0)
+                        ->addActionLabel(__('employees::filament/resources/employee/relation-manager/resume.form.sections.fields.add-attachment'))
+                        ->columnSpanFull(),
                 ])->columns(2)->columnSpanFull(),
             ]);
     }
@@ -118,6 +146,11 @@ trait EmployeeResumeRelation
                     ->limit(50)
                     ->wrap()
                     ->searchable(),
+                TextColumn::make('attachments_count')
+                    ->label(__('employees::filament/resources/employee/relation-manager/resume.table.columns.attachments'))
+                    ->counts('attachments')
+                    ->badge()
+                    ->toggleable(),
                 TextColumn::make('creator.name')
                     ->label(__('employees::filament/resources/employee/relation-manager/resume.table.columns.created-by'))
                     ->sortable(),
@@ -269,6 +302,19 @@ trait EmployeeResumeRelation
                                     ->placeholder('—')
                                     ->label(__('employees::filament/resources/employee/relation-manager/resume.infolist.entries.end-date'))
                                     ->icon('heroicon-o-calendar'),
+                            ])
+                            ->columns(2),
+                        RepeatableEntry::make('attachments')
+                            ->label(__('employees::filament/resources/employee/relation-manager/resume.infolist.entries.attachments'))
+                            ->schema([
+                                TextEntry::make('original_file_name')
+                                    ->label(__('employees::filament/resources/employee/relation-manager/resume.infolist.entries.file'))
+                                    ->icon('heroicon-o-paper-clip')
+                                    ->url(fn ($record) => $record->url)
+                                    ->openUrlInNewTab(),
+                                TextEntry::make('name')
+                                    ->placeholder('—')
+                                    ->label(__('employees::filament/resources/employee/relation-manager/resume.infolist.entries.attachment-name')),
                             ])
                             ->columns(2),
                     ])

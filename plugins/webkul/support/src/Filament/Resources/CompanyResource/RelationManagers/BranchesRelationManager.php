@@ -194,7 +194,6 @@ class BranchesRelationManager extends RelationManager
                                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.currency-rounding'))
                                                             ->required(),
                                                         Toggle::make('active')
-                                                            ->label('Active')
                                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.currency-status'))
                                                             ->default(true),
                                                     ])->columns(2),
@@ -414,7 +413,7 @@ class BranchesRelationManager extends RelationManager
                                         TextEntry::make('tax_id')
                                             ->icon('heroicon-o-currency-dollar')
                                             ->placeholder('—')
-                                            ->label('Tax ID'),
+                                            ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.general-information.sections.branch-information.entries.tax-id')),
                                         TextEntry::make('color')
                                             ->icon('heroicon-o-swatch')
                                             ->placeholder('—')
@@ -471,33 +470,33 @@ class BranchesRelationManager extends RelationManager
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
                                             ->date()
-                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.additional-information.entries.company-foundation-date')),
+                                            ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.additional-information.entries.company-foundation-date')),
                                         IconEntry::make('is_active')
-                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.additional-information.entries.status'))
+                                            ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.additional-information.entries.status'))
                                             ->boolean(),
                                     ])
                                     ->columns(2),
                             ]),
 
-                        Tab::make(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.title'))
+                        Tab::make(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.title'))
                             ->schema([
-                                Section::make(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.title'))
+                                Section::make(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.title'))
                                     ->schema([
                                         TextEntry::make('phone')
                                             ->icon('heroicon-o-phone')
                                             ->placeholder('—')
-                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.entries.phone-number')),
+                                            ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.entries.phone-number')),
                                         TextEntry::make('mobile')
                                             ->icon('heroicon-o-device-phone-mobile')
                                             ->placeholder('—')
-                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.entries.mobile-number')),
+                                            ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.entries.mobile-number')),
                                         TextEntry::make('email')
                                             ->icon('heroicon-o-envelope')
                                             ->placeholder('—')
                                             ->copyable()
                                             ->copyMessage('Email copied')
                                             ->copyMessageDuration(1500)
-                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.entries.email-address')),
+                                            ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.contact-information.sections.contact-information.entries.email-address')),
                                     ])
                                     ->columns(2),
                             ]),

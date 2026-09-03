@@ -41,6 +41,8 @@ class ManageContacts extends ManageRelatedRecords
                     ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
+                        $data['company_id'] = $this->getOwnerRecord()->company_id;
+
                         return $data;
                     })
                     ->successNotification(

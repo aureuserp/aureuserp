@@ -5,7 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'الفرق',
-        'group' => 'الإعدادات',
     ],
 
     'form' => [

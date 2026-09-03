@@ -3,9 +3,13 @@
 namespace Webkul\PluginManager;
 
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package as BasePackage;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\PhpExecutableFinder;
+use Throwable;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Models\Plugin;
@@ -194,17 +198,91 @@ class Package extends BasePackage
         return static::$plugins[$name] ??= Plugin::where('name', $name)->first();
     }
 
-    public static function isPluginInstalled(string $name): bool
+    public static function refreshPluginCaches(): void
     {
         try {
-            if (count(static::$plugins) == 0) {
+            Artisan::call('optimize:clear');
+
+            if (app()->isProduction()) {
+                static::rebuildCachesInBackground();
+            }
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected static function rebuildCachesInBackground(): void
+    {
+        if (! app()->isProduction() || PHP_OS_FAMILY === 'Windows') {
+            return;
+        }
+
+        $command = sprintf(
+            '%s %s optimize > /dev/null 2>&1 &',
+            escapeshellarg(static::phpBinaryPath()),
+            escapeshellarg(base_path('artisan'))
+        );
+
+        exec($command);
+    }
+
+    public static function phpBinaryPath(): string
+    {
+        return (new PhpExecutableFinder)->find(false) ?: 'php';
+    }
+
+    public static function buildTimeoutCommand(int $seconds, string $command): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
+        }
+
+        if (PHP_OS_FAMILY === 'Darwin') {
+            return (new ExecutableFinder)->find('gtimeout')
+                ? "gtimeout {$seconds} {$command}"
+                : $command;
+        }
+
+        return "timeout {$seconds} {$command}";
+    }
+
+    public static function openInBrowser(string $url): void
+    {
+        $opener = match (PHP_OS_FAMILY) {
+            'Darwin'  => 'open',
+            'Windows' => 'start',
+            'Linux'   => 'xdg-open',
+            default   => null,
+        };
+
+        if ($opener === null) {
+            return;
+        }
+
+        exec("{$opener} {$url}");
+    }
+
+    public static function syncPostgresSequences(): void
+    {
+        db_dialect()->syncSequences();
+    }
+
+    public static function isPluginInstalled(string $name): bool
+    {
+        static $isLoaded = false;
+
+        try {
+            if (! $isLoaded) {
                 DB::connection()->getPdo();
 
                 if (Schema::hasTable('plugins') === false) {
+                    $isLoaded = true;
+
                     return false;
                 }
 
                 static::$plugins = Plugin::all()->keyBy('name');
+                $isLoaded = true;
             }
 
             if (isset(static::$plugins[$name]) && static::$plugins[$name]->is_installed) {

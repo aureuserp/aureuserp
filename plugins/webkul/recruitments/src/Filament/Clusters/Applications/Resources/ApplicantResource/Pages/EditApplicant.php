@@ -38,11 +38,6 @@ class EditApplicant extends EditRecord
 
     protected array $interviewerChanges = [];
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -160,11 +155,11 @@ class EditApplicant extends EditRecord
                             ->live()
                             ->default(true)
                             ->visible(fn (Get $get) => $get('refuse_reason_id'))
-                            ->label('Notify'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.form.fields.notify')),
                         TextInput::make('email')
                             ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
-                            ->label('Email To'),
+                            ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.form.fields.email-to')),
                     ]);
                 })
                 ->action(function (array $data, Applicant $record) {
@@ -234,7 +229,7 @@ class EditApplicant extends EditRecord
 
         $messageData = [
             'from' => [
-                'company' => Auth::user()->defaultCompany->toArray(),
+                'company' => current_company()->toArray(),
             ],
             'body' => view($viewName, ['payload' => $data])->render(),
             'type' => 'comment',

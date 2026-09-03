@@ -9,12 +9,14 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Employee\Models\WorkLocation;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 
 class EmployeeFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -30,7 +32,6 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id'                     => Company::factory(),
             'user_id'                        => User::query()->value('id') ?? User::factory(),
             'creator_id'                     => User::query()->value('id') ?? User::factory(),
             'calendar_id'                    => null,
@@ -39,8 +40,8 @@ class EmployeeFactory extends Factory
             'job_id'                         => EmployeeJobPosition::factory(),
             'partner_id'                     => null,
             'work_location_id'               => WorkLocation::factory(),
-            'parent_id'                      => User::query()->value('id') ?? User::factory(),
-            'coach_id'                       => User::query()->value('id') ?? User::factory(),
+            'parent_id'                      => null,
+            'coach_id'                       => null,
             'country_id'                     => Country::factory(),
             'private_state_id'               => State::factory(),
             'private_country_id'             => Country::factory(),
@@ -89,7 +90,6 @@ class EmployeeFactory extends Factory
             'work_permit_expiration_date'    => fake()->date(),
             'departure_date'                 => fake()->optional()->date(),
             'departure_description'          => fake()->optional()->text,
-            'employee_properties'            => fake()->optional()->json,
             'additional_note'                => fake()->optional()->text,
             'notes'                          => fake()->optional()->text,
             'is_active'                      => fake()->boolean(),

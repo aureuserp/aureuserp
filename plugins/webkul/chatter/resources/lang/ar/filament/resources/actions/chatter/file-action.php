@@ -5,6 +5,8 @@ return [
         'title'   => 'المرفقات',
         'tooltip' => 'رفع المرفقات',
 
+        'modal-submit-action-label' => 'رفع',
+
         'form' => [
             'fields' => [
                 'files'                  => 'الملفات',

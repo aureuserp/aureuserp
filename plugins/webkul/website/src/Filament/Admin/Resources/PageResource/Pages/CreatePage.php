@@ -4,15 +4,21 @@ namespace Webkul\Website\Filament\Admin\Resources\PageResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use Webkul\Support\Filament\Concerns\TranslatableCreateRecord;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
 
 class CreatePage extends CreateRecord
 {
+    use TranslatableCreateRecord;
+
     protected static string $resource = PageResource::class;
 
-    protected function getRedirectUrl(): string
+    protected function getHeaderActions(): array
     {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+        return [
+            LocaleSwitcher::make(),
+        ];
     }
 
     protected function getCreatedNotification(): Notification

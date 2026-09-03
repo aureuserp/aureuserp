@@ -3,8 +3,10 @@
 namespace Webkul\Support;
 
 use Filament\Contracts\Plugin;
+use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\Support\Facades\FilamentView;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
 class SupportPlugin implements Plugin
@@ -39,6 +41,12 @@ class SupportPlugin implements Plugin
                     ->discoverClusters(
                         in: __DIR__.'/Filament/Widgets',
                         for: 'Webkul\\Support\\Filament\\Widgets'
+                    )
+                    ->renderHook(
+                        'panels::body.end',
+                        fn (): string => Filament::auth()->check()
+                            ? Blade::render("@livewire('quick-navigation')")
+                            : '',
                     );
             });
     }

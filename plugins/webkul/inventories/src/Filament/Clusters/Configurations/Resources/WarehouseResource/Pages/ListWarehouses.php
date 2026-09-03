@@ -20,13 +20,12 @@ class ListWarehouses extends ListRecords
             CreateAction::make()
                 ->label(__('inventories::filament/clusters/configurations/resources/warehouse/pages/list-warehouses.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->visible(WarehouseResource::getWarehouseSettings()->enable_locations)
                 ->mutateDataUsing(function ($data) {
                     $user = Auth::user();
 
                     $data['creator_id'] = $user->id;
 
-                    $data['company_id'] = $user->defaultCompany?->id;
+                    $data['company_id'] = current_company()?->id;
 
                     return $data;
                 })

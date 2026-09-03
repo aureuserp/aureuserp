@@ -7,15 +7,15 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice as EditRecord;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class EditCreditNote extends EditRecord
 {
-    protected static string $resource = CreditNoteResource::class;
+    use HandlesCrossCompanyException;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
+    protected ?bool $hasDatabaseTransactions = true;
+
+    protected static string $resource = CreditNoteResource::class;
 
     protected function getSavedNotification(): ?Notification
     {
@@ -52,5 +52,7 @@ class EditCreditNote extends EditRecord
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());
+
+        $this->refreshRecordState();
     }
 }

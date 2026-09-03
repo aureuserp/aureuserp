@@ -68,6 +68,18 @@ class PaymentMethodLine extends Model implements Sortable
         return $this->paymentMethod->code;
     }
 
+    public function getDisplayNameAttribute(): string
+    {
+        $name = $this->name ?? $this->paymentMethod?->name ?? '';
+
+        return $this->journal?->name ? "{$name} ({$this->journal->name})" : $name;
+    }
+
+    public function getPaymentTypeAttribute()
+    {
+        return $this->paymentMethod?->payment_type;
+    }
+
     public function computeName()
     {
         $this->name = $this->paymentMethod->name;

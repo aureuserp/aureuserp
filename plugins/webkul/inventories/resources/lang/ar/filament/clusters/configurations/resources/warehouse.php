@@ -11,13 +11,14 @@ return [
             'general' => [
                 'title'  => 'عام',
                 'fields' => [
-                    'name'               => 'الاسم',
-                    'name-placeholder'   => 'مثال: المستودع المركزي',
-                    'code'               => 'الاسم المختصر',
-                    'code-placeholder'   => 'مثال: MC',
-                    'code-hint-tooltip'  => 'الاسم المختصر يعمل كمعرف للمستودع.',
-                    'company'            => 'الشركة',
-                    'address'            => 'العنوان',
+                    'name'                    => 'الاسم',
+                    'name-placeholder'        => 'مثال: المستودع المركزي',
+                    'code'                    => 'الاسم المختصر',
+                    'code-placeholder'        => 'مثال: MC',
+                    'code-hint-tooltip'       => 'الاسم المختصر يعمل كمعرف للمستودع.',
+                    'company'                 => 'الشركة',
+                    'multi-warehouse-warning' => 'إنشاء مستودع جديد سيفعّل تلقائياً إعداد مواقع التخزين.',
+                    'address'                 => 'العنوان',
                 ],
             ],
 

@@ -3,7 +3,8 @@
 return [
     'stats-overview' => 'نظرة عامة على الإحصائيات',
 
-    'from-date' => 'من تاريخ',
+    'from-date'  => 'من تاريخ',
+    'date-range' => 'النطاق الزمني',
 
     'to-date' => 'إلى تاريخ',
 

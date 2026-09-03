@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
-use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class CompanySeeder extends Seeder
@@ -17,9 +17,19 @@ class CompanySeeder extends Seeder
      */
     public function run(): void
     {
-        DB::beginTransaction();
-
         try {
+            $this->seedDefaultCompany();
+        } catch (Throwable $e) {
+            $this->command?->warn('Skipping default company seeding: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Seed the default company and its partner.
+     */
+    protected function seedDefaultCompany(): void
+    {
+        DB::transaction(function () {
             if (
                 ! Schema::hasTable('users')
                 || ! Schema::hasTable('companies')
@@ -32,52 +42,27 @@ class CompanySeeder extends Seeder
             DB::table('companies')->delete();
             DB::table('users')->delete();
 
-            $user = User::first();
-
-            $partnerId = DB::table('partners_partners')->insertGetId([
-                'sub_type'         => 'company',
-                'company_registry' => 'DUMREG780',
-                'name'             => 'DummyCorp LLC',
-                'email'            => 'dummy@dummycorp.local',
-                'website'          => 'http://dummycorp.local',
-                'tax_id'           => 'DUM123456',
-                'phone'            => '1234567890',
-                'mobile'           => '1234567890',
-                'creator_id'       => $user?->id,
-                'color'            => '#AAAAAA',
-                'created_at'       => now(),
-                'updated_at'       => now(),
-            ]);
-
-            $currency = Currency::find(1);
+            $currency = Currency::resolveDefault();
 
             if (! $currency) {
-                throw new Exception('Currency with ID 1 not found.');
+                throw new Exception('No currency is available to assign to the default company.');
             }
 
-            DB::table('companies')->insert([
+            Company::create([
                 'sort'                => 1,
-                'name'                => 'DummyCorp LLC',
-                'tax_id'              => 'DUM123456',
-                'registration_number' => 'DUMREG789',
-                'company_id'          => 'DUMCOMP001',
-                'creator_id'          => $user?->id,
-                'email'               => 'dummy@dummycorp.local',
+                'name'                => 'My Company',
+                'tax_id'              => 'MYC123456',
+                'registration_number' => 'MYCREG001',
+                'company_id'          => 'MYCOMP001',
+                'email'               => 'info@mycompany.local',
                 'phone'               => '1234567890',
                 'mobile'              => '1234567890',
                 'color'               => '#AAAAAA',
                 'is_active'           => true,
                 'founded_date'        => '2000-01-01',
                 'currency_id'         => $currency->id,
-                'website'             => 'http://dummycorp.local',
-                'partner_id'          => $partnerId,
-                'created_at'          => now(),
-                'updated_at'          => now(),
+                'website'             => 'https://mycompany.local',
             ]);
-
-            DB::commit();
-        } catch (Throwable $e) {
-            DB::rollBack();
-        }
+        });
     }
 }

@@ -9,14 +9,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Translatable\HasTranslations;
 use Webkul\Blog\Database\Factories\PostFactory;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
+use Webkul\Support\Services\ImageService;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasCustomFields, HasFactory, HasTranslations, SoftDeletes;
 
     protected $table = 'blogs_posts';
+
+    public array $translatable = [
+        'title',
+        'sub_title',
+        'content',
+        'meta_title',
+        'meta_keywords',
+        'meta_description',
+    ];
 
     protected $fillable = [
         'title',
@@ -49,6 +61,24 @@ class Post extends Model
         }
 
         return Storage::url($this->image);
+    }
+
+    public function getImageThumbUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        return app(ImageService::class)->url($this->image, ['w' => 600, 'h' => 300, 'fit' => 'crop']);
+    }
+
+    public function getImageBannerUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        return app(ImageService::class)->url($this->image, ['w' => 1200, 'h' => 400, 'fit' => 'crop']);
     }
 
     public function getReadingTimeAttribute()

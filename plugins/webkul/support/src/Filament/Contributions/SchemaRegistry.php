@@ -14,7 +14,13 @@ class SchemaRegistry
 
     protected static array $actions = [];
 
+    protected static array $presetViews = [];
+
     protected static array $eagerLoad = [];
+
+    protected static array $companyDependentFields = [];
+
+    protected static array $companyDefaultFields = [];
 
     public static function form(string $scope, string $slot, Closure $factory, int $priority = 0): void
     {
@@ -36,6 +42,11 @@ class SchemaRegistry
         static::$actions[$scope][$slot][] = [$priority, $factory];
     }
 
+    public static function presetView(string $scope, string $key, Closure $factory, int $priority = 0): void
+    {
+        static::$presetViews[$scope][] = [$priority, $key, $factory];
+    }
+
     public static function eagerLoad(string $scope, array $relations): void
     {
         static::$eagerLoad[$scope] = array_values(array_unique([
@@ -47,6 +58,32 @@ class SchemaRegistry
     public static function eagerLoads(string $scope): array
     {
         return static::$eagerLoad[$scope] ?? [];
+    }
+
+    public static function companyDependentFields(string $scope, array $fields): void
+    {
+        static::$companyDependentFields[$scope] = [
+            ...(static::$companyDependentFields[$scope] ?? []),
+            ...$fields,
+        ];
+    }
+
+    public static function companyDefaultFields(string $scope, array $resolvers): void
+    {
+        static::$companyDefaultFields[$scope] = array_merge(
+            static::$companyDefaultFields[$scope] ?? [],
+            $resolvers,
+        );
+    }
+
+    public static function companyDefaultFieldsFor(string $scope): array
+    {
+        return static::$companyDefaultFields[$scope] ?? [];
+    }
+
+    public static function companyDependentFieldsFor(string $scope): array
+    {
+        return static::$companyDependentFields[$scope] ?? [];
     }
 
     public static function hasForm(string $scope, string $slot): bool
@@ -87,6 +124,21 @@ class SchemaRegistry
     public static function renderActions(string $scope, string $slot, mixed ...$args): array
     {
         return static::resolve(static::$actions[$scope][$slot] ?? [], $args);
+    }
+
+    public static function renderPresetViews(string $scope, mixed ...$args): array
+    {
+        $entries = static::$presetViews[$scope] ?? [];
+
+        usort($entries, fn (array $a, array $b): int => $a[0] <=> $b[0]);
+
+        $out = [];
+
+        foreach ($entries as [$priority, $key, $factory]) {
+            $out[$key] = $factory(...$args);
+        }
+
+        return $out;
     }
 
     protected static function resolve(array $entries, array $args): array

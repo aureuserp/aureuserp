@@ -22,8 +22,6 @@ class ManageTaskStages extends ManageRecords
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title('Task stage created')
-                        ->body('The task stage has been created successfully.')
                         ->title(__('projects::filament/clusters/configurations/resources/task-stage/pages/manage-task-stages.header-actions.create.notification.title'))
                         ->body(__('projects::filament/clusters/configurations/resources/task-stage/pages/manage-task-stages.header-actions.create.notification.body')),
                 ),

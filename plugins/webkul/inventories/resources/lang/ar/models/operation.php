@@ -3,6 +3,13 @@
 return [
     'title'          => 'العملية',
 
+    'titles'         => [
+        'incoming' => 'الإيصال',
+        'outgoing' => 'التسليم',
+        'internal' => 'التحويل الداخلي',
+        'dropship' => 'التسليم المباشر',
+    ],
+
     'log-attributes' => [
         'name'                         => 'الاسم',
         'origin'                       => 'المصدر',

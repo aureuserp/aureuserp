@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Filament\Resources\ProductResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -15,10 +16,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Product\Exceptions\ProductInUseException;
+use Webkul\Product\Exceptions\VariantInUseException;
 use Webkul\Product\Filament\Resources\AttributeResource;
 use Webkul\Product\Filament\Resources\ProductResource;
 use Webkul\Product\Filament\Resources\ProductResource\Actions\GenerateVariantsAction;
 use Webkul\Product\Models\ProductAttribute;
+use Webkul\Product\Support\VariantUsage;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageAttributes extends ManageRelatedRecords
@@ -99,6 +103,17 @@ class ManageAttributes extends ManageRelatedRecords
 
                         return $data;
                     })
+                    ->before(function (CreateAction $action) {
+                        $product = $this->getOwnerRecord();
+
+                        if ($product->is_configurable || ! $product->isInUse()) {
+                            return;
+                        }
+
+                        ProductInUseException::make($product, 'attributes')->notify();
+
+                        $action->cancel();
+                    })
                     ->after(function (ProductAttribute $record) {
                         $this->updateOrCreateVariants($record);
                     })
@@ -111,6 +126,20 @@ class ManageAttributes extends ManageRelatedRecords
             ])
             ->recordActions([
                 EditAction::make()
+                    ->before(function (EditAction $action, ProductAttribute $record) {
+                        // The injected $data is empty at this point; the submitted state only
+                        // lives on the mounted action.
+                        $keptOptionIds = array_map('intval', $action->getRawData()['options'] ?? []);
+
+                        $removedValueIds = $record->values()
+                            ->whereNotIn('attribute_option_id', $keptOptionIds)
+                            ->pluck('id')
+                            ->all();
+
+                        if (VariantUsage::valuesHaveVariantsInUse($removedValueIds)) {
+                            $this->refuse($action, 'values');
+                        }
+                    })
                     ->after(function (ProductAttribute $record) {
                         $this->updateOrCreateVariants($record);
                     })
@@ -121,6 +150,11 @@ class ManageAttributes extends ManageRelatedRecords
                             ->body(__('products::filament/resources/product/pages/manage-attributes.table.actions.edit.notification.body')),
                     ),
                 DeleteAction::make()
+                    ->before(function (DeleteAction $action, ProductAttribute $record) {
+                        if (VariantUsage::productHasVariantsInUse($record->product_id)) {
+                            $this->refuse($action, 'attribute');
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -129,6 +163,13 @@ class ManageAttributes extends ManageRelatedRecords
                     ),
             ])
             ->paginated(false);
+    }
+
+    protected function refuse(Action $action, string $reason): void
+    {
+        VariantInUseException::make($reason)->notify();
+
+        $action->halt();
     }
 
     protected function updateOrCreateVariants(ProductAttribute $record): void

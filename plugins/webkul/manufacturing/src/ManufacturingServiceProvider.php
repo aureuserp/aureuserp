@@ -5,21 +5,40 @@ namespace Webkul\Manufacturing;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
+use Webkul\Inventory\Models\MoveLine;
+use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
+use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Manufacturing\Facades\Manufacturing as ManufacturingFacade;
+use Webkul\Manufacturing\Models\BillOfMaterial;
+use Webkul\Manufacturing\Models\BillOfMaterialByproduct;
+use Webkul\Manufacturing\Models\BillOfMaterialLine;
+use Webkul\Manufacturing\Models\Order;
+use Webkul\Manufacturing\Models\UnbuildOrder;
+use Webkul\Manufacturing\Models\WorkCenterCapacity;
+use Webkul\Manufacturing\Models\WorkOrder;
 use Webkul\Manufacturing\Observers\MoveObserver;
 use Webkul\Manufacturing\Observers\WarehouseObserver;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Product;
+use Webkul\Product\Support\ProductUsageRegistry;
+use Webkul\Support\Services\SequenceService;
+use Webkul\TableViews\Filament\Components\PresetView;
 
 class ManufacturingServiceProvider extends PackageServiceProvider
 {
@@ -69,6 +88,7 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                 '2026_04_02_000002_alter_inventories_warehouses_table',
                 '2026_04_02_000003_alter_inventories_moves_table',
                 '2026_04_02_000004_alter_inventories_move_lines_table',
+                '2026_08_03_130000_seed_manufacturing_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -88,26 +108,30 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {
-                $command->startWith(function (UninstallCommand $command) {
+                $operationTypeIds = [];
+                $locationIds = [];
+                $routeIds = [];
+
+                $command->startWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds, &$routeIds) {
                     if (! Schema::hasColumn('inventories_warehouses', 'pbm_route_id')) {
                         return;
                     }
 
-                    $warehouses = Models\Warehouse::all();
-
-                    foreach ($warehouses as $warehouse) {
-                        $pbmRouteId = $warehouse->pbm_route_id;
-
-                        $operationTypeIds = array_filter([
+                    foreach (Models\Warehouse::withTrashed()->get() as $warehouse) {
+                        $operationTypeIds = array_merge($operationTypeIds, array_filter([
                             $warehouse->manu_type_id,
                             $warehouse->pbm_type_id,
                             $warehouse->sam_type_id,
-                        ]);
+                        ]));
 
-                        $locationIds = array_filter([
+                        $locationIds = array_merge($locationIds, array_filter([
                             $warehouse->pbm_loc_id,
                             $warehouse->sam_loc_id,
-                        ]);
+                        ]));
+
+                        $routeIds = array_merge($routeIds, array_filter([
+                            $warehouse->pbm_route_id,
+                        ]));
 
                         $warehouse->updateQuietly([
                             'manufacture_pull_id'     => null,
@@ -121,33 +145,91 @@ class ManufacturingServiceProvider extends PackageServiceProvider
                             'pbm_loc_id'              => null,
                             'sam_loc_id'              => null,
                         ]);
-
-                        if ($pbmRouteId) {
-                            Rule::withTrashed()
-                                ->where('route_id', $pbmRouteId)
-                                ->forceDelete();
-
-                            $warehouse->routes()->detach($pbmRouteId);
-
-                            Route::withTrashed()
-                                ->where('id', $pbmRouteId)
-                                ->forceDelete();
-                        }
-
-                        // Delete operation types created by manufacturing
-                        if (! empty($operationTypeIds)) {
-                            OperationType::withTrashed()
-                                ->whereIn('id', $operationTypeIds)
-                                ->forceDelete();
-                        }
-
-                        // Delete locations created by manufacturing
-                        if (! empty($locationIds)) {
-                            Location::withTrashed()
-                                ->whereIn('id', $locationIds)
-                                ->forceDelete();
-                        }
                     }
+                });
+
+                $command->endWith(function (UninstallCommand $command) use (&$operationTypeIds, &$locationIds, &$routeIds) {
+                    $operationTypeIds = array_values(array_unique($operationTypeIds));
+                    $locationIds = array_values(array_unique($locationIds));
+                    $routeIds = array_values(array_unique($routeIds));
+
+                    SequenceService::purge(['manufacturing.order']);
+
+                    SequenceService::purgeScoped(OperationType::class, $operationTypeIds);
+
+                    if (! empty($operationTypeIds) || ! empty($locationIds) || ! empty($routeIds)) {
+                        DB::transaction(function () use ($operationTypeIds, $locationIds, $routeIds) {
+                            if (! empty($routeIds)) {
+                                Rule::withTrashed()
+                                    ->whereIn('route_id', $routeIds)
+                                    ->forceDelete();
+
+                                Route::withTrashed()
+                                    ->whereIn('id', $routeIds)
+                                    ->forceDelete();
+                            }
+
+                            if (! empty($locationIds)) {
+                                $moveIds = Move::query()
+                                    ->where(function ($query) use ($locationIds) {
+                                        $query->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds);
+                                    })
+                                    ->pluck('id');
+
+                                MoveLine::query()
+                                    ->where(function ($query) use ($locationIds, $moveIds) {
+                                        $query->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds)
+                                            ->orWhereIn('move_id', $moveIds);
+                                    })
+                                    ->delete();
+
+                                Move::query()
+                                    ->whereIn('id', $moveIds)
+                                    ->delete();
+
+                                Scrap::query()
+                                    ->where(function ($query) use ($locationIds) {
+                                        $query->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds);
+                                    })
+                                    ->delete();
+
+                                ProductQuantity::query()
+                                    ->whereIn('location_id', $locationIds)
+                                    ->delete();
+                            }
+
+                            Operation::query()
+                                ->where(function ($query) use ($operationTypeIds, $locationIds) {
+                                    if (! empty($operationTypeIds)) {
+                                        $query->whereIn('operation_type_id', $operationTypeIds);
+                                    }
+
+                                    if (! empty($locationIds)) {
+                                        $query->orWhere(fn ($subQuery) => $subQuery
+                                            ->whereIn('source_location_id', $locationIds)
+                                            ->orWhereIn('destination_location_id', $locationIds));
+                                    }
+                                })
+                                ->delete();
+
+                            if (! empty($operationTypeIds)) {
+                                OperationType::withTrashed()
+                                    ->whereIn('id', $operationTypeIds)
+                                    ->forceDelete();
+                            }
+
+                            if (! empty($locationIds)) {
+                                Location::withTrashed()
+                                    ->whereIn('id', $locationIds)
+                                    ->forceDelete();
+                            }
+                        });
+                    }
+
+                    ChatterCleanupService::purgeForModels([Order::class]);
                 });
             })
             ->icon('manufacturing');
@@ -158,6 +240,52 @@ class ManufacturingServiceProvider extends PackageServiceProvider
         $this->registerCustomCss();
 
         $this->registerModelObservers();
+
+        $this->contributeProductSchema();
+
+        $this->contributeProductUsage();
+    }
+
+    protected function contributeProductUsage(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductUsageRegistry::register(
+            Order::class,
+            WorkOrder::class,
+            UnbuildOrder::class,
+            BillOfMaterial::class,
+            BillOfMaterialLine::class,
+            BillOfMaterialByproduct::class,
+            WorkCenterCapacity::class,
+        );
+    }
+
+    protected function contributeProductSchema(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Product::resolveRelationUsing('billsOfMaterials', fn (Product $product) => $product->hasMany(
+            BillOfMaterial::class,
+            'product_id',
+        ));
+
+        Product::resolveRelationUsing('billOfMaterialLines', fn (Product $product) => $product->hasMany(
+            BillOfMaterialLine::class,
+            'product_id',
+        ));
+
+        ProductSchemaRegistry::presetView(
+            'components',
+            fn () => PresetView::make(__('manufacturing::filament/clusters/products/resources/product/pages/list-products.tabs.components'))
+                ->icon('heroicon-s-puzzle-piece')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('billOfMaterialLines')),
+        );
     }
 
     public function packageRegistered(): void
@@ -182,6 +310,10 @@ class ManufacturingServiceProvider extends PackageServiceProvider
 
     protected function registerModelObservers(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         Warehouse::observe(WarehouseObserver::class);
 
         Move::observe(MoveObserver::class);

@@ -3,12 +3,15 @@
 namespace Webkul\Employee\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Employee\Enums\WorkLocation as WorkLocationEnum;
 use Webkul\Employee\Models\WorkLocation;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class WorkLocationFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -24,12 +27,11 @@ class WorkLocationFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id'      => Company::factory(),
-            'user_id'         => User::query()->value('id') ?? User::factory(),
+            'creator_id'      => User::query()->value('id') ?? User::factory(),
             'name'            => fake()->name,
-            'location_type'   => fake()->word,
+            'location_type'   => WorkLocationEnum::Office,
             'location_number' => fake()->numberBetween(1, 100),
-            'active'          => 1,
+            'is_active'       => true,
         ];
     }
 }

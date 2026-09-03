@@ -1,9 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    <title>Profit & Loss Report</title>
+    <title>{{ __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title') }}</title>
     <style>
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         @page {
             margin: 1.5cm 1.5cm;
             size: A4 portrait;
@@ -101,7 +114,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Profit & Loss Report</h1>
+        <h1>{{ __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title') }}</h1>
         <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</p>
     </div>
 

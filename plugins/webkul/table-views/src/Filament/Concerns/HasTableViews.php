@@ -48,7 +48,9 @@ trait HasTableViews
     protected function loadDefaultActiveTableView(): void
     {
         if (filled($this->activeTableView)) {
-            $this->applyTableViewFilters();
+            if ($this->shouldMountInteractsWithTable) {
+                $this->applyTableViewFilters();
+            }
 
             return;
         }
@@ -110,6 +112,12 @@ trait HasTableViews
             }
 
             $this->{$key} = $filter;
+        }
+
+        $this->getTableFiltersForm()->fill($this->tableFilters);
+
+        if ($this->getTable()->hasDeferredFilters()) {
+            $this->tableFilters = $this->tableDeferredFilters;
         }
     }
 
@@ -311,7 +319,6 @@ trait HasTableViews
     public function resetTableViewAction(): Action
     {
         return Action::make('resetTableView')
-            ->label('Reset')
             ->label(__('table-views::filament/concerns/has-table-views.reset'))
             ->color('danger')
             ->link()

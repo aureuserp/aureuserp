@@ -3,7 +3,6 @@
 return [
     'navigation' => [
         'title' => 'مقالات المدونة',
-        'group' => 'الموقع',
     ],
 
     'global-search' => [

@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationTypeFactory;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\MoveType;
@@ -17,10 +20,15 @@ use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Scopes\CompanyScope;
+use Webkul\Support\Models\Sequence;
+use Webkul\Support\Services\SequenceService;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class OperationType extends Model implements Sortable
 {
-    use HasFactory, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'inventories_operation_types';
 
@@ -112,6 +120,11 @@ class OperationType extends Model implements Sortable
         return $this->belongsTo(Warehouse::class)->withTrashed();
     }
 
+    public function moves(): HasMany
+    {
+        return $this->hasMany(Move::class);
+    }
+
     public function storageCategoryCapacities(): BelongsToMany
     {
         return $this->belongsToMany(StorageCategoryCapacity::class, 'inventories_storage_category_capacities', 'storage_category_id', 'package_type_id');
@@ -132,6 +145,46 @@ class OperationType extends Model implements Sortable
         return OperationTypeFactory::new();
     }
 
+    public function sequenceDefaults(): array
+    {
+        $warehouse = $this->warehouse;
+
+        return [
+            'name'   => $warehouse ? "{$this->name} ({$warehouse->code})" : $this->name,
+            'prefix' => $warehouse
+                ? $warehouse->code.'/'.$this->sequence_code.'/'
+                : $this->sequence_code.'/',
+            'initial_from' => Operation::withoutGlobalScopes()->where('operation_type_id', $this->id),
+        ];
+    }
+
+    public function ensureSequence(): void
+    {
+        if (! Schema::hasTable('sequences')) {
+            return;
+        }
+
+        SequenceService::ensureFor($this, '', $this->company_id, $this->sequenceDefaults());
+    }
+
+    public function syncSequence(): void
+    {
+        if (! Schema::hasTable('sequences')) {
+            return;
+        }
+
+        $defaults = $this->sequenceDefaults();
+
+        Sequence::withoutGlobalScope(CompanyScope::class)
+            ->where('scope_type', $this->getMorphClass())
+            ->where('scope_id', $this->id)
+            ->get()
+            ->each(fn (Sequence $sequence) => $sequence->update([
+                'name'   => $defaults['name'],
+                'prefix' => $defaults['prefix'],
+            ]));
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -139,7 +192,19 @@ class OperationType extends Model implements Sortable
         static::creating(function ($operationType) {
             $operationType->creator_id ??= Auth::id();
 
-            $operationType->reservation_method = ReservationMethod::AT_CONFIRM;
+            $operationType->reservation_method ??= ReservationMethod::AT_CONFIRM;
+        });
+
+        static::created(function ($operationType) {
+            $operationType->ensureSequence();
+        });
+
+        static::updated(function ($operationType) {
+            if ($operationType->wasChanged(['name', 'sequence_code', 'warehouse_id'])) {
+                $operationType->unsetRelation('warehouse');
+
+                $operationType->syncSequence();
+            }
         });
     }
 }

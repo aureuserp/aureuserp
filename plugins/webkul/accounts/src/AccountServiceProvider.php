@@ -6,7 +6,9 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
+use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -14,18 +16,32 @@ use Webkul\Account\Filament\Resources\PartnerResource\Schemas\AccountPartnerSche
 use Webkul\Account\Filament\Resources\ProductResource\Schemas\AccountProductSchema;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\CategoryCompanyAccount;
 use Webkul\Account\Models\FiscalPosition;
+use Webkul\Account\Models\Journal;
+use Webkul\Account\Models\Move;
+use Webkul\Account\Models\MoveLine;
+use Webkul\Account\Models\PartnerCompanyProperty;
+use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Account\Models\ProductCompanyAccount;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Observers\CompanyObserver;
+use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Chatter\Services\ChatterCleanupService;
+use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
+use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
-use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
-use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry;
+use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Support\ProductUsageRegistry;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Services\SequenceService;
 
 class AccountServiceProvider extends PackageServiceProvider
 {
@@ -104,6 +120,12 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_02_25_044931_alter_accounts_full_reconciles_table',
                 '2026_03_03_120000_alter_accounts_journals_bank_account_foreign_key',
                 '2026_04_17_000001_add_parent_id_to_accounts_accounts_table',
+                '2026_07_21_110000_fix_bank_cash_journal_default_accounts',
+                '2026_07_21_120000_null_company_on_payment_terms',
+                '2026_07_30_090000_create_products_product_company_accounts_table',
+                '2026_07_30_120000_create_products_category_company_accounts_table',
+                '2026_07_30_120001_create_partners_partner_company_properties_table',
+                '2026_08_03_130000_seed_accounts_sequences',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -122,18 +144,67 @@ class AccountServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {
+                $command->endWith(function () {
+                    ChatterCleanupService::purgeForModels([Move::class, Payment::class]);
+
+                    SequenceService::purge(scopeModels: [Journal::class]);
+                });
+            });
     }
 
     public function packageBooted(): void
     {
+
         Livewire::component('invoice-summary', InvoiceSummary::class);
 
         $this->registerCustomCss();
 
+        $this->registerObservers();
+
+        $this->flushCompanyPropertiesOnSave();
+
         $this->contributeProductSchema();
 
         $this->contributePartnerSchema();
+
+        $this->contributeProductUsage();
+    }
+
+    protected function contributeProductUsage(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        ProductUsageRegistry::register(MoveLine::class);
+    }
+
+    protected function registerObservers(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Company::observe(CompanyObserver::class);
+    }
+
+    protected function flushCompanyPropertiesOnSave(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        Event::listen('eloquent.saved: *', function (string $event, array $payload): void {
+            $model = $payload[0] ?? null;
+
+            match (true) {
+                $model instanceof Partner  => CompanyProperty::flush($model, PartnerCompanyProperty::class, 'partner_id'),
+                $model instanceof Product  => CompanyProperty::flush($model, ProductCompanyAccount::class, 'product_id'),
+                $model instanceof Category => CompanyProperty::flush($model, CategoryCompanyAccount::class, 'category_id'),
+                default                    => null,
+            };
+        });
     }
 
     protected function contributePartnerSchema(): void
@@ -180,6 +251,23 @@ class AccountServiceProvider extends PackageServiceProvider
             'property_inbound_payment_method_line_id',
         ]);
 
+        Partner::contributeCasts([
+            'property_account_payable_id'              => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_account_receivable_id'           => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_account_position_id'             => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_payment_term_id'                 => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_supplier_payment_term_id'        => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_inbound_payment_method_line_id'  => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+            'property_outbound_payment_method_line_id' => CompanyProperty::class.':'.PartnerCompanyProperty::class.',partner_id',
+        ]);
+
+        Partner::resolveRelationUsing(CompanyProperty::RELATION, fn (Partner $partner) => $partner->hasMany(
+            PartnerCompanyProperty::class,
+            'partner_id',
+        ));
+
+        PartnerSchemaRegistry::eagerLoad([CompanyProperty::RELATION]);
+
         Partner::resolveRelationUsing('propertyAccountPayable', fn (Partner $partner) => $partner->belongsTo(Account::class, 'property_account_payable_id'));
         Partner::resolveRelationUsing('propertyAccountReceivable', fn (Partner $partner) => $partner->belongsTo(Account::class, 'property_account_receivable_id'));
         Partner::resolveRelationUsing('propertyAccountPosition', fn (Partner $partner) => $partner->belongsTo(FiscalPosition::class, 'property_account_position_id'));
@@ -198,7 +286,25 @@ class AccountServiceProvider extends PackageServiceProvider
         ProductSchemaRegistry::form('right.pricing.fields', fn () => AccountProductSchema::taxFields());
         ProductSchemaRegistry::form('left.append', fn () => AccountProductSchema::policySection());
         ProductSchemaRegistry::form('hidden', fn () => AccountProductSchema::hiddenFields());
-        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes']);
+        ProductSchemaRegistry::eagerLoad(['productTaxes', 'supplierTaxes', CompanyProperty::RELATION]);
+
+        ProductSchemaRegistry::companyDefaultFields([
+            'property_account_income_id' => fn (?int $companyId) => Account::resolveForCompany(
+                settings(DefaultAccountSettings::class)->income_account_id,
+                $companyId,
+            ),
+            'property_account_expense_id' => fn (?int $companyId) => Account::resolveForCompany(
+                settings(DefaultAccountSettings::class)->expense_account_id,
+                $companyId,
+            ),
+        ]);
+
+        ProductSchemaRegistry::companyDependentFields([
+            'accounts_product_taxes'          => Tax::class,
+            'accounts_product_supplier_taxes' => Tax::class,
+            'property_account_income_id'      => Account::class,
+            'property_account_expense_id'     => Account::class,
+        ]);
 
         Product::contributeFillable([
             'property_account_income_id',
@@ -225,6 +331,27 @@ class AccountServiceProvider extends PackageServiceProvider
             'accounts_product_supplier_taxes',
             'product_id',
             'tax_id',
+        ));
+
+        Product::contributeCasts([
+            'property_account_income_id'  => CompanyProperty::class.':'.ProductCompanyAccount::class.',product_id',
+            'property_account_expense_id' => CompanyProperty::class.':'.ProductCompanyAccount::class.',product_id',
+        ]);
+
+        Product::resolveRelationUsing(CompanyProperty::RELATION, fn (Product $product) => $product->hasMany(
+            ProductCompanyAccount::class,
+            'product_id',
+        ));
+
+        Category::contributeCasts([
+            'property_account_income_id'       => CompanyProperty::class.':'.CategoryCompanyAccount::class.',category_id',
+            'property_account_expense_id'      => CompanyProperty::class.':'.CategoryCompanyAccount::class.',category_id',
+            'property_account_down_payment_id' => CompanyProperty::class.':'.CategoryCompanyAccount::class.',category_id',
+        ]);
+
+        Category::resolveRelationUsing(CompanyProperty::RELATION, fn (Category $category) => $category->hasMany(
+            CategoryCompanyAccount::class,
+            'category_id',
         ));
 
         Product::resolveRelationUsing('propertyAccountIncome', fn (Product $product) => $product->belongsTo(

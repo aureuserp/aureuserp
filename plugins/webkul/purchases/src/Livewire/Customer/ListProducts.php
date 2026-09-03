@@ -34,22 +34,22 @@ class ListProducts extends Component implements HasActions, HasForms, HasTable
             )
             ->columns([
                 TextColumn::make('name')
-                    ->label('Product'),
+                    ->label(__('purchases::filament/customer/clusters/account/resources/order.products.columns.product')),
                 TextColumn::make('product_qty')
-                    ->label('Quantity')
+                    ->label(__('purchases::filament/customer/clusters/account/resources/order.products.columns.quantity'))
                     ->formatStateUsing(fn (string $state): string => $state.' Units'),
                 TextColumn::make('price_unit')
-                    ->label('Unit Price')
+                    ->label(__('purchases::filament/customer/clusters/account/resources/order.products.columns.unit-price'))
                     ->money(fn (OrderLine $record) => $record->currency->code),
                 TextColumn::make('taxes.name')
-                    ->label('Taxes')
+                    ->label(__('purchases::filament/customer/clusters/account/resources/order.products.columns.taxes'))
                     ->badge()
                     ->placeholder('—'),
                 TextColumn::make('discount')
-                    ->label('Discount %')
+                    ->label(__('purchases::filament/customer/clusters/account/resources/order.products.columns.discount'))
                     ->suffix('%'),
                 TextColumn::make('price_subtotal')
-                    ->label('Amount')
+                    ->label(__('purchases::filament/customer/clusters/account/resources/order.products.columns.amount'))
                     ->money(fn (OrderLine $record) => $record->currency->code),
             ])
             ->paginated(false);

@@ -26,11 +26,6 @@ class EditTax extends EditRecord
             ->body(__('accounts::filament/resources/tax/pages/edit-tax.notification.body'));
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getHeaderActions(): array
     {
         return [
@@ -59,6 +54,10 @@ class EditTax extends EditRecord
     protected function beforeSave(): void
     {
         $data = $this->data;
+
+        if (! TaxResource::requiresRepartitionLines($data['amount_type'] ?? null)) {
+            return;
+        }
 
         try {
             TaxResource::validateRepartitionData(

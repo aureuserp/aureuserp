@@ -14,7 +14,7 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -22,6 +22,8 @@ use Webkul\Support\Models\UOM;
  */
 class MoveFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Move::class;
 
     public function definition(): array
@@ -62,9 +64,17 @@ class MoveFactory extends Factory
             'warehouse_id'            => null,
             'product_packaging_id'    => null,
             'scrap_id'                => null,
-            'company_id'              => Company::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
+    }
+
+    public function demand(float $quantity, ?UOM $uom = null): static
+    {
+        return $this->state(fn (array $attributes) => array_merge([
+            'product_uom_qty' => $quantity,
+            'product_qty'     => null,
+            'quantity'        => 0,
+        ], $uom ? ['uom_id' => $uom->id] : []));
     }
 
     public function confirmed(): static

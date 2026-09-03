@@ -21,11 +21,6 @@ class CreateTax extends CreateRecord
         return [];
     }
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -38,7 +33,7 @@ class CreateTax extends CreateRecord
     {
         $user = Auth::user();
 
-        $data['company_id'] = $user->default_company_id;
+        $data['company_id'] = current_company_id();
         $data['creator_id'] = $user->id;
 
         return $data;
@@ -47,6 +42,11 @@ class CreateTax extends CreateRecord
     protected function beforeCreate(): void
     {
         $data = $this->data;
+
+        if (! TaxResource::requiresRepartitionLines($data['amount_type'] ?? null)) {
+            return;
+        }
+
         try {
             TaxResource::validateRepartitionData(
                 $data['invoiceRepartitionLines'] ?? [],
@@ -55,7 +55,7 @@ class CreateTax extends CreateRecord
         } catch (Exception $e) {
             Notification::make()
                 ->danger()
-                ->title('Invalid Repartition Lines')
+                ->title(__('accounts::filament/resources/tax.table.pages.create.notifications.invalid-repartition-lines.title'))
                 ->body($e->getMessage())
                 ->send();
 

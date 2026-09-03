@@ -6,13 +6,15 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
+use Webkul\Support\Filament\Concerns\TranslatableListRecords;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ListPosts extends ListRecords
 {
-    use HasTableViews;
+    use HasTableViews, TranslatableListRecords;
 
     protected static string $resource = PostResource::class;
 
@@ -38,6 +40,7 @@ class ListPosts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            LocaleSwitcher::make(),
             CreateAction::make()
                 ->label(__('blogs::filament/admin/resources/post/pages/list-posts.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),

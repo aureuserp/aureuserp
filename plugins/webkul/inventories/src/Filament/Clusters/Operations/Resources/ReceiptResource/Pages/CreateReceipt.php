@@ -10,13 +10,17 @@ use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateReceipt extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected static string $resource = ReceiptResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     public function getSubNavigation(): array
     {
@@ -49,7 +53,9 @@ class CreateReceipt extends CreateRecord
     {
         parent::mount();
 
-        $operationType = OperationType::where('type', Enums\OperationType::INCOMING)->first();
+        $operationType = OperationType::where('type', Enums\OperationType::INCOMING)
+            ->where('company_id', current_company_id())
+            ->first();
 
         $this->data['operation_type_id'] = $operationType?->id;
 

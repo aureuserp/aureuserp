@@ -2,21 +2,16 @@
 
 namespace Webkul\Support\Filament\Resources\CompanyResource\Pages;
 
-use App\Models\User;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Webkul\Security\Models\User;
 use Webkul\Support\Filament\Resources\CompanyResource;
 
 class EditCompany extends EditRecord
 {
     protected static string $resource = CompanyResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
 
     protected function getSavedNotification(): Notification
     {
