@@ -14,6 +14,8 @@ return [
     ],
 
     'form' => [
+        'archived-products-warning' => 'Warning: This quote contains archived product(s).',
+
         'section' => [
             'general' => [
                 'title'  => 'General',

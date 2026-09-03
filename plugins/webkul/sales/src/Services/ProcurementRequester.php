@@ -198,7 +198,7 @@ class ProcurementRequester
         $options = $this->buildProcurementOptions($line, $procurementGroup);
 
         return new ProcurementRequest(
-            product: InventoryProduct::find($line->product_id),
+            product: InventoryProduct::withTrashed()->find($line->product_id),
             quantity: $productQty,
             uom: $procurementUom,
             location: $options->destinationLocation(),

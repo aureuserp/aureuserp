@@ -14,6 +14,8 @@ return [
     ],
 
     'form' => [
+        'archived-products-warning' => 'Avertissement : Ce devis contient un ou plusieurs produits archivés.',
+
         'section' => [
             'general' => [
                 'title'  => 'Général',
