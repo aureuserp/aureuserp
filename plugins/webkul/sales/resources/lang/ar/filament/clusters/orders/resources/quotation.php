@@ -14,8 +14,6 @@ return [
     ],
 
     'form' => [
-        'archived-products-warning' => 'تحذير: يحتوي عرض السعر هذا على منتج (منتجات) مؤرشفة.',
-
         'section' => [
             'general' => [
                 'title'  => 'عام',

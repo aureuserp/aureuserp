@@ -15,7 +15,6 @@ use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -79,10 +78,6 @@ class QuotationForm
                     ->disabled()
                     ->live()
                     ->reactive(),
-                Text::make(__('sales::filament/clusters/orders/resources/quotation.form.archived-products-warning'))
-                    ->color('warning')
-                    ->icon('heroicon-o-exclamation-triangle')
-                    ->visible(fn ($record): bool => (bool) $record?->lines->contains(fn ($line) => $line->product?->trashed())),
                 Section::make(__('sales::filament/clusters/orders/resources/quotation.form.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([

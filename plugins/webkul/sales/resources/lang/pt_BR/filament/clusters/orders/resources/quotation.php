@@ -14,8 +14,6 @@ return [
     ],
 
     'form' => [
-        'archived-products-warning' => 'Aviso: Este orçamento contém produto(s) arquivado(s).',
-
         'section' => [
             'general' => [
                 'title'  => 'Geral',

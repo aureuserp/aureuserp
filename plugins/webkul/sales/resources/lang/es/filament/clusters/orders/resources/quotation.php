@@ -14,8 +14,6 @@ return [
     ],
 
     'form' => [
-        'archived-products-warning' => 'Advertencia: Este presupuesto contiene producto(s) archivado(s).',
-
         'section' => [
             'general' => [
                 'title'  => 'General',

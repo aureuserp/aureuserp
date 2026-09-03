@@ -45,13 +45,6 @@ class QuotationInfolist
                     })
                     ->default(OrderState::DRAFT->value),
 
-                TextEntry::make('archived_products_warning')
-                    ->hiddenLabel()
-                    ->state(__('sales::filament/clusters/orders/resources/quotation.form.archived-products-warning'))
-                    ->color('warning')
-                    ->icon('heroicon-o-exclamation-triangle')
-                    ->visible(fn ($record): bool => (bool) $record?->lines->contains(fn ($line) => $line->product?->trashed())),
-
                 Section::make(__('sales::filament/clusters/orders/resources/quotation.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
