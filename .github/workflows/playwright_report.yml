@@ -1,0 +1,337 @@
+name: Playwright Report
+
+on:
+  workflow_run:
+    workflows: ["Playwright Tests"]
+    types: [completed]
+
+permissions:
+  contents: write # push screenshots to the gh-pages branch
+  pull-requests: write # post/update the PR comment
+  actions: read # download artifacts from the test run
+
+jobs:
+  publish_report:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    name: Publish failure report
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+      RUN_URL: ${{ github.event.workflow_run.html_url }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      TRUSTED: "0" # overwritten by "Check contributor trust" below
+
+    steps:
+      - name: Check contributor trust
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
+            --jq '[.[] | select(.state == "open")][0].number' 2>/dev/null || true)"
+
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "No open pull request found for ${HEAD_SHA}; nothing to publish to."
+            echo "TRUSTED=0" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "PR_NUMBER=${PR_NUMBER}" >> "$GITHUB_ENV"
+
+          # Gate on the PR author's relationship to the repo, not on which
+          # repo the branch happens to live in — every PR here comes from a
+          # personal fork (team members included), so "same repo" would
+          # reject everyone. OWNER/MEMBER/COLLABORATOR are people who already
+          # have write access to this repo by other means, so publishing
+          # their test output here adds no new exposure. Anyone else
+          # (CONTRIBUTOR, FIRST_TIME_CONTRIBUTOR, NONE, ...) is treated as
+          # untrusted and gets no published screenshots/comment.
+          ASSOCIATION="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" \
+            --jq '.author_association' 2>/dev/null || true)"
+          echo "PR #${PR_NUMBER} author_association: ${ASSOCIATION:-unknown}"
+
+          case "$ASSOCIATION" in
+            OWNER | MEMBER | COLLABORATOR) echo "TRUSTED=1" >> "$GITHUB_ENV" ;;
+            *) echo "TRUSTED=0" >> "$GITHUB_ENV" ;;
+          esac
+
+      - name: Download failure screenshots
+        if: env.TRUSTED == '1'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-failures-*
+          path: failures
+          merge-multiple: true
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Extract failure details from test results
+        if: env.TRUSTED == '1'
+        run: |
+          set -euo pipefail
+
+          # Playwright's json reporter (text-only, no screenshots/video/trace —
+          # see playwright.config.ts) gives us the real test title and error
+          # for each failure. Build a lookup, keyed by the same test-results
+          # folder name the screenshot lives in (taken straight from the
+          # reporter's own "screenshot" attachment path, so it's guaranteed to
+          # match — no need to reverse-engineer Playwright's folder-naming).
+          #
+          # A genuinely-failing test (as opposed to a flaky one that passed on
+          # retry — those have status "flaky", not "unexpected", and are
+          # already excluded) still has ONE result per attempt, all "failed" —
+          # e.g. attempt 0 and its retry both fail identically. We only want
+          # the LAST attempt (max_by(.retry)): it's the one that actually
+          # decided the test failed, and showing every retry's screenshot for
+          # what is really one failure is confusing and wastes gh-pages space
+          # for no benefit.
+          MAP="$RUNNER_TEMP/test-info.tsv"
+          : > "$MAP"
+          strip_ansi() { sed -E "s/$(printf '\033')\[[0-9;]*[A-Za-z]//g"; }
+
+          shopt -s nullglob
+          for f in failures/tests/e2e-pw/test-results-*.json; do
+            jq -r '
+              .. | objects | select(has("tests")) as $spec |
+              $spec.tests[] | select(.status == "unexpected") as $test |
+              ($test.results | max_by(.retry)) as $last |
+              ([$last.attachments[]? | select(.name == "screenshot") | .path] | first // "") as $shot |
+              select($shot != "") |
+              [
+                ($shot | split("/") | .[-2]),
+                ($shot | split("/") | .[-1]),
+                ($spec.title // "unknown"),
+                ($last.retry // 0 | tostring),
+                (($last.error.message // "") | gsub("\n"; " ") | gsub("\t"; " "))
+              ] | @tsv
+            ' "$f" 2>/dev/null | strip_ansi >> "$MAP" || true
+          done
+          shopt -u nullglob
+
+          echo "Parsed $(wc -l < "$MAP") failing test(s) from test-results JSON (deduped to final attempt)."
+
+      - name: Publish screenshots to gh-pages
+        if: env.TRUSTED == '1'
+        run: |
+          set -euo pipefail
+
+          DEST="$(date -u +%Y%m%d)-${RUN_ID}-${RUN_ATTEMPT}"
+          echo "DEST=${DEST}" >> "$GITHUB_ENV"
+
+          STAGE="$RUNNER_TEMP/stage"
+          mkdir -p "$STAGE"
+          MAP="$RUNNER_TEMP/test-info.tsv"
+
+          # Collect failure screenshots (PNGs only — safe to host as raw bytes).
+          # Filenames come from the artifact, so allow only safe characters and
+          # reject any path traversal before copying.
+          COUNT=0
+          if [ -s "$MAP" ]; then
+            # Normal path: one screenshot per genuinely-failing test (the
+            # final attempt only — see "Extract failure details" above),
+            # driven off the map so what we publish always matches what the
+            # comment links to.
+            while IFS=$'\t' read -r folder filename _rest; do
+              rel="${folder}/${filename}"
+              case "$rel" in (*[!A-Za-z0-9._/-]*) continue ;; esac
+              case "/$rel/" in (*/../*) continue ;; esac
+              png="failures/tests/e2e-pw/test-results/${rel}"
+              [ -f "$png" ] || continue
+              mkdir -p "$STAGE/screens/${folder}"
+              cp "$png" "$STAGE/screens/${rel}"
+              COUNT=$((COUNT + 1))
+            done < "$MAP"
+          else
+            # Fallback: the JSON reporter's output was missing/unparseable for
+            # this run — publish every failure screenshot found on disk rather
+            # than publishing nothing. This can include one entry per retry
+            # attempt of the same test (no title/error info to dedupe with).
+            echo "No test-results JSON found; falling back to publishing all screenshots."
+            while IFS= read -r -d '' png; do
+              rel="${png#failures/tests/e2e-pw/test-results/}"
+              [ "$rel" = "$png" ] && continue
+              case "$rel" in (*[!A-Za-z0-9._/-]*) continue ;; esac
+              case "/$rel/" in (*/../*) continue ;; esac
+              mkdir -p "$STAGE/screens/$(dirname "$rel")"
+              cp "$png" "$STAGE/screens/$rel"
+              COUNT=$((COUNT + 1))
+            done < <(find failures/tests/e2e-pw/test-results -type f -name '*.png' -print0 2>/dev/null)
+          fi
+          echo "SCREEN_COUNT=${COUNT}" >> "$GITHUB_ENV"
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "Nothing to publish."
+            echo "PUBLISHED=0" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          CUTOFF="$(date -u -d '14 days ago' +%Y%m%d)"
+          SIZE_CAP_MB=200 # hard backstop — see "Safety limits" note at the top of this file
+
+          # gh-pages is kept as a single commit (recreated + force-pushed each
+          # time) so its history never grows; reports older than 14 days are
+          # pruned. The retry loop handles two PRs publishing at once.
+          for attempt in 1 2 3; do
+            PUB="$RUNNER_TEMP/pages-$attempt"
+            rm -rf "$PUB"
+            EXPECTED=""
+            if git clone --quiet --depth 1 --branch gh-pages "$REMOTE" "$PUB" 2>/dev/null; then
+              EXPECTED="$(git -C "$PUB" rev-parse HEAD)"
+              rm -rf "$PUB/.git"
+            else
+              mkdir -p "$PUB"
+            fi
+
+            for d in "$PUB"/reports/*/; do
+              [ -d "$d" ] || continue
+              day="$(basename "$d" | cut -d- -f1)"
+              if [[ "$day" =~ ^[0-9]{8}$ ]] && [ "$day" -lt "$CUTOFF" ]; then
+                rm -rf "$d"
+              fi
+            done
+
+            # Backstop: the 14-day prune above is time-based only, so a burst
+            # of failures inside that window can still balloon the branch (this
+            # is exactly what previously made every push fail with an HTTP 500
+            # mid-transfer). Drop the OLDEST report folders — oldest-first,
+            # since folder names are date-prefixed and sort chronologically —
+            # until the branch is back under SIZE_CAP_MB.
+            while [ "$(du -sm "$PUB" 2>/dev/null | cut -f1)" -gt "$SIZE_CAP_MB" ]; do
+              oldest="$(find "$PUB/reports" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | head -n1)"
+              [ -z "$oldest" ] && break
+              rm -rf "$oldest"
+            done
+
+            mkdir -p "$PUB/reports/$DEST"
+            cp -r "$STAGE/." "$PUB/reports/$DEST/"
+            touch "$PUB/.nojekyll"
+
+            git -C "$PUB" init --quiet --initial-branch=gh-pages
+            git -C "$PUB" config user.name "github-actions[bot]"
+            git -C "$PUB" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C "$PUB" add -A
+            git -C "$PUB" commit --quiet -m "Playwright report for run ${RUN_ID} (attempt ${RUN_ATTEMPT})"
+            if git -C "$PUB" push --quiet --force-with-lease="refs/heads/gh-pages:${EXPECTED}" "$REMOTE" gh-pages; then
+              echo "PUBLISHED=1" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "gh-pages push was raced by another run, retrying (${attempt}/3)..."
+            sleep $((attempt * 5))
+          done
+
+          echo "Failed to push gh-pages after 3 attempts." >&2
+          exit 1
+
+      - name: Build comment body
+        if: env.TRUSTED == '1'
+        run: |
+          set -euo pipefail
+
+          BODY="$RUNNER_TEMP/comment.md"
+          RAW_BASE="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/gh-pages/reports/${DEST:-}"
+          MAP="$RUNNER_TEMP/test-info.tsv"
+
+          # Minimal HTML-escape — this text ends up inside an HTML block in
+          # the comment body, not a fenced code block, so raw `<`/`>`/`&`
+          # from an assertion message could otherwise break the layout.
+          html_escape() { sed -e 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'; }
+
+          {
+            echo '<!-- aureus-playwright-report -->'
+            echo "## ❌ Playwright tests failed — [run #${RUN_NUMBER}](${RUN_URL})"
+            echo
+            echo "Failure at \`${HEAD_SHA:0:7}\`."
+            echo
+
+            if [ "${SCREEN_COUNT:-0}" -gt 0 ] && [ "${PUBLISHED:-0}" = "1" ]; then
+              echo "### 🖼️ Failure screenshots (${SCREEN_COUNT})"
+              echo
+              shown=0
+              if [ -s "$MAP" ]; then
+                # Normal path: one entry per genuinely-failing test, with its
+                # real title, retry count and error message.
+                while IFS=$'\t' read -r folder filename title retry error; do
+                  [ "$shown" -ge 20 ] && break
+                  rel="${folder}/${filename}"
+                  title_esc="$(printf '%s' "$title" | html_escape)"
+                  error_esc="$(printf '%s' "$error" | html_escape)"
+                  test_name="$title_esc"
+                  [ "$retry" != "0" ] && test_name="${test_name} (retry ${retry})"
+
+                  echo "<details>"
+                  echo "<summary>🔴 <code>${test_name}</code></summary>"
+                  echo
+                  if [ -n "$error_esc" ]; then
+                    echo "<pre>${error_esc}</pre>"
+                    echo
+                  fi
+                  echo "<img src=\"${RAW_BASE}/screens/${rel}\" alt=\"${test_name}\" width=\"650\" />"
+                  echo
+                  echo "</details>"
+                  shown=$((shown + 1))
+                done < "$MAP"
+              else
+                # Fallback: no JSON info — show the raw folder name, and every
+                # PNG on disk (may include duplicate entries per retry attempt).
+                while IFS= read -r -d '' png; do
+                  [ "$shown" -ge 20 ] && break
+                  rel="${png#failures/tests/e2e-pw/test-results/}"
+                  [ "$rel" = "$png" ] && continue
+                  case "$rel" in (*[!A-Za-z0-9._/-]*) continue ;; esac
+                  case "/$rel/" in (*/../*) continue ;; esac
+                  test_name="$(dirname "$rel")"
+                  [ "$test_name" = "." ] && test_name="$(basename "$rel" .png)"
+
+                  echo "<details>"
+                  echo "<summary>🔴 <code>${test_name}</code></summary>"
+                  echo
+                  echo "<img src=\"${RAW_BASE}/screens/${rel}\" alt=\"${test_name}\" width=\"650\" />"
+                  echo
+                  echo "</details>"
+                  shown=$((shown + 1))
+                done < <(find failures/tests/e2e-pw/test-results -type f -name '*.png' -print0 2>/dev/null | sort -z)
+              fi
+              if [ "${SCREEN_COUNT}" -gt 20 ]; then
+                echo
+                echo "_…and $((SCREEN_COUNT - 20)) more — see the [run artifacts](${RUN_URL}) for the rest._"
+              fi
+              echo
+              echo "<sub>Screenshots are kept for up to 14 days (sooner if the branch fills up). The full report, video and trace are in the [run artifacts](${RUN_URL}) for 7 days.</sub>"
+            else
+              echo "_No failure screenshots were captured — the run may have failed before the tests started. Check the [run logs](${RUN_URL})._"
+            fi
+          } > "$BODY"
+
+      - name: Write run summary
+        if: env.TRUSTED == '1'
+        run: cat "$RUNNER_TEMP/comment.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on the pull request
+        if: env.TRUSTED == '1'
+        run: |
+          set -euo pipefail
+
+          BODY="$RUNNER_TEMP/comment.md"
+
+          # PR_NUMBER was already resolved (and the author already vetted) in
+          # "Check contributor trust" above — no need to look it up again.
+
+          # Find an existing report comment so we update it in place (one sticky
+          # comment per PR) instead of posting a new one every run.
+          COMMENT_ID="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '.[] | select(.body | startswith("<!-- aureus-playwright-report -->")) | .id' \
+            2>/dev/null | head -n1 || true)"
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --silent -X PATCH \
+              "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" -F "body=@${BODY}"
+            echo "Updated comment ${COMMENT_ID} on PR #${PR_NUMBER}."
+          else
+            gh api --silent -X POST \
+              "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" -F "body=@${BODY}"
+            echo "Created comment on PR #${PR_NUMBER}."
+          fi
