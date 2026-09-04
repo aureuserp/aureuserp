@@ -77,7 +77,7 @@ class ProductForm
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
-                        TextInputs::make('name')
+                        TextInput::make('name')
                             ->label(__('products::filament/resources/product.form.sections.general.fields.name'))
                             ->required()
                             ->maxLength(255)

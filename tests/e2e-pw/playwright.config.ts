@@ -12,8 +12,10 @@ export const ADMIN_AUTH_STATE_PATH = `${STATE_DIR_PATH}/admin-auth.json`;
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
+const jsonReportFile = process.env.PW_JSON_REPORT_FILE ?? "./test-results.json";
+
 const reporters = process.env.CI
-    ? [["list"], ["blob", { outputDir: "./blob-report" }]]
+    ? [["list"], ["blob", { outputDir: "./blob-report" }], ["json", { outputFile: jsonReportFile }]]
     : [
           ["list"],
           [

@@ -180,6 +180,7 @@ jobs:
       - name: Run All Playwright Tests
         env:
           BASE_URL: "http://127.0.0.1:8000"
+          PW_JSON_REPORT_FILE: "./test-results-${{ matrix.db }}-${{ matrix.shard_index }}.json"
         run: |
           npx playwright test --config=playwright.config.ts --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }}
         working-directory: tests/e2e-pw
@@ -199,6 +200,7 @@ jobs:
           name: playwright-failures-${{ matrix.db }}-${{ matrix.shard_index }}-${{ github.run_id }}-${{ github.run_number }}
           path: |
             tests/e2e-pw/test-results
+            tests/e2e-pw/test-results-*.json
             storage/logs/laravel.log
           retention-days: 7
 
