@@ -202,9 +202,16 @@ class PurchaseAgreementForm
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query, Get $get) => $query
-                            ->where('type', ProductType::GOODS)
+                        fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
+                            ->where(function (Builder $q) use ($state) {
+                                $q->whereNull('deleted_at');
+
+                                if (filled($state)) {
+                                    $q->orWhere('id', $state);
+                                }
+                            })
+                            ->where('type', ProductType::GOODS)
                             ->whereNull('is_configurable')
                             ->where(owned_by_company($get('../../company_id'))),
                     )
