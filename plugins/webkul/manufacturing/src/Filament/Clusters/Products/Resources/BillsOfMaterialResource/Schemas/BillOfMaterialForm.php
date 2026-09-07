@@ -57,13 +57,7 @@ class BillOfMaterialForm
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.sections.general.fields.product'))
                                     ->relationship('product', 'name', fn (Builder $query, Get $get, ?string $state) => $query
                                         ->withTrashed()
-                                        ->where(function (Builder $q) use ($state) {
-                                            $q->whereNull('deleted_at');
-
-                                            if (filled($state)) {
-                                                $q->orWhere('id', $state);
-                                            }
-                                        })
+                                        ->where(hide_deleted_unless_selected($state))
                                         ->whereNull('parent_id')
                                         ->where(owned_by_company($get('company_id'))))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -351,13 +345,7 @@ class BillOfMaterialForm
                 Select::make('product_id')
                     ->relationship('product', 'name', fn (Builder $query, Get $get, ?string $state) => $query
                         ->withTrashed()
-                        ->where(function (Builder $q) use ($state) {
-                            $q->whereNull('deleted_at');
-
-                            if (filled($state)) {
-                                $q->orWhere('id', $state);
-                            }
-                        })
+                        ->where(hide_deleted_unless_selected($state))
                         ->where(function (Builder $productQuery): void {
                             $productQuery
                                 ->where('is_configurable', false)
@@ -724,13 +712,7 @@ class BillOfMaterialForm
                 Select::make('product_id')
                     ->relationship('product', 'name', fn (Builder $query, Get $get, ?string $state) => $query
                         ->withTrashed()
-                        ->where(function (Builder $q) use ($state) {
-                            $q->whereNull('deleted_at');
-
-                            if (filled($state)) {
-                                $q->orWhere('id', $state);
-                            }
-                        })
+                        ->where(hide_deleted_unless_selected($state))
                         ->where(owned_by_company($get('../../company_id'))))
                     ->searchable()
                     ->preload()

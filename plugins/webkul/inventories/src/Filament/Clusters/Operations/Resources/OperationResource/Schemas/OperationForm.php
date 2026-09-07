@@ -344,13 +344,7 @@ class OperationForm
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
-                            ->where(function (Builder $q) use ($state) {
-                                $q->whereNull('deleted_at');
-
-                                if (filled($state)) {
-                                    $q->orWhere('id', $state);
-                                }
-                            })
+                            ->where(hide_deleted_unless_selected($state))
                             ->where('type', ProductType::GOODS)
                             ->whereNull('is_configurable')
                             ->where(owned_by_company(static::companyIdFor($get, '../../'))),

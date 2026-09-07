@@ -356,6 +356,19 @@ if (! function_exists('owned_by_company')) {
     }
 }
 
+if (! function_exists('hide_deleted_unless_selected')) {
+    function hide_deleted_unless_selected(?string $state): Closure
+    {
+        return function ($query) use ($state) {
+            $query->whereNull('deleted_at');
+
+            if (filled($state)) {
+                $query->orWhere('id', $state);
+            }
+        };
+    }
+}
+
 if (! function_exists('reapply_company_defaults')) {
     function reapply_company_defaults($component, array $fields): void
     {

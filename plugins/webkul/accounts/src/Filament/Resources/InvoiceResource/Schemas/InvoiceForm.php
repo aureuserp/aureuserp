@@ -474,8 +474,9 @@ class InvoiceForm
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query, Get $get) => $query
+                        fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
+                            ->where(hide_deleted_unless_selected($state))
                             ->where('is_configurable', null)
                             ->where(owned_by_company($get('../../company_id'))),
                     )
