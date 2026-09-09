@@ -12,7 +12,7 @@ return [
             'notifications' => [
                 'success' => [
                     'title'   => 'Nomenclature créée',
-                    'message' => 'La nomenclature a été créée avec succès.',
+                    'body'    => 'La nomenclature a été créée avec succès.',
                 ],
             ],
         ],

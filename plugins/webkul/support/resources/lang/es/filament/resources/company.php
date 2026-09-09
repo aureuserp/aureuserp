@@ -95,6 +95,7 @@ return [
             'country'              => 'País',
             'currency'             => 'Moneda',
             'status'               => 'Estado',
+            'created-by'           => 'Creado por',
             'created-at'           => 'Creado el',
             'updated-at'           => 'Actualizado el',
         ],
@@ -107,6 +108,7 @@ return [
             'email'        => 'Correo electrónico',
             'phone'        => 'Teléfono',
             'currency'     => 'Moneda',
+            'created-by'   => 'Creado por',
             'created-at'   => 'Creado el',
             'updated-at'   => 'Actualizado el',
         ],
@@ -128,6 +130,11 @@ return [
                 'notification' => [
                     'title' => 'Empresa eliminada',
                     'body'  => 'La empresa se ha eliminado correctamente.',
+
+                    'default-company' => [
+                        'title' => 'No se puede eliminar la empresa predeterminada',
+                        'body'  => 'No puede eliminar la empresa configurada actualmente como su empresa predeterminada.',
+                    ],
                 ],
             ],
 
@@ -135,6 +142,20 @@ return [
                 'notification' => [
                     'title' => 'Empresa restaurada',
                     'body'  => 'La empresa se ha restaurado correctamente.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Empresa eliminada permanentemente',
+                        'body'  => 'La empresa se ha eliminado permanentemente correctamente.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Error al eliminar la empresa permanentemente',
+                        'body'  => 'No se pudo eliminar la empresa permanentemente porque está asociada a otros registros.',
+                    ],
                 ],
             ],
         ],
@@ -158,6 +179,11 @@ return [
                 'notification' => [
                     'title' => 'Empresas eliminadas permanentemente',
                     'body'  => 'Las empresas se han eliminado permanentemente correctamente.',
+
+                    'error' => [
+                        'title' => 'Error al eliminar las empresas permanentemente',
+                        'body'  => 'No se pudieron eliminar las empresas permanentemente porque están asociadas a otros registros.',
+                    ],
                 ],
             ],
         ],

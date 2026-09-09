@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'تاريخ الاستحقاق',
                 'summary'       => 'الملخص',
                 'assigned-to'   => 'مُعيَّن إلى',
+
+                'message-placeholder' => 'اكتب رسالتك هنا...',
             ],
         ],
 

@@ -95,6 +95,7 @@ return [
             'country'              => 'Country',
             'currency'             => 'Currency',
             'status'               => 'Status',
+            'created-by'           => 'Created By',
             'created-at'           => 'Created At',
             'updated-at'           => 'Updated At',
         ],
@@ -107,6 +108,7 @@ return [
             'email'        => 'Email',
             'phone'        => 'Phone',
             'currency'     => 'Currency',
+            'created-by'   => 'Created By',
             'created-at'   => 'Created At',
             'updated-at'   => 'Updated At',
         ],
@@ -128,6 +130,11 @@ return [
                 'notification' => [
                     'title' => 'Company deleted',
                     'body'  => 'The company has been deleted successfully.',
+
+                    'default-company' => [
+                        'title' => 'Cannot delete default company',
+                        'body'  => 'You cannot delete the company currently set as your default company.',
+                    ],
                 ],
             ],
 
@@ -135,6 +142,20 @@ return [
                 'notification' => [
                     'title' => 'Company restored',
                     'body'  => 'The company has been restored successfully.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Company force deleted',
+                        'body'  => 'The company has been force deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Company force deletion failed',
+                        'body'  => 'The company could not be force deleted because it is associated with other records.',
+                    ],
                 ],
             ],
         ],
@@ -158,6 +179,11 @@ return [
                 'notification' => [
                     'title' => 'Companies force deleted',
                     'body'  => 'The companies has been force deleted successfully.',
+
+                    'error' => [
+                        'title' => 'Companies force deletion failed',
+                        'body'  => 'The companies could not be force deleted because they are associated with other records.',
+                    ],
                 ],
             ],
         ],

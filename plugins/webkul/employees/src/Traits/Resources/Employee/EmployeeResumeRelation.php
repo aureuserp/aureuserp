@@ -178,15 +178,15 @@ trait EmployeeResumeRelation
             ])
             ->filters([
                 SelectFilter::make('type_id')
-                    ->label(__('employees::filament/resources/employee/relation-manager/resume.table.groups.type'))
+                    ->label(__('employees::filament/resources/employee/relation-manager/resume.table.filters.type'))
                     ->relationship('resumeType', 'name')
                     ->searchable(),
                 Filter::make('start_date')
                     ->schema([
                         DatePicker::make('start')
-                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.groups.start-date-from')),
+                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.filters.start-date-from')),
                         DatePicker::make('end')
-                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.groups.start-date-to')),
+                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.filters.start-date-to')),
                     ])
                     ->query(function ($query, array $data) {
                         return $query
@@ -203,9 +203,9 @@ trait EmployeeResumeRelation
                 Filter::make('created_at')
                     ->schema([
                         DatePicker::make('from')
-                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.groups.created-from')),
+                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.filters.created-from')),
                         DatePicker::make('to')
-                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.groups.created-to')),
+                            ->label(__('employees::filament/resources/employee/relation-manager/resume.table.filters.created-to')),
                     ])
                     ->query(function ($query, array $data) {
                         return $query

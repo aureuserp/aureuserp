@@ -56,8 +56,8 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Condición de pago eliminada',
-                    'body'  => 'La condición de pago se ha eliminado correctamente.',
+                    'title' => 'Posición fiscal eliminada',
+                    'body'  => 'La posición fiscal se ha eliminado correctamente.',
                 ],
             ],
         ],

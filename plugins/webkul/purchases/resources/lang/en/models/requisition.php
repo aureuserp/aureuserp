@@ -6,8 +6,8 @@ return [
     'log-attributes' => [
         'state'     => 'Status',
         'reference' => 'Reference',
-        'starts_at' => 'Start Date',
-        'ends_at'   => 'End Date',
+        'starts-at' => 'Start Date',
+        'ends-at'   => 'End Date',
         'partner'   => 'Vendor',
         'buyer'     => 'Buyer',
     ],

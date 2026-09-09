@@ -56,8 +56,8 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Condição de pagamento excluída',
-                    'body'  => 'A condição de pagamento foi excluída com sucesso.',
+                    'title' => 'Posição fiscal excluída',
+                    'body'  => 'A posição fiscal foi excluída com sucesso.',
                 ],
             ],
         ],

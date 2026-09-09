@@ -62,6 +62,9 @@ return [
             'time-type'           => 'نوع الوقت',
             'request-unit'        => 'وحدة الطلب',
             'created-by'          => 'أنشئ بواسطة',
+            'employee-request'    => 'طلب الموظف',
+            'created-at'          => 'تاريخ الإنشاء',
+            'updated-at'          => 'تاريخ التحديث',
         ],
 
         'actions' => [

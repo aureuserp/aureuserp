@@ -95,6 +95,7 @@ return [
             'country'      => 'País',
             'currency'     => 'Moeda',
             'status'       => 'Status',
+            'created-by'   => 'Criado por',
             'created-at'   => 'Criado em',
             'updated-at'   => 'Atualizado em',
         ],
@@ -107,6 +108,7 @@ return [
             'email'        => 'E-mail',
             'phone'        => 'Telefone',
             'currency'     => 'Moeda',
+            'created-by'   => 'Criado por',
             'created-at'   => 'Criado em',
             'updated-at'   => 'Atualizado em',
         ],
@@ -128,6 +130,11 @@ return [
                 'notification' => [
                     'title' => 'Empresa excluída',
                     'body'  => 'A empresa foi excluída com sucesso.',
+
+                    'default-company' => [
+                        'title' => 'Não é possível excluir a empresa padrão',
+                        'body'  => 'Você não pode excluir a empresa atualmente definida como sua empresa padrão.',
+                    ],
                 ],
             ],
 
@@ -135,6 +142,20 @@ return [
                 'notification' => [
                     'title' => 'Empresa restaurada',
                     'body'  => 'A empresa foi restaurada com sucesso.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Empresa excluída permanentemente',
+                        'body'  => 'A empresa foi excluída permanentemente com sucesso.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Falha ao excluir a empresa permanentemente',
+                        'body'  => 'Não foi possível excluir a empresa permanentemente porque ela está associada a outros registros.',
+                    ],
                 ],
             ],
         ],
@@ -158,6 +179,11 @@ return [
                 'notification' => [
                     'title' => 'Empresas excluídas permanentemente',
                     'body'  => 'As empresas foram excluídas permanentemente com sucesso.',
+
+                    'error' => [
+                        'title' => 'Falha ao excluir as empresas permanentemente',
+                        'body'  => 'Não foi possível excluir as empresas permanentemente porque estão associadas a outros registros.',
+                    ],
                 ],
             ],
         ],

@@ -95,6 +95,7 @@ return [
             'country'              => 'Pays',
             'currency'             => 'Devise',
             'status'               => 'Statut',
+            'created-by'           => 'Créé par',
             'created-at'           => 'Créé le',
             'updated-at'           => 'Mis à jour le',
         ],
@@ -107,6 +108,7 @@ return [
             'email'        => 'E-mail',
             'phone'        => 'Téléphone',
             'currency'     => 'Devise',
+            'created-by'   => 'Créé par',
             'created-at'   => 'Créé le',
             'updated-at'   => 'Mis à jour le',
         ],
@@ -128,6 +130,11 @@ return [
                 'notification' => [
                     'title' => 'Société supprimée',
                     'body'  => 'La société a été supprimée avec succès.',
+
+                    'default-company' => [
+                        'title' => 'Impossible de supprimer la société par défaut',
+                        'body'  => 'Vous ne pouvez pas supprimer la société actuellement définie comme votre société par défaut.',
+                    ],
                 ],
             ],
 
@@ -135,6 +142,20 @@ return [
                 'notification' => [
                     'title' => 'Société restaurée',
                     'body'  => 'La société a été restaurée avec succès.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'success' => [
+                        'title' => 'Société définitivement supprimée',
+                        'body'  => 'La société a été définitivement supprimée avec succès.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Échec de la suppression définitive de la société',
+                        'body'  => 'La société n\'a pas pu être définitivement supprimée car elle est associée à d\'autres enregistrements.',
+                    ],
                 ],
             ],
         ],
@@ -158,6 +179,11 @@ return [
                 'notification' => [
                     'title' => 'Sociétés définitivement supprimées',
                     'body'  => 'Les sociétés ont été définitivement supprimées avec succès.',
+
+                    'error' => [
+                        'title' => 'Échec de la suppression définitive des sociétés',
+                        'body'  => 'Les sociétés n\'ont pas pu être définitivement supprimées car elles sont associées à d\'autres enregistrements.',
+                    ],
                 ],
             ],
         ],

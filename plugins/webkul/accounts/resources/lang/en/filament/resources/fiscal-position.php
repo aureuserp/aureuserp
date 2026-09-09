@@ -56,8 +56,8 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'Fiscal Position deleted',
+                    'body'  => 'The fiscal position has been deleted successfully.',
                 ],
             ],
         ],

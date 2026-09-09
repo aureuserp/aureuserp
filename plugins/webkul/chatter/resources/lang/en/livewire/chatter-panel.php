@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'Due Date',
                 'summary'       => 'Summary',
                 'assigned-to'   => 'Assigned To',
+
+                'message-placeholder' => 'Type your message here...',
             ],
         ],
 

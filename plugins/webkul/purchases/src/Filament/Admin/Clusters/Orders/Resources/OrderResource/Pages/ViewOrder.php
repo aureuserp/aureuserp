@@ -64,8 +64,8 @@ class ViewOrder extends ViewRecord
                     } catch (QueryException $e) {
                         Notification::make()
                             ->danger()
-                            ->title(__('inventories::filament/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.error.title'))
-                            ->body(__('inventories::filament/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.error.body'))
+                            ->title(__('purchases::filament/admin/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.error.title'))
+                            ->body(__('purchases::filament/admin/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.error.body'))
                             ->send();
 
                         $action->failure();
@@ -74,8 +74,8 @@ class ViewOrder extends ViewRecord
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('inventories::filament/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.success.title'))
-                        ->body(__('inventories::filament/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.success.body')),
+                        ->title(__('purchases::filament/admin/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.success.title'))
+                        ->body(__('purchases::filament/admin/clusters/orders/resources/order/pages/view-order.header-actions.delete.notification.success.body')),
                 ),
         ];
     }

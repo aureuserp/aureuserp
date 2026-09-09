@@ -23,6 +23,13 @@ return [
             ],
         ],
 
+        'restore' => [
+            'notification' => [
+                'title' => 'Candidato restaurado',
+                'body'  => 'O candidato foi restaurado com sucesso.',
+            ],
+        ],
+
         'refuse' => [
             'title' => 'Motivo da recusa',
             'form'  => [

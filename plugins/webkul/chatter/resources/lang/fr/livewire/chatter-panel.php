@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'Date d\'échéance',
                 'summary'       => 'Résumé',
                 'assigned-to'   => 'Assigné à',
+
+                'message-placeholder' => 'Tapez votre message ici...',
             ],
         ],
 
