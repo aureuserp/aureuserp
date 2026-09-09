@@ -56,8 +56,8 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Condition de paiement supprimée',
-                    'body'  => 'La condition de paiement a été supprimée avec succès.',
+                    'title' => 'Position fiscale supprimée',
+                    'body'  => 'La position fiscale a été supprimée avec succès.',
                 ],
             ],
         ],

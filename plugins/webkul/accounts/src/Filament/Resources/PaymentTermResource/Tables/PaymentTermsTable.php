@@ -151,8 +151,8 @@ class PaymentTermsTable
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-restore.notification.title'))
-                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-restore.notification.body'))
+                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.restore.notification.title'))
+                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.restore.notification.body'))
                         ),
                 ]),
             ])
