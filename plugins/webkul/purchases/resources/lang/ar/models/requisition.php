@@ -6,8 +6,8 @@ return [
     'log-attributes' => [
         'state'     => 'الحالة',
         'reference' => 'المرجع',
-        'starts_at' => 'تاريخ البدء',
-        'ends_at'   => 'تاريخ الانتهاء',
+        'starts-at' => 'تاريخ البدء',
+        'ends-at'   => 'تاريخ الانتهاء',
         'partner'   => 'المورد',
         'buyer'     => 'المشتري',
     ],

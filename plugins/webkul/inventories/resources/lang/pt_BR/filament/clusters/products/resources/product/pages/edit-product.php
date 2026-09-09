@@ -24,6 +24,11 @@ return [
                     'body'  => 'A quantidade disponível deve ser definida como zero antes de alterar o rastreamento de estoque.',
                 ],
 
+                'available-quantity' => [
+                    'title' => 'Erro ao atualizar produto',
+                    'body'  => 'A quantidade disponível deve ser definida como zero antes que você possa marcar este produto como não armazenável.',
+                ],
+
                 'track-by-update' => [
                     'title' => 'Erro ao atualizar rastreamento',
                     'body'  => 'Você tem produto(s) em estoque sem lote/número de série. É possível atribuir lotes/números de série fazendo um ajuste de estoque.',

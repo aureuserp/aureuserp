@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'navigation' => [
+        'title' => 'الوسوم',
+    ],
+
     'form' => [
         'name'  => 'الاسم',
         'color' => 'اللون',

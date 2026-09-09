@@ -17,7 +17,7 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Receipt deleted',
-                        'body'  => 'The receipt ras been deleted successfully.',
+                        'body'  => 'The receipt has been deleted successfully.',
                     ],
 
                     'error' => [

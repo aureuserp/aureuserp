@@ -24,6 +24,11 @@ return [
                     'body'  => 'La quantité disponible doit être fixée à zéro avant de modifier le suivi d\'inventaire.',
                 ],
 
+                'available-quantity' => [
+                    'title' => 'Erreur lors de la mise à jour du produit',
+                    'body'  => 'La quantité disponible doit être fixée à zéro avant de pouvoir marquer ce produit comme non stockable.',
+                ],
+
                 'track-by-update' => [
                     'title' => 'Erreur lors de la mise à jour du suivi',
                     'body'  => 'Vous avez des produits en stock sans numéro de lot/série. Vous pouvez attribuer des numéros de lot/série en effectuant un ajustement d\'inventaire.',

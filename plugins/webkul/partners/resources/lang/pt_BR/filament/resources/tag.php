@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'navigation' => [
+        'title' => 'Tags',
+    ],
+
     'form' => [
         'name'  => 'Nome',
         'color' => 'Cor',

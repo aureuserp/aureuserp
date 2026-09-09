@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'navigation' => [
+        'title' => 'Setores',
+    ],
+
     'form' => [
         'name'      => 'Nome',
         'full-name' => 'Nome completo',

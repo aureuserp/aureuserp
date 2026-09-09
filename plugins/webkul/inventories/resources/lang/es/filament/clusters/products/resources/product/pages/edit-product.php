@@ -24,6 +24,11 @@ return [
                     'body'  => 'La cantidad disponible debe establecerse en cero antes de cambiar el seguimiento de inventario.',
                 ],
 
+                'available-quantity' => [
+                    'title' => 'Error al actualizar el producto',
+                    'body'  => 'La cantidad disponible debe establecerse en cero antes de poder marcar este producto como no almacenable.',
+                ],
+
                 'track-by-update' => [
                     'title' => 'Error al actualizar el seguimiento',
                     'body'  => 'Existen productos en stock que no tienen número de lote / serie. Se pueden asignar números de lote / serie realizando un ajuste de inventario.',

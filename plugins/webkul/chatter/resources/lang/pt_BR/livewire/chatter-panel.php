@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'Data de vencimento',
                 'summary'       => 'Resumo',
                 'assigned-to'   => 'Atribuído a',
+
+                'message-placeholder' => 'Digite sua mensagem aqui...',
             ],
         ],
 

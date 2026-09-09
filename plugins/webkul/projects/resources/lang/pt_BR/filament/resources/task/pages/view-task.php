@@ -5,5 +5,12 @@ return [
         'create' => [
             'label' => 'Nova tarefa',
         ],
+
+        'delete' => [
+            'notification' => [
+                'title' => 'Tarefa excluída',
+                'body'  => 'A tarefa foi excluída com sucesso.',
+            ],
+        ],
     ],
 ];

@@ -69,9 +69,10 @@ return [
                 'title'    => 'Otra información',
 
                 'fields' => [
-                    'checked'         => 'Verificado',
-                    'company'         => 'Empresa',
-                    'fiscal-position' => 'Posición fiscal',
+                    'checked'                 => 'Verificado',
+                    'company'                 => 'Empresa',
+                    'fiscal-position'         => 'Posición fiscal',
+                    'fiscal-position-tooltip' => 'Las posiciones fiscales se utilizan para adaptar los impuestos y las cuentas según la ubicación del cliente.',
                 ],
             ],
 

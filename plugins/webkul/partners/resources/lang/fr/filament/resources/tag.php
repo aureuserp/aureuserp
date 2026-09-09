@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'navigation' => [
+        'title' => 'Étiquettes',
+    ],
+
     'form' => [
         'name'  => 'Nom',
         'color' => 'Couleur',
