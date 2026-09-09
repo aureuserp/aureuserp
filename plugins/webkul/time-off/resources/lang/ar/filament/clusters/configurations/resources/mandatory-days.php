@@ -33,6 +33,8 @@ return [
             'created-by'   => 'أنشئ بواسطة',
             'start-date'   => 'تاريخ البداية',
             'end-date'     => 'تاريخ النهاية',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [

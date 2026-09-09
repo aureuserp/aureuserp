@@ -91,13 +91,13 @@ return [
                     'body'  => 'تم حذف المرشح بنجاح.',
                 ],
             ],
+        ],
 
-            'empty-state-actions' => [
-                'create' => [
-                    'notification' => [
-                        'title' => 'تم إنشاء المرشح',
-                        'body'  => 'تم إنشاء المرشح بنجاح.',
-                    ],
+        'empty-state-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'تم إنشاء المرشح',
+                    'body'  => 'تم إنشاء المرشح بنجاح.',
                 ],
             ],
         ],

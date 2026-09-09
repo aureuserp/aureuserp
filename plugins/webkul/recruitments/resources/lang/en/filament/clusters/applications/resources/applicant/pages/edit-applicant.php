@@ -23,6 +23,13 @@ return [
             ],
         ],
 
+        'restore' => [
+            'notification' => [
+                'title' => 'Applicant restored',
+                'body'  => 'The applicant has been restored successfully.',
+            ],
+        ],
+
         'refuse' => [
             'title'        => 'Refuse Reason',
             'form'         => [

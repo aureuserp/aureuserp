@@ -91,13 +91,13 @@ return [
                     'body'  => 'Les candidats ont été supprimés avec succès.',
                 ],
             ],
+        ],
 
-            'empty-state-actions' => [
-                'create' => [
-                    'notification' => [
-                        'title' => 'Candidat créé',
-                        'body'  => 'Les candidats ont été créés avec succès.',
-                    ],
+        'empty-state-actions' => [
+            'create' => [
+                'notification' => [
+                    'title' => 'Candidat créé',
+                    'body'  => 'Les candidats ont été créés avec succès.',
                 ],
             ],
         ],

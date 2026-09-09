@@ -62,6 +62,9 @@ return [
             'time-type'           => 'Time Type',
             'request-unit'        => 'Request Unit',
             'created-by'          => 'Created By',
+            'employee-request'    => 'Employee Request',
+            'created-at'          => 'Created At',
+            'updated-at'          => 'Updated At',
         ],
 
         'actions' => [

@@ -110,8 +110,8 @@ class JobPositionForm
                                             ->createOptionForm(fn (Schema $schema) => UserResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
                                                 return $action
-                                                    ->modalIcon('heroicon-o-building-office')
-                                                    ->modalHeading(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.company-modal-title'));
+                                                    ->modalIcon('heroicon-o-user')
+                                                    ->modalHeading(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.recruiter-modal-title'));
                                             }),
                                         Select::make('recruitments_job_position_interviewers')
                                             ->label(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.interviewers'))
@@ -129,8 +129,8 @@ class JobPositionForm
                                             ->createOptionForm(fn (Schema $schema) => AddressResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
                                                 return $action
-                                                    ->modalHeading(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.department-modal-title'))
-                                                    ->modalSubmitActionLabel(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.department-modal-title'))
+                                                    ->modalHeading(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.job-location-modal-title'))
+                                                    ->modalSubmitActionLabel(__('recruitments::filament/clusters/configurations/resources/job-position.form.sections.employment-information.fields.job-location-modal-title'))
                                                     ->modalWidth('2xl');
                                             }),
                                         Select::make('industry_id')

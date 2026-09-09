@@ -33,6 +33,8 @@ return [
             'created-by'   => 'Criado por',
             'start-date'   => 'Data de início',
             'end-date'     => 'Data de término',
+            'created-at'   => 'Criado em',
+            'updated-at'   => 'Atualizado em',
         ],
 
         'groups' => [
