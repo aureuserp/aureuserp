@@ -22,6 +22,7 @@ class TaxResource extends JsonResource
             'type_tax_use'                     => $this->type_tax_use,
             'tax_scope'                        => $this->tax_scope,
             'amount_type'                      => $this->amount_type,
+            'formula'                          => $this->formula,
             'price_include_override'           => $this->price_include_override,
             'tax_exigibility'                  => $this->tax_exigibility,
             'name'                             => $this->name,

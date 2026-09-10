@@ -37,9 +37,9 @@ class ConfirmReceiptDateAction extends Action
                     ->send();
             })
             ->hidden(fn () => ! in_array($this->getRecord()->state, [
-                    OrderState::PURCHASE,
-                    OrderState::DONE,
-                ])
+                OrderState::PURCHASE,
+                OrderState::DONE,
+            ])
                 || $this->getRecord()->mail_reminder_confirmed
                 || ! $this->getRecord()->planned_at
                 || true

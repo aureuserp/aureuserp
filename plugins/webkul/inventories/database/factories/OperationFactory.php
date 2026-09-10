@@ -10,13 +10,15 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Operation>
  */
 class OperationFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Operation::class;
 
     public function definition(): array
@@ -42,7 +44,6 @@ class OperationFactory extends Factory
             'back_order_id'           => null,
             'return_id'               => null,
             'partner_id'              => null,
-            'company_id'              => Company::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }

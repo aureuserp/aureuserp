@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveLineFactory;
 use Webkul\Inventory\Enums\MoveState;
@@ -15,9 +16,11 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class MoveLine extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'inventories_move_lines';
@@ -53,15 +56,6 @@ class MoveLine extends Model
         'is_picked'    => 'boolean',
         'scheduled_at' => 'datetime',
     ];
-
-    protected array $context = [];
-
-    public function setContext(array $context)
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
 
     public function move(): BelongsTo
     {
@@ -137,278 +131,227 @@ class MoveLine extends Model
     {
         parent::boot();
 
-        static::creating(function ($moveLine) {
-            $moveLine->creator_id ??= Auth::id();
+        static::creating(function (MoveLine $line) {
+            $line->creator_id ??= Auth::id();
 
-            $moveLine->company_id ??= $moveLine->move?->company_id;
+            $line->company_id ??= $line->move?->company_id;
 
-            $moveLine->computeState();
+            $line->state ??= $line->move?->state;
         });
 
-        static::saving(function ($moveLine) {
-            $moveLine->computeOperationId();
-
-            $moveLine->computeReference();
-
-            $moveLine->computeUOMQty();
-
-            $moveLine->computePickingDescription();
-
-            $moveLine->computeProductId();
-
-            $moveLine->computePartnerId();
-
-            $moveLine->computeUOMId();
-
-            $moveLine->computeIsPicked();
-
-            $moveLine->computeSourceLocationId();
-
-            $moveLine->computeDestinationLocationId();
-
-            $moveLine->computeScheduledAt();
+        static::saving(function (MoveLine $line) {
+            $line->applyDefaults();
         });
 
-        static::created(function ($moveLine) {
-            if ($moveLine->state !== MoveState::DONE) {
-                $reservation = ! $moveLine->move->shouldBypassReservation();
-
-                if ($moveLine->qty && $reservation) {
-                    ProductQuantity::updateReservedQuantity(
-                        product: $moveLine->product,
-                        location: $moveLine->sourceLocation,
-                        quantity: $moveLine->uom_qty,
-                        lot: $moveLine->lot,
-                        package: $moveLine->package,
-                    );
-                }
-            }
-
-            $moveLine->move->computeQuantity();
-
-            $moveLine->move->computeState();
-
-            $moveLine->move->save();
-        });
-
-        static::updating(function ($moveLine) {
-            $values = $moveLine->getDirty();
-
-            $triggers = ['source_location_id', 'destination_location_id', 'lot_id', 'package_id', 'result_package_id', 'uom_id'];
-
-            $updates = [];
-
-            foreach ($triggers as $key) {
-                if (array_key_exists($key, $values)) {
-                    $updates[$key] = $values[$key];
-                }
-            }
-
-            if (array_key_exists('result_package_id', $updates)) {
-                if ($moveLine->package_level_id) {
-                    if (! empty($updates['result_package_id'])) {
-                        $moveLine->packageLevel->update(['package_id' => $updates['result_package_id']]);
-                    } else {
-                        $packageLevel = $moveLine->packageLevel;
-
-                        $moveLine->package_level_id = null;
-
-                        if ($packageLevel->moveLines()->count() === 0) {
-                            $packageLevel->delete();
-                        }
-                    }
-                }
-            }
-
-            if ((! empty($updates) && ! array_key_exists('result_package_id', $updates)) || array_key_exists('qty', $values)) {
-                if ($moveLine->product->is_storable && $moveLine->state !== MoveState::DONE) {
-                    if (array_key_exists('qty', $values) || array_key_exists('uom_id', $values)) {
-                        $newUOM = $moveLine->uom;
-
-                        if (isset($updates['uom_id'])) {
-                            $newUOM = UOM::find($updates['uom_id']);
-                        }
-
-                        $newReservedQty = $newUOM->computeQuantity(
-                            $values['qty'] ?? $moveLine->getOriginal('qty'),
-                            $moveLine->product->uom,
-                            roundingMethod: 'HALF-UP'
-                        );
-
-                        if (float_compare($newReservedQty, 0, precisionRounding: $moveLine->product->uom->rounding) < 0) {
-                            throw new \Exception(__('inventories::system.move-line.negative-quantity-not-allowed'));
-                        }
-                    } else {
-                        $newReservedQty = $moveLine->uom_qty;
-                    }
-
-                    $originalLocation = Location::find($moveLine->getOriginal('source_location_id')) ?? $moveLine->sourceLocation;
-
-                    $originalLot = Lot::find($moveLine->getOriginal('lot_id'));
-
-                    $originalPackage = Package::find($moveLine->getOriginal('package_id'));
-
-                    if (! float_is_zero($moveLine->getOriginal('uom_qty'), precisionRounding: $moveLine->product->uom->rounding)) {
-                        $moveLine->synchronizeQuantity(
-                            -$moveLine->getOriginal('uom_qty'),
-                            $originalLocation,
-                            action: 'reserved',
-                            values: [
-                                'lot'     => $originalLot,
-                                'package' => $originalPackage,
-                            ]
-                        );
-                    }
-
-                    $location = array_key_exists('source_location_id', $updates)
-                        ? Location::find($updates['source_location_id'])
-                        : $originalLocation;
-
-                    if (! $moveLine->move->shouldBypassReservation($location)) {
-                        $moveLine->synchronizeQuantity(
-                            $newReservedQty,
-                            $location,
-                            action: 'reserved',
-                            values: [
-                                'lot' => array_key_exists('lot_id', $updates)
-                                    ? Lot::find($updates['lot_id'])
-                                    : $originalLot,
-                                'package' => array_key_exists('package_id', $updates)
-                                    ? Package::find($updates['package_id'])
-                                    : $originalPackage,
-                            ]
-                        );
-                    }
-                }
-            }
-        });
-
-        static::updated(function ($moveLine) {
-            if ($moveLine->wasChanged('qty') || $moveLine->wasChanged('uom_id')) {
-                $moveLine->move->computeQuantity();
-
-                $moveLine->move->computeState();
-
-                $moveLine->move->save();
-            }
-        });
-
-        static::deleted(function ($moveLine) {
+        static::created(function (MoveLine $line) {
             if (
-                ! float_is_zero($moveLine->uom_qty, precisionRounding: $moveLine->product->uom->rounding)
-                && $moveLine->move_id
-                && ! $moveLine->move->shouldBypassReservation($moveLine->location)
+                $line->state !== MoveState::DONE
+                && $line->qty
+                && ! $line->move->bypassesReservation()
             ) {
-                ProductQuantity::updateReservedQuantity(
-                    product: $moveLine->product,
-                    location: $moveLine->sourceLocation,
-                    quantity: -$moveLine->uom_qty,
-                    lot: $moveLine->lot,
-                    package: $moveLine->package,
+                ProductQuantity::applyReservationDelta(
+                    product: $line->product,
+                    location: $line->sourceLocation,
+                    delta: $line->uom_qty,
+                    lot: $line->lot,
+                    package: $line->package,
                 );
             }
 
-            if ($moveLine->package_level_id) {
-                $packageLevel = $moveLine->packageLevel;
+            $line->refreshMove();
+        });
 
-                if (
-                    $packageLevel
-                    && $packageLevel->moveLines()->count() === 0
-                    && $packageLevel->moves()->count() === 0
-                ) {
-                    $packageLevel->delete();
-                }
+        static::updating(function (MoveLine $line) {
+            $changes = $line->getDirty();
+
+            $relocations = array_intersect_key($changes, array_flip([
+                'source_location_id',
+                'destination_location_id',
+                'lot_id',
+                'package_id',
+                'result_package_id',
+                'uom_id',
+            ]));
+
+            if (array_key_exists('result_package_id', $relocations)) {
+                $line->syncPackageLevel($relocations['result_package_id']);
             }
 
-            $moveLine->move->computeQuantity();
+            $reservationAffected = (! empty($relocations) && ! array_key_exists('result_package_id', $relocations))
+                || array_key_exists('qty', $changes);
 
-            $moveLine->move->computeState();
+            if ($reservationAffected && $line->product->is_storable && $line->state !== MoveState::DONE) {
+                $line->rebookReservation($changes, $relocations);
+            }
+        });
 
-            $moveLine->move->save();
+        static::updated(function (MoveLine $line) {
+            if ($line->wasChanged('qty') || $line->wasChanged('uom_id')) {
+                $line->refreshMove();
+            }
+        });
+
+        static::deleted(function (MoveLine $line) {
+            if (
+                ! float_is_zero($line->uom_qty, precisionRounding: $line->product->uom->rounding)
+                && $line->move_id
+                && ! $line->move->bypassesReservation()
+            ) {
+                ProductQuantity::applyReservationDelta(
+                    product: $line->product,
+                    location: $line->sourceLocation,
+                    delta: -$line->uom_qty,
+                    lot: $line->lot,
+                    package: $line->package,
+                );
+            }
+
+            $line->discardOrphanPackageLevel();
+
+            $line->refreshMove();
         });
     }
 
-    public function computeOperationId()
+    protected function refreshMove(): void
     {
-        $this->operation_id ??= $this->move?->operation_id;
+        $this->move->computeQuantity();
+
+        $this->move->computeState();
+
+        $this->move->save();
     }
 
-    public function computeState()
+    protected function syncPackageLevel(mixed $resultPackageId): void
     {
-        $this->state ??= $this->move?->state;
-    }
-
-    public function computeReference()
-    {
-        $this->reference ??= $this->move?->reference;
-    }
-
-    public function computeUOMQty()
-    {
-        if (! $this->uom) {
+        if (! $this->package_level_id) {
             return;
         }
 
-        $this->uom_qty = $this->uom->computeQuantity($this->qty, $this->product->uom, roundingMethod: 'HALF-UP');
+        if (! empty($resultPackageId)) {
+            $this->packageLevel->update(['package_id' => $resultPackageId]);
+
+            return;
+        }
+
+        $packageLevel = $this->packageLevel;
+
+        $this->package_level_id = null;
+
+        if ($packageLevel->moveLines()->count() === 0) {
+            $packageLevel->delete();
+        }
     }
 
-    public function computePickingDescription()
+    protected function discardOrphanPackageLevel(): void
     {
+        if (! $this->package_level_id) {
+            return;
+        }
+
+        $packageLevel = $this->packageLevel;
+
+        if (
+            $packageLevel
+            && $packageLevel->moveLines()->count() === 0
+            && $packageLevel->moves()->count() === 0
+        ) {
+            $packageLevel->delete();
+        }
+    }
+
+    protected function rebookReservation(array $changes, array $relocations): void
+    {
+        $reserveQty = $this->resolveReservedQuantity($changes, $relocations);
+
+        $previousLocation = Location::find($this->getOriginal('source_location_id')) ?? $this->sourceLocation;
+
+        $previousLot = Lot::find($this->getOriginal('lot_id'));
+
+        $previousPackage = Package::find($this->getOriginal('package_id'));
+
+        if (! float_is_zero($this->getOriginal('uom_qty'), precisionRounding: $this->product->uom->rounding)) {
+            $this->applyQuantityChange(
+                -$this->getOriginal('uom_qty'),
+                $previousLocation,
+                reserved: true,
+                lot: $previousLot,
+                package: $previousPackage,
+            );
+        }
+
+        $location = array_key_exists('source_location_id', $relocations)
+            ? Location::find($relocations['source_location_id'])
+            : $previousLocation;
+
+        if ($this->move->bypassesReservation($location)) {
+            return;
+        }
+
+        $this->applyQuantityChange(
+            $reserveQty,
+            $location,
+            reserved: true,
+            lot: array_key_exists('lot_id', $relocations) ? Lot::find($relocations['lot_id']) : $previousLot,
+            package: array_key_exists('package_id', $relocations) ? Package::find($relocations['package_id']) : $previousPackage,
+        );
+    }
+
+    protected function resolveReservedQuantity(array $changes, array $relocations): float
+    {
+        if (! array_key_exists('qty', $changes) && ! array_key_exists('uom_id', $changes)) {
+            return $this->uom_qty;
+        }
+
+        $uom = isset($relocations['uom_id']) ? UOM::find($relocations['uom_id']) : $this->uom;
+
+        $quantity = $uom->computeQuantity(
+            $changes['qty'] ?? $this->getOriginal('qty'),
+            $this->product->uom,
+            roundingMethod: 'HALF-UP'
+        );
+
+        if (float_compare($quantity, 0, precisionRounding: $this->product->uom->rounding) < 0) {
+            throw new \Exception(__('inventories::system.move-line.negative-quantity-not-allowed'));
+        }
+
+        return $quantity;
+    }
+
+    protected function applyDefaults(): void
+    {
+        $this->operation_id ??= $this->move?->operation_id;
+
+        $this->reference ??= $this->move?->reference;
+
+        if ($this->uom) {
+            $this->uom_qty = $this->uom->computeQuantity($this->qty, $this->product->uom, roundingMethod: 'HALF-UP');
+        }
+
         $this->picking_description ??= $this->move?->description_picking;
-    }
 
-    public function computePartnerId()
-    {
-        $this->partner_id ??= $this->move?->partner_id;
-    }
-
-    public function computeProductId()
-    {
         $this->product_id ??= $this->move?->product_id;
-    }
 
-    public function computeUOMId()
-    {
+        $this->partner_id ??= $this->move?->partner_id;
+
         $this->uom_id ??= $this->product?->uom_id;
-    }
 
-    public function computeIsPicked()
-    {
         $this->is_picked ??= $this->move?->is_picked ?? false;
-    }
 
-    public function computeSourceLocationId()
-    {
         $this->source_location_id ??= $this->move?->source_location_id;
-    }
 
-    public function computeDestinationLocationId()
-    {
         $this->destination_location_id ??= $this->move?->destination_location_id;
-    }
 
-    public function computeScheduledAt()
-    {
         $this->scheduled_at ??= $this->move?->scheduled_at ?? now();
     }
 
-    public function synchronizeQuantity(
+    public function applyQuantityChange(
         float $quantity,
         Location $location,
-        string $action = 'available',
+        bool $reserved = false,
         $incomingDate = null,
-        array $values = []
+        ?Lot $lot = null,
+        ?Package $package = null,
     ): array {
-        $lot = array_key_exists('lot', $values)
-            ? $values['lot']
-            : $this->lot;
-
-        $package = array_key_exists('package', $values)
-            ? $values['package']
-            : $this->package;
-
-        $availableQty = 0;
-
         if (
             ! $this->product->is_storable
             || float_is_zero($quantity, precisionRounding: $this->uom->rounding)
@@ -416,79 +359,92 @@ class MoveLine extends Model
             return [0, false];
         }
 
-        if ($action === 'available') {
-            [$availableQty, $incomingDate] = ProductQuantity::updateAvailableQuantity(
-                product: $this->product,
-                location: $location,
-                quantity: $quantity,
-                lot: $lot,
-                package: $package,
-                incomingDate: $incomingDate,
-            );
-        } elseif ($action === 'reserved' && ! $this->move->shouldBypassReservation($location)) {
-            ProductQuantity::updateReservedQuantity(
-                product: $this->product,
-                location: $location,
-                quantity: $quantity,
-                lot: $lot,
-                package: $package
-            );
-        }
-
-        if ($availableQty < 0 && $lot) {
-            $untrackedQty = ProductQuantity::getAvailableQuantity(
-                product: $this->product,
-                location: $location,
-                lot: null,
-                package: $package,
-                strict: true
-            );
-
-            if (! $untrackedQty) {
-                return [$availableQty, $incomingDate];
+        if ($reserved) {
+            if (! $this->move->bypassesReservation($location)) {
+                ProductQuantity::applyReservationDelta(
+                    product: $this->product,
+                    location: $location,
+                    delta: $quantity,
+                    lot: $lot,
+                    package: $package
+                );
             }
 
-            $takenFromUntrackedQty = min($untrackedQty, abs($quantity));
+            return [0, $incomingDate];
+        }
 
-            ProductQuantity::updateAvailableQuantity(
-                product: $this->product,
-                location: $location,
-                quantity: -$takenFromUntrackedQty,
-                lot: null,
-                package: $package,
-                incomingDate: $incomingDate,
-            );
+        [$availableQty, $incomingDate] = ProductQuantity::applyQuantityDelta(
+            product: $this->product,
+            location: $location,
+            delta: $quantity,
+            lot: $lot,
+            package: $package,
+            incomingDate: $incomingDate,
+        );
 
-            ProductQuantity::updateAvailableQuantity(
-                product: $this->product,
-                location: $location,
-                quantity: $takenFromUntrackedQty,
-                lot: $lot,
-                package: $package,
-                incomingDate: $incomingDate,
-            );
+        if ($availableQty < 0 && $lot) {
+            $this->coverShortfallFromUntracked($location, $package, $quantity, $incomingDate, $lot, $availableQty);
         }
 
         return [$availableQty, $incomingDate];
     }
 
-    public function freeReservation(
+    protected function coverShortfallFromUntracked(
+        Location $location,
+        ?Package $package,
+        float $quantity,
+        $incomingDate,
+        Lot $lot,
+        float $availableQty
+    ): void {
+        $untracked = ProductQuantity::availableFor(
+            product: $this->product,
+            location: $location,
+            lot: null,
+            package: $package,
+            strict: true
+        );
+
+        if (! $untracked) {
+            return;
+        }
+
+        $transferable = min($untracked, abs($quantity));
+
+        ProductQuantity::applyQuantityDelta(
+            product: $this->product,
+            location: $location,
+            delta: -$transferable,
+            lot: null,
+            package: $package,
+            incomingDate: $incomingDate,
+        );
+
+        ProductQuantity::applyQuantityDelta(
+            product: $this->product,
+            location: $location,
+            delta: $transferable,
+            lot: $lot,
+            package: $package,
+            incomingDate: $incomingDate,
+        );
+    }
+
+    public function releaseCompetingReservations(
         Product $product,
         Location $location,
         float $quantity,
         ?Lot $lot = null,
         ?Package $package = null,
-        $moveLineIdsToIgnore = null
+        ?Collection $excludedLineIds = null
     ): void {
-        $moveLineIdsToIgnore = $moveLineIdsToIgnore ?? collect();
+        $excludedLineIds = ($excludedLineIds ?? collect())->push($this->id);
 
-        $moveLineIdsToIgnore->push($this->id);
-
-        if ($this->move->shouldBypassReservation($location)) {
+        if ($this->move->bypassesReservation($location)) {
             return;
         }
 
-        $outdatedMoveLines = MoveLine::query()
+        $candidates = MoveLine::query()
             ->whereNotIn('state', [MoveState::DONE, MoveState::CANCELED])
             ->where('product_id', $product->id)
             ->where('lot_id', $lot?->id)
@@ -496,86 +452,84 @@ class MoveLine extends Model
             ->where('package_id', $package?->id)
             ->where('uom_qty', '>', 0.0)
             ->where('is_picked', false)
-            ->whereNotIn('id', $moveLineIdsToIgnore->all())
+            ->whereNotIn('id', $excludedLineIds->all())
             ->get()
-            ->sortBy(function ($candidate) {
-                $isCurrentOperation = $candidate->move->operation_id !== $this->move->operation_id ? 1 : 0;
+            ->sortBy(fn (MoveLine $candidate) => $this->releasePriority($candidate));
 
-                $scheduledAt = $candidate->operation_id
-                    ? ($candidate->move->operation->scheduled_at ?? $candidate->move->scheduled_at)
-                    : ($candidate->move->scheduled_at ?? null);
+        $movesToReserve = collect();
 
-                return [
-                    $isCurrentOperation,
-                    $scheduledAt ? -$scheduledAt->timestamp() : 0,
-                    -$candidate->id,
-                ];
-            });
-
-        $moveToReassign = collect();
-
-        $toDeleteCandidateIds = collect();
+        $exhaustedIds = collect();
 
         $rounding = $this->uom->rounding;
 
-        foreach ($outdatedMoveLines as $candidate) {
-            $moveToReassign->push($candidate->move);
+        foreach ($candidates as $candidate) {
+            $movesToReserve->push($candidate->move);
 
-            if (float_compare($candidate->uom_qty, $quantity, precisionRounding: $rounding) <= 0) {
-                $quantity -= $candidate->uom_qty;
-
-                $toDeleteCandidateIds->push($candidate->id);
-
-                if (float_is_zero($quantity, precisionRounding: $rounding)) {
-                    break;
-                }
-            } else {
+            if (float_compare($candidate->uom_qty, $quantity, precisionRounding: $rounding) > 0) {
                 $candidate->update([
                     'qty' => $candidate->qty - $candidate->product->uom->computeQuantity($quantity, $candidate->uom, roundingMethod: 'HALF-UP'),
                 ]);
 
                 break;
             }
+
+            $quantity -= $candidate->uom_qty;
+
+            $exhaustedIds->push($candidate->id);
+
+            if (float_is_zero($quantity, precisionRounding: $rounding)) {
+                break;
+            }
         }
 
-        $moveLinesToDelete = MoveLine::whereIn('id', $toDeleteCandidateIds)->get();
+        $exhausted = MoveLine::whereIn('id', $exhaustedIds)->get();
 
-        $moveLinesToDelete->pluck('move')
-            ->merge($moveToReassign)
+        $exhausted->pluck('move')
+            ->merge($movesToReserve)
             ->unique('id')
-            ->each(function ($move) {
+            ->each(function (Move $move) {
                 $move->update(['procure_method' => ProcureMethod::MAKE_TO_STOCK]);
 
                 $move->moveOrigins()->detach();
             });
 
-        MoveLine::whereIn('id', $toDeleteCandidateIds)->get()->each(fn ($moveLine) => $moveLine->delete());
+        $exhausted->each(fn (MoveLine $line) => $line->delete());
 
-        InventoryFacade::assignMoves($moveToReassign->unique('id'));
+        InventoryFacade::reserveMoves($movesToReserve->unique('id'));
     }
 
-    public function createAndAssignProductionLot()
+    protected function releasePriority(MoveLine $candidate): array
     {
-        $lotVals = [$this->prepareNewLotVals()];
+        $scheduledAt = $candidate->operation_id
+            ? ($candidate->move->operation->scheduled_at ?? $candidate->move->scheduled_at)
+            : $candidate->move->scheduled_at;
 
+        return [
+            $candidate->move->operation_id !== $this->move->operation_id ? 1 : 0,
+            $scheduledAt ? -$scheduledAt->timestamp : 0,
+            -$candidate->id,
+        ];
+    }
+
+    public function assignLotFromName(): void
+    {
         if ($this->product->tracking === ProductTracking::LOT) {
-            $existingLot = Lot::where('product_id', $this->product_id)
+            $existing = Lot::query()
+                ->where('product_id', $this->product_id)
                 ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$this->lot_name])
                 ->first();
 
-            if ($existingLot) {
-                $this->update(['lot_id' => $existingLot->id]);
+            if ($existing) {
+                $this->update(['lot_id' => $existing->id]);
 
                 return;
             }
         }
 
-        $lot = Lot::create($lotVals[0]);
-
-        $this->update(['lot_id' => $lot->id]);
+        $this->update(['lot_id' => Lot::create($this->buildLotAttributes())->id]);
     }
 
-    public function prepareNewLotVals(): array
+    public function buildLotAttributes(): array
     {
         return [
             'name'       => $this->lot_name,

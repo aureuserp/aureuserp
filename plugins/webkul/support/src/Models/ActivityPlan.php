@@ -11,9 +11,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class ActivityPlan extends Model
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes;
 
     protected $table = 'activity_plans';
@@ -128,8 +130,11 @@ class ActivityPlan extends Model
             $authUser = Auth::user();
 
             $activityPlan->creator_id ??= $authUser->id;
-
-            $activityPlan->company_id ??= $authUser?->default_company_id;
         });
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 }

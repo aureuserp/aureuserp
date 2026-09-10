@@ -8,10 +8,12 @@ use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateDropship extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected static string $resource = DropshipResource::class;
@@ -49,7 +51,9 @@ class CreateDropship extends CreateRecord
     {
         parent::mount();
 
-        $operationType = OperationType::where('type', Enums\OperationType::DROPSHIP)->first();
+        $operationType = OperationType::where('type', Enums\OperationType::DROPSHIP)
+            ->where('company_id', current_company_id())
+            ->first();
 
         $this->data['operation_type_id'] = $operationType?->id;
 

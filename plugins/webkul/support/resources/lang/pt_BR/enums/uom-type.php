@@ -2,6 +2,6 @@
 
 return [
     'reference' => 'Referência',
-    'bigger' => 'Maior',
-    'smaller' => 'Menor',
+    'bigger'    => 'Maior',
+    'smaller'   => 'Menor',
 ];

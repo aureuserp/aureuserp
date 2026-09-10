@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Empresa excluída',
-                'body' => 'A empresa foi excluída com sucesso.',
+                'body'  => 'A empresa foi excluída com sucesso.',
             ],
         ],
     ],

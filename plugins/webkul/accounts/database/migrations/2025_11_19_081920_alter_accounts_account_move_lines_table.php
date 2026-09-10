@@ -28,21 +28,17 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::table('accounts_partial_reconciles', function (Blueprint $table) {
-            $table->dropForeign(['debit_move_id']);
-            $table->dropForeign(['credit_move_id']);
+        $foreignKeys = collect(Schema::getForeignKeys('accounts_partial_reconciles'))
+            ->pluck('name');
 
-            $table->foreign('debit_move_id')
-                ->references('id')
-                ->on('accounts_account_moves')
-                ->restrictOnDelete()
-                ->restrictOnUpdate();
+        Schema::table('accounts_partial_reconciles', function (Blueprint $table) use ($foreignKeys) {
+            if ($foreignKeys->contains('accounts_partial_reconciles_debit_move_id_foreign')) {
+                $table->dropForeign(['debit_move_id']);
+            }
 
-            $table->foreign('credit_move_id')
-                ->references('id')
-                ->on('accounts_account_moves')
-                ->restrictOnDelete()
-                ->restrictOnUpdate();
+            if ($foreignKeys->contains('accounts_partial_reconciles_credit_move_id_foreign')) {
+                $table->dropForeign(['credit_move_id']);
+            }
         });
     }
 };

@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Database\Factories\FiscalPositionTaxFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class FiscalPositionTax extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'accounts_fiscal_position_taxes';

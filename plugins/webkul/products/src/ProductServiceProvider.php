@@ -10,6 +10,8 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Models\ProductAttribute;
+use Webkul\Product\Observers\ProductAttributeObserver;
 use Webkul\Product\Observers\UOMObserver;
 use Webkul\Support\Models\UOM;
 
@@ -63,7 +65,13 @@ class ProductServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
         UOM::observe(UOMObserver::class);
+
+        ProductAttribute::observe(ProductAttributeObserver::class);
     }
 
     public function packageRegistered(): void

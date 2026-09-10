@@ -6,9 +6,9 @@ return [
     ],
 
     'tabs' => [
-        'my-orders' => 'Meus pedidos',
-        'starred' => 'Favoritos',
-        'waiting-bills' => 'Faturas de fornecedor pendentes',
+        'my-orders'      => 'Meus pedidos',
+        'starred'        => 'Favoritos',
+        'waiting-bills'  => 'Faturas de fornecedor pendentes',
         'received-bills' => 'Faturas de fornecedor recebidas',
     ],
 
@@ -18,7 +18,7 @@ return [
 
             'notification' => [
                 'title' => 'Pedido criado',
-                'body' => 'O pedido foi criado com sucesso.',
+                'body'  => 'O pedido foi criado com sucesso.',
             ],
         ],
     ],

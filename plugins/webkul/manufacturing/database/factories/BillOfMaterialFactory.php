@@ -10,7 +10,7 @@ use Webkul\Manufacturing\Enums\BillOfMaterialType;
 use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -18,6 +18,8 @@ use Webkul\Support\Models\UOM;
  */
 class BillOfMaterialFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = BillOfMaterial::class;
 
     public function definition(): array
@@ -34,7 +36,6 @@ class BillOfMaterialFactory extends Factory
             'product_id'                   => Product::query()->value('id') ?? Product::factory(),
             'uom_id'                       => UOM::query()->value('id') ?? UOM::factory(),
             'operation_type_id'            => OperationType::query()->value('id') ?? OperationType::factory(),
-            'company_id'                   => Company::query()->value('id') ?? Company::factory(),
             'creator_id'                   => User::query()->value('id') ?? User::factory(),
         ];
     }

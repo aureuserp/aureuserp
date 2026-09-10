@@ -6,13 +6,16 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Manufacturing\Database\Factories\WorkCenterProductivityLogFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class WorkCenterProductivityLog extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'manufacturing_work_center_productivity_logs';
@@ -88,7 +91,7 @@ class WorkCenterProductivityLog extends Model
 
             $productivityLog->assigned_user_id ??= $user?->id;
 
-            $productivityLog->company_id ??= $user?->default_company_id;
+            $productivityLog->company_id ??= current_company_id();
 
             $productivityLog->description ??= __('manufacturing::system.work-center-productivity-log.time-tracking', ['name' => $user->name]);
 
@@ -156,36 +159,52 @@ class WorkCenterProductivityLog extends Model
         }
     }
 
-    public function closeTimer(): void
+    public function stop(): void
     {
-        $underPerformanceProductivityLogs = collect();
-
         $this->update(['finished_at' => now()]);
 
-        if ($this->workOrder->duration > $this->workOrder->expected_duration) {
-            $productiveDateEnd = Carbon::parse($this->finished_at)->subMinutes($this->workOrder->duration - $this->workOrder->expected_duration);
+        $overrun = $this->splitOffOverrun();
 
-            if ($productiveDateEnd <= Carbon::parse($this->started_at)) {
-                $underPerformanceProductivityLogs->push($this);
-            } else {
-                $newProductivityLog = $this->replicate();
-                $newProductivityLog->started_at = $productiveDateEnd;
-                $newProductivityLog->save();
-
-                $underPerformanceProductivityLogs->push($newProductivityLog);
-
-                $this->update(['finished_at' => $productiveDateEnd]);
-            }
+        if ($overrun->isEmpty()) {
+            return;
         }
 
-        if ($underPerformanceProductivityLogs->isNotEmpty()) {
-            $underperformanceType = WorkCenterProductivityLoss::where('loss_type', 'performance')->first();
+        $overrun->each->update(['loss_id' => $this->underperformanceLoss()->id]);
+    }
 
-            if (! $underperformanceType) {
-                throw new \Exception(__('manufacturing::system.work-center-productivity-log.no-performance-productivity-loss'));
-            }
+    protected function splitOffOverrun(): Collection
+    {
+        $overrunMinutes = $this->workOrder->duration - $this->workOrder->expected_duration;
 
-            $underPerformanceProductivityLogs->each->update(['loss_id' => $underperformanceType->id]);
+        if ($overrunMinutes <= 0) {
+            return collect();
         }
+
+        $productiveUntil = Carbon::parse($this->finished_at)->subMinutes($overrunMinutes);
+
+        if ($productiveUntil <= Carbon::parse($this->started_at)) {
+            return collect([$this]);
+        }
+
+        $overrunLog = $this->replicate();
+
+        $overrunLog->started_at = $productiveUntil;
+
+        $overrunLog->save();
+
+        $this->update(['finished_at' => $productiveUntil]);
+
+        return collect([$overrunLog]);
+    }
+
+    protected function underperformanceLoss(): WorkCenterProductivityLoss
+    {
+        $loss = WorkCenterProductivityLoss::where('loss_type', 'performance')->first();
+
+        if (! $loss) {
+            throw new \Exception(__('manufacturing::system.work-center-productivity-log.no-performance-productivity-loss'));
+        }
+
+        return $loss;
     }
 }

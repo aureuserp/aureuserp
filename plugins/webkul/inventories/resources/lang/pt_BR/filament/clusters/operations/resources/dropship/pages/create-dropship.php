@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Dropship criado',
-        'body' => 'O dropship foi criado com sucesso.',
+        'body'  => 'O dropship foi criado com sucesso.',
     ],
 ];

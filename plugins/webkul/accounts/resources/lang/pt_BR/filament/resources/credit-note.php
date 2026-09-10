@@ -11,13 +11,13 @@ return [
     'form' => [
         'section' => [
             'general' => [
-                'title' => 'Geral',
+                'title'  => 'Geral',
                 'fields' => [
                     'customer-invoice' => 'Nota de crédito de cliente',
-                    'customer' => 'Cliente',
-                    'invoice-date' => 'Data da fatura',
-                    'due-date' => 'Data de vencimento',
-                    'payment-term' => 'Condição de pagamento',
+                    'customer'         => 'Cliente',
+                    'invoice-date'     => 'Data da fatura',
+                    'due-date'         => 'Data de vencimento',
+                    'payment-term'     => 'Condição de pagamento',
                 ],
             ],
         ],
@@ -28,33 +28,33 @@ return [
 
                 'repeater' => [
                     'products' => [
-                        'title' => 'Produtos',
+                        'title'       => 'Produtos',
                         'add-product' => 'Adicionar produto',
 
                         'fields' => [
-                            'product' => 'Produto',
-                            'quantity' => 'Quantidade',
-                            'unit' => 'Unidade',
-                            'taxes' => 'Impostos',
+                            'product'             => 'Produto',
+                            'quantity'            => 'Quantidade',
+                            'unit'                => 'Unidade',
+                            'taxes'               => 'Impostos',
                             'discount-percentage' => 'Percentual de desconto',
-                            'unit-price' => 'Preço unitário',
-                            'sub-total' => 'Subtotal',
+                            'unit-price'          => 'Preço unitário',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title' => 'Outras informações',
+                'title'    => 'Outras informações',
                 'fieldset' => [
                     'invoice' => [
-                        'title' => 'Fatura',
+                        'title'  => 'Fatura',
                         'fields' => [
                             'customer-reference' => 'Referência do cliente',
-                            'sales-person' => 'Vendedor',
-                            'payment-reference' => 'Referência de pagamento',
-                            'recipient-bank' => 'Banco do destinatário',
-                            'delivery-date' => 'Data de entrega',
+                            'sales-person'       => 'Vendedor',
+                            'payment-reference'  => 'Referência de pagamento',
+                            'recipient-bank'     => 'Banco do destinatário',
+                            'delivery-date'      => 'Data de entrega',
                         ],
                     ],
 
@@ -62,28 +62,28 @@ return [
                         'title' => 'Contabilidade',
 
                         'fields' => [
-                            'incoterm' => 'Incoterm',
+                            'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Local do Incoterm',
-                            'payment-method' => 'Método de pagamento',
-                            'auto-post' => 'Publicação automática',
-                            'checked' => 'Verificado',
+                            'payment-method'    => 'Método de pagamento',
+                            'auto-post'         => 'Publicação automática',
+                            'checked'           => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Informações adicionais',
+                        'title'  => 'Informações adicionais',
                         'fields' => [
-                            'company' => 'Empresa',
+                            'company'  => 'Empresa',
                             'currency' => 'Moeda',
                         ],
                     ],
 
                     'marketing' => [
-                        'title' => 'Marketing',
+                        'title'  => 'Marketing',
                         'fields' => [
                             'campaign' => 'Campanha',
-                            'medium' => 'Médio',
-                            'source' => 'Origem',
+                            'medium'   => 'Médio',
+                            'source'   => 'Origem',
                         ],
                     ],
                 ],
@@ -98,13 +98,13 @@ return [
     'infolist' => [
         'section' => [
             'general' => [
-                'title' => 'Geral',
+                'title'   => 'Geral',
                 'entries' => [
                     'customer-invoice' => 'Nota de crédito de cliente',
-                    'customer' => 'Cliente',
-                    'invoice-date' => 'Data da fatura',
-                    'due-date' => 'Data de vencimento',
-                    'payment-term' => 'Condição de pagamento',
+                    'customer'         => 'Cliente',
+                    'invoice-date'     => 'Data da fatura',
+                    'due-date'         => 'Data de vencimento',
+                    'payment-term'     => 'Condição de pagamento',
                 ],
             ],
         ],
@@ -116,30 +116,30 @@ return [
                 'repeater' => [
                     'products' => [
                         'entries' => [
-                            'product' => 'Produto',
-                            'quantity' => 'Quantidade',
-                            'unit' => 'Unidade de medida',
-                            'taxes' => 'Impostos',
+                            'product'             => 'Produto',
+                            'quantity'            => 'Quantidade',
+                            'unit'                => 'Unidade de medida',
+                            'taxes'               => 'Impostos',
                             'discount-percentage' => 'Percentual de desconto',
-                            'unit-price' => 'Preço unitário',
-                            'sub-total' => 'Subtotal',
-                            'total' => 'Total',
+                            'unit-price'          => 'Preço unitário',
+                            'sub-total'           => 'Subtotal',
+                            'total'               => 'Total',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title' => 'Outras informações',
+                'title'    => 'Outras informações',
                 'fieldset' => [
                     'invoice' => [
-                        'title' => 'Fatura',
+                        'title'   => 'Fatura',
                         'entries' => [
                             'customer-reference' => 'Referência do cliente',
-                            'sales-person' => 'Vendedor',
-                            'payment-reference' => 'Referência de pagamento',
-                            'recipient-bank' => 'Banco do destinatário',
-                            'delivery-date' => 'Data de entrega',
+                            'sales-person'       => 'Vendedor',
+                            'payment-reference'  => 'Referência de pagamento',
+                            'recipient-bank'     => 'Banco do destinatário',
+                            'delivery-date'      => 'Data de entrega',
                         ],
                     ],
 
@@ -147,28 +147,28 @@ return [
                         'title' => 'Contabilidade',
 
                         'fieldset' => [
-                            'incoterm' => 'Incoterm',
+                            'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Local do Incoterm',
-                            'payment-method' => 'Método de pagamento',
-                            'auto-post' => 'Publicação automática',
-                            'checked' => 'Verificado',
+                            'payment-method'    => 'Método de pagamento',
+                            'auto-post'         => 'Publicação automática',
+                            'checked'           => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Informações adicionais',
+                        'title'   => 'Informações adicionais',
                         'entries' => [
-                            'company' => 'Empresa',
+                            'company'  => 'Empresa',
                             'currency' => 'Moeda',
                         ],
                     ],
 
                     'marketing' => [
-                        'title' => 'Marketing',
+                        'title'   => 'Marketing',
                         'entries' => [
                             'campaign' => 'Campanha',
-                            'medium' => 'Médio',
-                            'source' => 'Origem',
+                            'medium'   => 'Médio',
+                            'source'   => 'Origem',
                         ],
                     ],
                 ],

@@ -4,16 +4,20 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'title'        => 'Title',
-                'type'         => 'Type',
-                'name'         => 'Name',
-                'type'         => 'Type',
-                'create-type'  => 'Create Type',
-                'duration'     => 'Duration',
-                'start-date'   => 'Start Date',
-                'end-date'     => 'End Date',
-                'display-type' => 'Display Type',
-                'description'  => 'Description',
+                'title'            => 'Title',
+                'name'             => 'Name',
+                'type'             => 'Type',
+                'create-type'      => 'Create Type',
+                'duration'         => 'Duration',
+                'start-date'       => 'Start Date',
+                'end-date'         => 'End Date',
+                'display-type'     => 'Display Type',
+                'description'      => 'Description',
+                'attachments'      => 'Attachments',
+                'file'             => 'File',
+                'file-helper-text' => 'Accepted formats: PDF, DOC, DOCX, TXT, PNG, JPEG and WEBP. Maximum 10 MB per file.',
+                'attachment-name'  => 'Label',
+                'add-attachment'   => 'Add Attachment',
             ],
         ],
     ],
@@ -26,6 +30,7 @@ return [
             'display-type' => 'Display Type',
             'description'  => 'Description',
             'created-by'   => 'Created By',
+            'attachments'  => 'Attachments',
             'created-at'   => 'Created At',
             'updated-at'   => 'Updated At',
         ],
@@ -50,22 +55,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill Level updated',
-                    'body'  => 'The skill level has been updated successfully.',
+                    'title' => 'Resume updated',
+                    'body'  => 'The resume has been updated successfully.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Level created',
-                    'body'  => 'The skill level has been created successfully.',
+                    'title' => 'Resume created',
+                    'body'  => 'The resume has been created successfully.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Level deleted',
-                    'body'  => 'The skill level has been deleted successfully.',
+                    'title' => 'Resume deleted',
+                    'body'  => 'The resume has been deleted successfully.',
                 ],
             ],
         ],
@@ -73,8 +78,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'Resumes deleted',
+                    'body'  => 'The resumes have been deleted successfully.',
                 ],
             ],
         ],
@@ -82,13 +87,16 @@ return [
 
     'infolist' => [
         'entries' => [
-            'title'        => 'Title',
-            'display-type' => 'Display Type',
-            'type'         => 'Type',
-            'description'  => 'Description',
-            'duration'     => 'Duration',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'title'           => 'Title',
+            'display-type'    => 'Display Type',
+            'type'            => 'Type',
+            'description'     => 'Description',
+            'duration'        => 'Duration',
+            'start-date'      => 'Start Date',
+            'end-date'        => 'End Date',
+            'attachments'     => 'Attachments',
+            'file'            => 'File',
+            'attachment-name' => 'Label',
         ],
     ],
 ];

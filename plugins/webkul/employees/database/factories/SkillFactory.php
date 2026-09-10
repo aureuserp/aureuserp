@@ -4,6 +4,7 @@ namespace Webkul\Employee\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Employee\Models\Skill;
+use Webkul\Employee\Models\SkillType;
 
 class SkillFactory extends Factory
 {
@@ -23,7 +24,7 @@ class SkillFactory extends Factory
     {
         return [
             'name'          => fake()->word,
-            'skill_type_id' => SkillTypeFactory::factory(),
+            'skill_type_id' => SkillType::factory(),
         ];
     }
 }

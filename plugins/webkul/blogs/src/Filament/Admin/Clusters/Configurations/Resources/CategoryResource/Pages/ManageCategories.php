@@ -6,16 +6,21 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource;
 use Webkul\Blog\Models\Category;
+use Webkul\Support\Filament\Concerns\TranslatableManageRecords;
 
 class ManageCategories extends ManageRecords
 {
+    use TranslatableManageRecords;
+
     protected static string $resource = CategoryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            LocaleSwitcher::make(),
             CreateAction::make()
                 ->label(__('blogs::filament/admin/clusters/configurations/resources/category/pages/manage-categories.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')

@@ -6,7 +6,7 @@ return [
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

@@ -22,7 +22,7 @@ class DepartureReasonFactory extends Factory
     public function definition(): array
     {
         return [
-            'sequence'    => fake()->randomNumber(),
+            'sort'        => fake()->randomNumber(),
             'reason_code' => fake()->word,
             'name'        => fake()->word,
         ];

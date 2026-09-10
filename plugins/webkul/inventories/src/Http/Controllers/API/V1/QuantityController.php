@@ -178,6 +178,7 @@ class QuantityController extends Controller
             $adjustmentLocation = Location::query()
                 ->where('type', LocationType::INVENTORY)
                 ->where('is_scrap', false)
+                ->where('company_id', $record->location->company_id)
                 ->first();
 
             if (! $adjustmentLocation) {

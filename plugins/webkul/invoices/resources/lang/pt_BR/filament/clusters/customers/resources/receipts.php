@@ -9,9 +9,9 @@ return [
 
     'form' => [
         'fieldset' => [
-            'title' => 'Destinatário',
+            'title'  => 'Destinatário',
             'fields' => [
-                'reference' => 'Referência',
+                'reference'         => 'Referência',
                 'payment-reference' => 'Referência de pagamento',
             ],
         ],

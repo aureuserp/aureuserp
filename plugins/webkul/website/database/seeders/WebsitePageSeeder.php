@@ -5,6 +5,7 @@ namespace Webkul\Website\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Security\Models\User;
+use Webkul\Website\Models\Page;
 
 class WebsitePageSeeder extends Seeder
 {
@@ -17,7 +18,7 @@ class WebsitePageSeeder extends Seeder
 
         $user = User::first();
 
-        DB::table('website_pages')->insert([
+        $pages = [
             [
                 'title'             => 'Home',
                 'content'           => 'Home Content',
@@ -30,8 +31,6 @@ class WebsitePageSeeder extends Seeder
                 'meta_keywords'     => 'home',
                 'meta_description'  => 'Home Description',
                 'creator_id'        => $user?->id,
-                'created_at'        => now(),
-                'updated_at'        => now(),
             ],
             [
                 'title'             => 'About Us',
@@ -45,8 +44,6 @@ class WebsitePageSeeder extends Seeder
                 'meta_keywords'     => 'about us',
                 'meta_description'  => 'About Us Description',
                 'creator_id'        => $user?->id,
-                'created_at'        => now(),
-                'updated_at'        => now(),
             ],
             [
                 'title'             => 'Privacy Policy',
@@ -60,8 +57,6 @@ class WebsitePageSeeder extends Seeder
                 'meta_keywords'     => 'privacy policy',
                 'meta_description'  => 'Privacy Policy Description',
                 'creator_id'        => $user?->id,
-                'created_at'        => now(),
-                'updated_at'        => now(),
             ],
             [
                 'title'             => 'Terms & Conditions',
@@ -75,9 +70,11 @@ class WebsitePageSeeder extends Seeder
                 'meta_keywords'     => 'terms & conditions',
                 'meta_description'  => 'Terms & Conditions Description',
                 'creator_id'        => $user?->id,
-                'created_at'        => now(),
-                'updated_at'        => now(),
             ],
-        ]);
+        ];
+
+        foreach ($pages as $page) {
+            Page::create($page);
+        }
     }
 }

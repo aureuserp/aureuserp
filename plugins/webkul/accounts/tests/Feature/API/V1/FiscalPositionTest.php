@@ -117,14 +117,14 @@ it('lists fiscal positions for authorized users', function () {
 it('filters fiscal positions by name', function () {
     actingAsFiscalPositionApiUser(['view_any_account_fiscal::position']);
 
-    $fiscalPosition = FiscalPosition::factory()->create(['name' => 'EU Import Position']);
+    $fiscalPosition = FiscalPosition::factory()->create(['name' => 'EuImportPosition']);
     FiscalPosition::factory()->count(2)->create();
 
-    $response = $this->getJson(fiscalPositionRoute('index').'?filter[name]=EU')
+    $response = $this->getJson(fiscalPositionRoute('index').'?filter[name]=EuImportPosition')
         ->assertOk();
 
     collect($response->json('data'))->each(function ($item) {
-        expect($item['name'])->toContain('EU');
+        expect($item['name'])->toContain('EuImportPosition');
     });
 
     expect(collect($response->json('data'))->firstWhere('id', $fiscalPosition->id))->not->toBeNull();

@@ -7,9 +7,9 @@ return [
     ],
 
     'global-search' => [
-        'name' => 'Nome',
+        'name'         => 'Nome',
         'package-type' => 'Tipo de embalagem',
-        'location' => 'Localização',
+        'location'     => 'Localização',
     ],
 
     'form' => [
@@ -18,11 +18,11 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'name' => 'Nome',
+                    'name'             => 'Nome',
                     'name-placeholder' => 'ex.: PACK007',
-                    'package-type' => 'Tipo de embalagem',
-                    'pack-date' => 'Data de embalagem',
-                    'location' => 'Localização',
+                    'package-type'     => 'Tipo de embalagem',
+                    'pack-date'        => 'Data de embalagem',
+                    'location'         => 'Localização',
                 ],
             ],
         ],
@@ -30,25 +30,25 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'package-type' => 'Tipo de embalagem',
-            'location' => 'Localização',
-            'company' => 'Empresa',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'location'     => 'Localização',
+            'company'      => 'Empresa',
+            'created-at'   => 'Criado em',
+            'updated-at'   => 'Atualizado em',
         ],
 
         'groups' => [
             'package-type' => 'Tipo de embalagem',
-            'location' => 'Localização',
-            'created-at' => 'Criado em',
+            'location'     => 'Localização',
+            'created-at'   => 'Criado em',
         ],
 
         'filters' => [
             'package-type' => 'Tipo de embalagem',
-            'location' => 'Localização',
-            'creator' => 'Criador',
-            'company' => 'Empresa',
+            'location'     => 'Localização',
+            'creator'      => 'Criador',
+            'company'      => 'Empresa',
         ],
 
         'actions' => [
@@ -56,12 +56,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Embalagem excluída',
-                        'body' => 'A embalagem foi excluída com sucesso.',
+                        'body'  => 'A embalagem foi excluída com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir a embalagem',
-                        'body' => 'A embalagem não pode ser excluída porque está em uso.',
+                        'body'  => 'A embalagem não pode ser excluída porque está em uso.',
                     ],
                 ],
             ],
@@ -80,12 +80,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Embalagens excluídas',
-                        'body' => 'As embalagens foram excluídas com sucesso.',
+                        'body'  => 'As embalagens foram excluídas com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir as embalagens',
-                        'body' => 'As embalagens não podem ser excluídas porque estão em uso.',
+                        'body'  => 'As embalagens não podem ser excluídas porque estão em uso.',
                     ],
                 ],
             ],
@@ -98,13 +98,13 @@ return [
                 'title' => 'Detalhes da embalagem',
 
                 'entries' => [
-                    'name' => 'Nome da embalagem',
+                    'name'         => 'Nome da embalagem',
                     'package-type' => 'Tipo de embalagem',
-                    'pack-date' => 'Data de embalagem',
-                    'location' => 'Localização',
-                    'company' => 'Empresa',
-                    'created-at' => 'Criado em',
-                    'updated-at' => 'Última atualização',
+                    'pack-date'    => 'Data de embalagem',
+                    'location'     => 'Localização',
+                    'company'      => 'Empresa',
+                    'created-at'   => 'Criado em',
+                    'updated-at'   => 'Última atualização',
                 ],
             ],
 
@@ -112,8 +112,8 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'created-by' => 'Criado por',
-                    'created-at' => 'Criado em',
+                    'created-by'   => 'Criado por',
+                    'created-at'   => 'Criado em',
                     'last-updated' => 'Última atualização',
                 ],
             ],

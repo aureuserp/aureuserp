@@ -4,9 +4,9 @@ use Spatie\LaravelData\Data;
 use Spatie\LaravelSettings\SettingsCasts\DataCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast;
-use Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository;
 use Spatie\LaravelSettings\SettingsRepositories\RedisSettingsRepository;
 use Webkul\Security\Settings\UserSettings;
+use Webkul\Support\Settings\CompanyAwareSettingsRepository;
 
 return [
 
@@ -43,7 +43,7 @@ return [
      */
     'repositories' => [
         'database' => [
-            'type'       => DatabaseSettingsRepository::class,
+            'type'       => CompanyAwareSettingsRepository::class,
             'model'      => null,
             'table'      => null,
             'connection' => null,

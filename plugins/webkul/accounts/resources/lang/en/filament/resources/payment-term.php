@@ -5,6 +5,8 @@ return [
         'sections' => [
             'fields' => [
                 'payment-term'         => 'Payment Term',
+                'company'              => 'Company',
+                'company-placeholder'  => 'All Companies',
                 'early-discount'       => 'Early Discount',
                 'discount-days-prefix' => 'if paid within',
                 'discount-days-suffix' => 'days',

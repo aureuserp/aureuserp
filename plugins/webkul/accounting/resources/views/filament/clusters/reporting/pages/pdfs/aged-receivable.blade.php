@@ -1,9 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <title>{{ __('accounting::filament/clusters/reporting.pages.aged-receivable.navigation.title') }} - {{ $asOfDate }}</title>
     <style>
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         @page {
             margin: 1cm 1cm;
             size: A4 landscape;
@@ -66,7 +79,7 @@
         
         table td:first-child {
             text-align: left;
-            font-weight: 500;
+            font-weight: {{ $isRtl ? 'normal' : '500' }};
             color: #111827;
         }
         

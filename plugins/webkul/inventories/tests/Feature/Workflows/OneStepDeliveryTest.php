@@ -46,7 +46,7 @@ function validatedOneStepDelivery($warehouse, $product, float $stock, float $dem
         InventoryHelper::pick($operation->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     return $operation->refresh();
 }
@@ -212,7 +212,7 @@ it('validates a delivery drawn from two locations and clears both quants', funct
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $move = $operation->refresh()->moves->first()->refresh();
 
@@ -242,7 +242,7 @@ it('credits the customer location when the delivery is validated', function () {
 
     $customer = $operation->destinationLocation;
 
-    Inventory::doneTransfer($operation);
+    Inventory::completeTransfer($operation);
 
     expect(InventoryHelper::onHand($this->product, $customer))->toBe(10.0);
 });
@@ -257,7 +257,7 @@ it('leaves the remaining stock untouched when delivering part of it', function (
 it('unreserves a delivery move and drops it back to confirmed', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::unreserveMoves($operation->moves);
+    Inventory::releaseMoves($operation->moves);
 
     $move = $operation->refresh()->moves->first();
 
@@ -272,9 +272,9 @@ it('unreserves a delivery move and drops it back to confirmed', function () {
 it('re-reserves the full demand when availability is checked again', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::unreserveMoves($operation->moves);
+    Inventory::releaseMoves($operation->moves);
 
-    Inventory::assignTransfer($operation->refresh());
+    Inventory::reserveTransfer($operation->refresh());
 
     $operation->refresh();
     $move = $operation->moves->first();
@@ -290,11 +290,11 @@ it('re-reserves the full demand when availability is checked again', function ()
 it('re-reserves only what is still available after stock shrinks', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::unreserveMoves($operation->moves);
+    Inventory::releaseMoves($operation->moves);
 
     InventoryHelper::quantOf($this->product, $this->stock)->update(['quantity' => 4]);
 
-    Inventory::assignTransfer($operation->refresh());
+    Inventory::reserveTransfer($operation->refresh());
 
     $move = $operation->refresh()->moves->first();
 
@@ -307,7 +307,7 @@ it('re-reserves only what is still available after stock shrinks', function () {
 it('does not double reserve when availability is checked twice', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::assignTransfer($operation);
+    Inventory::reserveTransfer($operation);
 
     $move = $operation->refresh()->moves->first();
 
@@ -324,7 +324,7 @@ it('tops up a partially assigned move when stock arrives', function () {
 
     InventoryHelper::quantOf($this->product, $this->stock)->update(['quantity' => 10]);
 
-    Inventory::assignTransfer($operation->refresh());
+    Inventory::reserveTransfer($operation->refresh());
 
     $move = $operation->refresh()->moves->first();
 
@@ -337,7 +337,7 @@ it('tops up a partially assigned move when stock arrives', function () {
 it('frees the stock for another delivery once unreserved', function () {
     $first = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::unreserveMoves($first->moves);
+    Inventory::releaseMoves($first->moves);
 
     $second = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
 
@@ -355,7 +355,7 @@ it('silently skips a validated move because validation marks it picked', functio
     expect($move->state)->toBe(MoveState::DONE)
         ->and($move->is_picked)->toBeTrue();
 
-    Inventory::unreserveMoves($operation->moves);
+    Inventory::releaseMoves($operation->moves);
 
     expect($operation->refresh()->moves->first()->state)->toBe(MoveState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
@@ -368,7 +368,7 @@ it('refuses to unreserve a done move that was never picked', function () {
         ->forceFill(['state' => MoveState::DONE, 'is_picked' => false])
         ->saveQuietly();
 
-    expect(fn () => Inventory::unreserveMoves($operation->refresh()->moves))
+    expect(fn () => Inventory::releaseMoves($operation->refresh()->moves))
         ->toThrow(Exception::class, __('inventories::system.inventory-manager.unreserve-move.already-done'));
 });
 
@@ -408,7 +408,7 @@ it('creates a backorder of a backorder when the remainder is again partially pic
 
     InventoryHelper::pick($backorder->moves->first(), 1);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
     $second = InventoryHelper::backorderOf($backorder->refresh());
 
@@ -425,7 +425,7 @@ it('creates a backorder on a partially available delivery', function () {
     expect($move->state)->toBe(MoveState::PARTIALLY_ASSIGNED)
         ->and((float) $move->quantity)->toBe(4.0);
 
-    Inventory::doneTransfer($operation);
+    Inventory::completeTransfer($operation);
 
     $backorder = InventoryHelper::backorderOf($operation->refresh());
 
@@ -435,12 +435,12 @@ it('creates a backorder on a partially available delivery', function () {
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
 });
 
-it('creates no backorder when validating with cancelBackOrder', function () {
+it('creates no backorder when validating with cancelBackorder', function () {
     $operation = confirmedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
     InventoryHelper::pick($operation->moves->first(), 6);
 
-    Inventory::doneTransfer($operation->refresh(), cancelBackOrder: true);
+    Inventory::completeTransfer($operation->refresh(), cancelBackorder: true);
 
     $operation->refresh();
     $move = $operation->moves->first();
@@ -460,7 +460,7 @@ it('refuses to validate a delivery with no picked quantity', function () {
 
     InventoryHelper::pick($operation->moves->first(), 0);
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.no-quantities-reserved.body'));
 });
 
@@ -535,13 +535,13 @@ it('returns a delivery back into stock', function () {
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 3]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 3]);
 
     expect($return->return_id)->toBe($operation->id)
         ->and($return->source_location_id)->toBe($operation->destination_location_id)
         ->and($return->destination_location_id)->toBe($this->stock->id);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect($return->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->stock))->toBe(3.0);
@@ -550,7 +550,7 @@ it('returns a delivery back into stock', function () {
 it('leaves the original delivery untouched by the return', function () {
     $operation = validatedOneStepDelivery($this->warehouse, $this->product, 10, 10);
 
-    Inventory::returnTransfer($operation, [$operation->moves->first()->id => 3]);
+    Inventory::createReturn($operation, [$operation->moves->first()->id => 3]);
 
     $operation->refresh();
 
@@ -568,7 +568,7 @@ it('schedules the returned move for today instead of inheriting the original sch
 
     $sourceMove->saveQuietly();
 
-    $return = Inventory::returnTransfer($operation->refresh(), [$sourceMove->id => 3]);
+    $return = Inventory::createReturn($operation->refresh(), [$sourceMove->id => 3]);
 
     $returnMove = $return->refresh()->moves->first();
 
@@ -582,7 +582,7 @@ it('resets the returned move picking and procurement fields instead of inheritin
 
     expect($sourceMove->is_picked)->toBeTrue();
 
-    $return = Inventory::returnTransfer($operation, [$sourceMove->id => 3]);
+    $return = Inventory::createReturn($operation, [$sourceMove->id => 3]);
 
     $returnMove = $return->refresh()->moves->first();
 
@@ -737,7 +737,7 @@ it('removes only the delivered lot quantity from stock', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $quant = InventoryHelper::quantOf($product, $this->stock, $lot->id);
 
@@ -847,7 +847,7 @@ it('takes the goods out of the package when a partial package is delivered', fun
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(6.0);
 
@@ -960,7 +960,7 @@ it('keeps the source quant with the remainder after a partial delivery', functio
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $quant = InventoryHelper::quantOf($this->product, $this->stock);
 
@@ -993,7 +993,7 @@ it('does not auto reserve a delivery when the operation type uses manual reserva
     expect($operation->refresh()->moves->first()->state)->toBe(MoveState::CONFIRMED)
         ->and(InventoryHelper::reserved($this->product, $this->stock))->toBe(0.0);
 
-    Inventory::assignTransfer($operation->refresh());
+    Inventory::reserveTransfer($operation->refresh());
 
     expect($operation->refresh()->moves->first()->state)->toBe(MoveState::ASSIGNED)
         ->and(InventoryHelper::reserved($this->product, $this->stock))->toBe(10.0);
@@ -1008,7 +1008,7 @@ it('delivers more than the demand when the picked quantity is increased', functi
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 12);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $customer = $operation->refresh()->destinationLocation;
 
@@ -1030,7 +1030,7 @@ it('reserves the product uom equivalent when the delivery demand is in dozens', 
 
     expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(12.0);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
 });
@@ -1050,6 +1050,6 @@ it('throws when only part of a source package is moved while keeping the same re
 
     InventoryHelper::pick($move, 5);
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.partial-package.body'));
 });

@@ -24,6 +24,11 @@ return [
                     'body'  => 'Available quantity should be set to zero before changing inventory tracking.',
                 ],
 
+                'available-quantity' => [
+                    'title' => 'Error updating product',
+                    'body'  => 'Available quantity should be set to zero before you can mark this product as non-storable.',
+                ],
+
                 'track-by-update' => [
                     'title' => 'Error updating tracking',
                     'body'  => 'You have product(s) in stock that have no lot/serial number. You can assign lot/serial numbers by doing an inventory adjustment.',

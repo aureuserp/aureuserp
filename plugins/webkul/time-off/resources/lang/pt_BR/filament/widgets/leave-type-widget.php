@@ -8,10 +8,10 @@ return [
     'label' => 'Visão geral',
 
     'types' => [
-        'draft' => 'Rascunho',
+        'draft'     => 'Rascunho',
         'confirmed' => 'Confirmado',
         'validated' => 'Validado',
-        'refused' => 'Recusado',
+        'refused'   => 'Recusado',
         'cancelled' => 'Cancelada',
     ],
 ];

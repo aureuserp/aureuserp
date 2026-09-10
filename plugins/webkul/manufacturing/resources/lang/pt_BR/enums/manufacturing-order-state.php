@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'draft' => 'Rascunho',
+    'draft'     => 'Rascunho',
     'confirmed' => 'Confirmado',
-    'progress' => 'Em andamento',
-    'to-close' => 'Para fechar',
-    'done' => 'Concluído',
-    'cancel' => 'Cancelada',
+    'progress'  => 'Em andamento',
+    'to-close'  => 'Para fechar',
+    'done'      => 'Concluído',
+    'cancel'    => 'Cancelada',
 ];

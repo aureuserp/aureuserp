@@ -15,7 +15,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\CategoryResource;
 use Webkul\Product\Filament\Resources\ProductResource;
@@ -163,9 +162,22 @@ class ProductForm
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                    ->placeholder(__('products::filament/resources/product.form.sections.settings.fields.company-placeholder'))
                     ->searchable()
                     ->preload()
-                    ->default(Auth::user()->default_company_id),
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                        clear_foreign_company_values(
+                            $set,
+                            $get,
+                            Registry::companyDependentFieldsFor(),
+                            $state,
+                        );
+
+                        foreach (Registry::companyDefaultFieldsFor() as $field => $resolveDefault) {
+                            $set($field, $resolveDefault($state));
+                        }
+                    }),
             ]);
     }
 

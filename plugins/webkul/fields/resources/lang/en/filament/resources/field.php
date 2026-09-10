@@ -208,19 +208,19 @@ return [
                     ],
 
                     'textarea' => [
-                        'autofocus'    => 'Autofocus',
-                        'autosize'     => 'Autosize',
-                        'cols'         => 'Columns',
-                        'default'      => 'Default Value',
-                        'disabled'     => 'Disabled',
-                        'helperText'   => 'Helper Text',
-                        'hint'         => 'Hint',
-                        'hintColor'    => 'Hint Color',
-                        'hintIcon'     => 'Hint Icon',
-                        'id'           => 'Id',
-                        'placeholder'  => 'Placeholder',
-                        'read-only'    => 'Read Only',
-                        'rows'         => 'Rows',
+                        'autofocus'     => 'Autofocus',
+                        'autosize'      => 'Autosize',
+                        'cols'          => 'Columns',
+                        'default'       => 'Default Value',
+                        'disabled'      => 'Disabled',
+                        'helper-text'   => 'Helper Text',
+                        'hint'          => 'Hint',
+                        'hint-color'    => 'Hint Color',
+                        'hint-icon'     => 'Hint Icon',
+                        'id'            => 'Id',
+                        'placeholder'   => 'Placeholder',
+                        'read-only'     => 'Read Only',
+                        'rows'          => 'Rows',
                     ],
 
                     'select' => [
@@ -299,7 +299,7 @@ return [
                         'disabled'                => 'Disabled',
                         'disabled-dates'          => 'Disabled Dates',
                         'display-format'          => 'Display Format',
-                        'first-fay-of-week'       => 'First Day of Week',
+                        'first-day-of-week'       => 'First Day of Week',
                         'format'                  => 'Format',
                         'helper-text'             => 'Helper Text',
                         'hint'                    => 'Hint',
@@ -424,6 +424,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Thin',
                         'extra-light' => 'Extra Light',
                         'light'       => 'Light',
                         'normal'      => 'Normal',
@@ -431,6 +432,7 @@ return [
                         'semi-bold'   => 'Semi Bold',
                         'bold'        => 'Bold',
                         'extra-bold'  => 'Extra Bold',
+                        'black'       => 'Black',
                     ],
 
                     'icon-position-options' => [
@@ -520,6 +522,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Thin',
                         'extra-light' => 'Extra Light',
                         'light'       => 'Light',
                         'normal'      => 'Normal',
@@ -527,6 +530,7 @@ return [
                         'semi-bold'   => 'Semi Bold',
                         'bold'        => 'Bold',
                         'extra-bold'  => 'Extra Bold',
+                        'black'       => 'Black',
                     ],
 
                     'icon-position-options' => [
@@ -666,6 +670,7 @@ return [
                 'title' => 'Resource',
 
                 'fields' => [
+                    'plugin'   => 'Plugin',
                     'resource' => 'Resource',
                 ],
             ],

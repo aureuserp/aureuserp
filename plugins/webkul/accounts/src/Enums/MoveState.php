@@ -2,10 +2,10 @@
 
 namespace Webkul\Account\Enums;
 
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
 
-enum MoveState: string implements HasLabel, HasColor
+enum MoveState: string implements HasColor, HasLabel
 {
     case DRAFT = 'draft';
 

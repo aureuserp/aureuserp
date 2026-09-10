@@ -28,7 +28,6 @@ class EmploymentTypeFactory extends Factory
             'country_id' => Country::factory(),
             'creator_id' => User::query()->value('id') ?? User::factory(),
             'code'       => fake()->word,
-            'sequence'   => fake()->numberBetween(1, 100),
             'sort'       => fake()->numberBetween(1, 100),
         ];
     }

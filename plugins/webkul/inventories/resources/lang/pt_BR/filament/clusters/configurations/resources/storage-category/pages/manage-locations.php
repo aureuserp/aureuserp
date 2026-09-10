@@ -10,7 +10,7 @@ return [
 
                 'notification' => [
                     'title' => 'Local criado',
-                    'body' => 'O local foi criado.',
+                    'body'  => 'O local foi criado.',
                 ],
             ],
         ],

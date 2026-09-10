@@ -264,12 +264,16 @@ it('updates account-specific fields on a product variant', function () {
         ->assertJsonPath('data.purchase_ok', false);
 
     $this->assertDatabaseHas('products_products', [
-        'id'                          => $variant->id,
+        'id'             => $variant->id,
+        'invoice_policy' => 'order',
+        'sales_ok'       => true,
+        'purchase_ok'    => false,
+    ]);
+
+    $this->assertDatabaseHas('products_product_company_accounts', [
+        'product_id'                  => $variant->id,
         'property_account_income_id'  => $income->id,
         'property_account_expense_id' => $expense->id,
-        'invoice_policy'              => 'order',
-        'sales_ok'                    => true,
-        'purchase_ok'                 => false,
     ]);
 });
 

@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Departamento excluído',
-                'body' => 'O departamento foi excluído com sucesso.',
+                'body'  => 'O departamento foi excluído com sucesso.',
             ],
         ],
     ],

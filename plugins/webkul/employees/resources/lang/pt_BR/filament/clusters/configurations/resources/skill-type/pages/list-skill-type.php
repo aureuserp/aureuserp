@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Tipo de habilidade criado',
-                'body' => 'O tipo de habilidade foi criado com sucesso.',
+                'body'  => 'O tipo de habilidade foi criado com sucesso.',
             ],
         ],
     ],

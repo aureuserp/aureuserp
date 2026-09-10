@@ -19,17 +19,17 @@ return [
                 'title' => 'Unidades de medida',
 
                 'fields' => [
-                    'uoms' => 'Unidades',
-                    'type' => 'Tipo',
-                    'name' => 'Nome',
-                    'ratio' => 'Fator',
+                    'uoms'     => 'Unidades',
+                    'type'     => 'Tipo',
+                    'name'     => 'Nome',
+                    'ratio'    => 'Fator',
                     'rounding' => 'Precisão de arredondamento',
                 ],
 
                 'validations' => [
-                    'missing-reference' => 'Esta categoria deve ter uma unidade de medida de referência.',
-                    'multiple-references' => 'Esta categoria deve ter apenas uma unidade de medida de referência.',
-                    'ratio-greater-than-zero' => 'O fator de conversão de uma unidade de medida não pode ser zero.',
+                    'missing-reference'          => 'Esta categoria deve ter uma unidade de medida de referência.',
+                    'multiple-references'        => 'Esta categoria deve ter apenas uma unidade de medida de referência.',
+                    'ratio-greater-than-zero'    => 'O fator de conversão de uma unidade de medida não pode ser zero.',
                     'rounding-greater-than-zero' => 'A precisão de arredondamento deve ser estritamente positiva.',
                 ],
 
@@ -42,8 +42,8 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'uoms' => 'UOMs',
+            'name'       => 'Nome',
+            'uoms'       => 'UOMs',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
@@ -56,14 +56,14 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Categoria de UOM atualizada',
-                    'body' => 'A categoria de UOM foi atualizada com sucesso.',
+                    'body'  => 'A categoria de UOM foi atualizada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Categoria de UOM excluída',
-                    'body' => 'A categoria de UOM foi excluída com sucesso.',
+                    'body'  => 'A categoria de UOM foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -72,7 +72,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Categorias de UOM excluídas',
-                    'body' => 'As categorias de UOM foram excluídas com sucesso.',
+                    'body'  => 'As categorias de UOM foram excluídas com sucesso.',
                 ],
             ],
         ],

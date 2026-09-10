@@ -6,9 +6,9 @@ return [
     'modal' => [
         'form' => [
             'columns' => [
-                'product' => 'Produto',
-                'quantity' => 'Quantidade',
-                'uom' => 'Unidade de medida',
+                'product'                 => 'Produto',
+                'quantity'                => 'Quantidade',
+                'uom'                     => 'Unidade de medida',
                 'excess-quantity-tooltip' => 'A quantidade a devolver é maior que a quantidade processada na operação original.',
             ],
         ],

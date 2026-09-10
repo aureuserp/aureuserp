@@ -7,7 +7,7 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'       => 'Nome',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
@@ -24,21 +24,21 @@ return [
             'edit' => [
                 'notification' => [
                     'title' => 'Habilidade atualizada',
-                    'body' => 'A habilidade foi atualizada com sucesso.',
+                    'body'  => 'A habilidade foi atualizada com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Habilidade restaurada',
-                    'body' => 'A habilidade foi restaurada com sucesso.',
+                    'body'  => 'A habilidade foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Habilidade excluída',
-                    'body' => 'A habilidade foi excluída com sucesso.',
+                    'body'  => 'A habilidade foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -47,21 +47,21 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Habilidades excluídas',
-                    'body' => 'As habilidades foram excluídas com sucesso.',
+                    'body'  => 'As habilidades foram excluídas com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Habilidades excluídas permanentemente',
-                    'body' => 'As habilidades foram excluídas permanentemente com sucesso.',
+                    'body'  => 'As habilidades foram excluídas permanentemente com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Habilidades restauradas permanentemente',
-                    'body' => 'As habilidades foram restauradas permanentemente com sucesso.',
+                    'body'  => 'As habilidades foram restauradas permanentemente com sucesso.',
                 ],
             ],
         ],

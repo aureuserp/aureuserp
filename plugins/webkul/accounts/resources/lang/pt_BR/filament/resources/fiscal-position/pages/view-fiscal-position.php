@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Posição fiscal excluída',
-                'body' => 'A posição fiscal foi excluída com sucesso.',
+                'body'  => 'A posição fiscal foi excluída com sucesso.',
             ],
         ],
     ],

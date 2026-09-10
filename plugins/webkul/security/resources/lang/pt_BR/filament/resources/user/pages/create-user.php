@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Usuário criado',
-        'body' => 'O usuário foi criado com sucesso.',
+        'body'  => 'O usuário foi criado com sucesso.',
     ],
 ];

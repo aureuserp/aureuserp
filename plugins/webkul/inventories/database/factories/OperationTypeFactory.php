@@ -21,7 +21,7 @@ class OperationTypeFactory extends Factory
 
     public function definition(): array
     {
-        $company = Company::factory();
+        $company = current_company_id() ?? Company::query()->value('id') ?? Company::factory();
 
         return [
             'name'                               => fake()->words(2, true),
@@ -62,7 +62,7 @@ class OperationTypeFactory extends Factory
 
     public function receipt(): static
     {
-        $company = Company::factory();
+        $company = current_company_id() ?? Company::query()->value('id') ?? Company::factory();
 
         return $this->state(fn (array $attributes) => [
             'type'                    => OperationTypeEnum::INCOMING,
@@ -75,7 +75,7 @@ class OperationTypeFactory extends Factory
 
     public function internal(): static
     {
-        $company = Company::factory();
+        $company = current_company_id() ?? Company::query()->value('id') ?? Company::factory();
 
         return $this->state(fn (array $attributes) => [
             'type'                    => OperationTypeEnum::INTERNAL,
@@ -88,7 +88,7 @@ class OperationTypeFactory extends Factory
 
     public function delivery(): static
     {
-        $company = Company::factory();
+        $company = current_company_id() ?? Company::query()->value('id') ?? Company::factory();
 
         return $this->state(fn (array $attributes) => [
             'type'                    => OperationTypeEnum::OUTGOING,
@@ -101,7 +101,7 @@ class OperationTypeFactory extends Factory
 
     public function dropship(): static
     {
-        $company = Company::factory();
+        $company = current_company_id() ?? Company::query()->value('id') ?? Company::factory();
 
         return $this->state(fn (array $attributes) => [
             'type'                    => OperationTypeEnum::DROPSHIP,

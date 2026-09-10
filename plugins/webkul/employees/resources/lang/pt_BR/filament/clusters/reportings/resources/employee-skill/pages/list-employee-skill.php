@@ -2,8 +2,8 @@
 
 return [
     'tabs' => [
-        'with-skill' => 'Com habilidade',
+        'with-skill'    => 'Com habilidade',
         'without-skill' => 'Sem habilidade',
-        'archived' => 'Arquivados',
+        'archived'      => 'Arquivados',
     ],
 ];

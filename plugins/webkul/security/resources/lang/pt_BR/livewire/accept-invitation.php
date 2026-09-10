@@ -15,7 +15,7 @@ return [
 
         'login' => [
             'before' => 'ou',
-            'label' => 'entrar na sua conta',
+            'label'  => 'entrar na sua conta',
         ],
 
     ],
@@ -31,7 +31,7 @@ return [
         ],
 
         'password' => [
-            'label' => 'Senha',
+            'label'                => 'Senha',
             'validation_attribute' => 'senha',
         ],
 
@@ -53,7 +53,7 @@ return [
 
         'throttled' => [
             'title' => 'Muitas tentativas de cadastro',
-            'body' => 'Tente novamente em :seconds segundos.',
+            'body'  => 'Tente novamente em :seconds segundos.',
         ],
 
     ],

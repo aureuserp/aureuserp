@@ -9,57 +9,57 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'Geral',
+                'title'  => 'Geral',
                 'fields' => [
-                    'name' => 'Nome',
-                    'name-placeholder' => 'ex.: Linha de montagem 1',
-                    'code' => 'Código',
-                    'code-placeholder' => 'ex.: LM1',
-                    'working-state' => 'Estado de trabalho',
-                    'color' => 'Cor',
-                    'tags' => 'Tag',
+                    'name'                     => 'Nome',
+                    'name-placeholder'         => 'ex.: Linha de montagem 1',
+                    'code'                     => 'Código',
+                    'code-placeholder'         => 'ex.: LM1',
+                    'working-state'            => 'Estado de trabalho',
+                    'color'                    => 'Cor',
+                    'tags'                     => 'Tag',
                     'alternative-work-centers' => 'Centros de trabalho alternativos',
-                    'company' => 'Empresa',
-                    'calendar' => 'Horário de trabalho',
+                    'company'                  => 'Empresa',
+                    'calendar'                 => 'Horário de trabalho',
                 ],
             ],
 
             'information' => [
-                'title' => 'Informações gerais',
+                'title'     => 'Informações gerais',
                 'fieldsets' => [
                     'production-information' => 'Informações de produção',
-                    'costing-information' => 'Informações de custo',
+                    'costing-information'    => 'Informações de custo',
                 ],
                 'fields' => [
                     'default-capacity' => 'Capacidade padrão',
-                    'time-efficiency' => 'Eficiência de tempo',
-                    'oee-target' => 'Meta de OEE',
-                    'costs-per-hour' => 'Custo por hora',
-                    'cost-suffix' => 'por hora',
-                    'setup-time' => 'Tempo de preparação',
-                    'cleanup-time' => 'Tempo de limpeza',
-                    'time-suffix' => 'minutos',
+                    'time-efficiency'  => 'Eficiência de tempo',
+                    'oee-target'       => 'Meta de OEE',
+                    'costs-per-hour'   => 'Custo por hora',
+                    'cost-suffix'      => 'por hora',
+                    'setup-time'       => 'Tempo de preparação',
+                    'cleanup-time'     => 'Tempo de limpeza',
+                    'time-suffix'      => 'minutos',
                 ],
             ],
 
             'description' => [
-                'title' => 'Descrição',
+                'title'  => 'Descrição',
                 'fields' => [
-                    'note' => 'Descrição',
+                    'note'             => 'Descrição',
                     'note-placeholder' => 'Descrição do centro de trabalho...',
                 ],
             ],
 
             'specific-capacity' => [
-                'title' => 'Capacidade específica',
+                'title'  => 'Capacidade específica',
                 'fields' => [
                     'records' => 'Capacidade específica',
                 ],
                 'columns' => [
-                    'product' => 'Produto',
-                    'product-uom' => 'Unidade de medida',
-                    'capacity' => 'Capacidade',
-                    'setup-time' => 'Tempo de preparação',
+                    'product'      => 'Produto',
+                    'product-uom'  => 'Unidade de medida',
+                    'capacity'     => 'Capacidade',
+                    'setup-time'   => 'Tempo de preparação',
                     'cleanup-time' => 'Tempo de limpeza',
                 ],
                 'actions' => [
@@ -71,17 +71,17 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'code' => 'Código',
-            'company' => 'Empresa',
-            'calendar' => 'Horário de trabalho',
-            'working-state' => 'Estado de trabalho',
+            'name'             => 'Nome',
+            'code'             => 'Código',
+            'company'          => 'Empresa',
+            'calendar'         => 'Horário de trabalho',
+            'working-state'    => 'Estado de trabalho',
             'default-capacity' => 'Capacidade',
-            'time-efficiency' => 'Eficiência',
-            'costs-per-hour' => 'Custo por hora',
-            'deleted-at' => 'Excluído em',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'time-efficiency'  => 'Eficiência',
+            'costs-per-hour'   => 'Custo por hora',
+            'deleted-at'       => 'Excluído em',
+            'created-at'       => 'Criado em',
+            'updated-at'       => 'Atualizado em',
         ],
 
         'groups' => [
@@ -89,7 +89,7 @@ return [
         ],
 
         'filters' => [
-            'company' => 'Empresa',
+            'company'       => 'Empresa',
             'working-state' => 'Estado de trabalho',
         ],
 
@@ -97,14 +97,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Centro de trabalho restaurado',
-                    'body' => 'O centro de trabalho foi restaurado com sucesso.',
+                    'body'  => 'O centro de trabalho foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Centro de trabalho arquivado',
-                    'body' => 'O centro de trabalho foi arquivado com sucesso.',
+                    'body'  => 'O centro de trabalho foi arquivado com sucesso.',
                 ],
             ],
 
@@ -112,12 +112,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Centro de trabalho excluído',
-                        'body' => 'O centro de trabalho foi excluído permanentemente.',
+                        'body'  => 'O centro de trabalho foi excluído permanentemente.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir o centro de trabalho',
-                        'body' => 'O centro de trabalho não pode ser excluído porque está em uso no momento.',
+                        'body'  => 'O centro de trabalho não pode ser excluído porque está em uso no momento.',
                     ],
                 ],
             ],
@@ -127,14 +127,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Centros de trabalho restaurados',
-                    'body' => 'Os centros de trabalho selecionados foram restaurados com sucesso.',
+                    'body'  => 'Os centros de trabalho selecionados foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Centros de trabalho arquivados',
-                    'body' => 'Os centros de trabalho selecionados foram arquivados com sucesso.',
+                    'body'  => 'Os centros de trabalho selecionados foram arquivados com sucesso.',
                 ],
             ],
 
@@ -142,12 +142,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Centros de trabalho excluídos',
-                        'body' => 'Os centros de trabalho selecionados foram excluídos permanentemente.',
+                        'body'  => 'Os centros de trabalho selecionados foram excluídos permanentemente.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir os centros de trabalho',
-                        'body' => 'Um ou mais centros de trabalho selecionados estão em uso no momento.',
+                        'body'  => 'Um ou mais centros de trabalho selecionados estão em uso no momento.',
                     ],
                 ],
             ],
@@ -160,49 +160,49 @@ return [
                 'title' => 'Informações gerais',
 
                 'entries' => [
-                    'name' => 'Nome do centro de trabalho',
-                    'code' => 'Código',
-                    'working-state' => 'Estado de trabalho',
-                    'tags' => 'Tag',
+                    'name'                     => 'Nome do centro de trabalho',
+                    'code'                     => 'Código',
+                    'working-state'            => 'Estado de trabalho',
+                    'tags'                     => 'Tag',
                     'alternative-work-centers' => 'Centros de trabalho alternativos',
-                    'company' => 'Empresa',
-                    'calendar' => 'Horário de trabalho',
+                    'company'                  => 'Empresa',
+                    'calendar'                 => 'Horário de trabalho',
                 ],
             ],
 
             'information' => [
-                'title' => 'Informações gerais',
+                'title'     => 'Informações gerais',
                 'fieldsets' => [
                     'production-information' => 'Informações de produção',
-                    'costing-information' => 'Informações de custo',
+                    'costing-information'    => 'Informações de custo',
                 ],
 
                 'entries' => [
                     'default-capacity' => 'Capacidade padrão',
-                    'time-efficiency' => 'Eficiência de tempo',
-                    'oee-target' => 'Meta de OEE',
-                    'costs-per-hour' => 'Custo por hora',
-                    'cost-suffix' => 'por centro de trabalho',
-                    'setup-time' => 'Tempo de preparação',
-                    'cleanup-time' => 'Tempo de limpeza',
-                    'time-suffix' => 'minutos',
+                    'time-efficiency'  => 'Eficiência de tempo',
+                    'oee-target'       => 'Meta de OEE',
+                    'costs-per-hour'   => 'Custo por hora',
+                    'cost-suffix'      => 'por centro de trabalho',
+                    'setup-time'       => 'Tempo de preparação',
+                    'cleanup-time'     => 'Tempo de limpeza',
+                    'time-suffix'      => 'minutos',
                 ],
             ],
 
             'description' => [
-                'title' => 'Descrição',
+                'title'   => 'Descrição',
                 'entries' => [
                     'note' => 'Descrição',
                 ],
             ],
 
             'specific-capacity' => [
-                'title' => 'Capacidades específicas',
+                'title'   => 'Capacidades específicas',
                 'columns' => [
-                    'product' => 'Produto',
-                    'product-uom' => 'Unidade de medida',
-                    'capacity' => 'Capacidade',
-                    'setup-time' => 'Tempo de preparação',
+                    'product'      => 'Produto',
+                    'product-uom'  => 'Unidade de medida',
+                    'capacity'     => 'Capacidade',
+                    'setup-time'   => 'Tempo de preparação',
                     'cleanup-time' => 'Tempo de limpeza',
                 ],
             ],
@@ -211,8 +211,8 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'created-by' => 'Criado por',
-                    'created-at' => 'Criado em',
+                    'created-by'   => 'Criado por',
+                    'created-at'   => 'Criado em',
                     'last-updated' => 'Última atualização',
                 ],
             ],

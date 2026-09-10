@@ -3,14 +3,14 @@
 return [
     'notification' => [
         'title' => 'Nota de crédito atualizada',
-        'body' => 'A nota de crédito foi atualizada com sucesso.',
+        'body'  => 'A nota de crédito foi atualizada com sucesso.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'title' => 'Nota de crédito excluída',
-                'body' => 'A nota de crédito foi excluída com sucesso.',
+                'body'  => 'A nota de crédito foi excluída com sucesso.',
             ],
         ],
 

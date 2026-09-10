@@ -2,5 +2,5 @@
 
 return [
     'last-day-of-month' => 'Último dia do mês',
-    'day' => 'Dia :day',
+    'day'               => 'Dia :day',
 ];

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'up' => 'Para cima',
-    'down' => 'Para baixo',
+    'up'      => 'Para cima',
+    'down'    => 'Para baixo',
     'half-up' => 'Mais próximo',
 ];

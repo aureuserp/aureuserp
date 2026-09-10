@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package as BasePackage;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Throwable;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -226,30 +228,38 @@ class Package extends BasePackage
 
     public static function phpBinaryPath(): string
     {
-        $php = trim((string) @shell_exec('which php 2>/dev/null'));
+        return (new PhpExecutableFinder)->find(false) ?: 'php';
+    }
 
-        if ($php !== '' && is_file($php)) {
-            return $php;
+    public static function buildTimeoutCommand(int $seconds, string $command): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return $command;
         }
 
-        if (! str_contains(PHP_BINARY, 'fpm') && is_file(PHP_BINARY)) {
-            return PHP_BINARY;
+        if (PHP_OS_FAMILY === 'Darwin') {
+            return (new ExecutableFinder)->find('gtimeout')
+                ? "gtimeout {$seconds} {$command}"
+                : $command;
         }
 
-        $candidates = [
-            '/usr/local/bin/php',
-            '/usr/bin/php',
-            '/opt/homebrew/bin/php',
-            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
-        ];
+        return "timeout {$seconds} {$command}";
+    }
 
-        foreach ($candidates as $path) {
-            if (is_file($path)) {
-                return $path;
-            }
+    public static function openInBrowser(string $url): void
+    {
+        $opener = match (PHP_OS_FAMILY) {
+            'Darwin'  => 'open',
+            'Windows' => 'start',
+            'Linux'   => 'xdg-open',
+            default   => null,
+        };
+
+        if ($opener === null) {
+            return;
         }
 
-        return 'php';
+        exec("{$opener} {$url}");
     }
 
     public static function syncPostgresSequences(): void

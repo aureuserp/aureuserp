@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Projeto excluído',
-                'body' => 'O projeto foi excluído com sucesso.',
+                'body'  => 'O projeto foi excluído com sucesso.',
             ],
         ],
     ],

@@ -5,13 +5,11 @@ namespace Webkul\Inventory\Filament\Widgets;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Livewire\Component;
-use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
-use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
 
@@ -59,8 +57,9 @@ class OperationTypeCardWidget extends Component
         return $this->baseQuery()
             ->whereIn('state', [OperationState::ASSIGNED, OperationState::WAITING, OperationState::CONFIRMED])
             ->where(function (Builder $query) {
-                $query->whereDate('scheduled_at', '<', today())
-                    ->orWhere('has_deadline_issue', true);
+                $query->where('has_deadline_issue', true)
+                    ->orWhereDate('deadline', '<', today())
+                    ->orWhereDate('scheduled_at', '<', today());
             })
             ->count();
     }
@@ -73,12 +72,9 @@ class OperationTypeCardWidget extends Component
             ->count();
     }
 
-    protected function getMoveReadyCount(): int
+    protected function getTodoCount(): int
     {
-        return Move::query()
-            ->where('operation_type_id', $this->operationType->id)
-            ->where('state', MoveState::ASSIGNED)
-            ->count();
+        return $this->baseQuery()->count();
     }
 
     protected function getReadyLabel(): string
@@ -112,7 +108,7 @@ class OperationTypeCardWidget extends Component
             $links[] = [
                 'label' => __('inventories::filament/widgets/operation-type-card-widget.links.late'),
                 'count' => $late,
-                'url'   => $this->getUrl('todo'),
+                'url'   => $this->getUrl('late'),
             ];
         }
 
@@ -124,11 +120,11 @@ class OperationTypeCardWidget extends Component
             ];
         }
 
-        if ($moves = $this->getMoveReadyCount()) {
+        if ($todo = $this->getTodoCount()) {
             $links[] = [
                 'label' => __('inventories::filament/widgets/operation-type-card-widget.links.operations'),
-                'count' => $moves,
-                'url'   => $this->getUrl('ready'),
+                'count' => $todo,
+                'url'   => $this->getUrl('todo'),
             ];
         }
 

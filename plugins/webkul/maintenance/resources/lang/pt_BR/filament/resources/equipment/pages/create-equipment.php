@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Equipamento criado',
-        'body' => 'O equipamento foi criado com sucesso.',
+        'body'  => 'O equipamento foi criado com sucesso.',
     ],
 ];

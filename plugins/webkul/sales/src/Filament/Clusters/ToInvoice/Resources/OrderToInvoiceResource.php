@@ -34,7 +34,6 @@ class OrderToInvoiceResource extends QuotationResource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->applyPermissionScope()
             ->where('invoice_status', InvoiceStatus::TO_INVOICE);
     }
 

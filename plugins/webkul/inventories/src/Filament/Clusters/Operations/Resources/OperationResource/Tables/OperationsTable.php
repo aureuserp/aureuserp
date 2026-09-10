@@ -26,7 +26,6 @@ class OperationsTable
     {
         return $table
             ->reorderableColumns()
-            ->columnManagerColumns(2)
             ->defaultSort('id', 'desc')
             ->columns([
                 IconColumn::make('is_favorite')

@@ -4,7 +4,7 @@ return [
     'title' => 'Feriados',
     'form'  => [
         'placeholders' => [
-            'public-holiday' => 'Feriados',
+            'public-holiday'    => 'Feriados',
             'mandatory-holiday' => 'Feriados obrigatórios',
         ],
     ],

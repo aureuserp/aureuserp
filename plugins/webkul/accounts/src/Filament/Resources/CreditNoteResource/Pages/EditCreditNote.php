@@ -7,9 +7,14 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice as EditRecord;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class EditCreditNote extends EditRecord
 {
+    use HandlesCrossCompanyException;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected static string $resource = CreditNoteResource::class;
 
     protected function getSavedNotification(): ?Notification

@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Contato criado',
-        'body' => 'O contato foi criado com sucesso.',
+        'body'  => 'O contato foi criado com sucesso.',
     ],
 ];

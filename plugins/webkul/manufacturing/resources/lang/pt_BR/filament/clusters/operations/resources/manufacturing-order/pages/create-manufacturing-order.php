@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Ordem de produção criada',
-        'body' => 'A ordem de produção foi criada com sucesso.',
+        'body'  => 'A ordem de produção foi criada com sucesso.',
     ],
 ];

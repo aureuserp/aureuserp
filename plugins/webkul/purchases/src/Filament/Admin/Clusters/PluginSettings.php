@@ -16,7 +16,7 @@ class PluginSettings extends Cluster
         return __('purchases::app.navigation.settings.label');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Purchase;
     }

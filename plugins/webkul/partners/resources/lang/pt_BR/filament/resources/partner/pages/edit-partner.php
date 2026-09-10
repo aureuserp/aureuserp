@@ -5,14 +5,14 @@ return [
 
     'notification' => [
         'title' => 'Contato atualizado',
-        'body' => 'O contato foi atualizado com sucesso.',
+        'body'  => 'O contato foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'title' => 'Contato excluído',
-                'body' => 'O contato foi excluído com sucesso.',
+                'body'  => 'O contato foi excluído com sucesso.',
             ],
         ],
     ],

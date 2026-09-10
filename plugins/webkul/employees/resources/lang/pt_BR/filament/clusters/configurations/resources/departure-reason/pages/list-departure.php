@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Motivo de saída criado',
-                'body' => 'O motivo de saída foi criado com sucesso.',
+                'body'  => 'O motivo de saída foi criado com sucesso.',
             ],
         ],
     ],

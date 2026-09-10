@@ -25,7 +25,7 @@ class Settings extends Cluster
         return __('support::filament/clusters/settings/pages/settings.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Setting;
     }

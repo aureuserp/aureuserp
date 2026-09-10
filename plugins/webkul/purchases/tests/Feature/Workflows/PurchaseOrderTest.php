@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\TaxIncludeOverride;
@@ -8,6 +9,8 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
@@ -23,13 +26,13 @@ beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('purchases');
 
     foreach (['inventories', 'purchases'] as $plugin) {
-        Illuminate\Support\Facades\DB::table('plugins')->updateOrInsert(
+        DB::table('plugins')->updateOrInsert(
             ['name' => $plugin],
             ['is_installed' => true, 'is_active' => true, 'updated_at' => now()],
         );
     }
 
-    Webkul\PluginManager\Package::$plugins = Webkul\PluginManager\Models\Plugin::all()->keyBy('name');
+    Package::$plugins = Plugin::all()->keyBy('name');
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 
@@ -236,7 +239,7 @@ it('lands the ordered quantity in stock when the receipt is validated', function
 
     $receipt = $order->operations->first();
 
-    Inventory::doneTransfer($receipt->refresh());
+    Inventory::completeTransfer($receipt->refresh());
 
     expect($receipt->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->stock))->toBe(10.0);
@@ -245,7 +248,7 @@ it('lands the ordered quantity in stock when the receipt is validated', function
 it('writes the received quantity back to the order line when the receipt is validated', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $line = $order->refresh()->lines->first();
 
@@ -270,7 +273,7 @@ it('pushes only the extra quantity onto the receipt when the ordered quantity is
 it('creates a fresh receipt for the extra quantity after the first receipt is validated', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $order->refresh()->lines->first()->update(['product_qty' => 15]);
 
@@ -285,7 +288,7 @@ it('creates a fresh receipt for the extra quantity after the first receipt is va
 it('refuses to decrease the ordered quantity below the received quantity', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $line = $order->refresh()->lines->first();
 
@@ -304,14 +307,14 @@ it('cancels the receipt when the purchase order is cancelled', function () {
 it('decreases the received quantity when a purchase return refunds by default', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $receipt = $order->refresh()->operations->first();
     $receiptMove = $receipt->moves->first();
 
-    $return = Inventory::returnTransfer($receipt, [$receiptMove->id => 4]);
+    $return = Inventory::createReturn($receipt, [$receiptMove->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     $line = $order->refresh()->lines->first();
 
@@ -322,16 +325,16 @@ it('decreases the received quantity when a purchase return refunds by default', 
 it('keeps the received quantity when a purchase return is physical only', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $receipt = $order->refresh()->operations->first();
     $receiptMove = $receipt->moves->first();
 
-    $return = Inventory::returnTransfer($receipt, [
+    $return = Inventory::createReturn($receipt, [
         $receiptMove->id => ['quantity' => 4, 'to_refund' => false],
     ]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     $line = $order->refresh()->lines->first();
 
@@ -342,12 +345,12 @@ it('keeps the received quantity when a purchase return is physical only', functi
 it('links the purchase return move back to the original receipt move and order line', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $receipt = $order->refresh()->operations->first();
     $receiptMove = $receipt->moves->first();
 
-    $return = Inventory::returnTransfer($receipt, [$receiptMove->id => 4]);
+    $return = Inventory::createReturn($receipt, [$receiptMove->id => 4]);
 
     $returnMove = $return->refresh()->moves->first();
 
@@ -395,7 +398,7 @@ it('marks the receipt status pending after confirmation and full after validatio
 
     expect($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::PENDING);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     expect($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::FULL);
 });
@@ -403,7 +406,7 @@ it('marks the receipt status pending after confirmation and full after validatio
 it('marks the receipt status partial when only some receipts are done', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $order->refresh()->lines->first()->update(['product_qty' => 15]);
 
@@ -430,7 +433,7 @@ it('reports no invoice status while the order is still a draft', function () {
 it('marks the order to-invoice after receipt and invoiced after billing', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     expect($order->refresh()->invoice_status)->toBe(OrderInvoiceStatus::TO_INVOICED);
 
@@ -447,7 +450,7 @@ it('marks the order to-invoice after receipt and invoiced after billing', functi
 it('links the created bill to the order and its lines to the order lines', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     PurchaseOrderFacade::createPurchaseOrderBill($order->refresh());
 
@@ -519,12 +522,12 @@ it('adds a move for a new order line appended to a confirmed purchase order', fu
 it('handles a quantity change after a receipt has been returned', function () {
     $order = confirmedPurchaseOrder($this->warehouse, $this->product, 10);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $receipt = $order->refresh()->operations->first();
-    $return = Inventory::returnTransfer($receipt, [$receipt->moves->first()->id => 4]);
+    $return = Inventory::createReturn($receipt, [$receipt->moves->first()->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     $order->refresh()->lines->first()->update(['product_qty' => 12]);
 
@@ -540,7 +543,7 @@ it('creates the lot named on the receipt move when a lot-tracked purchase is val
 
     InventoryHelper::nameLines($order->operations->first()->refresh()->moves->first(), ['LOT-A']);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     $moveLine = $order->operations->first()->refresh()->moves->first()->lines->first();
 
@@ -558,7 +561,7 @@ it('assigns one serial number per unit on a serial-tracked receipt', function ()
 
     InventoryHelper::nameLines($order->operations->first()->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
 
-    Inventory::doneTransfer($order->operations->first()->refresh());
+    Inventory::completeTransfer($order->operations->first()->refresh());
 
     expect((float) $order->refresh()->lines->first()->qty_received)->toBe(3.0)
         ->and(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])

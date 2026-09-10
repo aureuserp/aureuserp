@@ -8,7 +8,7 @@ return [
 
     'global-search' => [
         'partner' => 'Parceiro',
-        'origin' => 'Origem',
+        'origin'  => 'Origem',
     ],
 
     'table' => [
@@ -17,12 +17,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Entrega excluída',
-                        'body' => 'A entrega foi excluída com sucesso.',
+                        'body'  => 'A entrega foi excluída com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir a entrega',
-                        'body' => 'A entrega não pode ser excluída porque está em uso.',
+                        'body'  => 'A entrega não pode ser excluída porque está em uso.',
                     ],
                 ],
             ],
@@ -33,12 +33,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Entregas excluídas',
-                        'body' => 'As entregas foram excluídas com sucesso.',
+                        'body'  => 'As entregas foram excluídas com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir as entregas',
-                        'body' => 'As entregas não podem ser excluídas porque estão em uso.',
+                        'body'  => 'As entregas não podem ser excluídas porque estão em uso.',
                     ],
                 ],
             ],

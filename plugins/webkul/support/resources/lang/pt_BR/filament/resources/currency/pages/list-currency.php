@@ -10,8 +10,8 @@ return [
     ],
 
     'tabs' => [
-        'all' => 'Todos',
-        'active' => 'Ativa',
+        'all'      => 'Todos',
+        'active'   => 'Ativa',
         'inactive' => 'Inativo',
     ],
 ];

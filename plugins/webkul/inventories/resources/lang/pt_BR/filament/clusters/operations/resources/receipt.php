@@ -8,7 +8,7 @@ return [
 
     'global-search' => [
         'partner' => 'Parceiro',
-        'origin' => 'Origem',
+        'origin'  => 'Origem',
     ],
 
     'table' => [
@@ -17,12 +17,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Recebimento excluído',
-                        'body' => 'O recebimento foi excluído com sucesso.',
+                        'body'  => 'O recebimento foi excluído com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir o recebimento',
-                        'body' => 'O recebimento não pode ser excluído porque está em uso.',
+                        'body'  => 'O recebimento não pode ser excluído porque está em uso.',
                     ],
                 ],
             ],
@@ -33,12 +33,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Recebimentos excluídos',
-                        'body' => 'Os recebimentos foram excluídos com sucesso.',
+                        'body'  => 'Os recebimentos foram excluídos com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Não foi possível excluir os recebimentos',
-                        'body' => 'Os recebimentos não podem ser excluídos porque estão em uso.',
+                        'body'  => 'Os recebimentos não podem ser excluídos porque estão em uso.',
                     ],
                 ],
             ],

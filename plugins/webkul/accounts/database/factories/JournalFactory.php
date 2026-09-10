@@ -8,11 +8,13 @@ use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 class JournalFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Journal::class;
 
     public function definition(): array
@@ -22,7 +24,6 @@ class JournalFactory extends Factory
             'suspense_account_id'      => null,
             'sort'                     => 0,
             'currency_id'              => Currency::factory(),
-            'company_id'               => Company::factory(),
             'profit_account_id'        => null,
             'loss_account_id'          => null,
             'bank_account_id'          => null,

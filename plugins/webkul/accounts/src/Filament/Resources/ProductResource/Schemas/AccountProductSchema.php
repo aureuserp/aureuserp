@@ -7,8 +7,10 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\DefaultAccountSettings;
 
@@ -112,26 +114,50 @@ class AccountProductSchema
             ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.label'))
             ->schema([
                 Select::make('property_account_income_id')
+                    ->key(fn (Get $get) => 'property_account_income_id.'.($get('company_id') ?? 'all'))
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.income-account'))
                     ->hintIcon(
                         'heroicon-m-question-mark-circle',
                         tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.income-account-hint-tooltip')
                     )
-                    ->relationship('propertyAccountIncome', 'name')
+                    ->options(fn (Get $get) => static::accountOptions($get('company_id')))
+                    ->getOptionLabelUsing(fn ($value, Get $get) => static::accountOptions($get('company_id'))[$value] ?? null)
                     ->preload()
                     ->searchable()
-                    ->default(fn (DefaultAccountSettings $settings) => $settings->income_account_id),
+                    ->default(fn (Get $get, DefaultAccountSettings $settings) => Account::resolveForCompany(
+                        $settings->income_account_id,
+                        $get('company_id'),
+                    ))
+                    ->afterStateHydrated(function (Select $component, $state, Get $get, DefaultAccountSettings $settings): void {
+                        if (filled($state) && array_key_exists((int) $state, static::accountOptions($get('company_id')))) {
+                            return;
+                        }
+
+                        $component->state(Account::resolveForCompany($settings->income_account_id, $get('company_id')));
+                    }),
 
                 Select::make('property_account_expense_id')
+                    ->key(fn (Get $get) => 'property_account_expense_id.'.($get('company_id') ?? 'all'))
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account'))
                     ->hintIcon(
                         'heroicon-m-question-mark-circle',
                         tooltip: __('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account-hint-tooltip')
                     )
-                    ->relationship('propertyAccountExpense', 'name')
+                    ->options(fn (Get $get) => static::accountOptions($get('company_id')))
+                    ->getOptionLabelUsing(fn ($value, Get $get) => static::accountOptions($get('company_id'))[$value] ?? null)
                     ->preload()
                     ->searchable()
-                    ->default(fn (DefaultAccountSettings $settings) => $settings->expense_account_id),
+                    ->default(fn (Get $get, DefaultAccountSettings $settings) => Account::resolveForCompany(
+                        $settings->expense_account_id,
+                        $get('company_id'),
+                    ))
+                    ->afterStateHydrated(function (Select $component, $state, Get $get, DefaultAccountSettings $settings): void {
+                        if (filled($state) && array_key_exists((int) $state, static::accountOptions($get('company_id')))) {
+                            return;
+                        }
+
+                        $component->state(Account::resolveForCompany($settings->expense_account_id, $get('company_id')));
+                    }),
             ]);
 
         return Section::make()
@@ -161,5 +187,23 @@ class AccountProductSchema
             Hidden::make('sale_line_warn')
                 ->default('no-message'),
         ];
+    }
+
+    protected static function accountOptions($companyId): array
+    {
+
+        return Account::query()
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ])
+            ->where(owned_by_company($companyId))
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->all();
     }
 }

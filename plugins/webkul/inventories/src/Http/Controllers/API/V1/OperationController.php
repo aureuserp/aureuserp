@@ -112,7 +112,7 @@ class OperationController extends Controller
     protected function checkAvailabilityById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $operation = Inventory::assignTransfer($operation);
+        $operation = Inventory::reserveTransfer($operation);
 
         return $operation->refresh()->load($this->allowedIncludes);
     }
@@ -128,7 +128,7 @@ class OperationController extends Controller
     protected function validateById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $operation = Inventory::doneTransfer($operation);
+        $operation = Inventory::completeTransfer($operation);
 
         return $operation->refresh()->load($this->allowedIncludes);
     }
@@ -144,7 +144,7 @@ class OperationController extends Controller
     protected function returnById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $newOperation = Inventory::returnTransfer($operation);
+        $newOperation = Inventory::createReturn($operation);
 
         return $newOperation->refresh()->load($this->allowedIncludes);
     }
@@ -338,7 +338,7 @@ class OperationController extends Controller
                 }
             }
 
-            Move::$globalContext['skip_additional'] = false;
+            Move::markNextAsAdditional();
 
             $createdMove = $operation->moves()->create($this->prepareMoveData($operation, $moveData));
             $retainedMoveIds[] = $createdMove->id;

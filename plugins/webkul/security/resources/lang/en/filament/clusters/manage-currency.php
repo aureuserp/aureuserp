@@ -11,8 +11,8 @@ return [
 
     'form' => [
         'default-currency' => [
-            'label'       => 'Default Currency',
-            'helper-text' => 'The default currency used in the application.',
+            'label'       => 'Base Currency',
+            'helper-text' => 'The base currency of the system. Product prices are stored in this currency and are converted to the company currency when a sale or purchase is made.',
         ],
     ],
 ];

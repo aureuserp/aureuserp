@@ -2,10 +2,10 @@
 
 return [
     'tabs' => [
-        'my-projects' => 'Meus projetos',
+        'my-projects'          => 'Meus projetos',
         'my-favorite-projects' => 'Meus favoritos',
-        'unassigned-projects' => 'Projetos não atribuídos',
-        'archived-projects' => 'Projetos arquivados',
+        'unassigned-projects'  => 'Projetos não atribuídos',
+        'archived-projects'    => 'Projetos arquivados',
     ],
 
     'header-actions' => [

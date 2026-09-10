@@ -6,7 +6,7 @@ return [
     'notification' => [
         'success' => [
             'title' => 'Ordem de produção iniciada',
-            'body' => 'A ordem de produção foi iniciada com sucesso.',
+            'body'  => 'A ordem de produção foi iniciada com sucesso.',
         ],
     ],
 ];

@@ -111,6 +111,11 @@ return [
                 'notification' => [
                     'title' => 'Monedas eliminadas',
                     'body'  => 'Las monedas se han eliminado correctamente.',
+
+                    'error' => [
+                        'title' => 'No se pudieron eliminar las monedas',
+                        'body'  => 'Algunas de las monedas seleccionadas están en uso y no se pueden eliminar.',
+                    ],
                 ],
             ],
         ],

@@ -8,10 +8,12 @@ use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateDelivery extends CreateRecord
 {
+    use HandlesCrossCompanyException;
     use HasRepeaterColumnManager;
 
     protected static string $resource = DeliveryResource::class;
@@ -49,7 +51,9 @@ class CreateDelivery extends CreateRecord
     {
         parent::mount();
 
-        $operationType = OperationType::where('type', Enums\OperationType::OUTGOING)->first();
+        $operationType = OperationType::where('type', Enums\OperationType::OUTGOING)
+            ->where('company_id', current_company_id())
+            ->first();
 
         $this->data['operation_type_id'] = $operationType?->id;
 

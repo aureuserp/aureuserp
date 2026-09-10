@@ -10,7 +10,7 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\Scrap;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -18,6 +18,8 @@ use Webkul\Support\Models\UOM;
  */
 class ScrapFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Scrap::class;
 
     public function definition(): array
@@ -39,7 +41,6 @@ class ScrapFactory extends Factory
             'operation_id'            => null,
             'source_location_id'      => Location::factory(),
             'destination_location_id' => Location::factory(),
-            'company_id'              => Company::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }

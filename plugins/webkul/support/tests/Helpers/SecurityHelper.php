@@ -6,6 +6,8 @@ use Spatie\Permission\PermissionRegistrar;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\Permission;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Services\CompanyContext;
 
 class SecurityHelper
 {
@@ -22,9 +24,19 @@ class SecurityHelper
         // no-op: keep model events enabled for API behavior under test.
     }
 
-    public static function authenticateWithPermissions(array $permissionNames): User
+    public static function authenticateWithPermissions(array $permissionNames, bool $bypassCompanyScope = false): User
     {
         $user = static::createUser();
+
+        if ($user->default_company_id) {
+            $user->allowedCompanies()->sync([$user->default_company_id]);
+
+            session([CompanyContext::SESSION_KEY => [$user->default_company_id]]);
+        }
+
+        if ($bypassCompanyScope) {
+            $permissionNames[] = 'bypass_company_scope';
+        }
 
         if (! empty($permissionNames)) {
             static::ensurePermissionsExist($permissionNames);
@@ -36,6 +48,8 @@ class SecurityHelper
         Auth::guard('sanctum')->setUser($user);
         Auth::shouldUse('sanctum');
         Sanctum::actingAs($user, ['*']);
+
+        app()->forgetInstance(CompanyContext::class);
 
         return $user;
     }
@@ -57,7 +71,11 @@ class SecurityHelper
 
     private static function createUser(): User
     {
-        return User::withoutEvents(fn (): User => User::factory()->create());
+        $companyId = Company::query()->value('id') ?? Company::factory()->create()->id;
+
+        return User::withoutEvents(fn (): User => User::factory()->create([
+            'default_company_id' => $companyId,
+        ]));
     }
 
     private static function ensurePermissionsExist(array $permissionNames): void

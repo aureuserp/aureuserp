@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Regra criada',
-                'body' => 'A regra foi criada com sucesso.',
+                'body'  => 'A regra foi criada com sucesso.',
             ],
         ],
     ],

@@ -82,7 +82,7 @@ export class CompanyManagementPage {
      */
     async assertCompanyVisible(identifier: string) {
         await this.searchCompany(identifier);
-        await expect(this.page.getByText(identifier).first()).toBeVisible();
+        await expect(this.erpLocators.companiesTable.first().getByText(identifier).first()).toBeVisible();
     }
 
     /**

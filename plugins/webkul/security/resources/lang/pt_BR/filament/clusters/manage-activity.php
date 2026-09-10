@@ -2,8 +2,8 @@
 
 return [
     'breadcrumb' => 'Gerenciar atividades',
-    'title' => 'Gerenciar atividades',
-    'group' => 'Geral',
+    'title'      => 'Gerenciar atividades',
+    'group'      => 'Geral',
 
     'navigation' => [
         'label' => 'Gerenciar atividades',
@@ -11,7 +11,7 @@ return [
 
     'form' => [
         'activity-description' => [
-            'label' => 'Atividades',
+            'label'   => 'Atividades',
             'content' => 'Configure seus tipos de atividade.',
         ],
 

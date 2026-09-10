@@ -33,6 +33,11 @@ class Homepage extends Page
         return __('website::filament/app.homepage.title');
     }
 
+    public function getHeading(): string|Htmlable|null
+    {
+        return null;
+    }
+
     public function getContent(): string|Htmlable
     {
         $homePage = PageModel::where('slug', 'home')->first();

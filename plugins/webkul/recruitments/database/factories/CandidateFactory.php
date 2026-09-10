@@ -8,13 +8,15 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Recruitment\Models\Candidate;
 use Webkul\Recruitment\Models\Degree;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Candidate>
  */
 class CandidateFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Candidate::class;
 
     public function definition(): array
@@ -32,7 +34,6 @@ class CandidateFactory extends Factory
             'candidate_properties' => null,
 
             // Relationships
-            'company_id'  => Company::factory(),
             'partner_id'  => Partner::query()->value('id') ?? Partner::factory(),
             'degree_id'   => Degree::factory(),
             'manager_id'  => null,

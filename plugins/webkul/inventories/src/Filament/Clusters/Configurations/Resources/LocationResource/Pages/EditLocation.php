@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource;
 use Webkul\Inventory\Models\Location;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLocation extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
 
     protected static string $resource = LocationResource::class;

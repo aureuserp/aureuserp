@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Empresa criada',
-        'body' => 'A empresa foi criada com sucesso.',
+        'body'  => 'A empresa foi criada com sucesso.',
     ],
 ];

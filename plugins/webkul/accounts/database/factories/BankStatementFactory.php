@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Account\Models\BankStatement;
 use Webkul\Account\Models\Journal;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<\App\Models\BankStatement>
  */
 class BankStatementFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = BankStatement::class;
 
     /**
@@ -26,7 +28,6 @@ class BankStatementFactory extends Factory
         $balanceEnd = $balanceStart + fake()->randomFloat(2, -1000, 1000);
 
         return [
-            'company_id'       => Company::factory(),
             'journal_id'       => Journal::factory(),
             'creator_id'       => User::query()->value('id') ?? User::factory(),
             'name'             => fake()->words(2, true),

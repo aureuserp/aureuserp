@@ -2,6 +2,6 @@
 
 return [
     'individual' => 'Pessoa física',
-    'company' => 'Empresa',
-    'address' => 'Endereço',
+    'company'    => 'Empresa',
+    'address'    => 'Endereço',
 ];

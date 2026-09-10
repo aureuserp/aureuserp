@@ -13,9 +13,11 @@ use Webkul\Employee\Database\Factories\EmployeeJobPositionFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class EmployeeJobPosition extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
     protected $table = 'employees_job_positions';

@@ -14,8 +14,10 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Models\Employee;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Models\Leave;
@@ -75,7 +77,17 @@ trait TimeOffHelper
 
                     Select::make('holiday_status_id')
                         ->label(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type'))
-                        ->relationship('holidayStatus', 'name')
+                        ->relationship(
+                            'holidayStatus',
+                            'name',
+                            modifyQueryUsing: function (Get $get, Builder $query) {
+                                $employeeCompanyId = $get('employee_id')
+                                    ? Employee::withoutGlobalScope(CompanyScope::class)->find($get('employee_id'))?->company_id
+                                    : null;
+
+                                return $query->where(owned_by_company($employeeCompanyId));
+                            },
+                        )
                         ->required()
                         ->columnSpanFull()
                         ->placeholder(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type-placeholder'))
@@ -444,8 +456,8 @@ trait TimeOffHelper
 
         if ($user) {
             $data['user_id'] = $user->id;
-            $data['company_id'] = $user->default_company_id;
-            $data['employee_company_id'] = $user->default_company_id;
+            $data['employee_company_id'] = $employee?->company_id ?? current_company_id();
+            $data['company_id'] = $data['employee_company_id'];
         }
     }
 }

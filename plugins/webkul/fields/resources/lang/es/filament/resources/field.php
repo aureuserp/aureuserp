@@ -208,19 +208,19 @@ return [
                     ],
 
                     'textarea' => [
-                        'autofocus'    => 'Enfoque automático',
-                        'autosize'     => 'Tamaño automático',
-                        'cols'         => 'Columnas',
-                        'default'      => 'Valor predeterminado',
-                        'disabled'     => 'Deshabilitado',
-                        'helperText'   => 'Texto de ayuda',
-                        'hint'         => 'Sugerencia',
-                        'hintColor'    => 'Color de la sugerencia',
-                        'hintIcon'     => 'Icono de la sugerencia',
-                        'id'           => 'Id',
-                        'placeholder'  => 'Marcador de posición',
-                        'read-only'    => 'Solo lectura',
-                        'rows'         => 'Filas',
+                        'autofocus'     => 'Enfoque automático',
+                        'autosize'      => 'Tamaño automático',
+                        'cols'          => 'Columnas',
+                        'default'       => 'Valor predeterminado',
+                        'disabled'      => 'Deshabilitado',
+                        'helper-text'   => 'Texto de ayuda',
+                        'hint'          => 'Sugerencia',
+                        'hint-color'    => 'Color de la sugerencia',
+                        'hint-icon'     => 'Icono de la sugerencia',
+                        'id'            => 'Id',
+                        'placeholder'   => 'Marcador de posición',
+                        'read-only'     => 'Solo lectura',
+                        'rows'          => 'Filas',
                     ],
 
                     'select' => [
@@ -299,7 +299,7 @@ return [
                         'disabled'                => 'Deshabilitado',
                         'disabled-dates'          => 'Fechas deshabilitadas',
                         'display-format'          => 'Formato de visualización',
-                        'first-fay-of-week'       => 'Primer día de la semana',
+                        'first-day-of-week'       => 'Primer día de la semana',
                         'format'                  => 'Formato',
                         'helper-text'             => 'Texto de ayuda',
                         'hint'                    => 'Sugerencia',
@@ -424,6 +424,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Ultrafino',
                         'extra-light' => 'Extrafino',
                         'light'       => 'Fino',
                         'normal'      => 'Normal',
@@ -431,6 +432,7 @@ return [
                         'semi-bold'   => 'Seminegrita',
                         'bold'        => 'Negrita',
                         'extra-bold'  => 'Extranegrita',
+                        'black'       => 'Negro',
                     ],
 
                     'icon-position-options' => [
@@ -520,6 +522,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Ultrafino',
                         'extra-light' => 'Extrafino',
                         'light'       => 'Fino',
                         'normal'      => 'Normal',
@@ -527,6 +530,7 @@ return [
                         'semi-bold'   => 'Seminegrita',
                         'bold'        => 'Negrita',
                         'extra-bold'  => 'Extranegrita',
+                        'black'       => 'Negro',
                     ],
 
                     'icon-position-options' => [
@@ -666,6 +670,7 @@ return [
                 'title' => 'Recurso',
 
                 'fields' => [
+                    'plugin'   => 'Complemento',
                     'resource' => 'Recurso',
                 ],
             ],

@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Produto excluído',
-                'body' => 'O produto foi excluído com sucesso.',
+                'body'  => 'O produto foi excluído com sucesso.',
             ],
         ],
     ],

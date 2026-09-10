@@ -6,8 +6,8 @@ return [
     ],
 
     'table-columns' => [
-        'user' => 'Usuário',
+        'user'        => 'Usuário',
         'hours-spent' => 'Horas gastas',
-        'tasks' => 'Tarefas',
+        'tasks'       => 'Tarefas',
     ],
 ];

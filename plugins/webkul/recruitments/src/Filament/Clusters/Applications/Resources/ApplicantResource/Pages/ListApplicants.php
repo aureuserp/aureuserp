@@ -18,6 +18,8 @@ use Webkul\Recruitment\Enums\RecruitmentState;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource;
 use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
+use Webkul\Recruitment\Models\Candidate;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -159,7 +161,7 @@ class ListApplicants extends ListRecords
                 ])
                 ->mutateDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
-                    $data['company_id'] = Auth::user()->default_company_id;
+                    $data['company_id'] = Candidate::withoutGlobalScope(CompanyScope::class)->find($data['candidate_id'])?->company_id ?? current_company_id();
                     $data['create_date'] = now();
                     $data['is_active'] = true;
 

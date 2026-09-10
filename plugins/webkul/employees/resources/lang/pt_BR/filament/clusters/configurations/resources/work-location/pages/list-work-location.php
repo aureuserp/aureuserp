@@ -2,10 +2,10 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'    => 'Todos',
         'office' => 'Escritório',
-        'home' => 'Início',
-        'other' => 'Outro',
+        'home'   => 'Início',
+        'other'  => 'Outro',
     ],
 
     'header-actions' => [
@@ -14,7 +14,7 @@ return [
 
             'notification' => [
                 'title' => 'Local de trabalho criado',
-                'body' => 'O local de trabalho foi criado com sucesso.',
+                'body'  => 'O local de trabalho foi criado com sucesso.',
             ],
         ],
     ],

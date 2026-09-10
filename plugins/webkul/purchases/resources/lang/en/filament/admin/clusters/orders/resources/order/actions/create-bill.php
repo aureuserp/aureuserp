@@ -10,6 +10,10 @@ return [
                 'body'  => 'There is no invoiceable line, please make sure that a quantity has been received.',
             ],
 
+            'missing-journal' => [
+                'title' => 'Accounting is not set up',
+            ],
+
             'success' => [
                 'title' => 'Bill created',
                 'body'  => 'The bill has been created successfully.',

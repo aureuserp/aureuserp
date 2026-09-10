@@ -17,8 +17,8 @@ class EmailService
                 'name'    => Auth::user()->name,
             ];
 
-            if (Auth::user()->defaultCompany) {
-                $payload['from']['company'] = Auth::user()->defaultCompany->toArray();
+            if (current_company()) {
+                $payload['from']['company'] = current_company()->toArray();
             }
 
             Mail::to($payload['to']['address'], '"'.addslashes($payload['to']['name']).'"')

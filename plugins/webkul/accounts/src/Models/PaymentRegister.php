@@ -17,9 +17,11 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PaymentRegister extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'accounts_payment_registers';
@@ -93,6 +95,16 @@ class PaymentRegister extends Model
     public function partner()
     {
         return $this->belongsTo(Partner::class, 'partner_id');
+    }
+
+    public function getCompanyCurrencyAttribute(): ?Currency
+    {
+        return $this->company?->currency;
+    }
+
+    public function getCompanyCurrencyIdAttribute(): ?int
+    {
+        return $this->company?->currency_id;
     }
 
     public function paymentMethodLine()
@@ -495,7 +507,9 @@ class PaymentRegister extends Model
         $paymentValues = $batch['payment_values'];
 
         if ($paymentValues['payment_type'] == PaymentType::RECEIVE) {
-            return collect($journal->bankAccount);
+            return $journal?->bankAccount
+                ? collect([$journal->bankAccount])
+                : collect();
         }
 
         $company = $batch['lines']
@@ -503,8 +517,9 @@ class PaymentRegister extends Model
             ->first()
             ->company;
 
-        return $batch['lines']->first()->partner->bankAccounts
-            ->filter(fn ($bankAccount) => ! $bankAccount->company_id || $bankAccount->company_id == $company->id);
+        return collect($batch['lines']->first()->partner?->bankAccounts ?? [])
+            ->filter(fn ($bankAccount) => ! $bankAccount->company_id || $bankAccount->company_id == $company->id)
+            ->values();
     }
 
     public function getTotalAmountsToPay($batchResults)

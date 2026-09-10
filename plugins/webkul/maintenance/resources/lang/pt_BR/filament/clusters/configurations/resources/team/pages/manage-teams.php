@@ -7,13 +7,13 @@ return [
 
             'notification' => [
                 'title' => 'Equipe criada',
-                'body' => 'A equipe foi criada com sucesso.',
+                'body'  => 'A equipe foi criada com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

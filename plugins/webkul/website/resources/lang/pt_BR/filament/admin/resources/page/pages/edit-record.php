@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Página atualizada',
-        'body' => 'A página foi atualizada com sucesso.',
+        'body'  => 'A página foi atualizada com sucesso.',
     ],
 
     'header-actions' => [
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Página definida como rascunho',
-                'body' => 'A página foi definida como rascunho com sucesso.',
+                'body'  => 'A página foi definida como rascunho com sucesso.',
             ],
         ],
 
@@ -21,14 +21,14 @@ return [
 
             'notification' => [
                 'title' => 'Página publicada',
-                'body' => 'A página foi publicada com sucesso.',
+                'body'  => 'A página foi publicada com sucesso.',
             ],
         ],
 
         'delete' => [
             'notification' => [
                 'title' => 'Página excluída',
-                'body' => 'A página foi excluída com sucesso.',
+                'body'  => 'A página foi excluída com sucesso.',
             ],
         ],
     ],

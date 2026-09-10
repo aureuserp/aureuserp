@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Rota excluída',
-                'body' => 'A rota foi excluída com sucesso.',
+                'body'  => 'A rota foi excluída com sucesso.',
             ],
         ],
     ],

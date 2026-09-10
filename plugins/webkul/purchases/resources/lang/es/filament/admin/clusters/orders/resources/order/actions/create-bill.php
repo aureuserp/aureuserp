@@ -10,6 +10,10 @@ return [
                 'body'  => 'No hay ninguna línea facturable, asegúrese de que se haya recibido una cantidad.',
             ],
 
+            'missing-journal' => [
+                'title' => 'La contabilidad no está configurada',
+            ],
+
             'success' => [
                 'title' => 'Factura creada',
                 'body'  => 'La factura se ha creado correctamente.',

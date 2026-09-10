@@ -7,7 +7,7 @@ use Webkul\Product\Models\Product;
 use Webkul\Sale\Models\OrderTemplate;
 use Webkul\Sale\Models\OrderTemplateProduct;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -15,6 +15,8 @@ use Webkul\Support\Models\UOM;
  */
 class OrderTemplateProductFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -34,7 +36,6 @@ class OrderTemplateProductFactory extends Factory
             'quantity'          => fake()->randomFloat(2, 1, 10),
             'display_type'      => null,
             'order_template_id' => OrderTemplate::factory(),
-            'company_id'        => Company::factory(),
             'product_id'        => Product::factory(),
             'product_uom_id'    => UOM::factory(),
             'creator_id'        => User::query()->value('id') ?? User::factory(),

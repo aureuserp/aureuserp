@@ -8,7 +8,7 @@ use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**
@@ -16,6 +16,8 @@ use Webkul\Support\Models\Currency;
  */
 class RequisitionFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -36,7 +38,6 @@ class RequisitionFactory extends Factory
             'state'       => RequisitionState::DRAFT,
             'currency_id' => Currency::factory(),
             'partner_id'  => Partner::query()->value('id') ?? Partner::factory(),
-            'company_id'  => Company::factory(),
             'creator_id'  => User::query()->value('id') ?? User::factory(),
         ];
     }

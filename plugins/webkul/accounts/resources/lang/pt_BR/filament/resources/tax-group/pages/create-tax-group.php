@@ -3,6 +3,6 @@
 return [
     'notification' => [
         'title' => 'Grupo de impostos criado',
-        'body' => 'O grupo de impostos foi criado com sucesso.',
+        'body'  => 'O grupo de impostos foi criado com sucesso.',
     ],
 ];

@@ -14,7 +14,7 @@ use Webkul\Manufacturing\Models\BillOfMaterial;
 use Webkul\Manufacturing\Models\Order;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\UOM;
 
 /**
@@ -22,6 +22,8 @@ use Webkul\Support\Models\UOM;
  */
 class OrderFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Order::class;
 
     public function definition(): array
@@ -49,7 +51,6 @@ class OrderFactory extends Factory
             'final_location_id'       => null,
             'bill_of_material_id'     => BillOfMaterial::factory(),
             'assigned_user_id'        => User::query()->value('id'),
-            'company_id'              => Company::query()->value('id') ?? Company::factory(),
             'order_point_id'          => OrderPoint::query()->value('id'),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];

@@ -9,7 +9,7 @@ return [
 
     'global-search' => [
         'department-manager' => 'Gerente',
-        'company' => 'Empresa',
+        'company'            => 'Empresa',
     ],
 
     'form' => [
@@ -18,18 +18,18 @@ return [
                 'title' => 'Informações gerais',
 
                 'fields' => [
-                    'name' => 'Nome',
-                    'manager' => 'Gerente',
-                    'parent-department' => 'Departamento superior',
+                    'name'                => 'Nome',
+                    'manager'             => 'Gerente',
+                    'parent-department'   => 'Departamento superior',
                     'manager-placeholder' => 'Selecionar gerente',
-                    'company' => 'Empresa',
+                    'company'             => 'Empresa',
                     'company-placeholder' => 'Selecionar empresa',
-                    'color' => 'Cor',
+                    'color'               => 'Cor',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Informações adicionais',
+                'title'       => 'Informações adicionais',
                 'description' => 'Informações adicionais sobre este departamento.',
             ],
         ],
@@ -37,46 +37,46 @@ return [
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'manager-name' => 'Gerente',
             'company-name' => 'Empresa',
         ],
 
         'groups' => [
-            'name' => 'Nome',
-            'manager' => 'Gerente',
-            'company' => 'Empresa',
+            'name'       => 'Nome',
+            'manager'    => 'Gerente',
+            'company'    => 'Empresa',
             'updated-at' => 'Atualizado em',
             'created-at' => 'Criado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'manager-name' => 'Gerente',
             'company-name' => 'Empresa',
-            'updated-at' => 'Atualizado em',
-            'created-at' => 'Criado em',
+            'updated-at'   => 'Atualizado em',
+            'created-at'   => 'Criado em',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
                     'title' => 'Departamento restaurado',
-                    'body' => 'O departamento foi restaurado com sucesso.',
+                    'body'  => 'O departamento foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Departamento excluído',
-                    'body' => 'O departamento foi excluído com sucesso.',
+                    'body'  => 'O departamento foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Departamento excluído permanentemente',
-                    'body' => 'O departamento foi excluído permanentemente com sucesso.',
+                    'body'  => 'O departamento foi excluído permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -85,21 +85,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Departamentos restaurados',
-                    'body' => 'Os departamentos foram restaurados com sucesso.',
+                    'body'  => 'Os departamentos foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Departamentos excluídos',
-                    'body' => 'Os departamentos foram excluídos com sucesso.',
+                    'body'  => 'Os departamentos foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Departamentos excluídos permanentemente',
-                    'body' => 'Os departamentos foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os departamentos foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -111,10 +111,10 @@ return [
                 'title' => 'Geral',
 
                 'entries' => [
-                    'name' => 'Nome',
-                    'manager' => 'Gerente',
-                    'company' => 'Empresa',
-                    'color' => 'Cor',
+                    'name'            => 'Nome',
+                    'manager'         => 'Gerente',
+                    'company'         => 'Empresa',
+                    'color'           => 'Cor',
                     'hierarchy-title' => 'Organização do departamento',
                 ],
             ],

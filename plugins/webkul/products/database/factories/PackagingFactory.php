@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Packaging>
  */
 class PackagingFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -33,7 +35,6 @@ class PackagingFactory extends Factory
             'sort'       => 1,
             'product_id' => Product::factory(),
             'creator_id' => User::query()->value('id') ?? User::factory(),
-            'company_id' => Company::factory(),
         ];
     }
 }

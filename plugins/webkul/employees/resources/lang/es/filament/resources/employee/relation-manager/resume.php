@@ -4,16 +4,20 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'title'        => 'Título',
-                'type'         => 'Tipo',
-                'name'         => 'Nombre',
-                'type'         => 'Tipo',
-                'create-type'  => 'Crear tipo',
-                'duration'     => 'Duración',
-                'start-date'   => 'Fecha de inicio',
-                'end-date'     => 'Fecha de fin',
-                'display-type' => 'Tipo de visualización',
-                'description'  => 'Descripción',
+                'title'            => 'Título',
+                'name'             => 'Nombre',
+                'type'             => 'Tipo',
+                'create-type'      => 'Crear tipo',
+                'duration'         => 'Duración',
+                'start-date'       => 'Fecha de inicio',
+                'end-date'         => 'Fecha de fin',
+                'display-type'     => 'Tipo de visualización',
+                'description'      => 'Descripción',
+                'attachments'      => 'Adjuntos',
+                'file'             => 'Archivo',
+                'file-helper-text' => 'Formatos aceptados: PDF, DOC, DOCX, TXT, PNG, JPEG y WEBP. Máximo 10 MB por archivo.',
+                'attachment-name'  => 'Etiqueta',
+                'add-attachment'   => 'Añadir adjunto',
             ],
         ],
     ],
@@ -26,6 +30,7 @@ return [
             'display-type' => 'Tipo de visualización',
             'description'  => 'Descripción',
             'created-by'   => 'Creado por',
+            'attachments'  => 'Adjuntos',
             'created-at'   => 'Creado el',
             'updated-at'   => 'Actualizado el',
         ],
@@ -50,22 +55,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Nivel de competencia actualizado',
-                    'body'  => 'El nivel de competencia se ha actualizado correctamente.',
+                    'title' => 'Currículum actualizado',
+                    'body'  => 'El currículum se ha actualizado correctamente.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Nivel de competencia creado',
-                    'body'  => 'El nivel de competencia se ha creado correctamente.',
+                    'title' => 'Currículum creado',
+                    'body'  => 'El currículum se ha creado correctamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Nivel de competencia eliminado',
-                    'body'  => 'El nivel de competencia se ha eliminado correctamente.',
+                    'title' => 'Currículum eliminado',
+                    'body'  => 'El currículum se ha eliminado correctamente.',
                 ],
             ],
         ],
@@ -73,8 +78,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Competencias eliminadas',
-                    'body'  => 'Las competencias se han eliminado correctamente.',
+                    'title' => 'Currículums eliminados',
+                    'body'  => 'Los currículums se han eliminado correctamente.',
                 ],
             ],
         ],
@@ -82,13 +87,16 @@ return [
 
     'infolist' => [
         'entries' => [
-            'title'        => 'Título',
-            'display-type' => 'Tipo de visualización',
-            'type'         => 'Tipo',
-            'description'  => 'Descripción',
-            'duration'     => 'Duración',
-            'start-date'   => 'Fecha de inicio',
-            'end-date'     => 'Fecha de fin',
+            'title'           => 'Título',
+            'display-type'    => 'Tipo de visualización',
+            'type'            => 'Tipo',
+            'description'     => 'Descripción',
+            'duration'        => 'Duración',
+            'start-date'      => 'Fecha de inicio',
+            'end-date'        => 'Fecha de fin',
+            'attachments'     => 'Adjuntos',
+            'file'            => 'Archivo',
+            'attachment-name' => 'Etiqueta',
         ],
     ],
 ];

@@ -11,7 +11,7 @@ use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 
 /**
@@ -19,6 +19,8 @@ use Webkul\Support\Models\Currency;
  */
 class PaymentRegisterFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = PaymentRegister::class;
 
     /**
@@ -36,7 +38,6 @@ class PaymentRegisterFactory extends Factory
             'partner_bank_id'             => null,
             'custom_user_currency_id'     => null,
             'source_currency_id'          => Currency::factory(),
-            'company_id'                  => Company::factory(),
             'partner_id'                  => Partner::query()->value('id') ?? Partner::factory(),
             'payment_method_line_id'      => PaymentMethodLine::factory(),
             'writeoff_account_id'         => null,

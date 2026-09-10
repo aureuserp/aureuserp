@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Post excluído',
-                'body' => 'O post foi excluído com sucesso.',
+                'body'  => 'O post foi excluído com sucesso.',
             ],
         ],
     ],

@@ -4,12 +4,17 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'Nombre',
-                'tax-type'        => 'Tipo de impuesto',
-                'tax-computation' => 'Cálculo del impuesto',
-                'tax-scope'       => 'Ámbito del impuesto',
-                'status'          => 'Estado',
-                'amount'          => 'Importe',
+                'name'                         => 'Nombre',
+                'tax-type'                     => 'Tipo de impuesto',
+                'tax-computation'              => 'Cálculo del impuesto',
+                'tax-scope'                    => 'Ámbito del impuesto',
+                'status'                       => 'Estado',
+                'amount'                       => 'Importe',
+                'formula'                      => 'Fórmula',
+                'formula-helper-text'          => 'Solo aritmética: números, + - * / ( ), las funciones :functions y estas variables: :variables',
+                'children-taxes'               => 'Impuestos hijos',
+                'children-taxes-helper-text'   => 'El importe de este impuesto es la suma de sus impuestos hijos.',
+                'children-taxes-type-mismatch' => 'Los impuestos hijos deben ser del tipo de impuesto :type o no tener tipo de impuesto. Estos no lo son: :taxes',
             ],
 
             'repeater' => [
@@ -140,6 +145,8 @@ return [
                 'tax-scope'       => 'Ámbito del impuesto',
                 'status'          => 'Estado',
                 'amount'          => 'Importe',
+                'formula'         => 'Fórmula',
+                'children-taxes'  => 'Impuestos hijos',
             ],
 
             'field-set' => [

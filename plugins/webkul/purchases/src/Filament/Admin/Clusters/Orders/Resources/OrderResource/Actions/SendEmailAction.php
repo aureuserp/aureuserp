@@ -109,10 +109,18 @@ MD;
 
                 $livewire->updateForm();
 
+                $missing = PurchaseOrder::countVendorsWithoutEmail($data['vendors']);
+
+                $status = match (true) {
+                    $missing === count($data['vendors']) => 'danger',
+                    $missing === 0                       => 'success',
+                    default                              => 'warning',
+                };
+
                 Notification::make()
-                    ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.success.title'))
-                    ->body(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.success.body'))
-                    ->success()
+                    ->title(__("purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.{$status}.title"))
+                    ->body(__("purchases::filament/admin/clusters/orders/resources/order/actions/send-email.action.notification.{$status}.body"))
+                    ->status($status)
                     ->send();
             })
             ->color(

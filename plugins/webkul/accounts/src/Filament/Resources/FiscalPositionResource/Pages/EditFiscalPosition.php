@@ -5,7 +5,6 @@ namespace Webkul\Account\Filament\Resources\FiscalPositionResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\FiscalPositionResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -34,14 +33,5 @@ class EditFiscalPosition extends EditRecord
                         ->body(__('accounts::filament/resources/fiscal-position/pages/edit-fiscal-position.header-actions.delete.notification.body'))
                 ),
         ];
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['company_id'] = $user?->default_company_id;
-
-        return $data;
     }
 }

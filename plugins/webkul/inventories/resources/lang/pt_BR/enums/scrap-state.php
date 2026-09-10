@@ -2,5 +2,5 @@
 
 return [
     'draft' => 'Rascunho',
-    'done' => 'Concluído',
+    'done'  => 'Concluído',
 ];

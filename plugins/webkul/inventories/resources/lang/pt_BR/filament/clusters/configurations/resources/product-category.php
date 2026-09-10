@@ -34,7 +34,7 @@ return [
                         'title' => 'Logística',
 
                         'entries' => [
-                            'routes' => 'Rotas do armazém',
+                            'routes'     => 'Rotas do armazém',
                             'route_name' => 'Nome da rota',
                         ],
                     ],

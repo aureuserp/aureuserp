@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditWarehouse extends EditRecord
 {
+    use HandlesCrossCompanyException;
     use HasRecordNavigationTabs;
 
     protected static string $resource = WarehouseResource::class;

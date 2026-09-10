@@ -14,6 +14,7 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\Manage
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ManageBankAccounts;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ManageContacts;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ViewCustomer;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Tables\CustomersTable;
 use Webkul\Sale\Models\Partner;
 
 class CustomerResource extends BaseCustomerResource
@@ -42,13 +43,7 @@ class CustomerResource extends BaseCustomerResource
 
     public static function table(Table $table): Table
     {
-        return BaseCustomerResource::table($table)
-            ->contentGrid([
-                'sm'  => 1,
-                'md'  => 2,
-                'xl'  => 3,
-                '2xl' => 3,
-            ]);
+        return CustomersTable::configure($table);
     }
 
     public static function getRecordSubNavigation(Page $page): array

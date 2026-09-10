@@ -166,12 +166,15 @@ it('creates a product with account-specific income and expense accounts', functi
         ->assertJsonPath('data.purchase_ok', true);
 
     $this->assertDatabaseHas('products_products', [
-        'name'                        => $payload['name'],
+        'name'           => $payload['name'],
+        'invoice_policy' => 'order',
+        'sales_ok'       => true,
+        'purchase_ok'    => true,
+    ]);
+
+    $this->assertDatabaseHas('products_product_company_accounts', [
         'property_account_income_id'  => $incomeAccount->id,
         'property_account_expense_id' => $expenseAccount->id,
-        'invoice_policy'              => 'order',
-        'sales_ok'                    => true,
-        'purchase_ok'                 => true,
     ]);
 });
 
@@ -294,12 +297,16 @@ it('updates account-specific fields on a product', function () {
         ->assertJsonPath('data.purchase_ok', true);
 
     $this->assertDatabaseHas('products_products', [
-        'id'                          => $product->id,
+        'id'             => $product->id,
+        'invoice_policy' => 'delivery',
+        'sales_ok'       => false,
+        'purchase_ok'    => true,
+    ]);
+
+    $this->assertDatabaseHas('products_product_company_accounts', [
+        'product_id'                  => $product->id,
         'property_account_income_id'  => $incomeAccount->id,
         'property_account_expense_id' => $expenseAccount->id,
-        'invoice_policy'              => 'delivery',
-        'sales_ok'                    => false,
-        'purchase_ok'                 => true,
     ]);
 });
 

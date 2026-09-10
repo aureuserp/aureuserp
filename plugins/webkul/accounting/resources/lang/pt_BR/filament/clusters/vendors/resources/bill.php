@@ -8,16 +8,16 @@ return [
     ],
 
     'global-search' => [
-        'vendor' => 'Fornecedor',
-        'date' => 'Data',
+        'vendor'   => 'Fornecedor',
+        'date'     => 'Data',
         'due-date' => 'Data de vencimento',
-        'amount' => 'Valor',
+        'amount'   => 'Valor',
     ],
 
     'form' => [
-        'biller' => 'Emissor da fatura',
-        'reference' => 'Referência',
+        'biller'            => 'Emissor da fatura',
+        'reference'         => 'Referência',
         'payment-reference' => 'Referência de pagamento',
-        'date' => 'Data',
+        'date'              => 'Data',
     ],
 ];

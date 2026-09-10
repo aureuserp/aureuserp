@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Atributo criado',
-                'body' => 'O atributo foi criado com sucesso.',
+                'body'  => 'O atributo foi criado com sucesso.',
             ],
         ],
     ],

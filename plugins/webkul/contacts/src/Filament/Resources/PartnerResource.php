@@ -34,7 +34,7 @@ class PartnerResource extends BasePartnerResource
         return __('contacts::filament/resources/partner.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Contact;
     }

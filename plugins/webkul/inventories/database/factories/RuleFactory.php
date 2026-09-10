@@ -12,13 +12,15 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Rule>
  */
 class RuleFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Rule::class;
 
     public function definition(): array
@@ -45,7 +47,6 @@ class RuleFactory extends Factory
             'partner_address_id'      => null,
             'warehouse_id'            => null,
             'propagate_warehouse_id'  => null,
-            'company_id'              => Company::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }

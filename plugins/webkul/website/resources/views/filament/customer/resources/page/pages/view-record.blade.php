@@ -17,7 +17,7 @@
         <meta property="og:url" content="{{ self::getResource()::getUrl('view', ['record' => $record->slug]) }}" />
     @endPush
 
-    <div dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" class="{{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}" style="font-family: {{ app()->getLocale() === 'ar' ? 'Cairo, sans-serif' : 'inherit' }};">
+    <div dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" class="fi-prose {{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}" style="font-family: {{ app()->getLocale() === 'ar' ? 'Cairo, sans-serif' : 'inherit' }};">
         {!! str($record->content)->sanitizeHtml() !!}
     </div>
 </x-filament-panels::page>

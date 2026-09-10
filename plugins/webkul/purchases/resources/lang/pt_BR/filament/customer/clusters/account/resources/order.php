@@ -3,21 +3,21 @@
 return [
     'table' => [
         'columns' => [
-            'reference' => 'Referência',
-            'total-amount' => 'Valor total',
+            'reference'         => 'Referência',
+            'total-amount'      => 'Valor total',
             'confirmation-date' => 'Data de confirmação',
-            'status' => 'Status',
+            'status'            => 'Status',
         ],
     ],
 
     'products' => [
         'columns' => [
-            'product' => 'Produto',
-            'quantity' => 'Quantidade',
+            'product'    => 'Produto',
+            'quantity'   => 'Quantidade',
             'unit-price' => 'Preço unitário',
-            'taxes' => 'Impostos',
-            'discount' => 'Desconto %',
-            'amount' => 'Valor',
+            'taxes'      => 'Impostos',
+            'discount'   => 'Desconto %',
+            'amount'     => 'Valor',
         ],
     ],
 
@@ -33,7 +33,7 @@ return [
 
                     'notification' => [
                         'title' => 'Cotação aceita',
-                        'body' => 'A solicitação de cotação foi confirmada com sucesso.',
+                        'body'  => 'A solicitação de cotação foi confirmada com sucesso.',
                     ],
 
                     'message' => [
@@ -46,7 +46,7 @@ return [
 
                     'notification' => [
                         'title' => 'Cotação recusada',
-                        'body' => 'A solicitação de cotação foi recusada com sucesso.',
+                        'body'  => 'A solicitação de cotação foi recusada com sucesso.',
                     ],
 
                     'message' => [
@@ -62,16 +62,16 @@ return [
 
         'general' => [
             'entries' => [
-                'purchase-order' => 'Pedido de compra nº :id',
-                'quotation' => 'Solicitação de cotação nº :id',
-                'order-date' => 'Data do pedido',
-                'from' => 'De',
-                'confirmation-date' => 'Data de confirmação',
-                'receipt-date' => 'Data de recebimento',
-                'products' => 'Produtos',
-                'untaxed-amount' => 'Valor sem impostos',
-                'tax-amount' => 'Valor do imposto',
-                'total' => 'Total',
+                'purchase-order'        => 'Pedido de compra nº :id',
+                'quotation'             => 'Solicitação de cotação nº :id',
+                'order-date'            => 'Data do pedido',
+                'from'                  => 'De',
+                'confirmation-date'     => 'Data de confirmação',
+                'receipt-date'          => 'Data de recebimento',
+                'products'              => 'Produtos',
+                'untaxed-amount'        => 'Valor sem impostos',
+                'tax-amount'            => 'Valor do imposto',
+                'total'                 => 'Total',
                 'communication-history' => 'Histórico de comunicação',
             ],
         ],

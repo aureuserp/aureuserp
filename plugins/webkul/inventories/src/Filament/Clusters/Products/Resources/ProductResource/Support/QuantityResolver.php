@@ -104,11 +104,11 @@ class QuantityResolver
             return [];
         }
 
-        [$quantityScope] = (new Product)->getLocationFilters();
+        $scopes = (new Product)->resolveStockScopes();
 
         return ProductQuantity::query()
             ->whereIn('product_id', $productIds)
-            ->where(fn (Builder $query) => $quantityScope($query))
+            ->where(fn (Builder $query) => $scopes->quantities($query))
             ->groupBy('product_id')
             ->selectRaw('product_id, SUM(quantity) as total')
             ->pluck('total', 'product_id')
@@ -125,14 +125,12 @@ class QuantityResolver
             return [];
         }
 
-        [, $moveInScope, $moveOutScope] = (new Product)->getLocationFilters();
-
-        $scope = $incoming ? $moveInScope : $moveOutScope;
+        $scopes = (new Product)->resolveStockScopes();
 
         return Move::query()
             ->whereIn('product_id', $productIds)
             ->whereIn('state', [MoveState::WAITING, MoveState::CONFIRMED, MoveState::ASSIGNED, MoveState::PARTIALLY_ASSIGNED])
-            ->where(fn (Builder $query) => $scope($query))
+            ->where(fn (Builder $query) => $incoming ? $scopes->incomingMoves($query) : $scopes->outgoingMoves($query))
             ->groupBy('product_id')
             ->selectRaw('product_id, SUM(product_qty) as total')
             ->pluck('total', 'product_id')

@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Horários de trabalho excluídos',
-                'body' => 'Os horários de trabalho foram excluídos com sucesso.',
+                'body'  => 'Os horários de trabalho foram excluídos com sucesso.',
             ],
         ],
     ],

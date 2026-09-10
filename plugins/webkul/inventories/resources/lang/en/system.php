@@ -50,6 +50,11 @@ return [
         'split-done-or-cancel'       => 'You cannot split a stock move that has been set to \'Done\' or \'Cancel\'.',
         'split-draft'                => 'You cannot split a draft move. It needs to be confirmed first.',
         'serial-already-assigned'    => 'The serial number has already been assigned to the Product: :product, Serial Number: :serial_number',
+
+        'cross-company' => [
+            'title' => 'Cross-company transfer not allowed',
+            'body'  => 'A transfer cannot move stock directly between locations that belong to different companies (:source and :destination). Inter-company transfers are not supported yet.',
+        ],
     ],
 
     'rule' => [

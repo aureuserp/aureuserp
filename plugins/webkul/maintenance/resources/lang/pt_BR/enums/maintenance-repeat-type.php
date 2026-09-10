@@ -2,5 +2,5 @@
 
 return [
     'forever' => 'Para sempre',
-    'until' => 'Até',
+    'until'   => 'Até',
 ];

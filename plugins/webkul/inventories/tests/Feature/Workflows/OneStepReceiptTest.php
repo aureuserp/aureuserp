@@ -8,6 +8,8 @@ use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Support\Models\UOM;
+use Webkul\Support\Models\UOMCategory;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/InventoryHelper.php';
@@ -17,14 +19,14 @@ beforeEach(function () {
 
     InventoryHelper::actingAsAdmin();
 
-    Move::$globalContext = [];
+    Move::forgetAdditionalFlag();
 
     $this->warehouse = InventoryHelper::warehouse();
     $this->product = InventoryHelper::product();
     $this->stock = $this->warehouse->lotStockLocation;
 });
 
-afterEach(fn () => Move::$globalContext = []);
+afterEach(fn () => Move::forgetAdditionalFlag());
 
 function addMoveTo(Operation $operation, $product, float $demand): Move
 {
@@ -50,7 +52,7 @@ function validatedOneStepReceipt($warehouse, $product, float $demand, ?float $pi
         InventoryHelper::pick($operation->refresh()->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     return $operation->refresh();
 }
@@ -107,7 +109,7 @@ it('unreserves a receipt move back to confirmed without touching any quant', fun
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::unreserveMoves($operation->refresh()->moves);
+    Inventory::releaseMoves($operation->refresh()->moves);
 
     $move = $operation->refresh()->moves->first();
 
@@ -138,7 +140,7 @@ it('debits the supplier location when the receipt is validated', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $supplier))->toBe(-10.0);
 });
@@ -176,7 +178,7 @@ it('creates a backorder of a backorder when the remainder is again partially rec
 
     InventoryHelper::pick($backorder->moves->first(), 2);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
     $second = InventoryHelper::backorderOf($backorder->refresh());
 
@@ -186,14 +188,14 @@ it('creates a backorder of a backorder when the remainder is again partially rec
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(6.0);
 });
 
-it('creates no backorder when validating with cancelBackOrder', function () {
+it('creates no backorder when validating with cancelBackorder', function () {
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
 
     Inventory::confirmTransfer($operation);
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh(), cancelBackOrder: true);
+    Inventory::completeTransfer($operation->refresh(), cancelBackorder: true);
 
     $operation->refresh();
     $move = $operation->moves->first();
@@ -255,7 +257,7 @@ it('leaves a cancelled receipt cancelled when cancelled again', function () {
 it('returns a receipt back to the supplier and removes the quantity from stock', function () {
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
     expect($return->return_id)->toBe($operation->id)
         ->and($return->state)->toBe(OperationState::ASSIGNED)
@@ -269,7 +271,7 @@ it('returns a receipt back to the supplier and removes the quantity from stock',
         ->and($returnMove->origin_returned_move_id)->toBe($operation->moves->first()->id)
         ->and($returnMove->additional)->toBeFalse();
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(6.0);
 });
@@ -277,9 +279,9 @@ it('returns a receipt back to the supplier and removes the quantity from stock',
 it('returns the full received quantity', function () {
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 10]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 10]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
 });
@@ -287,7 +289,7 @@ it('returns the full received quantity', function () {
 it('leaves the original receipt untouched by the return', function () {
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
-    Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
     $operation->refresh();
 
@@ -316,7 +318,7 @@ it('receives an exact decimal quantity', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(2.5);
 });
@@ -350,7 +352,7 @@ it('receives a dozen as twelve units into stock', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(12.0);
 });
@@ -367,7 +369,7 @@ it('rounds a partial dozen into whole product units', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(6.0);
 });
@@ -384,7 +386,7 @@ it('creates one move per product on a multi product receipt', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $operation->refresh();
 
@@ -433,7 +435,7 @@ it('refuses to validate a lot tracked receipt when no lot name is given', functi
 
     Inventory::confirmTransfer($operation);
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.validate.missing-lot-serial-number'), ':'));
 });
 
@@ -448,7 +450,7 @@ it('creates the lot named on the move line when the receipt is validated', funct
 
     InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A']);
 
@@ -474,7 +476,7 @@ it('reuses an existing lot when the same lot name is received twice', function (
 
         InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
 
-        Inventory::doneTransfer($operation->refresh());
+        Inventory::completeTransfer($operation->refresh());
     }
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A'])
@@ -493,7 +495,7 @@ it('keeps two different lots of the same product apart in stock', function () {
 
         InventoryHelper::nameLines($operation->refresh()->moves->first(), [$name]);
 
-        Inventory::doneTransfer($operation->refresh());
+        Inventory::completeTransfer($operation->refresh());
     }
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A', 'LOT-B'])
@@ -526,7 +528,7 @@ it('creates one lot per serial number when the receipt is validated', function (
 
     InventoryHelper::nameLines($operation->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])
         ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0);
@@ -562,7 +564,7 @@ it('marks a move additional and auto confirms it when manually added to a confir
 
     $other = InventoryHelper::product();
 
-    Move::$globalContext['skip_additional'] = false;
+    Move::markNextAsAdditional();
 
     $move = addMoveTo($operation->refresh(), $other, 5);
 
@@ -578,20 +580,20 @@ it('consumes the manual add context on the first move so a second is not additio
     $firstProduct = InventoryHelper::product();
     $secondProduct = InventoryHelper::product();
 
-    Move::$globalContext['skip_additional'] = false;
+    Move::markNextAsAdditional();
 
     $first = addMoveTo($operation->refresh(), $firstProduct, 5);
     $second = addMoveTo($operation->refresh(), $secondProduct, 5);
 
     expect($first->additional)->toBeTrue()
         ->and($second->refresh()->additional)->toBeFalse()
-        ->and(Move::$globalContext)->toBe([]);
+        ->and(Move::flagsNextAsAdditional())->toBeFalse();
 });
 
 it('forces a manually added move to done when the receipt is already done', function () {
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
-    Move::$globalContext['skip_additional'] = false;
+    Move::markNextAsAdditional();
 
     $move = addMoveTo($operation->refresh(), $this->product, 5);
 
@@ -616,15 +618,15 @@ it('throws when splitting a validated move', function () {
 it('throws when checking availability on an operation with no moves', function () {
     $operation = InventoryHelper::operation($this->warehouse->inType, []);
 
-    expect(fn () => Inventory::assignTransfer($operation))
+    expect(fn () => Inventory::reserveTransfer($operation))
         ->toThrow(Exception::class, __('inventories::system.inventory-manager.check-availability.no-moves'));
 });
 
 it('throws when reserving without a quantity', function () {
-    expect(fn () => ProductQuantity::updateReservedQuantity(
+    expect(fn () => ProductQuantity::applyReservationDelta(
         product: $this->product,
         location: $this->stock,
-        quantity: 0,
+        delta: 0,
     ))->toThrow(Exception::class, __('inventories::system.product-quantity.quantity-not-set'));
 });
 
@@ -641,7 +643,7 @@ it('throws when the same serial number is assigned to two move lines', function 
 
     $operation->refresh()->moves->first()->lines->each(fn ($line) => $line->update(['lot_id' => $lot->id]));
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, Str::before(__('inventories::system.move.serial-already-assigned'), ':'));
 });
 
@@ -656,14 +658,14 @@ it('throws when validating a move line with a negative done quantity', function 
 
     $move->refresh()->lines->first()->forceFill(['qty' => -1])->saveQuietly();
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, __('inventories::system.inventory-manager.validate.no-negative-quantities'));
 });
 
 it('throws when a move line quantity violates the unit rounding precision', function () {
-    $category = Webkul\Support\Models\UOMCategory::factory()->create();
+    $category = UOMCategory::factory()->create();
 
-    $uom = Webkul\Support\Models\UOM::factory()->reference()->create([
+    $uom = UOM::factory()->reference()->create([
         'rounding'    => 1.0,
         'category_id' => $category->id,
     ]);
@@ -680,6 +682,6 @@ it('throws when a move line quantity violates the unit rounding precision', func
 
     $move->refresh()->lines->first()->forceFill(['qty' => 0.5])->saveQuietly();
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.validate.quantity-rounding-mismatch'), ':'));
 });

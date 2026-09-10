@@ -6,21 +6,21 @@ return [
     ],
 
     'form' => [
-        'name' => 'Nome',
+        'name'   => 'Nome',
         'status' => 'Status',
     ],
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'status' => 'Status',
+            'name'       => 'Nome',
+            'status'     => 'Status',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'groups' => [
-            'name' => 'Nome',
-            'status' => 'Status',
+            'name'       => 'Nome',
+            'status'     => 'Status',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
@@ -29,21 +29,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Plano de atividade restaurado',
-                    'body' => 'O plano de atividade foi restaurado com sucesso.',
+                    'body'  => 'O plano de atividade foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Plano de atividade excluído',
-                    'body' => 'O plano de atividade foi excluído com sucesso.',
+                    'body'  => 'O plano de atividade foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Plano de atividade excluído permanentemente',
-                    'body' => 'O plano de atividade foi excluído permanentemente com sucesso.',
+                    'body'  => 'O plano de atividade foi excluído permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -52,21 +52,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Planos de atividade restaurados',
-                    'body' => 'Os planos de atividade foram restaurados com sucesso.',
+                    'body'  => 'Os planos de atividade foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Planos de atividade excluídos',
-                    'body' => 'Os planos de atividade foram excluídos com sucesso.',
+                    'body'  => 'Os planos de atividade foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Planos de atividade excluídos permanentemente',
-                    'body' => 'Os planos de atividade foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os planos de atividade foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -75,14 +75,14 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Plano de atividade criado',
-                    'body' => 'O plano de atividade foi criado com sucesso.',
+                    'body'  => 'O plano de atividade foi criado com sucesso.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Nome',
+        'name'   => 'Nome',
         'status' => 'Status',
     ],
 ];

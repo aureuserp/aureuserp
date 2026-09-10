@@ -2,8 +2,8 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
-use Filament\Resources\ParentResourceRegistration;
 use Filament\Resources\Pages\Page;
+use Filament\Resources\ParentResourceRegistration;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderBillResource\Pages\EditBill;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderBillResource\Pages\ManagePayments;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderBillResource\Pages\ViewBill;
@@ -33,8 +33,8 @@ class PurchaseOrderBillResource extends QuotationBillResource
     public static function getPages(): array
     {
         return [
-            'view' => ViewBill::route('/{record}/view'),
-            'edit' => EditBill::route('/{record}/edit'),
+            'view'     => ViewBill::route('/{record}/view'),
+            'edit'     => EditBill::route('/{record}/edit'),
             'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }

@@ -15,12 +15,12 @@ return [
                 'title' => 'Geral',
 
                 'fields' => [
-                    'title' => 'Título',
-                    'sub-title' => 'Subtítulo',
+                    'title'             => 'Título',
+                    'sub-title'         => 'Subtítulo',
                     'title-placeholder' => 'Título do post ...',
-                    'slug' => 'Slug',
-                    'content' => 'Conteúdo',
-                    'banner' => 'Banner',
+                    'slug'              => 'Slug',
+                    'content'           => 'Conteúdo',
+                    'banner'            => 'Banner',
                 ],
             ],
 
@@ -28,8 +28,8 @@ return [
                 'title' => 'SEO',
 
                 'fields' => [
-                    'meta-title' => 'Meta título',
-                    'meta-keywords' => 'Meta palavras-chave',
+                    'meta-title'       => 'Meta título',
+                    'meta-keywords'    => 'Meta palavras-chave',
                     'meta-description' => 'Meta descrição',
                 ],
             ],
@@ -38,10 +38,10 @@ return [
                 'title' => 'Configurações',
 
                 'fields' => [
-                    'category' => 'Categoria',
-                    'tags' => 'Tags',
-                    'name' => 'Nome',
-                    'color' => 'Cor',
+                    'category'     => 'Categoria',
+                    'tags'         => 'Tags',
+                    'name'         => 'Nome',
+                    'color'        => 'Cor',
                     'is-published' => 'Está publicado',
                 ],
             ],
@@ -50,56 +50,56 @@ return [
 
     'table' => [
         'columns' => [
-            'title' => 'Título',
-            'slug' => 'Slug',
-            'author' => 'Autor',
-            'category' => 'Categoria',
-            'creator' => 'Criado por',
+            'title'        => 'Título',
+            'slug'         => 'Slug',
+            'author'       => 'Autor',
+            'category'     => 'Categoria',
+            'creator'      => 'Criado por',
             'is-published' => 'Está publicado',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'created-at'   => 'Criado em',
+            'updated-at'   => 'Atualizado em',
         ],
 
         'groups' => [
-            'category' => 'Categoria',
-            'author' => 'Autor',
+            'category'   => 'Categoria',
+            'author'     => 'Autor',
             'created-at' => 'Criado em',
         ],
 
         'filters' => [
             'is-published' => 'Está publicado',
-            'author' => 'Autor',
-            'creator' => 'Criado por',
-            'category' => 'Categoria',
-            'tags' => 'Tags',
+            'author'       => 'Autor',
+            'creator'      => 'Criado por',
+            'category'     => 'Categoria',
+            'tags'         => 'Tags',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Post atualizado',
-                    'body' => 'O post foi atualizado com sucesso.',
+                    'body'  => 'O post foi atualizado com sucesso.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
                     'title' => 'Post restaurado',
-                    'body' => 'O post foi restaurado com sucesso.',
+                    'body'  => 'O post foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Post excluído',
-                    'body' => 'O post foi excluído com sucesso.',
+                    'body'  => 'O post foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Post excluído permanentemente',
-                    'body' => 'O post foi excluído permanentemente com sucesso.',
+                    'body'  => 'O post foi excluído permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -108,21 +108,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Posts restaurados',
-                    'body' => 'Os posts foram restaurados com sucesso.',
+                    'body'  => 'Os posts foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Posts excluídos',
-                    'body' => 'Os posts foram excluídos com sucesso.',
+                    'body'  => 'Os posts foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Posts excluídos permanentemente',
-                    'body' => 'Os posts foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os posts foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -134,10 +134,10 @@ return [
                 'title' => 'Geral',
 
                 'entries' => [
-                    'title' => 'Título',
-                    'slug' => 'Slug',
+                    'title'   => 'Título',
+                    'slug'    => 'Slug',
                     'content' => 'Conteúdo',
-                    'banner' => 'Banner',
+                    'banner'  => 'Banner',
                 ],
             ],
 
@@ -145,8 +145,8 @@ return [
                 'title' => 'SEO',
 
                 'entries' => [
-                    'meta-title' => 'Meta título',
-                    'meta-keywords' => 'Meta palavras-chave',
+                    'meta-title'       => 'Meta título',
+                    'meta-keywords'    => 'Meta palavras-chave',
                     'meta-description' => 'Meta descrição',
                 ],
             ],
@@ -155,12 +155,12 @@ return [
                 'title' => 'Informações do registro',
 
                 'entries' => [
-                    'author' => 'Autor',
-                    'created-by' => 'Criado por',
-                    'published-at' => 'Publicado em',
+                    'author'          => 'Autor',
+                    'created-by'      => 'Criado por',
+                    'published-at'    => 'Publicado em',
                     'last-updated-by' => 'Última atualização por',
-                    'last-updated' => 'Última atualização em',
-                    'created-at' => 'Criado em',
+                    'last-updated'    => 'Última atualização em',
+                    'created-at'      => 'Criado em',
                 ],
             ],
 
@@ -168,10 +168,10 @@ return [
                 'title' => 'Configurações',
 
                 'entries' => [
-                    'category' => 'Categoria',
-                    'tags' => 'Tags',
-                    'name' => 'Nome',
-                    'color' => 'Cor',
+                    'category'     => 'Categoria',
+                    'tags'         => 'Tags',
+                    'name'         => 'Nome',
+                    'color'        => 'Cor',
                     'is-published' => 'Está publicado',
                 ],
             ],

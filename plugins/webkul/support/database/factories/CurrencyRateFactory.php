@@ -4,7 +4,7 @@ namespace Webkul\Support\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 
@@ -13,6 +13,8 @@ use Webkul\Support\Models\CurrencyRate;
  */
 class CurrencyRateFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = CurrencyRate::class;
 
     public function definition(): array
@@ -22,7 +24,6 @@ class CurrencyRateFactory extends Factory
             'rate'        => fake()->randomFloat(6, 0.5, 2),
             'currency_id' => Currency::factory(),
             'creator_id'  => User::query()->value('id') ?? User::factory(),
-            'company_id'  => Company::factory(),
         ];
     }
 }

@@ -55,6 +55,10 @@ return [
         'uninstalled-failed' => [
             'title' => 'فشل إلغاء التثبيت',
         ],
+        'uninstalled-blocked' => [
+            'title' => 'لا يمكن إلغاء تثبيت الإضافة',
+            'body'  => "الإضافة ':name' لديها إضافات تابعة مُثبَّتة يجب إلغاء تثبيتها أولاً: :dependents.",
+        ],
     ],
 
     'infolist' => [

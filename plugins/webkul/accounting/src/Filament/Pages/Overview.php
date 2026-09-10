@@ -25,7 +25,7 @@ class Overview extends Page
         return __('accounting::filament/pages/overview.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Accounting;
     }

@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Projeto atualizado',
-        'body' => 'O projeto foi atualizado com sucesso.',
+        'body'  => 'O projeto foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Projeto atualizado',
-                'body' => 'O projeto foi atualizado com sucesso.',
+                'body'  => 'O projeto foi atualizado com sucesso.',
             ],
         ],
     ],

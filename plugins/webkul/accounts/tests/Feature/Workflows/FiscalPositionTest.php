@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveType;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -67,4 +67,3 @@ it('leaves the receivable account unchanged without a matching fiscal mapping', 
 
     expect($termLine->account_id)->toBe($this->partner->property_account_receivable_id);
 });
-

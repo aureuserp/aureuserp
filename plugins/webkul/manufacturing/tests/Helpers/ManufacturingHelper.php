@@ -227,7 +227,7 @@ class ManufacturingHelper
                 break;
             }
 
-            InventoryFacade::doneTransfer($ready->refresh());
+            InventoryFacade::completeTransfer($ready->refresh());
         }
     }
 }

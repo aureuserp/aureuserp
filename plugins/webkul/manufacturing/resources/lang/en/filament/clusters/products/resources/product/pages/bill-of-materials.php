@@ -12,7 +12,7 @@ return [
             'notifications' => [
                 'success' => [
                     'title'   => 'Bill of Material created',
-                    'message' => 'Bill of Material has been created successfully.',
+                    'body'    => 'Bill of Material has been created successfully.',
                 ],
             ],
         ],

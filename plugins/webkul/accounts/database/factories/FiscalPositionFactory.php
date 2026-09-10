@@ -5,18 +5,19 @@ namespace Webkul\Account\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Country;
 
 class FiscalPositionFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = FiscalPosition::class;
 
     public function definition(): array
     {
         return [
             'sort'             => 0,
-            'company_id'       => Company::factory(),
             'country_id'       => Country::factory(),
             'country_group_id' => null,
             'creator_id'       => User::query()->value('id') ?? User::factory(),

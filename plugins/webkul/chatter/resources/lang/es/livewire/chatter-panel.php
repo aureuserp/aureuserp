@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'Fecha de vencimiento',
                 'summary'       => 'Resumen',
                 'assigned-to'   => 'Asignado a',
+
+                'message-placeholder' => 'Escribe tu mensaje aquí...',
             ],
         ],
 
@@ -52,7 +54,7 @@ return [
     ],
 
     'mark-as-done' => [
-        'title' => 'Marcar como hecho',
+        'title'   => 'Marcar como hecho',
         'actions' => [
             'done' => [
                 'label' => 'Hecho',

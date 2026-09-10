@@ -13,6 +13,8 @@ return [
         'individuals' => 'Individuals',
         'companies'   => 'Companies',
         'employees'   => 'Employees',
+        'customers'   => 'Customers',
+        'vendors'     => 'Vendors',
         'archived'    => 'Archived',
     ],
 ];

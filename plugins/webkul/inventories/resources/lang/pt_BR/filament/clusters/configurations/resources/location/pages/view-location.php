@@ -9,7 +9,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Local excluído',
-                'body' => 'O local foi excluído com sucesso.',
+                'body'  => 'O local foi excluído com sucesso.',
             ],
         ],
     ],

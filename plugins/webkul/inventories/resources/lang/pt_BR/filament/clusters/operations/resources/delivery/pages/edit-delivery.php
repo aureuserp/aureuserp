@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Entrega atualizada',
-        'body' => 'A entrega foi atualizada com sucesso.',
+        'body'  => 'A entrega foi atualizada com sucesso.',
     ],
 
     'header-actions' => [
@@ -15,12 +15,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Entrega excluída',
-                    'body' => 'A entrega foi excluída com sucesso.',
+                    'body'  => 'A entrega foi excluída com sucesso.',
                 ],
 
                 'error' => [
                     'title' => 'Não foi possível excluir a entrega',
-                    'body' => 'A entrega não pode ser excluída porque está em uso.',
+                    'body'  => 'A entrega não pode ser excluída porque está em uso.',
                 ],
             ],
         ],

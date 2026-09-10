@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'normal' => 'Produzir este produto',
+    'normal'  => 'Produzir este produto',
     'phantom' => 'Kit',
 ];

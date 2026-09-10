@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'day' => 'Dias',
-    'week' => 'Semanas',
+    'day'   => 'Dias',
+    'week'  => 'Semanas',
     'month' => 'Meses',
-    'year' => 'Anos',
+    'year'  => 'Anos',
 ];

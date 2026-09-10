@@ -3,16 +3,16 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'Novo centro de trabalho',
+            'label'        => 'Novo centro de trabalho',
             'notification' => [
                 'title' => 'Centro de trabalho criado',
-                'body' => 'O centro de trabalho foi criado com sucesso.',
+                'body'  => 'O centro de trabalho foi criado com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

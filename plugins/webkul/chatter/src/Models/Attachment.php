@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Attachment extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'chatter_attachments';
 
     protected $fillable = [

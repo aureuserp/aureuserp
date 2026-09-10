@@ -11,9 +11,12 @@ use Webkul\Chatter\Services\ChatterNotificationService;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Message extends Model
 {
+    use BelongsToCompany;
+
     protected $table = 'chatter_messages';
 
     protected $fillable = [

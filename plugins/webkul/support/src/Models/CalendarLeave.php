@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class CalendarLeave extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'calendar_leaves';
@@ -56,7 +58,7 @@ class CalendarLeave extends Model
 
             $calendarLeave->creator_id ??= $authUser?->id;
 
-            $calendarLeave->company_id ??= $authUser?->default_company_id;
+            $calendarLeave->company_id ??= current_company_id();
         });
     }
 }

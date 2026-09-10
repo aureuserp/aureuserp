@@ -9,7 +9,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Acordo de compra excluído',
-                'body' => 'O acordo de compra foi excluído com sucesso.',
+                'body'  => 'O acordo de compra foi excluído com sucesso.',
             ],
         ],
     ],

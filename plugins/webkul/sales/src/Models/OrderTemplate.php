@@ -12,9 +12,11 @@ use Webkul\Account\Models\Journal;
 use Webkul\Sale\Enums\OrderDisplayType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class OrderTemplate extends Model implements Sortable
 {
+    use BelongsToCompany;
     use HasFactory, SortableTrait;
 
     protected $table = 'sales_order_templates';

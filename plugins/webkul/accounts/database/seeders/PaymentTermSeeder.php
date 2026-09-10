@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\EarlyPayDiscount;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
 
 class PaymentTermSeeder extends Seeder
 {
@@ -16,12 +15,9 @@ class PaymentTermSeeder extends Seeder
 
         $user = User::first();
 
-        $company = Company::first();
-
         $paymentTerms = [
             [
                 'id'                  => 1,
-                'company_id'          => $company?->id,
                 'sort'                => 1,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -35,7 +31,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 2,
-                'company_id'          => $company?->id,
                 'sort'                => 2,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -49,7 +44,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 3,
-                'company_id'          => $company?->id,
                 'sort'                => 3,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -63,7 +57,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 4,
-                'company_id'          => $company?->id,
                 'sort'                => 4,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -77,7 +70,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 5,
-                'company_id'          => $company?->id,
                 'sort'                => 5,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -91,7 +83,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 6,
-                'company_id'          => $company?->id,
                 'sort'                => 6,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -105,7 +96,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 7,
-                'company_id'          => $company?->id,
                 'sort'                => 7,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -119,7 +109,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 8,
-                'company_id'          => $company?->id,
                 'sort'                => 8,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,
@@ -133,7 +122,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 9,
-                'company_id'          => $company?->id,
                 'sort'                => 9,
                 'discount_days'       => 7,
                 'creator_id'          => $user?->id,
@@ -147,7 +135,6 @@ class PaymentTermSeeder extends Seeder
                 'updated_at'          => now(),
             ], [
                 'id'                  => 10,
-                'company_id'          => $company?->id,
                 'sort'                => 10,
                 'discount_days'       => 10,
                 'creator_id'          => $user?->id,

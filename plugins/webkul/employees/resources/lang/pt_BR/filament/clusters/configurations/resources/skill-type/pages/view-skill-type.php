@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Tipo de habilidade excluído',
-                'body' => 'O tipo de habilidade foi excluído com sucesso.',
+                'body'  => 'O tipo de habilidade foi excluído com sucesso.',
             ],
         ],
     ],

@@ -4,7 +4,7 @@ namespace Webkul\TimeOff\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\TimeOff\Enums\AccruedGainTime;
 use Webkul\TimeOff\Enums\CarryoverDate;
 use Webkul\TimeOff\Enums\CarryoverDay;
@@ -17,6 +17,8 @@ use Webkul\TimeOff\Models\LeaveType;
  */
 class LeaveAccrualPlanFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = LeaveAccrualPlan::class;
 
     /**
@@ -28,7 +30,6 @@ class LeaveAccrualPlanFactory extends Factory
     {
         return [
             'time_off_type_id'        => LeaveType::factory(),
-            'company_id'              => Company::factory(),
             'carryover_day'           => CarryoverDay::DAY_1,
             'creator_id'              => User::query()->value('id') ?? User::factory(),
             'name'                    => fake()->words(3, true),

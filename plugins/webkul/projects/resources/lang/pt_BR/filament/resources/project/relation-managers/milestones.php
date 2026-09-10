@@ -8,7 +8,7 @@ return [
 
                 'notification' => [
                     'title' => 'Marco criado',
-                    'body' => 'O marco foi criado com sucesso.',
+                    'body'  => 'O marco foi criado com sucesso.',
                 ],
             ],
         ],

@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'تاريخ الاستحقاق',
                 'summary'       => 'الملخص',
                 'assigned-to'   => 'مُعيَّن إلى',
+
+                'message-placeholder' => 'اكتب رسالتك هنا...',
             ],
         ],
 
@@ -52,7 +54,7 @@ return [
     ],
 
     'mark-as-done' => [
-        'title' => 'تعيين كمكتمل',
+        'title'   => 'تعيين كمكتمل',
         'actions' => [
             'done' => [
                 'label' => 'تم',

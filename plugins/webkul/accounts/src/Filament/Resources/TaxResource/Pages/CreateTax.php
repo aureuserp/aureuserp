@@ -33,7 +33,7 @@ class CreateTax extends CreateRecord
     {
         $user = Auth::user();
 
-        $data['company_id'] = $user->default_company_id;
+        $data['company_id'] = current_company_id();
         $data['creator_id'] = $user->id;
 
         return $data;
@@ -42,6 +42,11 @@ class CreateTax extends CreateRecord
     protected function beforeCreate(): void
     {
         $data = $this->data;
+
+        if (! TaxResource::requiresRepartitionLines($data['amount_type'] ?? null)) {
+            return;
+        }
+
         try {
             TaxResource::validateRepartitionData(
                 $data['invoiceRepartitionLines'] ?? [],

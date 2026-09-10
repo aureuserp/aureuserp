@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Tag criada',
-                'body' => 'A tag foi criada com sucesso.',
+                'body'  => 'A tag foi criada com sucesso.',
             ],
         ],
     ],

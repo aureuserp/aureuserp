@@ -1,7 +1,7 @@
 <?php
 
-use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\DeliveryStep;
+use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\PackageUse;
@@ -65,7 +65,7 @@ function validatedThreeStepPick($warehouse, $product, float $stock, float $deman
         InventoryHelper::pick($operation->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     return $operation->refresh();
 }
@@ -80,7 +80,7 @@ function validatedThreeStepPack($warehouse, $product, float $stock, float $deman
         InventoryHelper::pick($pack->refresh()->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($pack->refresh());
+    Inventory::completeTransfer($pack->refresh());
 
     return $pack->refresh();
 }
@@ -221,7 +221,7 @@ it('delivers to the customer only after all three legs are validated', function 
 
     $customer = $ship->destinationLocation;
 
-    Inventory::doneTransfer($ship->refresh());
+    Inventory::completeTransfer($ship->refresh());
 
     expect($ship->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0)
@@ -235,7 +235,7 @@ it('stops pushing once the goods reach the customer', function () {
 
     $ship = threeStepShipOperation($this->warehouse);
 
-    Inventory::doneTransfer($ship->refresh());
+    Inventory::completeTransfer($ship->refresh());
 
     expect($ship->refresh()->moves->first()->moveDestinations)->toHaveCount(0)
         ->and(InventoryHelper::operationCount($this->warehouse))->toBe(3);
@@ -260,7 +260,7 @@ it('merges the second push into the existing pack move when the pick backorder i
 
     $backorder = InventoryHelper::backorderOf($operation);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
     $pack = packOperation($this->warehouse);
 
@@ -293,7 +293,7 @@ it('backorders the ship leg when it is partially validated', function () {
 
     InventoryHelper::pick($ship->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($ship->refresh());
+    Inventory::completeTransfer($ship->refresh());
 
     $backorder = InventoryHelper::backorderOf($ship->refresh());
 
@@ -304,12 +304,12 @@ it('backorders the ship leg when it is partially validated', function () {
     expect(InventoryHelper::onHand($this->product, $this->output))->toBe(6.0);
 });
 
-it('creates no pick backorder when validating with cancelBackOrder', function () {
+it('creates no pick backorder when validating with cancelBackorder', function () {
     $operation = confirmedThreeStepPick($this->warehouse, $this->product, 10, 10);
 
     InventoryHelper::pick($operation->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh(), cancelBackOrder: true);
+    Inventory::completeTransfer($operation->refresh(), cancelBackorder: true);
 
     expect(InventoryHelper::backorderOf($operation->refresh()))->toBeNull()
         ->and((float) packOperation($this->warehouse)->moves->first()->product_uom_qty)->toBe(4.0);
@@ -320,7 +320,7 @@ it('refuses to validate the pick leg with no picked quantity', function () {
 
     InventoryHelper::pick($operation->moves->first(), 0);
 
-    expect(fn () => Inventory::doneTransfer($operation->refresh()))
+    expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.no-quantities-reserved.body'));
 });
 
@@ -368,7 +368,7 @@ it('unreserves the pack move and drops it back to confirmed', function () {
 
     $pack = packOperation($this->warehouse);
 
-    Inventory::unreserveMoves($pack->refresh()->moves);
+    Inventory::releaseMoves($pack->refresh()->moves);
 
     $move = $pack->refresh()->moves->first();
 
@@ -384,7 +384,7 @@ it('unreserves the ship move and drops it back to confirmed', function () {
 
     $ship = threeStepShipOperation($this->warehouse);
 
-    Inventory::unreserveMoves($ship->refresh()->moves);
+    Inventory::releaseMoves($ship->refresh()->moves);
 
     $move = $ship->refresh()->moves->first();
 
@@ -399,9 +399,9 @@ it('re-reserves the pack move when availability is checked again', function () {
 
     $pack = packOperation($this->warehouse);
 
-    Inventory::unreserveMoves($pack->refresh()->moves);
+    Inventory::releaseMoves($pack->refresh()->moves);
 
-    Inventory::assignTransfer($pack->refresh());
+    Inventory::reserveTransfer($pack->refresh());
 
     $move = $pack->refresh()->moves->first();
 
@@ -418,7 +418,7 @@ it('returns the pick leg from packing back into stock and unreserves the pack mo
 
     expect($packMove->state)->toBe(MoveState::ASSIGNED);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
     expect($return->return_id)->toBe($operation->id)
         ->and($return->source_location_id)->toBe($this->packing->id)
@@ -427,7 +427,7 @@ it('returns the pick leg from packing back into stock and unreserves the pack mo
     expect($packMove->refresh()->state)->not->toBe(MoveState::ASSIGNED)
         ->and((float) $packMove->quantity)->toBe(0.0);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->packing))->toBe(6.0)
         ->and(InventoryHelper::onHand($this->product, $this->stock))->toBe(4.0);
@@ -436,13 +436,13 @@ it('returns the pick leg from packing back into stock and unreserves the pack mo
 it('returns the pack leg from output back into the packing zone', function () {
     $pack = validatedThreeStepPack($this->warehouse, $this->product, 10, 10);
 
-    $return = Inventory::returnTransfer($pack, [$pack->moves->first()->id => 3]);
+    $return = Inventory::createReturn($pack, [$pack->moves->first()->id => 3]);
 
     expect($return->return_id)->toBe($pack->id)
         ->and($return->source_location_id)->toBe($this->output->id)
         ->and($return->destination_location_id)->toBe($this->packing->id);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->output))->toBe(7.0)
         ->and(InventoryHelper::onHand($this->product, $this->packing))->toBe(3.0);
@@ -453,16 +453,16 @@ it('returns the ship leg from the customer back into output', function () {
 
     $ship = threeStepShipOperation($this->warehouse);
 
-    Inventory::doneTransfer($ship->refresh());
+    Inventory::completeTransfer($ship->refresh());
 
     $ship->refresh();
 
-    $return = Inventory::returnTransfer($ship, [$ship->moves->first()->id => 3]);
+    $return = Inventory::createReturn($ship, [$ship->moves->first()->id => 3]);
 
     expect($return->source_location_id)->toBe($ship->destination_location_id)
         ->and($return->destination_location_id)->toBe($this->output->id);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->output))->toBe(3.0);
 });
@@ -480,7 +480,7 @@ it('creates one pack move per product on a multi product pick', function () {
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $pack = packOperation($this->warehouse);
 
@@ -499,7 +499,7 @@ it('pushes a decimal picked quantity through the whole chain', function () {
 
     expect((float) $ship->moves->first()->product_uom_qty)->toBe(1.25);
 
-    Inventory::doneTransfer($ship->refresh());
+    Inventory::completeTransfer($ship->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->output))->toBe(0.0)
         ->and(InventoryHelper::onHand($this->product, $this->packing))->toBe(1.25)
@@ -540,7 +540,7 @@ it('carries the lot from stock through packing and output to the customer', func
 
     expect($shipLine->lot_id)->toBe($lot->id);
 
-    Inventory::doneTransfer($ship->refresh());
+    Inventory::completeTransfer($ship->refresh());
 
     $customer = $ship->refresh()->destinationLocation;
 
@@ -645,12 +645,12 @@ it('deletes each intermediate quant as the goods move through pick pack and ship
     expect(InventoryHelper::quantOf($this->product, $this->stock))->toBeNull()
         ->and((float) InventoryHelper::quantOf($this->product, $this->packing)?->quantity)->toBe(10.0);
 
-    Inventory::doneTransfer(packOperation($this->warehouse)->refresh());
+    Inventory::completeTransfer(packOperation($this->warehouse)->refresh());
 
     expect(InventoryHelper::quantOf($this->product, $this->packing))->toBeNull()
         ->and((float) InventoryHelper::quantOf($this->product, $this->output)?->quantity)->toBe(10.0);
 
-    Inventory::doneTransfer(threeStepShipOperation($this->warehouse)->refresh());
+    Inventory::completeTransfer(threeStepShipOperation($this->warehouse)->refresh());
 
     expect(InventoryHelper::quantOf($this->product, $this->output))->toBeNull();
 });

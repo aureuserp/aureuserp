@@ -4,13 +4,15 @@ namespace Webkul\Website\Filament\Admin\Resources\PageResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use Webkul\Support\Filament\Concerns\TranslatableListRecords;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
 
 class ListPages extends ListRecords
 {
-    use HasTableViews;
+    use HasTableViews, TranslatableListRecords;
 
     protected static string $resource = PageResource::class;
 
@@ -29,6 +31,7 @@ class ListPages extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            LocaleSwitcher::make(),
             CreateAction::make()
                 ->label(__('website::filament/admin/resources/page/pages/list-records.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),

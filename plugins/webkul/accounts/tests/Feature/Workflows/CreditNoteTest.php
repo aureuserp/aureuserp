@@ -1,13 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Models\TaxPartition;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 

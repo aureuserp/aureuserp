@@ -9,9 +9,9 @@ return [
 
     'global-search' => [
         'customer' => 'Cliente',
-        'date' => 'Data',
+        'date'     => 'Data',
         'due-date' => 'Data de vencimento',
-        'amount' => 'Valor',
+        'amount'   => 'Valor',
     ],
 
     'form' => [

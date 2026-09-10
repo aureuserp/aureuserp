@@ -16,7 +16,7 @@ class Products extends Cluster
         return __('inventories::filament/clusters/products.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Inventory;
     }

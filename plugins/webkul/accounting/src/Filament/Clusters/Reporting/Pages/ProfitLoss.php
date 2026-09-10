@@ -11,8 +11,6 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
@@ -23,11 +21,14 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\ProfitAndLossExport;
+use Webkul\Accounting\Support\CompanyRateMap;
 
 class ProfitLoss extends Page implements HasForms
 {
     use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.profit-loss';
 
@@ -61,7 +62,7 @@ class ProfitLoss extends Page implements HasForms
 
     public function mount(): void
     {
-        $this->form->fill([]);
+        $this->form->fill();
     }
 
     protected function getHeaderActions(): array
@@ -149,18 +150,18 @@ class ProfitLoss extends Page implements HasForms
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfMonth();
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now()->endOfMonth();
 
-        $companyId = Auth::user()->default_company_id;
+        $rateMap = CompanyRateMap::make(date: $dateTo->toDateString());
         $journalIds = $this->data['journals'] ?? [];
 
         $query = MoveLine::query()
             ->select([
                 'accounts_account_move_lines.account_id',
-                DB::raw('SUM(accounts_account_move_lines.debit) as total_debit'),
-                DB::raw('SUM(accounts_account_move_lines.credit) as total_credit'),
-                DB::raw('SUM(accounts_account_move_lines.balance) as balance'),
+                $rateMap->sum('accounts_account_move_lines.debit', 'total_debit'),
+                $rateMap->sum('accounts_account_move_lines.credit', 'total_credit'),
+                $rateMap->sum('accounts_account_move_lines.balance', 'balance'),
             ])
             ->join('accounts_account_moves', 'accounts_account_moves.id', '=', 'accounts_account_move_lines.move_id')
-            ->where('accounts_account_moves.company_id', $companyId)
+            ->whereIn('accounts_account_moves.company_id', $rateMap->companyIds())
             ->where('accounts_account_moves.state', MoveState::POSTED)
             ->whereBetween('accounts_account_moves.date', [$dateFrom, $dateTo])
             ->groupBy('accounts_account_move_lines.account_id');

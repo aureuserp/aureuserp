@@ -208,19 +208,19 @@ return [
                     ],
 
                     'textarea' => [
-                        'autofocus'   => 'Foco automático',
-                        'autosize'    => 'Tamanho automático',
-                        'cols'        => 'Colunas',
-                        'default'     => 'Valor padrão',
-                        'disabled'    => 'Desabilitado',
-                        'helperText'  => 'Texto de ajuda',
-                        'hint'        => 'Dica',
-                        'hintColor'   => 'Cor da dica',
-                        'hintIcon'    => 'Ícone da dica',
-                        'id'          => 'Id',
-                        'placeholder' => 'Texto de exemplo',
-                        'read-only'   => 'Somente leitura',
-                        'rows'        => 'Linhas',
+                        'autofocus'    => 'Foco automático',
+                        'autosize'     => 'Tamanho automático',
+                        'cols'         => 'Colunas',
+                        'default'      => 'Valor padrão',
+                        'disabled'     => 'Desabilitado',
+                        'helper-text'  => 'Texto de ajuda',
+                        'hint'         => 'Dica',
+                        'hint-color'   => 'Cor da dica',
+                        'hint-icon'    => 'Ícone da dica',
+                        'id'           => 'Id',
+                        'placeholder'  => 'Texto de exemplo',
+                        'read-only'    => 'Somente leitura',
+                        'rows'         => 'Linhas',
                     ],
 
                     'select' => [
@@ -299,7 +299,7 @@ return [
                         'disabled'                => 'Desabilitado',
                         'disabled-dates'          => 'Datas desabilitadas',
                         'display-format'          => 'Formato de exibição',
-                        'first-fay-of-week'       => 'Primeiro dia da semana',
+                        'first-day-of-week'       => 'Primeiro dia da semana',
                         'format'                  => 'Formato',
                         'helper-text'             => 'Texto de ajuda',
                         'hint'                    => 'Dica',
@@ -424,6 +424,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Fino',
                         'extra-light' => 'Extra leve',
                         'light'       => 'Leve',
                         'normal'      => 'Normal',
@@ -431,6 +432,7 @@ return [
                         'semi-bold'   => 'Seminegrito',
                         'bold'        => 'Negrito',
                         'extra-bold'  => 'Extra negrito',
+                        'black'       => 'Preto',
                     ],
 
                     'icon-position-options' => [
@@ -520,6 +522,7 @@ return [
                     ],
 
                     'font-weight-options' => [
+                        'thin'        => 'Fino',
                         'extra-light' => 'Extra leve',
                         'light'       => 'Leve',
                         'normal'      => 'Normal',
@@ -527,6 +530,7 @@ return [
                         'semi-bold'   => 'Seminegrito',
                         'bold'        => 'Negrito',
                         'extra-bold'  => 'Extra negrito',
+                        'black'       => 'Preto',
                     ],
 
                     'icon-position-options' => [
@@ -666,6 +670,7 @@ return [
                 'title' => 'Recurso',
 
                 'fields' => [
+                    'plugin'   => 'Plugin',
                     'resource' => 'Recurso',
                 ],
             ],

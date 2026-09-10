@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Armazém criado',
-                'body' => 'O armazém foi criado com sucesso.',
+                'body'  => 'O armazém foi criado com sucesso.',
             ],
         ],
     ],

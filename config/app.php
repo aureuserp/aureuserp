@@ -56,6 +56,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Asset URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by the asset() helper to generate URLs for the
+    | application's assets. It defaults to the application URL, and only
+    | needs to be set separately if assets are served from a different
+    | origin than the application itself.
+    |
+    */
+
+    'asset_url' => env('ASSET_URL', env('APP_URL')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
@@ -119,6 +133,12 @@ return [
             'label'  => 'Portuguese (Brazil)',
             'native' => 'Português (Brasil)',
             'flag'   => 'br',
+            'rtl'    => false,
+        ],
+        'fr' => [
+            'label'  => 'French',
+            'native' => 'Français',
+            'flag'   => 'fr',
             'rtl'    => false,
         ],
     ],

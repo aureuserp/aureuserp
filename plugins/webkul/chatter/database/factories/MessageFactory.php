@@ -4,14 +4,16 @@ namespace Webkul\Chatter\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Chatter\Models\Message;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\ActivityType;
-use Webkul\Support\Models\Company;
 
 /**
  * @extends Factory<Message>
  */
 class MessageFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Message::class;
 
     public function definition(): array
@@ -26,7 +28,6 @@ class MessageFactory extends Factory
             'messageable_type' => null,
 
             // Relationships
-            'company_id'       => Company::factory(),
             'activity_type_id' => null,
         ];
     }

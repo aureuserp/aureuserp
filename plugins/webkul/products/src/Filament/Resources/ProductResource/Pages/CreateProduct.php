@@ -5,10 +5,15 @@ namespace Webkul\Product\Filament\Resources\ProductResource\Pages;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateProduct extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected static string $resource = ProductResource::class;
+
+    protected ?bool $hasDatabaseTransactions = true;
 
     public function getSubNavigation(): array
     {

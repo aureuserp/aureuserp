@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'today' => 'Hoje',
+    'today'     => 'Hoje',
     'yesterday' => 'Ontem',
 ];

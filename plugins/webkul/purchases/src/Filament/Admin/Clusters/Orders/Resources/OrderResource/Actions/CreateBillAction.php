@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Livewire\Component;
+use Webkul\Account\Exceptions\MissingJournalException;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Models\Order;
@@ -40,7 +41,18 @@ class CreateBillAction extends Action
                     return;
                 }
 
-                $record = PurchaseOrder::createPurchaseOrderBill($record);
+                try {
+                    $record = PurchaseOrder::createPurchaseOrderBill($record);
+                } catch (MissingJournalException $exception) {
+                    Notification::make()
+                        ->title(__('purchases::filament/admin/clusters/orders/resources/order/actions/create-bill.action.notification.missing-journal.title'))
+                        ->body($exception->getMessage())
+                        ->danger()
+                        ->persistent()
+                        ->send();
+
+                    return;
+                }
 
                 $livewire->updateForm();
 

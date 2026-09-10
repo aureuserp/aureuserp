@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Origem criada',
-                'body' => 'A origem foi criada com sucesso.',
+                'body'  => 'A origem foi criada com sucesso.',
             ],
         ],
     ],

@@ -6,12 +6,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Imposto excluído',
-                    'body' => 'O imposto foi excluído com sucesso.',
+                    'body'  => 'O imposto foi excluído com sucesso.',
                 ],
 
                 'error' => [
                     'title' => 'Imposto não pôde ser excluído',
-                    'body' => 'O imposto não pode ser excluído porque está em uso no momento.',
+                    'body'  => 'O imposto não pode ser excluído porque está em uso no momento.',
                 ],
             ],
         ],

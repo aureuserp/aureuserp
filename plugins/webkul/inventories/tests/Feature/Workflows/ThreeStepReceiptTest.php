@@ -49,7 +49,7 @@ function validatedThreeStepReceiptLeg($warehouse, $product, float $demand, ?floa
         InventoryHelper::pick($operation->refresh()->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     return $operation->refresh();
 }
@@ -64,7 +64,7 @@ function validatedThreeStepQuality($warehouse, $product, float $demand, ?float $
         InventoryHelper::pick($quality->refresh()->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($quality->refresh());
+    Inventory::completeTransfer($quality->refresh());
 
     return $quality->refresh();
 }
@@ -176,7 +176,7 @@ it('lands the quantity in stock only after all three legs are validated', functi
 
     $storage = threeStepStorageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect($storage->refresh()->state)->toBe(OperationState::DONE)
         ->and(InventoryHelper::onHand($this->product, $this->input))->toBe(0.0)
@@ -190,7 +190,7 @@ it('stops pushing once the goods reach stock', function () {
 
     $storage = threeStepStorageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect($storage->refresh()->moves->first()->moveDestinations)->toHaveCount(0)
         ->and(InventoryHelper::operationCount($this->warehouse))->toBe(3);
@@ -214,7 +214,7 @@ it('merges the second push into the existing quality move when the receipt backo
 
     $backorder = InventoryHelper::backorderOf($operation);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
     $quality = qualityOperation($this->warehouse);
 
@@ -247,7 +247,7 @@ it('backorders the storage leg when it is partially validated', function () {
 
     InventoryHelper::pick($storage->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     $backorder = InventoryHelper::backorderOf($storage->refresh());
 
@@ -259,14 +259,14 @@ it('backorders the storage leg when it is partially validated', function () {
         ->and(InventoryHelper::onHand($this->product, $this->quality))->toBe(6.0);
 });
 
-it('creates no receipt backorder when validating with cancelBackOrder', function () {
+it('creates no receipt backorder when validating with cancelBackorder', function () {
     $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
 
     Inventory::confirmTransfer($operation);
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh(), cancelBackOrder: true);
+    Inventory::completeTransfer($operation->refresh(), cancelBackorder: true);
 
     expect(InventoryHelper::backorderOf($operation->refresh()))->toBeNull()
         ->and((float) qualityOperation($this->warehouse)->moves->first()->product_uom_qty)->toBe(4.0);
@@ -317,7 +317,7 @@ it('unreserves the quality move and drops it back to confirmed', function () {
 
     $quality = qualityOperation($this->warehouse);
 
-    Inventory::unreserveMoves($quality->refresh()->moves);
+    Inventory::releaseMoves($quality->refresh()->moves);
 
     $move = $quality->refresh()->moves->first();
 
@@ -334,7 +334,7 @@ it('unreserves the storage move and drops it back to confirmed', function () {
 
     $storage = threeStepStorageOperation($this->warehouse);
 
-    Inventory::unreserveMoves($storage->refresh()->moves);
+    Inventory::releaseMoves($storage->refresh()->moves);
 
     $move = $storage->refresh()->moves->first();
 
@@ -351,7 +351,7 @@ it('returns the receipt leg back to the supplier and unreserves the quality move
 
     expect($qualityMove->state)->toBe(MoveState::ASSIGNED);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
     expect($return->return_id)->toBe($operation->id)
         ->and($return->source_location_id)->toBe($this->input->id)
@@ -360,7 +360,7 @@ it('returns the receipt leg back to the supplier and unreserves the quality move
     expect($qualityMove->refresh()->state)->not->toBe(MoveState::ASSIGNED)
         ->and((float) $qualityMove->quantity)->toBe(0.0);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->input))->toBe(6.0);
 });
@@ -368,13 +368,13 @@ it('returns the receipt leg back to the supplier and unreserves the quality move
 it('returns the quality leg from quality control back into input', function () {
     $quality = validatedThreeStepQuality($this->warehouse, $this->product, 10);
 
-    $return = Inventory::returnTransfer($quality, [$quality->moves->first()->id => 3]);
+    $return = Inventory::createReturn($quality, [$quality->moves->first()->id => 3]);
 
     expect($return->return_id)->toBe($quality->id)
         ->and($return->source_location_id)->toBe($this->quality->id)
         ->and($return->destination_location_id)->toBe($this->input->id);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->quality))->toBe(7.0)
         ->and(InventoryHelper::onHand($this->product, $this->input))->toBe(3.0);
@@ -385,16 +385,16 @@ it('returns the storage leg from stock back into quality control', function () {
 
     $storage = threeStepStorageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     $storage->refresh();
 
-    $return = Inventory::returnTransfer($storage, [$storage->moves->first()->id => 3]);
+    $return = Inventory::createReturn($storage, [$storage->moves->first()->id => 3]);
 
     expect($return->source_location_id)->toBe($this->stock->id)
         ->and($return->destination_location_id)->toBe($this->quality->id);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(7.0)
         ->and(InventoryHelper::onHand($this->product, $this->quality))->toBe(3.0);
@@ -417,7 +417,7 @@ it('creates one quality move per product on a multi product receipt', function (
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $quality = qualityOperation($this->warehouse);
 
@@ -436,17 +436,17 @@ it('pushes a dozen received as twelve units through the whole chain', function (
 
     Inventory::confirmTransfer($operation);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->input))->toBe(12.0);
 
     $quality = qualityOperation($this->warehouse);
 
-    Inventory::doneTransfer($quality->refresh());
+    Inventory::completeTransfer($quality->refresh());
 
     $storage = threeStepStorageOperation($this->warehouse);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(12.0);
 });
@@ -462,7 +462,7 @@ it('creates the lot at the receipt leg and carries it into stock through quality
 
     InventoryHelper::nameLines($operation->refresh()->moves->first(), ['LOT-A']);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A'])
         ->and(InventoryHelper::onHand($product, $this->input))->toBe(10.0);
@@ -472,7 +472,7 @@ it('creates the lot at the receipt leg and carries it into stock through quality
 
     expect($qualityLine->lot_id)->not->toBeNull();
 
-    Inventory::doneTransfer($quality->refresh());
+    Inventory::completeTransfer($quality->refresh());
 
     expect(InventoryHelper::onHand($product, $this->quality))->toBe(10.0)
         ->and(InventoryHelper::onHand($product, $this->input))->toBe(0.0);
@@ -480,7 +480,7 @@ it('creates the lot at the receipt leg and carries it into stock through quality
     $storage = threeStepStorageOperation($this->warehouse);
     $storageLine = $storage->moves->first()->lines->first();
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     $stockQuant = InventoryHelper::quantOf($product, $this->stock, $storageLine->lot_id);
 
@@ -500,18 +500,18 @@ it('keeps two lots apart as they flow through quality and storage into stock', f
 
         InventoryHelper::nameLines($operation->refresh()->moves->first(), [$name]);
 
-        Inventory::doneTransfer($operation->refresh());
+        Inventory::completeTransfer($operation->refresh());
     }
 
     Operation::query()
         ->where('operation_type_id', $this->warehouse->qc_type_id)
         ->get()
-        ->each(fn ($quality) => Inventory::doneTransfer($quality->refresh()));
+        ->each(fn ($quality) => Inventory::completeTransfer($quality->refresh()));
 
     Operation::query()
         ->where('operation_type_id', $this->warehouse->store_type_id)
         ->get()
-        ->each(fn ($storage) => Inventory::doneTransfer($storage->refresh()));
+        ->each(fn ($storage) => Inventory::completeTransfer($storage->refresh()));
 
     expect(InventoryHelper::lotsOf($product))->toBe(['LOT-A', 'LOT-B'])
         ->and(InventoryHelper::onHand($product, $this->stock))->toBe(14.0)
@@ -547,19 +547,19 @@ it('stores each serial number in stock through the whole three step chain', func
 
     InventoryHelper::nameLines($operation->refresh()->moves->first(), ['SN-1', 'SN-2', 'SN-3']);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $quality = qualityOperation($this->warehouse);
 
     expect($quality->moves->first()->lines)->toHaveCount(3);
 
-    Inventory::doneTransfer($quality->refresh());
+    Inventory::completeTransfer($quality->refresh());
 
     $storage = threeStepStorageOperation($this->warehouse);
 
     expect($storage->moves->first()->lines)->toHaveCount(3);
 
-    Inventory::doneTransfer($storage->refresh());
+    Inventory::completeTransfer($storage->refresh());
 
     expect(InventoryHelper::lotsOf($product))->toBe(['SN-1', 'SN-2', 'SN-3'])
         ->and(InventoryHelper::onHand($product, $this->stock))->toBe(3.0)
@@ -588,7 +588,7 @@ it('deletes each intermediate quant as the goods move through receipt quality an
     expect(InventoryHelper::quantOf($this->product, $this->input))->toBeNull()
         ->and((float) InventoryHelper::quantOf($this->product, $this->quality)?->quantity)->toBe(10.0);
 
-    Inventory::doneTransfer(threeStepStorageOperation($this->warehouse)->refresh());
+    Inventory::completeTransfer(threeStepStorageOperation($this->warehouse)->refresh());
 
     expect(InventoryHelper::quantOf($this->product, $this->quality))->toBeNull()
         ->and((float) InventoryHelper::quantOf($this->product, $this->stock)?->quantity)->toBe(10.0);

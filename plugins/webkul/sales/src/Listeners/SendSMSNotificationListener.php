@@ -31,7 +31,7 @@ class SendSMSNotificationListener
         $totalRemaining = $invoices->sum('amount_residual');
         $totalPaid = $totalInvoiced - $totalRemaining;
 
-        $currency = $order->currency?->code ?? config('app.currency');
+        $currency = $order->currency?->code ?? default_currency_code();
         $customerName = $order->partner?->name ?? 'Customer';
 
         $customerMessage = "Dear {$customerName}, we have received your payment for order {$order->name}. "

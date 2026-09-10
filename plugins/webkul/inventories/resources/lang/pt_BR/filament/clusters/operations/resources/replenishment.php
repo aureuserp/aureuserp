@@ -13,23 +13,23 @@ return [
 
     'table' => [
         'columns' => [
-            'product' => 'Produto',
-            'location' => 'Localização',
-            'route' => 'Rota',
-            'vendor' => 'Fornecedor',
-            'trigger' => 'Disparar',
-            'on-hand' => 'Em estoque',
-            'min' => 'Mín.',
-            'max' => 'Máx.',
+            'product'           => 'Produto',
+            'location'          => 'Localização',
+            'route'             => 'Rota',
+            'vendor'            => 'Fornecedor',
+            'trigger'           => 'Disparar',
+            'on-hand'           => 'Em estoque',
+            'min'               => 'Mín.',
+            'max'               => 'Máx.',
             'multiple-quantity' => 'Quantidade múltipla',
-            'to-order' => 'A pedir',
-            'uom' => 'Unidade de medida',
-            'company' => 'Empresa',
+            'to-order'          => 'A pedir',
+            'uom'               => 'Unidade de medida',
+            'company'           => 'Empresa',
         ],
 
         'groups' => [
             'location' => 'Localização',
-            'product' => 'Produto',
+            'product'  => 'Produto',
             'category' => 'Categoria',
         ],
 
@@ -42,13 +42,13 @@ return [
 
                 'notification' => [
                     'title' => 'Reabastecimento adicionado',
-                    'body' => 'O reabastecimento foi adicionado com sucesso.',
+                    'body'  => 'O reabastecimento foi adicionado com sucesso.',
                 ],
 
                 'before' => [
                     'notification' => [
                         'title' => 'Reabastecimento já existe',
-                        'body' => 'Já existe um reabastecimento para esta configuração. Atualize o reabastecimento existente.',
+                        'body'  => 'Já existe um reabastecimento para esta configuração. Atualize o reabastecimento existente.',
                     ],
                 ],
             ],

@@ -286,6 +286,7 @@ class ChatterAction extends Action
     {
         $this
             ->slideOver()
+            ->modalAutofocus(false)
             ->hiddenLabel()
             ->icon(Heroicon::ChatBubbleLeftRight)
             ->modalIcon(Heroicon::ChatBubbleLeftRight)

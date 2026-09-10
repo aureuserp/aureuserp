@@ -29,7 +29,7 @@ function replicationDelivery($warehouse, $product, float $stock, float $demand, 
         InventoryHelper::pick($operation->refresh()->moves->first(), $picked);
     }
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     return $operation->refresh();
 }
@@ -39,7 +39,7 @@ it('does not carry the source completion timestamp onto a return', function () {
 
     expect($operation->closed_at)->not->toBeNull();
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 3]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 3]);
 
     expect($return->refresh()->closed_at)->toBeNull();
 });
@@ -60,7 +60,7 @@ it('does not carry the printed flag onto a return', function () {
 
     $operation->saveQuietly();
 
-    $return = Inventory::returnTransfer($operation->refresh(), [$operation->moves->first()->id => 3]);
+    $return = Inventory::createReturn($operation->refresh(), [$operation->moves->first()->id => 3]);
 
     expect($return->refresh()->is_printed)->toBeFalse();
 });
@@ -78,7 +78,7 @@ it('does not carry the printed flag onto a backorder', function () {
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::backorderOf($operation)->is_printed)->toBeFalse();
 });
@@ -90,9 +90,9 @@ it('does not point a return of a backorder at the original as its backorder pare
 
     InventoryHelper::pick($backorder->refresh()->moves->first(), 6);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
-    $return = Inventory::returnTransfer($backorder->refresh(), [$backorder->moves->first()->id => 2]);
+    $return = Inventory::createReturn($backorder->refresh(), [$backorder->moves->first()->id => 2]);
 
     expect($return->refresh()->back_order_id)->toBeNull();
 });
@@ -100,11 +100,11 @@ it('does not point a return of a backorder at the original as its backorder pare
 it('does not carry a return link onto a backorder of a return', function () {
     $operation = replicationDelivery($this->warehouse, $this->product, 10, 10);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 6]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 6]);
 
     InventoryHelper::pick($return->refresh()->moves->first(), 2);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     $backorder = InventoryHelper::backorderOf($return);
 
@@ -125,7 +125,7 @@ it('schedules a backorder for today instead of inheriting the original schedule'
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     expect(InventoryHelper::backorderOf($operation)->scheduled_at->isToday())->toBeTrue();
 });
@@ -139,7 +139,7 @@ it('does not carry the source deadline onto a returned move', function () {
 
     $sourceMove->saveQuietly();
 
-    $return = Inventory::returnTransfer($operation->refresh(), [$sourceMove->id => 3]);
+    $return = Inventory::createReturn($operation->refresh(), [$sourceMove->id => 3]);
 
     expect($return->refresh()->moves->first()->deadline)->toBeNull();
 });
@@ -153,7 +153,7 @@ it('does not carry the source unit price onto a returned move', function () {
 
     $sourceMove->saveQuietly();
 
-    $return = Inventory::returnTransfer($operation->refresh(), [$sourceMove->id => 3]);
+    $return = Inventory::createReturn($operation->refresh(), [$sourceMove->id => 3]);
 
     expect((float) $return->refresh()->moves->first()->price_unit)->toBe(0.0);
 });
@@ -165,9 +165,9 @@ it('leaves a returned operation out of the backorder lookup for the original', f
 
     InventoryHelper::pick($backorder->refresh()->moves->first(), 6);
 
-    Inventory::doneTransfer($backorder->refresh());
+    Inventory::completeTransfer($backorder->refresh());
 
-    Inventory::returnTransfer($backorder->refresh(), [$backorder->moves->first()->id => 2]);
+    Inventory::createReturn($backorder->refresh(), [$backorder->moves->first()->id => 2]);
 
     expect(InventoryHelper::backorderOf($operation)->id)->toBe($backorder->id);
 });
@@ -211,7 +211,7 @@ it('reserves only once when availability is checked twice on an assigned move', 
 
     expect(InventoryHelper::reserved($this->product, $this->stock))->toBe(10.0);
 
-    Inventory::assignTransfer($operation->refresh());
+    Inventory::reserveTransfer($operation->refresh());
 
     $move = $operation->refresh()->moves->first();
 
@@ -263,17 +263,17 @@ it('keeps a counted quant with a zero quantity instead of sweeping it', function
 it('returns the reserved quantity to stock when a return of a return is created', function () {
     $operation = replicationDelivery($this->warehouse, $this->product, 10, 10);
 
-    $return = Inventory::returnTransfer($operation, [$operation->moves->first()->id => 4]);
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
 
-    Inventory::doneTransfer($return->refresh());
+    Inventory::completeTransfer($return->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(4.0);
 
-    $secondReturn = Inventory::returnTransfer($return->refresh(), [$return->moves->first()->id => 4]);
+    $secondReturn = Inventory::createReturn($return->refresh(), [$return->moves->first()->id => 4]);
 
     expect($secondReturn->refresh()->return_id)->toBe($return->id);
 
-    Inventory::doneTransfer($secondReturn->refresh());
+    Inventory::completeTransfer($secondReturn->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(0.0);
 });
@@ -283,13 +283,13 @@ it('returns a delivery twice without exceeding the delivered quantity', function
 
     $move = $operation->moves->first();
 
-    $firstReturn = Inventory::returnTransfer($operation, [$move->id => 4]);
+    $firstReturn = Inventory::createReturn($operation, [$move->id => 4]);
 
-    Inventory::doneTransfer($firstReturn->refresh());
+    Inventory::completeTransfer($firstReturn->refresh());
 
-    $secondReturn = Inventory::returnTransfer($operation->refresh(), [$move->id => 6]);
+    $secondReturn = Inventory::createReturn($operation->refresh(), [$move->id => 6]);
 
-    Inventory::doneTransfer($secondReturn->refresh());
+    Inventory::completeTransfer($secondReturn->refresh());
 
     expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(10.0)
         ->and(InventoryHelper::returnOf($operation))->not->toBeNull();
@@ -308,9 +308,9 @@ it('splits a returned move across the locations that hold the stock', function (
 
     expect($operation->refresh()->moves->first()->lines)->toHaveCount(2);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
-    $return = Inventory::returnTransfer($operation->refresh(), [$operation->moves->first()->id => 6]);
+    $return = Inventory::createReturn($operation->refresh(), [$operation->moves->first()->id => 6]);
 
     expect($return->refresh()->moves->first()->lines)->toHaveCount(1);
 });
@@ -328,7 +328,7 @@ it('carries the split across to the backorder when a split move is partially pic
 
     InventoryHelper::pick($operation->refresh()->moves->first(), 4);
 
-    Inventory::doneTransfer($operation->refresh());
+    Inventory::completeTransfer($operation->refresh());
 
     $backorder = InventoryHelper::backorderOf($operation);
 

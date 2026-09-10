@@ -67,7 +67,8 @@ return [
 
                     'error' => [
                         'title' => 'No se pudo eliminar el atributo',
-                        'body'  => 'El atributo no puede eliminarse porque está en uso.',
+                        'body'  => 'El atributo no puede eliminarse porque está en uso por el producto: :products',
+                        'more'  => '... +:count más',
                     ],
                 ],
             ],
@@ -95,9 +96,9 @@ return [
                         'body'  => 'Los atributos han sido eliminados definitivamente de forma correcta.',
                     ],
 
-                    'error' => [
-                        'title' => 'No se pudieron eliminar los atributos',
-                        'body'  => 'Los atributos no pueden eliminarse porque están en uso.',
+                    'partial' => [
+                        'title' => 'No se pudieron eliminar algunos atributos',
+                        'body'  => 'El atributo ":attributes" no puede eliminarse porque está en uso por el producto: :products',
                     ],
                 ],
             ],

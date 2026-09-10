@@ -1,8 +1,8 @@
 <?php
 
-use Webkul\Account\Enums\MoveState;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Webkul\Account\Enums\MoveState;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 

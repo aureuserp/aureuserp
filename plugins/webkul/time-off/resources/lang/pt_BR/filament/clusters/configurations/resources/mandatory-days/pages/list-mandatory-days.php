@@ -8,7 +8,7 @@ return [
             'notification' => [
                 'created' => [
                     'title' => 'Dia obrigatório criado',
-                    'body' => 'O dia obrigatório foi criado com sucesso.',
+                    'body'  => 'O dia obrigatório foi criado com sucesso.',
                 ],
             ],
         ],

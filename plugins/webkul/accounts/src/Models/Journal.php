@@ -7,20 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Database\Factories\JournalFactory;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\SequenceResetFrequency;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Services\SequenceService;
+use Webkul\Support\Traits\BelongsToCompany;
+use Webkul\Support\Traits\ChecksCompanyConsistency;
 
 class Journal extends Model implements Sortable
 {
-    use HasFactory, SortableTrait;
+    use BelongsToCompany;
+    use ChecksCompanyConsistency;
+    use HasCustomFields, HasFactory, SortableTrait;
 
     protected $table = 'accounts_journals';
 
@@ -204,6 +212,47 @@ class Journal extends Model implements Sortable
         })->toArray();
     }
 
+    public function sequenceVariants(): array
+    {
+        $variants = [''];
+
+        if ($this->refund_sequence) {
+            $variants[] = 'refund';
+        }
+
+        if ($this->payment_sequence) {
+            $variants[] = 'payment';
+        }
+
+        return $variants;
+    }
+
+    public function sequenceDefaults(string $variant = ''): array
+    {
+        $flag = implode('', array_map(
+            fn (string $part): string => strtoupper($part[0]),
+            array_filter(explode('-', $variant)),
+        ));
+
+        return [
+            'name'            => $variant ? "{$this->name} (".ucwords($variant, '-').')' : $this->name,
+            'prefix'          => $flag.$this->code.'/%(year)/',
+            'reset_frequency' => SequenceResetFrequency::YEARLY,
+            'initial_from'    => Move::withoutGlobalScopes()->where('journal_id', $this->id),
+        ];
+    }
+
+    public function ensureSequences(): void
+    {
+        if (! Schema::hasTable('sequences')) {
+            return;
+        }
+
+        foreach ($this->sequenceVariants() as $variant) {
+            SequenceService::ensureFor($this, $variant, $this->company_id, $this->sequenceDefaults($variant));
+        }
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -215,10 +264,24 @@ class Journal extends Model implements Sortable
         static::saving(function ($journal) {
             $journal->computeSuspenseAccountId();
         });
+
+        static::saved(function ($journal) {
+            $journal->ensureSequences();
+        });
     }
 
     protected static function newFactory()
     {
         return JournalFactory::new();
+    }
+
+    public function companyConsistentFields(): array
+    {
+        return [
+            'default_account_id'  => Account::class,
+            'profit_account_id'   => Account::class,
+            'loss_account_id'     => Account::class,
+            'suspense_account_id' => Account::class,
+        ];
     }
 }

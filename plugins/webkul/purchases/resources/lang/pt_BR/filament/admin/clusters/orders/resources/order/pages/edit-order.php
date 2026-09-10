@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Pedido atualizado',
-        'body' => 'O pedido foi atualizado com sucesso.',
+        'body'  => 'O pedido foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
@@ -27,12 +27,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Pedido excluído',
-                    'body' => 'O pedido foi excluído com sucesso.',
+                    'body'  => 'O pedido foi excluído com sucesso.',
                 ],
 
                 'error' => [
                     'title' => 'Não foi possível excluir o pedido',
-                    'body' => 'O pedido não pode ser excluído porque está em uso.',
+                    'body'  => 'O pedido não pode ser excluído porque está em uso.',
                 ],
             ],
         ],

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Filament\Resources\PartnerResource;
+use Webkul\PluginManager\Package;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -33,7 +34,7 @@ class ListPartners extends ListRecords
 
     public function getPresetTableViews(): array
     {
-        return [
+        $views = [
             'individuals' => PresetView::make(__('partners::filament/resources/partner/pages/list-partners.tabs.individuals'))
                 ->icon('heroicon-s-user')
                 ->favorite()
@@ -44,10 +45,32 @@ class ListPartners extends ListRecords
                 ->favorite()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('account_type', AccountType::COMPANY)),
 
+            'employees' => PresetView::make(__('partners::filament/resources/partner/pages/list-partners.tabs.employees'))
+                ->icon('heroicon-s-identification')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('sub_type', 'employee')),
+
+            'customers' => PresetView::make(__('partners::filament/resources/partner/pages/list-partners.tabs.customers'))
+                ->icon('heroicon-s-shopping-bag')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('customer_rank', '>', 0)),
+
+            'vendors' => PresetView::make(__('partners::filament/resources/partner/pages/list-partners.tabs.vendors'))
+                ->icon('heroicon-s-truck')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('supplier_rank', '>', 0)),
+
             'archived' => PresetView::make(__('partners::filament/resources/partner/pages/list-partners.tabs.archived'))
                 ->icon('heroicon-s-archive-box')
                 ->favorite()
                 ->modifyQueryUsing(fn (Builder $query) => $query->onlyTrashed()),
         ];
+
+        // Customer and vendor ranks are columns the accounts plugin adds.
+        if (! Package::isPluginInstalled('accounts')) {
+            unset($views['customers'], $views['vendors']);
+        }
+
+        return $views;
     }
 }

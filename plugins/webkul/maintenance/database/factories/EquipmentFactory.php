@@ -8,13 +8,15 @@ use Webkul\Maintenance\Models\EquipmentCategory;
 use Webkul\Maintenance\Models\Team;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<Equipment>
  */
 class EquipmentFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Equipment::class;
 
     public function definition(): array
@@ -39,7 +41,6 @@ class EquipmentFactory extends Factory
             'owner_user_id'           => null,
             'maintenance_team_id'     => null,
             'technician_user_id'      => null,
-            'company_id'              => Company::factory(),
             'creator_id'              => User::query()->value('id') ?? User::factory(),
         ];
     }

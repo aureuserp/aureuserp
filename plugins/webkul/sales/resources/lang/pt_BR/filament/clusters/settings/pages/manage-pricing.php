@@ -11,10 +11,10 @@ return [
 
     'form' => [
         'fields' => [
-            'discount' => 'Desconto',
+            'discount'      => 'Desconto',
             'discount-help' => 'Habilitar desconto em produtos.',
-            'margins' => 'Margens',
-            'margins-help' => 'Mostrar margens nos pedidos.',
+            'margins'       => 'Margens',
+            'margins-help'  => 'Mostrar margens nos pedidos.',
         ],
     ],
 ];

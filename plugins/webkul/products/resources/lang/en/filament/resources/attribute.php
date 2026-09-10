@@ -67,7 +67,8 @@ return [
 
                     'error' => [
                         'title' => 'Attribute could not be deleted',
-                        'body'  => 'The attribute cannot be deleted because it is currently in use.',
+                        'body'  => 'The attribute cannot be deleted because it is currently in use by Product : :products',
+                        'more'  => '... +:count more',
                     ],
                 ],
             ],
@@ -95,9 +96,9 @@ return [
                         'body'  => 'The attributes has been force deleted successfully.',
                     ],
 
-                    'error' => [
-                        'title' => 'Attributes could not be deleted',
-                        'body'  => 'The attributes cannot be deleted because they are currently in use.',
+                    'partial' => [
+                        'title' => 'Some attributes could not be deleted',
+                        'body'  => 'The Attribute ":attributes" cannot be deleted because they are currently in use by Product : :products',
                     ],
                 ],
             ],

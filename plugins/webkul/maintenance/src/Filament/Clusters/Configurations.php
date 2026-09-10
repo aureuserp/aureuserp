@@ -16,7 +16,7 @@ class Configurations extends Cluster
         return __('maintenance::filament/clusters/configurations.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Maintenance;
     }

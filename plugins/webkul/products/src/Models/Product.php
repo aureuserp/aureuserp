@@ -8,25 +8,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Product\Database\Factories\ProductFactory;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Exceptions\ProductInUseException;
+use Webkul\Product\Support\ProductUsageRegistry;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Concerns\HasContributedAttributes;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Concerns\HasContributedAttributes;
+use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class Product extends Model implements Sortable
 {
-    use HasChatter, HasContributedAttributes, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use BelongsToCompany;
+    use HasChatter, HasContributedAttributes, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
     public const ACTIVITY_PLAN_PLUGIN = 'products';
 
     protected $table = 'products_products';
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
+    }
 
     protected $fillable = [
         'type',
@@ -179,6 +191,21 @@ class Product extends Model implements Sortable
         }
     }
 
+    public function deleteOrArchive(): void
+    {
+        try {
+            $this->forceDelete();
+        } catch (QueryException) {
+            $this->forceDeleting = false;
+            $this->delete();
+        }
+    }
+
+    public function isInUse(): bool
+    {
+        return ProductUsageRegistry::isProductInUse($this->getKey());
+    }
+
     /**
      * Generate or sync variants based on product attributes
      */
@@ -188,6 +215,10 @@ class Product extends Model implements Sortable
 
         if ($attributes->isEmpty()) {
             return;
+        }
+
+        if (! $this->is_configurable && $this->isInUse()) {
+            throw ProductInUseException::make($this, 'variants');
         }
 
         $existingVariants = $this->variants()->get();
@@ -279,7 +310,7 @@ class Product extends Model implements Sortable
             ->whereNotIn('id', $processedVariantIds)
             ->each(function ($variant) {
                 ProductCombination::where('product_id', $variant->id)->delete();
-                $variant->forceDelete();
+                $variant->deleteOrArchive();
             });
 
         $this->update(['is_configurable' => true]);
@@ -419,7 +450,17 @@ class Product extends Model implements Sortable
         });
 
         static::saved(function ($product) {
-            $product->variants->each(fn ($variant) => $variant->update(['is_storable' => $product->is_storable]));
+            if ($product->parent_id) {
+                return;
+            }
+
+            $product->variants()
+                ->withoutGlobalScope(CompanyScope::class)
+                ->get()
+                ->each(fn ($variant) => $variant->update([
+                    'is_storable' => $product->is_storable,
+                    'company_id'  => $product->company_id,
+                ]));
         });
 
         static::deleting(function (self $product) {

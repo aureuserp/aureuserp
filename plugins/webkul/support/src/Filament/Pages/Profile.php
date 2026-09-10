@@ -20,12 +20,12 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Webkul\Support\Filament\Clusters\Settings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Webkul\Support\Filament\Clusters\Settings;
 
 class Profile extends Page implements HasForms
 {
@@ -232,7 +232,7 @@ class Profile extends Page implements HasForms
 
             if ($languageChanged) {
                 app()->setLocale($fill['language']);
-                
+
                 session()->put('locale', $fill['language']);
             }
 

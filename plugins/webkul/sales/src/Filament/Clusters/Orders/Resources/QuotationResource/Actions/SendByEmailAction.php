@@ -31,7 +31,7 @@ class SendByEmailAction extends Action
         $this
             ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'primary' : 'gray')
             ->beforeFormFilled(function (Order $record, Action $action) {
-                $pdf = Pdf::loadView('sales::sales.quotation', compact('record'))
+                $pdf = Pdf::loadView('sales::sales.quotation', ['record' => $record, 'isPdf' => true])
                     ->setPaper('A4', 'portrait')
                     ->setOption('defaultFont', 'Arial');
 

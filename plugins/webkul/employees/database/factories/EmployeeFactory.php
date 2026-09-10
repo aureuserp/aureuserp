@@ -3,18 +3,24 @@
 namespace Webkul\Employee\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Employee\Enums\DistanceUnit;
+use Webkul\Employee\Enums\Gender;
+use Webkul\Employee\Enums\MaritalStatus;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\DepartureReason;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeJobPosition;
+use Webkul\Employee\Models\EmploymentType;
 use Webkul\Employee\Models\WorkLocation;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 
 class EmployeeFactory extends Factory
 {
+    use HasCompanyDefault;
+
     /**
      * The name of the factory's corresponding model.
      *
@@ -30,7 +36,6 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id'                     => Company::factory(),
             'user_id'                        => User::query()->value('id') ?? User::factory(),
             'creator_id'                     => User::query()->value('id') ?? User::factory(),
             'calendar_id'                    => null,
@@ -39,8 +44,8 @@ class EmployeeFactory extends Factory
             'job_id'                         => EmployeeJobPosition::factory(),
             'partner_id'                     => null,
             'work_location_id'               => WorkLocation::factory(),
-            'parent_id'                      => User::query()->value('id') ?? User::factory(),
-            'coach_id'                       => User::query()->value('id') ?? User::factory(),
+            'parent_id'                      => null,
+            'coach_id'                       => null,
             'country_id'                     => Country::factory(),
             'private_state_id'               => State::factory(),
             'private_country_id'             => Country::factory(),
@@ -56,7 +61,7 @@ class EmployeeFactory extends Factory
             'children'                       => fake()->numberBetween(0, 5),
             'distance_home_work'             => fake()->numberBetween(5, 100),
             'km_home_work'                   => fake()->numberBetween(5, 100),
-            'distance_home_work_unit'        => fake()->randomElement(['km', 'miles']),
+            'distance_home_work_unit'        => fake()->randomElement(DistanceUnit::cases())->value,
             'private_street1'                => fake()->streetAddress,
             'private_street2'                => fake()->secondaryAddress,
             'private_city'                   => fake()->city,
@@ -64,9 +69,9 @@ class EmployeeFactory extends Factory
             'private_phone'                  => fake()->phoneNumber,
             'private_email'                  => fake()->unique()->safeEmail,
             'lang'                           => fake()->languageCode,
-            'gender'                         => fake()->randomElement(),
+            'gender'                         => fake()->randomElement(Gender::cases())->value,
             'birthday'                       => fake()->date(),
-            'marital'                        => fake()->randomElement(['single', 'married', 'divorced', 'widowed']),
+            'marital'                        => fake()->randomElement(MaritalStatus::cases())->value,
             'spouse_complete_name'           => fake()->name,
             'spouse_birthdate'               => fake()->date(),
             'place_of_birth'                 => fake()->city,
@@ -81,7 +86,7 @@ class EmployeeFactory extends Factory
             'study_school'                   => fake()->company,
             'emergency_contact'              => fake()->name,
             'emergency_phone'                => fake()->phoneNumber,
-            'employee_type'                  => fake()->randomElement(['full-time', 'part-time', 'contractor']),
+            'employee_type'                  => EmploymentType::factory(),
             'barcode'                        => fake()->ean13,
             'pin'                            => fake()->randomNumber(6, true),
             'private_car_plate'              => fake()->bothify('??-###-##'),
@@ -89,7 +94,6 @@ class EmployeeFactory extends Factory
             'work_permit_expiration_date'    => fake()->date(),
             'departure_date'                 => fake()->optional()->date(),
             'departure_description'          => fake()->optional()->text,
-            'employee_properties'            => fake()->optional()->json,
             'additional_note'                => fake()->optional()->text,
             'notes'                          => fake()->optional()->text,
             'is_active'                      => fake()->boolean(),

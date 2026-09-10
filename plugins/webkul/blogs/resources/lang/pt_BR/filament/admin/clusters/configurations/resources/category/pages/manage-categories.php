@@ -7,13 +7,13 @@ return [
 
             'notification' => [
                 'title' => 'Categoria criada',
-                'body' => 'A categoria foi criada com sucesso.',
+                'body'  => 'A categoria foi criada com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

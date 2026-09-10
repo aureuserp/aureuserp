@@ -11,55 +11,55 @@ return [
 
     'form' => [
         'fields' => [
-            'name' => 'Nome',
+            'name'             => 'Nome',
             'name-placeholder' => 'Informe o nome do feriado',
-            'date-from' => 'Data de início',
-            'date-to' => 'Data de término',
-            'color' => 'Cor',
-            'calendar' => 'Calendário',
+            'date-from'        => 'Data de início',
+            'date-to'          => 'Data de término',
+            'color'            => 'Cor',
+            'calendar'         => 'Calendário',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'company-name' => 'Nome da empresa',
-            'calendar' => 'Calendário',
-            'created-by' => 'Criado por',
-            'date-from' => 'Data de início',
-            'date-to' => 'Data de término',
+            'calendar'     => 'Calendário',
+            'created-by'   => 'Criado por',
+            'date-from'    => 'Data de início',
+            'date-to'      => 'Data de término',
         ],
 
         'filters' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'company-name' => 'Nome da empresa',
-            'created-by' => 'Criado por',
-            'date-from' => 'Data de início',
-            'date-to' => 'Data de término',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'created-by'   => 'Criado por',
+            'date-from'    => 'Data de início',
+            'date-to'      => 'Data de término',
+            'created-at'   => 'Criado em',
+            'updated-at'   => 'Atualizado em',
         ],
 
         'groups' => [
-            'name' => 'Nome',
+            'name'         => 'Nome',
             'company-name' => 'Nome da empresa',
-            'created-by' => 'Criado por',
-            'date-from' => 'Data de início',
-            'date-to' => 'Data de término',
+            'created-by'   => 'Criado por',
+            'date-from'    => 'Data de início',
+            'date-to'      => 'Data de término',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Feriado atualizado',
-                    'body' => 'O feriado foi restaurado com sucesso.',
+                    'body'  => 'O feriado foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Feriado excluído',
-                    'body' => 'O feriado foi excluído com sucesso.',
+                    'body'  => 'O feriado foi excluído com sucesso.',
                 ],
             ],
         ],
@@ -68,7 +68,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Feriados excluídos',
-                    'body' => 'Os feriados foram excluídos com sucesso.',
+                    'body'  => 'Os feriados foram excluídos com sucesso.',
                 ],
             ],
         ],
@@ -76,10 +76,10 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Nome',
+            'name'      => 'Nome',
             'date-from' => 'Data de início',
-            'date-to' => 'Data de término',
-            'color' => 'Cor',
+            'date-to'   => 'Data de término',
+            'color'     => 'Cor',
         ],
     ],
 ];

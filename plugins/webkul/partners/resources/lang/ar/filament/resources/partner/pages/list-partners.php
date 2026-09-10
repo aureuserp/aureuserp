@@ -13,6 +13,8 @@ return [
         'individuals' => 'أفراد',
         'companies'   => 'شركات',
         'employees'   => 'موظفون',
+        'customers'   => 'عملاء',
+        'vendors'     => 'موردون',
         'archived'    => 'مؤرشف',
     ],
 ];

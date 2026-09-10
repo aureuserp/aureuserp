@@ -50,6 +50,11 @@ return [
         'split-done-or-cancel'       => 'Você não pode dividir uma movimentação de estoque definida como \'Concluída\' ou \'Cancelada\'.',
         'split-draft'                => 'Você não pode dividir uma movimentação em rascunho. Ela precisa ser confirmada primeiro.',
         'serial-already-assigned'    => 'O número de série já foi atribuído ao produto: :product, número de série: :serial_number',
+
+        'cross-company' => [
+            'title' => 'Transferência entre empresas não permitida',
+            'body'  => 'Uma transferência não pode mover estoque diretamente entre locais que pertencem a empresas diferentes (:source e :destination). Transferências entre empresas ainda não são suportadas.',
+        ],
     ],
 
     'rule' => [

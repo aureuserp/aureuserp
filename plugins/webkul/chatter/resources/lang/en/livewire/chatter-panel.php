@@ -32,6 +32,8 @@ return [
                 'due-date'      => 'Due Date',
                 'summary'       => 'Summary',
                 'assigned-to'   => 'Assigned To',
+
+                'message-placeholder' => 'Type your message here...',
             ],
         ],
 
@@ -52,7 +54,7 @@ return [
     ],
 
     'mark-as-done' => [
-        'title' => 'Mark as done',
+        'title'   => 'Mark as done',
         'actions' => [
             'done' => [
                 'label' => 'Done',

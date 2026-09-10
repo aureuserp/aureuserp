@@ -111,6 +111,11 @@ return [
                 'notification' => [
                     'title' => 'Moedas excluídas',
                     'body'  => 'As moedas foram excluídas com sucesso.',
+
+                    'error' => [
+                        'title' => 'Não foi possível excluir as moedas',
+                        'body'  => 'Algumas das moedas selecionadas estão em uso e não podem ser excluídas.',
+                    ],
                 ],
             ],
         ],

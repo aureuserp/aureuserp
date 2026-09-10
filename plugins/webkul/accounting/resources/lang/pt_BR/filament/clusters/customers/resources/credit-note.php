@@ -9,6 +9,6 @@ return [
 
     'global-search' => [
         'customer' => 'Cliente',
-        'amount' => 'Valor',
+        'amount'   => 'Valor',
     ],
 ];

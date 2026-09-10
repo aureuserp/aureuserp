@@ -2,11 +2,14 @@
 
 namespace Webkul\Barcode\Filament\Pages;
 
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Page;
 use Webkul\Support\Enums\NavigationGroup;
 
 class LaunchBarcode extends Page
 {
+    use HasPageShield;
+
     protected string $view = 'barcode::filament.pages.launch-barcode';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-qr-code';
@@ -23,7 +26,7 @@ class LaunchBarcode extends Page
         return __('barcode::app.filament.navigation.label');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Barcode;
     }

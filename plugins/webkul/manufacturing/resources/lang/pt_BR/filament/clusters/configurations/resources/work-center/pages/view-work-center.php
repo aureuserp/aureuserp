@@ -5,7 +5,7 @@ return [
         'delete' => [
             'notification' => [
                 'title' => 'Centro de trabalho arquivado',
-                'body' => 'O centro de trabalho foi arquivado com sucesso.',
+                'body'  => 'O centro de trabalho foi arquivado com sucesso.',
             ],
         ],
     ],

@@ -14,7 +14,7 @@ class ToInvoice extends Cluster
         return __('sales::filament/clusters/to-invoice.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Sale;
     }

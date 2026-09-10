@@ -62,6 +62,9 @@ return [
             'time-type'           => 'Tipo de tiempo',
             'request-unit'        => 'Unidad de solicitud',
             'created-by'          => 'Creado por',
+            'employee-request'    => 'Solicitud de empleado',
+            'created-at'          => 'Creado el',
+            'updated-at'          => 'Actualizado el',
         ],
 
         'actions' => [

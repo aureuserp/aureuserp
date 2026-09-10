@@ -16,7 +16,7 @@ class Configuration extends Cluster
         return __('sales::filament/clusters/configurations.navigation.title');
     }
 
-    public static function getNavigationGroup(): string | \UnitEnum
+    public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Sale;
     }

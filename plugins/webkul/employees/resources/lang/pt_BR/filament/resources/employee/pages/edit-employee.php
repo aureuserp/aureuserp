@@ -3,7 +3,7 @@
 return [
     'notification' => [
         'title' => 'Colaborador atualizado',
-        'body' => 'O colaborador foi atualizado com sucesso.',
+        'body'  => 'O colaborador foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Colaborador excluído',
-                'body' => 'O colaborador foi excluído com sucesso.',
+                'body'  => 'O colaborador foi excluído com sucesso.',
             ],
         ],
     ],

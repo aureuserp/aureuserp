@@ -54,7 +54,7 @@ class ManageSubTasks extends ManageRelatedRecords
                     ->icon('heroicon-o-plus-circle')
                     ->fillForm(function (array $arguments): array {
                         return [
-                            'stage_id'     => TaskStage::first()?->id,
+                            'stage_id'     => TaskStage::where('project_id', $this->getOwnerRecord()->project_id)->orderBy('sort')->first()?->id,
                             'state'        => TaskState::IN_PROGRESS,
                             'project_id'   => $this->getOwnerRecord()->project_id,
                             'milestone_id' => $this->getOwnerRecord()->milestone_id,

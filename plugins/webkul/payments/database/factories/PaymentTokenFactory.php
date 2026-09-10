@@ -7,13 +7,15 @@ use Webkul\Account\Models\PaymentMethod;
 use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentToken;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 /**
  * @extends Factory<\App\Models\PaymentToken>
  */
 class PaymentTokenFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = PaymentToken::class;
 
     /**
@@ -24,7 +26,6 @@ class PaymentTokenFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id'        => Company::factory(),
             'payment_method_id' => PaymentMethod::factory(),
             'partner_id'        => Partner::query()->value('id') ?? Partner::factory(),
             'creator_id'        => User::query()->value('id') ?? User::factory(),

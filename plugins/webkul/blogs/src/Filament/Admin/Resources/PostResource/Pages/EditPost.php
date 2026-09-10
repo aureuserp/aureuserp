@@ -7,11 +7,15 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
 use Webkul\Blog\Models\Post;
+use Webkul\Support\Filament\Concerns\TranslatableEditRecord;
 
 class EditPost extends EditRecord
 {
+    use TranslatableEditRecord;
+
     protected static string $resource = PostResource::class;
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -32,6 +36,7 @@ class EditPost extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            LocaleSwitcher::make(),
             Action::make('publish')
                 ->label(__('blogs::filament/admin/resources/post/pages/edit-post.header-actions.publish.label'))
                 ->icon('heroicon-o-check-circle')

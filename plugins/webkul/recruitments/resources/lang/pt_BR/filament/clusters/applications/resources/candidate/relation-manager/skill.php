@@ -4,8 +4,8 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'skill-type' => 'Tipo de habilidade',
-                'skill' => 'Habilidade',
+                'skill-type'  => 'Tipo de habilidade',
+                'skill'       => 'Habilidade',
                 'skill-level' => 'Nível de habilidade',
             ],
         ],
@@ -13,13 +13,13 @@ return [
 
     'table' => [
         'columns' => [
-            'skill-type' => 'Tipo de habilidade',
-            'skill' => 'Habilidade',
-            'skill-level' => 'Nível de habilidade',
+            'skill-type'    => 'Tipo de habilidade',
+            'skill'         => 'Habilidade',
+            'skill-level'   => 'Nível de habilidade',
             'level-percent' => 'Percentual do nível',
-            'created-by' => 'Criado por',
-            'user' => 'Usuário',
-            'created-at' => 'Criado em',
+            'created-by'    => 'Criado por',
+            'user'          => 'Usuário',
+            'created-at'    => 'Criado em',
         ],
 
         'groups' => [
@@ -31,30 +31,30 @@ return [
         ],
 
         'filters' => [
-            'activity-type' => 'Tipo de atividade',
+            'activity-type'   => 'Tipo de atividade',
             'activity-status' => 'Status da atividade',
-            'has-delay' => 'Tem atraso',
+            'has-delay'       => 'Tem atraso',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
                     'title' => 'Habilidade atualizada',
-                    'body' => 'A habilidade foi atualizada com sucesso.',
+                    'body'  => 'A habilidade foi atualizada com sucesso.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
                     'title' => 'Habilidade criada',
-                    'body' => 'A habilidade foi criada com sucesso.',
+                    'body'  => 'A habilidade foi criada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Habilidade excluída',
-                    'body' => 'A habilidade foi excluída com sucesso.',
+                    'body'  => 'A habilidade foi excluída com sucesso.',
                 ],
             ],
         ],
@@ -63,7 +63,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Habilidades excluídas',
-                    'body' => 'As habilidades foram excluídas com sucesso.',
+                    'body'  => 'As habilidades foram excluídas com sucesso.',
                 ],
             ],
         ],
@@ -71,9 +71,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'skill-type' => 'Tipo de habilidade',
-            'skill' => 'Habilidade',
-            'skill-level' => 'Nível de habilidade',
+            'skill-type'    => 'Tipo de habilidade',
+            'skill'         => 'Habilidade',
+            'skill-level'   => 'Nível de habilidade',
             'level-percent' => 'Percentual do nível',
         ],
     ],

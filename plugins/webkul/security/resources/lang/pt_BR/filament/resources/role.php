@@ -3,7 +3,7 @@
 return [
     'form' => [
         'fields' => [
-            'web' => 'Web',
+            'web'     => 'Web',
             'sanctum' => 'Sanctum',
         ],
     ],
@@ -11,7 +11,7 @@ return [
     'notification' => [
         'system-role-delete' => [
             'title' => 'Função do sistema não pode ser excluída',
-            'body' => 'Esta é uma função do sistema e não pode ser excluída.',
+            'body'  => 'Esta é uma função do sistema e não pode ser excluída.',
         ],
     ],
 ];

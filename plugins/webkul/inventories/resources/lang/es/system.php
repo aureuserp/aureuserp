@@ -42,7 +42,7 @@ return [
     ],
 
     'product' => [
-        'endless-loop-rule' => "Configuración de regla no válida, la siguiente regla provoca un bucle infinito: :name",
+        'endless-loop-rule' => 'Configuración de regla no válida, la siguiente regla provoca un bucle infinito: :name',
     ],
 
     'move' => [
@@ -50,6 +50,11 @@ return [
         'split-done-or-cancel'       => 'No se puede dividir un movimiento de existencias que se ha marcado como \'Hecho\' o \'Cancelado\'.',
         'split-draft'                => 'No se puede dividir un movimiento en borrador. Primero debe confirmarse.',
         'serial-already-assigned'    => 'El número de serie ya se ha asignado al producto: :product, número de serie: :serial_number',
+
+        'cross-company' => [
+            'title' => 'Transferencia entre empresas no permitida',
+            'body'  => 'Una transferencia no puede mover existencias directamente entre ubicaciones que pertenecen a empresas diferentes (:source y :destination). Las transferencias entre empresas aún no son compatibles.',
+        ],
     ],
 
     'rule' => [

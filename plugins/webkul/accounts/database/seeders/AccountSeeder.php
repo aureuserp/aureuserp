@@ -23,9 +23,9 @@ class AccountSeeder extends Seeder
 
         $user = User::first();
 
-        $currency = Currency::active()->first() ?? Currency::first();
-
         $company = Company::first();
+
+        $currency = $company?->currency ?? Currency::active()->first() ?? Currency::first();
 
         $now = now();
 

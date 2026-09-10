@@ -7,7 +7,7 @@ return [
 
     'notification' => [
         'title' => 'Preço do fornecedor atualizado',
-        'body' => 'O preço do fornecedor foi atualizado com sucesso.',
+        'body'  => 'O preço do fornecedor foi atualizado com sucesso.',
     ],
 
     'header-actions' => [
@@ -15,12 +15,12 @@ return [
             'notification' => [
                 'success' => [
                     'title' => 'Preço do fornecedor excluído',
-                    'body' => 'O preço do fornecedor foi excluído com sucesso.',
+                    'body'  => 'O preço do fornecedor foi excluído com sucesso.',
                 ],
 
                 'error' => [
                     'title' => 'Não foi possível excluir o preço do fornecedor',
-                    'body' => 'O preço do fornecedor não pode ser excluído porque está em uso.',
+                    'body'  => 'O preço do fornecedor não pode ser excluído porque está em uso.',
                 ],
             ],
         ],

@@ -138,11 +138,17 @@ class Warehouse extends BaseWarehouse
             $this->sam_loc_id,
         ])->update(['warehouse_id' => $this->id]);
 
-        OperationType::withTrashed()->whereIn('id', [
+        $operationTypeIds = [
             $this->pbm_type_id,
             $this->sam_type_id,
             $this->manu_type_id,
-        ])->update(['warehouse_id' => $this->id]);
+        ];
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->update(['warehouse_id' => $this->id]);
+
+        OperationType::withTrashed()->whereIn('id', $operationTypeIds)->get()->each(
+            fn (OperationType $operationType) => $operationType->syncSequence()
+        );
 
         $this->routes()->attach($this->pbm_route_id);
 
@@ -288,7 +294,9 @@ class Warehouse extends BaseWarehouse
 
     protected function createManufacturingRules(): void
     {
-        $productionLocation = Location::where('type', LocationType::PRODUCTION)->first();
+        $productionLocation = Location::where('type', LocationType::PRODUCTION)
+            ->where('company_id', $this->company_id)
+            ->first();
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 15,
@@ -425,7 +433,9 @@ class Warehouse extends BaseWarehouse
             'deleted_at' => $this->manufacture_steps === ManufactureStep::ONE_STEP ? now() : null,
         ]);
 
-        $productionLocation = Location::where('type', LocationType::PRODUCTION)->first();
+        $productionLocation = Location::where('type', LocationType::PRODUCTION)
+            ->where('company_id', $this->company_id)
+            ->first();
 
         $this->updateRules(
             'manufacture_steps',

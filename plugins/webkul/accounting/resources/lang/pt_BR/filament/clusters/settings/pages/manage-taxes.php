@@ -5,7 +5,7 @@ return [
 
     'form' => [
         'default-taxes' => [
-            'label' => 'Impostos padrão',
+            'label'       => 'Impostos padrão',
             'helper-text' => 'O padrão será aplicado aos produtos se nenhum imposto for selecionado',
         ],
 
@@ -22,7 +22,7 @@ return [
         ],
 
         'rounding-method' => [
-            'label' => 'Método de arredondamento',
+            'label'       => 'Método de arredondamento',
             'helper-text' => 'Método usado para arredondar valores de impostos',
 
             'options' => [

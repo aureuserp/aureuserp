@@ -7,7 +7,6 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Tax;
-use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
@@ -17,6 +16,7 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Product;
+use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Sale\Models\Order;
@@ -203,7 +203,7 @@ class SaleHelper
                 && $op->moves->contains(fn ($move) => in_array($move->state, [MoveState::ASSIGNED, MoveState::PARTIALLY_ASSIGNED])));
 
         if ($ready) {
-            Inventory::doneTransfer($ready->refresh());
+            Inventory::completeTransfer($ready->refresh());
         }
 
         return $ready;
@@ -237,7 +237,7 @@ class SaleHelper
 
         InventoryHelper::pick($leg->moves->first(), $qty);
 
-        Inventory::doneTransfer($leg->refresh());
+        Inventory::completeTransfer($leg->refresh());
 
         return $leg->refresh();
     }

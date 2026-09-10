@@ -1,9 +1,9 @@
 <?php
 
-use Webkul\Account\Enums\DisplayType;
-use Webkul\Account\Enums\MoveType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\MoveType;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 

@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+        html,
+        body,
+        table,
+        th,
+        td,
+        div,
+        span,
+        p,
+        b,
+        strong {
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
+        }
+
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 14px;
             color: #333333;
             line-height: 1.6;
@@ -27,15 +39,16 @@
 
         .company-info {
             width: 50%;
-            float: left;
+            float: {{ $isRtl ? 'right' : 'left' }};
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .vendor-info {
             width: 45%;
-            float: right;
-            text-align: right;
-            border-left: 2px solid #f0f0f0;
-            padding-left: 20px;
+            float: {{ $isRtl ? 'left' : 'right' }};
+            text-align: {{ $isRtl ? 'left' : 'right' }};
+            border-{{ $isRtl ? 'right' : 'left' }}: 2px solid #f0f0f0;
+            padding-{{ $isRtl ? 'right' : 'left' }}: 20px;
         }
 
         .clearfix {
@@ -48,6 +61,7 @@
             margin: 25px 0;
             padding: 15px 0;
             border-bottom: 2px solid #1a4587;
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .details-table {
@@ -59,6 +73,7 @@
         .details-table td {
             padding: 10px;
             vertical-align: top;
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .items-table {
@@ -71,12 +86,13 @@
             background: #1a4587;
             color: white;
             padding: 12px;
-            text-align: left;
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .items-table td {
             padding: 12px;
             border-bottom: 1px solid #e9ecef;
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .items-table tr:nth-child(even) {
@@ -88,17 +104,11 @@
             display: inline-block;
         }
         .summary table {
-            float: right;
+            float: {{ $isRtl ? 'right' : 'left' }};
             width: 250px;
             padding-top: 5px;
             padding-bottom: 5px;
             white-space: nowrap;
-        }
-        .summary table.rtl {
-            width: 280px;
-        }
-        .summary table.rtl {
-            margin-right: 480px;
         }
         .summary table td {
             padding: 5px 10px;
@@ -106,8 +116,8 @@
         .summary table td:nth-child(2) {
             text-align: center;
         }
-        .summary table td:nth-child(3) {
-            text-align: right;
+        .summary table td.amount {
+            text-align: {{ $isRtl ? 'left' : 'right' }};
         }
 
         .payment-info {
@@ -115,10 +125,11 @@
             margin-top: 20px;
             padding: 20px;
             border-radius: 8px;
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .payment-info-title {
-            font-weight: 600;
+            font-weight: {{ $isRtl ? 'bold' : '600' }};
             margin-bottom: 10px;
         }
     </style>
@@ -276,7 +287,7 @@
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 
-                        <td>{{ money($item->price_unit, $record->currency->name) }}</td>
+                        <td class="amount">{{ money($item->price_unit, $record->currency->name) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -284,29 +295,29 @@
         @endif
 
         <div class="summary">
-            <table class="ltr">
+            <table>
                 <tbody>
                     <tr>
                         <td>{{ __('accounts::account-manager.documents.labels.subtotal') }}</td>
                         <td>-</td>
-                        <td>{{ money($record->amount_untaxed, $record->currency->name) }}</td>
+                        <td class="amount">{{ money($record->amount_untaxed, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td>{{ __('accounts::account-manager.documents.labels.tax') }}</td>
                         <td>-</td>
-                        <td>{{ money($record->amount_tax, $record->currency->name) }}</td>
+                        <td class="amount">{{ money($record->amount_tax, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td>{{ __('accounts::account-manager.documents.labels.discount') }}</td>
                         <td>-</td>
-                        <td>-{{ money($record->total_discount, $record->currency->name) }}</td>
+                        <td class="amount">-{{ money($record->total_discount, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td style="border-top: 1px solid #FFFFFF;">
                             <b>{{ __('accounts::account-manager.documents.labels.grand-total') }}</b>
                         </td>
                         <td style="border-top: 1px solid #FFFFFF;">-</td>
-                        <td style="border-top: 1px solid #FFFFFF;">
+                        <td class="amount" style="border-top: 1px solid #FFFFFF;">
                             <b>{{ money($record->amount_total, $record->currency->name) }}</b>
                         </td>
                     </tr>

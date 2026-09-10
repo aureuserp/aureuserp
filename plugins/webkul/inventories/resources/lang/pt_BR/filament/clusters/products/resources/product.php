@@ -3,7 +3,7 @@
 return [
     'table' => [
         'columns' => [
-            'on-hand' => 'Em estoque',
+            'on-hand'    => 'Em estoque',
             'forecasted' => 'Previsto',
         ],
     ],

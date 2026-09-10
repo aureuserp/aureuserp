@@ -7,7 +7,7 @@ return [
 
             'notification' => [
                 'title' => 'Título criado',
-                'body' => 'O título foi criado com sucesso.',
+                'body'  => 'O título foi criado com sucesso.',
             ],
         ],
     ],

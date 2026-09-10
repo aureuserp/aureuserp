@@ -2,7 +2,7 @@
 
 return [
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 
@@ -12,7 +12,7 @@ return [
 
             'notification' => [
                 'title' => 'Plano de atividade criado',
-                'body' => 'O plano de atividade foi criado com sucesso.',
+                'body'  => 'O plano de atividade foi criado com sucesso.',
             ],
         ],
     ],

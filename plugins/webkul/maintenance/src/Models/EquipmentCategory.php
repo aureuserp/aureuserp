@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Maintenance\Database\Factories\EquipmentCategoryFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class EquipmentCategory extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'maintenance_equipment_categories';
@@ -28,6 +30,11 @@ class EquipmentCategory extends Model
     public function getModelTitle(): string
     {
         return __('maintenance::models/equipment-category.title');
+    }
+
+    public static function autoAssignsCompany(): bool
+    {
+        return false;
     }
 
     public function creator(): BelongsTo
@@ -68,7 +75,6 @@ class EquipmentCategory extends Model
             $authUser = Auth::user();
 
             $category->creator_id ??= $authUser?->id;
-            $category->company_id ??= $authUser?->default_company_id;
         });
     }
 }

@@ -13,9 +13,11 @@ use Webkul\Product\Enums\PriceRuleType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Traits\BelongsToCompany;
 
 class PriceRuleItem extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $table = 'products_price_rule_items';

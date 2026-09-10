@@ -10,7 +10,7 @@ return [
 
                 'notification' => [
                     'title' => 'Preço do fornecedor criado',
-                    'body' => 'O preço do fornecedor foi criado com sucesso.',
+                    'body'  => 'O preço do fornecedor foi criado com sucesso.',
                 ],
             ],
         ],

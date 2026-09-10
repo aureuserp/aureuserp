@@ -4,13 +4,15 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'payment-term' => 'Condição de pagamento',
-                'early-discount' => 'Desconto antecipado',
+                'payment-term'         => 'Condição de pagamento',
+                'company'              => 'Empresa',
+                'company-placeholder'  => 'Todas as empresas',
+                'early-discount'       => 'Desconto antecipado',
                 'discount-days-prefix' => 'se pago em até',
                 'discount-days-suffix' => 'dias',
-                'reduced-tax' => 'Imposto reduzido',
-                'note' => 'Nota',
-                'status' => 'Status',
+                'reduced-tax'          => 'Imposto reduzido',
+                'note'                 => 'Nota',
+                'status'               => 'Status',
             ],
         ],
 
@@ -21,11 +23,11 @@ return [
                 'repeater' => [
                     'due-terms' => [
                         'fields' => [
-                            'value' => 'Valor',
-                            'due' => 'Vencimento',
-                            'delay-type' => 'Tipo de prazo',
+                            'value'                  => 'Valor',
+                            'due'                    => 'Vencimento',
+                            'delay-type'             => 'Tipo de prazo',
                             'days-on-the-next-month' => 'Dias no próximo mês',
-                            'days' => 'Dias',
+                            'days'                   => 'Dias',
                         ],
                     ],
                 ],
@@ -36,18 +38,18 @@ return [
     'table' => [
         'columns' => [
             'payment-term' => 'Condição de pagamento',
-            'company' => 'Empresa',
-            'created-at' => 'Criado em',
-            'updated-at' => 'Atualizado em',
+            'company'      => 'Empresa',
+            'created-at'   => 'Criado em',
+            'updated-at'   => 'Atualizado em',
         ],
 
         'groups' => [
-            'company-name' => 'Nome da empresa',
-            'discount-days' => 'Dias de desconto',
-            'early-pay-discount' => 'Desconto por pagamento antecipado',
-            'payment-term' => 'Condição de pagamento',
-            'display-on-invoice' => 'Exibir na fatura',
-            'early-discount' => 'Desconto antecipado',
+            'company-name'        => 'Nome da empresa',
+            'discount-days'       => 'Dias de desconto',
+            'early-pay-discount'  => 'Desconto por pagamento antecipado',
+            'payment-term'        => 'Condição de pagamento',
+            'display-on-invoice'  => 'Exibir na fatura',
+            'early-discount'      => 'Desconto antecipado',
             'discount-percentage' => 'Percentual de desconto',
         ],
 
@@ -55,14 +57,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Condição de pagamento restaurada',
-                    'body' => 'A condição de pagamento foi restaurada com sucesso.',
+                    'body'  => 'A condição de pagamento foi restaurada com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Condição de pagamento excluída',
-                    'body' => 'A condição de pagamento foi excluída com sucesso.',
+                    'body'  => 'A condição de pagamento foi excluída com sucesso.',
                 ],
             ],
 
@@ -70,12 +72,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Condição de pagamento excluída permanentemente',
-                        'body' => 'A condição de pagamento foi excluída permanentemente com sucesso.',
+                        'body'  => 'A condição de pagamento foi excluída permanentemente com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Falha na exclusão permanente da condição de pagamento',
-                        'body' => 'A condição de pagamento não pôde ser excluída permanentemente porque possui lançamentos contábeis associados.',
+                        'body'  => 'A condição de pagamento não pôde ser excluída permanentemente porque possui lançamentos contábeis associados.',
                     ],
                 ],
             ],
@@ -85,14 +87,14 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Condições de pagamento restauradas',
-                    'body' => 'As condições de pagamento foram restauradas com sucesso.',
+                    'body'  => 'As condições de pagamento foram restauradas com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Condições de pagamento excluídas',
-                    'body' => 'As condições de pagamento foram excluídas com sucesso.',
+                    'body'  => 'As condições de pagamento foram excluídas com sucesso.',
                 ],
             ],
 
@@ -100,12 +102,12 @@ return [
                 'notification' => [
                     'success' => [
                         'title' => 'Condições de pagamento excluídas permanentemente',
-                        'body' => 'As condições de pagamento foram excluídas permanentemente com sucesso.',
+                        'body'  => 'As condições de pagamento foram excluídas permanentemente com sucesso.',
                     ],
 
                     'error' => [
                         'title' => 'Falha na exclusão permanente das condições de pagamento',
-                        'body' => 'As condições de pagamento não puderam ser excluídas permanentemente porque possuem lançamentos contábeis associados.',
+                        'body'  => 'As condições de pagamento não puderam ser excluídas permanentemente porque possuem lançamentos contábeis associados.',
                     ],
                 ],
             ],
@@ -115,14 +117,14 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'payment-term' => 'Condição de pagamento',
-                'early-discount' => 'Desconto antecipado',
-                'discount-percentage' => 'Percentual de desconto',
+                'payment-term'         => 'Condição de pagamento',
+                'early-discount'       => 'Desconto antecipado',
+                'discount-percentage'  => 'Percentual de desconto',
                 'discount-days-prefix' => 'se pago em até',
                 'discount-days-suffix' => 'dias',
-                'reduced-tax' => 'Imposto reduzido',
-                'note' => 'Nota',
-                'status' => 'Status',
+                'reduced-tax'          => 'Imposto reduzido',
+                'note'                 => 'Nota',
+                'status'               => 'Status',
             ],
         ],
 
@@ -133,11 +135,11 @@ return [
                 'repeater' => [
                     'due-terms' => [
                         'entries' => [
-                            'value' => 'Valor',
-                            'due' => 'Vencimento',
-                            'delay-type' => 'Tipo de prazo',
+                            'value'                  => 'Valor',
+                            'due'                    => 'Vencimento',
+                            'delay-type'             => 'Tipo de prazo',
                             'days-on-the-next-month' => 'Dias no próximo mês',
-                            'days' => 'Dias',
+                            'days'                   => 'Dias',
                         ],
                     ],
                 ],

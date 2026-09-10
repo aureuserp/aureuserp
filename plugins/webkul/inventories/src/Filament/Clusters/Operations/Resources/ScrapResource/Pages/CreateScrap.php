@@ -10,9 +10,12 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Support\Filament\Concerns\HandlesCrossCompanyException;
 
 class CreateScrap extends CreateRecord
 {
+    use HandlesCrossCompanyException;
+
     protected ?bool $hasDatabaseTransactions = true;
 
     public function getSubNavigation(): array
@@ -44,11 +47,15 @@ class CreateScrap extends CreateRecord
 
         $data['creator_id'] = Auth::id();
 
-        $data['source_location_id'] ??= Warehouse::first()->lot_stock_location_id;
+        $data['source_location_id'] ??= Warehouse::where(owned_by_company(current_company_id()))->value('lot_stock_location_id');
 
-        $data['destination_location_id'] ??= Location::where('is_scrap', true)->first()->id;
+        $sourceCompanyId = Location::find($data['source_location_id'])?->company_id;
 
-        $data['company_id'] ??= Auth::user()->default_company_id;
+        $data['destination_location_id'] ??= Location::where('is_scrap', true)
+            ->when($sourceCompanyId, fn ($query, $companyId) => $query->where(owned_by_company($companyId)))
+            ->value('id');
+
+        $data['company_id'] ??= $sourceCompanyId ?? current_company_id();
 
         return $data;
     }

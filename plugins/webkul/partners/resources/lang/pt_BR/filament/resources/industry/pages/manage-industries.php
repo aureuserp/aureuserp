@@ -7,13 +7,13 @@ return [
 
             'notification' => [
                 'title' => 'Setor criado',
-                'body' => 'O setor foi criado com sucesso.',
+                'body'  => 'O setor foi criado com sucesso.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all' => 'Todos',
+        'all'      => 'Todos',
         'archived' => 'Arquivados',
     ],
 ];

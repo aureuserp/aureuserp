@@ -5,6 +5,6 @@ return [
 
     'notification' => [
         'title' => 'Categoria de UOM criada',
-        'body' => 'A categoria de UOM foi criada com sucesso.',
+        'body'  => 'A categoria de UOM foi criada com sucesso.',
     ],
 ];

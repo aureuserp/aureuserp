@@ -7,40 +7,40 @@ return [
     ],
 
     'global-search' => [
-        'name' => 'Departamento',
-        'department' => 'Departamento',
-        'manager' => 'Gerente',
-        'company' => 'Empresa',
-        'plugin' => 'Plugin',
+        'name'         => 'Departamento',
+        'department'   => 'Departamento',
+        'manager'      => 'Gerente',
+        'company'      => 'Empresa',
+        'plugin'       => 'Plugin',
         'creator-name' => 'Criado por',
     ],
 
     'table' => [
         'columns' => [
-            'name' => 'Nome',
-            'status' => 'Status',
+            'name'       => 'Nome',
+            'status'     => 'Status',
             'department' => 'Departamento',
-            'company' => 'Empresa',
-            'manager' => 'Gerente',
+            'company'    => 'Empresa',
+            'manager'    => 'Gerente',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
         ],
 
         'filters' => [
-            'name' => 'Nome',
-            'plugin' => 'Plugin',
+            'name'           => 'Nome',
+            'plugin'         => 'Plugin',
             'activity-types' => 'Tipos de atividade',
-            'company' => 'Empresa',
-            'department' => 'Departamento',
-            'is-active' => 'Status',
-            'updated-at' => 'Atualizado em',
-            'created-at' => 'Criado em',
+            'company'        => 'Empresa',
+            'department'     => 'Departamento',
+            'is-active'      => 'Status',
+            'updated-at'     => 'Atualizado em',
+            'created-at'     => 'Criado em',
         ],
 
         'groups' => [
-            'status' => 'Status',
-            'name' => 'Nome',
+            'status'     => 'Status',
+            'name'       => 'Nome',
             'created-by' => 'Criado por',
             'created-at' => 'Criado em',
             'updated-at' => 'Atualizado em',
@@ -50,21 +50,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Plano de atividade restaurado',
-                    'body' => 'O plano de atividade foi restaurado com sucesso.',
+                    'body'  => 'O plano de atividade foi restaurado com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Plano de atividade excluído',
-                    'body' => 'O plano de atividade foi excluído com sucesso.',
+                    'body'  => 'O plano de atividade foi excluído com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Plano de atividade excluído permanentemente',
-                    'body' => 'O plano de atividade foi excluído permanentemente com sucesso.',
+                    'body'  => 'O plano de atividade foi excluído permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -73,21 +73,21 @@ return [
             'restore' => [
                 'notification' => [
                     'title' => 'Planos de atividade restaurados',
-                    'body' => 'Os planos de atividade foram restaurados com sucesso.',
+                    'body'  => 'Os planos de atividade foram restaurados com sucesso.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
                     'title' => 'Planos de atividade excluídos',
-                    'body' => 'Os planos de atividade foram excluídos com sucesso.',
+                    'body'  => 'Os planos de atividade foram excluídos com sucesso.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'title' => 'Planos de atividade excluídos permanentemente',
-                    'body' => 'Os planos de atividade foram excluídos permanentemente com sucesso.',
+                    'body'  => 'Os planos de atividade foram excluídos permanentemente com sucesso.',
                 ],
             ],
         ],
@@ -96,7 +96,7 @@ return [
             'create' => [
                 'notification' => [
                     'title' => 'Plano de atividade criado',
-                    'body' => 'O plano de atividade foi criado com sucesso.',
+                    'body'  => 'O plano de atividade foi criado com sucesso.',
                 ],
             ],
         ],

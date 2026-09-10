@@ -2,6 +2,6 @@
 
 return [
     'confirmed' => 'Aguardando',
-    'assigned' => 'Pronto',
-    'waiting' => 'Aguardando outra operação',
+    'assigned'  => 'Pronto',
+    'waiting'   => 'Aguardando outra operação',
 ];

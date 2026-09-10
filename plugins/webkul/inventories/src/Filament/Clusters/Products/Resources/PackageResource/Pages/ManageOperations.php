@@ -51,8 +51,8 @@ class ManageOperations extends ManageRelatedRecords
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('inventories::filament/clusters/operations/resources/receipt.table.actions.delete.notification.title'))
-                                ->body(__('inventories::filament/clusters/operations/resources/receipt.table.actions.delete.notification.body')),
+                                ->title(__('inventories::filament/clusters/operations/resources/receipt.table.actions.delete.notification.success.title'))
+                                ->body(__('inventories::filament/clusters/operations/resources/receipt.table.actions.delete.notification.success.body')),
                         ),
                 ]),
             ]);

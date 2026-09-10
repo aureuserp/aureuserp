@@ -52,9 +52,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'Multiempresa',
-                'allowed-companies' => 'Empresas permitidas',
-                'default-company'   => 'Empresa predeterminada',
+                'title'                       => 'Multiempresa',
+                'allowed-companies'           => 'Empresas permitidas',
+                'default-company'             => 'Empresa predeterminada',
+                'default-company-not-allowed' => 'La empresa predeterminada debe ser una de las empresas permitidas.',
             ],
         ],
     ],
@@ -181,9 +182,10 @@ return [
             ],
 
             'multi-company' => [
-                'title'             => 'Multiempresa',
-                'allowed-companies' => 'Empresas permitidas',
-                'default-company'   => 'Empresa predeterminada',
+                'title'                       => 'Multiempresa',
+                'allowed-companies'           => 'Empresas permitidas',
+                'default-company'             => 'Empresa predeterminada',
+                'default-company-not-allowed' => 'La empresa predeterminada debe ser una de las empresas permitidas.',
             ],
         ],
     ],

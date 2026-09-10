@@ -2,6 +2,8 @@
     <div class="space-y-6">
         <form wire:submit="$refresh">
             {{ $this->form }}
+
+        @include('accounting::filament.clusters.reporting.pages.partials.currency-notice')
         </form>
 
         @php

@@ -6,12 +6,12 @@ return [
     ],
 
     'tabs' => [
-        'my-agreements' => 'Meus acordos',
-        'blanket-orders' => 'Pedidos em aberto',
+        'my-agreements'      => 'Meus acordos',
+        'blanket-orders'     => 'Pedidos em aberto',
         'purchase-templates' => 'Modelos de compra',
-        'draft' => 'Rascunho',
-        'done' => 'Concluído',
-        'archived' => 'Arquivados',
+        'draft'              => 'Rascunho',
+        'done'               => 'Concluído',
+        'archived'           => 'Arquivados',
     ],
 
     'header-actions' => [
@@ -20,7 +20,7 @@ return [
 
             'notification' => [
                 'title' => 'Acordo de compra criado',
-                'body' => 'O acordo de compra foi criado com sucesso.',
+                'body'  => 'O acordo de compra foi criado com sucesso.',
             ],
         ],
     ],

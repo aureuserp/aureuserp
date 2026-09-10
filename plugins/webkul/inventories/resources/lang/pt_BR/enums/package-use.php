@@ -2,5 +2,5 @@
 
 return [
     'disposable' => 'Descartável',
-    'reusable' => 'Reutilizável',
+    'reusable'   => 'Reutilizável',
 ];

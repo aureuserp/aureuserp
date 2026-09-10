@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -14,11 +15,13 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrder
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\ConfirmAction;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\CreateInvoiceAction;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\LockAndUnlockAction;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
 use Webkul\Sale\Models\Order;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
+require_once __DIR__.'/../../../../support/tests/Helpers/CompanyHelper.php';
 require_once __DIR__.'/../../Helpers/SaleHelper.php';
 
 beforeEach(function () {
@@ -132,4 +135,75 @@ it('creates an invoice from a confirmed sale order through the action', function
         ]);
 
     expect($order->refresh()->accountMoves()->count())->toBeGreaterThan(0);
+});
+
+it('requires a customer to create a sale order', function () {
+    FilamentHelper::actingAs(['view_any_sale_order', 'create_sale_order']);
+
+    Livewire::test(CreateOrder::class)
+        ->fillForm([
+            'partner_id' => null,
+            'date_order' => now(),
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['partner_id']);
+});
+
+it('lists the invoice status column of a sale order', function () {
+    $user = FilamentHelper::actingAs(['view_any_sale_order']);
+
+    $order = saleOrderRecord($user->id);
+
+    Livewire::test(ListOrders::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords([$order])
+        ->assertCanRenderTableColumn('amount_total')
+        ->assertTableColumnExists('invoice_status');
+});
+
+it('offers the lock action on a confirmed sale order', function () {
+    $user = FilamentHelper::actingAs(['view_any_sale_order', 'view_sale_order']);
+
+    $order = saleOrderRecord($user->id);
+
+    Livewire::test(ViewOrder::class, ['record' => $order->id])
+        ->assertOk()
+        ->assertActionVisible(LockAndUnlockAction::class)
+        ->assertActionHidden(ConfirmAction::class);
+});
+
+it('lists a sale order to a user of the owning company', function () {
+    FilamentHelper::actingAsCompanyUser(SaleHelper::company(), ['view_any_sale_order']);
+
+    $order = saleOrderRecord();
+
+    Livewire::test(ListOrders::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords([$order]);
+});
+
+it('hides a sale order owned by another company from the list', function () {
+    FilamentHelper::actingAsCompanyUser(SaleHelper::company(), ['view_any_sale_order']);
+
+    $order = saleOrderRecord();
+
+    FilamentHelper::actingAsCompanyUser(CompanyHelper::company(), ['view_any_sale_order']);
+
+    Livewire::test(ListOrders::class)
+        ->assertOk()
+        ->assertCanNotSeeTableRecords([$order]);
+});
+
+it('refuses to open a sale order owned by another company', function () {
+    FilamentHelper::actingAsCompanyUser(SaleHelper::company(), ['view_any_sale_order']);
+
+    $order = saleOrderRecord();
+
+    FilamentHelper::actingAsCompanyUser(CompanyHelper::company(), [
+        'view_any_sale_order',
+        'view_sale_order',
+    ]);
+
+    expect(fn () => Livewire::test(ViewOrder::class, ['record' => $order->id]))
+        ->toThrow(ModelNotFoundException::class);
 });

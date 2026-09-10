@@ -8,7 +8,7 @@ return [
             'notification' => [
                 'created' => [
                     'title' => 'Feriado criado',
-                    'body' => 'O feriado foi criado com sucesso.',
+                    'body'  => 'O feriado foi criado com sucesso.',
                 ],
             ],
         ],
