@@ -1,17 +1,23 @@
 @if ($records->count())
     <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
         @foreach ($records as $record)
-            <div class="max-w-md overflow-hidden bg-white shadow-md rounded-xl md:max-w-2xl">
-                <a href="{{ $record->category ? self::getResource()::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug]) : self::getResource()::getUrl('index')}}">
-                    <div class="md:shrink-0">
-                        @if ($record->image_url)
-                            <img class="object-cover w-full h-48 md:h-full md:w-48" src="{{$record->image_thumb_url}}" alt="Blog post featured image" loading="lazy" decoding="async" width="600" height="300" style="aspect-ratio: 2 / 1" />
-                        @else
-                            <div class="object-cover w-full h-48 rounded-md bg-primary-500 md:h-full md:w-48" style="aspect-ratio: 2 / 1"></div>
-                        @endif
-                    </div>
+            @php
+                $postUrl = $record->category
+                    ? self::getResource()::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug])
+                    : self::getResource()::getUrl('index');
+            @endphp
 
-                    <div class="p-6">
+            <div class="max-w-md overflow-hidden bg-white shadow-md rounded-xl md:max-w-2xl">
+                <a href="{{ $postUrl }}" class="block md:shrink-0">
+                    @if ($record->image_url)
+                        <img class="object-cover w-full h-48 md:h-full md:w-48" src="{{$record->image_thumb_url}}" alt="Blog post featured image" loading="lazy" decoding="async" width="600" height="300" style="aspect-ratio: 2 / 1" />
+                    @else
+                        <div class="object-cover w-full h-48 rounded-md bg-primary-500 md:h-full md:w-48" style="aspect-ratio: 2 / 1"></div>
+                    @endif
+                </a>
+
+                <div class="p-6">
+                    <a href="{{ $postUrl }}" class="block">
                         <div class="text-sm font-semibold tracking-wide uppercase text-primary-500">
                             {{ $record->category?->name }}
                         </div>
@@ -23,37 +29,42 @@
                         <p class="mt-2 text-gray-500">
                             {!! \Illuminate\Support\Str::limit(str($record->sub_title ?? $record->content)->sanitizeHtml(), 150, $end='...') !!}
                         </p>
+                    </a>
 
-                        @if ($record->tags->count())
-                            <div class="flex gap-4 mt-4">
-                                @foreach ($record->tags as $tag)
-                                    <x-filament::badge
-                                        :color="$tag->color ? \Filament\Support\Colors\Color::hex($tag->color) : 'primary'"
-                                    >
-                                        {{ $tag->name }}
-                                    </x-filament::badge>
-                                @endforeach
-                            </div>
-                        @endif
+                    @if ($record->tags->count())
+                        <div class="flex flex-wrap gap-4 mt-4">
+                            @foreach ($record->tags as $tag)
+                                <x-filament::badge
+                                    tag="a"
+                                    :href="$this->getTagFilterUrl($tag)"
+                                    :color="$tag->color ? \Filament\Support\Colors\Color::hex($tag->color) : 'primary'"
+                                    :icon="$this->isTagActive($tag) ? \Filament\Support\Icons\Heroicon::XMark : null"
+                                    icon-position="after"
+                                    class="transition duration-75 hover:opacity-75"
+                                >
+                                    {{ $tag->name }}
+                                </x-filament::badge>
+                            @endforeach
+                        </div>
+                    @endif
 
-                        <div class="flex items-center mt-4">
-                            <x-filament-panels::avatar.user
-                                class="mr-4"
-                                :user="$record->creator"
-                            />
+                    <div class="flex items-center mt-4">
+                        <x-filament-panels::avatar.user
+                            class="mr-4"
+                            :user="$record->creator"
+                        />
 
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">
-                                    {{ $record->creator->name }}
-                                </p>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ $record->creator->name }}
+                            </p>
 
-                                <p class="text-sm text-gray-500">
-                                    {{ $record->published_at->format('F j, Y').' · '.$record->reading_time }}
-                                </p>
-                            </div>
+                            <p class="text-sm text-gray-500">
+                                {{ $record->published_at->format('F j, Y').' · '.$record->reading_time }}
+                            </p>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
         @endforeach
     </div>

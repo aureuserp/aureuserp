@@ -36,10 +36,13 @@
     </p>
 
     @if ($record->tags->count())
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-4">
             @foreach ($record->tags as $tag)
                 <x-filament::badge
+                    tag="a"
+                    :href="self::getResource()::$parentResource::getUrl('index', ['tags' => $tag->getKey()])"
                     :color="$tag->color ? \Filament\Support\Colors\Color::hex($tag->color) : 'primary'"
+                    class="transition duration-75 hover:opacity-75"
                 >
                     {{ $tag->name }}
                 </x-filament::badge>
