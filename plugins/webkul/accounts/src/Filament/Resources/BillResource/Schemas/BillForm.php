@@ -417,8 +417,9 @@ class BillForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
+                            ->where(hide_deleted_unless_selected($state))
                             ->whereNull('is_configurable')
                             ->where(owned_by_company($get('../../company_id'))),
                     )

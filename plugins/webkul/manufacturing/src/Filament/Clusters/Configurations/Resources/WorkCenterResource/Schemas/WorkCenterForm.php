@@ -133,7 +133,10 @@ class WorkCenterForm
                                             ->relationship(
                                                 'product',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where(owned_by_company($get('../../company_id'))),
+                                                modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                                                    ->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state))
+                                                    ->where(owned_by_company($get('../../company_id'))),
                                             )
                                             ->searchable()
                                             ->preload()

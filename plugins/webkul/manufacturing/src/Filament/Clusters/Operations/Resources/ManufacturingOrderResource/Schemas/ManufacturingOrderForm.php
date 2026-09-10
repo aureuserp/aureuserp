@@ -101,8 +101,9 @@ class ManufacturingOrderForm
                                     ->relationship(
                                         'product',
                                         'name',
-                                        fn (Builder $query, Get $get) => $query
+                                        fn (Builder $query, Get $get, ?string $state) => $query
                                             ->withTrashed()
+                                            ->where(hide_deleted_unless_selected($state))
                                             ->where('type', ProductType::GOODS)
                                             ->whereNull('is_configurable')
                                             ->where(owned_by_company($get('company_id')))
@@ -611,8 +612,9 @@ class ManufacturingOrderForm
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query, Get $get) => $query
+                        fn (Builder $query, Get $get, ?string $state) => $query
                             ->withTrashed()
+                            ->where(hide_deleted_unless_selected($state))
                             ->where('type', ProductType::GOODS)
                             ->whereNull('is_configurable')
                             ->where(owned_by_company($get('../../company_id'))),

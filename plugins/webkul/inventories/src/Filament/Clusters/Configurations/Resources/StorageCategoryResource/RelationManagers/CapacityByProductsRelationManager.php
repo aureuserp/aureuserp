@@ -35,7 +35,9 @@ class CapacityByProductsRelationManager extends RelationManager
                     ->relationship(
                         'product',
                         'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                        modifyQueryUsing: fn (Builder $query, ?string $state) => $query
+                            ->withTrashed()
+                            ->where(hide_deleted_unless_selected($state)),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
