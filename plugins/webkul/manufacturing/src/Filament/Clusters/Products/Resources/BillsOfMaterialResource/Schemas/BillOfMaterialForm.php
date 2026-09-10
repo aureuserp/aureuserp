@@ -55,7 +55,7 @@ class BillOfMaterialForm
                             ->schema([
                                 Select::make('product_id')
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.sections.general.fields.product'))
-                                    ->relationship('product', 'name', fn (Builder $query, Get $get, ?string $state) => $query
+                                    ->relationship('product', 'name', fn (Builder $query, Get $get, $state) => $query
                                         ->withTrashed()
                                         ->where(hide_deleted_unless_selected($state))
                                         ->whereNull('parent_id')
@@ -230,8 +230,9 @@ class BillOfMaterialForm
                                     ->columnSpanFull(),
                                 Select::make('operation_type_id')
                                     ->label(__('manufacturing::filament/clusters/products/resources/bill-of-material.form.tabs.miscellaneous.fields.routing'))
-                                    ->relationship('operationType', 'name', fn (Builder $query, Get $get) => $query
+                                    ->relationship('operationType', 'name', fn (Builder $query, Get $get, $state) => $query
                                         ->withTrashed()
+                                        ->where(hide_deleted_unless_selected($state))
                                         ->where('type', OperationType::MANUFACTURE)
                                         ->where(owned_by_company($get('company_id'))))
                                     ->searchable()
@@ -343,7 +344,7 @@ class BillOfMaterialForm
             ->schema([
                 Hidden::make('company_id'),
                 Select::make('product_id')
-                    ->relationship('product', 'name', fn (Builder $query, Get $get, ?string $state) => $query
+                    ->relationship('product', 'name', fn (Builder $query, Get $get, $state) => $query
                         ->withTrashed()
                         ->where(hide_deleted_unless_selected($state))
                         ->where(function (Builder $productQuery): void {
@@ -710,7 +711,7 @@ class BillOfMaterialForm
             ->schema([
                 Hidden::make('company_id'),
                 Select::make('product_id')
-                    ->relationship('product', 'name', fn (Builder $query, Get $get, ?string $state) => $query
+                    ->relationship('product', 'name', fn (Builder $query, Get $get, $state) => $query
                         ->withTrashed()
                         ->where(hide_deleted_unless_selected($state))
                         ->where(owned_by_company($get('../../company_id'))))

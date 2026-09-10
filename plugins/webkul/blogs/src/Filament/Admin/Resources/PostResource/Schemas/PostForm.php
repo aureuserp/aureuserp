@@ -75,7 +75,8 @@ class PostForm
                                     ->relationship(
                                         name: 'category',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn ($query) => $query->withTrashed(),
+                                        modifyQueryUsing: fn ($query, $state) => $query->withTrashed()
+                                            ->where(hide_deleted_unless_selected($state)),
                                     )
                                     ->searchable()
                                     ->getOptionLabelFromRecordUsing(function ($record): string {

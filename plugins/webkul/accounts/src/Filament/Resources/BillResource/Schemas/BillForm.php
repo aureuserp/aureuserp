@@ -98,7 +98,8 @@ class BillForm
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                fn (Builder $query) => $query->orderBy('id')->withTrashed(),
+                                                fn (Builder $query, $state) => $query->orderBy('id')->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state)),
                                             )
                                             ->required()
                                             ->searchable()
@@ -138,8 +139,9 @@ class BillForm
                                             ->relationship(
                                                 'partnerBank',
                                                 'account_number',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                     ->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state))
                                                     ->where('partner_id', Move::resolveBankPartnerId(
                                                         $get('move_type'),
                                                         $get('company_id'),
@@ -417,7 +419,7 @@ class BillForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state))
                             ->whereNull('is_configurable')

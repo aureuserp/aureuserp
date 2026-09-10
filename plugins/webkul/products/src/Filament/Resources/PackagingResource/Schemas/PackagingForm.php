@@ -28,7 +28,7 @@ class PackagingForm
                     ->relationship(
                         'product',
                         'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state))
                             ->where('type', 'goods')
