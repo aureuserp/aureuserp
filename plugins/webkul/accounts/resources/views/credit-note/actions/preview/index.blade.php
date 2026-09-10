@@ -85,14 +85,26 @@
         .items-table th {
             background: #1a4587;
             color: white;
-            padding: 12px;
+            padding: 12px 8px;
             text-align: {{ $isRtl ? 'right' : 'left' }};
+            white-space: nowrap;
         }
 
         .items-table td {
-            padding: 12px;
+            padding: 12px 8px;
             border-bottom: 1px solid #e9ecef;
             text-align: {{ $isRtl ? 'right' : 'left' }};
+        }
+
+        .items-table th.numeric,
+        .items-table td.numeric {
+            text-align: {{ $isRtl ? 'left' : 'right' }};
+            white-space: nowrap;
+        }
+
+        .items-table th:first-child,
+        .items-table td:first-child {
+            width: 40%;
         }
 
         .items-table tr:nth-child(even) {
@@ -262,18 +274,29 @@
         </table>
 
         <!-- Items Table -->
+        @php
+            $showDiscount = $record->invoiceLines->contains(fn ($line) => (float) $line->discount > 0);
+        @endphp
+
         @if (! $record->invoiceLines->isEmpty())
             <table class="items-table">
                 <thead>
                     <tr>
                         <th>{{ __('accounts::account-manager.documents.labels.product') }}</th>
-                        <th>{{ __('accounts::account-manager.documents.labels.quantity') }}</th>
+                        <th class="numeric">{{ __('accounts::account-manager.documents.labels.quantity') }}</th>
 
                         @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <th>{{ __('accounts::account-manager.documents.labels.unit') }}</th>
                         @endif
 
-                        <th>{{ __('accounts::account-manager.documents.labels.unit-price') }}</th>
+                        <th class="numeric">{{ __('accounts::account-manager.documents.labels.unit-price') }}</th>
+
+                        @if ($showDiscount)
+                            <th class="numeric">{{ __('accounts::account-manager.documents.labels.discount-percentage') }}</th>
+                        @endif
+
+                        <th>{{ __('accounts::account-manager.documents.labels.taxes') }}</th>
+                        <th class="numeric">{{ __('accounts::account-manager.documents.labels.amount') }}</th>
                     </tr>
                 </thead>
 
@@ -281,13 +304,20 @@
                     @foreach ($record->invoiceLines as $item)
                     <tr>
                         <td>{{ $item->product->name }}</td>
-                        <td>{{ number_format($item->quantity) }}</td>
+                        <td class="numeric">{{ number_format($item->quantity) }}</td>
 
                         @if (settings(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 
-                        <td class="amount">{{ money($item->price_unit, $record->currency->name) }}</td>
+                        <td class="numeric">{{ money($item->price_unit, $record->currency->name) }}</td>
+
+                        @if ($showDiscount)
+                            <td class="numeric">{{ floatval($item->discount) }}%</td>
+                        @endif
+
+                        <td>{{ $item->taxes->pluck('name')->implode(', ') ?: '-' }}</td>
+                        <td class="numeric">{{ money($item->price_subtotal, $record->currency->name) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -306,11 +336,6 @@
                         <td>{{ __('accounts::account-manager.documents.labels.tax') }}</td>
                         <td>-</td>
                         <td class="amount">{{ money($record->amount_tax, $record->currency->name) }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ __('accounts::account-manager.documents.labels.discount') }}</td>
-                        <td>-</td>
-                        <td class="amount">-{{ money($record->total_discount, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td style="border-top: 1px solid #FFFFFF;">
