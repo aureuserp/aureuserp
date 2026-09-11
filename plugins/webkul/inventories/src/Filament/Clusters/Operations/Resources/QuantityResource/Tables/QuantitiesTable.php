@@ -183,7 +183,6 @@ class QuantitiesTable
                             ->icon('heroicon-o-shopping-bag'),
                         QuantityResource::getProductSettings()->enable_uom
                             ? RelationshipConstraint::make('uom')
-                                ->attribute('product.uom.name')
                                 ->label(__('inventories::filament/clusters/operations/resources/quantity.table.filters.uom'))
                                 ->multiple()
                                 ->selectable(
@@ -196,7 +195,6 @@ class QuantitiesTable
                                 ->icon('heroicon-o-shopping-bag')
                             : null,
                         RelationshipConstraint::make('productCategory')
-                            ->attribute('product.category.name')
                             ->label(__('inventories::filament/clusters/operations/resources/quantity.table.filters.product-category'))
                             ->multiple()
                             ->selectable(
