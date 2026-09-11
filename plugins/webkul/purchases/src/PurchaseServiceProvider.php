@@ -10,6 +10,7 @@ use Webkul\Account\Events\MoveCancelled;
 use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MoveReversed;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Inventory\Events\OperationBackOrdered;
 use Webkul\Inventory\Events\OperationDone;
@@ -30,6 +31,7 @@ use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\OrderLine;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Models\RequisitionLine;
+use Webkul\Purchase\Observers\PaymentTermObserver;
 use Webkul\Support\Services\SequenceService;
 
 class PurchaseServiceProvider extends PackageServiceProvider
@@ -108,6 +110,17 @@ class PurchaseServiceProvider extends PackageServiceProvider
         $this->contributeProductSchema();
 
         $this->contributeProductUsage();
+
+        $this->registerObservers();
+    }
+
+    protected function registerObservers(): void
+    {
+        if (! Package::isPluginInstalled(static::$name)) {
+            return;
+        }
+
+        PaymentTerm::observe(PaymentTermObserver::class);
     }
 
     protected function contributeProductUsage(): void

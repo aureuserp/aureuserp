@@ -2,6 +2,9 @@
 
 namespace Webkul\Account\Filament\Resources\PaymentTermResource\Tables;
 
+use Closure;
+use Exception;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -17,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Models\PaymentTerm;
 
 class PaymentTermsTable
@@ -79,6 +83,10 @@ class PaymentTermsTable
                             ->body(__('accounts::filament/resources/payment-term.table.actions.restore.notification.body'))
                     ),
                 DeleteAction::make()
+                    ->action(fn (PaymentTerm $record, DeleteAction $action) => static::runDeletion(
+                        fn () => $record->delete(),
+                        $action,
+                    ))
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -86,17 +94,10 @@ class PaymentTermsTable
                             ->body(__('accounts::filament/resources/payment-term.table.actions.delete.notification.body'))
                     ),
                 ForceDeleteAction::make()
-                    ->action(function (PaymentTerm $record, ForceDeleteAction $action) {
-                        if ($record->moves()->count() > 0) {
-                            $action->failure();
-
-                            return;
-                        }
-
-                        $record->forceDelete();
-
-                        $action->success();
-                    })
+                    ->action(fn (PaymentTerm $record, ForceDeleteAction $action) => static::runDeletion(
+                        fn () => $record->forceDelete(),
+                        $action,
+                    ))
                     ->failureNotification(
                         Notification::make()
                             ->danger()
@@ -113,6 +114,10 @@ class PaymentTermsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
+                        ->action(fn (Collection $records, DeleteBulkAction $action) => static::runDeletion(
+                            fn () => $records->each(fn (Model $record) => $record->delete()),
+                            $action,
+                        ))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -120,21 +125,10 @@ class PaymentTermsTable
                                 ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.delete.notification.body'))
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records, ForceDeleteBulkAction $action) {
-                            $hasMoves = $records->contains(function ($record) {
-                                return $record->moves()->exists();
-                            });
-
-                            if ($hasMoves) {
-                                $action->failure();
-
-                                return;
-                            }
-
-                            $records->each(fn (Model $record) => $record->forceDelete());
-
-                            $action->success();
-                        })
+                        ->action(fn (Collection $records, ForceDeleteBulkAction $action) => static::runDeletion(
+                            fn () => $records->each(fn (Model $record) => $record->forceDelete()),
+                            $action,
+                        ))
                         ->failureNotification(
                             Notification::make()
                                 ->danger()
@@ -157,5 +151,20 @@ class PaymentTermsTable
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    public static function runDeletion(Closure $deletion, Action $action): void
+    {
+        try {
+            DB::transaction($deletion);
+        } catch (Exception $exception) {
+            $action->failureNotificationTitle($exception->getMessage());
+
+            $action->failure();
+
+            return;
+        }
+
+        $action->success();
     }
 }
