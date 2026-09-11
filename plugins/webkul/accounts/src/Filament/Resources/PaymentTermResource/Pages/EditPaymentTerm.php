@@ -7,6 +7,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Account\Filament\Resources\PaymentTermResource\Tables\PaymentTermsTable;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -20,6 +22,10 @@ class EditPaymentTerm extends EditRecord
     {
         return [
             DeleteAction::make()
+                ->action(fn (PaymentTerm $record, DeleteAction $action) => PaymentTermsTable::runDeletion(
+                    fn () => $record->delete(),
+                    $action,
+                ))
                 ->successNotification(
                     Notification::make()
                         ->success()

@@ -2,6 +2,8 @@
 
 namespace Webkul\Account\Models;
 
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -230,6 +232,10 @@ class PaymentTerm extends Model implements Sortable
             $paymentTerm->creator_id ??= Auth::id();
         });
 
+        static::deleting(function (self $paymentTerm) {
+            $paymentTerm->guardAgainstDeletionWhileInUse();
+        });
+
         static::created(function ($paymentTerm) {
             $paymentTerm->dueTerms()->create([
                 'value'           => DueTermValue::PERCENT->value,
@@ -240,6 +246,45 @@ class PaymentTerm extends Model implements Sortable
                 'payment_id'      => $paymentTerm->id,
             ]);
         });
+    }
+
+    protected function guardAgainstDeletionWhileInUse(): void
+    {
+        $move = Move::withoutGlobalScopes()
+            ->where('invoice_payment_term_id', $this->id)
+            ->first();
+
+        if ($move) {
+            throw new Exception(__('accounts::models/payment-term.in-use-by-move', [
+                'payment_term' => $this->name,
+                'move'         => $move->name,
+            ]));
+        }
+
+        $partner = Partner::withoutGlobalScopes()
+            ->where(fn (Builder $query) => $query
+                ->where('property_payment_term_id', $this->id)
+                ->orWhere('property_supplier_payment_term_id', $this->id))
+            ->first();
+
+        if ($partner) {
+            throw new Exception(__('accounts::models/payment-term.in-use-by-partner', [
+                'payment_term' => $this->name,
+                'partner'      => $partner->name,
+            ]));
+        }
+
+        $hasCompanyProperty = PartnerCompanyProperty::withoutGlobalScopes()
+            ->where(fn (Builder $query) => $query
+                ->where('property_payment_term_id', $this->id)
+                ->orWhere('property_supplier_payment_term_id', $this->id))
+            ->exists();
+
+        if ($hasCompanyProperty) {
+            throw new Exception(__('accounts::models/payment-term.in-use-by-partner-property', [
+                'payment_term' => $this->name,
+            ]));
+        }
     }
 
     protected static function newFactory(): PaymentTermFactory
