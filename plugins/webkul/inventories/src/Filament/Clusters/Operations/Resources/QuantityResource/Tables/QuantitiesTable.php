@@ -194,7 +194,7 @@ class QuantitiesTable
                                 )
                                 ->icon('heroicon-o-shopping-bag')
                             : null,
-                        RelationshipConstraint::make('product.category')
+                        RelationshipConstraint::make('productCategory')
                             ->label(__('inventories::filament/clusters/operations/resources/quantity.table.filters.product-category'))
                             ->multiple()
                             ->selectable(
@@ -203,7 +203,6 @@ class QuantitiesTable
                                     ->searchable()
                                     ->multiple()
                                     ->preload()
-                                    ->modifyQueryUsing(fn ($query) => $query->select('categories.*')->from('categories'))
                             )
                             ->icon('heroicon-o-folder'),
                         QuantityResource::getTraceabilitySettings()->enable_lots_serial_numbers
