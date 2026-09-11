@@ -19,14 +19,6 @@ class ActivityPlanInfolist
                             ->label(__('sales::filament/clusters/configurations/resources/activity-plan.infolist.sections.general.entries.name'))
                             ->icon('heroicon-o-briefcase')
                             ->placeholder('—'),
-                        TextEntry::make('department.name')
-                            ->icon('heroicon-o-building-office-2')
-                            ->placeholder('—')
-                            ->label(__('sales::filament/clusters/configurations/resources/activity-plan.infolist.sections.general.entries.department')),
-                        TextEntry::make('department.manager.name')
-                            ->icon('heroicon-o-user')
-                            ->placeholder('—')
-                            ->label(__('sales::filament/clusters/configurations/resources/activity-plan.infolist.sections.general.entries.manager')),
                         TextEntry::make('company.name')
                             ->icon('heroicon-o-building-office')
                             ->placeholder('—')

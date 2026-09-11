@@ -34,12 +34,6 @@ class ActivityPlansTable
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
                     ->searchable(),
-                TextColumn::make('department.name')
-                    ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.department'))
-                    ->sortable(),
-                TextColumn::make('department.manager.name')
-                    ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.manager'))
-                    ->sortable(),
                 TextColumn::make('company.name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.company'))
                     ->sortable(),
@@ -95,18 +89,6 @@ class ActivityPlansTable
                                     ->titleAttribute('name')
                                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.filters.company'))
                                     ->searchable()
-                                    ->multiple()
-                                    ->preload(),
-                            ),
-                        RelationshipConstraint::make('department')
-                            ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.filters.department'))
-                            ->icon('heroicon-o-building-office-2')
-                            ->multiple()
-                            ->selectable(
-                                IsRelatedToOperator::make()
-                                    ->titleAttribute('name')
-                                    ->searchable()
-                                    ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.filters.department'))
                                     ->multiple()
                                     ->preload(),
                             ),
