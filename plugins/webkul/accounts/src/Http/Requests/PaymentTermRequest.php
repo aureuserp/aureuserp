@@ -33,6 +33,23 @@ class PaymentTermRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     *
+     * Sanitize the note field to strip unsafe HTML/JavaScript while
+     * preserving legitimate formatting.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('note')) {
+            $this->merge([
+                'note' => $this->note === null
+                    ? null
+                    : (string) str($this->note)->sanitizeHtml(),
+            ]);
+        }
+    }
+
+    /**
      * Get body parameters for Scribe documentation.
      */
     public function bodyParameters(): array
