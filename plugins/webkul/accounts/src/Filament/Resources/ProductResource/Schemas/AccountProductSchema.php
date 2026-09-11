@@ -13,6 +13,7 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Support\Models\Scopes\CompaniesScope;
 
 /**
  * Account-owned Product schema fragments, contributed to the shared
@@ -191,8 +192,13 @@ class AccountProductSchema
 
     protected static function accountOptions($companyId): array
     {
+        $query = Account::query();
 
-        return Account::query()
+        if (filled($companyId) && in_array((int) $companyId, allowed_company_ids(), true)) {
+            $query->withoutGlobalScope(CompaniesScope::class);
+        }
+
+        return $query
             ->where('deprecated', false)
             ->whereNotIn('account_type', [
                 AccountType::ASSET_RECEIVABLE,
