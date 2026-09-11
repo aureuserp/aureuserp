@@ -11,7 +11,7 @@ use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\OrderResource\T
 use Webkul\Purchase\Models\Order;
 use Webkul\Website\Filament\Customer\Clusters\Account;
 
-class OrderResource extends Resource
+abstract class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
