@@ -436,25 +436,25 @@ class BranchesRelationManager extends RelationManager
                             ->schema([
                                 Section::make(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.title'))
                                     ->schema([
-                                        TextEntry::make('address.street1')
+                                        TextEntry::make('street1')
                                             ->icon('heroicon-o-map-pin')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.entries.street1')),
-                                        TextEntry::make('address.street2')
+                                        TextEntry::make('street2')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.entries.street2')),
-                                        TextEntry::make('address.city')
+                                        TextEntry::make('city')
                                             ->icon('heroicon-o-building-library')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.entries.city')),
-                                        TextEntry::make('address.zip')
+                                        TextEntry::make('zip')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.entries.zip-code')),
-                                        TextEntry::make('address.country.name')
+                                        TextEntry::make('country.name')
                                             ->icon('heroicon-o-globe-alt')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.entries.country')),
-                                        TextEntry::make('address.state.name')
+                                        TextEntry::make('state.name')
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.infolist.tabs.address-information.sections.address-information.entries.state')),
                                     ])
