@@ -24,7 +24,7 @@ class PostResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['title', 'category.name'];
+        return ['title', 'category.name', 'tags.name'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
@@ -36,7 +36,11 @@ class PostResource extends Resource
 
     public static function getGlobalSearchResultUrl(Model $record): string
     {
-        return CategoryResource::getUrl('posts.view', ['parent' => $record->category->slug, 'record' => $record->slug]);
+        if (! $record->category) {
+            return CategoryResource::getUrl('index');
+        }
+
+        return CategoryResource::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug]);
     }
 
     public static function getGlobalSearchEloquentQuery(): Builder
