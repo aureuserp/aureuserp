@@ -244,6 +244,10 @@ class OrderLine extends Model implements Sortable
             return;
         }
 
+        if (! $this->order) {
+            return;
+        }
+
         $this->warehouse_id = $this->order->warehouse_id;
 
         if (! $this->route_id) {
