@@ -115,6 +115,24 @@ it('creates a payment term', function () {
     $this->assertDatabaseHas('accounts_payment_terms', ['name' => 'Net 30']);
 });
 
+it('sanitizes unsafe HTML/JavaScript in the note when creating a payment term', function () {
+    actingAsPaymentTermApiUser(['create_account_payment::term']);
+
+    $payload = [
+        'name' => 'Net 30',
+        'note' => '<p>Pay in 30 days</p><script>alert("xss")</script>',
+    ];
+
+    $this->postJson(paymentTermRoute('store'), $payload)
+        ->assertCreated();
+
+    $paymentTerm = PaymentTerm::where('name', 'Net 30')->firstOrFail();
+
+    expect($paymentTerm->note)
+        ->not->toContain('<script>')
+        ->and($paymentTerm->note)->toContain('Pay in 30 days');
+});
+
 it('validates required fields when creating a payment term', function (string $field) {
     actingAsPaymentTermApiUser(['create_account_payment::term']);
 

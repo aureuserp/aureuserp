@@ -56,7 +56,7 @@ class PaymentTermInfolist
                                 TextEntry::make('note')
                                     ->label(__('accounts::filament/resources/payment-term.infolist.sections.entries.note'))
                                     ->columnSpanFull()
-                                    ->formatStateUsing(fn ($state) => new HtmlString($state))
+                                    ->formatStateUsing(fn ($state) => new HtmlString(str($state)->sanitizeHtml()))
                                     ->placeholder('—'),
                             ]),
                     ]),

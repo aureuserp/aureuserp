@@ -72,6 +72,13 @@ class PaymentTerm extends Model implements Sortable
         return false;
     }
 
+    public function setNoteAttribute($value): void
+    {
+        $this->attributes['note'] = $value === null
+            ? null
+            : (string) str($value)->sanitizeHtml();
+    }
+
     public function computeTerms(
         $dateRef,
         $currency,
