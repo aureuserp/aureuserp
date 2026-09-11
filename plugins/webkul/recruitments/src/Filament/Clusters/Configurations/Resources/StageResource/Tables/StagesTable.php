@@ -17,6 +17,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
 use Webkul\Recruitment\Models\Stage;
@@ -69,16 +70,8 @@ class StagesTable
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        RelationshipConstraint::make('name')
-                            ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.name'))
-                            ->multiple()
-                            ->selectable(
-                                IsRelatedToOperator::make()
-                                    ->titleAttribute('name')
-                                    ->searchable()
-                                    ->multiple()
-                                    ->preload(),
-                            ),
+                        TextConstraint::make('name')
+                            ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.name')),
                         RelationshipConstraint::make('jobs')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.job-position'))
                             ->multiple()
