@@ -36,7 +36,8 @@ class RouteForm
                             ->relationship(
                                 name: 'company',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()
+                                    ->where(hide_deleted_unless_selected($state)),
                             )
                             ->getOptionLabelFromRecordUsing(
                                 fn (Model $record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''),

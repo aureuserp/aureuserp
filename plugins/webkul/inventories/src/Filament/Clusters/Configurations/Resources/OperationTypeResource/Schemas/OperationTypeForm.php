@@ -87,8 +87,9 @@ class OperationTypeForm
                                                     ->relationship(
                                                         'warehouse',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                             ->withTrashed()
+                                                            ->where(hide_deleted_unless_selected($state))
                                                             ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -132,8 +133,9 @@ class OperationTypeForm
                                                     ->relationship(
                                                         'returnOperationType',
                                                         'name',
-                                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                             ->withTrashed()
+                                                            ->where(hide_deleted_unless_selected($state))
                                                             ->where(owned_by_company($get('company_id')))
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function (OperationType $record) {
@@ -182,8 +184,9 @@ class OperationTypeForm
                                             ->relationship(
                                                 'sourceLocation',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                     ->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state))
                                                     ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -207,8 +210,9 @@ class OperationTypeForm
                                             ->relationship(
                                                 'destinationLocation',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                     ->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state))
                                                     ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {

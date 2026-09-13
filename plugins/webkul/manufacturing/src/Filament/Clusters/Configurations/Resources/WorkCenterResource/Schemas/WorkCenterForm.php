@@ -79,7 +79,10 @@ class WorkCenterForm
 
                                 Select::make('calendar_id')
                                     ->label(__('manufacturing::filament/clusters/configurations/resources/work-center.form.sections.general.fields.calendar'))
-                                    ->options(fn (): array => Calendar::withTrashed()->pluck('name', 'id')->all())
+                                    ->options(fn ($state): array => Calendar::withTrashed()
+                                        ->where(hide_deleted_unless_selected($state))
+                                        ->pluck('name', 'id')
+                                        ->all())
                                     ->searchable()
                                     ->preload()
                                     ->required(),
@@ -133,7 +136,7 @@ class WorkCenterForm
                                             ->relationship(
                                                 'product',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                     ->withTrashed()
                                                     ->where(hide_deleted_unless_selected($state))
                                                     ->where(owned_by_company($get('../../company_id'))),

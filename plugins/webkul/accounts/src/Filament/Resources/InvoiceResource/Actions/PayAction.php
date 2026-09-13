@@ -160,9 +160,10 @@ class PayAction extends Action
                                 ->relationship(
                                     'partnerBank',
                                     'account_number',
-                                    modifyQueryUsing: function (Builder $query, Get $get) use ($paymentRegister) {
+                                    modifyQueryUsing: function (Builder $query, Get $get, $state) use ($paymentRegister) {
                                         $query
                                             ->withTrashed()
+                                            ->where(hide_deleted_unless_selected($state))
                                             ->whereIn('id', $this->getAvailablePartnerBanks($paymentRegister, $get('journal_id'))->pluck('id'));
                                     }
                                 )

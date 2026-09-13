@@ -49,7 +49,8 @@ class ScrapForm
                                             ->relationship(
                                                 'product',
                                                 'name',
-                                                fn (Builder $query, Get $get, ?string $state) => $query
+                                                fn (Builder $query, Get $get, $state) => $query
+                                                    ->withTrashed()
                                                     ->where(hide_deleted_unless_selected($state))
                                                     ->where('type', ProductType::GOODS)
                                                     ->whereNull('is_configurable')

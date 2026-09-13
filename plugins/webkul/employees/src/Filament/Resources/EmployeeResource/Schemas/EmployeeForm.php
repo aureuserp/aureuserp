@@ -95,7 +95,7 @@ class EmployeeForm
                                     ->relationship(
                                         name: 'department',
                                         titleAttribute: 'complete_name',
-                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
+                                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -110,7 +110,7 @@ class EmployeeForm
                                         Action::make('open_mobile_phone')
                                             ->icon('heroicon-o-phone')
                                             ->color('blue')
-                                            ->action(function (Set $set, $state) {
+                                            ->action(function (Set $set, ?string $state) {
                                                 $set('mobile_phone', $state);
                                             })
                                             ->url(fn (?string $state) => $state ? "tel:{$state}" : '#')
@@ -132,7 +132,7 @@ class EmployeeForm
                                         Action::make('open_work_phone')
                                             ->icon('heroicon-o-phone')
                                             ->color('blue')
-                                            ->action(function (Set $set, $state) {
+                                            ->action(function (Set $set, ?string $state) {
                                                 $set('work_phone', $state);
                                             })
                                             ->url(fn (?string $state) => $state ? "tel:{$state}" : '#')
@@ -630,7 +630,7 @@ class EmployeeForm
                                                         Toggle::make('work_permit_scheduled_activity')
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.work-permit-scheduled-activity')),
                                                         Select::make('user_id')
-                                                            ->relationship(name: 'user', titleAttribute: 'name', modifyQueryUsing: fn ($query) => $query->withTrashed())
+                                                            ->relationship(name: 'user', titleAttribute: 'name', modifyQueryUsing: fn ($query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                                             ->getOptionLabelFromRecordUsing(function ($record, $livewire) {
                                                                 $label = $record->name;
 
