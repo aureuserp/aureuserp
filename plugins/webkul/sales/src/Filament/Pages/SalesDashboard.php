@@ -12,15 +12,13 @@ use Filament\Widgets\Widget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Product\Models\Category;
 use Webkul\Sale\Filament\Widgets\MonthlySalesChart;
+use Webkul\Sale\Filament\Widgets\RevenueByCategoryChart;
+use Webkul\Sale\Filament\Widgets\SalesPersonPerformanceChart;
 use Webkul\Sale\Filament\Widgets\SaleStatsOverview;
-use Webkul\Sale\Filament\Widgets\TopCategoriesTable;
-use Webkul\Sale\Filament\Widgets\TopCountriesTable;
 use Webkul\Sale\Filament\Widgets\TopCustomersTable;
 use Webkul\Sale\Filament\Widgets\TopProductsTable;
 use Webkul\Sale\Filament\Widgets\TopQuotationsTable;
 use Webkul\Sale\Filament\Widgets\TopSalesOrdersTable;
-use Webkul\Sale\Filament\Widgets\TopSalesPersonsTable;
-use Webkul\Sale\Filament\Widgets\TopSalesTeamsTable;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -113,14 +111,12 @@ class SalesDashboard extends BaseDashboard
         return [
             SaleStatsOverview::class,
             MonthlySalesChart::class,
-            TopQuotationsTable::class,
-            TopSalesOrdersTable::class,
-            TopCountriesTable::class,
+            RevenueByCategoryChart::class,
+            SalesPersonPerformanceChart::class,
             TopProductsTable::class,
             TopCustomersTable::class,
-            TopCategoriesTable::class,
-            TopSalesTeamsTable::class,
-            TopSalesPersonsTable::class,
+            TopSalesOrdersTable::class,
+            TopQuotationsTable::class,
         ];
     }
 }

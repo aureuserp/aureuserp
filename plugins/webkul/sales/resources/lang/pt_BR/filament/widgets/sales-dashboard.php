@@ -1,9 +1,12 @@
 <?php
 
 return [
-    'unknown' => 'Desconhecido',
-
-    'stats' => [
+    'unknown'             => 'Desconhecido',
+    'other'               => 'Outros',
+    'share'               => 'Participação',
+    'status'              => 'Situação',
+    'billing'             => 'Faturamento',
+    'stats'               => [
         'heading'            => 'Métricas Principais',
         'total-quotations'   => 'Total de Cotações',
         'total-sales-orders' => 'Total de Pedidos de Venda',
@@ -13,39 +16,22 @@ return [
         'decrease'           => 'redução',
     ],
 
-    'monthly-sales' => [
+    'monthly-sales'       => [
         'heading' => 'Vendas Mensais',
         'revenue' => 'Receita',
     ],
 
-    'top-quotations' => [
-        'heading' => 'Principais Cotações',
-        'columns' => [
-            'reference' => 'Referência',
-            'customer'  => 'Cliente',
-            'amount'    => 'Valor',
-        ],
+    'revenue-by-category' => [
+        'heading' => 'Receita por Categoria',
+        'revenue' => 'Receita',
     ],
 
-    'top-sales-orders' => [
-        'heading' => 'Principais Pedidos de Venda',
-        'columns' => [
-            'reference' => 'Referência',
-            'customer'  => 'Cliente',
-            'amount'    => 'Valor',
-        ],
+    'sales-persons'       => [
+        'heading' => 'Desempenho por Vendedor',
+        'revenue' => 'Receita',
     ],
 
-    'top-countries' => [
-        'heading' => 'Principais Países',
-        'columns' => [
-            'name'    => 'País',
-            'orders'  => 'Pedidos',
-            'revenue' => 'Receita',
-        ],
-    ],
-
-    'top-products' => [
+    'top-products'        => [
         'heading' => 'Principais Produtos',
         'columns' => [
             'name'     => 'Produto',
@@ -54,7 +40,7 @@ return [
         ],
     ],
 
-    'top-customers' => [
+    'top-customers'       => [
         'heading' => 'Principais Clientes',
         'columns' => [
             'name'    => 'Cliente',
@@ -63,29 +49,21 @@ return [
         ],
     ],
 
-    'top-categories' => [
-        'heading' => 'Principais Categorias',
+    'top-sales-orders'    => [
+        'heading' => 'Principais Pedidos de Venda',
         'columns' => [
-            'name'    => 'Categoria',
-            'revenue' => 'Receita',
+            'reference' => 'Referência',
+            'customer'  => 'Cliente',
+            'amount'    => 'Valor',
         ],
     ],
 
-    'top-sales-teams' => [
-        'heading' => 'Principais Equipes de Vendas',
+    'top-quotations'      => [
+        'heading' => 'Principais Cotações',
         'columns' => [
-            'name'    => 'Equipe de Vendas',
-            'orders'  => 'Pedidos',
-            'revenue' => 'Receita',
-        ],
-    ],
-
-    'top-sales-persons' => [
-        'heading' => 'Principais Vendedores',
-        'columns' => [
-            'name'    => 'Vendedor',
-            'orders'  => 'Pedidos',
-            'revenue' => 'Receita',
+            'reference' => 'Referência',
+            'customer'  => 'Cliente',
+            'amount'    => 'Valor',
         ],
     ],
 ];

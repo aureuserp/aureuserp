@@ -1,9 +1,12 @@
 <?php
 
 return [
-    'unknown' => 'Unknown',
-
-    'stats' => [
+    'unknown'             => 'Unknown',
+    'other'               => 'Other',
+    'share'               => 'Share',
+    'status'              => 'Status',
+    'billing'             => 'Billing',
+    'stats'               => [
         'heading'            => 'Key Metrics',
         'total-quotations'   => 'Total Quotations',
         'total-sales-orders' => 'Total Sales Orders',
@@ -13,39 +16,22 @@ return [
         'decrease'           => 'decrease',
     ],
 
-    'monthly-sales' => [
+    'monthly-sales'       => [
         'heading' => 'Monthly Sales',
         'revenue' => 'Revenue',
     ],
 
-    'top-quotations' => [
-        'heading' => 'Top Quotations',
-        'columns' => [
-            'reference' => 'Reference',
-            'customer'  => 'Customer',
-            'amount'    => 'Amount',
-        ],
+    'revenue-by-category' => [
+        'heading' => 'Revenue by Category',
+        'revenue' => 'Revenue',
     ],
 
-    'top-sales-orders' => [
-        'heading' => 'Top Sales Orders',
-        'columns' => [
-            'reference' => 'Reference',
-            'customer'  => 'Customer',
-            'amount'    => 'Amount',
-        ],
+    'sales-persons'       => [
+        'heading' => 'Sales Person Performance',
+        'revenue' => 'Revenue',
     ],
 
-    'top-countries' => [
-        'heading' => 'Top Countries',
-        'columns' => [
-            'name'    => 'Country',
-            'orders'  => 'Orders',
-            'revenue' => 'Revenue',
-        ],
-    ],
-
-    'top-products' => [
+    'top-products'        => [
         'heading' => 'Top Products',
         'columns' => [
             'name'     => 'Product',
@@ -54,7 +40,7 @@ return [
         ],
     ],
 
-    'top-customers' => [
+    'top-customers'       => [
         'heading' => 'Top Customers',
         'columns' => [
             'name'    => 'Customer',
@@ -63,29 +49,21 @@ return [
         ],
     ],
 
-    'top-categories' => [
-        'heading' => 'Top Categories',
+    'top-sales-orders'    => [
+        'heading' => 'Top Sales Orders',
         'columns' => [
-            'name'    => 'Category',
-            'revenue' => 'Revenue',
+            'reference' => 'Reference',
+            'customer'  => 'Customer',
+            'amount'    => 'Amount',
         ],
     ],
 
-    'top-sales-teams' => [
-        'heading' => 'Top Sales Teams',
+    'top-quotations'      => [
+        'heading' => 'Top Quotations',
         'columns' => [
-            'name'    => 'Sales Team',
-            'orders'  => 'Orders',
-            'revenue' => 'Revenue',
-        ],
-    ],
-
-    'top-sales-persons' => [
-        'heading' => 'Top Sales Persons',
-        'columns' => [
-            'name'    => 'Sales Person',
-            'orders'  => 'Orders',
-            'revenue' => 'Revenue',
+            'reference' => 'Reference',
+            'customer'  => 'Customer',
+            'amount'    => 'Amount',
         ],
     ],
 ];

@@ -15,9 +15,15 @@ class TopCustomersTable extends TableWidget
 {
     use HasSaleDashboardFilters, HasWidgetShield;
 
-    protected static ?int $sort = 7;
+    protected const BAR_COLOR = '#2a78d6';
 
-    protected static bool $isLazy = false;
+    protected const TRACK_COLOR = 'rgba(137, 135, 129, 0.22)';
+
+    protected static ?int $sort = 6;
+
+    protected static bool $isLazy = true;
+
+    protected ?float $peak = null;
 
     public function table(Table $table): Table
     {
@@ -57,13 +63,31 @@ class TopCustomersTable extends TableWidget
         return [
             Tables\Columns\TextColumn::make('name')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.name'))
-                ->placeholder(__('sales::filament/widgets/sales-dashboard.unknown')),
+                ->placeholder(__('sales::filament/widgets/sales-dashboard.unknown'))
+                ->wrap(),
+            Tables\Columns\TextColumn::make('share')
+                ->label(__('sales::filament/widgets/sales-dashboard.share'))
+                ->state(fn ($record): string => $this->shareBar((float) $record->revenue))
+                ->html(),
             Tables\Columns\TextColumn::make('orders_count')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.orders'))
-                ->numeric(),
+                ->numeric()
+                ->alignEnd(),
             Tables\Columns\TextColumn::make('revenue')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.revenue'))
-                ->formatStateUsing(fn ($state) => money($state ?? 0, current_company()?->currency?->name)),
+                ->formatStateUsing(fn ($state) => money($state ?? 0, current_company()?->currency?->name))
+                ->alignEnd(),
         ];
+    }
+
+    protected function shareBar(float $revenue): string
+    {
+        $this->peak ??= (float) ($this->getTableQuery()->get()->max('revenue') ?? 0);
+
+        $width = $this->peak > 0 ? max(2, min(100, (int) round($revenue / $this->peak * 100))) : 0;
+
+        return '<span style="display:block;width:100%;height:6px;border-radius:3px;background:'.self::TRACK_COLOR.'">'
+            .'<span style="display:block;width:'.$width.'%;height:6px;border-radius:3px;background:'.self::BAR_COLOR.'"></span>'
+            .'</span>';
     }
 }

@@ -1,9 +1,12 @@
 <?php
 
 return [
-    'unknown' => 'Inconnu',
-
-    'stats' => [
+    'unknown'             => 'Inconnu',
+    'other'               => 'Autres',
+    'share'               => 'Part',
+    'status'              => 'Statut',
+    'billing'             => 'Facturation',
+    'stats'               => [
         'heading'            => 'Indicateurs Clés',
         'total-quotations'   => 'Total des Devis',
         'total-sales-orders' => 'Total des Commandes',
@@ -13,39 +16,22 @@ return [
         'decrease'           => 'diminution',
     ],
 
-    'monthly-sales' => [
+    'monthly-sales'       => [
         'heading' => 'Ventes Mensuelles',
         'revenue' => 'Revenu',
     ],
 
-    'top-quotations' => [
-        'heading' => 'Meilleurs Devis',
-        'columns' => [
-            'reference' => 'Référence',
-            'customer'  => 'Client',
-            'amount'    => 'Montant',
-        ],
+    'revenue-by-category' => [
+        'heading' => 'Revenu par Catégorie',
+        'revenue' => 'Revenu',
     ],
 
-    'top-sales-orders' => [
-        'heading' => 'Meilleures Commandes',
-        'columns' => [
-            'reference' => 'Référence',
-            'customer'  => 'Client',
-            'amount'    => 'Montant',
-        ],
+    'sales-persons'       => [
+        'heading' => 'Performance des Commerciaux',
+        'revenue' => 'Revenu',
     ],
 
-    'top-countries' => [
-        'heading' => 'Meilleurs Pays',
-        'columns' => [
-            'name'    => 'Pays',
-            'orders'  => 'Commandes',
-            'revenue' => 'Revenu',
-        ],
-    ],
-
-    'top-products' => [
+    'top-products'        => [
         'heading' => 'Meilleurs Produits',
         'columns' => [
             'name'     => 'Produit',
@@ -54,7 +40,7 @@ return [
         ],
     ],
 
-    'top-customers' => [
+    'top-customers'       => [
         'heading' => 'Meilleurs Clients',
         'columns' => [
             'name'    => 'Client',
@@ -63,29 +49,21 @@ return [
         ],
     ],
 
-    'top-categories' => [
-        'heading' => 'Meilleures Catégories',
+    'top-sales-orders'    => [
+        'heading' => 'Meilleures Commandes',
         'columns' => [
-            'name'    => 'Catégorie',
-            'revenue' => 'Revenu',
+            'reference' => 'Référence',
+            'customer'  => 'Client',
+            'amount'    => 'Montant',
         ],
     ],
 
-    'top-sales-teams' => [
-        'heading' => 'Meilleures Équipes de Vente',
+    'top-quotations'      => [
+        'heading' => 'Meilleurs Devis',
         'columns' => [
-            'name'    => 'Équipe de Vente',
-            'orders'  => 'Commandes',
-            'revenue' => 'Revenu',
-        ],
-    ],
-
-    'top-sales-persons' => [
-        'heading' => 'Meilleurs Vendeurs',
-        'columns' => [
-            'name'    => 'Vendeur',
-            'orders'  => 'Commandes',
-            'revenue' => 'Revenu',
+            'reference' => 'Référence',
+            'customer'  => 'Client',
+            'amount'    => 'Montant',
         ],
     ],
 ];

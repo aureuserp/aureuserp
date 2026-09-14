@@ -1,9 +1,12 @@
 <?php
 
 return [
-    'unknown' => 'Desconocido',
-
-    'stats' => [
+    'unknown'             => 'Desconocido',
+    'other'               => 'Otros',
+    'share'               => 'Participación',
+    'status'              => 'Estado',
+    'billing'             => 'Facturación',
+    'stats'               => [
         'heading'            => 'Métricas Clave',
         'total-quotations'   => 'Total de Cotizaciones',
         'total-sales-orders' => 'Total de Pedidos de Venta',
@@ -13,39 +16,22 @@ return [
         'decrease'           => 'disminución',
     ],
 
-    'monthly-sales' => [
+    'monthly-sales'       => [
         'heading' => 'Ventas Mensuales',
         'revenue' => 'Ingresos',
     ],
 
-    'top-quotations' => [
-        'heading' => 'Mejores Cotizaciones',
-        'columns' => [
-            'reference' => 'Referencia',
-            'customer'  => 'Cliente',
-            'amount'    => 'Importe',
-        ],
+    'revenue-by-category' => [
+        'heading' => 'Ingresos por Categoría',
+        'revenue' => 'Ingresos',
     ],
 
-    'top-sales-orders' => [
-        'heading' => 'Mejores Pedidos de Venta',
-        'columns' => [
-            'reference' => 'Referencia',
-            'customer'  => 'Cliente',
-            'amount'    => 'Importe',
-        ],
+    'sales-persons'       => [
+        'heading' => 'Rendimiento por Vendedor',
+        'revenue' => 'Ingresos',
     ],
 
-    'top-countries' => [
-        'heading' => 'Mejores Países',
-        'columns' => [
-            'name'    => 'País',
-            'orders'  => 'Pedidos',
-            'revenue' => 'Ingresos',
-        ],
-    ],
-
-    'top-products' => [
+    'top-products'        => [
         'heading' => 'Mejores Productos',
         'columns' => [
             'name'     => 'Producto',
@@ -54,7 +40,7 @@ return [
         ],
     ],
 
-    'top-customers' => [
+    'top-customers'       => [
         'heading' => 'Mejores Clientes',
         'columns' => [
             'name'    => 'Cliente',
@@ -63,29 +49,21 @@ return [
         ],
     ],
 
-    'top-categories' => [
-        'heading' => 'Mejores Categorías',
+    'top-sales-orders'    => [
+        'heading' => 'Mejores Pedidos de Venta',
         'columns' => [
-            'name'    => 'Categoría',
-            'revenue' => 'Ingresos',
+            'reference' => 'Referencia',
+            'customer'  => 'Cliente',
+            'amount'    => 'Importe',
         ],
     ],
 
-    'top-sales-teams' => [
-        'heading' => 'Mejores Equipos de Ventas',
+    'top-quotations'      => [
+        'heading' => 'Mejores Cotizaciones',
         'columns' => [
-            'name'    => 'Equipo de Ventas',
-            'orders'  => 'Pedidos',
-            'revenue' => 'Ingresos',
-        ],
-    ],
-
-    'top-sales-persons' => [
-        'heading' => 'Mejores Vendedores',
-        'columns' => [
-            'name'    => 'Vendedor',
-            'orders'  => 'Pedidos',
-            'revenue' => 'Ingresos',
+            'reference' => 'Referencia',
+            'customer'  => 'Cliente',
+            'amount'    => 'Importe',
         ],
     ],
 ];

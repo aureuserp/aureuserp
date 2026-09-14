@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 
-class MonthlySalesChart extends ChartWidget
+class SalesPersonPerformanceChart extends ChartWidget
 {
     use HasSaleDashboardFilters, HasWidgetShield;
 
@@ -17,54 +17,43 @@ class MonthlySalesChart extends ChartWidget
 
     protected const GRID = 'rgba(137, 135, 129, 0.25)';
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 4;
 
     protected static bool $isLazy = false;
-
-    protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '300px';
 
     public function getHeading(): string|Htmlable|null
     {
-        return __('sales::filament/widgets/sales-dashboard.monthly-sales.heading');
+        return __('sales::filament/widgets/sales-dashboard.sales-persons.heading');
     }
 
     protected function getData(): array
     {
-        $query = $this->saleOrders();
-
-        $bucket = db_dialect()->monthBucket($query->qualifyColumn('date_order'));
-
-        $revenues = $query
-            ->selectRaw("{$bucket} as period, SUM(amount_total) as revenue")
-            ->groupByRaw($bucket)
-            ->pluck('revenue', 'period');
-
-        [$start, $end] = $this->periodRange();
-
-        $labels = [];
-        $data = [];
-        $cursor = $start->copy()->startOfMonth();
-
-        while ($cursor <= $end) {
-            $labels[] = $cursor->translatedFormat('M Y');
-            $data[] = round((float) ($revenues[$cursor->format('Y-m')] ?? 0), 2);
-            $cursor->addMonth();
-        }
+        $rows = $this->saleOrders()
+            ->leftJoin('users', 'users.id', '=', 'sales_orders.user_id')
+            ->groupBy('users.id', 'users.name')
+            ->addSelect('users.name as name')
+            ->selectRaw('SUM(sales_orders.amount_total) as revenue')
+            ->havingRaw('SUM(sales_orders.amount_total) > 0')
+            ->orderByDesc('revenue')
+            ->limit(6)
+            ->get();
 
         return [
             'datasets' => [
                 [
-                    'label'           => __('sales::filament/widgets/sales-dashboard.monthly-sales.revenue'),
-                    'data'            => $data,
+                    'label'           => __('sales::filament/widgets/sales-dashboard.sales-persons.revenue'),
+                    'data'            => $rows->map(fn ($row): float => round((float) $row->revenue, 2))->all(),
                     'backgroundColor' => self::BAR_COLOR,
                     'borderRadius'    => 4,
                     'borderSkipped'   => 'bottom',
-                    'maxBarThickness' => 28,
+                    'maxBarThickness' => 40,
                 ],
             ],
-            'labels' => $labels,
+            'labels' => $rows
+                ->map(fn ($row): string => $row->name ?: __('sales::filament/widgets/sales-dashboard.unknown'))
+                ->all(),
         ];
     }
 

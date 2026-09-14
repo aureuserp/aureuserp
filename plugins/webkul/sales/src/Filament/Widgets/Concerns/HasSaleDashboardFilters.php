@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderLine;
 
 trait HasSaleDashboardFilters
 {
@@ -63,6 +64,12 @@ trait HasSaleDashboardFilters
             ->whereIn($query->qualifyColumn('state'), [OrderState::DRAFT->value, OrderState::SENT->value]);
     }
 
+    protected function confirmedLines(?Carbon $start = null, ?Carbon $end = null): Builder
+    {
+        return OrderLine::query()
+            ->whereHas('order', fn (Builder $query) => $this->applyConfirmedScope($query, $start, $end));
+    }
+
     /**
      * @return array{0: Carbon, 1: Carbon}
      */
@@ -90,9 +97,6 @@ trait HasSaleDashboardFilters
 
         $length = $start->diffInDays($end) + 1;
 
-        return [
-            (clone $start)->subDays($length),
-            (clone $end)->subDays($length),
-        ];
+        return [(clone $start)->subDays($length), (clone $end)->subDays($length)];
     }
 }

@@ -43,8 +43,8 @@ class SaleStatsOverview extends BaseWidget
         $revenue = (float) $this->saleOrders()->sum('amount_total');
         $previousRevenue = (float) $this->saleOrders($previousStart, $previousEnd)->sum('amount_total');
 
-        $averageRevenue = $orders > 0 ? $revenue / $orders : 0;
-        $previousAverageRevenue = $previousOrders > 0 ? $previousRevenue / $previousOrders : 0;
+        $average = $orders > 0 ? $revenue / $orders : 0;
+        $previousAverage = $previousOrders > 0 ? $previousRevenue / $previousOrders : 0;
 
         return [
             $this->makeStat(
@@ -70,9 +70,9 @@ class SaleStatsOverview extends BaseWidget
             ),
             $this->makeStat(
                 __('sales::filament/widgets/sales-dashboard.stats.average-revenue'),
-                money($averageRevenue, $currency),
-                $averageRevenue,
-                $previousAverageRevenue,
+                money($average, $currency),
+                $average,
+                $previousAverage,
                 [],
             ),
         ];
