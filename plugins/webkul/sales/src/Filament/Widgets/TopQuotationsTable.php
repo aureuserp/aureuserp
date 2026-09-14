@@ -2,27 +2,33 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 
 class TopQuotationsTable extends TableWidget
 {
-    use HasSaleDashboardFilters;
+    use HasSaleDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 3;
 
+    protected static bool $isLazy = false;
+
     public function table(Table $table): Table
     {
-        return $table->recordUrl(fn ($record): ?string => QuotationResource::canAccess()
-            ? QuotationResource::getUrl('view', ['record' => $record->id])
-            : null);
+        return $table
+            ->defaultKeySort(false)
+            ->recordUrl(fn ($record): ?string => QuotationResource::canAccess()
+                ? QuotationResource::getUrl('view', ['record' => $record->id])
+                : null);
     }
 
-    public function getHeading(): ?string
+    protected function getTableHeading(): string|Htmlable|null
     {
         return __('sales::filament/widgets/sales-dashboard.top-quotations.heading');
     }

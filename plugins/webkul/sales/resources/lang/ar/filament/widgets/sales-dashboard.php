@@ -1,12 +1,16 @@
 <?php
 
 return [
+    'unknown' => 'غير معروف',
+
     'stats' => [
         'heading'            => 'المؤشرات الرئيسية',
         'total-quotations'   => 'إجمالي عروض الأسعار',
         'total-sales-orders' => 'إجمالي أوامر البيع',
         'total-revenue'      => 'إجمالي الإيرادات',
         'average-revenue'    => 'متوسط الإيرادات',
+        'increase'           => 'زيادة',
+        'decrease'           => 'انخفاض',
     ],
 
     'monthly-sales' => [

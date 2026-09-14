@@ -1,12 +1,16 @@
 <?php
 
 return [
+    'unknown' => 'Desconocido',
+
     'stats' => [
         'heading'            => 'Métricas Clave',
         'total-quotations'   => 'Total de Cotizaciones',
         'total-sales-orders' => 'Total de Pedidos de Venta',
         'total-revenue'      => 'Ingresos Totales',
         'average-revenue'    => 'Ingresos Promedio',
+        'increase'           => 'aumento',
+        'decrease'           => 'disminución',
     ],
 
     'monthly-sales' => [

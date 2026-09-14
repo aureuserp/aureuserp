@@ -2,27 +2,33 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 
 class TopCustomersTable extends TableWidget
 {
-    use HasSaleDashboardFilters;
+    use HasSaleDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 7;
 
+    protected static bool $isLazy = false;
+
     public function table(Table $table): Table
     {
-        return $table->recordUrl(fn ($record): ?string => CustomerResource::canAccess()
-            ? CustomerResource::getUrl('view', ['record' => $record->id])
-            : null);
+        return $table
+            ->defaultKeySort(false)
+            ->recordUrl(fn ($record): ?string => $record->id && CustomerResource::canAccess()
+                ? CustomerResource::getUrl('view', ['record' => $record->id])
+                : null);
     }
 
-    public function getHeading(): ?string
+    protected function getTableHeading(): string|Htmlable|null
     {
         return __('sales::filament/widgets/sales-dashboard.top-customers.heading');
     }
@@ -35,11 +41,13 @@ class TopCustomersTable extends TableWidget
     protected function getTableQuery(): Builder
     {
         return $this->saleOrders()
-            ->join('partners_partners', 'partners_partners.id', '=', 'sales_orders.partner_id')
+            ->leftJoin('partners_partners', 'partners_partners.id', '=', 'sales_orders.partner_id')
             ->groupBy('partners_partners.id', 'partners_partners.name')
-            ->select('partners_partners.id as id', 'partners_partners.name as name')
+            ->selectRaw('COALESCE(partners_partners.id, 0) as id')
+            ->addSelect('partners_partners.name as name')
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('SUM(sales_orders.amount_total) as revenue')
+            ->havingRaw('SUM(sales_orders.amount_total) > 0')
             ->orderByDesc('revenue')
             ->limit(5);
     }
@@ -48,7 +56,8 @@ class TopCustomersTable extends TableWidget
     {
         return [
             Tables\Columns\TextColumn::make('name')
-                ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.name')),
+                ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.name'))
+                ->placeholder(__('sales::filament/widgets/sales-dashboard.unknown')),
             Tables\Columns\TextColumn::make('orders_count')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-customers.columns.orders'))
                 ->numeric(),

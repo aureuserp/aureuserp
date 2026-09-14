@@ -1,12 +1,16 @@
 <?php
 
 return [
+    'unknown' => 'Unknown',
+
     'stats' => [
         'heading'            => 'Key Metrics',
         'total-quotations'   => 'Total Quotations',
         'total-sales-orders' => 'Total Sales Orders',
         'total-revenue'      => 'Total Revenue',
         'average-revenue'    => 'Average Revenue',
+        'increase'           => 'increase',
+        'decrease'           => 'decrease',
     ],
 
     'monthly-sales' => [

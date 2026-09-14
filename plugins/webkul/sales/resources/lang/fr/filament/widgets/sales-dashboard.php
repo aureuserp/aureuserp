@@ -1,12 +1,16 @@
 <?php
 
 return [
+    'unknown' => 'Inconnu',
+
     'stats' => [
         'heading'            => 'Indicateurs Clés',
         'total-quotations'   => 'Total des Devis',
         'total-sales-orders' => 'Total des Commandes',
         'total-revenue'      => 'Revenu Total',
         'average-revenue'    => 'Revenu Moyen',
+        'increase'           => 'augmentation',
+        'decrease'           => 'diminution',
     ],
 
     'monthly-sales' => [

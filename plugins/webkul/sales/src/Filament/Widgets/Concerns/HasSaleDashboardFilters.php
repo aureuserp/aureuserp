@@ -12,20 +12,14 @@ trait HasSaleDashboardFilters
 {
     use InteractsWithPageFilters;
 
-    /**
-     * Apply the shared dashboard filters to a sales order query.
-     */
-    protected function applyFilters(Builder $query): Builder
+    protected function applyFilters(Builder $query, ?Carbon $start = null, ?Carbon $end = null): Builder
     {
         $filters = $this->pageFilters ?? [];
 
-        if (! empty($filters['startDate'])) {
-            $query->whereDate($query->qualifyColumn('date_order'), '>=', Carbon::parse($filters['startDate']));
-        }
+        [$defaultStart, $defaultEnd] = $this->periodRange();
 
-        if (! empty($filters['endDate'])) {
-            $query->whereDate($query->qualifyColumn('date_order'), '<=', Carbon::parse($filters['endDate']));
-        }
+        $query->whereDate($query->qualifyColumn('date_order'), '>=', $start ?? $defaultStart);
+        $query->whereDate($query->qualifyColumn('date_order'), '<=', $end ?? $defaultEnd);
 
         if (! empty($filters['countries'])) {
             $query->whereHas('partner', fn (Builder $q) => $q->whereIn('country_id', $filters['countries']));
@@ -50,30 +44,55 @@ trait HasSaleDashboardFilters
         return $query;
     }
 
-    /**
-     * Apply the filters and scope the query to confirmed sales orders.
-     */
-    protected function applyConfirmedScope(Builder $query): Builder
+    protected function applyConfirmedScope(Builder $query, ?Carbon $start = null, ?Carbon $end = null): Builder
     {
-        return $this->applyFilters($query)->where($query->qualifyColumn('state'), OrderState::SALE->value);
+        return $this->applyFilters($query, $start, $end)
+            ->where($query->qualifyColumn('state'), OrderState::SALE->value);
     }
 
-    /**
-     * Filtered query scoped to confirmed sales orders.
-     */
-    protected function saleOrders(): Builder
+    protected function saleOrders(?Carbon $start = null, ?Carbon $end = null): Builder
     {
-        return $this->applyConfirmedScope(Order::query());
+        return $this->applyConfirmedScope(Order::query(), $start, $end);
     }
 
-    /**
-     * Filtered query scoped to quotations (draft and sent).
-     */
-    protected function quotations(): Builder
+    protected function quotations(?Carbon $start = null, ?Carbon $end = null): Builder
     {
         $query = Order::query();
 
-        return $this->applyFilters($query)
+        return $this->applyFilters($query, $start, $end)
             ->whereIn($query->qualifyColumn('state'), [OrderState::DRAFT->value, OrderState::SENT->value]);
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    protected function periodRange(): array
+    {
+        $filters = $this->pageFilters ?? [];
+
+        $start = ! empty($filters['startDate'])
+            ? Carbon::parse($filters['startDate'])->startOfDay()
+            : now()->startOfYear();
+
+        $end = ! empty($filters['endDate'])
+            ? Carbon::parse($filters['endDate'])->endOfDay()
+            : now()->endOfYear();
+
+        return [$start, $end];
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    protected function previousPeriodRange(): array
+    {
+        [$start, $end] = $this->periodRange();
+
+        $length = $start->diffInDays($end) + 1;
+
+        return [
+            (clone $start)->subDays($length),
+            (clone $end)->subDays($length),
+        ];
     }
 }

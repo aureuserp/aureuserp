@@ -2,16 +2,18 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Carbon;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 
 class MonthlySalesChart extends ChartWidget
 {
-    use HasSaleDashboardFilters;
+    use HasSaleDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 2;
+
+    protected static bool $isLazy = false;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -24,12 +26,14 @@ class MonthlySalesChart extends ChartWidget
 
     protected function getData(): array
     {
+        $bucket = db_dialect()->monthBucket('date_order');
+
         $revenues = $this->saleOrders()
-            ->selectRaw("DATE_FORMAT(date_order, '%Y-%m') as period, SUM(amount_total) as revenue")
-            ->groupBy('period')
+            ->selectRaw("{$bucket} as period, SUM(amount_total) as revenue")
+            ->groupByRaw($bucket)
             ->pluck('revenue', 'period');
 
-        [$start, $end] = $this->getPeriodRange();
+        [$start, $end] = $this->periodRange();
 
         $labels = [];
         $data = [];
@@ -53,17 +57,6 @@ class MonthlySalesChart extends ChartWidget
             ],
             'labels' => $labels,
         ];
-    }
-
-    protected function getPeriodRange(): array
-    {
-        $filters = $this->pageFilters ?? [];
-
-        $start = ! empty($filters['startDate']) ? Carbon::parse($filters['startDate']) : now()->subMonths(11);
-
-        $end = ! empty($filters['endDate']) ? Carbon::parse($filters['endDate']) : now();
-
-        return [$start, $end];
     }
 
     protected function getType(): string
