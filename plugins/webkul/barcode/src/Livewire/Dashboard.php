@@ -5,6 +5,7 @@ namespace Webkul\Barcode\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
+use Webkul\Barcode\Support\OperationTypes;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
@@ -39,7 +40,7 @@ class Dashboard extends Component
             ->orderBy('sort')
             ->orderBy('name')
             ->get()
-            ->groupBy(fn (OperationType $operationType): string => $operationType->name.'|'.$operationType->type?->value.'|'.$operationType->warehouse_id)
+            ->groupBy(fn (OperationType $operationType): string => OperationTypes::groupKey($operationType))
             ->map(function (Collection $operationTypes) {
                 $primaryOperationType = $operationTypes->first();
                 $primaryOperationType->waiting_count = $operationTypes->sum('waiting_count');

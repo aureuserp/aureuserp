@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
+use Webkul\Barcode\Support\Barcode;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Lot;
@@ -32,9 +33,11 @@ class Adjustments extends Component
 
     public float|string|null $editingCountedQuantity = null;
 
+    public int $perPage = 50;
+
     public function scan(): void
     {
-        $barcode = $this->normalizeBarcode($this->search);
+        $barcode = Barcode::normalize($this->search);
 
         if ($barcode === '') {
             $this->notice = __('barcode::app.scan.empty');
@@ -104,6 +107,11 @@ class Adjustments extends Component
         $this->dispatchNativeFeedback($this->notice, false);
     }
 
+    public function loadMore(): void
+    {
+        $this->perPage += 50;
+    }
+
     public function clearFilters(): void
     {
         $this->selectedLocationId = null;
@@ -116,38 +124,72 @@ class Adjustments extends Component
 
     public function quickCountQuantity(int $quantityId): void
     {
-        $quantity = $this->quantityRecord($quantityId);
+        if (! $quantity = $this->quantityRecord($quantityId)) {
+            return;
+        }
 
-        $this->persistCountedQuantity($quantity, (float) $quantity->quantity);
+        $onHandQuantity = (float) $quantity->quantity;
+
+        $this->persistCountedQuantity($quantity, $onHandQuantity);
 
         $this->selectedQuantityId = $quantityId;
-        $this->notice = __('barcode::app.adjustments.count-saved');
+        $this->notice = __('barcode::app.adjustments.count-set', [
+            'quantity' => $this->formatQuantity($onHandQuantity),
+            'uom'      => $quantity->product?->uom?->name,
+        ]);
         $this->noticeColor = 'success';
         $this->dispatchNativeFeedback($this->notice, true);
     }
 
     public function adjustQuantityCount(int $quantityId, float $amount): void
     {
-        $quantity = $this->quantityRecord($quantityId);
+        if (! $quantity = $this->quantityRecord($quantityId)) {
+            return;
+        }
+
         $currentCounted = $quantity->inventory_quantity_set ? (float) $quantity->counted_quantity : 0.0;
         $newCounted = max(0, $currentCounted + $amount);
 
         $this->persistCountedQuantity($quantity, $newCounted);
 
         $this->selectedQuantityId = $quantityId;
-        $this->notice = __('barcode::app.adjustments.count-saved');
+        $this->notice = __('barcode::app.adjustments.count-saved', [
+            'quantity'   => $this->formatQuantity($newCounted),
+            'uom'        => $quantity->product?->uom?->name,
+            'difference' => $this->formatDifference($newCounted - (float) $quantity->quantity),
+        ]);
         $this->noticeColor = 'success';
     }
 
     public function editQuantity(int $quantityId): void
     {
-        $quantity = $this->quantityRecord($quantityId);
+        if (! $quantity = $this->quantityRecord($quantityId)) {
+            return;
+        }
 
         $this->editingQuantityId = $quantityId;
         $this->selectedQuantityId = $quantityId;
         $this->editingCountedQuantity = $quantity->inventory_quantity_set
             ? (float) $quantity->counted_quantity
             : 0.0;
+    }
+
+    public function setEditingQuantity(float $quantity): void
+    {
+        if (! $this->editingQuantityId) {
+            return;
+        }
+
+        $this->editingCountedQuantity = max(0, $quantity);
+    }
+
+    public function adjustEditingQuantity(float $amount): void
+    {
+        if (! $this->editingQuantityId) {
+            return;
+        }
+
+        $this->editingCountedQuantity = max(0, (float) $this->editingCountedQuantity + $amount);
     }
 
     public function discardQuantityEdit(): void
@@ -162,12 +204,22 @@ class Adjustments extends Component
             return;
         }
 
-        $quantity = $this->quantityRecord($this->editingQuantityId);
+        if (! $quantity = $this->quantityRecord($this->editingQuantityId)) {
+            $this->discardQuantityEdit();
+
+            return;
+        }
+
         $countedQuantity = max(0, (float) $this->editingCountedQuantity);
+        $difference = $countedQuantity - (float) $quantity->quantity;
 
         $this->persistCountedQuantity($quantity, $countedQuantity);
 
-        $this->notice = __('barcode::app.adjustments.count-saved');
+        $this->notice = __('barcode::app.adjustments.count-saved', [
+            'quantity'   => $this->formatQuantity($countedQuantity),
+            'uom'        => $quantity->product?->uom?->name,
+            'difference' => $this->formatDifference($difference),
+        ]);
         $this->noticeColor = 'success';
         $this->dispatchNativeFeedback($this->notice, true);
 
@@ -176,7 +228,9 @@ class Adjustments extends Component
 
     public function clearQuantityCount(int $quantityId): void
     {
-        $quantity = $this->quantityRecord($quantityId);
+        if (! $quantity = $this->quantityRecord($quantityId)) {
+            return;
+        }
 
         $quantity->update([
             'counted_quantity'        => 0,
@@ -191,28 +245,51 @@ class Adjustments extends Component
 
     public function applyQuantityCount(int $quantityId): void
     {
-        $quantity = $this->quantityRecord($quantityId);
+        if (! $quantity = $this->quantityRecord($quantityId)) {
+            return;
+        }
 
         if (! $quantity->inventory_quantity_set) {
             return;
         }
 
+        $countedQuantity = (float) $quantity->counted_quantity;
+        $difference = $countedQuantity - (float) $quantity->quantity;
+        $uomName = $quantity->product?->uom?->name;
+
         $quantity->update([
-            'quantity'                => (float) $quantity->counted_quantity,
+            'quantity'                => $countedQuantity,
             'counted_quantity'        => 0,
             'inventory_quantity_set'  => false,
         ]);
 
         $this->selectedQuantityId = $quantityId;
-        $this->notice = __('barcode::app.adjustments.count-applied');
-        $this->noticeColor = 'success';
+
+        if ($this->isUnchanged($quantity, $difference)) {
+            $this->notice = __('barcode::app.adjustments.count-unchanged', [
+                'quantity' => $this->formatQuantity($countedQuantity),
+                'uom'      => $uomName,
+            ]);
+            $this->noticeColor = 'info';
+        } else {
+            $this->notice = __('barcode::app.adjustments.count-applied', [
+                'quantity'   => $this->formatQuantity($countedQuantity),
+                'uom'        => $uomName,
+                'difference' => $this->formatDifference($difference),
+            ]);
+            $this->noticeColor = 'success';
+        }
+
         $this->dispatchNativeFeedback($this->notice, true);
     }
 
     public function render(): View
     {
         $editingQuantity = $this->editingQuantityId
-            ? $this->loadQuantities()->firstWhere('id', $this->editingQuantityId)
+            ? ProductQuantity::query()
+                ->with(['company', 'location', 'lot', 'package', 'product.uom'])
+                ->whereHas('product')
+                ->find($this->editingQuantityId)
             : null;
 
         return view('barcode::livewire.adjustments', [
@@ -221,6 +298,7 @@ class Adjustments extends Component
             'selectedProduct'  => $this->selectedProduct(),
             'selectedLot'      => $this->selectedLot(),
             'quantities'       => $this->loadQuantities(),
+            'totalQuantities'  => $this->inventoryQuery()->count(),
         ])->layout('barcode::layouts.app', [
             'title' => __('barcode::app.adjustments.title'),
         ]);
@@ -230,6 +308,7 @@ class Adjustments extends Component
     {
         return ProductQuantity::query()
             ->with([
+                'company',
                 'location',
                 'lot',
                 'package',
@@ -239,6 +318,7 @@ class Adjustments extends Component
                 $query->where('type', LocationType::INTERNAL)
                     ->where('is_scrap', false);
             })
+            ->whereHas('product')
             ->when($this->selectedLocationId, fn (Builder $query) => $query->where('location_id', $this->selectedLocationId))
             ->when($this->selectedProductId, fn (Builder $query) => $query->where('product_id', $this->selectedProductId))
             ->when($this->selectedLotId, fn (Builder $query) => $query->where('lot_id', $this->selectedLotId))
@@ -279,7 +359,7 @@ class Adjustments extends Component
     private function loadQuantities(): Collection
     {
         return $this->inventoryQuery()
-            ->limit(200)
+            ->limit($this->perPage)
             ->get();
     }
 
@@ -303,11 +383,37 @@ class Adjustments extends Component
         $this->dispatchNativeFeedback($this->notice, true);
     }
 
-    private function quantityRecord(int $quantityId): ProductQuantity
+    private function quantityRecord(int $quantityId): ?ProductQuantity
     {
-        return ProductQuantity::query()
-            ->with(['location', 'lot', 'package', 'product.uom'])
-            ->findOrFail($quantityId);
+        $quantity = ProductQuantity::query()
+            ->with(['company', 'location', 'lot', 'package', 'product.uom'])
+            ->whereHas('product')
+            ->find($quantityId);
+
+        if (! $quantity) {
+            $this->notice = __('barcode::app.adjustments.product-unavailable');
+            $this->noticeColor = 'warning';
+            $this->dispatchNativeFeedback($this->notice, false, 'long');
+        }
+
+        return $quantity;
+    }
+
+    public function formatQuantity(float $quantity): string
+    {
+        return rtrim(rtrim(number_format($quantity, 2, '.', ''), '0'), '.') ?: '0';
+    }
+
+    public function formatDifference(float $difference): string
+    {
+        return ($difference > 0 ? '+' : '').$this->formatQuantity($difference);
+    }
+
+    private function isUnchanged(ProductQuantity $quantity, float $difference): bool
+    {
+        $rounding = (float) ($quantity->product?->uom?->rounding ?: 0.01);
+
+        return float_is_zero($difference, precisionRounding: $rounding);
     }
 
     private function persistCountedQuantity(ProductQuantity $quantity, float $countedQuantity): void
@@ -361,14 +467,6 @@ class Adjustments extends Component
     private function selectedLot(): ?Lot
     {
         return $this->selectedLotId ? Lot::query()->find($this->selectedLotId) : null;
-    }
-
-    private function normalizeBarcode(string $barcode): string
-    {
-        $barcode = trim($barcode);
-        $barcode = preg_replace('/\s+/', ' ', $barcode) ?: '';
-
-        return trim($barcode, " \t\n\r\0\x0B#");
     }
 
     private function dispatchNativeFeedback(?string $message, bool $vibrate = false, string $duration = 'short'): void

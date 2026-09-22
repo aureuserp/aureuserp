@@ -228,6 +228,18 @@
             </x-filament::input.wrapper>
         </form>
 
+        @if ($blockedNotice)
+            <x-filament::callout icon="heroicon-o-lock-closed" color="warning" class="mb-3">
+                <x-slot name="heading">
+                    {{ $operation->state?->getLabel() }}
+                </x-slot>
+
+                <x-slot name="description">
+                    {{ $blockedNotice }}
+                </x-slot>
+            </x-filament::callout>
+        @endif
+
         @if ($notice)
             <x-filament::callout icon="heroicon-o-information-circle" color="info" class="mb-3">
                 <x-slot name="heading">

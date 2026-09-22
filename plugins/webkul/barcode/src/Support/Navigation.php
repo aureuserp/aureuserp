@@ -36,9 +36,9 @@ class Navigation
                 'label'       => 'Manufacturing Orders',
                 'icon'        => 'heroicon-m-wrench-screwdriver',
                 'native_icon' => 'build',
-                'href'        => null,
-                'active'      => false,
-                'disabled'    => true,
+                'href'        => Manufacturing::isAvailable() ? NativeApp::navigationUrl('barcode.manufacturing-orders') : null,
+                'active'      => str_starts_with($currentRoute, 'barcode.manufacturing-order'),
+                'disabled'    => ! Manufacturing::isAvailable(),
             ],
             [
                 'id'          => 'inventory-adjustments',

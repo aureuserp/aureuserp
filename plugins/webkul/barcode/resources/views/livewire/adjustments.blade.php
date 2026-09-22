@@ -17,8 +17,11 @@
             $productImages = $editingQuantity->product?->images ?? [];
             $productImage = is_array($productImages) ? ($productImages[0] ?? null) : null;
             $productImageUrl = is_string($productImage) && $productImage !== '' ? (str_starts_with($productImage, 'http') || str_starts_with($productImage, '/') ? $productImage : asset('storage/'.$productImage)) : null;
-            $currentCountedQuantity = $editingQuantity->inventory_quantity_set ? (float) $editingQuantity->counted_quantity : 0.0;
-            $remainingToFullCount = max((float) $editingQuantity->quantity - $currentCountedQuantity, 0);
+            $onHandQuantity = (float) $editingQuantity->quantity;
+            $currentCountedQuantity = max((float) $editingCountedQuantity, 0);
+            $remainingToFullCount = max($onHandQuantity - $currentCountedQuantity, 0);
+            $canDecrementCount = $currentCountedQuantity > 0;
+            $canCountFull = $remainingToFullCount > 0;
         @endphp
 
         <section class="mx-auto">
@@ -26,6 +29,9 @@
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex min-w-0 flex-col gap-1">
                         <strong class="block text-xl leading-6 font-medium text-gray-950">{{ $editingQuantity->location?->full_name ?? $editingQuantity->location?->name }}</strong>
+                        @if ($editingQuantity->company?->name)
+                            <span class="text-xs leading-4 font-semibold uppercase tracking-wide text-gray-500">{{ $editingQuantity->company->name }}</span>
+                        @endif
                         <span class="text-sm leading-5 text-gray-950">
                             {{ $editingQuantity->product?->name }}
                             @if ($editingQuantity->lot?->name)
@@ -34,13 +40,11 @@
                         </span>
                     </div>
 
-                    <div class="inline-flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
-                        @if ($productImageUrl)
+                    @if ($productImageUrl)
+                        <div class="inline-flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                             <img src="{{ $productImageUrl }}" alt="{{ __('barcode::app.adjustments.edit-tooltip') }}" class="h-full w-full object-cover">
-                        @else
-                            <span class="text-lg font-extrabold text-gray-500">{{ mb_substr((string) $editingQuantity->product?->name, 0, 1) }}</span>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
             </x-filament::section>
 
@@ -60,17 +64,17 @@
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                wire:model="editingCountedQuantity"
+                                wire:model.live.debounce.500ms="editingCountedQuantity"
                             />
                         </x-filament::input.wrapper>
                         <div class="flex min-h-10 items-center rounded-md border border-gray-200 bg-gray-100 px-4 text-base text-gray-950">{{ $editingQuantity->product?->uom?->name }}</div>
                     </div>
 
                     <div class="mt-3 grid grid-cols-4 gap-2">
-                        <x-filament::button color="gray" class="w-full justify-center" type="button" wire:click="$set('editingCountedQuantity', 0)">0</x-filament::button>
-                        <x-filament::button color="gray" class="w-full justify-center" type="button" wire:click="$set('editingCountedQuantity', {{ max($currentCountedQuantity - 1, 0) }})">-1</x-filament::button>
-                        <x-filament::button color="gray" class="w-full justify-center" type="button" wire:click="$set('editingCountedQuantity', {{ $currentCountedQuantity + 1 }})">+1</x-filament::button>
-                        <x-filament::button color="success" class="w-full justify-center" type="button" wire:click="$set('editingCountedQuantity', {{ $currentCountedQuantity + $remainingToFullCount }})">
+                        <x-filament::button color="gray" class="w-full justify-center" type="button" wire:click="setEditingQuantity(0)">0</x-filament::button>
+                        <x-filament::button color="gray" class="w-full justify-center" type="button" wire:click="adjustEditingQuantity(-1)" :disabled="! $canDecrementCount">-1</x-filament::button>
+                        <x-filament::button color="gray" class="w-full justify-center" type="button" wire:click="adjustEditingQuantity(1)">+1</x-filament::button>
+                        <x-filament::button color="success" class="w-full justify-center" type="button" wire:click="setEditingQuantity({{ $onHandQuantity }})" :disabled="! $canCountFull">
                             +{{ number_format($remainingToFullCount, 0) }}
                         </x-filament::button>
                     </div>
@@ -86,7 +90,7 @@
                         </div>
                         <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-xs">
                             <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ __('barcode::app.adjustments.on-hand') }}</span>
-                            <strong class="mt-1 block text-sm font-semibold text-gray-950">{{ number_format((float) $editingQuantity->quantity, 2) }} {{ $editingQuantity->product?->uom?->name }}</strong>
+                            <strong class="mt-1 block text-sm font-semibold text-gray-950">{{ number_format($onHandQuantity, 2) }} {{ $editingQuantity->product?->uom?->name }}</strong>
                         </div>
                         <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-xs">
                             <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ __('barcode::app.adjustments.counted') }}</span>
@@ -206,6 +210,9 @@
                     <div class="min-w-0 flex-1 px-4 py-4">
                         <div class="flex flex-col gap-1">
                             <strong class="block text-xl leading-6 font-medium text-gray-950">{{ $quantity->location?->full_name ?? $quantity->location?->name }}</strong>
+                            @if ($quantity->company?->name)
+                                <span class="text-xs leading-4 font-semibold uppercase tracking-wide text-gray-500">{{ $quantity->company->name }}</span>
+                            @endif
                             <span class="text-sm leading-5 text-gray-950">{{ $quantity->product?->name }}</span>
                             @if ($quantity->lot?->name)
                                 <span class="text-sm leading-5 text-gray-950">{{ __('barcode::app.adjustments.lot-serial') }}: {{ $quantity->lot->name }}</span>
@@ -219,18 +226,24 @@
                                 ])>{{ number_format($countedQuantity, 0) }} / {{ number_format($onHandQuantity, 0) }}</strong>
                                 <span class="text-sm font-bold text-gray-950">{{ $quantity->product?->uom?->name }}</span>
                             </div>
+
+                            @if ($quantity->inventory_quantity_set)
+                                <span @class([
+                                    'mt-1 text-sm font-semibold',
+                                    'text-gray-500' => $countedQuantity === $onHandQuantity,
+                                    'text-[var(--warning-600)]' => $countedQuantity !== $onHandQuantity,
+                                ])>{{ __('barcode::app.adjustments.difference') }}: {{ $this->formatDifference($countedQuantity - $onHandQuantity) }} {{ $quantity->product?->uom?->name }}</span>
+                            @endif
                         </div>
                     </div>
 
                     <div class="flex shrink-0 flex-col items-end gap-7 px-4 py-3 text-right">
-                        <div class="grid w-[92px] grid-cols-2 gap-2">
-                            <div class="inline-flex h-[42px] w-[42px] items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
-                                @if ($productImageUrl)
+                        <div class="flex w-[92px] justify-end gap-2">
+                            @if ($productImageUrl)
+                                <div class="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
                                     <img src="{{ $productImageUrl }}" alt="{{ __('barcode::app.adjustments.edit-tooltip') }}" class="h-full w-full object-cover">
-                                @else
-                                    <span class="text-lg font-extrabold text-gray-500">{{ mb_substr((string) $quantity->product?->name, 0, 1) }}</span>
-                                @endif
-                            </div>
+                                </div>
+                            @endif
 
                             <x-filament::button
                                 color="gray"
@@ -243,7 +256,7 @@
                         </div>
 
                         <div class="flex min-h-[42px] w-[92px] items-end justify-end gap-2">
-                            @if (! $quantity->inventory_quantity_set || $countedQuantity <= 0)
+                            @if (! $quantity->inventory_quantity_set)
                                 <x-filament::button color="gray" outlined type="button" class="h-[42px] min-w-[42px] justify-center px-3" wire:click="quickCountQuantity({{ $quantity->id }})">+{{ number_format($onHandQuantity, 0) }}</x-filament::button>
                             @else
                                 <x-filament::button
@@ -272,6 +285,18 @@
                     <div>{{ __('barcode::app.adjustments.empty') }}</div>
                 </div>
             @endforelse
+
+            @if ($quantities->isNotEmpty())
+                <div class="flex flex-col items-center gap-2 py-2 text-sm text-gray-600">
+                    <span>{{ __('barcode::app.pagination.showing', ['shown' => $quantities->count(), 'total' => $totalQuantities]) }}</span>
+
+                    @if ($quantities->count() < $totalQuantities)
+                        <x-filament::button color="gray" outlined type="button" wire:click="loadMore">
+                            {{ __('barcode::app.pagination.load-more') }}
+                        </x-filament::button>
+                    @endif
+                </div>
+            @endif
         </section>
     @endif
 </main>

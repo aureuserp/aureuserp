@@ -7,6 +7,7 @@ use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Webkul\Barcode\Filament\Pages\LaunchBarcode;
 
 class Authenticate
 {
@@ -29,6 +30,8 @@ class Authenticate
 
             return redirect()->guest(route('barcode.login'));
         }
+
+        abort_unless(LaunchBarcode::canAccess(), 403, __('barcode::app.auth.forbidden'));
 
         return $next($request);
     }
