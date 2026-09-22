@@ -74,7 +74,11 @@ MD;
                     ->disk('public')
                     ->default(fn () => PurchaseOrder::generatePurchaseOrderPdf($record))
                     ->acceptedFileTypes([
-                        'image/*',
+                        'image/jpeg',
+                        'image/png',
+                        'image/gif',
+                        'image/bmp',
+                        'image/webp',
                         'application/pdf',
                     ])
                     ->downloadable()

@@ -89,6 +89,13 @@ class BranchesRelationManager extends RelationManager
                                         FileUpload::make('avatar')
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branding.fields.branch-logo'))
                                             ->image()
+                                            ->acceptedFileTypes([
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/bmp',
+                                                'image/webp',
+                                            ])
                                             ->directory('company-logos')
                                             ->visibility('public'),
                                     ]),

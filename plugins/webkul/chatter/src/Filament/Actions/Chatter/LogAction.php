@@ -16,6 +16,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Webkul\Chatter\Support\ChatterMentions;
 
 class LogAction extends Action
@@ -77,12 +79,20 @@ class LogAction extends Action
                         ->directory('log-attachments')
                         ->disk('public')
                         ->visibility('public')
-                        ->preserveFilenames()
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                            $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+
+                            return Str::random(16).'-'.($name ?: 'file').'.'.($file->guessExtension() ?: 'bin');
+                        })
                         ->previewable(true)
                         ->panelLayout('grid')
                         ->imagePreviewHeight('100')
                         ->acceptedFileTypes([
-                            'image/*',
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'image/bmp',
+                            'image/webp',
                             'application/pdf',
                             'application/msword',
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

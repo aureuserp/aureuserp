@@ -597,7 +597,11 @@ class EmployeeForm
                                                             ->panelAspectRatio('4:1')
                                                             ->panelLayout('integrated')
                                                             ->acceptedFileTypes([
-                                                                'image/*',
+                                                                'image/jpeg',
+                                                                'image/png',
+                                                                'image/gif',
+                                                                'image/bmp',
+                                                                'image/webp',
                                                                 'application/pdf',
                                                             ])
                                                             ->directory('employees/work-permit')

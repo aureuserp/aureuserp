@@ -66,7 +66,11 @@ class SendByEmailAction extends Action
                         FileUpload::make('file')
                             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/send-by-email.form.fields.attachment'))
                             ->acceptedFileTypes([
-                                'image/*',
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                                'image/bmp',
+                                'image/webp',
                                 'application/pdf',
                             ])
                             ->downloadable()

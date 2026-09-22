@@ -10,6 +10,8 @@ use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FileAction extends Action
 {
@@ -34,7 +36,11 @@ class FileAction extends Action
                     ->directory('chats-attachments')
                     ->disk('public')
                     ->visibility('public')
-                    ->preserveFilenames()
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                        $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+
+                        return Str::random(16).'-'.($name ?: 'file').'.'.($file->guessExtension() ?: 'bin');
+                    })
                     ->downloadable()
                     ->openable()
                     ->reorderable()
@@ -71,7 +77,11 @@ class FileAction extends Action
                             ->send();
                     })
                     ->acceptedFileTypes([
-                        'image/*',
+                        'image/jpeg',
+                        'image/png',
+                        'image/gif',
+                        'image/bmp',
+                        'image/webp',
                         'application/pdf',
                         'application/msword',
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

@@ -46,7 +46,14 @@ class PostForm
                                     ->required(),
                                 FileUpload::make('image')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.banner'))
-                                    ->image(),
+                                    ->image()
+                                    ->acceptedFileTypes([
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/bmp',
+                                        'image/webp',
+                                    ]),
                             ]),
 
                         Section::make(__('blogs::filament/admin/resources/post.form.sections.seo.title'))
