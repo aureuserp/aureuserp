@@ -6,6 +6,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Account\Filament\Resources\PaymentTermResource\Tables\PaymentTermsTable;
+use Webkul\Account\Models\PaymentTerm;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewPaymentTerm extends ViewRecord
@@ -18,6 +20,10 @@ class ViewPaymentTerm extends ViewRecord
     {
         return [
             DeleteAction::make()
+                ->action(fn (PaymentTerm $record, DeleteAction $action) => PaymentTermsTable::runDeletion(
+                    fn () => $record->delete(),
+                    $action,
+                ))
                 ->successNotification(
                     Notification::make()
                         ->success()
