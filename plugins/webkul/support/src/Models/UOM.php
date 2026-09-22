@@ -135,6 +135,23 @@ class UOM extends Model
         return $amount;
     }
 
+    public function computePrice($price, $toUnit)
+    {
+        if (! $price || ! $toUnit || $this->id === $toUnit->id) {
+            return (float) $price;
+        }
+
+        if ($this->category_id !== $toUnit->category_id) {
+            return (float) $price;
+        }
+
+        if (! $toUnit->factor) {
+            return (float) $price;
+        }
+
+        return (float) $price * $this->factor / $toUnit->factor;
+    }
+
     public function adjustUomQuantities($qty, $productUom)
     {
         $procurementUom = $this;

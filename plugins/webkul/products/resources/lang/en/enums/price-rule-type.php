@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'percentage'   => 'Percentage',
-    'formula'      => 'Formula',
-    'fixed'        => 'Fixed',
+    'percentage' => 'Discount',
+    'formula'    => 'Formula',
+    'fixed'      => 'Fixed Price',
 ];

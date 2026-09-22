@@ -5,6 +5,7 @@ use Webkul\Product\Http\Controllers\API\V1\AttributeController;
 use Webkul\Product\Http\Controllers\API\V1\AttributeOptionController;
 use Webkul\Product\Http\Controllers\API\V1\CategoryController;
 use Webkul\Product\Http\Controllers\API\V1\PackagingController;
+use Webkul\Product\Http\Controllers\API\V1\PriceListController;
 use Webkul\Product\Http\Controllers\API\V1\ProductAttributeController;
 use Webkul\Product\Http\Controllers\API\V1\ProductController;
 use Webkul\Product\Http\Controllers\API\V1\ProductVariantController;
@@ -27,4 +28,6 @@ Route::name('admin.api.v1.products.')->prefix('admin/api/v1/products')->middlewa
     Route::softDeletableApiResource('products.variants', ProductVariantController::class);
 
     Route::apiResource('packagings', PackagingController::class);
+
+    Route::apiResource('price-lists', PriceListController::class);
 });

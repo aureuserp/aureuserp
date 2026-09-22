@@ -37,8 +37,9 @@ class DepartmentForm
                                             ->relationship(
                                                 name: 'parent',
                                                 titleAttribute: 'complete_name',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                                     ->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state))
                                                     ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(
@@ -63,7 +64,7 @@ class DepartmentForm
                                             ->nullable(),
                                         Select::make('company_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.company'))
-                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                             ->getOptionLabelFromRecordUsing(function (Model $record): string {
                                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                             })

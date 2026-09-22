@@ -2,6 +2,8 @@
 
 use ArPHP\I18N\Arabic;
 use Filament\Forms\Components\Field;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Webkul\Security\Settings\CurrencySettings;
@@ -375,14 +377,24 @@ if (! function_exists('owned_by_company')) {
 }
 
 if (! function_exists('hide_deleted_unless_selected')) {
-    function hide_deleted_unless_selected(?string $state): Closure
+    function hide_deleted_unless_selected($state = null): Closure
     {
         return function ($query) use ($state) {
-            $query->whereNull('deleted_at');
+            $model = $query->getModel();
 
-            if (filled($state)) {
-                $query->orWhere('id', $state);
+            if (! in_array(SoftDeletes::class, class_uses_recursive($model), true)) {
+                return $query;
             }
+
+            $query->whereNull($model->getQualifiedDeletedAtColumn());
+
+            $selected = array_values(array_filter(Arr::wrap($state), fn ($value): bool => filled($value)));
+
+            if ($selected !== []) {
+                $query->orWhereIn($model->getQualifiedKeyName(), $selected);
+            }
+
+            return $query;
         };
     }
 }

@@ -30,6 +30,7 @@ class PriceListResource extends JsonResource
             'currency'    => CurrencyResource::make($this->whenLoaded('currency')),
             'creator'     => UserResource::make($this->whenLoaded('creator')),
             'company'     => CompanyResource::make($this->whenLoaded('company')),
+            'items'       => PriceRuleItemResource::collection($this->whenLoaded('items')),
         ];
     }
 }

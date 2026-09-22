@@ -43,7 +43,7 @@ class LotForm
                                     ->relationship(
                                         name: 'product',
                                         titleAttribute: 'name',
-                                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                             ->withTrashed()
                                             ->where(hide_deleted_unless_selected($state))
                                             ->whereIn('tracking', [ProductTracking::LOT, ProductTracking::SERIAL])

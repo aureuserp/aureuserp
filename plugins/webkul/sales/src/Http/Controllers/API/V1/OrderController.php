@@ -18,11 +18,13 @@ use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Services\PriceListResolver;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Sale\Http\Requests\OrderRequest;
 use Webkul\Sale\Http\Resources\V1\OrderResource;
 use Webkul\Sale\Models\Order;
+use Webkul\Support\Models\UOM;
 
 #[Group('Sales API Management')]
 #[Subgroup('Orders', 'Manage sales orders')]
@@ -37,6 +39,7 @@ class OrderController extends Controller
         'team',
         'company',
         'currency',
+        'priceList',
         'paymentTerm',
         'fiscalPosition',
         'journal',
@@ -116,7 +119,7 @@ class OrderController extends Controller
 
             $order = SaleOrderFacade::computeSaleOrder($order->refresh());
 
-            $order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom']);
+            $order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom']);
 
             return (new OrderResource($order))
                 ->additional(['message' => 'Order created successfully.'])
@@ -174,7 +177,7 @@ class OrderController extends Controller
 
             $order = SaleOrderFacade::computeSaleOrder($order->refresh());
 
-            $order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom']);
+            $order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom']);
 
             return (new OrderResource($order))
                 ->additional(['message' => 'Order updated successfully.']);
@@ -207,7 +210,7 @@ class OrderController extends Controller
             ], 422);
         }
 
-        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom'])))
             ->additional(['message' => 'Order confirmed successfully.']);
     }
 
@@ -238,7 +241,7 @@ class OrderController extends Controller
 
         $order = SaleOrderFacade::cancelSaleOrder($order, ! empty($data['partners']) ? $data : []);
 
-        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom'])))
             ->additional(['message' => 'Order canceled successfully.']);
     }
 
@@ -262,7 +265,7 @@ class OrderController extends Controller
 
         $order = SaleOrderFacade::backToQuotation($order);
 
-        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom'])))
             ->additional(['message' => 'Order set as quotation successfully.']);
     }
 
@@ -286,7 +289,7 @@ class OrderController extends Controller
 
         $order = SaleOrderFacade::lockAndUnlock($order);
 
-        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom'])))
             ->additional(['message' => 'Order lock state updated successfully.']);
     }
 
@@ -321,7 +324,7 @@ class OrderController extends Controller
 
         $order->restore();
 
-        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'priceList', 'lines.product', 'lines.uom'])))
             ->additional(['message' => 'Order restored successfully.']);
     }
 
@@ -387,7 +390,7 @@ class OrderController extends Controller
                 'salesman_id'      => $order->user_id,
                 'product_qty'      => $lineData['product_qty'] ?? 0,
                 'product_uom_qty'  => $lineData['product_qty'] ?? 0,
-                'price_unit'       => $lineData['price_unit'] ?? 0,
+                'price_unit'       => $lineData['price_unit'] ?? $this->resolveLinePrice($order, $product, $lineData),
                 'discount'         => $lineData['discount'] ?? 0,
                 'customer_lead'    => $lineData['customer_lead'] ?? 0,
             ], $lineData);
@@ -408,5 +411,28 @@ class OrderController extends Controller
                 $orderLine->taxes()->sync($taxes);
             }
         }
+    }
+
+    private function resolveLinePrice(Order $order, ?Product $product, array $lineData): float
+    {
+        if (! $product) {
+            return 0.0;
+        }
+
+        $uom = isset($lineData['product_uom_id'])
+            ? UOM::find($lineData['product_uom_id'])
+            : $product->uom;
+
+        $price = app(PriceListResolver::class)->getProductPrice(
+            $order->priceList,
+            $product,
+            (float) ($lineData['product_qty'] ?? 1) ?: 1,
+            $uom,
+            $order->currency,
+            $order->date_order,
+            $order->company,
+        );
+
+        return round($price, 2);
     }
 }

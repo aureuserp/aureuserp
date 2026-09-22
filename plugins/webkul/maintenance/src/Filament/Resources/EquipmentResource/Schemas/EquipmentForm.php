@@ -102,8 +102,9 @@ class EquipmentForm
                                     ->relationship(
                                         'team',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                             ->withTrashed()
+                                            ->where(hide_deleted_unless_selected($state))
                                             ->where(owned_by_company($get('company_id'))),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {

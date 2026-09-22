@@ -1,12 +1,16 @@
 <?php
 
 use Illuminate\Testing\TestResponse;
+use Webkul\Product\Enums\PriceRuleApplyTo;
+use Webkul\Product\Enums\PriceRuleType;
+use Webkul\Product\Models\PriceList;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
 require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -275,4 +279,41 @@ it('force deletes an order for authorized users', function () {
         ->assertJsonPath('message', 'Order permanently deleted.');
 
     $this->assertDatabaseMissing('sales_orders', ['id' => $order->id]);
+});
+
+it('takes the order currency from the price list sent in the payload', function () {
+    actingAsSalesOrderApiUser(['create_sale_order']);
+
+    $otherCurrency = Currency::query()->whereKeyNot(1)->first();
+
+    $priceList = PriceList::factory()->create(['currency_id' => $otherCurrency->id]);
+
+    $response = createOrderViaApi(['price_list_id' => $priceList->id]);
+
+    $response->assertJsonPath('data.price_list_id', $priceList->id)
+        ->assertJsonPath('data.currency_id', $otherCurrency->id);
+
+    expect(Order::query()->find($response->json('data.id'))->currency_id)->toBe($otherCurrency->id);
+});
+
+it('prices an order line from the price list when no unit price is sent', function () {
+    actingAsSalesOrderApiUser(['create_sale_order']);
+
+    $priceList = PriceList::factory()->create(['currency_id' => 1]);
+
+    $priceList->items()->create([
+        'apply_to'    => PriceRuleApplyTo::GLOBAL,
+        'type'        => PriceRuleType::FIXED,
+        'fixed_price' => 77,
+    ]);
+
+    $payload = salesOrderPayload(lineCount: 1, overrides: ['price_list_id' => $priceList->id]);
+
+    unset($payload['lines'][0]['price_unit']);
+
+    $response = test()
+        ->postJson(salesOrderRoute('store'), $payload)
+        ->assertCreated();
+
+    expect((float) OrderLine::query()->where('order_id', $response->json('data.id'))->value('price_unit'))->toBe(77.0);
 });

@@ -1,6 +1,8 @@
 <?php
 
 return [
-    'product'   => 'Produit',
-    'category'  => 'Catégorie',
+    'variant'  => 'Variante',
+    'product'  => 'Produit',
+    'category' => 'Catégorie',
+    'global'   => 'Tous les produits',
 ];

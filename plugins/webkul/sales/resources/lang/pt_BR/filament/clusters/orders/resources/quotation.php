@@ -23,6 +23,7 @@ return [
                     'quotation-date' => 'Data do orçamento',
                     'order-date'     => 'Data do pedido',
                     'payment-term'   => 'Condição de pagamento',
+                    'price-list'     => 'Lista de preços',
                 ],
             ],
         ],
@@ -186,8 +187,8 @@ return [
                         'title' => 'Informações adicionais',
 
                         'fields' => [
-                            'company'  => 'Empresa',
-                            'currency' => 'Moeda',
+                            'company'    => 'Empresa',
+                            'currency'   => 'Moeda',
                         ],
                     ],
                 ],

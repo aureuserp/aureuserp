@@ -13,7 +13,9 @@ class ListPriceLists extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label(__('products::filament/resources/price-list.header-actions.create.label'))
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

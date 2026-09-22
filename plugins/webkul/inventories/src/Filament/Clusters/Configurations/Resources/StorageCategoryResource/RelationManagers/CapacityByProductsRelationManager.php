@@ -35,7 +35,7 @@ class CapacityByProductsRelationManager extends RelationManager
                     ->relationship(
                         'product',
                         'name',
-                        modifyQueryUsing: fn (Builder $query, ?string $state) => $query
+                        modifyQueryUsing: fn (Builder $query, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state)),
                     )

@@ -21,9 +21,21 @@ class PriceListResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationLabel(): string
     {
-        return 'Price Lists';
+        return __('products::filament/resources/price-list.navigation.title');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('products::models/price-list.title');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('products::models/price-list.plural-title');
     }
 
     public static function form(Schema $schema): Schema

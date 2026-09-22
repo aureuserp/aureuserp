@@ -287,8 +287,11 @@ class InstallCommand extends Command
             $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> settings database migrations...");
 
             $this->call('migrate', [
-                '--path' => $settingsToRun->toArray(),
+                '--path'  => $settingsToRun->toArray(),
+                '--force' => true,
             ]);
+
+            $this->callSilently('settings:clear-cache');
 
             $this->info("✅ Settings migrations <comment>{$this->package->shortName()}</comment> completed successfully.");
 

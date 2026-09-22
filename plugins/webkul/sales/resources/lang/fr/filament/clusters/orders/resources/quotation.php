@@ -23,6 +23,7 @@ return [
                     'quotation-date' => 'Date du devis',
                     'order-date'     => 'Date de commande',
                     'payment-term'   => 'Condition de paiement',
+                    'price-list'     => 'Liste de prix',
                 ],
             ],
         ],
@@ -186,8 +187,8 @@ return [
                         'title' => 'Informations complémentaires',
 
                         'fields' => [
-                            'company'  => 'Société',
-                            'currency' => 'Devise',
+                            'company'    => 'Société',
+                            'currency'   => 'Devise',
                         ],
                     ],
                 ],

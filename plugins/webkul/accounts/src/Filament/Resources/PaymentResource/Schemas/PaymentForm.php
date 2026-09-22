@@ -196,7 +196,7 @@ class PaymentForm
                                             ->relationship(
                                                 'partnerBank',
                                                 'account_number',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where('partner_id', $get('partner_id')),
+                                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->where('partner_id', $get('partner_id')),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');

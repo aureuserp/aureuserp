@@ -9,6 +9,7 @@ use Webkul\Account\Http\Resources\V1\JournalResource;
 use Webkul\Account\Http\Resources\V1\PaymentTermResource;
 use Webkul\Inventory\Http\Resources\V1\WarehouseResource;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
+use Webkul\Product\Http\Resources\V1\PriceListResource;
 use Webkul\Security\Http\Resources\V1\TeamResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
 use Webkul\Support\Http\Resources\V1\CompanyResource;
@@ -56,6 +57,7 @@ class OrderResource extends JsonResource
             'team_id'             => $this->team_id,
             'company_id'          => $this->company_id,
             'currency_id'         => $this->currency_id,
+            'price_list_id'       => $this->price_list_id,
             'payment_term_id'     => $this->payment_term_id,
             'fiscal_position_id'  => $this->fiscal_position_id,
             'journal_id'          => $this->journal_id,
@@ -73,6 +75,7 @@ class OrderResource extends JsonResource
             'team'                => new TeamResource($this->whenLoaded('team')),
             'company'             => new CompanyResource($this->whenLoaded('company')),
             'currency'            => new CurrencyResource($this->whenLoaded('currency')),
+            'price_list'          => new PriceListResource($this->whenLoaded('priceList')),
             'payment_term'        => new PaymentTermResource($this->whenLoaded('paymentTerm')),
             'fiscal_position'     => new FiscalPositionResource($this->whenLoaded('fiscalPosition')),
             'journal'             => new JournalResource($this->whenLoaded('journal')),

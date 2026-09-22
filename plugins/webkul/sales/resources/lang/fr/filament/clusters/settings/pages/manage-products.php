@@ -17,6 +17,8 @@ return [
             'uom-help'                      => 'Permettre aux produits d\'avoir une unité de mesure',
             'packagings'                    => 'Conditionnements',
             'packagings-help'               => 'Permettre aux produits d\'avoir plusieurs conditionnements',
+            'price-lists'                   => 'Listes de prix',
+            'price-lists-help'              => 'Permettre aux produits d\'être vendus aux prix définis par une liste de prix',
             'deliver-content-by-email'      => 'Livrer le contenu par e-mail',
             'deliver-content-by-email-help' => 'Permettre aux produits de livrer le contenu par e-mail',
         ],

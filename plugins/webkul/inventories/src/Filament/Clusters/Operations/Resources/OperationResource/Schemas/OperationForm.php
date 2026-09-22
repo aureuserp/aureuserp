@@ -90,7 +90,8 @@ class OperationForm
                             ->relationship(
                                 name: 'partner',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()
+                                    ->where(hide_deleted_unless_selected($state))
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -122,7 +123,7 @@ class OperationForm
                             ->relationship(
                                 name: 'operationType',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()->whereIn('type', [
+                                modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->whereIn('type', [
                                     Enums\OperationType::INCOMING,
                                     Enums\OperationType::OUTGOING,
                                     Enums\OperationType::INTERNAL,
@@ -155,8 +156,9 @@ class OperationForm
                             ->relationship(
                                 'sourceLocation',
                                 'full_name',
-                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                     ->withTrashed()
+                                    ->where(hide_deleted_unless_selected($state))
                                     ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -175,8 +177,9 @@ class OperationForm
                             ->relationship(
                                 'destinationLocation',
                                 'full_name',
-                                modifyQueryUsing: fn (Builder $query, Get $get) => $query
+                                modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                                     ->withTrashed()
+                                    ->where(hide_deleted_unless_selected($state))
                                     ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
@@ -342,7 +345,7 @@ class OperationForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state))
                             ->where('type', ProductType::GOODS)
@@ -387,7 +390,8 @@ class OperationForm
                     ->relationship(
                         'finalLocation',
                         'full_name',
-                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                        modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()
+                            ->where(hide_deleted_unless_selected($state)),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
@@ -776,8 +780,9 @@ class OperationForm
                             ->relationship(
                                 name: 'destinationLocation',
                                 titleAttribute: 'full_name',
-                                modifyQueryUsing: fn (Builder $query) => $query
+                                modifyQueryUsing: fn (Builder $query, $state) => $query
                                     ->withTrashed()
+                                    ->where(hide_deleted_unless_selected($state))
                                     ->where(function ($query) use ($move) {
                                         $query->where('id', $move->destination_location_id)
                                             ->orWhere('parent_id', $move->destination_location_id);

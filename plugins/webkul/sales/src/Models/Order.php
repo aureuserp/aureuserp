@@ -21,6 +21,7 @@ use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProcurementGroup;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\PluginManager\Package;
+use Webkul\Product\Models\PriceList;
 use Webkul\Sale\Database\Factories\OrderFactory;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
@@ -87,6 +88,7 @@ class Order extends Model
         'amount_total',
         'warehouse_id',
         'procurement_group_id',
+        'price_list_id',
     ];
 
     protected $casts = [
@@ -133,6 +135,11 @@ class Order extends Model
     public function partner()
     {
         return $this->belongsTo(Partner::class);
+    }
+
+    public function priceList()
+    {
+        return $this->belongsTo(PriceList::class, 'price_list_id');
     }
 
     public function getQtyToInvoiceAttribute()
@@ -288,6 +295,8 @@ class Order extends Model
         });
 
         static::saving(function ($order) {
+            $order->computeCurrencyId();
+
             $order->updateName();
 
             $order->lines->each->update(['state' => $order->state]);
@@ -309,6 +318,18 @@ class Order extends Model
         } catch (Throwable $e) {
             return '';
         }
+    }
+
+    public function computeCurrencyId(): void
+    {
+        $priceListCurrencyId = $this->price_list_id
+            ? PriceList::query()->whereKey($this->price_list_id)->value('currency_id')
+            : null;
+
+        $this->currency_id = $priceListCurrencyId
+            ?? Company::query()->whereKey($this->company_id)->value('currency_id')
+            ?? $this->currency_id
+            ?? default_currency_id();
     }
 
     public function computeWarehouseId()

@@ -7,6 +7,8 @@ use Livewire\Livewire;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
+use Webkul\Product\Models\PriceList;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\BackToQuotationAction;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\CancelQuotationAction;
@@ -16,6 +18,7 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\Creat
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQuotations;
 use Webkul\Sale\Models\Order;
+use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
@@ -225,4 +228,50 @@ it('refuses to open a quotation owned by another company', function () {
 
     expect(fn () => Livewire::test(EditQuotation::class, ['record' => $quotation->id]))
         ->toThrow(ModelNotFoundException::class);
+});
+
+it('takes the order currency from the selected price list', function () {
+    $settings = app(ProductSettings::class);
+    $settings->enable_price_lists = true;
+    $settings->save();
+
+    FilamentHelper::actingAs(['view_any_sale_quotation', 'create_sale_quotation']);
+
+    $partner = SaleHelper::partner();
+
+    $otherCurrency = Currency::query()->whereKeyNot(SaleHelper::currency()->id)->first();
+
+    $priceList = PriceList::factory()->create(['currency_id' => $otherCurrency->id]);
+
+    Livewire::test(CreateQuotation::class)
+        ->fillForm([
+            'partner_id'      => $partner->id,
+            'date_order'      => now(),
+            'validity_date'   => now()->addDays(30),
+            'payment_term_id' => PaymentTerm::query()->value('id'),
+            'price_list_id'   => $priceList->id,
+        ])
+        ->assertFormSet(['currency_id' => $otherCurrency->id])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Order::query()->where('partner_id', $partner->id)->value('currency_id'))->toBe($otherCurrency->id);
+});
+
+it('still saves a currency when no price list is chosen', function () {
+    FilamentHelper::actingAs(['view_any_sale_quotation', 'create_sale_quotation']);
+
+    $partner = SaleHelper::partner();
+
+    Livewire::test(CreateQuotation::class)
+        ->fillForm([
+            'partner_id'      => $partner->id,
+            'date_order'      => now(),
+            'validity_date'   => now()->addDays(30),
+            'payment_term_id' => PaymentTerm::query()->value('id'),
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Order::query()->where('partner_id', $partner->id)->value('currency_id'))->not->toBeNull();
 });

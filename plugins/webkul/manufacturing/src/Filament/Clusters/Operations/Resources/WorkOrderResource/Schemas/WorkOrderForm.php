@@ -55,7 +55,7 @@ class WorkOrderForm
                             ->schema([
                                 Select::make('operation_id')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.form.sections.general.fields.work-order'))
-                                    ->relationship('operation', 'name', fn (Builder $query) => $query->withTrashed())
+                                    ->relationship('operation', 'name', fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                     ->searchable()
                                     ->preload()
                                     ->native(false)
@@ -75,7 +75,7 @@ class WorkOrderForm
                                     ->disabled(fn (?WorkOrder $record): bool => $record && ! in_array($record->state, [WorkOrderState::PENDING, WorkOrderState::WAITING], true)),
                                 Select::make('work_center_id')
                                     ->label(__('manufacturing::filament/clusters/operations/resources/work-order.form.sections.general.fields.work-center'))
-                                    ->relationship('workCenter', 'name', fn (Builder $query) => $query->withTrashed())
+                                    ->relationship('workCenter', 'name', fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                     ->searchable()
                                     ->preload()
                                     ->native(false)

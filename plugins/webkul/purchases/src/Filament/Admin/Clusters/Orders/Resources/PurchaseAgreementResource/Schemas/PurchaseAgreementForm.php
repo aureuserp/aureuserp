@@ -46,7 +46,8 @@ class PurchaseAgreementForm
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        fn (Builder $query) => $query->withTrashed()
+                                        fn (Builder $query, $state) => $query->withTrashed()
+                                            ->where(hide_deleted_unless_selected($state))
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -119,7 +120,7 @@ class PurchaseAgreementForm
                                     ->placeholder(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.reference-placeholder')),
                                 Select::make('company_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.company'))
-                                    ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                    ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                     })
@@ -202,7 +203,7 @@ class PurchaseAgreementForm
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query, Get $get, ?string $state) => $query
+                        fn (Builder $query, Get $get, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state))
                             ->where('type', ProductType::GOODS)

@@ -23,6 +23,7 @@ return [
                     'quotation-date' => 'Quotation Date',
                     'order-date'     => 'Order Date',
                     'payment-term'   => 'Payment Term',
+                    'price-list'     => 'Price List',
                 ],
             ],
         ],
@@ -186,8 +187,8 @@ return [
                         'title' => 'Additional Information',
 
                         'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'    => 'Company',
+                            'currency'   => 'Currency',
                         ],
                     ],
                 ],

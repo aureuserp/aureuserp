@@ -40,7 +40,7 @@ class ActivityPlanForm
                             ->editOptionForm(fn (Schema $schema) => DepartmentResource::form($schema)),
                         Select::make('company_id')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.company'))
-                            ->relationship(name: 'company', titleAttribute: 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                            ->relationship(name: 'company', titleAttribute: 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                             ->searchable()
                             ->preload()
                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))

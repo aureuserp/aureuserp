@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\ProductQuantityFactory;
 use Webkul\Inventory\Enums\LocationType;
@@ -100,9 +101,28 @@ class ProductQuantity extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getUomAttribute(): UOM
+    public function uom(): HasOneThrough
     {
-        return $this->product->uom;
+        return $this->hasOneThrough(
+            UOM::class,
+            Product::class,
+            'id',
+            'id',
+            'product_id',
+            'uom_id',
+        )->withTrashedParents();
+    }
+
+    public function productCategory(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Category::class,
+            Product::class,
+            'id',
+            'id',
+            'product_id',
+            'category_id',
+        )->withTrashedParents();
     }
 
     public function getAvailableQuantityAttribute(): float

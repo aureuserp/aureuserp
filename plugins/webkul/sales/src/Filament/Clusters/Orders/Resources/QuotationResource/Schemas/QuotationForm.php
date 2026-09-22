@@ -34,6 +34,8 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Support\StockScope;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
+use Webkul\Product\Models\PriceList;
+use Webkul\Product\Services\PriceListResolver;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Enums\QtyDeliveredMethod;
@@ -90,18 +92,21 @@ class QuotationForm
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('id')->withTrashed()
+                                                modifyQueryUsing: fn (Builder $query, $state) => $query->orderBy('id')->withTrashed()
+                                                    ->where(hide_deleted_unless_selected($state))
                                             )
                                             ->searchable()
                                             ->preload()
                                             ->required()
                                             ->createOptionForm(fn (Schema $schema) => CustomerResource::form($schema))
                                             ->live()
-                                            ->afterStateUpdated(function (Set $set, $state) {
+                                            ->afterStateUpdated(function (Set $set, Get $get, $state) {
                                                 $partner = $state ? Partner::find($state) : null;
 
                                                 $set('user_id', $partner?->user?->id);
                                                 $set('payment_term_id', $partner?->propertyPaymentTerm?->id);
+
+                                                static::applyPartnerPriceList($partner, $set, $get);
                                             })
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                                             ->columnSpan(1)
@@ -135,6 +140,24 @@ class QuotationForm
                                     ->searchable()
                                     ->preload()
                                     ->required()
+                                    ->columnSpan(1),
+                                Select::make('price_list_id')
+                                    ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.price-list'))
+                                    ->relationship(
+                                        name: 'priceList',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->active()->where(owned_by_company($get('company_id'))),
+                                    )
+                                    ->searchable()
+                                    ->preload()
+                                    ->live()
+                                    ->visible(fn (ProductSettings $settings): bool => $settings->enable_price_lists)
+                                    ->afterStateUpdated(function (Set $set, Get $get): void {
+                                        $previousCurrencyId = filled($get('currency_id')) ? (int) $get('currency_id') : null;
+
+                                        static::syncCurrencyFromPriceList($set, $get, $previousCurrencyId, $get('company_id'));
+                                    })
+                                    ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                                     ->columnSpan(1),
                             ])->columns(2),
                     ]),
@@ -238,7 +261,7 @@ class QuotationForm
                                     ->schema([
                                         Select::make('company_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.company'))
-                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                             })
@@ -251,28 +274,21 @@ class QuotationForm
                                             ->afterStateUpdated(function (Set $set, Get $get, ?int $state): void {
                                                 $companyId = $state ?? current_company_id();
 
-                                                $set('currency_id', Company::find($state)?->currency_id);
+                                                $previousCurrencyId = filled($get('currency_id')) ? (int) $get('currency_id') : null;
+
                                                 $set('warehouse_id', static::getDefaultWarehouseId($companyId));
 
                                                 clear_foreign_company_values($set, $get, [
                                                     'payment_term_id' => PaymentTerm::class,
+                                                    'price_list_id'   => PriceList::class,
                                                 ], $companyId);
+
+                                                static::syncCurrencyFromPriceList($set, $get, $previousCurrencyId, $companyId);
                                             })
                                             ->reactive()
                                             ->default(current_company_id()),
-                                        Select::make('currency_id')
-                                            ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
-                                            ->relationship(
-                                                name: 'currency',
-                                                titleAttribute: 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
-                                            )
-                                            ->required()
-                                            ->searchable()
-                                            ->preload()
-                                            ->live()
-                                            ->reactive()
-                                            ->afterStateUpdated(fn ($old, Set $set, Get $get) => static::updateProductPricesForCurrency($old ? (int) $old : null, $set, $get))
+                                        Hidden::make('currency_id')
+                                            ->dehydrated(false)
                                             ->default(current_company()?->currency_id),
                                         ...$customFormFields,
                                     ]),
@@ -441,7 +457,7 @@ class QuotationForm
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Get $get, ?string $state) => $query
+                        modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state))
                             ->whereNull('is_configurable')
@@ -785,7 +801,7 @@ class QuotationForm
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query, Get $get, ?string $state) => $query
+                        fn (Builder $query, Get $get, $state) => $query
                             ->withTrashed()
                             ->where(hide_deleted_unless_selected($state))
                             ->whereNull('is_configurable')
@@ -1067,6 +1083,8 @@ class QuotationForm
 
         $set('product_packaging_qty', $packaging['packaging_qty'] ?? null);
 
+        $set('price_unit', round(static::calculateUnitPrice($get), 2));
+
         self::calculateLineTotals($set, $get);
     }
 
@@ -1239,33 +1257,128 @@ class QuotationForm
     {
         $product = Product::withTrashed()->find($get('product_id'));
 
-        $vendorPrices = $product->sellers->sortByDesc('sort');
-
-        if ($get('../../partner_id')) {
-            $vendorPrices = $vendorPrices->where('partner_id', $get('../../partner_id'));
+        if (! $product) {
+            return 0.0;
         }
 
-        $vendorPrices = $vendorPrices->where('min_qty', '<=', $get('product_qty') ?? 1);
+        return static::unitPriceFor(
+            $product,
+            static::resolvePriceList($get('../../price_list_id')),
+            filled($get('product_uom_id')) ? (int) $get('product_uom_id') : null,
+            floatval($get('product_qty') ?? 1),
+            filled($get('../../currency_id')) ? (int) $get('../../currency_id') : null,
+            filled($get('../../company_id')) ? (int) $get('../../company_id') : current_company_id(),
+        );
+    }
 
-        $currencyId = $get('../../currency_id');
+    /**
+     * A sale is priced from the product's sales price, shaped by the order's
+     * price list when it carries one. Vendor prices belong to purchasing.
+     */
+    private static function unitPriceFor(
+        Product $product,
+        ?PriceList $priceList,
+        ?int $uomId,
+        float $quantity,
+        ?int $currencyId,
+        ?int $companyId,
+    ): float {
+        return app(PriceListResolver::class)->getProductPrice(
+            $priceList,
+            $product,
+            $quantity ?: 1,
+            $uomId ? UOM::find($uomId) : null,
+            $currencyId ? Currency::find($currencyId) : null,
+            null,
+            $companyId ? Company::find($companyId) : null,
+        );
+    }
 
-        $companyId = $get('../../company_id') ?? current_company_id();
+    private static function syncCurrencyFromPriceList(Set $set, Get $get, ?int $previousCurrencyId, $companyId): void
+    {
+        $priceList = static::resolvePriceList($get('price_list_id'));
 
-        if (! $vendorPrices->isEmpty()) {
-            $seller = $vendorPrices->first();
+        $currencyId = $priceList?->currency_id
+            ?? Company::find(filled($companyId) ? $companyId : current_company_id())?->currency_id
+            ?? $previousCurrencyId;
 
-            $vendorPrice = static::convertPrice($seller->price, $seller->currency_id, $currencyId, $companyId);
-        } else {
-            $vendorPrice = static::convertPrice($product->price ?? $product->cost, default_currency_id(), $currencyId, $companyId);
+        $set('currency_id', $currencyId);
+
+        if ($priceList) {
+            static::repriceLines($set, $get);
+
+            return;
         }
 
-        if (! $get('product_uom_id') || ! $product->uom) {
-            return $vendorPrice;
+        if ($previousCurrencyId && $currencyId && $previousCurrencyId !== (int) $currencyId) {
+            static::updateProductPricesForCurrency($previousCurrencyId, $set, $get);
+        }
+    }
+
+    private static function resolvePriceList($priceListId): ?PriceList
+    {
+        if (! $priceListId) {
+            return null;
         }
 
-        $uomQty = UOM::find($get('product_uom_id'))->computeQuantity(1, $product->uom, false);
+        return PriceList::find($priceListId);
+    }
 
-        return (float) ($vendorPrice * $uomQty);
+    private static function applyPartnerPriceList(?Partner $partner, Set $set, Get $get): void
+    {
+        if (! app(ProductSettings::class)->enable_price_lists) {
+            return;
+        }
+
+        if (blank($partner?->price_list_id)) {
+            return;
+        }
+
+        $previousCurrencyId = filled($get('currency_id')) ? (int) $get('currency_id') : null;
+
+        $set('price_list_id', $partner->price_list_id);
+
+        static::syncCurrencyFromPriceList($set, $get, $previousCurrencyId, $get('company_id'));
+    }
+
+    private static function repriceLines(Set $set, Get $get): void
+    {
+        $products = $get('products');
+
+        if (! is_array($products)) {
+            return;
+        }
+
+        $priceList = static::resolvePriceList($get('price_list_id'));
+
+        $currencyId = filled($get('currency_id')) ? (int) $get('currency_id') : null;
+
+        $companyId = filled($get('company_id')) ? (int) $get('company_id') : current_company_id();
+
+        foreach ($products as $key => $line) {
+            if (empty($line['product_id'])) {
+                continue;
+            }
+
+            $product = Product::withTrashed()->find($line['product_id']);
+
+            if (! $product) {
+                continue;
+            }
+
+            $priceUnit = static::unitPriceFor(
+                $product,
+                $priceList,
+                filled($line['product_uom_id'] ?? null) ? (int) $line['product_uom_id'] : null,
+                floatval($line['product_qty'] ?? 1),
+                $currencyId,
+                $companyId,
+            );
+
+            $set("products.$key.price_unit", round($priceUnit, 2));
+
+            static::calculateLineTotals($set, $get, "products.$key.");
+        }
     }
 
     private static function calculatePurchasePrice($product, $uomId, ?int $currencyId = null, ?int $companyId = null): float

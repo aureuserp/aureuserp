@@ -63,6 +63,9 @@ class ManageProducts extends SettingsPage
                 Toggle::make('enable_packagings')
                     ->label(__('sales::filament/clusters/settings/pages/manage-products.form.fields.packagings'))
                     ->helperText(__('sales::filament/clusters/settings/pages/manage-products.form.fields.packagings-help')),
+                Toggle::make('enable_price_lists')
+                    ->label(__('sales::filament/clusters/settings/pages/manage-products.form.fields.price-lists'))
+                    ->helperText(__('sales::filament/clusters/settings/pages/manage-products.form.fields.price-lists-help')),
                 // Forms\Components\Toggle::make('enable_deliver_content_by_email')
                 //     ->label(__('sales::filament/clusters/settings/pages/manage-products.form.fields.deliver-content-by-email'))
                 //     ->helperText(__('sales::filament/clusters/settings/pages/manage-products.form.fields.deliver-content-by-email-help')),

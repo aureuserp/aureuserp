@@ -1,6 +1,8 @@
 <?php
 
 return [
-    'product'   => 'منتج',
-    'category'  => 'فئة',
+    'variant'  => 'متغير',
+    'product'  => 'منتج',
+    'category' => 'فئة',
+    'global'   => 'كل المنتجات',
 ];

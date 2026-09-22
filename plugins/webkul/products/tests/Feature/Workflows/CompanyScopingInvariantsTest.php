@@ -1,6 +1,7 @@
 <?php
 
 use Webkul\Product\Models\Packaging;
+use Webkul\Product\Models\PriceRuleItem;
 use Webkul\Product\Models\Product;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/CompanyScopeHelper.php';
@@ -10,6 +11,7 @@ $plugin = 'products';
 
 $shared = [
     Packaging::class,
+    PriceRuleItem::class,
     Product::class,
 ];
 
