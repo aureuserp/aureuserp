@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class RouteRequest extends FormRequest
 {
@@ -18,7 +19,7 @@ class RouteRequest extends FormRequest
 
         return [
             'name'                        => [...$requiredRule, 'string', 'max:255'],
-            'company_id'                  => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                  => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'product_category_selectable' => ['nullable', 'boolean'],
             'product_selectable'          => ['nullable', 'boolean'],
             'packaging_selectable'        => ['nullable', 'boolean'],

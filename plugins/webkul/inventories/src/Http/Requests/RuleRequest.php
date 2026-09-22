@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\RuleAction;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class RuleRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class RuleRequest extends FormRequest
             'partner_address_id'      => ['nullable', 'integer', 'exists:partners_partners,id'],
             'delay'                   => ['nullable', 'integer', 'min:0'],
             'route_id'                => [...$requiredRule, 'integer', 'exists:inventories_routes,id'],
-            'company_id'              => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'              => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
         ];
     }
 

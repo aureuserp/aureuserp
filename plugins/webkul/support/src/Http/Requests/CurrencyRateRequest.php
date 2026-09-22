@@ -4,6 +4,7 @@ namespace Webkul\Support\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class CurrencyRateRequest extends FormRequest
 {
@@ -28,7 +29,7 @@ class CurrencyRateRequest extends FormRequest
         $rules = [
             'name'       => [...$requiredRule, 'date'],
             'rate'       => [...$requiredRule, 'numeric', 'min:0'],
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
         ];
 
         return $rules;

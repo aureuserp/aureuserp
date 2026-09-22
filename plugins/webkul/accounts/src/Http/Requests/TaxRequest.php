@@ -14,6 +14,7 @@ use Webkul\Account\Enums\TaxScope;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Exceptions\InvalidTaxFormulaException;
 use Webkul\Account\Services\TaxFormulaEvaluator;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class TaxRequest extends FormRequest
 {
@@ -63,7 +64,7 @@ class TaxRequest extends FormRequest
                 },
             ],
             'tax_group_id'                                   => [...$requiredRule, 'integer', 'exists:accounts_tax_groups,id'],
-            'company_id'                                     => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                                     => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'country_id'                                     => ['nullable', 'integer', 'exists:countries,id'],
             'tax_scope'                                      => ['nullable', 'string', Rule::enum(TaxScope::class)],
             'price_include_override'                         => ['nullable', 'string', Rule::enum(TaxIncludeOverride::class)],

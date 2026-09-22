@@ -141,6 +141,7 @@ it('creates a tax with repartition lines', function () {
     $currency = Currency::first() ?? Currency::factory()->create();
     $company = Company::factory()->create(['currency_id' => $currency->id]);
     $user->forceFill(['default_company_id' => $company->id])->saveQuietly();
+    $user->allowedCompanies()->sync([$company->id]);
 
     $payload = taxPayload(['company_id' => $company->id]);
 

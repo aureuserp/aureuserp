@@ -55,7 +55,7 @@ function inventoryOperationTypePayload(array $overrides = []): array
 {
     $source = Location::factory()->create();
     $destination = Location::factory()->create();
-    $company = Company::factory()->create();
+    $companyId = current_company_id() ?? Company::factory()->create()->id;
 
     return array_replace_recursive([
         'name'                    => 'Test Operation',
@@ -64,7 +64,7 @@ function inventoryOperationTypePayload(array $overrides = []): array
         'create_backorder'        => CreateBackorder::ASK->value,
         'source_location_id'      => $source->id,
         'destination_location_id' => $destination->id,
-        'company_id'              => $company->id,
+        'company_id'              => $companyId,
     ], $overrides);
 }
 

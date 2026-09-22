@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Webkul\Product\Enums\PriceRuleApplyTo;
 use Webkul\Product\Enums\PriceRuleBase;
 use Webkul\Product\Enums\PriceRuleType;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PriceListRequest extends FormRequest
 {
@@ -32,7 +33,7 @@ class PriceListRequest extends FormRequest
         return [
             'name'                        => [...$requiredRule, 'string', 'max:255'],
             'currency_id'                 => [...$requiredRule, 'integer', 'exists:currencies,id'],
-            'company_id'                  => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                  => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'sort'                        => ['nullable', 'integer'],
             'is_active'                   => ['nullable', 'boolean'],
             'items'                       => ['nullable', 'array'],

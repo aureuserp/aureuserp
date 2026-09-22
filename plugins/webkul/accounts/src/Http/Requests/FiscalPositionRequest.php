@@ -4,6 +4,7 @@ namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class FiscalPositionRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class FiscalPositionRequest extends FormRequest
 
         return [
             'name'             => [...$requiredRule, 'string', 'max:255'],
-            'company_id'       => [...$requiredRule, 'integer', 'exists:companies,id'],
+            'company_id'       => [...$requiredRule, 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'country_id'       => ['nullable', 'integer', 'exists:countries,id'],
             'country_group_id' => ['nullable', 'integer', 'exists:countries,id'],
             'zip_from'         => ['nullable', 'string', 'max:10'],

@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class JournalRequest extends FormRequest
 {
@@ -31,7 +32,7 @@ class JournalRequest extends FormRequest
             'name'                      => [...$requiredRule, 'string', 'max:255'],
             'code'                      => [...$requiredRule, 'string', 'max:5'],
             'type'                      => [...$requiredRule, 'string', Rule::enum(JournalType::class)],
-            'company_id'                => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'currency_id'               => ['nullable', 'integer', 'exists:currencies,id'],
             'default_account_id'        => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'suspense_account_id'       => ['nullable', 'integer', 'exists:accounts_accounts,id'],

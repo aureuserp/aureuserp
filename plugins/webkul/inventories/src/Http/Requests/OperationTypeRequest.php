@@ -8,6 +8,7 @@ use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationType as InventoryOperationType;
 use Webkul\Inventory\Enums\ReservationMethod;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class OperationTypeRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class OperationTypeRequest extends FormRequest
             'warehouse_id'                       => ['nullable', 'integer', 'exists:inventories_warehouses,id'],
             'reservation_method'                 => ['nullable', 'string', Rule::enum(ReservationMethod::class)],
             'auto_show_reception_report'         => ['nullable', 'boolean'],
-            'company_id'                         => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                         => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'return_operation_type_id'           => ['nullable', 'integer', 'exists:inventories_operation_types,id'],
             'create_backorder'                   => [...$requiredRule, 'string', Rule::enum(CreateBackorder::class)],
             'move_type'                          => ['nullable', 'string', Rule::enum(MoveType::class)],

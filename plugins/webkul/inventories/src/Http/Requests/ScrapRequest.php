@@ -4,6 +4,7 @@ namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Inventory\Support\CrossCompanyTransferGuard;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class ScrapRequest extends FormRequest
 {
@@ -42,7 +43,7 @@ class ScrapRequest extends FormRequest
             'partner_id'              => ['nullable', 'integer', 'exists:partners_partners,id'],
             'source_location_id'      => ['nullable', 'integer', 'exists:inventories_locations,id'],
             'destination_location_id' => ['nullable', 'integer', 'exists:inventories_locations,id'],
-            'company_id'              => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'              => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'tags'                    => ['nullable', 'array'],
             'tags.*'                  => ['integer', 'exists:inventories_tags,id'],
         ];

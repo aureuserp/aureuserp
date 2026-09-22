@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Product\Models\Product;
 use Webkul\Purchase\Enums\RequisitionType;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PurchaseAgreementRequest extends FormRequest
 {
@@ -32,7 +33,7 @@ class PurchaseAgreementRequest extends FormRequest
             'partner_id'        => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
             'type'              => [...$requiredRule, 'string', Rule::enum(RequisitionType::class)],
             'currency_id'       => [...$requiredRule, 'integer', 'exists:currencies,id'],
-            'company_id'        => [...$requiredRule, 'integer', 'exists:companies,id'],
+            'company_id'        => [...$requiredRule, 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'user_id'           => ['nullable', 'integer', 'exists:users,id'],
             'starts_at'         => ['nullable', 'date', 'after_or_equal:today'],
             'ends_at'           => ['nullable', 'date', 'after_or_equal:starts_at'],
