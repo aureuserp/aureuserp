@@ -46,6 +46,7 @@ class ProductServiceProvider extends PackageServiceProvider
                 '2026_04_15_044431_add_columns_in_products_product_suppliers_table',
                 '2026_09_15_000000_consolidate_products_price_rules_into_price_lists_table',
                 '2026_09_15_000100_add_price_list_id_to_partners_partners_table',
+                '2026_09_24_000000_add_unique_barcode_to_products_products_table',
             ])
             ->hasSeeder('Webkul\\Product\\Database\Seeders\\DatabaseSeeder')
             ->runsMigrations()

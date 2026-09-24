@@ -142,6 +142,7 @@ class ProductForm
                     ->maxLength(255),
                 TextInput::make('barcode')
                     ->label(__('products::filament/resources/product.form.sections.settings.fields.barcode'))
+                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
                 Select::make('category_id')
                     ->label(__('products::filament/resources/product.form.sections.settings.fields.category'))
