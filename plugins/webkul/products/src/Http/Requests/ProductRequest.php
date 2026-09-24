@@ -32,7 +32,7 @@ class ProductRequest extends FormRequest
             'name'                 => [...$requiredRule, 'string', 'max:255'],
             'service_tracking'     => ['nullable', 'string', 'max:255'],
             'reference'            => ['nullable', 'string', 'max:255'],
-            'barcode'              => ['nullable', 'string', 'max:255'],
+            'barcode'              => ['nullable', 'string', 'max:255', Rule::unique('products_products', 'barcode'),
             'price'                => [...$requiredRule, 'numeric', 'min:0'],
             'cost'                 => ['nullable', 'numeric', 'min:0'],
             'volume'               => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
