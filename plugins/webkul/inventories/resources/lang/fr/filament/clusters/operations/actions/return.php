@@ -9,7 +9,7 @@ return [
                 'product'                 => 'Produit',
                 'quantity'                => 'Quantité',
                 'uom'                     => 'UdM',
-                'excess-quantity-tooltip' => 'La quantité à retourner est supérieure à la quantité traitée dans l\'opération d\'origine.',
+                'excess-quantity-tooltip' => 'La quantité à retourner est supérieure à la quantité restante pouvant être retournée.',
             ],
         ],
     ],
@@ -20,6 +20,9 @@ return [
         ],
         'no-quantities' => [
             'body' => 'Veuillez indiquer au moins une quantité non nulle.',
+        ],
+        'excess-quantity' => [
+            'body' => 'La quantité à retourner pour :product ne peut pas être supérieure à la quantité restante pouvant être retournée (:quantity).',
         ],
     ],
 ];

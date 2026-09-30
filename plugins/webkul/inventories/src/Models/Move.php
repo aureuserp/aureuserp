@@ -213,6 +213,18 @@ class Move extends Model
         return $this->hasMany(self::class, 'origin_returned_move_id');
     }
 
+    public function returnedQuantity(): float
+    {
+        return $this->returnedMoves
+            ->reject(fn (self $move) => $move->state === MoveState::CANCELED)
+            ->sum(fn (self $move) => $move->uom->computeQuantity($move->product_uom_qty, $this->uom, roundingMethod: 'HALF-UP'));
+    }
+
+    public function returnableQuantity(): float
+    {
+        return max(0.0, float_round($this->quantity - $this->returnedQuantity(), precisionRounding: $this->uom->rounding));
+    }
+
     public function restrictPartner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);

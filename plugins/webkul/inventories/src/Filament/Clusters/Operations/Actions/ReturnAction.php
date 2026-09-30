@@ -56,9 +56,9 @@ class ReturnAction extends Action
                 $form->fill([
                     'return_moves' => $returnableMoves->map(fn ($move) => [
                         'move_id'       => $move->id,
-                        'move_quantity' => (float) $move->quantity,
+                        'move_quantity' => $move->returnableQuantity(),
                         'product_name'  => $move->product?->name ?? '—',
-                        'qty'           => $move->product_uom_qty,
+                        'qty'           => $move->returnableQuantity(),
                         'uom_name'      => $move->uom?->name ?? '—',
                     ])->values()->all(),
                 ]);
@@ -109,6 +109,23 @@ class ReturnAction extends Action
                     ]),
             ])
             ->action(function (Operation $record, array $data, Component $livewire): void {
+                $excess = collect($data['return_moves'] ?? [])
+                    ->first(fn ($row) => (float) $row['qty'] > (float) ($row['move_quantity'] ?? 0));
+
+                if ($excess) {
+                    Notification::make()
+                        ->warning()
+                        ->body(__('inventories::filament/clusters/operations/actions/return.notification.excess-quantity.body', [
+                            'product'  => $excess['product_name'] ?? '',
+                            'quantity' => (float) ($excess['move_quantity'] ?? 0),
+                        ]))
+                        ->send();
+
+                    $this->halt();
+
+                    return;
+                }
+
                 $moveQuantities = collect($data['return_moves'] ?? [])
                     ->filter(fn ($row) => (float) $row['qty'] > 0)
                     ->mapWithKeys(fn ($row) => [(int) $row['move_id'] => (float) $row['qty']])
@@ -147,6 +164,7 @@ class ReturnAction extends Action
     {
         return $record->moves->filter(
             fn ($move) => $move->state === MoveState::DONE && ! $move->is_scraped
+                && $move->returnableQuantity() > 0
         );
     }
 }
