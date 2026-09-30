@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Product\Models\Product;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class VendorPriceListRequest extends FormRequest
 {
@@ -30,7 +31,7 @@ class VendorPriceListRequest extends FormRequest
             'partner_id'    => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
             'product_id'    => [...$requiredRule, 'integer', 'exists:products_products,id'],
             'currency_id'   => [...$requiredRule, 'integer', 'exists:currencies,id'],
-            'company_id'    => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'    => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'product_name'  => ['nullable', 'string', 'max:255'],
             'product_code'  => ['nullable', 'string', 'max:255'],
             'delay'         => ['nullable', 'integer', 'min:0', 'max:99999999'],

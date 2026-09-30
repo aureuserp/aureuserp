@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class WarehouseRequest extends FormRequest
 {
@@ -20,7 +21,7 @@ class WarehouseRequest extends FormRequest
         return [
             'name'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,name'.($warehouseId ? ','.$warehouseId : '')],
             'code'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,code'.($warehouseId ? ','.$warehouseId : '')],
-            'company_id'            => [...$requiredRule, 'integer', 'exists:companies,id'],
+            'company_id'            => [...$requiredRule, 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'partner_address_id'    => ['nullable', 'integer', 'exists:partners_partners,id'],
             'reception_steps'       => ['nullable', 'string'],
             'delivery_steps'        => ['nullable', 'string'],

@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Product\Models\Product;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PurchaseOrderRequest extends FormRequest
 {
@@ -30,7 +31,7 @@ class PurchaseOrderRequest extends FormRequest
             'partner_id'                   => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
             'currency_id'                  => [...$requiredRule, 'integer', 'exists:currencies,id'],
             'ordered_at'                   => [...$requiredRule, 'date'],
-            'company_id'                   => [...$requiredRule, 'integer', 'exists:companies,id'],
+            'company_id'                   => [...$requiredRule, 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'partner_reference'            => ['nullable', 'string', 'max:255'],
             'requisition_id'               => ['nullable', 'integer', 'exists:purchases_requisitions,id'],
             'planned_at'                   => ['nullable', 'date'],

@@ -58,7 +58,7 @@ function inventoryRulePayload(array $overrides = []): array
     $destination = Location::factory()->create();
     $route = Route::factory()->create();
     $opType = OperationType::factory()->create();
-    $company = Company::factory()->create();
+    $companyId = current_company_id() ?? Company::factory()->create()->id;
 
     return array_replace_recursive([
         'name'                    => 'Test Rule',
@@ -67,7 +67,7 @@ function inventoryRulePayload(array $overrides = []): array
         'source_location_id'      => $source->id,
         'destination_location_id' => $destination->id,
         'route_id'                => $route->id,
-        'company_id'              => $company->id,
+        'company_id'              => $companyId,
     ], $overrides);
 }
 

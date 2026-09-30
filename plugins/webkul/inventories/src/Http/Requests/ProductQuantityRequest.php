@@ -7,6 +7,7 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Package;
 use Webkul\Inventory\Models\Product;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class ProductQuantityRequest extends FormRequest
 {
@@ -28,7 +29,7 @@ class ProductQuantityRequest extends FormRequest
             'package_id'         => ['nullable', 'integer', 'exists:inventories_packages,id'],
             'partner_id'         => ['nullable', 'integer', 'exists:partners_partners,id'],
             'user_id'            => ['nullable', 'integer', 'exists:users,id'],
-            'company_id'         => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'         => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'counted_quantity'   => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
             'scheduled_at'       => ['nullable', 'date'],
         ];

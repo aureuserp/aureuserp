@@ -49,12 +49,12 @@ function inventoryWarehouseRoute(string $action, mixed $warehouse = null): strin
 
 function inventoryWarehousePayload(array $overrides = []): array
 {
-    $company = Company::factory()->create();
+    $companyId = current_company_id() ?? Company::factory()->create()->id;
 
     return array_replace_recursive([
         'name'       => 'Test Warehouse',
         'code'       => 'TWH-'.uniqid(),
-        'company_id' => $company->id,
+        'company_id' => $companyId,
     ], $overrides);
 }
 
@@ -245,12 +245,12 @@ it('rejects duplicate warehouse names', function () {
     actingAsInventoryWarehouseApiUser(['create_inventory_warehouse']);
 
     $existing = Warehouse::factory()->create(['name' => 'DuplicateWarehouse']);
-    $company = Company::factory()->create();
+    $companyId = current_company_id() ?? Company::factory()->create()->id;
 
     $this->postJson(inventoryWarehouseRoute('store'), [
         'name'       => $existing->name,
         'code'       => 'UNIQ-'.uniqid(),
-        'company_id' => $company->id,
+        'company_id' => $companyId,
     ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['name']);
@@ -260,12 +260,12 @@ it('rejects duplicate warehouse codes', function () {
     actingAsInventoryWarehouseApiUser(['create_inventory_warehouse']);
 
     $existing = Warehouse::factory()->create(['code' => 'DUPCODE']);
-    $company = Company::factory()->create();
+    $companyId = current_company_id() ?? Company::factory()->create()->id;
 
     $this->postJson(inventoryWarehouseRoute('store'), [
         'name'       => 'New Warehouse',
         'code'       => $existing->code,
-        'company_id' => $company->id,
+        'company_id' => $companyId,
     ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['code']);

@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\AllowNewProduct;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class StorageCategoryRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class StorageCategoryRequest extends FormRequest
             'name'               => [...$requiredRule, 'string', 'max:255'],
             'max_weight'         => ['nullable', 'numeric', 'min:0', 'max:99999999'],
             'allow_new_products' => [...$requiredRule, 'string', Rule::enum(AllowNewProduct::class)],
-            'company_id'         => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'         => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
         ];
     }
 

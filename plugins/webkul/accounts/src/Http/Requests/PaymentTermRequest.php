@@ -4,6 +4,7 @@ namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PaymentTermRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class PaymentTermRequest extends FormRequest
 
         return [
             'name'       => [...$requiredRule, 'string', 'max:255'],
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'note'       => ['nullable', 'string'],
         ];
     }

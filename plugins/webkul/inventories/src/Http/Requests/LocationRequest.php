@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\LocationType;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class LocationRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class LocationRequest extends FormRequest
             'parent_id'                  => ['nullable', 'integer', 'exists:inventories_locations,id'],
             'description'                => ['nullable', 'string'],
             'type'                       => [...$requiredRule, 'string', Rule::enum(LocationType::class)],
-            'company_id'                 => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                 => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'storage_category_id'        => ['nullable', 'integer', 'exists:inventories_storage_categories,id'],
             'is_scrap'                   => ['nullable', 'boolean'],
             'is_dock'                    => ['nullable', 'boolean'],

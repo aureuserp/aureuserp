@@ -10,6 +10,8 @@ class CompanyConsistencyGuard
     {
         $companyId = $companyId ?: current_company_id();
 
+        $allowedCompanyIds = allowed_company_ids() ?: [$companyId];
+
         $conflicts = [];
 
         foreach ($fields as $field => $model) {
@@ -47,6 +49,11 @@ class CompanyConsistencyGuard
             $names = $model::query()
                 ->withoutGlobalScopes()
                 ->whereKey($foreign)
+                ->where(function ($query) use ($allowedCompanyIds) {
+                    foreach ($allowedCompanyIds as $allowedCompanyId) {
+                        $query->orWhere(owned_by_company($allowedCompanyId));
+                    }
+                })
                 ->get()
                 ->mapWithKeys(fn ($record) => [$record->getKey() => $record->name ?? $record->getKey()]);
 

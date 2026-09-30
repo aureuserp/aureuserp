@@ -5,6 +5,7 @@ namespace Webkul\Project\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Project\Enums\ProjectVisibility;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class ProjectRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class ProjectRequest extends FormRequest
             'stage_id'         => [...$requiredRule, 'integer', 'exists:projects_project_stages,id'],
             'user_id'          => ['nullable', 'integer', 'exists:users,id'],
             'partner_id'       => ['nullable', 'integer', 'exists:partners_partners,id'],
-            'company_id'       => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'       => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'start_date'       => ['nullable', 'date', 'required_with:end_date', 'before_or_equal:end_date'],
             'end_date'         => ['nullable', 'date', 'required_with:start_date', 'after_or_equal:start_date'],
             'allocated_hours'  => ['nullable', 'numeric', 'min:0'],

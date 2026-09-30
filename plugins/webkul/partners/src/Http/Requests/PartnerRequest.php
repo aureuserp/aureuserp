@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Partner\Enums\AccountType;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PartnerRequest extends FormRequest
 {
@@ -48,7 +49,7 @@ class PartnerRequest extends FormRequest
             'country_id'       => ['nullable', 'integer', 'exists:countries,id'],
             'parent_id'        => ['nullable', 'integer', 'exists:partners_partners,id'],
             'title_id'         => ['nullable', 'integer', 'exists:partners_titles,id'],
-            'company_id'       => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'       => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'industry_id'      => ['nullable', 'integer', 'exists:partners_industries,id'],
             'user_id'          => ['nullable', 'integer', 'exists:users,id'],
         ];

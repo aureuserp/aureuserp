@@ -5,6 +5,7 @@ namespace Webkul\Sale\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Product\Models\Product;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class OrderRequest extends FormRequest
 {
@@ -36,7 +37,7 @@ class OrderRequest extends FormRequest
             'origin'                        => ['nullable', 'string', 'max:255'],
             'note'                          => ['nullable', 'string'],
             'user_id'                       => ['nullable', 'integer', 'exists:users,id'],
-            'company_id'                    => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'                    => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
             'currency_id'                   => ['nullable', 'integer', 'exists:currencies,id'],
             'price_list_id'                 => ['nullable', 'integer', 'exists:products_product_price_lists,id'],
             'campaign_id'                   => ['nullable', 'integer', 'exists:utm_campaigns,id'],

@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
 
 class PackageTypeRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class PackageTypeRequest extends FormRequest
             'base_weight'         => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
             'max_weight'          => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
             'barcode'             => ['nullable', 'string', 'max:255'],
-            'company_id'          => ['nullable', 'integer', 'exists:companies,id'],
+            'company_id'          => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
         ];
     }
 
