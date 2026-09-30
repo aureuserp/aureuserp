@@ -171,6 +171,12 @@ jobs:
             --admin-email="admin@example.com" \
             --admin-password="admin123"
 
+      - name: Switch to Production Mode
+        run: |
+          sed -i "s|^\(APP_ENV=\s*\).*$|\1production|" .env
+          sed -i "/URL::forceScheme('https');/s|^|//|" app/Providers/AppServiceProvider.php
+          php artisan config:clear
+
       - name: Start Laravel server
         run: |
           php artisan serve --host=0.0.0.0 --port=8000 > server.log 2>&1 &
