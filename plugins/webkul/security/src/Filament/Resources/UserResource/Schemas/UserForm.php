@@ -130,6 +130,13 @@ class UserForm
                                             ->hiddenLabel()
                                             ->automaticallyResizeImagesMode('cover')
                                             ->image()
+                                            ->acceptedFileTypes([
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/bmp',
+                                                'image/webp',
+                                            ])
                                             ->imageEditor()
                                             ->directory('users/avatars')
                                             ->visibility('public'),

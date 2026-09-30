@@ -75,7 +75,11 @@ class PrintAndSendAction extends Action
                     FileUpload::make('files')
                         ->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.form.files'))
                         ->acceptedFileTypes([
-                            'image/*',
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'image/bmp',
+                            'image/webp',
                             'application/pdf',
                         ])
                         ->downloadable()

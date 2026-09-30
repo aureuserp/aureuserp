@@ -132,8 +132,8 @@ return [
         'disk'          => env('LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK', 'local'),
         'rules'         => [
             'file',
-            'mimes:jpg,jpeg,png,gif,bmp,svg,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,mp4,mov,avi,wmv,mp3,m4a,wav,mpga,wma',
-            'mimetypes:image/*,video/*,audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv,application/zip',
+            'mimes:jpg,jpeg,png,gif,bmp,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,mp4,mov,avi,wmv,mp3,m4a,wav,mpga,wma',
+            'mimetypes:image/jpeg,image/png,image/gif,image/bmp,image/webp,video/*,audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv,application/zip',
         ],
         'directory'     => null,
         'middleware'    => 'auth',
@@ -141,7 +141,6 @@ return [
             'png',
             'gif',
             'bmp',
-            'svg',
             'wav',
             'mp4',
             'mov',

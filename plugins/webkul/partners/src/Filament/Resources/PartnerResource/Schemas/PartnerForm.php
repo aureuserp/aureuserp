@@ -111,6 +111,13 @@ class PartnerForm
                             ->schema([
                                 FileUpload::make('avatar')
                                     ->image()
+                                    ->acceptedFileTypes([
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/bmp',
+                                        'image/webp',
+                                    ])
                                     ->hiddenLabel()
                                     ->automaticallyResizeImagesMode('cover')
                                     ->imageEditor()

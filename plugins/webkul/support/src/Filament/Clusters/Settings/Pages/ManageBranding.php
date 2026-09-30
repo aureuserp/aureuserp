@@ -66,6 +66,13 @@ class ManageBranding extends SettingsPage
                             ->label(__('support::filament/clusters/manage-branding.form.fields.light-logo'))
                             ->helperText(__('support::filament/clusters/manage-branding.form.fields.light-logo-helper'))
                             ->image()
+                            ->acceptedFileTypes([
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                                'image/bmp',
+                                'image/webp',
+                            ])
                             ->disk('public')
                             ->directory('branding')
                             ->visibility('public'),
@@ -73,6 +80,13 @@ class ManageBranding extends SettingsPage
                             ->label(__('support::filament/clusters/manage-branding.form.fields.dark-logo'))
                             ->helperText(__('support::filament/clusters/manage-branding.form.fields.dark-logo-helper'))
                             ->image()
+                            ->acceptedFileTypes([
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                                'image/bmp',
+                                'image/webp',
+                            ])
                             ->disk('public')
                             ->directory('branding')
                             ->visibility('public'),
@@ -80,6 +94,13 @@ class ManageBranding extends SettingsPage
                             ->label(__('support::filament/clusters/manage-branding.form.fields.favicon'))
                             ->helperText(__('support::filament/clusters/manage-branding.form.fields.favicon-helper'))
                             ->image()
+                            ->acceptedFileTypes([
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                                'image/bmp',
+                                'image/webp',
+                            ])
                             ->disk('public')
                             ->directory('branding')
                             ->visibility('public'),

@@ -196,6 +196,13 @@ class CompanyForm
                                                 FileUpload::make('avatar')
                                                     ->label(__('support::filament/resources/company.form.sections.branding.fields.company-logo'))
                                                     ->image()
+                                                    ->acceptedFileTypes([
+                                                        'image/jpeg',
+                                                        'image/png',
+                                                        'image/gif',
+                                                        'image/bmp',
+                                                        'image/webp',
+                                                    ])
                                                     ->directory('company-logos')
                                                     ->visibility('public'),
                                             ]),
