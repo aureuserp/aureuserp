@@ -6,6 +6,7 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\CategoryResource;
@@ -36,6 +37,9 @@ class ManageProducts extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return ProductResource::table($table)
+            ->pushFilters([
+                TrashedFilter::make(),
+            ])
             ->headerActions([
                 CreateAction::make()
                     ->label(__('products::filament/resources/category/pages/manage-products.table.header-actions.create.label'))
