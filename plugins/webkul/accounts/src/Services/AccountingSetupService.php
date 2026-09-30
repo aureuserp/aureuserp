@@ -4,6 +4,7 @@ namespace Webkul\Account\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Support\Models\Company;
 
@@ -56,6 +57,11 @@ class AccountingSetupService
         $templateId = $this->templateCompanyId();
 
         if ($templateId === null || $templateId === (int) $company->id) {
+            Log::warning('Skipping accounting setup: no usable template company.', [
+                'company_id'  => (int) $company->id,
+                'template_id' => $templateId,
+            ]);
+
             return false;
         }
 
