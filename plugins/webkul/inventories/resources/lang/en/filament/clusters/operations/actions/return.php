@@ -9,7 +9,7 @@ return [
                 'product'                 => 'Product',
                 'quantity'                => 'Quantity',
                 'uom'                     => 'UOM',
-                'excess-quantity-tooltip' => 'The quantity to return is greater than the quantity processed in the original operation.',
+                'excess-quantity-tooltip' => 'The quantity to return is greater than the remaining returnable quantity.',
             ],
         ],
     ],
@@ -20,6 +20,9 @@ return [
         ],
         'no-quantities' => [
             'body' => 'Please specify at least one non-zero quantity.',
+        ],
+        'excess-quantity' => [
+            'body' => 'The quantity to return for :product cannot be greater than the remaining returnable quantity (:quantity).',
         ],
     ],
 ];
