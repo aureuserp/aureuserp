@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Filament\Resources\CategoryResource\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -86,7 +87,7 @@ class CategoriesTable
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make()
-                    ->action(function (Category $record) {
+                    ->action(function (Category $record, Action $action) {
                         try {
                             $record->delete();
                         } catch (QueryException $e) {
@@ -95,6 +96,8 @@ class CategoriesTable
                                 ->title(__('products::filament/resources/category.table.actions.delete.notification.error.title'))
                                 ->body(__('products::filament/resources/category.table.actions.delete.notification.error.body'))
                                 ->send();
+
+                            $action->cancel();
                         }
                     })
                     ->successNotification(
@@ -106,7 +109,7 @@ class CategoriesTable
             ])
             ->toolbarActions([
                 DeleteBulkAction::make()
-                    ->action(function (Collection $records) {
+                    ->action(function (Collection $records, Action $action) {
                         try {
                             $records->each(fn (Model $record) => $record->delete());
                         } catch (QueryException $e) {
@@ -115,6 +118,8 @@ class CategoriesTable
                                 ->title(__('products::filament/resources/category.table.bulk-actions.delete.notification.error.title'))
                                 ->body(__('products::filament/resources/category.table.bulk-actions.delete.notification.error.body'))
                                 ->send();
+
+                            $action->cancel();
                         }
                     })
                     ->successNotification(
