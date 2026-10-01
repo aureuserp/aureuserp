@@ -171,8 +171,10 @@ return [
                 'title' => 'Rule Details',
 
                 'description' => [
-                    'pull' => 'When products are required in <b>:sourceLocation</b>, <b>:operation</b> is generated from <b>:destinationLocation</b> to meet the demand.',
-                    'push' => 'When products reach in <b>:sourceLocation</b>, <b>:operation</b> is generated to transfer them to <b>:destinationLocation</b>.',
+                    'pull'        => 'When products are required in <b>:sourceLocation</b>, <b>:operation</b> is generated from <b>:destinationLocation</b> to meet the demand.',
+                    'push'        => 'When products reach in <b>:sourceLocation</b>, <b>:operation</b> is generated to transfer them to <b>:destinationLocation</b>.',
+                    'buy'         => 'When products are required in <b>:destinationLocation</b>, a purchase order is generated to buy them to meet the demand.',
+                    'manufacture' => 'When products are required in <b>:destinationLocation</b>, a manufacturing order is generated to produce them to meet the demand.',
                 ],
 
                 'entries' => [
