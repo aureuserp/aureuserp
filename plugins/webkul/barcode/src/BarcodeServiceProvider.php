@@ -9,6 +9,8 @@ use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Webkul\Barcode\Livewire\Adjustments;
 use Webkul\Barcode\Livewire\Dashboard;
+use Webkul\Barcode\Livewire\ManufacturingOrder;
+use Webkul\Barcode\Livewire\ManufacturingOrders;
 use Webkul\Barcode\Livewire\Operation;
 use Webkul\Barcode\Livewire\Transfers;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
@@ -44,6 +46,8 @@ class BarcodeServiceProvider extends PackageServiceProvider
         Livewire::component('barcode-adjustments', Adjustments::class);
         Livewire::component('barcode-transfers', Transfers::class);
         Livewire::component('barcode-operation', Operation::class);
+        Livewire::component('barcode-manufacturing-orders', ManufacturingOrders::class);
+        Livewire::component('barcode-manufacturing-order', ManufacturingOrder::class);
 
         FilamentAsset::register(assets: [
             Css::make('barcode', __DIR__.'/../resources/dist/barcode.css'),

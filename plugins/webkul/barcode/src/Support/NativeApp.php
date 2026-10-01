@@ -20,7 +20,10 @@ class NativeApp extends NativeRemote
             'barcode.adjustments' => __('barcode::app.adjustments.title'),
             'barcode.transfers'   => request()?->route('operationType')?->name,
             'barcode.operation'   => request()?->route('operation')?->name,
-            default               => null,
+
+            'barcode.manufacturing-orders' => __('barcode::app.manufacturing.title'),
+            'barcode.manufacturing-order'  => request()?->route('order')?->name,
+            default                        => null,
         };
     }
 
@@ -33,7 +36,10 @@ class NativeApp extends NativeRemote
             'barcode.adjustments' => __('barcode::app.adjustments.subtitle'),
             'barcode.transfers'   => __('barcode::app.dashboard.operations'),
             'barcode.operation'   => request()?->route('operationType')?->name,
-            default               => null,
+
+            'barcode.manufacturing-orders' => __('barcode::app.manufacturing.subtitle'),
+            'barcode.manufacturing-order'  => request()?->route('order')?->product?->name,
+            default                        => null,
         };
     }
 
@@ -43,6 +49,8 @@ class NativeApp extends NativeRemote
             'barcode.adjustments',
             'barcode.transfers',
             'barcode.operation',
+            'barcode.manufacturing-orders',
+            'barcode.manufacturing-order',
         ], true);
     }
 

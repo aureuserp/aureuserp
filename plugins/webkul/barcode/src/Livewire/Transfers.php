@@ -3,8 +3,11 @@
 namespace Webkul\Barcode\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Livewire\Component;
+use Webkul\Barcode\Support\Barcode;
+use Webkul\Barcode\Support\OperationTypes;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Models\Lot;
 use Webkul\Inventory\Models\Move;
@@ -26,6 +29,10 @@ class Transfers extends Component
     public string $operationNoticeColor = 'info';
 
     public array $matchingOperationIds = [];
+
+    public int $perPage = 50;
+
+    private ?array $operationTypeIds = null;
 
     public function mount(OperationType $operationType): void
     {
@@ -55,7 +62,7 @@ class Transfers extends Component
             return $this->redirectRoute('barcode.operation', [
                 $operation->operationType,
                 $operation,
-                'scan' => $this->normalizeBarcode($this->search),
+                'scan' => Barcode::normalize($this->search),
             ], navigate: true);
         }
 
@@ -66,6 +73,11 @@ class Transfers extends Component
         $this->dispatchNativeFeedback($this->operationNotice);
 
         return null;
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 50;
     }
 
     public function updatedSearch(): void
@@ -80,47 +92,62 @@ class Transfers extends Component
 
     public function render(): View
     {
-        $transfers = $this->matchingOperationIds !== []
-            ? Operation::query()->with(['operationType', 'partner'])->whereIn('id', $this->matchingOperationIds)->get()
-            : $this->transfers()
-                ->filter(function ($operation): bool {
-                    if ($this->search === '') {
-                        return true;
-                    }
+        if ($this->matchingOperationIds !== []) {
+            $transfers = Operation::query()
+                ->with(['operationType', 'partner'])
+                ->whereIn('id', $this->matchingOperationIds)
+                ->latest('scheduled_at')
+                ->latest('id')
+                ->get();
 
-                    $search = mb_strtolower($this->search);
-
-                    return str_contains(mb_strtolower($operation->name), $search)
-                        || str_contains(mb_strtolower((string) $operation->origin), $search)
-                        || str_contains(mb_strtolower((string) $operation->partner?->name), $search);
-                });
+            $totalTransfers = $transfers->count();
+        } else {
+            $transfers = $this->transfersQuery()->limit($this->perPage)->get();
+            $totalTransfers = $this->transfersQuery()->count();
+        }
 
         return view('barcode::livewire.transfers', [
-            'transfers' => $transfers,
+            'transfers'      => $transfers,
+            'totalTransfers' => $totalTransfers,
         ])->layout('barcode::layouts.app', [
             'title' => $this->operationType->name,
         ]);
     }
 
-    private function transfers(): Collection
+    private function operationTypeIds(): array
+    {
+        return $this->operationTypeIds ??= OperationTypes::siblingIds($this->operationType);
+    }
+
+    private function transfersQuery(): Builder
     {
         return Operation::query()
             ->with(['partner', 'operationType'])
-            ->where('operation_type_id', $this->operationType->id)
+            ->whereIn('operation_type_id', $this->operationTypeIds())
             ->whereNotIn('state', [
                 OperationState::DRAFT->value,
                 OperationState::DONE->value,
                 OperationState::CANCELED->value,
             ])
+            ->when($this->search !== '', function (Builder $query): void {
+                $search = mb_strtolower($this->search);
+
+                $query->where(function (Builder $searchQuery) use ($search): void {
+                    $searchQuery
+                        ->whereRaw('LOWER(name) like ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(origin) like ?', ["%{$search}%"])
+                        ->orWhereHas('partner', function (Builder $partnerQuery) use ($search): void {
+                            $partnerQuery->whereRaw('LOWER(name) like ?', ["%{$search}%"]);
+                        });
+                });
+            })
             ->latest('scheduled_at')
-            ->latest('id')
-            ->limit(200)
-            ->get();
+            ->latest('id');
     }
 
     private function findMatchingOperations(string $barcode): Collection
     {
-        $barcode = $this->normalizeBarcode($barcode);
+        $barcode = Barcode::normalize($barcode);
 
         if ($barcode === '') {
             return collect();
@@ -128,7 +155,7 @@ class Transfers extends Component
 
         $operations = Operation::query()
             ->with('operationType')
-            ->where('operation_type_id', $this->operationType->id)
+            ->whereIn('operation_type_id', $this->operationTypeIds())
             ->whereNotIn('state', [
                 OperationState::DRAFT->value,
                 OperationState::DONE->value,
@@ -187,7 +214,7 @@ class Transfers extends Component
     {
         return Operation::query()
             ->with('operationType')
-            ->where('operation_type_id', $this->operationType->id)
+            ->whereIn('operation_type_id', $this->operationTypeIds())
             ->whereNotIn('state', [
                 OperationState::DRAFT->value,
                 OperationState::DONE->value,
@@ -203,7 +230,7 @@ class Transfers extends Component
     {
         return Operation::query()
             ->with('operationType')
-            ->where('operation_type_id', $this->operationType->id)
+            ->whereIn('operation_type_id', $this->operationTypeIds())
             ->whereNotIn('state', [
                 OperationState::DRAFT->value,
                 OperationState::DONE->value,
@@ -243,15 +270,6 @@ class Transfers extends Component
         return Package::query()
             ->whereRaw(db_dialect()->caseInsensitiveEquals('name'), [$barcode])
             ->first();
-    }
-
-    private function normalizeBarcode(string $barcode): string
-    {
-        $barcode = trim($barcode);
-        $barcode = preg_replace('/\s+/', ' ', $barcode) ?: '';
-        $barcode = preg_replace('/^packing\s+slip\s*/i', '', $barcode) ?: $barcode;
-
-        return trim($barcode, " \t\n\r\0\x0B#");
     }
 
     private function dispatchNativeFeedback(?string $message, bool $vibrate = false, string $duration = 'short'): void

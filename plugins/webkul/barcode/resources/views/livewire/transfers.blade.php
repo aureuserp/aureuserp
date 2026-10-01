@@ -89,6 +89,16 @@
                         </div>
                     </a>
                 @endforeach
+
+                <div class="flex flex-col items-center gap-2 py-2 text-sm text-gray-600">
+                    <span>{{ __('barcode::app.pagination.showing', ['shown' => $transfers->count(), 'total' => $totalTransfers]) }}</span>
+
+                    @if ($transfers->count() < $totalTransfers)
+                        <x-filament::button color="gray" outlined type="button" wire:click="loadMore">
+                            {{ __('barcode::app.pagination.load-more') }}
+                        </x-filament::button>
+                    @endif
+                </div>
             </section>
         @endif
     </main>

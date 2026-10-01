@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Livewire\Component;
 use Throwable;
+use Webkul\Barcode\Support\Barcode;
+use Webkul\Barcode\Support\OperationTypes;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\OperationState;
@@ -61,7 +63,7 @@ class Operation extends Component
 
     public function mount(OperationType $operationType, InventoryOperation $operation): void
     {
-        abort_unless((int) $operation->operation_type_id === (int) $operationType->id, 404);
+        abort_unless(in_array((int) $operation->operation_type_id, OperationTypes::siblingIds($operationType), true), 404);
 
         $this->operationType = $operationType;
         $this->operation = $operation;
@@ -299,6 +301,7 @@ class Operation extends Component
 
         return view('barcode::livewire.operation', [
             'actions'               => $this->availableActions($operation),
+            'blockedNotice'         => $this->blockedNotice($operation),
             'operation'             => $operation,
             'moveLines'             => $moveLines,
             'backorderMoveLines'    => $this->backorderMoveLines($moveLines),
@@ -378,7 +381,7 @@ class Operation extends Component
 
     private function availableActions(InventoryOperation $operation): array
     {
-        if (in_array($operation->state, [OperationState::DONE, OperationState::CANCELED], true)) {
+        if (! $this->isActionable($operation)) {
             return [];
         }
 
@@ -388,8 +391,49 @@ class Operation extends Component
         ];
     }
 
+    private function isActionable(InventoryOperation $operation): bool
+    {
+        if (in_array($operation->state, [
+            OperationState::DRAFT,
+            OperationState::DONE,
+            OperationState::CANCELED,
+        ], true)) {
+            return false;
+        }
+
+        return $this->unavailableProductMoveLines($operation)->isEmpty();
+    }
+
+    private function unavailableProductMoveLines(InventoryOperation $operation): Collection
+    {
+        return $operation->moveLines->filter(fn (MoveLine $moveLine): bool => $moveLine->product === null);
+    }
+
+    private function blockedNotice(InventoryOperation $operation): ?string
+    {
+        if (in_array($operation->state, [OperationState::DONE, OperationState::CANCELED], true)) {
+            return null;
+        }
+
+        if ($operation->state === OperationState::DRAFT) {
+            return __('barcode::app.actions.draft-blocked');
+        }
+
+        $unavailable = $this->unavailableProductMoveLines($operation);
+
+        if ($unavailable->isNotEmpty()) {
+            return __('barcode::app.actions.product-unavailable', ['count' => $unavailable->count()]);
+        }
+
+        return null;
+    }
+
     private function executeOperationAction(InventoryOperation $operation, string $action, bool $cancelBackOrder = false): InventoryOperation
     {
+        if (! $this->isActionable($operation)) {
+            throw new InvalidArgumentException($this->blockedNotice($operation) ?? __('barcode::app.actions.unsupported'));
+        }
+
         return match ($action) {
             'validate', 'done' => $this->validateOperation($operation, $cancelBackOrder),
             'cancel'           => Inventory::cancelTransfer($operation),
@@ -563,7 +607,7 @@ class Operation extends Component
 
     private function resolveScan(InventoryOperation $operation, string $barcode): array
     {
-        $barcode = trim($barcode);
+        $barcode = Barcode::normalize($barcode);
 
         if ($barcode === '') {
             return [
@@ -572,7 +616,7 @@ class Operation extends Component
             ];
         }
 
-        if ($operation->name === $barcode) {
+        if (Barcode::matches($operation->name, $barcode)) {
             return [
                 'matched' => true,
                 'type'    => 'operation',
