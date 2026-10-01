@@ -1,0 +1,30 @@
+{
+    "name": "webkul/attendance",
+    "description": "Neutral employee attendance layer (daily check-in/check-out records, source-agnostic)",
+    "authors": [
+        {
+            "name": "AureusERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Attendance\\AttendanceServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Attendance\\": "src/",
+            "Webkul\\Attendance\\Database\\Factories\\": "database/factories/",
+            "Webkul\\Attendance\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Attendance\\Tests\\": "tests/"
+        }
+    }
+}
