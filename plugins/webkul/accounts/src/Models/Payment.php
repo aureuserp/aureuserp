@@ -493,7 +493,7 @@ class Payment extends Model
 
         $move = Move::create([
             'move_type'         => MoveType::ENTRY,
-            'ref'               => $this->memo,
+            'reference'         => $this->memo,
             'date'              => $this->date,
             'journal_id'        => $this->journal_id,
             'company_id'        => $this->company_id,
