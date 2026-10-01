@@ -38,6 +38,9 @@
         <testsuite name="EmployeeFeature">
             <directory>plugins/webkul/employees/tests/Feature</directory>
         </testsuite>
+        <testsuite name="AttendanceFeature">
+            <directory>plugins/webkul/attendance/tests/Feature</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
