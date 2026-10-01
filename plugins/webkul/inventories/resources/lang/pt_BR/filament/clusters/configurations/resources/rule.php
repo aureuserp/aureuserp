@@ -171,8 +171,10 @@ return [
                 'title' => 'Detalhes da regra',
 
                 'description' => [
-                    'pull' => 'Quando produtos são necessários em <b>:sourceLocation</b>, <b>:operation</b> é gerada a partir de <b>:destinationLocation</b> para atender à demanda.',
-                    'push' => 'Quando produtos chegam a <b>:sourceLocation</b>, <b>:operation</b> é gerada para transferi-los para <b>:destinationLocation</b>.',
+                    'pull'        => 'Quando produtos são necessários em <b>:sourceLocation</b>, <b>:operation</b> é gerada a partir de <b>:destinationLocation</b> para atender à demanda.',
+                    'push'        => 'Quando produtos chegam a <b>:sourceLocation</b>, <b>:operation</b> é gerada para transferi-los para <b>:destinationLocation</b>.',
+                    'buy'         => 'Quando produtos são necessários em <b>:destinationLocation</b>, um pedido de compra é gerado para comprá-los e atender à demanda.',
+                    'manufacture' => 'Quando produtos são necessários em <b>:destinationLocation</b>, uma ordem de produção é gerada para produzi-los e atender à demanda.',
                 ],
 
                 'entries' => [

@@ -171,8 +171,10 @@ return [
                 'title' => 'Détails de la règle',
 
                 'description' => [
-                    'pull' => 'Lorsque des produits sont requis dans <b>:sourceLocation</b>, <b>:operation</b> est généré depuis <b>:destinationLocation</b> pour répondre à la demande.',
-                    'push' => 'Lorsque des produits arrivent à <b>:sourceLocation</b>, <b>:operation</b> est généré pour les transférer vers <b>:destinationLocation</b>.',
+                    'pull'        => 'Lorsque des produits sont requis dans <b>:sourceLocation</b>, <b>:operation</b> est généré depuis <b>:destinationLocation</b> pour répondre à la demande.',
+                    'push'        => 'Lorsque des produits arrivent à <b>:sourceLocation</b>, <b>:operation</b> est généré pour les transférer vers <b>:destinationLocation</b>.',
+                    'buy'         => 'Lorsque des produits sont requis dans <b>:destinationLocation</b>, un bon de commande est généré pour les acheter afin de répondre à la demande.',
+                    'manufacture' => 'Lorsque des produits sont requis dans <b>:destinationLocation</b>, un ordre de fabrication est généré pour les produire afin de répondre à la demande.',
                 ],
 
                 'entries' => [

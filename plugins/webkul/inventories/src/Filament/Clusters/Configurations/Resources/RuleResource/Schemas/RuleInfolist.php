@@ -36,10 +36,20 @@ class RuleInfolist
                                     'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location'),
                                 ]);
 
+                                $buyMessage = __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.description.buy', [
+                                    'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location'),
+                                ]);
+
+                                $manufactureMessage = __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.description.manufacture', [
+                                    'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location'),
+                                ]);
+
                                 return match ($record->action) {
-                                    RuleAction::PULL      => new HtmlString($pullMessage),
-                                    RuleAction::PUSH      => new HtmlString($pushMessage),
-                                    RuleAction::PULL_PUSH => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                    RuleAction::PULL        => new HtmlString($pullMessage),
+                                    RuleAction::PUSH        => new HtmlString($pushMessage),
+                                    RuleAction::PULL_PUSH   => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                    RuleAction::BUY         => new HtmlString($buyMessage),
+                                    RuleAction::MANUFACTURE => new HtmlString($manufactureMessage),
                                 };
                             })
                             ->schema([

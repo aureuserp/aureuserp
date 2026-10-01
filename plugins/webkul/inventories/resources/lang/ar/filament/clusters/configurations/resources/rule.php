@@ -26,7 +26,7 @@ return [
                         'pull'        => 'عندما تكون المنتجات مطلوبة في <b>:sourceLocation</b>، يتم إنشاء :operation من <b>:destinationLocation</b> لتلبية الطلب.',
                         'push'        => 'عندما تصل المنتجات إلى <b>:sourceLocation</b>،</br>يتم إنشاء <b>:operation</b> لنقلها إلى <b>:destinationLocation</b>.',
                         'buy'         => 'عندما تكون المنتجات مطلوبة في <b>:destinationLocation</b>، يتم إنشاء طلب عرض أسعار لتلبية الحاجة.',
-                        'manufacture' => 'When products are needed in <b>:destinationLocation</b>, a manufacturing order is created to fulfill the need.',
+                        'manufacture' => 'عندما تكون المنتجات مطلوبة في <b>:destinationLocation</b>، يتم إنشاء أمر تصنيع لتلبية الحاجة.',
                     ],
                 ],
             ],
@@ -171,8 +171,10 @@ return [
                 'title' => 'تفاصيل القاعدة',
 
                 'description' => [
-                    'pull' => 'عندما تكون المنتجات مطلوبة في <b>:sourceLocation</b>، يتم إنشاء <b>:operation</b> من <b>:destinationLocation</b> لتلبية الطلب.',
-                    'push' => 'عندما تصل المنتجات إلى <b>:sourceLocation</b>، يتم إنشاء <b>:operation</b> لنقلها إلى <b>:destinationLocation</b>.',
+                    'pull'        => 'عندما تكون المنتجات مطلوبة في <b>:sourceLocation</b>، يتم إنشاء <b>:operation</b> من <b>:destinationLocation</b> لتلبية الطلب.',
+                    'push'        => 'عندما تصل المنتجات إلى <b>:sourceLocation</b>، يتم إنشاء <b>:operation</b> لنقلها إلى <b>:destinationLocation</b>.',
+                    'buy'         => 'عندما تكون المنتجات مطلوبة في <b>:destinationLocation</b>، يتم إنشاء أمر شراء لشرائها لتلبية الطلب.',
+                    'manufacture' => 'عندما تكون المنتجات مطلوبة في <b>:destinationLocation</b>، يتم إنشاء أمر تصنيع لإنتاجها لتلبية الطلب.',
                 ],
 
                 'entries' => [
