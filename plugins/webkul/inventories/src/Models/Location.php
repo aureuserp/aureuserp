@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -83,6 +84,15 @@ class Location extends Model
     public function quantities(): HasMany
     {
         return $this->hasMany(ProductQuantity::class, 'location_id');
+    }
+
+    /**
+     * Products with a stock record in this location. A product is repeated
+     * once per quant, so callers listing products should de-duplicate.
+     */
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'inventories_product_quantities', 'location_id', 'product_id');
     }
 
     public function storageCategory(): BelongsTo

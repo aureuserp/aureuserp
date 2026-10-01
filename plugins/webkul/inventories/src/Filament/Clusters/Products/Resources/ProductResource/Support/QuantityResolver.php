@@ -11,13 +11,29 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Inventory\Support\StockQueryScopes;
+use Webkul\Inventory\Support\StockScope;
 
 class QuantityResolver
 {
     /**
-     * @var array<int, array<string, float>>
+     * @var array<string, array<int, array<string, float>>>
      */
     protected array $quantities = [];
+
+    /**
+     * @var array<string, StockQueryScopes>
+     */
+    protected array $stockScopes = [];
+
+    protected ?int $locationId = null;
+
+    public function forLocation(?int $locationId): static
+    {
+        $this->locationId = $locationId;
+
+        return $this;
+    }
 
     public function onHand(Model $record, mixed $scope = null): float
     {
@@ -33,11 +49,16 @@ class QuantityResolver
     {
         $id = $record->getKey();
 
-        if (! array_key_exists($id, $this->quantities)) {
+        if (! array_key_exists($id, $this->quantities[$this->scopeKey()] ?? [])) {
             $this->load($this->products($record, $scope));
         }
 
-        return $this->quantities[$id][$key] ?? 0.0;
+        return $this->quantities[$this->scopeKey()][$id][$key] ?? 0.0;
+    }
+
+    protected function scopeKey(): string
+    {
+        return (string) ($this->locationId ?? 'company');
     }
 
     /**
@@ -80,11 +101,22 @@ class QuantityResolver
 
             $rounding = $product->uom?->rounding;
 
-            $this->quantities[$id] = [
+            $this->quantities[$this->scopeKey()][$id] = [
                 'on_hand'    => $this->round($available, $rounding),
                 'forecasted' => $this->round($available + $in - $out, $rounding),
             ];
         }
+    }
+
+    protected function stockScopes(): StockQueryScopes
+    {
+        return $this->stockScopes[$this->scopeKey()] ??= (new Product)
+            ->withStockScope(
+                $this->locationId
+                    ? StockScope::make()->forLocations($this->locationId)
+                    : StockScope::make()
+            )
+            ->resolveStockScopes();
     }
 
     protected function round(float $quantity, ?float $rounding): float
@@ -104,7 +136,7 @@ class QuantityResolver
             return [];
         }
 
-        $scopes = (new Product)->resolveStockScopes();
+        $scopes = $this->stockScopes();
 
         return ProductQuantity::query()
             ->whereIn('product_id', $productIds)
@@ -125,7 +157,7 @@ class QuantityResolver
             return [];
         }
 
-        $scopes = (new Product)->resolveStockScopes();
+        $scopes = $this->stockScopes();
 
         return Move::query()
             ->whereIn('product_id', $productIds)
