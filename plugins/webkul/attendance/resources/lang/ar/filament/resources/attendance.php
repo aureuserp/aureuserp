@@ -15,7 +15,7 @@ return [
         'check-in-not-in-work-date'  => 'يجب أن يكون الحضور ضمن تاريخ العمل.',
         'check-out'                  => 'الانصراف',
         'check-out-before-check-in'  => 'يجب أن يكون الانصراف بعد الحضور.',
-        'check-out-not-in-work-date' => 'يجب أن يكون الانصراف ضمن تاريخ العمل.',
+        'check-out-not-in-work-date' => 'يجب أن يكون الانصراف خلال 16 ساعة من الحضور.',
         'long-shift-warning'         => 'تنبيه: هذه الوردية مدتها :hours ساعة.',
         'source'                     => 'المصدر',
         'source-manual'              => 'يدوي',

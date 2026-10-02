@@ -42,9 +42,9 @@ was present on a calendar day.
 
 ## Rules the plugin enforces
 
-- Check-in and check-out must both fall inside `work_date`. There is
-  **no night-shift support in V1**: a checkout past midnight is rejected,
-  not silently attached to the previous day.
+- Check-in must fall inside `work_date`; check-out must be within 16 hours
+  of check-in (`Attendance::MAX_SHIFT_HOURS`, TEMP until per-shift windows
+  land), so night shifts pair onto the start day instead of being rejected.
 - Open rows (no check-out) stay completable at any age; closed device rows
   are frozen; closed manual rows are editable only while recent, older ones
   are fixed via delete + recreate (visible in the activity log).
@@ -52,6 +52,25 @@ was present on a calendar day.
 - Company scoping via `BelongsToCompany`; non-global roles only see rows
   of their allowed companies. Absence is derived (no row on a scheduled
   workday), never stored, and never auto-deducted from leave.
+
+## Integration contract
+
+Writers push, attendance pairs — dependency stays `writer → attendance`,
+attendance never reads writer tables and works standalone with a central
+raw store (`attendance_events`); writers keep their own device tables too.
+Writer duties: register the slug on boot (`WriterRegistry::register`),
+normalize device clocks to UTC, then `EventGateway::push($employeeId,
+$punchedAtUtc, $direction, $source, $sourceRef, $sourceLabel = null)` —
+never decide days. Directions: `1` in, `-1` out, `0` unknown; deduped by
+`UNIQUE(source, source_ref)`; unknown slugs throw, nothing else is rejected.
+Pairing owner is `attendance:process-events` (idempotent, V1 single pass):
+an open row of the SAME writer slug takes any punch within
+`Attendance::MAX_SHIFT_HOURS` (16h, TEMP) of its check-in — device ids never
+isolate rows, so in-gate/out-gate pairs onto one row that keeps the opening
+device's source while events keep their own. Otherwise a new row opens
+anchored to the punch's calendar day. A 22:00 → 06:00(+1) shift is one row
+on day 1; a punch 33h later starts a new row. Per-shift windows (the shifts
+phase) replace the TEMP constant; shifts/rosters/overtime stay out of scope.
 
 ## What it is NOT
 
@@ -66,9 +85,8 @@ was present on a calendar day.
 
 ## Ideas for future developers
 
-1. **Shift definitions with night windows** — named shifts with start/end
-   spanning midnight, so 22:00 → 06:00 pairs onto one logical day instead
-   of being rejected.
+1. **Shift definitions with named windows** — named shifts with start/end
+   spanning midnight, replacing the TEMP 16h cap with per-shift windows.
 2. **Break-aware, multi-session pairing** — split lunch/break punches into
    sessions instead of first/last, with per-session minutes.
 3. **Advanced work-time rules** — overtime, late arrival, early leave, and

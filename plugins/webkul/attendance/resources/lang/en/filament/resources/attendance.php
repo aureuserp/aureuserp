@@ -15,7 +15,7 @@ return [
         'check-in-not-in-work-date'  => 'Check-in must be within the work date.',
         'check-out'                  => 'Check Out',
         'check-out-before-check-in'  => 'Check-out must be after check-in.',
-        'check-out-not-in-work-date' => 'Check-out must be within the work date.',
+        'check-out-not-in-work-date' => 'Check-out must be within 16 hours of check-in.',
         'long-shift-warning'         => 'Heads up: this shift is :hours hours long.',
         'source'                     => 'Source',
         'source-manual'              => 'Manual',

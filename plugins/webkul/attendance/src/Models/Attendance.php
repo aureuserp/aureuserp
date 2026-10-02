@@ -5,6 +5,7 @@ namespace Webkul\Attendance\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Webkul\Attendance\Database\Factories\AttendanceFactory;
@@ -28,6 +29,21 @@ class Attendance extends Model
      * punches carry seconds, so the threshold compares whole minutes.
      */
     public const LONG_SHIFT_MINUTES = 14 * 60;
+
+    /**
+     * TEMP: maximum shift length in hours until the shifts phase lands with
+     * per-shift windows, which replace this constant.
+     */
+    public const MAX_SHIFT_HOURS = 16;
+
+    public static function isValidCheckout(Carbon $checkIn, Carbon $checkOut): bool
+    {
+        if ($checkOut->lt($checkIn)) {
+            return false;
+        }
+
+        return (int) floor($checkIn->diffInMinutes($checkOut)) <= self::MAX_SHIFT_HOURS * 60;
+    }
 
     /**
      * Writer-key contract (see README "Writer keys"): 'manual' for the

@@ -128,11 +128,11 @@ class AttendanceForm
                     ->rule('after_or_equal:check_in')
                     ->rules(fn (Get $get): array => [
                         function (string $attribute, mixed $value, \Closure $fail) use ($get) {
-                            if (! $value || ! $get('work_date')) {
+                            if (! $value || ! $get('check_in')) {
                                 return;
                             }
 
-                            if (static::resolveWorkDate($value, $get('employee_id')) !== Carbon::parse($get('work_date'))->toDateString()) {
+                            if (! Attendance::isValidCheckout(Carbon::parse($get('check_in')), Carbon::parse($value))) {
                                 $fail(__('attendance::filament/resources/attendance.form.check-out-not-in-work-date'));
                             }
                         },

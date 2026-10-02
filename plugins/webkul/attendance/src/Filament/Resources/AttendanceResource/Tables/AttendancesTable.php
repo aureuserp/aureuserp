@@ -155,7 +155,7 @@ class AttendancesTable
                             ]);
                         }
 
-                        if ($checkOut->toDateString() !== $record->work_date->format('Y-m-d')) {
+                        if (! Attendance::isValidCheckout($checkIn, $checkOut)) {
                             throw ValidationException::withMessages([
                                 'check_out' => __('attendance::filament/resources/attendance.form.check-out-not-in-work-date'),
                             ]);

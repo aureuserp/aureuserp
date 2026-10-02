@@ -15,7 +15,7 @@ return [
         'check-in-not-in-work-date'  => 'A entrada deve estar dentro da data de trabalho.',
         'check-out'                  => 'Saída',
         'check-out-before-check-in'  => 'A saída deve ser após a entrada.',
-        'check-out-not-in-work-date' => 'A saída deve estar dentro da data de trabalho.',
+        'check-out-not-in-work-date' => 'A saída deve estar dentro de 16 horas após a entrada.',
         'long-shift-warning'         => 'Atenção: este turno dura :hours horas.',
         'source'                     => 'Fonte',
         'source-manual'              => 'Manual',

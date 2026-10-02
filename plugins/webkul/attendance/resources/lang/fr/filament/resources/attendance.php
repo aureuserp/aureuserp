@@ -15,7 +15,7 @@ return [
         'check-in-not-in-work-date'  => "L'arrivée doit être dans la date de travail.",
         'check-out'                  => 'Départ',
         'check-out-before-check-in'  => 'Le départ doit être après l’arrivée.',
-        'check-out-not-in-work-date' => 'Le départ doit être dans la date de travail.',
+        'check-out-not-in-work-date' => 'Le départ doit être dans les 16 heures suivant l’arrivée.',
         'long-shift-warning'         => 'Attention : ce poste dure :hours heures.',
         'source'                     => 'Source',
         'source-manual'              => 'Manuel',
