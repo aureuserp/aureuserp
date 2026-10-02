@@ -19,6 +19,7 @@ return [
         'plugin'        => 'Plugins',
         'setting'       => 'Configurações',
         'help'          => 'Ajuda',
+        'attendance'    => 'Presenças',
         'barcode'       => 'Código de barras',
     ],
 ];

@@ -6,6 +6,7 @@ use App\Providers\Filament\CustomerPanelProvider;
 use Webkul\Account\AccountServiceProvider;
 use Webkul\Accounting\AccountingServiceProvider;
 use Webkul\Analytic\AnalyticServiceProvider;
+use Webkul\Attendance\AttendanceServiceProvider;
 use Webkul\Barcode\BarcodeServiceProvider;
 use Webkul\Blog\BlogServiceProvider;
 use Webkul\Chatter\ChatterServiceProvider;
@@ -39,6 +40,7 @@ return [
     AccountingServiceProvider::class,
     AccountServiceProvider::class,
     AnalyticServiceProvider::class,
+    AttendanceServiceProvider::class,
     BarcodeServiceProvider::class,
     BlogServiceProvider::class,
     ChatterServiceProvider::class,
