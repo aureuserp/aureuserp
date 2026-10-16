@@ -174,9 +174,15 @@ class WorkCenterProductivityLog extends Model
 
     protected function splitOffOverrun(): Collection
     {
-        $overrunMinutes = $this->workOrder->duration - $this->workOrder->expected_duration;
+        $expectedDuration = (float) $this->workOrder->expected_duration;
 
-        if ($overrunMinutes <= 0) {
+        if (float_compare($expectedDuration, 0, precisionDigits: 2) <= 0) {
+            return collect();
+        }
+
+        $overrunMinutes = (float) $this->workOrder->duration - $expectedDuration;
+
+        if (float_compare($overrunMinutes, 0, precisionDigits: 2) <= 0) {
             return collect();
         }
 

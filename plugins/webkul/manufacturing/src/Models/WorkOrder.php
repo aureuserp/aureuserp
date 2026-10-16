@@ -206,32 +206,40 @@ class WorkOrder extends Model implements Sortable
         return "{$this->manufacturingOrder->name} - {$this->name}";
     }
 
+    protected function expectedDurationValue(): float
+    {
+        return (float) $this->expected_duration;
+    }
+
     public function getExpectedDuration(?WorkCenter $alternativeWorkCenter = null, float $ratio = 1): float
     {
         if (! $this->work_center_id) {
-            return $this->expected_duration;
+            return $this->expectedDurationValue();
         }
 
         if (! $this->operation_id) {
-            $durationExpectedWorking = ($this->expected_duration - $this->workCenter->setup_time - $this->workCenter->cleanup_time)
+            $durationExpectedWorking = ($this->expectedDurationValue() - $this->workCenter->setup_time - $this->workCenter->cleanup_time)
                 * $this->workCenter->time_efficiency / 100.0;
 
             if ($durationExpectedWorking < 0) {
                 $durationExpectedWorking = 0;
             }
 
-            if (! in_array($this->quantity_producing, [0, $this->quantity_production])) {
+            if (
+                ! float_is_zero((float) $this->quantity_production, precisionDigits: 2)
+                && ! in_array($this->quantity_producing, [0, $this->quantity_production])
+            ) {
                 $qtyRatio = $this->quantity_producing / $this->quantity_production;
             } else {
                 $qtyRatio = 1;
             }
 
             return $this->workCenter->setupAndCleanupTime($this->product)
-                + $durationExpectedWorking * $qtyRatio * $ratio * 100.0 / $this->workCenter->time_efficiency;
+                + $durationExpectedWorking * $qtyRatio * $ratio * 100.0 / ((float) $this->workCenter->time_efficiency ?: 100);
         }
 
         $qtyProduction = $this->manufacturingOrder->uom->computeQuantity(
-            $this->quantity_producing ?: $this->quantity_production,
+            (float) $this->quantity_producing ?: (float) $this->quantity_production,
             $this->manufacturingOrder->product->uom
         );
 
@@ -240,7 +248,7 @@ class WorkOrder extends Model implements Sortable
         $cycleNumber = float_round($qtyProduction / $capacity, precisionDigits: 0, roundingMethod: 'UP');
 
         if ($alternativeWorkCenter) {
-            $durationExpectedWorking = ($this->expected_duration - $this->workCenter->setupAndCleanupTime($this->product))
+            $durationExpectedWorking = ($this->expectedDurationValue() - $this->workCenter->setupAndCleanupTime($this->product))
                 * $this->workCenter->time_efficiency / (100.0 * $cycleNumber);
 
             if ($durationExpectedWorking < 0) {
@@ -252,13 +260,13 @@ class WorkOrder extends Model implements Sortable
             $alternativeCycleNb = float_round($qtyProduction / $alternativeCapacity, precisionDigits: 0, roundingMethod: 'UP');
 
             return $alternativeWorkCenter->setupAndCleanupTime($this->product)
-                + $alternativeCycleNb * $durationExpectedWorking * 100.0 / $alternativeWorkCenter->time_efficiency;
+                + $alternativeCycleNb * $durationExpectedWorking * 100.0 / ((float) $alternativeWorkCenter->time_efficiency ?: 100);
         }
 
         $timeCycle = $this->operation->time_cycle;
 
         return $this->workCenter->setupAndCleanupTime($this->product)
-            + $cycleNumber * $timeCycle * 100.0 / $this->workCenter->time_efficiency;
+            + $cycleNumber * $timeCycle * 100.0 / ((float) $this->workCenter->time_efficiency ?: 100);
     }
 
     protected static function newFactory(): WorkOrderFactory
@@ -336,13 +344,13 @@ class WorkOrder extends Model implements Sortable
 
     public function computeDuration(): void
     {
-        $this->duration = $this->productivityLogs->sum('duration');
+        $this->duration = $this->productivityLogs()->sum('duration');
 
         $this->duration_per_unit = round($this->duration / max($this->quantity_produced, 1), 2);
 
-        $expectedDuration = (float) $this->expected_duration;
+        $expectedDuration = $this->expectedDurationValue();
 
-        if ($expectedDuration > 0) {
+        if (float_compare($expectedDuration, 0, precisionDigits: 2) > 0) {
             $this->duration_percent = (int) round(max(
                 -2147483648,
                 min(
@@ -372,9 +380,11 @@ class WorkOrder extends Model implements Sortable
             return $minutes * 60 + $seconds;
         };
 
-        $oldOrderDuration = $this->productivityLogs->sum('duration');
+        $oldOrderDuration = (float) $this->productivityLogs->sum('duration');
 
-        $newOrderDuration = $this->duration;
+        $newOrderDuration = (float) $this->duration;
+
+        $expectedDuration = $this->expectedDurationValue();
 
         if ($newOrderDuration == $oldOrderDuration) {
             return;
@@ -391,14 +401,14 @@ class WorkOrder extends Model implements Sortable
 
             $dateStart = $endDate->clone()->subSeconds($floatDurationToSecond($deltaDuration));
 
-            if ($this->expected_duration >= $newOrderDuration || $oldOrderDuration >= $this->expected_duration) {
+            if (float_compare($expectedDuration, $newOrderDuration, precisionDigits: 2) >= 0 || float_compare($oldOrderDuration, $expectedDuration, precisionDigits: 2) >= 0) {
                 $values = $this->buildProductivityLogAttributes($newOrderDuration, $dateStart, $endDate);
 
                 WorkCenterProductivityLog::create($values);
             } else {
-                $maxDate = $endDate->clone()->subMinutes($newOrderDuration - $this->expected_duration);
+                $maxDate = $endDate->clone()->subMinutes($newOrderDuration - $expectedDuration);
 
-                $values = $this->buildProductivityLogAttributes($this->expected_duration, $dateStart, $maxDate);
+                $values = $this->buildProductivityLogAttributes($expectedDuration, $dateStart, $maxDate);
 
                 WorkCenterProductivityLog::create($values);
 
@@ -507,13 +517,13 @@ class WorkOrder extends Model implements Sortable
         $start = $startedAt ?? Carbon::parse($this->started_at);
 
         if (! $workCenter->calendar_id) {
-            $durationInSeconds = $this->expected_duration * 60;
+            $durationInSeconds = $this->expectedDurationValue() * 60;
 
             return $start->clone()->addSeconds($durationInSeconds);
         }
 
         return $workCenter->calendar->planHours(
-            $this->expected_duration / 60.0,
+            $this->expectedDurationValue() / 60.0,
             $start,
             computeLeaves: true,
             filter: fn ($query) => $query->whereIn('time_type', ['leave', 'other'])
@@ -569,7 +579,7 @@ class WorkOrder extends Model implements Sortable
         }
 
         if ($this->shouldStartTimer()) {
-            WorkCenterProductivityLog::create($this->buildProductivityLogAttributes($this->duration, now()));
+            WorkCenterProductivityLog::create($this->buildProductivityLogAttributes((float) $this->duration, now()));
         }
 
         if ($this->manufacturingOrder->state !== ManufacturingOrderState::PROGRESS) {
@@ -592,7 +602,7 @@ class WorkOrder extends Model implements Sortable
                 'name'          => $this->name,
                 'calendar_id'   => $this->workCenter->calendar_id,
                 'date_from'     => $dateStart,
-                'date_to'       => $dateStart->clone()->addMinutes((float) $this->expected_duration),
+                'date_to'       => $dateStart->clone()->addMinutes($this->expectedDurationValue()),
                 'resource_id'   => $this->workCenter->getKey(),
                 'resource_type' => $this->workCenter->getMorphClass(),
                 'time_type'     => 'other',
@@ -774,9 +784,9 @@ class WorkOrder extends Model implements Sortable
 
     public function buildProductivityLogAttributes(float $duration, Carbon $dateStart, ?Carbon $dateEnd = null): array
     {
-        $expectedDuration = (float) $this->expected_duration;
+        $expectedDuration = $this->expectedDurationValue();
 
-        if ($expectedDuration <= 0 || $duration <= $expectedDuration) {
+        if (float_compare($expectedDuration, 0, precisionDigits: 2) <= 0 || float_compare($duration, $expectedDuration, precisionDigits: 2) <= 0) {
             $lossId = WorkCenterProductivityLoss::where('loss_type', 'productive')->first();
 
             if (! $lossId) {
