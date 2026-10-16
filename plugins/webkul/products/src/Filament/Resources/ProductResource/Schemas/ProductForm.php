@@ -15,11 +15,13 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\CategoryResource;
 use Webkul\Product\Filament\Resources\ProductResource;
 use Webkul\Product\Filament\Resources\ProductResource\Support\ProductSchemaRegistry as Registry;
 use Webkul\Product\Models\Category;
+use Webkul\Product\Rules\UniqueBarcode;
 use Webkul\Support\Models\UOM;
 
 class ProductForm
@@ -149,6 +151,7 @@ class ProductForm
                     ->maxLength(255),
                 TextInput::make('barcode')
                     ->label(__('products::filament/resources/product.form.sections.settings.fields.barcode'))
+                    ->rule(fn (Get $get, ?Model $record): UniqueBarcode => new UniqueBarcode($get('company_id'), $record))
                     ->maxLength(255),
                 Select::make('category_id')
                     ->label(__('products::filament/resources/product.form.sections.settings.fields.category'))

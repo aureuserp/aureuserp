@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Rules\UniqueBarcode;
 
 class ProductRequest extends FormRequest
 {
@@ -32,7 +33,7 @@ class ProductRequest extends FormRequest
             'name'                 => [...$requiredRule, 'string', 'max:255'],
             'service_tracking'     => ['nullable', 'string', 'max:255'],
             'reference'            => ['nullable', 'string', 'max:255'],
-            'barcode'              => ['nullable', 'string', 'max:255'],
+            'barcode'              => ['nullable', 'string', 'max:255', new UniqueBarcode($this->input('company_id'), $this->ignoredProduct())],
             'price'                => [...$requiredRule, 'numeric', 'min:0'],
             'cost'                 => ['nullable', 'numeric', 'min:0'],
             'volume'               => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
@@ -52,6 +53,13 @@ class ProductRequest extends FormRequest
             'tags'                 => ['nullable', 'array'],
             'tags.*'               => ['integer', 'exists:products_tags,id'],
         ];
+    }
+
+    protected function ignoredProduct(): mixed
+    {
+        $parameters = $this->route()?->parameters() ?? [];
+
+        return end($parameters) ?: null;
     }
 
     /**
