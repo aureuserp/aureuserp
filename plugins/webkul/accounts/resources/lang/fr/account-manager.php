@@ -12,6 +12,7 @@ return [
         'lines-required'       => 'Veuillez ajouter au moins une ligne à la facture.',
         'draft-state-required' => 'Seules les factures à l\'état brouillon peuvent être confirmées.',
         'journal-archived'     => 'Vous ne pouvez pas confirmer une facture avec un journal archivé.',
+        'unbalanced'           => 'L\'écriture n\'est pas équilibrée. Le total des débits doit être égal au total des crédits avant la comptabilisation.',
     ],
 
     'documents' => [

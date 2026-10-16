@@ -45,31 +45,33 @@ class MoveWorkflow
 
     public function post(AccountMove $move): AccountMove
     {
-        $this->assertPostable($move);
+        return DB::transaction(function () use ($move) {
+            $move = app(MoveCalculator::class)->recompute($move);
+            
+            $this->assertPostable($move);
 
-        $move->state = MoveState::POSTED;
+            $move->state = MoveState::POSTED;
 
-        $move->posted_before = true;
+            $move->posted_before = true;
 
-        $move->save();
+            $move->save();
 
-        $move = app(MoveCalculator::class)->recompute($move);
+            $move->refresh();
 
-        $move->refresh();
+            $this->stampLineStates($move, MoveState::POSTED);
 
-        $this->stampLineStates($move, MoveState::POSTED);
+            $move->refresh();
 
-        $move->refresh();
+            if ($move->reversedEntry?->state == MoveState::POSTED) {
+                $this->reconcileAgainstReversedEntry($move);
+            }
 
-        if ($move->reversedEntry?->state == MoveState::POSTED) {
-            $this->reconcileAgainstReversedEntry($move);
-        }
+            $this->bumpPartnerRanks($move);
 
-        $this->bumpPartnerRanks($move);
+            MoveConfirmed::dispatch($move);
 
-        MoveConfirmed::dispatch($move);
-
-        return $move;
+            return $move;
+        });
     }
 
     public function markChecked(AccountMove $move): AccountMove
@@ -118,38 +120,43 @@ class MoveWorkflow
 
     public function reverse(Collection $moves, array $defaultValuesPerMove = [], bool $cancel = false): Collection
     {
-        if ($cancel) {
-            $moves->flatMap(fn (AccountMove $move) => $move->lines)->each(function (MoveLine $line) {
-                $line->matchedDebits->each(fn ($partial) => $partial->delete());
+        return DB::transaction(function () use ($moves, $defaultValuesPerMove, $cancel) {
+            if ($cancel) {
+                $moves->flatMap(fn (AccountMove $move) => $move->lines)->each(function (MoveLine $line) {
+                    $line->matchedDebits->each(fn ($partial) => $partial->delete());
 
-                $line->matchedCredits->each(fn ($partial) => $partial->delete());
-            });
-        }
+                    $line->matchedCredits->each(fn ($partial) => $partial->delete());
+                });
+            }
 
-        $reversals = collect();
+            $reversals = collect();
 
-        foreach ($moves->values() as $index => $move) {
-            $reversals->push($this->buildReversal($move, $defaultValuesPerMove[$index] ?? []));
-        }
+            foreach ($moves->values() as $index => $move) {
+                $reversals->push($this->buildReversal($move, $defaultValuesPerMove[$index] ?? []));
+            }
 
-        foreach ($reversals as $reversal) {
-            foreach ($reversal->lines as $line) {
-                if ($reversal->move_type === MoveType::ENTRY || $line->display_type === DisplayType::COGS) {
-                    $line->update([
-                        'balance'         => -$line->balance,
-                        'amount_currency' => -$line->amount_currency,
-                    ]);
+            foreach ($reversals as $reversal) {
+                foreach ($reversal->lines as $line) {
+                    if ($reversal->move_type === MoveType::ENTRY || $line->display_type === DisplayType::COGS) {
+                        $line->balance = -$line->balance;
+
+                        $line->amount_currency = -$line->amount_currency;
+
+                        $line->computeCreditAndDebit();
+
+                        $line->save();
+                    }
                 }
             }
-        }
 
-        if ($cancel) {
-            $reversals->each(fn (AccountMove $reversal) => $this->post($reversal));
-        }
+            if ($cancel) {
+                $reversals->each(fn (AccountMove $reversal) => $this->post($reversal));
+            }
 
-        $moves->each(fn (AccountMove $move) => MoveReversed::dispatch($move));
+            $moves->each(fn (AccountMove $move) => MoveReversed::dispatch($move));
 
-        return $reversals;
+            return $reversals;
+        });
     }
 
     protected function buildReversal(AccountMove $move, array $defaultValues): AccountMove
@@ -283,6 +290,13 @@ class MoveWorkflow
 
         if (! $move->currency) {
             throw new Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
+        }
+
+        if (! float_is_zero(
+            $move->lines->sum(fn (MoveLine $line) => $line->debit - $line->credit),
+            precisionRounding: $move->currency->rounding
+        )) {
+            throw new Exception(__('accounts::account-manager.post-action-validate.unbalanced'));
         }
     }
 

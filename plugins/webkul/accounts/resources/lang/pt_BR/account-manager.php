@@ -12,6 +12,7 @@ return [
         'lines-required'       => 'Adicione pelo menos uma linha à fatura.',
         'draft-state-required' => 'Somente faturas em rascunho podem ser confirmadas.',
         'journal-archived'     => 'Você não pode confirmar uma fatura com um diário arquivado.',
+        'unbalanced'           => 'O lançamento está desbalanceado. O total de débito deve ser igual ao total de crédito antes de ser lançado.',
     ],
 
     'documents' => [
