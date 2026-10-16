@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Models\Employee;
 use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
+use Webkul\TimeOff\Enums\RequiresAllocation;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Models\Leave;
 use Webkul\TimeOff\Models\LeaveAllocation;
@@ -287,7 +288,7 @@ trait TimeOffHelper
 
         $leaveType = LeaveType::find($leaveTypeId);
 
-        if (! $leaveType || ! $leaveType->requires_allocation) {
+        if (! $leaveType || $leaveType->requires_allocation !== RequiresAllocation::YES->value) {
             return;
         }
 
@@ -372,6 +373,7 @@ trait TimeOffHelper
         $end = $endDate ? Carbon::parse($endDate) : $start;
 
         $query = Leave::where('employee_id', $employeeId)
+            ->where('state', '!=', State::REFUSE->value)
             ->where(function ($q) use ($start, $end) {
                 $q->whereBetween('date_from', [$start, $end])
                     ->orWhereBetween('date_to', [$start, $end])

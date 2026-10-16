@@ -8,6 +8,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Webkul\TimeOff\Enums\RequiresAllocation;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Models\Leave;
 use Webkul\TimeOff\Models\LeaveAllocation;
@@ -37,6 +38,10 @@ class MyTimeOffWidget extends BaseWidget
         $stats = [];
 
         foreach ($leaveTypes as $leaveType) {
+            if ($leaveType->requires_allocation === RequiresAllocation::NO->value) {
+                continue;
+            }
+
             $availableDays = $this->calculateAvailableDays($employeeId, $leaveType->id, $endOfYear);
 
             $stats[] = Stat::make(__($leaveType->name), $availableDays['days'])

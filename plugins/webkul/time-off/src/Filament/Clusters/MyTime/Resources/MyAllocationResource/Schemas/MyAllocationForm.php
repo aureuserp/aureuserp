@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,9 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\TimeOff\Enums\AllocationType;
+use Webkul\TimeOff\Enums\RequiresAllocation;
 use Webkul\TimeOff\Enums\State;
+use Webkul\TimeOff\Models\LeaveType;
 
 class MyAllocationForm
 {
@@ -66,12 +69,15 @@ class MyAllocationForm
                                             ->relationship(
                                                 'holidayStatus',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where(owned_by_company(
-                                                    Employee::withoutGlobalScope(CompanyScope::class)->where('user_id', Auth::id())->value('company_id')
-                                                )),
+                                                modifyQueryUsing: fn (Builder $query) => $query
+                                                    ->where('requires_allocation', RequiresAllocation::YES->value)
+                                                    ->where(owned_by_company(
+                                                        Employee::withoutGlobalScope(CompanyScope::class)->where('user_id', Auth::id())->value('company_id')
+                                                    )),
                                             )
                                             ->searchable()
                                             ->preload()
+                                            ->live()
                                             ->required(),
                                     ]),
                                 Radio::make('allocation_type')
@@ -97,12 +103,22 @@ class MyAllocationForm
                                     ->default(0)
                                     ->minValue(0)
                                     ->maxValue(99999999999)
-                                    ->required()
+                                    ->hidden(fn (Get $get): bool => static::isNoLimit($get('holiday_status_id')))
+                                    ->required(fn (Get $get): bool => ! static::isNoLimit($get('holiday_status_id')))
                                     ->suffix(__('time-off::filament/clusters/my-time/resources/my-allocation.form.fields.allocation-suffix')),
                                 RichEditor::make('notes')
                                     ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.form.fields.reason')),
                             ]),
                     ])->columns(2)->columnSpanFull(),
             ]);
+    }
+
+    protected static function isNoLimit(?int $leaveTypeId): bool
+    {
+        if (! $leaveTypeId) {
+            return false;
+        }
+
+        return LeaveType::find($leaveTypeId)?->requires_allocation === RequiresAllocation::NO->value;
     }
 }

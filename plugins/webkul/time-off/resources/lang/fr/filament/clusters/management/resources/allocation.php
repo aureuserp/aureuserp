@@ -58,7 +58,7 @@ return [
                 ],
                 'notification' => [
                     'title' => 'Allocation approuvée',
-                    'body'  => 'L\'allocation approuvée a été approuvée avec succès.',
+                    'body'  => 'L\'allocation a été approuvée avec succès.',
                 ],
             ],
 
