@@ -9,7 +9,7 @@ return [
                 'product'                 => 'Produit',
                 'quantity'                => 'Quantité',
                 'uom'                     => 'UdM',
-                'excess-quantity-tooltip' => 'La quantité à retourner est supérieure à la quantité traitée dans l\'opération d\'origine.',
+                'excess-quantity-tooltip' => 'La quantité à retourner est supérieure à la quantité restante pouvant être retournée.',
             ],
         ],
     ],

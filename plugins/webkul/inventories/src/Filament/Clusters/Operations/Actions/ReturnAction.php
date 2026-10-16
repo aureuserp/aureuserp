@@ -56,9 +56,9 @@ class ReturnAction extends Action
                 $form->fill([
                     'return_moves' => $returnableMoves->map(fn ($move) => [
                         'move_id'       => $move->id,
-                        'move_quantity' => (float) $move->quantity,
+                        'move_quantity' => $move->returnableQuantity(),
                         'product_name'  => $move->product?->name ?? '—',
-                        'qty'           => $move->product_uom_qty,
+                        'qty'           => $move->returnableQuantity(),
                         'uom_name'      => $move->uom?->name ?? '—',
                     ])->values()->all(),
                 ]);
@@ -147,6 +147,7 @@ class ReturnAction extends Action
     {
         return $record->moves->filter(
             fn ($move) => $move->state === MoveState::DONE && ! $move->is_scraped
+                && $move->returnableQuantity() > 0
         );
     }
 }

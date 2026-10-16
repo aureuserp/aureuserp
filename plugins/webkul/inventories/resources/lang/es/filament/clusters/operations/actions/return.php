@@ -9,7 +9,7 @@ return [
                 'product'                 => 'Producto',
                 'quantity'                => 'Cantidad',
                 'uom'                     => 'UOM',
-                'excess-quantity-tooltip' => 'La cantidad a devolver es mayor que la cantidad procesada en la operación original.',
+                'excess-quantity-tooltip' => 'La cantidad a devolver es mayor que la cantidad devolvible restante.',
             ],
         ],
     ],
