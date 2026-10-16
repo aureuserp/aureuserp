@@ -248,6 +248,10 @@ class WorkOrder extends Model implements Sortable
         $cycleNumber = float_round($qtyProduction / $capacity, precisionDigits: 0, roundingMethod: 'UP');
 
         if ($alternativeWorkCenter) {
+            if (float_is_zero($cycleNumber, precisionDigits: 2)) {
+                return $alternativeWorkCenter->setupAndCleanupTime($this->product);
+            }
+
             $durationExpectedWorking = ($this->expectedDurationValue() - $this->workCenter->setupAndCleanupTime($this->product))
                 * $this->workCenter->time_efficiency / (100.0 * $cycleNumber);
 
