@@ -23,6 +23,8 @@ jobs:
       RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
       RUN_URL: ${{ github.event.workflow_run.html_url }}
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      HEAD_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
       TRUSTED: "0" # overwritten by "Check contributor trust" below
 
     steps:
@@ -32,6 +34,15 @@ jobs:
 
           PR_NUMBER="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
             --jq '[.[] | select(.state == "open")][0].number' 2>/dev/null || true)"
+
+          # PRs opened from a fork usually don't show up under
+          # commits/{sha}/pulls on the base repo, so fall back to looking the
+          # PR up by its "owner:branch" head.
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            PR_NUMBER="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" \
+              -f state=open -f head="${HEAD_OWNER}:${HEAD_BRANCH}" \
+              --jq "[.[] | select(.head.sha == \"${HEAD_SHA}\")][0].number" 2>/dev/null || true)"
+          fi
 
           if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
             echo "No open pull request found for ${HEAD_SHA}; nothing to publish to."
