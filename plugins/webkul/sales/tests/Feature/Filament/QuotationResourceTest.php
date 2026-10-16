@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -226,8 +225,8 @@ it('refuses to open a quotation owned by another company', function () {
         'update_sale_quotation',
     ]);
 
-    expect(fn () => Livewire::test(EditQuotation::class, ['record' => $quotation->id]))
-        ->toThrow(ModelNotFoundException::class);
+    Livewire::test(EditQuotation::class, ['record' => $quotation->id])
+        ->assertNotFound();
 });
 
 it('takes the order currency from the selected price list', function () {

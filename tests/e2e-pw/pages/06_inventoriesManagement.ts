@@ -711,7 +711,7 @@ export class InventoriesManagementPage {
         const panel = this.erpLocators.inventorySelectPanel.last();
         await expect(panel).toBeVisible();
 
-        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+        const search = panel.locator('input.fi-input[role="combobox"]').first();
         if (await search.isVisible().catch(() => false)) {
             await search.fill(opTypeName);
             await this.page.waitForTimeout(600);
@@ -1160,7 +1160,7 @@ export class InventoriesManagementPage {
         const panel = this.erpLocators.inventorySelectPanel.last();
         await expect(panel).toBeVisible();
 
-        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+        const search = panel.locator('input.fi-input[role="combobox"]').first();
         if (await search.isVisible().catch(() => false)) {
             await search.fill(value);
             await this.page.waitForTimeout(500);
@@ -1528,7 +1528,7 @@ export class InventoriesManagementPage {
 
         const panel = this.erpLocators.inventorySelectPanel.last();
         await expect(panel).toBeVisible();
-        const search = panel.locator('input.fi-input[aria-label="Search"]').first();
+        const search = panel.locator('input.fi-input[role="combobox"]').first();
         if (await search.isVisible().catch(() => false)) {
             await search.fill(serial);
             await this.page.waitForTimeout(500);

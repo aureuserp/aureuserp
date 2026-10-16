@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -183,6 +182,6 @@ it('refuses to open a dropship owned by another company', function () {
         'view_inventory_dropship',
     ]);
 
-    expect(fn () => Livewire::test(ViewDropship::class, ['record' => $dropship->id]))
-        ->toThrow(ModelNotFoundException::class);
+    Livewire::test(ViewDropship::class, ['record' => $dropship->id])
+        ->assertNotFound();
 });

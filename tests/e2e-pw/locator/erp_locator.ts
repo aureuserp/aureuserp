@@ -538,17 +538,17 @@ export class ErpLocators {
         // Only the open dropdown panel is visible, so the install/uninstall
         // options below always belong to the plugin whose menu was opened.
         this.pluginDropdownPanel = page.locator('.fi-dropdown-panel:visible');
-        this.pluginInstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Install', exact: true });
-        this.pluginUninstallOption = this.pluginDropdownPanel.getByRole('button', { name: 'Uninstall', exact: true });
+        this.pluginInstallOption = this.pluginDropdownPanel.getByRole('menuitem', { name: 'Install', exact: true });
+        this.pluginUninstallOption = this.pluginDropdownPanel.getByRole('menuitem', { name: 'Uninstall', exact: true });
         this.pluginInstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Install Plugin' });
         this.pluginUninstallConfirmButton = anyDialog(page).getByRole('button', { name: 'Uninstall Plugin' });
         this.pluginSearchInput = page.locator('.fi-input.fi-input-has-inline-prefix').nth(1);
-        this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Installed Successfully' }).first();
-        this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title', { hasText: 'Plugin Uninstalled Successfully' }).first();
+        this.pluginInstallSuccessNotification = page.locator('h3.fi-no-notification-title:visible', { hasText: 'Plugin Installed Successfully' }).first();
+        this.pluginUninstallSuccessNotification = page.locator('h3.fi-no-notification-title:visible', { hasText: 'Plugin Uninstalled Successfully' }).first();
         // "Cannot Uninstall Plugin" is included here too: the confirm button is always rendered
         // even when dependents are installed, so submitting a blocked plugin the dependency
         // warning check below missed would otherwise never match a failure/success outcome.
-        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title', { hasText: /Installation Failed|Uninstallation Failed|Cannot Uninstall Plugin/ }).first();
+        this.pluginActionFailedNotification = page.locator('h3.fi-no-notification-title:visible', { hasText: /Installation Failed|Uninstallation Failed|Cannot Uninstall Plugin/ }).first();
         // The modal renders this block up front whenever the plugin still has installed
         // dependents, so a blocked uninstall can be detected without ever submitting.
         this.pluginUninstallDependencyWarning = anyDialog(page).getByText('Action Required').first();
@@ -599,9 +599,9 @@ export class ErpLocators {
         this.usersEmailInput = page.locator('input[id="form.email"]');
         this.usersPasswordInput = page.locator('input[id="form.password"]');
         this.usersPasswordConfirmationInput = page.locator('input[id="form.password_confirmation"]');
-        this.usersRoleSelect = page.locator('div.fi-select-input-value-ctn').nth(0);
-        this.usersAllowedCompaniesSelect = page.locator('div.fi-select-input-value-ctn').nth(4);
-        this.usersCompanySelect = page.locator('div.fi-select-input-value-ctn').nth(5);
+        this.usersRoleSelect = page.locator('button[id="form.roles"]');
+        this.usersAllowedCompaniesSelect = page.locator('button[id="form.allowed_companies"]');
+        this.usersCompanySelect = page.locator('button[id="form.default_company_id"]');
         this.usersCompanySearchInput = page.locator('input[type="search"], input[placeholder*="Search"], input[placeholder*="search"]');
         this.usersRoleOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
         this.usersCompanyOption = page.locator('[role="option"], .fi-select-option, li').filter({ hasText: /./ });
@@ -622,7 +622,7 @@ export class ErpLocators {
         this.usersChangePasswordSaveButton = page.getByRole('button', { name: 'Submit' });
         this.userMenuButton = page.locator('button[aria-label="User menu"]');
         this.logoutButton = page.getByRole('textbox', { name: 'Confirm New Password' });
-        this.usersSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+        this.usersSuccessToast = page.locator("h3.fi-no-notification-title:visible, .fi-toast-message-success:visible").first();
         this.usersErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.userFeildValidationMessage = page.locator(".fi-fo-field-wrp-error-message", { hasText: /The email has already been taken./ });
         this.usersValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
@@ -659,18 +659,18 @@ export class ErpLocators {
         this.salesQuotationOrderLineTab = page.getByRole("tab", { name: /Order Line/i }).first();
         this.salesProductUomSelect = page.locator('input[id="form.uom_id"], [role="combobox"][aria-label*="UOM"], [role="combobox"][aria-labelledby*="UOM"]').first();
         this.salesProductCreateButton = page.locator('button[id="key-bindings-1"]').first();
-        this.salesProductEditButton = page.getByRole('link', { name: 'Edit' });
+        this.salesProductEditButton = page.getByRole('menuitem', { name: 'Edit' });
         this.salesProductSaveButton = page.locator('button[id="key-bindings-2"]').first();
-        this.salesProductDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.salesProductDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
 
         this.salesQuotationCreateButton = page.locator("a,button").filter({ hasText: /new quotation|create quotation|add quotation|create/i }).first();
-        this.salesQuotationEditButton = page.getByRole('link', { name: 'Edit' }).first();
+        this.salesQuotationEditButton = page.getByRole('menuitem', { name: 'Edit' }).first();
         this.salesQuotationCustomerSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
         this.salesQuotationPaymentTermSelect = page.locator('[wire\\:key$="form.payment_term_id"] button.fi-select-input-btn').first();
         this.salesQuotationAddProductButton = page.getByRole("button", { name: /Add Product/i }).first();
         this.salesQuotationProductSelectInput = page.locator('[wire\\:key*=".form.products."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.salesQuotationQuantityInput = page.locator('input[id^="form.products."][id$=".product_qty"]');
-        this.salesQuotationDeleteButton = page.getByRole('button', { name: 'Delete' }).first();
+        this.salesQuotationDeleteButton = page.getByRole('menuitem', { name: 'Delete' }).first();
         this.salesQuotationSaveButton = page.locator('button[type="submit"]').filter({ hasText: /^\s*(Create|Save changes|Submit)\s*$/i }).first();
         this.salesQuotationConfirmButton = page.getByRole("button", { name: /Confirm/i }).first();
         this.salesQuotationSendButton = page.getByRole("button", { name: /Send by Email|Send/i }).first();
@@ -715,8 +715,8 @@ export class ErpLocators {
         this.salesDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.salesConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
 
-        this.salesSelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"]').last();
-        this.salesSelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+        this.salesSelectSearchInput = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible input.fi-input[role="combobox"]').last();
+        this.salesSelectOption = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible [role="option"]');
         this.salesSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.salesValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
 
@@ -756,7 +756,7 @@ export class ErpLocators {
         this.inventoryWarehouseTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryWarehouseRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryWarehouseEditAction = page.locator("a.fi-ac-link-action").nth(1);  
-        this.inventoryWarehouseDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryWarehouseDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.inventoryWarehouseConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /Delete/i }).first();
 
         this.inventoryLocationsTable = page.locator("table, div.fi-ta-empty-state");
@@ -798,7 +798,7 @@ export class ErpLocators {
         this.inventoryProductTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryProductRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryProductEditAction = page.getByRole("link", { name: /Edit/i }).first();
-        this.inventoryProductDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryProductDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         this.inventoryProductIsStorableToggle = page.getByRole("switch", { name: /Track Inventory|Storable/i }).first();
         this.inventoryProductQuantitiesTab = page.locator("a, li").filter({ hasText: /On Hand|Quantities/i }).first();
         this.inventoryProductMovesTab = page.getByRole('link', { name: 'IN/OUT' });
@@ -854,7 +854,7 @@ export class ErpLocators {
         this.inventoryOperationTypeSelect = page.locator('[wire\\:key$="form.operation_type_id"] button.fi-select-input-btn').first();
         this.inventoryOperationSourceLocationSelect = page.locator('[wire\\:key$="form.source_location_id"] button.fi-select-input-btn').first();
         this.inventoryOperationDestinationLocationSelect = page.locator('[wire\\:key$="form.destination_location_id"] button.fi-select-input-btn').first();
-        this.inventoryOperationAddMoveButton = page.getByRole("button", { name: /Add a line|Add Move|Add Item|Add to Cart|Add product|Add/i }).first();
+        this.inventoryOperationAddMoveButton = page.getByRole("button", { name: /^(Add a line|Add Move|Add Item|Add to Cart|Add product|Add to moves)$/i }).first();
         this.inventoryOperationMoveProductSelect = page.locator('[wire\\:key*=".form.moves."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.inventoryOperationMoveDemandInput = page.locator('input[id^="form.moves."][id$=".product_uom_qty"]');
         this.inventoryOperationMoveQuantityInput = page.locator('input[id^="form.moves."][id$=".quantity"]');
@@ -891,22 +891,22 @@ export class ErpLocators {
         this.inventoryOperationTable = page.locator("table, div.fi-ta-empty-state");
         this.inventoryOperationRowActions = page.getByRole("button", { name: "Actions" }).first();
         this.inventoryOperationEditAction = page.getByRole("link", { name: /Edit/i }).first();
-        this.inventoryOperationDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryOperationDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
 
         /**
          * Inventory - Generic UI helpers
          */
 
         this.inventorySearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.inventorySelectSearchInput = page.locator('.fi-dropdown-panel[role="listbox"]:visible input.fi-input[aria-label="Search"]').last();
-        this.inventorySelectOption = page.locator('.fi-dropdown-panel[role="listbox"]:visible [role="option"]');
+        this.inventorySelectSearchInput = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible input.fi-input[role="combobox"]').last();
+        this.inventorySelectOption = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible [role="option"]');
         this.inventorySuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
         this.inventoryErrorToast = page.locator(".fi-toast-message-error, .fi-input-wrp-error").first();
         this.inventoryValidationMessage = page.locator(".fi-fo-field-wrp-error-message, .text-danger, .invalid-feedback");
         this.inventoryConfirmDialogButton = anyDialog(page).getByRole("button", { name: /Confirm|Delete|Yes/i }).first();
         this.inventoryTableRows = page.locator("table tbody tr");
         this.inventoryPageHeading = page.locator("h1").first();
-        this.inventorySelectPanel = page.locator('.fi-dropdown-panel[role="listbox"]:visible');
+        this.inventorySelectPanel = page.locator('.fi-dropdown-panel:has([role="listbox"]):visible');
 
         /**
          * Inventory - Traceability (product lot/serial tracking)
@@ -947,7 +947,7 @@ export class ErpLocators {
         this.inventoryPackageLocationSelect = page.locator('[wire\\:key$="form.location_id"] button.fi-select-input-btn').first();
         this.inventoryPackageSaveButton = page.locator('button[id="key-bindings-1"]').first();
         this.inventoryPackageTable = page.locator("table, div.fi-ta-empty-state");
-        this.inventoryPackageDeleteAction = page.getByRole("button", { name: /Delete/i }).first();
+        this.inventoryPackageDeleteAction = page.getByRole("menuitem", { name: /Delete/i }).first();
         // The packages list ships with an "Internal Locations" preset view as its default;
         // "Default" is the unfiltered view that also lists shipped-out packages.
         this.inventoryPackageDefaultViewTab = page.locator("button,a").filter({ hasText: /^\s*Default\s*$/ }).first();
@@ -1004,17 +1004,17 @@ export class ErpLocators {
         this.purchaseProductsTable = page.locator("table, div.fi-ta-empty-state");
         this.purchaseProductNewCreateButton = page.locator("a,button").filter({ hasText: /new product|create product|add product|create/i }).first();
         this.purchaseProductCreateButton = page.locator('button[id="key-bindings-1"]').first();
-        this.purchaseProductEditButton = page.getByRole('link', { name: 'Edit' });
+        this.purchaseProductEditButton = page.getByRole('menuitem', { name: 'Edit' });
         this.purchaseProductNameInput = page.locator('input[id="form.name"]').first();
         this.purchaseProductPriceInput = page.locator('input[id="form.price"]').first();
         this.purchaseProductSaveButton = page.locator('button[id="key-bindings-2"]').first();
         this.purchaseProductSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
-        this.purchaseProductDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.purchaseProductDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
 
         this.purchaseQuotationsTable = page.locator("table, div.fi-ta-empty-state");
         this.purchaseQuotationCreateButton = page.locator("a,button").filter({ hasText: /new request for quotation|New RFQ|create quotation|add quotation|create/i }).first();
-        this.purchaseQuotationEditButton = page.getByRole('link', { name: 'Edit' }).first();
-        this.purchaseQuotationDeleteButton = page.getByRole('button', { name: 'Delete' }).first();
+        this.purchaseQuotationEditButton = page.getByRole('menuitem', { name: 'Edit' }).first();
+        this.purchaseQuotationDeleteButton = page.getByRole('menuitem', { name: 'Delete' }).first();
         this.purchaseQuotationVendorSelect = page.locator('[wire\\:key$="form.partner_id"] button.fi-select-input-btn').first();
         this.purchaseQuotationAgreementSelect = page.locator('[wire\\:key$="form.requisition_id"] button.fi-select-input-btn').first();
         this.purchaseQuotationAddProductButton = page.getByRole("button", { name: /Add Product/i }).first();
@@ -1040,8 +1040,8 @@ export class ErpLocators {
         this.purchaseAgreementProductSelect = page.locator('[wire\\:key*=".form.lines."][wire\\:key*=".product_id."] button.fi-select-input-btn');
         this.purchaseAgreementQuantityInput = page.locator('input[id^="form.lines."][id$=".qty"]');
         this.purchaseAgreementUnitPriceInput = page.locator('input[id^="form.lines."][id$=".price_unit"]');
-        this.purchaseAgreementEditButton = page.getByRole('link', { name: 'Edit' });
-        this.purchaseAgreementDeleteButton = page.getByRole('button', { name: 'Delete' });
+        this.purchaseAgreementEditButton = page.getByRole('menuitem', { name: 'Edit' });
+        this.purchaseAgreementDeleteButton = page.getByRole('menuitem', { name: 'Delete' });
         this.purchaseAgreementSaveButton = page.getByRole("button", { name: /^(Create|Save changes|Submit)$/i }).first();
         this.purchaseAgreementConfirmButton = page.getByRole("button", { name: /^Confirm$/i }).first();
         this.purchaseAgreementSearchInput = page.locator(".fi-input.fi-input-has-inline-prefix").nth(1);
