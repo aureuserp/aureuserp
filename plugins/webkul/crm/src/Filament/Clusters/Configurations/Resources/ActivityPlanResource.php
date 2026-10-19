@@ -1,0 +1,45 @@
+<?php
+
+namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
+
+use Filament\Tables\Table;
+use Webkul\Crm\Filament\Clusters\Configurations;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Tables\ActivityPlansTable;
+use Webkul\Crm\Models\ActivityPlan;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource as BaseActivityPlanResource;
+
+class ActivityPlanResource extends BaseActivityPlanResource
+{
+    protected static ?string $model = ActivityPlan::class;
+
+    protected static ?string $cluster = Configurations::class;
+
+    protected static ?int $navigationSort = 6;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/activity-plan.navigation.title');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/activity-plan.navigation.group');
+    }
+
+    public static function table(Table $table): Table
+    {
+        return ActivityPlansTable::configure($table);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListActivityPlans::route('/'),
+            'view'  => ViewActivityPlan::route('/{record}'),
+            'edit'  => EditActivityPlan::route('/{record}/edit'),
+        ];
+    }
+}

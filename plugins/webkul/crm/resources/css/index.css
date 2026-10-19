@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@import "../../../support/resources/css/colors.css";
+
+@variant dark (&:where(.dark, .dark *));
+
+@source '../../resources/views';
+@source '../../../../../vendor/wezlo/filament-kanban/resources/views';
+
+/*
+ * Kanban toolbar. Unlayered on purpose: other plugins' Tailwind builds load after this
+ * file and their `.w-full` utility would otherwise stretch the search box.
+ */
+.crm-kanban-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.crm-kanban-search {
+    width: 16rem;
+    max-width: 100%;
+    flex: none;
+}
+
+.crm-kanban-filters {
+    position: relative;
+}
+
+.crm-kanban-filters-panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    inset-inline-start: 0;
+    z-index: 30;
+    width: 20rem;
+    max-width: calc(100vw - 2rem);
+}
+
+/*
+ * Stage stepper: stages before the current one are shown as active too.
+ * Opt-in via the `crm-stepper-previous-active` class on the shared ProgressStepper (Fields plugin),
+ * so other plugins using the stepper are unaffected. Pure CSS (`:has()`), so it follows the
+ * selected stage live in the edit form.
+ */
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button,
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button:hover {
+    color: #fff;
+    background-color: var(--primary-500);
+    border-color: var(--primary-500);
+}
+
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button::after,
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button:hover::after {
+    background-color: var(--primary-500);
+    border-right-color: var(--primary-500);
+    border-top-color: var(--primary-500);
+}
+
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button * {
+    color: inherit;
+}
+
+/* Floating record bar: View / Edit tabs with the workflow actions (e.g. Won, Lost) inside the same bar. */
+.crm-record-action-bar {
+    width: max-content;
+    max-width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.crm-record-action-bar-divider {
+    align-self: stretch;
+    width: 1px;
+    margin-inline: 0.25rem;
+    background-color: var(--gray-200);
+}
+
+.dark .crm-record-action-bar-divider {
+    background-color: var(--gray-700);
+}

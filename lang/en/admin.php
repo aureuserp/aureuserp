@@ -4,6 +4,7 @@ return [
     'navigation' => [
         'dashboard'     => 'Dashboard',
         'contact'       => 'Contact',
+        'crm'           => 'CRM',
         'sale'          => 'Sales',
         'purchase'      => 'Purchase',
         'invoice'       => 'Invoices',

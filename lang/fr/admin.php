@@ -4,6 +4,7 @@ return [
     'navigation' => [
         'dashboard'     => 'Tableau de bord',
         'contact'       => 'Contact',
+        'crm'           => 'CRM',
         'sale'          => 'Ventes',
         'purchase'      => 'Achats',
         'invoice'       => 'Factures',
