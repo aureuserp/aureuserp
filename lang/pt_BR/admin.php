@@ -20,6 +20,7 @@ return [
         'plugin'        => 'Plugins',
         'setting'       => 'Configurações',
         'help'          => 'Ajuda',
+        'point-of-sale' => 'Ponto de Venda',
         'barcode'       => 'Código de barras',
     ],
 ];

@@ -20,6 +20,7 @@ return [
         'plugin'        => 'Plugins',
         'setting'       => 'Settings',
         'help'          => 'Help',
+        'point-of-sale' => 'Point of Sale',
         'barcode'       => 'Barcode',
     ],
 ];
