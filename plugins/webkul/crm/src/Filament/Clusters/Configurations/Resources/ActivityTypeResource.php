@@ -2,6 +2,7 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\CreateActivityType;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\EditActivityType;
@@ -29,6 +30,11 @@ class ActivityTypeResource extends BaseActivityTypeResource
         return __('crm::filament/clusters/configurations/resources/activity-type.model-label');
     }
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/activity-type.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/activity-type.navigation.title');
@@ -37,6 +43,11 @@ class ActivityTypeResource extends BaseActivityTypeResource
     public static function getNavigationGroup(): string
     {
         return __('crm::filament/clusters/configurations/resources/activity-type.navigation.group');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('plugin', 'crm');
     }
 
     public static function getPages(): array

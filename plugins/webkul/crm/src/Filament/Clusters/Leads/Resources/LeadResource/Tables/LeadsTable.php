@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
@@ -102,7 +103,7 @@ class LeadsTable
                     ->preload(),
                 SelectFilter::make('team_id')
                     ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.team'))
-                    ->relationship('team', 'name')
+                    ->relationship('team', 'name', fn (Builder $query): Builder => $query->where(owned_by_company(current_company_id())))
                     ->multiple()
                     ->preload(),
                 SelectFilter::make('tags')

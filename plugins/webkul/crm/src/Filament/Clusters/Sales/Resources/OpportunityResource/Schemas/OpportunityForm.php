@@ -21,14 +21,12 @@ use Webkul\Partner\Models\Partner;
 
 class OpportunityForm
 {
-    /**
-     * @param  bool  $withinTeam  When true the team is set by the parent team page, so its field is hidden.
-     */
     public static function configure(Schema $schema, bool $withinTeam = false): Schema
     {
         return $schema
             ->components([
                 FormProgressStepper::make('stage_id')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.stage'))
                     ->hiddenLabel()
                     ->inline()
                     ->extraAttributes(['class' => 'crm-stepper-previous-active'])
@@ -96,6 +94,7 @@ class OpportunityForm
                         Section::make(__('crm::filament/clusters/sales/resources/opportunity.form.sections.notes.title'))
                             ->schema([
                                 RichEditor::make('description')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
                                     ->hiddenLabel(),
                             ]),
                     ])
@@ -145,9 +144,6 @@ class OpportunityForm
             ->columns(3);
     }
 
-    /**
-     * Active users allowed to work in the given company (all active users when no company is set).
-     */
     public static function scopeSalespeople(Builder $query, mixed $companyId): Builder
     {
         return $query

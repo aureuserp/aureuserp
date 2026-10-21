@@ -35,6 +35,7 @@ class LeadInfolist
                 Section::make()
                     ->schema([
                         TextEntry::make('name')
+                            ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))
                             ->hiddenLabel()
                             ->size(TextSize::Large)
                             ->weight(FontWeight::Bold),
@@ -100,6 +101,7 @@ class LeadInfolist
                             ->icon('heroicon-o-pencil-square')
                             ->schema([
                                 TextEntry::make('description')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
                                     ->hiddenLabel()
                                     ->html()
                                     ->placeholder('—'),

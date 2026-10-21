@@ -27,7 +27,7 @@ class ListActivities extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return ActivityResource::getViewSwitcherActions('index');
+        return ActivityResource::getViewSwitcherActions('list');
     }
 
     public function getPresetTableViews(): array

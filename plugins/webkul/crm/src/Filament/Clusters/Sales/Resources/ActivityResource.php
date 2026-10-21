@@ -47,9 +47,6 @@ class ActivityResource extends Resource
         return __('crm::filament/clusters/sales/resources/activity.navigation.title');
     }
 
-    /**
-     * Activities on lost (archived) opportunities are hidden, like the opportunities themselves.
-     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -57,9 +54,6 @@ class ActivityResource extends Resource
             ->with(['lead.partner', 'lead.stage', 'activityType', 'assignedTo']);
     }
 
-    /**
-     * Activities shown in the Kanban and Graph views: the current user's, or everyone's when \$scope is "all".
-     */
     public static function getScopedQuery(?string $scope = null): Builder
     {
         return static::getEloquentQuery()
@@ -84,17 +78,12 @@ class ActivityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListActivities::route('/'),
-            'kanban' => KanbanActivities::route('/kanban'),
+            'index'  => KanbanActivities::route('/'),
+            'list'   => ListActivities::route('/list'),
             'graph'  => GraphActivities::route('/graph'),
         ];
     }
 
-    /**
-     * Header buttons that switch between the List, Kanban and Graph views.
-     *
-     * @return array<int, Action>
-     */
     public static function getViewSwitcherActions(string $currentPage): array
     {
         return [
@@ -103,21 +92,18 @@ class ActivityResource extends Resource
         ];
     }
 
-    /**
-     * @return array<int, Action>
-     */
     protected static function getViewSwitcherButtons(string $currentPage): array
     {
         return collect([
-            'index'  => ['heroicon-o-list-bullet', 'list'],
-            'kanban' => ['heroicon-o-view-columns', 'kanban'],
+            'index'  => ['heroicon-o-view-columns', 'kanban'],
+            'list'   => ['heroicon-o-list-bullet', 'list'],
             'graph'  => ['heroicon-o-chart-bar', 'graph'],
         ])
-            ->map(fn (array $view, string $page): Action => Action::make('view_'.$view[1])
+            ->except($currentPage)
+            ->map(fn (array $view, string $page): Action => Action::make($view[1].'View')
                 ->label(__('crm::filament/clusters/sales/resources/activity.views.'.$view[1]))
                 ->icon($view[0])
-                ->color($page === $currentPage ? 'primary' : 'gray')
-                ->outlined($page !== $currentPage)
+                ->color('gray')
                 ->url(fn (): string => static::getUrl($page)))
             ->values()
             ->all();

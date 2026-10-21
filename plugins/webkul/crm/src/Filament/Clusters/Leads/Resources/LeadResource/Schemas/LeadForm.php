@@ -28,6 +28,7 @@ class LeadForm
                 Section::make()
                     ->schema([
                         TextInput::make('name')
+                            ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))
                             ->hiddenLabel()
                             ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.name-placeholder'))
                             ->required()
@@ -53,24 +54,29 @@ class LeadForm
                                         Fieldset::make(__('crm::filament/clusters/leads/resources/lead.form.fields.address'))
                                             ->schema([
                                                 TextInput::make('street1')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.street1'))
                                                     ->hiddenLabel()
                                                     ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.street1'))
                                                     ->maxLength(255)
                                                     ->columnSpanFull(),
                                                 TextInput::make('street2')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.street2'))
                                                     ->hiddenLabel()
                                                     ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.street2'))
                                                     ->maxLength(255)
                                                     ->columnSpanFull(),
                                                 TextInput::make('city')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.city'))
                                                     ->hiddenLabel()
                                                     ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.city'))
                                                     ->maxLength(255),
                                                 TextInput::make('zip')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.zip'))
                                                     ->hiddenLabel()
                                                     ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.zip'))
                                                     ->maxLength(255),
                                                 Select::make('state_id')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.state'))
                                                     ->hiddenLabel()
                                                     ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.state'))
                                                     ->relationship(
@@ -81,6 +87,7 @@ class LeadForm
                                                     ->searchable()
                                                     ->preload(),
                                                 Select::make('country_id')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.country'))
                                                     ->hiddenLabel()
                                                     ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.country'))
                                                     ->relationship('country', 'name')
@@ -143,6 +150,7 @@ class LeadForm
                             ->icon('heroicon-o-pencil-square')
                             ->schema([
                                 RichEditor::make('description')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
                                     ->hiddenLabel(),
                             ]),
                         Tab::make(__('crm::filament/clusters/leads/resources/lead.form.tabs.extra-info'))
@@ -200,9 +208,6 @@ class LeadForm
             ->columns(1);
     }
 
-    /**
-     * Active users allowed to work in the given company (all active users when no company is set).
-     */
     public static function scopeSalespeople(Builder $query, mixed $companyId): Builder
     {
         return $query

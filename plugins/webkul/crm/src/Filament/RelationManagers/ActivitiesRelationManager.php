@@ -11,10 +11,6 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\Schedu
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Tables\ActivitiesTable;
 use Webkul\Crm\Models\Lead;
 
-/**
- * Planned activities of a lead or opportunity, shown on its view and edit pages.
- * Uses the same columns and actions (Done, Reschedule, Cancel) as My Activities.
- */
 class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'crmActivities';

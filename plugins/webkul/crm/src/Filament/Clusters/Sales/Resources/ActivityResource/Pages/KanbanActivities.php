@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
+use Webkul\Crm\Filament\Concerns\ManagesActivityTypeKanbanColumns;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Models\Activity;
 use Webkul\Support\Models\ActivityType;
@@ -20,7 +21,7 @@ use Wezlo\FilamentKanban\KanbanBoard;
 
 class KanbanActivities extends ListRecords
 {
-    use HasKanbanBoard {
+    use HasKanbanBoard, ManagesActivityTypeKanbanColumns {
         kanbanColumnAction as kanbanColumnActionFromBoard;
     }
 
@@ -35,9 +36,6 @@ class KanbanActivities extends ListRecords
         $this->kanbanFilters['assigned_to'] = Auth::id();
     }
 
-    /**
-     * Clears every kanban filter while keeping the keys the filter fields are bound to.
-     */
     public function resetKanbanFilters(): void
     {
         $this->kanbanFilters = [
@@ -45,10 +43,6 @@ class KanbanActivities extends ListRecords
         ];
     }
 
-    /**
-     * The column "+" pre-fills the whole form (due date, summary, assignee) from the column's activity type,
-     * not only the type itself as the package does.
-     */
     public function kanbanColumnAction(): Action
     {
         return $this->kanbanColumnActionFromBoard()
@@ -67,7 +61,7 @@ class KanbanActivities extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return ActivityResource::getViewSwitcherActions('kanban');
+        return ActivityResource::getViewSwitcherActions('index');
     }
 
     public function kanban(KanbanBoard $kanban): KanbanBoard
@@ -154,6 +148,7 @@ class KanbanActivities extends ListRecords
             )
             ->columnWidth('300px')
             ->boardView('crm::filament.kanban.board')
+            ->columnView('crm::filament.kanban.column')
             ->cardView('crm::filament.kanban.card');
     }
 }

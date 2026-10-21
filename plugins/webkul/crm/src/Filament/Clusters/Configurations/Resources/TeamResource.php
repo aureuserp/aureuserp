@@ -26,6 +26,11 @@ class TeamResource extends BaseTeamResource
         return __('crm::filament/clusters/configurations/resources/team.model-label');
     }
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/team.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/team.navigation.title');

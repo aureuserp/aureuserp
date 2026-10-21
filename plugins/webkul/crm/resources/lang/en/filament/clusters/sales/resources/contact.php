@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'model-label' => 'Contact',
+    'model-label'        => 'Contact',
+    'plural-model-label' => 'Contacts',
 
     'navigation' => [
         'title' => 'Contacts',

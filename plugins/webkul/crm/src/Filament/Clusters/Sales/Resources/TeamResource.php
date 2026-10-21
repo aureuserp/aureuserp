@@ -13,10 +13,6 @@ use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
 use Webkul\Crm\Policies\TeamPolicy;
 use Webkul\Sale\Models\Team;
 
-/**
- * Pipeline overview of the sales teams managed under CRM → Configuration → Sales Teams.
- * It shares the `*_crm_team` permissions with that screen.
- */
 class TeamResource extends Resource
 {
     use HasCrmAuthorization;
@@ -29,7 +25,7 @@ class TeamResource extends Resource
 
     protected static ?string $cluster = Sales::class;
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -43,6 +39,11 @@ class TeamResource extends Resource
     public static function getModelLabel(): string
     {
         return __('crm::filament/clusters/sales/resources/team.model-label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/sales/resources/team.plural-model-label');
     }
 
     public static function getNavigationLabel(): string

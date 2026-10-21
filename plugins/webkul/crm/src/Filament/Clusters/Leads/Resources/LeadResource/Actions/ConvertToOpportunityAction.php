@@ -101,25 +101,16 @@ class ConvertToOpportunityAction extends Action
             });
     }
 
-    /**
-     * Customers that belong to the lead's company (or are shared across companies).
-     */
     protected static function customersFor(Lead $record): Builder
     {
         return Partner::query()->where(owned_by_company($record->company_id));
     }
 
-    /**
-     * Sales teams of the lead's company (or shared across companies).
-     */
     protected static function teamsFor(Lead $record): Builder
     {
         return Team::query()->where(owned_by_company($record->company_id));
     }
 
-    /**
-     * Active users allowed to work in the lead's company.
-     */
     protected static function salespeopleFor(Lead $record): Builder
     {
         return User::query()

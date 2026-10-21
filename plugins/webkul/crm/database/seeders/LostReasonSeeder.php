@@ -8,9 +8,6 @@ use Webkul\Security\Models\User;
 
 class LostReasonSeeder extends Seeder
 {
-    /**
-     * Seed the default lost reasons without duplicating them on reinstall.
-     */
     public function run(): void
     {
         $creator = User::find(1);

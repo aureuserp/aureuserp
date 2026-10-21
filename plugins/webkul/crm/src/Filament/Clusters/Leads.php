@@ -16,6 +16,11 @@ class Leads extends Cluster
         return __('crm::filament/clusters/leads.navigation.title');
     }
 
+    public static function getClusterBreadcrumb(): ?string
+    {
+        return static::getNavigationLabel();
+    }
+
     public static function getNavigationGroup(): string|\UnitEnum
     {
         return NavigationGroup::Crm;

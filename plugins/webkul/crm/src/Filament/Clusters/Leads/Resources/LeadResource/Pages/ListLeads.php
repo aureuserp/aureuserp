@@ -6,8 +6,12 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Filament\Actions\CrmExportAction;
+use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Exports\LeadExporter;
+use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -31,6 +35,11 @@ class ListLeads extends ListRecords
     {
         return [
             ...LeadResource::getViewSwitcherActions('list'),
+            CrmImportAction::make()
+                ->importer(LeadImporter::class)
+                ->visible(fn (): bool => LeadResource::canCreate()),
+            CrmExportAction::make()
+                ->exporter(LeadExporter::class),
             CreateAction::make()
                 ->label(__('crm::filament/clusters/leads/resources/lead.actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),

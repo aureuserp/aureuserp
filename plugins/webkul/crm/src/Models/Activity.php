@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Chatter\Models\Message;
 use Webkul\Crm\Enums\ActivityDueStatus;
 
-/**
- * A Chatter activity scheduled on a CRM opportunity.
- */
 class Activity extends Message
 {
     protected static function booted(): void
@@ -57,10 +54,6 @@ class Activity extends Message
         };
     }
 
-    /**
-     * Completes the activity the same way the Chatter panel does: a "done" note is
-     * posted on the opportunity and the activity is removed.
-     */
     public function markAsDone(?string $feedback = null): void
     {
         $this->lead?->addMessage([

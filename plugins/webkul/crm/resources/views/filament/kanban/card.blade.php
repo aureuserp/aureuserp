@@ -1,4 +1,3 @@
-{{-- CRM copy of wezlo/filament-kanban's card view: footer actions without a URL are routed through the board's kanbanCardFooter action (the package echoes them unregistered, so they never fire). --}}
 @php
     $recordId = $record->getKey();
     $hasClickAction = $board->hasCardClickAction();

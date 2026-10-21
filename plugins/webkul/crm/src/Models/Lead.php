@@ -25,10 +25,6 @@ use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
 use Webkul\Support\Traits\BelongsToCompany;
 
-/**
- * A CRM lead record. `type = 'lead'` rows are unqualified leads (CRM → Leads);
- * `type = 'opportunity'` rows are in the sales pipeline (CRM → Sales → My Pipeline).
- */
 class Lead extends Model
 {
     use BelongsToCompany;
@@ -145,9 +141,6 @@ class Lead extends Model
         return $this->trashed();
     }
 
-    /**
-     * Move the opportunity to the first "won" stage.
-     */
     public function markAsWon(): bool
     {
         $wonStageId = Stage::query()->where('is_won', true)->orderBy('sort')->value('id');
@@ -161,9 +154,6 @@ class Lead extends Model
         return $this->save();
     }
 
-    /**
-     * Archive the opportunity as lost, recording why.
-     */
     public function markAsLost(?int $lostReasonId, ?string $feedback = null): void
     {
         $this->forceFill([
@@ -176,11 +166,6 @@ class Lead extends Model
         $this->delete();
     }
 
-    /**
-     * Turns the lead into an opportunity, optionally creating or linking its customer.
-     *
-     * @param  array{customer?: 'create'|'link'|'none', partner_id?: ?int, user_id?: ?int, team_id?: ?int}  $options
-     */
     public function convertToOpportunity(array $options = []): self
     {
         $partnerId = match ($options['customer'] ?? 'none') {
@@ -192,17 +177,14 @@ class Lead extends Model
         $this->forceFill([
             'type'         => self::TYPE_OPPORTUNITY,
             'partner_id'   => $partnerId,
-            'user_id'      => $options['user_id'] ?? $this->user_id,
-            'team_id'      => $options['team_id'] ?? $this->team_id,
+            'user_id'      => array_key_exists('user_id', $options) ? $options['user_id'] : $this->user_id,
+            'team_id'      => array_key_exists('team_id', $options) ? $options['team_id'] : $this->team_id,
             'converted_at' => now(),
         ])->save();
 
         return $this;
     }
 
-    /**
-     * Creates a customer from the lead: a company when a company name is set, otherwise an individual.
-     */
     public function createCustomer(): Partner
     {
         return Partner::query()->create([
@@ -224,9 +206,6 @@ class Lead extends Model
         ]);
     }
 
-    /**
-     * Activities scheduled on this record, as CRM Activity models (see My Activities).
-     */
     public function crmActivities(): HasMany
     {
         return $this->hasMany(Activity::class, 'messageable_id');
@@ -299,6 +278,14 @@ class Lead extends Model
 
     protected static function booted(): void
     {
+        static::saving(function (self $lead): void {
+            $lead->expected_revenue ??= 0;
+
+            $lead->probability ??= 0;
+
+            $lead->priority ??= OpportunityPriority::Low;
+        });
+
         static::creating(function (self $lead): void {
             $lead->type ??= self::TYPE_OPPORTUNITY;
 

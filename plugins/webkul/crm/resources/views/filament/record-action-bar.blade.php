@@ -1,4 +1,3 @@
-{{-- Floating record bar: View / Edit tabs (same markup as the Support RecordNavigationTabs widget) with the workflow actions inside the same bar. --}}
 @php
     $tabs = $this->getFloatingRecordTabs();
     $actions = array_filter($this->getFloatingRecordActions(), fn ($action) => $action?->isVisible());

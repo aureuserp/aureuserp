@@ -12,6 +12,7 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
@@ -31,6 +32,14 @@ class ManageTeamOpportunities extends ManageRelatedRecords
     protected static string $relationship = 'opportunities';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-funnel';
+
+    public static function canAccess(array $parameters = []): bool
+    {
+        $team = $parameters['record'] ?? null;
+
+        return parent::canAccess($parameters)
+            && ($team instanceof Model ? TeamResource::canView($team) : TeamResource::canViewAny());
+    }
 
     public static function getNavigationLabel(): string
     {

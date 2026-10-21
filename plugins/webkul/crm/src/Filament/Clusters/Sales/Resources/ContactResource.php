@@ -25,7 +25,7 @@ class ContactResource extends BasePartnerResource
 
     protected static ?string $cluster = Sales::class;
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
@@ -43,15 +43,16 @@ class ContactResource extends BasePartnerResource
         return __('crm::filament/clusters/sales/resources/contact.model-label');
     }
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/sales/resources/contact.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/sales/resources/contact.navigation.title');
     }
 
-    /**
-     * The Contacts plugin pins its resource to the global Contact navigation group,
-     * so the group is cleared here to list Contacts directly under CRM → Sales.
-     */
     public static function getNavigationItems(): array
     {
         return array_map(

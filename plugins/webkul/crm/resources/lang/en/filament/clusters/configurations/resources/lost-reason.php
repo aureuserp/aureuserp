@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'model-label' => 'Lost Reason',
+    'model-label'        => 'Lost Reason',
+    'plural-model-label' => 'Lost Reasons',
 
     'navigation' => [
         'title' => 'Lost Reasons',

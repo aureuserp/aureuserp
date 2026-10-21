@@ -8,23 +8,10 @@ use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Security\Models\User;
 
-/**
- * @extends Factory<Lead>
- */
 class LeadFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Lead::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
@@ -42,9 +29,6 @@ class LeadFactory extends Factory
         ];
     }
 
-    /**
-     * Indicate that the record is an unqualified lead.
-     */
     public function lead(): static
     {
         return $this->state(fn (): array => [

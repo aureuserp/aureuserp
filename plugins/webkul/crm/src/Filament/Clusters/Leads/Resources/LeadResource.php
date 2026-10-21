@@ -123,11 +123,6 @@ class LeadResource extends Resource
         ];
     }
 
-    /**
-     * The header toggle to the other view, like My Pipeline: Kanban shows "List", List shows "Kanban".
-     *
-     * @return array<int, Action>
-     */
     public static function getViewSwitcherActions(string $currentPage): array
     {
         $showList = $currentPage === 'index';

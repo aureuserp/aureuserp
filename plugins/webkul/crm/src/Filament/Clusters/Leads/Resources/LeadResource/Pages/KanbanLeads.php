@@ -11,8 +11,13 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Filament\Actions\CrmExportAction;
+use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
+use Webkul\Crm\Filament\Exports\LeadExporter;
+use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
@@ -21,7 +26,7 @@ use Wezlo\FilamentKanban\KanbanBoard;
 
 class KanbanLeads extends ListRecords
 {
-    use HasCrmClusterNavigation, HasKanbanBoard;
+    use HasCrmClusterNavigation, HasKanbanBoard, ManagesStageKanbanColumns;
 
     protected static string $resource = LeadResource::class;
 
@@ -34,9 +39,6 @@ class KanbanLeads extends ListRecords
         $this->kanbanFilters['user_id'] = Auth::id();
     }
 
-    /**
-     * Clears every kanban filter while keeping the keys the filter fields are bound to.
-     */
     public function resetKanbanFilters(): void
     {
         $this->kanbanFilters = [
@@ -60,6 +62,14 @@ class KanbanLeads extends ListRecords
     {
         return [
             ...LeadResource::getViewSwitcherActions('index'),
+            CrmImportAction::make()
+                ->importer(LeadImporter::class)
+                ->visible(fn (): bool => LeadResource::canCreate()),
+            CrmExportAction::make()
+                ->exporter(LeadExporter::class)
+                ->modifyQueryUsing(fn (Builder $query): Builder => CrmExportAction::limitToVisibleRecords(
+                    $query->whereIn('crm_leads.id', $this->getKanbanQuery($this->getKanbanBoard())->reorder()->pluck('crm_leads.id')),
+                )),
             Action::make('create')
                 ->label(__('crm::filament/clusters/leads/resources/lead.actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
@@ -165,12 +175,10 @@ class KanbanLeads extends ListRecords
             )
             ->columnWidth('300px')
             ->boardView('crm::filament.kanban.board')
+            ->columnView('crm::filament.kanban.column')
             ->cardView('crm::filament.kanban.card');
     }
 
-    /**
-     * The team taken from the (client-side) kanban filter, accepted only when it belongs to the current company.
-     */
     protected function validatedQuickCreateTeamId(): ?int
     {
         $teamId = $this->kanbanFilters['team_id'] ?? null;
@@ -182,9 +190,6 @@ class KanbanLeads extends ListRecords
         return Team::query()->where(owned_by_company(current_company_id()))->whereKey($teamId)->value('id');
     }
 
-    /**
-     * The column's stage, accepted only when it is an existing stage that is not a won stage.
-     */
     protected function validatedQuickCreateStageId(mixed $stageId): ?int
     {
         return Stage::query()->where('is_won', false)->whereKey($stageId)->value('id')

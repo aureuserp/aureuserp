@@ -20,17 +20,10 @@ use Webkul\Crm\Models\Lead;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
 
-/**
- * Schedules an activity on any opportunity from the My Activities views,
- * without opening the opportunity's chatter first.
- */
 class ScheduleActivityAction extends Action
 {
     protected ?Lead $lockedLead = null;
 
-    /**
-     * Schedules on this lead/opportunity only (used on its own page); the record picker is hidden.
-     */
     public function forLead(?Lead $lead): static
     {
         $this->lockedLead = $lead;
@@ -134,20 +127,11 @@ class ScheduleActivityAction extends Action
             });
     }
 
-    /**
-     * Open opportunities reachable through the Opportunity resource (company-scoped, lost ones excluded).
-     * Edit permission on the chosen opportunity is still checked when saving.
-     */
     protected static function selectableOpportunities(): Builder
     {
         return OpportunityResource::getEloquentQuery()->withoutTrashed();
     }
 
-    /**
-     * Form defaults derived from an activity type: its due-date delay, summary and default user.
-     *
-     * @return array{activity_type_id: mixed, date_deadline: string, summary: ?string, assigned_to: ?int}
-     */
     public static function defaultsForType(mixed $activityTypeId): array
     {
         $type = filled($activityTypeId) ? ActivityType::query()->find($activityTypeId) : null;

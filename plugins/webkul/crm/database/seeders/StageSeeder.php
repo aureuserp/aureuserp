@@ -8,18 +8,31 @@ use Webkul\Security\Models\User;
 
 class StageSeeder extends Seeder
 {
-    /**
-     * Seed the default pipeline stages without duplicating them on reinstall.
-     */
     public function run(): void
     {
         $creator = User::find(1);
 
         $stages = [
-            ['sort' => 1, 'name' => 'New', 'is_won' => false],
-            ['sort' => 2, 'name' => 'Qualified', 'is_won' => false],
-            ['sort' => 3, 'name' => 'Proposition', 'is_won' => false],
-            ['sort' => 4, 'name' => 'Won', 'is_won' => true],
+            [
+                'sort'   => 1,
+                'name'   => 'New',
+                'is_won' => false,
+            ],
+            [
+                'sort'   => 2,
+                'name'   => 'Qualified',
+                'is_won' => false,
+            ],
+            [
+                'sort'   => 3,
+                'name'   => 'Proposition',
+                'is_won' => false,
+            ],
+            [
+                'sort'   => 4,
+                'name'   => 'Won',
+                'is_won' => true,
+            ],
         ];
 
         foreach ($stages as $stage) {

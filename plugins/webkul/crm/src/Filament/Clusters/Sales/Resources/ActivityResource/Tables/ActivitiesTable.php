@@ -21,9 +21,6 @@ use Webkul\Crm\Models\Activity;
 
 class ActivitiesTable
 {
-    /**
-     * @param  bool  $withinRecord  When true the table is shown on a lead/opportunity page, so the record columns and links are hidden.
-     */
     public static function configure(Table $table, bool $withinRecord = false): Table
     {
         return $table

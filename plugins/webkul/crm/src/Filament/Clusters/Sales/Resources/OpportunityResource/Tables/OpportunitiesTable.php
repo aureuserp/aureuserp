@@ -24,9 +24,6 @@ use Webkul\Crm\Models\Lead;
 
 class OpportunitiesTable
 {
-    /**
-     * @param  bool  $withinTeam  When true the table is shown on a team page, so team columns, filters and groups are hidden.
-     */
     public static function configure(Table $table, bool $withinTeam = false): Table
     {
         return $table

@@ -23,6 +23,16 @@ class CompanyResource extends BaseCompanyResource
 
     protected static bool $isGloballySearchable = false;
 
+    public static function getModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/company.model-label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/company.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/company.navigation.title');

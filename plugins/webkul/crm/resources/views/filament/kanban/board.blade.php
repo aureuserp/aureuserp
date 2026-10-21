@@ -1,4 +1,3 @@
-{{-- CRM copy of wezlo/filament-kanban's board view: compact search box and a filter panel that opens below its button, inside the screen. --}}
 @php
     $board = $this->getKanbanBoard();
     $columns = $this->getKanbanColumns();
@@ -108,6 +107,63 @@
         @foreach($columns as $column)
             @include($board->getColumnView(), ['column' => $column, 'board' => $board])
         @endforeach
+
+        @if(method_exists($this, 'canAddKanbanColumn') && $this->canAddKanbanColumn())
+            <div
+                x-data="{ adding: false, name: '', saving: false }"
+                style="flex: 0 0 {{ $board->getColumnWidth() }}; width: {{ $board->getColumnWidth() }}; padding: 2px;"
+                class="crm-kanban-add-column"
+            >
+                <div x-show="! adding">
+                    <x-filament::button
+                        color="gray"
+                        outlined
+                        icon="heroicon-m-plus"
+                        x-on:click="adding = true; $nextTick(() => $refs.newColumnName.focus())"
+                        style="width: 100%; justify-content: flex-start;"
+                    >
+                        {{ $this->getAddKanbanColumnLabel() }}
+                    </x-filament::button>
+                </div>
+
+                <div
+                    x-show="adding"
+                    x-cloak
+                    class="rounded-xl bg-gray-50 p-3 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10"
+                >
+                    <x-filament::input.wrapper>
+                        <x-filament::input
+                            type="text"
+                            x-ref="newColumnName"
+                            x-model="name"
+                            maxlength="255"
+                            :placeholder="__('crm::filament/kanban.add-column.placeholder')"
+                            :aria-label="$this->getAddKanbanColumnLabel()"
+                            x-on:keydown.enter.prevent="if (! saving && name.trim()) { saving = true; $wire.addKanbanColumn(name).then((created) => { saving = false; if (created) { name = ''; $refs.newColumnName.focus(); } }) }"
+                            x-on:keydown.escape="adding = false; name = ''"
+                        />
+                    </x-filament::input.wrapper>
+
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                        <x-filament::button
+                            size="sm"
+                            x-bind:disabled="saving || ! name.trim()"
+                            x-on:click="saving = true; $wire.addKanbanColumn(name).then((created) => { saving = false; if (created) { name = ''; $refs.newColumnName.focus(); } })"
+                        >
+                            {{ __('crm::filament/kanban.add-column.add') }}
+                        </x-filament::button>
+
+                        <x-filament::button
+                            size="sm"
+                            color="gray"
+                            x-on:click="adding = false; name = ''"
+                        >
+                            {{ __('crm::filament/kanban.add-column.cancel') }}
+                        </x-filament::button>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     <x-filament-actions::modals />

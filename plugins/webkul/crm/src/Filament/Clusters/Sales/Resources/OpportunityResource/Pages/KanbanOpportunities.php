@@ -13,7 +13,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Filament\Actions\CrmExportAction;
+use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
+use Webkul\Crm\Filament\Exports\OpportunityExporter;
+use Webkul\Crm\Filament\Imports\OpportunityImporter;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
@@ -24,13 +29,10 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class KanbanOpportunities extends ListRecords
 {
-    use HasKanbanBoard;
+    use HasKanbanBoard, ManagesStageKanbanColumns;
 
     protected static string $resource = OpportunityResource::class;
 
-    /**
-     * Opens on the current user's pipeline, or on a team's pipeline when `?team=` is given.
-     */
     public function mount(): void
     {
         parent::mount();
@@ -44,9 +46,6 @@ class KanbanOpportunities extends ListRecords
         ];
     }
 
-    /**
-     * Clears every kanban filter while keeping the keys the filter fields are bound to.
-     */
     public function resetKanbanFilters(): void
     {
         $this->kanbanFilters = [
@@ -74,6 +73,14 @@ class KanbanOpportunities extends ListRecords
                 ->icon('heroicon-o-list-bullet')
                 ->color('gray')
                 ->url(fn (): string => OpportunityResource::getUrl('list')),
+            CrmImportAction::make()
+                ->importer(OpportunityImporter::class)
+                ->visible(fn (): bool => OpportunityResource::canCreate()),
+            CrmExportAction::make()
+                ->exporter(OpportunityExporter::class)
+                ->modifyQueryUsing(fn (Builder $query): Builder => CrmExportAction::limitToVisibleRecords(
+                    $query->whereIn('crm_leads.id', $this->getKanbanQuery($this->getKanbanBoard())->reorder()->pluck('crm_leads.id')),
+                )),
             Action::make('create')
                 ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
@@ -182,12 +189,10 @@ class KanbanOpportunities extends ListRecords
             )
             ->columnWidth('300px')
             ->boardView('crm::filament.kanban.board')
+            ->columnView('crm::filament.kanban.column')
             ->cardView('crm::filament.kanban.card');
     }
 
-    /**
-     * The team taken from the (client-side) kanban filter, accepted only when it belongs to the current company.
-     */
     protected function validatedQuickCreateTeamId(): ?int
     {
         $teamId = $this->kanbanFilters['team_id'] ?? null;
@@ -199,9 +204,6 @@ class KanbanOpportunities extends ListRecords
         return Team::query()->where(owned_by_company(current_company_id()))->whereKey($teamId)->value('id');
     }
 
-    /**
-     * The column's stage, accepted only when it is an existing stage.
-     */
     protected function validatedQuickCreateStageId(mixed $stageId): ?int
     {
         return Stage::query()->whereKey($stageId)->value('id')

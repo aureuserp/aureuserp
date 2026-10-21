@@ -23,6 +23,16 @@ class UserResource extends BaseUserResource
 
     protected static bool $isGloballySearchable = false;
 
+    public static function getModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/user.model-label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/user.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/user.navigation.title');

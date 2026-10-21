@@ -7,8 +7,7 @@
 @source '../../../../../vendor/wezlo/filament-kanban/resources/views';
 
 /*
- * Kanban toolbar. Unlayered on purpose: other plugins' Tailwind builds load after this
- * file and their `.w-full` utility would otherwise stretch the search box.
+ * Kanban CSS
  */
 .crm-kanban-toolbar {
     display: flex;
@@ -36,12 +35,6 @@
     max-width: calc(100vw - 2rem);
 }
 
-/*
- * Stage stepper: stages before the current one are shown as active too.
- * Opt-in via the `crm-stepper-previous-active` class on the shared ProgressStepper (Fields plugin),
- * so other plugins using the stepper are unaffected. Pure CSS (`:has()`), so it follows the
- * selected stage live in the edit form.
- */
 .crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button,
 .crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button:hover {
     color: #fff;
@@ -60,7 +53,6 @@
     color: inherit;
 }
 
-/* Floating record bar: View / Edit tabs with the workflow actions (e.g. Won, Lost) inside the same bar. */
 .crm-record-action-bar {
     width: max-content;
     max-width: 100%;

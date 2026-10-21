@@ -30,6 +30,11 @@ class LostReasonResource extends Resource
         return __('crm::filament/clusters/configurations/resources/lost-reason.model-label');
     }
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/lost-reason.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/lost-reason.navigation.title');

@@ -28,6 +28,11 @@ class StageResource extends Resource
         return __('crm::filament/clusters/configurations/resources/stage.model-label');
     }
 
+    public static function getPluralModelLabel(): string
+    {
+        return __('crm::filament/clusters/configurations/resources/stage.plural-model-label');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/stage.navigation.title');

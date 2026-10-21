@@ -7,7 +7,11 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Filament\Actions\CrmExportAction;
+use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Exports\OpportunityExporter;
+use Webkul\Crm\Filament\Imports\OpportunityImporter;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -35,6 +39,11 @@ class ListOpportunities extends ListRecords
                 ->icon('heroicon-o-view-columns')
                 ->color('gray')
                 ->url(fn (): string => OpportunityResource::getUrl('index')),
+            CrmImportAction::make()
+                ->importer(OpportunityImporter::class)
+                ->visible(fn (): bool => OpportunityResource::canCreate()),
+            CrmExportAction::make()
+                ->exporter(OpportunityExporter::class),
             CreateAction::make()
                 ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),

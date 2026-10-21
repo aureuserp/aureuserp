@@ -20,6 +20,7 @@ class OpportunityInfolist
         return $schema
             ->components([
                 InfolistProgressStepper::make('stage_id')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.stage'))
                     ->hiddenLabel()
                     ->inline()
                     ->extraAttributes(['class' => 'crm-stepper-previous-active'])
@@ -43,6 +44,7 @@ class OpportunityInfolist
                         Section::make(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.general.title'))
                             ->schema([
                                 TextEntry::make('name')
+                                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.name'))
                                     ->hiddenLabel()
                                     ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold),
@@ -70,6 +72,7 @@ class OpportunityInfolist
                         Section::make(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.notes.title'))
                             ->schema([
                                 TextEntry::make('description')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
                                     ->hiddenLabel()
                                     ->html()
                                     ->placeholder('—'),
