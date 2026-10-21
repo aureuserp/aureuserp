@@ -48,8 +48,8 @@ return [
                     'approve'  => 'Approve',
                 ],
                 'notification' => [
-                    'title' => 'Allocation approved approved',
-                    'body'  => 'The allocation approved has been approved successfully.',
+                    'title' => 'Allocation approved',
+                    'body'  => 'The allocation has been approved successfully.',
                 ],
             ],
 

@@ -17,7 +17,7 @@ class CompanyScopeHelper
         foreach (glob(base_path("plugins/webkul/{$plugin}/src/Models/*.php")) as $file) {
             $source = file_get_contents($file);
 
-            if (! str_contains($source, 'use BelongsToCompany;')) {
+            if (! preg_match('/^\s*use\s+[^;]*\bBelongsToCompany\b[^;]*;/m', $source)) {
                 continue;
             }
 

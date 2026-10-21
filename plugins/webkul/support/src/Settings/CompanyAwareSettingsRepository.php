@@ -11,6 +11,8 @@ class CompanyAwareSettingsRepository extends DatabaseSettingsRepository
     public const COMPANY_SCOPED_GROUPS = [
         'accounts_accounts',
         'accounts_taxes',
+        'point_of_sale_account',
+        'point_of_sale_inventory',
     ];
 
     protected static ?bool $hasCompanyColumn = null;

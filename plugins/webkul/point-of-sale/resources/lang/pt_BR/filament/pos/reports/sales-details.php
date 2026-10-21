@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title'                  => 'Relatório de vendas diárias :config',
+    'session'                => 'ID da sessão: :session',
+    'as-of'                  => 'Em :date',
+    'sales'                  => 'Vendas',
+    'refunds'                => 'Devoluções',
+    'taxes-on-sales'         => 'Impostos sobre vendas',
+    'taxes-on-refunds'       => 'Impostos sobre devoluções',
+    'total'                  => 'Total',
+    'discount'               => 'Desc.: :percent%',
+    'payments'               => 'Pagamentos',
+    'discounts'              => 'Descontos',
+    'number-of-discounts'    => 'Número de descontos',
+    'amount-of-discounts'    => 'Valor dos descontos',
+    'invoices'               => 'Faturas',
+    'order'                  => 'Pedido :order',
+    'session-control'        => 'Controle da sessão',
+    'number-of-transactions' => 'Número de transações',
+    'name'                   => 'Nome',
+    'expected'               => 'Esperado',
+    'opening-note'           => 'Nota de abertura da sessão:',
+    'closing-note'           => 'Nota de fechamento da sessão:',
+    'filename'               => 'Relatório de vendas diárias',
+];

@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title'                  => 'Daily Sales Report :config',
+    'session'                => 'Session ID: :session',
+    'as-of'                  => 'As of :date',
+    'sales'                  => 'Sales',
+    'refunds'                => 'Refunds',
+    'taxes-on-sales'         => 'Taxes on sales',
+    'taxes-on-refunds'       => 'Taxes on refunds',
+    'total'                  => 'Total',
+    'discount'               => 'Disc: :percent%',
+    'payments'               => 'Payments',
+    'discounts'              => 'Discounts',
+    'number-of-discounts'    => 'Number of discounts',
+    'amount-of-discounts'    => 'Amount of discounts',
+    'invoices'               => 'Invoices',
+    'order'                  => 'Order :order',
+    'session-control'        => 'Session Control',
+    'number-of-transactions' => 'Number of transactions',
+    'name'                   => 'Name',
+    'expected'               => 'Expected',
+    'opening-note'           => 'Opening of session note:',
+    'closing-note'           => 'Closing of session note:',
+    'filename'               => 'Daily Sales Report',
+];

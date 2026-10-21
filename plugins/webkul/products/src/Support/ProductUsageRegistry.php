@@ -12,6 +12,8 @@ class ProductUsageRegistry
 
     protected static array $tableExists = [];
 
+    protected static array $productColumns = [];
+
     public static function register(string ...$models): void
     {
         foreach ($models as $model) {
@@ -56,12 +58,39 @@ class ProductUsageRegistry
                 continue;
             }
 
-            if ($query->whereIn('product_id', $productIds)->exists()) {
+            $columns = static::productColumns($query->getModel());
+
+            if ($columns === []) {
+                continue;
+            }
+
+            $query->where(function ($usage) use ($columns, $productIds): void {
+                foreach ($columns as $column) {
+                    $usage->orWhereIn($column, $productIds);
+                }
+            });
+
+            if ($query->exists()) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected static function productColumns(Model $model): array
+    {
+        $table = $model->getTable();
+
+        return static::$productColumns[$table] ??= collect(
+            $model->getConnection()->getSchemaBuilder()->getColumnListing($table)
+        )
+            ->filter(fn (string $column): bool => $column === 'product_id' || str_ends_with($column, '_product_id'))
+            ->values()
+            ->all();
     }
 
     protected static function tableExists(Model $model): bool
@@ -78,5 +107,7 @@ class ProductUsageRegistry
         static::$models = [];
 
         static::$tableExists = [];
+
+        static::$productColumns = [];
     }
 }

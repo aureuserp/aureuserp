@@ -28,7 +28,7 @@ class CurrencyRateRequest extends FormRequest
 
         $rules = [
             'name'       => [...$requiredRule, 'date'],
-            'rate'       => [...$requiredRule, 'numeric', 'min:0'],
+            'rate'       => [...$requiredRule, 'numeric', 'gt:0'],
             'company_id' => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
         ];
 
@@ -48,7 +48,7 @@ class CurrencyRateRequest extends FormRequest
                 'example'     => '2024-01-15',
             ],
             'rate' => [
-                'description' => 'Exchange rate (minimum 0).',
+                'description' => 'Exchange rate (must be greater than 0).',
                 'example'     => 1.25,
             ],
             'company_id' => [

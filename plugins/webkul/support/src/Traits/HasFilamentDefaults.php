@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Traits;
 
+use Filament\Facades\Filament;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -32,7 +33,7 @@ trait HasFilamentDefaults
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
-            fn (): string => Blade::render(<<<'BLADE'
+            fn (): string => Filament::getCurrentPanel()?->getId() === 'pos' ? '' : Blade::render(<<<'BLADE'
                 <x-filament::dropdown.list>
                     <x-filament::dropdown.list.item>
                         <div class="flex items-center gap-2">

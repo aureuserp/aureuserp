@@ -141,6 +141,25 @@ class SchemaRegistry
         return $out;
     }
 
+    public static function flush(): void
+    {
+        static::$form = [];
+
+        static::$infolist = [];
+
+        static::$table = [];
+
+        static::$actions = [];
+
+        static::$presetViews = [];
+
+        static::$eagerLoad = [];
+
+        static::$companyDependentFields = [];
+
+        static::$companyDefaultFields = [];
+    }
+
     protected static function resolve(array $entries, array $args): array
     {
         usort($entries, fn (array $a, array $b): int => $a[0] <=> $b[0]);

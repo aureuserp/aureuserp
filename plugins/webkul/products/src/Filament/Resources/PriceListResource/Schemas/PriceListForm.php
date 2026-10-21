@@ -356,10 +356,6 @@ class PriceListForm
         ];
     }
 
-    /**
-     * Mirrors Odoo's rule tip: restates the formula in words and works a
-     * worked example through it.
-     */
     private static function describeRuleTip(Get $get, $livewire): string
     {
         $base = static::ruleBase($get('base')) ?? PriceRuleBase::LIST_PRICE;

@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title'                  => 'Rapport des ventes quotidiennes :config',
+    'session'                => 'ID de session : :session',
+    'as-of'                  => 'Au :date',
+    'sales'                  => 'Ventes',
+    'refunds'                => 'Remboursements',
+    'taxes-on-sales'         => 'Taxes sur les ventes',
+    'taxes-on-refunds'       => 'Taxes sur les remboursements',
+    'total'                  => 'Total',
+    'discount'               => 'Rem. : :percent%',
+    'payments'               => 'Paiements',
+    'discounts'              => 'Remises',
+    'number-of-discounts'    => 'Nombre de remises',
+    'amount-of-discounts'    => 'Montant des remises',
+    'invoices'               => 'Factures',
+    'order'                  => 'Commande :order',
+    'session-control'        => 'Contrôle de session',
+    'number-of-transactions' => 'Nombre de transactions',
+    'name'                   => 'Nom',
+    'expected'               => 'Attendu',
+    'opening-note'           => 'Note d\'ouverture de session :',
+    'closing-note'           => 'Note de clôture de session :',
+    'filename'               => 'Rapport des ventes quotidiennes',
+];

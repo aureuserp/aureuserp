@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title'                  => 'Informe de ventas diarias :config',
+    'session'                => 'ID de sesión: :session',
+    'as-of'                  => 'Al :date',
+    'sales'                  => 'Ventas',
+    'refunds'                => 'Devoluciones',
+    'taxes-on-sales'         => 'Impuestos sobre ventas',
+    'taxes-on-refunds'       => 'Impuestos sobre devoluciones',
+    'total'                  => 'Total',
+    'discount'               => 'Dto.: :percent%',
+    'payments'               => 'Pagos',
+    'discounts'              => 'Descuentos',
+    'number-of-discounts'    => 'Número de descuentos',
+    'amount-of-discounts'    => 'Importe de descuentos',
+    'invoices'               => 'Facturas',
+    'order'                  => 'Pedido :order',
+    'session-control'        => 'Control de sesión',
+    'number-of-transactions' => 'Número de transacciones',
+    'name'                   => 'Nombre',
+    'expected'               => 'Esperado',
+    'opening-note'           => 'Nota de apertura de sesión:',
+    'closing-note'           => 'Nota de cierre de sesión:',
+    'filename'               => 'Informe de ventas diarias',
+];

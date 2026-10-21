@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'title'                  => 'تقرير المبيعات اليومي :config',
+    'session'                => 'معرف الجلسة: :session',
+    'as-of'                  => 'حتى :date',
+    'sales'                  => 'المبيعات',
+    'refunds'                => 'المرتجعات',
+    'taxes-on-sales'         => 'الضرائب على المبيعات',
+    'taxes-on-refunds'       => 'الضرائب على المرتجعات',
+    'total'                  => 'الإجمالي',
+    'discount'               => 'خصم: :percent%',
+    'payments'               => 'المدفوعات',
+    'discounts'              => 'الخصومات',
+    'number-of-discounts'    => 'عدد الخصومات',
+    'amount-of-discounts'    => 'مبلغ الخصومات',
+    'invoices'               => 'الفواتير',
+    'order'                  => 'الطلب :order',
+    'session-control'        => 'التحكم بالجلسة',
+    'number-of-transactions' => 'عدد المعاملات',
+    'name'                   => 'الاسم',
+    'expected'               => 'المتوقع',
+    'opening-note'           => 'ملاحظة افتتاح الجلسة:',
+    'closing-note'           => 'ملاحظة إغلاق الجلسة:',
+    'filename'               => 'تقرير المبيعات اليومي',
+];

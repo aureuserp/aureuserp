@@ -59,11 +59,16 @@ class SupportPlugin implements Plugin
             <script>
                 document.addEventListener('livewire:navigated', function() {
                     setTimeout(() => {
-                        const activeSidebarItem = document.querySelector('nav .fi-sidebar-item-active');
+                        const activeSidebarItem = document.querySelector('.fi-main-sidebar .fi-sidebar-item.fi-active')
+                            ?? document.querySelector('.fi-main-sidebar .fi-sidebar-group.fi-active');
 
-                        const sidebarWrapper = document.querySelector('nav.fi-sidebar-nav');
-    
-                        sidebarWrapper.scrollTo(0, activeSidebarItem.offsetTop - 250);
+                        const sidebarWrapper = document.querySelector('.fi-main-sidebar .fi-sidebar-nav');
+
+                        if (! activeSidebarItem || activeSidebarItem.offsetParent === null || ! sidebarWrapper) {
+                            return;
+                        }
+
+                        sidebarWrapper.scrollTo(0, activeSidebarItem.offsetTop - window.innerHeight / 2);
                     }, 0);
                 });
             </script>

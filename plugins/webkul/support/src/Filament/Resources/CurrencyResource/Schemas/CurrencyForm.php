@@ -124,7 +124,7 @@ class CurrencyForm
                                     ->required()
                                     ->numeric()
                                     ->step(0.000001)
-                                    ->minValue(1)
+                                    ->minValue(0.000001)
                                     ->default(1.000000)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function ($state, callable $set) {

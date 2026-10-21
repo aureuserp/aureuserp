@@ -5,6 +5,7 @@ namespace Webkul\TimeOff\Http\Resources\V1;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
 use Webkul\Support\Http\Resources\V1\CompanyResource;
+use Webkul\TimeOff\Enums\RequiresAllocation;
 
 class LeaveTypeResource extends JsonResource
 {
@@ -16,7 +17,7 @@ class LeaveTypeResource extends JsonResource
             'color'                               => $this->color,
             'max_allowed_negative'                => (float) $this->max_allowed_negative,
             'leave_validation_type'               => $this->leave_validation_type?->value,
-            'requires_allocation'                 => (bool) $this->requires_allocation,
+            'requires_allocation'                 => $this->requires_allocation === RequiresAllocation::YES->value,
             'employee_requests'                   => (bool) $this->employee_requests,
             'allocation_validation_type'          => $this->allocation_validation_type,
             'time_type'                           => $this->time_type,

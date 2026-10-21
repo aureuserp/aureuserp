@@ -1,0 +1,30 @@
+{
+    "name": "webkul/point-of-sale",
+    "description": "Point of sale terminal, sessions and orders",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\PointOfSale\\PointOfSaleServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\PointOfSale\\": "src/",
+            "Webkul\\PointOfSale\\Database\\Factories\\": "database/factories/",
+            "Webkul\\PointOfSale\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\PointOfSale\\Tests\\": "tests/"
+        }
+    }
+}

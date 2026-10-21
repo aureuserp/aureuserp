@@ -23,6 +23,9 @@
         <testsuite name="ManufacturingFeature">
             <directory>plugins/webkul/manufacturing/tests/Feature</directory>
         </testsuite>
+        <testsuite name="PointOfSaleFeature">
+            <directory>plugins/webkul/point-of-sale/tests/Feature</directory>
+        </testsuite>
         <testsuite name="ProjectFeature">
             <directory>plugins/webkul/projects/tests/Feature</directory>
         </testsuite>

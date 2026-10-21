@@ -534,7 +534,17 @@ class OperationForm
             ->icon('heroicon-m-bars-4')
             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.modal-heading'))
             ->modalSubmitActionLabel(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.modal-submit-action-label'))
-            ->visible(OperationResource::getWarehouseSettings()->enable_locations)
+            ->visible(
+                OperationResource::getWarehouseSettings()->enable_locations
+                    || (
+                        OperationResource::getTraceabilitySettings()->enable_lots_serial_numbers
+                        && $move->product !== null
+                        && (
+                            $move->product->tracking == ProductTracking::LOT
+                            || $move->product->tracking == ProductTracking::SERIAL
+                        )
+                    )
+            )
             ->schema([
                 Actions::make([
                     Action::make('generateLots')
@@ -655,7 +665,8 @@ class OperationForm
                             ),
                         TableColumn::make('destination_location_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.location'))
-                            ->markAsRequired(),
+                            ->markAsRequired()
+                            ->visible(OperationResource::getWarehouseSettings()->enable_locations),
                         TableColumn::make('result_package_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
                             ->visible(OperationResource::getOperationSettings()->enable_packages),
@@ -801,6 +812,7 @@ class OperationForm
                             ->afterStateUpdated(function (Set $set) {
                                 $set('result_package_id', null);
                             })
+                            ->visible(OperationResource::getWarehouseSettings()->enable_locations)
                             ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
                         Select::make('result_package_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
