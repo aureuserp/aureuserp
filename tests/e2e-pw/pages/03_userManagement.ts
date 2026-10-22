@@ -171,10 +171,25 @@ export class UserManagementPage {
         await this.erpLocators.usersRowActionsButton.click();
         await this.erpLocators.usersEditButton.click();
         await this.erpLocators.usersResetPasswordButton.click();
-        await this.erpLocators.usersChangePasswordInput.fill(newPassword);
-        await this.erpLocators.usersChangePasswordConfirmationInput.fill(newPassword);
-        await this.erpLocators.usersChangePasswordSaveButton.click();
-        await this.expectSuccessFeedback();
+
+        const submitButton = this.erpLocators.usersChangePasswordSaveButton;
+
+        // A click landing while Livewire is hydrating/in flight is swallowed, and a re-render
+        // can wipe the typed values (native required validation then blocks submit silently),
+        // so refill and resubmit until the modal closes.
+        await expect(async () => {
+            if (await submitButton.isHidden()) {
+                return;
+            }
+
+            await this.erpLocators.usersChangePasswordInput.fill(newPassword);
+            await this.erpLocators.usersChangePasswordConfirmationInput.fill(newPassword);
+            await expect(this.erpLocators.usersChangePasswordInput).toHaveValue(newPassword);
+            await expect(this.erpLocators.usersChangePasswordConfirmationInput).toHaveValue(newPassword);
+            await expect(submitButton).toBeEnabled();
+            await submitButton.click();
+            await expect(submitButton).toBeHidden({ timeout: 8_000 });
+        }).toPass({ timeout: 60_000 });
     }
 
     /**

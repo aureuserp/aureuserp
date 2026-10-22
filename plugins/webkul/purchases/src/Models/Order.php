@@ -237,12 +237,36 @@ class Order extends Model
         });
 
         static::saving(function ($order) {
+            $order->computeCurrencyRate();
+
             $order->updateName();
         });
 
         static::created(function ($order) {
             $order->update(['name' => $order->name]);
         });
+    }
+
+    public function computeCurrencyRate(): void
+    {
+        if ((float) $this->currency_rate !== 0.0) {
+            if (! $this->exists || $this->wasRecentlyCreated || ! $this->isDirty('currency_id')) {
+                return;
+            }
+        }
+
+        $companyCurrencyId = Company::withTrashed()->whereKey($this->company_id)->value('currency_id');
+
+        if ($companyCurrencyId && $this->currency_id && (int) $this->currency_id !== (int) $companyCurrencyId) {
+            $companyCurrency = Currency::find($companyCurrencyId);
+            $orderCurrency   = Currency::find($this->currency_id);
+
+            $this->currency_rate = ($companyCurrency && $orderCurrency)
+                ? (float) $orderCurrency->getConversionRate($companyCurrency, $orderCurrency)
+                : 1.0;
+        } else {
+            $this->currency_rate = 1.0;
+        }
     }
 
     public function updateName()

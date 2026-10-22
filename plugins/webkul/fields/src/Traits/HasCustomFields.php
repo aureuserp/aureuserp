@@ -69,9 +69,7 @@ trait HasCustomFields
     public function mergeCasts($attributes)
     {
         if (is_array($attributes)) {
-            parent::mergeCasts($attributes);
-
-            return $attributes;
+            return parent::mergeCasts($attributes);
         }
 
         foreach ($attributes as $attribute) {
