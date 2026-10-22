@@ -452,7 +452,7 @@ it('opens the board on the current user\'s activities', function () {
     $someoneElses = scheduledCrmActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
     $component = Livewire::test(KanbanActivities::class)
-        ->assertSet('kanbanFilters', ['assigned_to' => $user->id]);
+        ->assertSet('kanbanFilters', [...KanbanActivities::emptyKanbanFilters(), 'assigned_to' => $user->id]);
 
     $ids = collect($component->instance()->getKanbanColumns())
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
@@ -517,4 +517,23 @@ it('counts the user\'s activities in the mine scope and everyone\'s in the all s
 
     expect($mineIds)->toContain($mine->id)->not->toContain($someoneElses->id)
         ->and($allIds)->toContain($mine->id, $someoneElses->id);
+});
+
+it('filters the board by due status and activity type like the list', function () {
+    actingAsActivityPlanner();
+
+    $opportunity = CrmTestHelper::opportunity();
+
+    $overdue = scheduledCrmActivity($opportunity, ['date_deadline' => now()->subDays(2)->toDateString()]);
+    $planned = scheduledCrmActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString(), 'activity_type_id' => crmActivityType('Call')->id]);
+
+    $ids = fn (array $filters): array => collect(Livewire::test(KanbanActivities::class)
+        ->set('kanbanFilters', [...KanbanActivities::emptyKanbanFilters(), 'assigned_to' => auth()->id(), ...$filters])
+        ->instance()
+        ->getKanbanColumns())
+        ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
+        ->all();
+
+    expect($ids(['due_status' => 'overdue']))->toContain($overdue->id)->not->toContain($planned->id)
+        ->and($ids(['activity_type_id' => [crmActivityType('Call')->id]]))->toContain($planned->id)->not->toContain($overdue->id);
 });

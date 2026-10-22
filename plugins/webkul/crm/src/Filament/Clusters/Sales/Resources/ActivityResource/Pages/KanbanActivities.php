@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
+use Webkul\Crm\Filament\Concerns\AppliesKanbanListFilters;
 use Webkul\Crm\Filament\Concerns\ManagesActivityTypeKanbanColumns;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Models\Activity;
@@ -21,7 +22,9 @@ use Wezlo\FilamentKanban\KanbanBoard;
 
 class KanbanActivities extends ListRecords
 {
-    use HasKanbanBoard, ManagesActivityTypeKanbanColumns {
+    use AppliesKanbanListFilters, HasKanbanBoard, ManagesActivityTypeKanbanColumns {
+        AppliesKanbanListFilters::getKanbanQuery insteadof HasKanbanBoard;
+        HasKanbanBoard::getKanbanQuery as getBaseKanbanQuery;
         kanbanColumnAction as kanbanColumnActionFromBoard;
     }
 
@@ -38,9 +41,31 @@ class KanbanActivities extends ListRecords
 
     public function resetKanbanFilters(): void
     {
-        $this->kanbanFilters = [
-            'assigned_to' => null,
+        $this->kanbanFilters = static::emptyKanbanFilters();
+    }
+
+    public static function emptyKanbanFilters(): array
+    {
+        return [
+            'assigned_to'      => null,
+            'due_status'       => null,
+            'activity_type_id' => [],
         ];
+    }
+
+    protected function kanbanSimpleFilterKeys(): array
+    {
+        return ['assigned_to'];
+    }
+
+    protected function applyKanbanListFilters(Builder $query, array $filters): Builder
+    {
+        $dueStatus = ActivityDueStatus::tryFrom((string) ($filters['due_status'] ?? ''));
+        $typeIds = static::kanbanFilterValues($filters, 'activity_type_id');
+
+        return $query
+            ->when($dueStatus, fn (Builder $query): Builder => $query->dueStatus($dueStatus))
+            ->when($typeIds, fn (Builder $query): Builder => $query->whereIn('activity_type_id', $typeIds));
     }
 
     public function kanbanColumnAction(): Action
@@ -139,6 +164,16 @@ class KanbanActivities extends ListRecords
                     ->searchable()
                     ->preload()
                     ->placeholder(__('crm::filament/clusters/sales/resources/activity/pages/kanban-activities.filters.everyone')),
+                Select::make('due_status')
+                    ->label(__('crm::filament/clusters/sales/resources/activity.table.filters.due-status'))
+                    ->options(ActivityDueStatus::class)
+                    ->placeholder(__('crm::filament/clusters/sales/resources/activity/pages/kanban-activities.filters.all')),
+                Select::make('activity_type_id')
+                    ->label(__('crm::filament/clusters/sales/resources/activity.table.filters.activity-type'))
+                    ->options(fn (): array => ActivityType::query()->where('plugin', 'crm')->orderBy('name')->pluck('name', 'id')->all())
+                    ->multiple()
+                    ->searchable()
+                    ->placeholder(__('crm::filament/clusters/sales/resources/activity/pages/kanban-activities.filters.all')),
             ])
             ->filtersColumns(1)
             ->emptyState(

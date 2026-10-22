@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
@@ -57,6 +58,16 @@ class OpportunityInfolist
                                             ->label(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.general.entries.probability'))
                                             ->numeric(decimalPlaces: 0)
                                             ->suffix('%'),
+                                        TextEntry::make('recurring_revenue')
+                                            ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
+                                            ->money(fn (Lead $record): ?string => $record->company?->currency?->code)
+                                            ->suffix(fn (Lead $record): ?string => $record->recurringPlan ? ' · '.$record->recurringPlan->name : null)
+                                            ->visible(fn (Lead $record): bool => RecurringPlanResource::isRecurringRevenueEnabled() && (float) $record->recurring_revenue > 0),
+                                        TextEntry::make('monthly_recurring_revenue')
+                                            ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.mrr'))
+                                            ->state(fn (Lead $record): float => $record->monthlyRecurringRevenue())
+                                            ->money(fn (Lead $record): ?string => $record->company?->currency?->code)
+                                            ->visible(fn (Lead $record): bool => RecurringPlanResource::isRecurringRevenueEnabled() && (float) $record->recurring_revenue > 0),
                                         TextEntry::make('partner.name')
                                             ->label(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.general.entries.customer'))
                                             ->placeholder('—'),

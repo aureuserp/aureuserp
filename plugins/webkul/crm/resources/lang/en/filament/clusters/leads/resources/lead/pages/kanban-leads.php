@@ -2,7 +2,8 @@
 
 return [
     'filters' => [
-        'all' => 'All',
+        'all'    => 'All',
+        'status' => 'Status',
     ],
 
     'quick-create' => [
@@ -13,4 +14,6 @@ return [
         'heading'     => 'No leads',
         'description' => 'Drag a lead here or use + to create one.',
     ],
+
+    'lost-move' => 'Lost leads cannot be moved. Restore them first.',
 ];

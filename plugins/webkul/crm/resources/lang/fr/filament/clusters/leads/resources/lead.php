@@ -112,6 +112,14 @@ return [
             ],
 
             'form' => [
+                'action'     => 'Action de conversion',
+                'duplicates' => 'Pistes et opportunités similaires à fusionner',
+
+                'action-options' => [
+                    'convert' => 'Convertir en opportunité',
+                    'merge'   => 'Fusionner avec des opportunités existantes',
+                ],
+
                 'customer'          => 'Client',
                 'existing-customer' => 'Client existant',
                 'salesperson'       => 'Vendeur',
@@ -135,6 +143,33 @@ return [
             ],
         ],
 
+        'mass-convert' => [
+            'label' => 'Convertir en opportunités',
+
+            'modal' => [
+                'heading' => 'Convertir en opportunités',
+                'submit'  => 'Convertir',
+            ],
+
+            'form' => [
+                'deduplicate'             => 'Appliquer la déduplication',
+                'deduplicate-helper'      => 'Fusionner chaque piste avec ses pistes et opportunités similaires (même e-mail, téléphone ou client).',
+                'salespeople'             => 'Vendeurs',
+                'salespeople-helper'      => 'Les pistes sans vendeur leur sont réparties à tour de rôle.',
+                'force-assignment'        => 'Forcer l\'attribution',
+                'force-assignment-helper' => 'Réattribuer aussi les pistes qui ont déjà un vendeur.',
+
+                'customer-options' => [
+                    'create' => 'Lier à un client existant ou en créer un',
+                    'link'   => 'Lier à un client existant',
+                ],
+            ],
+
+            'notification' => [
+                'title' => 'Pistes converties',
+                'body'  => ':count piste(s) convertie(s), :merged enregistrement(s) similaire(s) fusionné(s), :skipped ignorée(s).',
+            ],
+        ],
         'lost' => [
             'notification' => [
                 'title' => 'Piste perdue',

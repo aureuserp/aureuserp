@@ -171,6 +171,18 @@ return [
     ],
 
     'actions' => [
+        'new-quotation' => [
+            'label'             => 'Nouveau devis',
+            'modal-heading'     => 'Nouveau devis',
+            'modal-description' => 'Cette opportunité n\'a pas encore de client. Choisissez le client du devis.',
+            'submit'            => 'Continuer',
+            'subheading'        => 'Depuis l\'opportunité : :name',
+        ],
+
+        'open-opportunity' => [
+            'label' => 'Opportunité',
+        ],
+
         'won' => [
             'label' => 'Gagnée',
 
@@ -209,6 +221,24 @@ return [
                 'title' => 'Opportunité perdue',
                 'body'  => 'L\'opportunité a été marquée comme perdue et déplacée dans la vue Perdues.',
             ],
+        ],
+    ],
+
+    'quotations' => [
+        'title' => 'Devis',
+
+        'columns' => [
+            'number'      => 'Numéro',
+            'date'        => 'Date',
+            'customer'    => 'Client',
+            'salesperson' => 'Vendeur',
+            'total'       => 'Total',
+            'status'      => 'Statut',
+        ],
+
+        'empty' => [
+            'heading'     => 'Aucun devis pour le moment',
+            'description' => 'Utilisez « Nouveau devis » pour créer un devis depuis cette opportunité.',
         ],
     ],
 ];

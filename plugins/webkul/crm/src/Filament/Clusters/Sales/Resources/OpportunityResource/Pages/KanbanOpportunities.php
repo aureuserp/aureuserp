@@ -15,12 +15,15 @@ use Illuminate\Support\Number;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Actions\CrmExportAction;
 use Webkul\Crm\Filament\Actions\CrmImportAction;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Concerns\AppliesKanbanListFilters;
 use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
 use Webkul\Crm\Filament\Exports\OpportunityExporter;
 use Webkul\Crm\Filament\Imports\OpportunityImporter;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
+use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\Company;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
@@ -29,7 +32,11 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class KanbanOpportunities extends ListRecords
 {
-    use HasKanbanBoard, ManagesStageKanbanColumns;
+    use AppliesKanbanListFilters, HasKanbanBoard, ManagesStageKanbanColumns {
+        AppliesKanbanListFilters::getKanbanQuery insteadof HasKanbanBoard;
+        HasKanbanBoard::getKanbanQuery as getBaseKanbanQuery;
+        HasKanbanBoard::moveRecord as moveBaseRecord;
+    }
 
     protected static string $resource = OpportunityResource::class;
 
@@ -40,19 +47,47 @@ class KanbanOpportunities extends ListRecords
         $teamId = request()->integer('team');
 
         $this->kanbanFilters = [
-            'user_id'  => $teamId ? null : Auth::id(),
-            'team_id'  => $teamId ?: null,
-            'priority' => null,
+            ...static::emptyKanbanFilters(),
+            'user_id' => $teamId ? null : Auth::id(),
+            'team_id' => $teamId ?: null,
         ];
     }
 
     public function resetKanbanFilters(): void
     {
-        $this->kanbanFilters = [
+        $this->kanbanFilters = static::emptyKanbanFilters();
+    }
+
+    public static function emptyKanbanFilters(): array
+    {
+        return [
             'user_id'  => null,
             'team_id'  => null,
             'priority' => null,
+            'status'   => null,
+            'stage_id' => [],
+            'tags'     => [],
         ];
+    }
+
+    protected function kanbanSimpleFilterKeys(): array
+    {
+        return ['user_id', 'team_id', 'priority'];
+    }
+
+    protected function applyKanbanListFilters(Builder $query, array $filters): Builder
+    {
+        $status = $filters['status'] ?? null;
+        $stageIds = static::kanbanFilterValues($filters, 'stage_id');
+        $tagIds = static::kanbanFilterValues($filters, 'tags');
+
+        return $query
+            ->when($status === 'lost', fn (Builder $query): Builder => $query->onlyTrashed(), fn (Builder $query): Builder => $query->withoutTrashed())
+            ->when($status === 'open', fn (Builder $query): Builder => $query->open())
+            ->when($status === 'won', fn (Builder $query): Builder => $query->won())
+            ->when($status === 'unassigned', fn (Builder $query): Builder => $query->whereNull('crm_leads.user_id'))
+            ->when($stageIds, fn (Builder $query): Builder => $query->whereIn('crm_leads.stage_id', $stageIds))
+            ->when($tagIds, fn (Builder $query): Builder => $query->whereHas('tags', fn (Builder $query): Builder => $query->whereIn('crm_tags.id', $tagIds)));
     }
 
     public function getTitle(): string
@@ -97,13 +132,17 @@ class KanbanOpportunities extends ListRecords
 
         return $kanban
             ->relationshipColumn('stage', 'name', Stage::class, orderAttribute: 'sort')
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->with(['partner', 'user', 'tags', 'company.currency']))
+            ->excludeColumns(Stage::hiddenColumnsForTeam($this->kanbanFilters['team_id'] ?? null))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['partner', 'user', 'tags', 'company.currency', 'recurringPlan']))
             ->columnColor(fn (KanbanColumn $column): string => in_array($column->value, $wonStageIds, true) ? 'success' : 'gray')
             ->cardTitle(fn (Lead $record): string => $record->name)
             ->cardDescription(fn (Lead $record): string => collect([
                 $record->partner?->name,
                 (float) $record->expected_revenue > 0
                     ? Number::currency((float) $record->expected_revenue, $record->company?->currency?->code ?? $currencyCode)
+                    : null,
+                RecurringPlanResource::isRecurringRevenueEnabled() && (float) $record->recurring_revenue > 0
+                    ? '+ '.Number::currency((float) $record->recurring_revenue, $record->company?->currency?->code ?? $currencyCode).($record->recurringPlan ? ' '.$record->recurringPlan->name : '')
                     : null,
             ])->filter()->implode(' · '))
             ->cardBadges(fn (Lead $record): array => collect([
@@ -136,6 +175,27 @@ class KanbanOpportunities extends ListRecords
                 Select::make('priority')
                     ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.filters.priority'))
                     ->options(OpportunityPriority::class)
+                    ->placeholder(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.filters.all')),
+                Select::make('status')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.filters.status'))
+                    ->options([
+                        'open'       => __('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.open'),
+                        'unassigned' => __('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.unassigned'),
+                        'won'        => __('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.won'),
+                        'lost'       => __('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.lost'),
+                    ])
+                    ->placeholder(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.filters.all')),
+                Select::make('stage_id')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.stage'))
+                    ->options(fn (): array => Stage::query()->orderBy('sort')->pluck('name', 'id')->all())
+                    ->multiple()
+                    ->preload()
+                    ->placeholder(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.filters.all')),
+                Select::make('tags')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.tags'))
+                    ->options(fn (): array => Tag::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->multiple()
+                    ->searchable()
                     ->placeholder(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.filters.all')),
             ])
             ->filtersColumns(1)
@@ -191,6 +251,20 @@ class KanbanOpportunities extends ListRecords
             ->boardView('crm::filament.kanban.board')
             ->columnView('crm::filament.kanban.column')
             ->cardView('crm::filament.kanban.card');
+    }
+
+    public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void
+    {
+        if (($this->kanbanFilters['status'] ?? null) === 'lost') {
+            Notification::make()
+                ->warning()
+                ->title(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.lost-move'))
+                ->send();
+
+            return;
+        }
+
+        $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
     }
 
     protected function validatedQuickCreateTeamId(): ?int

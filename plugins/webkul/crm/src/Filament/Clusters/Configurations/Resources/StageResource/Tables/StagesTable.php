@@ -20,6 +20,10 @@ class StagesTable
                 TextColumn::make('name')
                     ->label(__('crm::filament/clusters/configurations/resources/stage.table.columns.name'))
                     ->searchable(),
+                TextColumn::make('teams.name')
+                    ->label(__('crm::filament/clusters/configurations/resources/stage.table.columns.teams'))
+                    ->badge()
+                    ->placeholder(__('crm::filament/clusters/configurations/resources/stage.form.fields.all-teams')),
                 IconColumn::make('is_won')
                     ->label(__('crm::filament/clusters/configurations/resources/stage.table.columns.is-won'))
                     ->boolean(),

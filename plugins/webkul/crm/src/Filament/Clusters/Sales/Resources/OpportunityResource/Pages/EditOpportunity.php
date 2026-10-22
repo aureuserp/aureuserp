@@ -10,6 +10,7 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
 use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -32,6 +33,7 @@ class EditOpportunity extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            NewQuotationAction::make(),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),

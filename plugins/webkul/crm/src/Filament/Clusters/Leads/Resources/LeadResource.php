@@ -15,14 +15,17 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\CreateLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\EditLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\KanbanLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
+use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Schemas\LeadForm;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Schemas\LeadInfolist;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Tables\LeadsTable;
 use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
 use Webkul\Crm\Filament\RelationManagers\ActivitiesRelationManager;
+use Webkul\Crm\Filament\Support\SimilarLeads as SimilarLeadsNavigation;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Policies\LeadRecordPolicy;
+use Webkul\Crm\Settings\CrmSettings;
 
 class LeadResource extends Resource
 {
@@ -43,6 +46,21 @@ class LeadResource extends Resource
     public static function getCrmPolicy(): string
     {
         return LeadRecordPolicy::class;
+    }
+
+    public static function isQualificationStepEnabled(): bool
+    {
+        return (bool) app(CrmSettings::class)->use_leads;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::isQualificationStepEnabled() && parent::canViewAny();
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::isQualificationStepEnabled() && parent::canCreate();
     }
 
     public static function getModelLabel(): string
@@ -106,20 +124,24 @@ class LeadResource extends Resource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
-            ViewLead::class,
-            EditLead::class,
-        ]);
+        return [
+            ...$page->generateNavigationItems([
+                ViewLead::class,
+                EditLead::class,
+            ]),
+            ...SimilarLeadsNavigation::navigationItems($page, SimilarLeads::class),
+        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => KanbanLeads::route('/'),
-            'list'   => ListLeads::route('/list'),
-            'create' => CreateLead::route('/create'),
-            'view'   => ViewLead::route('/{record}'),
-            'edit'   => EditLead::route('/{record}/edit'),
+            'index'   => KanbanLeads::route('/'),
+            'list'    => ListLeads::route('/list'),
+            'create'  => CreateLead::route('/create'),
+            'view'    => ViewLead::route('/{record}'),
+            'edit'    => EditLead::route('/{record}/edit'),
+            'similar' => SimilarLeads::route('/{record}/similar'),
         ];
     }
 

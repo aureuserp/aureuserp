@@ -14,6 +14,7 @@ return [
             'period'      => 'Fechamento previsto',
             'upcoming'    => 'Próximos fechamentos',
             'all-dates'   => 'Qualquer data',
+            'presets'     => 'Filtros',
             'all'         => 'Todos',
         ],
 

@@ -112,6 +112,14 @@ return [
             ],
 
             'form' => [
+                'action'     => 'Conversion action',
+                'duplicates' => 'Similar leads and opportunities to merge',
+
+                'action-options' => [
+                    'convert' => 'Convert to opportunity',
+                    'merge'   => 'Merge with existing opportunities',
+                ],
+
                 'customer'          => 'Customer',
                 'existing-customer' => 'Existing Customer',
                 'salesperson'       => 'Salesperson',
@@ -135,6 +143,33 @@ return [
             ],
         ],
 
+        'mass-convert' => [
+            'label' => 'Convert to Opportunities',
+
+            'modal' => [
+                'heading' => 'Convert to opportunities',
+                'submit'  => 'Convert',
+            ],
+
+            'form' => [
+                'deduplicate'             => 'Apply deduplication',
+                'deduplicate-helper'      => 'Merge each lead with its similar leads and opportunities (same email, phone or customer).',
+                'salespeople'             => 'Salespeople',
+                'salespeople-helper'      => 'Leads without a salesperson are shared between them in turn.',
+                'force-assignment'        => 'Force assignment',
+                'force-assignment-helper' => 'Also reassign leads that already have a salesperson.',
+
+                'customer-options' => [
+                    'create' => 'Link to an existing customer or create one',
+                    'link'   => 'Link to an existing customer',
+                ],
+            ],
+
+            'notification' => [
+                'title' => 'Leads converted',
+                'body'  => ':count lead(s) converted, :merged similar record(s) merged, :skipped skipped.',
+            ],
+        ],
         'lost' => [
             'notification' => [
                 'title' => 'Lead lost',

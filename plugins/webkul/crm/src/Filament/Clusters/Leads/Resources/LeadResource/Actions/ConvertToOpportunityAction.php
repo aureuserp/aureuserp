@@ -3,14 +3,21 @@
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use Webkul\Crm\Filament\Actions\MergeLeadsAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Support\SimilarLeads;
 use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Models\LeadConversion;
+use Webkul\Crm\Services\LeadConverter;
+use Webkul\Crm\Services\LeadMerger;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -35,7 +42,9 @@ class ConvertToOpportunityAction extends Action
             ->modalWidth('lg')
             ->visible(fn (Lead $record): bool => $record->isLead() && ! $record->trashed() && LeadResource::canEdit($record))
             ->fillForm(fn (Lead $record): array => [
-                'customer'   => match (true) {
+                'action'        => LeadConversion::ACTION_CONVERT,
+                'duplicate_ids' => static::mergeableDuplicates($record)->modelKeys(),
+                'customer'      => match (true) {
                     filled($record->partner_id)                                     => 'link',
                     filled($record->company_name) || filled($record->contact_name)  => 'create',
                     default                                                         => 'none',
@@ -45,6 +54,27 @@ class ConvertToOpportunityAction extends Action
                 'team_id'    => $record->team_id,
             ])
             ->schema([
+                Radio::make('action')
+                    ->label(__('crm::filament/clusters/leads/resources/lead.actions.convert.form.action'))
+                    ->options([
+                        LeadConversion::ACTION_CONVERT => __('crm::filament/clusters/leads/resources/lead.actions.convert.form.action-options.convert'),
+                        LeadConversion::ACTION_MERGE   => __('crm::filament/clusters/leads/resources/lead.actions.convert.form.action-options.merge'),
+                    ])
+                    ->visible(fn (Lead $record): bool => static::mergeableDuplicates($record)->isNotEmpty())
+                    ->required()
+                    ->live(),
+                CheckboxList::make('duplicate_ids')
+                    ->label(__('crm::filament/clusters/leads/resources/lead.actions.convert.form.duplicates'))
+                    ->options(fn (Lead $record): array => static::mergeableDuplicates($record)
+                        ->mapWithKeys(fn (Lead $duplicate): array => [$duplicate->getKey() => collect([
+                            $duplicate->name,
+                            $duplicate->isLead() ? __('crm::models/lead.title') : __('crm::models/opportunity.title'),
+                            $duplicate->trashed() ? __('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.lost') : $duplicate->stage?->name,
+                            $duplicate->user?->name,
+                        ])->filter()->implode(' · ')])
+                        ->all())
+                    ->visible(fn (Get $get): bool => $get('action') === LeadConversion::ACTION_MERGE)
+                    ->required(fn (Get $get): bool => $get('action') === LeadConversion::ACTION_MERGE),
                 Radio::make('customer')
                     ->label(__('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer'))
                     ->options([
@@ -89,7 +119,20 @@ class ConvertToOpportunityAction extends Action
                     $action->halt();
                 }
 
-                $record->convertToOpportunity($data);
+                $duplicates = ($data['action'] ?? LeadConversion::ACTION_CONVERT) === LeadConversion::ACTION_MERGE
+                    ? static::mergeableDuplicates($record)->whereIn('id', array_map('intval', (array) ($data['duplicate_ids'] ?? [])))->values()
+                    : collect();
+
+                if ($duplicates->isNotEmpty() && ! MergeLeadsAction::canMerge(app(LeadMerger::class)->pickHead(collect([$record, ...$duplicates])), collect([$record, ...$duplicates]))) {
+                    Notification::make()
+                        ->danger()
+                        ->title(__('crm::filament/clusters/leads/resources/lead.actions.convert.notification.invalid.title'))
+                        ->send();
+
+                    $action->halt();
+                }
+
+                $record = app(LeadConverter::class)->convert($record, $data, $duplicates)->opportunity;
 
                 Notification::make()
                     ->success()
@@ -101,17 +144,33 @@ class ConvertToOpportunityAction extends Action
             });
     }
 
-    protected static function customersFor(Lead $record): Builder
+    public static function mergeableDuplicates(Lead $record): Collection
+    {
+        $duplicates = SimilarLeads::visibleRecords($record);
+
+        if ($duplicates->isEmpty()) {
+            return $duplicates;
+        }
+
+        $records = collect([$record, ...$duplicates]);
+        $head = app(LeadMerger::class)->pickHead($records);
+
+        return MergeLeadsAction::canMerge($head, $records->reject(fn (Lead $lead): bool => $lead->is($head))->values())
+            ? $duplicates
+            : collect();
+    }
+
+    public static function customersFor(Lead $record): Builder
     {
         return Partner::query()->where(owned_by_company($record->company_id));
     }
 
-    protected static function teamsFor(Lead $record): Builder
+    public static function teamsFor(Lead $record): Builder
     {
         return Team::query()->where(owned_by_company($record->company_id));
     }
 
-    protected static function salespeopleFor(Lead $record): Builder
+    public static function salespeopleFor(Lead $record): Builder
     {
         return User::query()
             ->where('is_active', true)

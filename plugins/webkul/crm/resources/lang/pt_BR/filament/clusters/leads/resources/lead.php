@@ -112,6 +112,14 @@ return [
             ],
 
             'form' => [
+                'action'     => 'Ação de conversão',
+                'duplicates' => 'Leads e oportunidades semelhantes para mesclar',
+
+                'action-options' => [
+                    'convert' => 'Converter em oportunidade',
+                    'merge'   => 'Mesclar com oportunidades existentes',
+                ],
+
                 'customer'          => 'Cliente',
                 'existing-customer' => 'Cliente existente',
                 'salesperson'       => 'Vendedor',
@@ -135,6 +143,33 @@ return [
             ],
         ],
 
+        'mass-convert' => [
+            'label' => 'Converter em oportunidades',
+
+            'modal' => [
+                'heading' => 'Converter em oportunidades',
+                'submit'  => 'Converter',
+            ],
+
+            'form' => [
+                'deduplicate'             => 'Aplicar desduplicação',
+                'deduplicate-helper'      => 'Mesclar cada lead com seus leads e oportunidades semelhantes (mesmo e-mail, telefone ou cliente).',
+                'salespeople'             => 'Vendedores',
+                'salespeople-helper'      => 'Leads sem vendedor são distribuídos entre eles em rodízio.',
+                'force-assignment'        => 'Forçar atribuição',
+                'force-assignment-helper' => 'Reatribuir também leads que já têm vendedor.',
+
+                'customer-options' => [
+                    'create' => 'Vincular a um cliente existente ou criar um',
+                    'link'   => 'Vincular a um cliente existente',
+                ],
+            ],
+
+            'notification' => [
+                'title' => 'Leads convertidos',
+                'body'  => ':count lead(s) convertido(s), :merged registro(s) semelhante(s) mesclado(s), :skipped ignorado(s).',
+            ],
+        ],
         'lost' => [
             'notification' => [
                 'title' => 'Lead perdido',

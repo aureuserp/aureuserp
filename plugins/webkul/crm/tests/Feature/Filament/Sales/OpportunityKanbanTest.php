@@ -6,6 +6,7 @@ use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
+use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -57,7 +58,7 @@ it('opens on the current user\'s opportunities', function () {
 
     $component = Livewire::test(KanbanOpportunities::class)
         ->assertOk()
-        ->assertSet('kanbanFilters', ['user_id' => $user->id, 'team_id' => null, 'priority' => null]);
+        ->assertSet('kanbanFilters', [...KanbanOpportunities::emptyKanbanFilters(), 'user_id' => $user->id]);
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($mine->id)
@@ -75,7 +76,7 @@ it('opens a team\'s pipeline when ?team= is given', function () {
     $component = Livewire::withQueryParams(['team' => $team->id])
         ->test(KanbanOpportunities::class)
         ->assertOk()
-        ->assertSet('kanbanFilters', ['user_id' => null, 'team_id' => $team->id, 'priority' => null]);
+        ->assertSet('kanbanFilters', [...KanbanOpportunities::emptyKanbanFilters(), 'team_id' => $team->id]);
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($teamDeal->id)
@@ -90,7 +91,7 @@ it('resets the filters but keeps the keys the filter fields are bound to', funct
     $component = Livewire::test(KanbanOpportunities::class)
         ->set('kanbanFilters.priority', OpportunityPriority::High->value)
         ->call('resetKanbanFilters')
-        ->assertSet('kanbanFilters', ['user_id' => null, 'team_id' => null, 'priority' => null]);
+        ->assertSet('kanbanFilters', KanbanOpportunities::emptyKanbanFilters());
 
     expect(pipelineBoardRecordIds($component))->toContain($someoneElses->id);
 });
@@ -316,4 +317,65 @@ it('forbids the board without the view any permission', function () {
     CrmTestHelper::actingAs(['view_any_crm_lead']);
 
     Livewire::test(KanbanOpportunities::class)->assertForbidden();
+});
+
+describe('list view filters on the board', function () {
+    it('filters by status: open, unassigned, won and lost', function () {
+        $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $open = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+        $won = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
+        $lost = CrmTestHelper::opportunity();
+        $lost->markAsLost(null);
+        $unassigned = CrmTestHelper::opportunity();
+        $unassigned->forceFill(['user_id' => null])->saveQuietly();
+
+        $component = Livewire::test(KanbanOpportunities::class)->set('kanbanFilters.user_id', null);
+
+        $ids = fn (string $status): array => pipelineBoardRecordIds($component->set('kanbanFilters.status', $status));
+
+        expect($ids('open'))->toContain($open->id)->not->toContain($won->id)->not->toContain($lost->id)
+            ->and($ids('won'))->toContain($won->id)->not->toContain($open->id)
+            ->and($ids('lost'))->toContain($lost->id)->not->toContain($open->id)
+            ->and($ids('unassigned'))->toContain($unassigned->id)->not->toContain($open->id);
+    });
+
+    it('hides lost opportunities unless the Lost status is chosen', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $lost = CrmTestHelper::opportunity();
+        $lost->markAsLost(null);
+
+        expect(pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)))->not->toContain($lost->id);
+    });
+
+    it('filters by stages and tags', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $first = CrmTestHelper::firstStage();
+        $tag = Tag::query()->create(['name' => 'Board tag '.uniqid()]);
+
+        $inStage = CrmTestHelper::opportunity(['stage_id' => $first->id]);
+        $tagged = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
+        $tagged->tags()->attach($tag->id);
+
+        $byStage = pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)->set('kanbanFilters.stage_id', [$first->id]));
+        $byTag = pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)->set('kanbanFilters.tags', [$tag->id]));
+
+        expect($byStage)->toContain($inStage->id)->not->toContain($tagged->id)
+            ->and($byTag)->toBe([$tagged->id]);
+    });
+
+    it('does not move lost opportunities on the board', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $lost = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+        $lost->markAsLost(null);
+
+        Livewire::test(KanbanOpportunities::class)
+            ->set('kanbanFilters.status', 'lost')
+            ->call('moveRecord', (string) $lost->id, (string) CrmTestHelper::wonStage()->id, [(string) $lost->id]);
+
+        expect(Lead::withTrashed()->find($lost->id)->stage_id)->toBe(CrmTestHelper::firstStage()->id);
+    });
 });

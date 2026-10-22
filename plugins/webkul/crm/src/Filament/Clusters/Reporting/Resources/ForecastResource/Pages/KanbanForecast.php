@@ -15,6 +15,7 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
+use Webkul\Crm\Filament\Support\Reports\ForecastReport;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Models\Lead;
@@ -40,6 +41,7 @@ class KanbanForecast extends ListRecords
             'user_id' => Auth::id(),
             'team_id' => null,
             'period'  => 'upcoming',
+            'presets' => [],
         ];
     }
 
@@ -49,6 +51,7 @@ class KanbanForecast extends ListRecords
             'user_id' => null,
             'team_id' => null,
             'period'  => 'all',
+            'presets' => [],
         ];
     }
 
@@ -119,6 +122,11 @@ class KanbanForecast extends ListRecords
                         'all'      => $label('filters.all-dates'),
                     ])
                     ->selectablePlaceholder(false),
+                Select::make('presets')
+                    ->label($label('filters.presets'))
+                    ->options(fn (): array => collect(static::kanbanPresets())->map(fn (array $preset): string => $preset['label'])->all())
+                    ->multiple()
+                    ->placeholder($label('filters.all')),
             ])
             ->filtersColumns(1)
             ->emptyState(
@@ -178,11 +186,25 @@ class KanbanForecast extends ListRecords
         return $columns->values()->all();
     }
 
+    public static function kanbanPresets(): array
+    {
+        return collect(ForecastReport::presets())
+            ->only(['unassigned', 'ongoing', 'won', 'lost', 'created_this_year', 'closed_this_year'])
+            ->all();
+    }
+
     protected function getKanbanQuery(KanbanBoard $board): Builder
     {
-        $query = ForecastResource::getEloquentQuery()->whereNull('crm_leads.deleted_at');
-
         $filters = $this->kanbanFilters;
+
+        $presets = array_intersect_key(static::kanbanPresets(), array_flip(array_filter((array) ($filters['presets'] ?? []))));
+
+        $query = ForecastResource::getEloquentQuery()
+            ->when(! isset($presets['lost']), fn (Builder $query): Builder => $query->whereNull('crm_leads.deleted_at'));
+
+        foreach ($presets as $preset) {
+            $query = $preset['query']($query);
+        }
 
         $query
             ->when(filled($filters['user_id'] ?? null), fn (Builder $query): Builder => $query->where('crm_leads.user_id', $filters['user_id']))

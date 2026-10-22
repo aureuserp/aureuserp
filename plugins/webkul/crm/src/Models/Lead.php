@@ -15,6 +15,7 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Crm\Database\Factories\LeadFactory;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Partner\Models\Partner;
+use Webkul\Sale\Models\Quotation;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -55,6 +56,8 @@ class Lead extends Model
         'state_id',
         'country_id',
         'expected_revenue',
+        'recurring_revenue',
+        'recurring_plan_id',
         'probability',
         'priority',
         'expected_closing_date',
@@ -77,6 +80,7 @@ class Lead extends Model
 
     protected $casts = [
         'expected_revenue'      => 'decimal:4',
+        'recurring_revenue'     => 'decimal:4',
         'probability'           => 'decimal:2',
         'priority'              => OpportunityPriority::class,
         'expected_closing_date' => 'date',
@@ -206,6 +210,48 @@ class Lead extends Model
         ]);
     }
 
+    public static function normalizeEmail(?string $email): ?string
+    {
+        $email = strtolower(trim((string) $email));
+
+        return $email !== '' ? $email : null;
+    }
+
+    public static function sanitizePhone(?string $phone): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+
+        return strlen($digits) >= 7 ? $digits : null;
+    }
+
+    public function similarRecordsQuery(): Builder
+    {
+        $email = $this->email_normalized ?? static::normalizeEmail($this->email);
+        $phone = $this->phone_sanitized ?? static::sanitizePhone($this->phone);
+        $partnerId = $this->partner_id;
+
+        return static::query()
+            ->withTrashed()
+            ->whereKeyNot($this->getKey())
+            ->where('company_id', $this->company_id)
+            ->where(function (Builder $query) use ($email, $phone, $partnerId): void {
+                $query->whereRaw('1 = 0')
+                    ->when($email, fn (Builder $query): Builder => $query->orWhere('email_normalized', $email))
+                    ->when($phone, fn (Builder $query): Builder => $query->orWhere('phone_sanitized', $phone))
+                    ->when($partnerId, fn (Builder $query): Builder => $query->orWhere('partner_id', $partnerId));
+            });
+    }
+
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class, 'opportunity_id');
+    }
+
+    public function merges(): HasMany
+    {
+        return $this->hasMany(LeadMerge::class, 'lead_id');
+    }
+
     public function crmActivities(): HasMany
     {
         return $this->hasMany(Activity::class, 'messageable_id');
@@ -234,6 +280,18 @@ class Lead extends Model
     public function source(): BelongsTo
     {
         return $this->belongsTo(UTMSource::class, 'utm_source_id');
+    }
+
+    public function recurringPlan(): BelongsTo
+    {
+        return $this->belongsTo(RecurringPlan::class, 'recurring_plan_id')->withTrashed();
+    }
+
+    public function monthlyRecurringRevenue(): float
+    {
+        $months = (int) ($this->recurringPlan?->number_of_months ?? 0);
+
+        return $months > 0 ? round((float) $this->recurring_revenue / $months, 2) : 0.0;
     }
 
     public function stage(): BelongsTo
@@ -273,7 +331,7 @@ class Lead extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'crm_lead_tags', 'lead_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'crm_tag_rel', 'lead_id', 'tag_id');
     }
 
     protected static function booted(): void
@@ -281,9 +339,15 @@ class Lead extends Model
         static::saving(function (self $lead): void {
             $lead->expected_revenue ??= 0;
 
+            $lead->recurring_revenue ??= 0;
+
             $lead->probability ??= 0;
 
             $lead->priority ??= OpportunityPriority::Low;
+
+            $lead->email_normalized = static::normalizeEmail($lead->email);
+
+            $lead->phone_sanitized = static::sanitizePhone($lead->phone);
         });
 
         static::creating(function (self $lead): void {

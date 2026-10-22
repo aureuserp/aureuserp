@@ -14,6 +14,7 @@ return [
             'period'      => 'Expected Closing',
             'upcoming'    => 'Upcoming closings',
             'all-dates'   => 'Any date',
+            'presets'     => 'Filters',
             'all'         => 'All',
         ],
 

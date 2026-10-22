@@ -14,7 +14,9 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Schemas\TagForm;
+use Webkul\Crm\Models\RecurringPlan;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Partner\Models\Partner;
@@ -62,6 +64,18 @@ class OpportunityForm
                                             ->maxValue(100)
                                             ->suffix('%')
                                             ->default(10),
+                                        TextInput::make('recurring_revenue')
+                                            ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(0)
+                                            ->live(onBlur: true)
+                                            ->visible(fn (): bool => RecurringPlanResource::isRecurringRevenueEnabled()),
+                                        Select::make('recurring_plan_id')
+                                            ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.plan'))
+                                            ->options(fn (): array => RecurringPlan::query()->orderBy('sort')->pluck('name', 'id')->all())
+                                            ->required(fn (Get $get): bool => (float) $get('recurring_revenue') > 0)
+                                            ->visible(fn (): bool => RecurringPlanResource::isRecurringRevenueEnabled()),
                                     ]),
 
                                 Select::make('partner_id')

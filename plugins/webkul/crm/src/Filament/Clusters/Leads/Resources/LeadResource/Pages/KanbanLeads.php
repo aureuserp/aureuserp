@@ -14,19 +14,26 @@ use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Actions\CrmExportAction;
 use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
+use Webkul\Crm\Filament\Concerns\AppliesKanbanListFilters;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
 use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
 use Webkul\Crm\Filament\Exports\LeadExporter;
 use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
+use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
+use Webkul\Support\Models\UTMSource;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 
 class KanbanLeads extends ListRecords
 {
-    use HasCrmClusterNavigation, HasKanbanBoard, ManagesStageKanbanColumns;
+    use AppliesKanbanListFilters, HasCrmClusterNavigation, HasKanbanBoard, ManagesStageKanbanColumns {
+        AppliesKanbanListFilters::getKanbanQuery insteadof HasKanbanBoard;
+        HasKanbanBoard::getKanbanQuery as getBaseKanbanQuery;
+        HasKanbanBoard::moveRecord as moveBaseRecord;
+    }
 
     protected static string $resource = LeadResource::class;
 
@@ -41,11 +48,49 @@ class KanbanLeads extends ListRecords
 
     public function resetKanbanFilters(): void
     {
-        $this->kanbanFilters = [
-            'user_id'  => null,
-            'team_id'  => null,
-            'priority' => null,
+        $this->kanbanFilters = static::emptyKanbanFilters();
+    }
+
+    public static function emptyKanbanFilters(): array
+    {
+        return [
+            'user_id'       => null,
+            'team_id'       => null,
+            'priority'      => null,
+            'utm_source_id' => null,
+            'status'        => null,
+            'tags'          => [],
         ];
+    }
+
+    protected function kanbanSimpleFilterKeys(): array
+    {
+        return ['user_id', 'team_id', 'priority', 'utm_source_id'];
+    }
+
+    protected function applyKanbanListFilters(Builder $query, array $filters): Builder
+    {
+        $status = $filters['status'] ?? null;
+        $tagIds = static::kanbanFilterValues($filters, 'tags');
+
+        return $query
+            ->when($status === 'lost', fn (Builder $query): Builder => $query->onlyTrashed(), fn (Builder $query): Builder => $query->withoutTrashed())
+            ->when($status === 'unassigned', fn (Builder $query): Builder => $query->whereNull('crm_leads.user_id'))
+            ->when($tagIds, fn (Builder $query): Builder => $query->whereHas('tags', fn (Builder $query): Builder => $query->whereIn('crm_tags.id', $tagIds)));
+    }
+
+    public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void
+    {
+        if (($this->kanbanFilters['status'] ?? null) === 'lost') {
+            Notification::make()
+                ->warning()
+                ->title(__('crm::filament/clusters/leads/resources/lead/pages/kanban-leads.lost-move'))
+                ->send();
+
+            return;
+        }
+
+        $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
     }
 
     public function getTitle(): string
@@ -82,8 +127,11 @@ class KanbanLeads extends ListRecords
     {
         return $kanban
             ->relationshipColumn('stage', 'name', Stage::class, orderAttribute: 'sort')
-            ->excludeColumns(Stage::query()->where('is_won', true)->pluck('id')->map(fn ($id): string => (string) $id)->all())
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->with(['user', 'tags'])->latest())
+            ->excludeColumns([
+                ...Stage::query()->where('is_won', true)->pluck('id')->map(fn ($id): string => (string) $id)->all(),
+                ...Stage::hiddenColumnsForTeam($this->kanbanFilters['team_id'] ?? null),
+            ])
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['user', 'tags'])->latest())
             ->cardTitle(fn (Lead $record): string => $record->name)
             ->cardDescription(fn (Lead $record): string => collect([
                 $record->company_name ?: $record->contact_name,
@@ -121,6 +169,24 @@ class KanbanLeads extends ListRecords
                 Select::make('priority')
                     ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.priority'))
                     ->options(OpportunityPriority::class)
+                    ->placeholder(__('crm::filament/clusters/leads/resources/lead/pages/kanban-leads.filters.all')),
+                Select::make('utm_source_id')
+                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.source'))
+                    ->options(fn (): array => UTMSource::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->searchable()
+                    ->placeholder(__('crm::filament/clusters/leads/resources/lead/pages/kanban-leads.filters.all')),
+                Select::make('status')
+                    ->label(__('crm::filament/clusters/leads/resources/lead/pages/kanban-leads.filters.status'))
+                    ->options([
+                        'unassigned' => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.unassigned'),
+                        'lost'       => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.lost'),
+                    ])
+                    ->placeholder(__('crm::filament/clusters/leads/resources/lead/pages/kanban-leads.filters.all')),
+                Select::make('tags')
+                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.tags'))
+                    ->options(fn (): array => Tag::query()->orderBy('name')->pluck('name', 'id')->all())
+                    ->multiple()
+                    ->searchable()
                     ->placeholder(__('crm::filament/clusters/leads/resources/lead/pages/kanban-leads.filters.all')),
             ])
             ->filtersColumns(1)

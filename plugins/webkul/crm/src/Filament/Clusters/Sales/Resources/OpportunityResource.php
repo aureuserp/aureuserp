@@ -14,11 +14,14 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\Creat
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\EditOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ManageQuotations;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\SimilarOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ViewOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityInfolist;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables\OpportunitiesTable;
 use Webkul\Crm\Filament\RelationManagers\ActivitiesRelationManager;
+use Webkul\Crm\Filament\Support\SimilarLeads as SimilarLeadsNavigation;
 use Webkul\Crm\Models\Lead;
 
 class OpportunityResource extends Resource
@@ -96,20 +99,26 @@ class OpportunityResource extends Resource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
-            ViewOpportunity::class,
-            EditOpportunity::class,
-        ]);
+        return [
+            ...$page->generateNavigationItems([
+                ViewOpportunity::class,
+                EditOpportunity::class,
+            ]),
+            ...ManageQuotations::navigationItems($page),
+            ...SimilarLeadsNavigation::navigationItems($page, SimilarOpportunities::class),
+        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => KanbanOpportunities::route('/'),
-            'list'   => ListOpportunities::route('/list'),
-            'create' => CreateOpportunity::route('/create'),
-            'view'   => ViewOpportunity::route('/{record}'),
-            'edit'   => EditOpportunity::route('/{record}/edit'),
+            'index'      => KanbanOpportunities::route('/'),
+            'list'       => ListOpportunities::route('/list'),
+            'create'     => CreateOpportunity::route('/create'),
+            'view'       => ViewOpportunity::route('/{record}'),
+            'edit'       => EditOpportunity::route('/{record}/edit'),
+            'similar'    => SimilarOpportunities::route('/{record}/similar'),
+            'quotations' => ManageQuotations::route('/{record}/quotations'),
         ];
     }
 }

@@ -19,6 +19,7 @@ return [
         'salesperson' => 'Vendeur',
         'team'        => 'Équipe commerciale',
         'priority'    => 'Priorité',
+        'status'      => 'Statut',
     ],
 
     'quick-create' => [
@@ -29,4 +30,6 @@ return [
         'heading'     => 'Aucune opportunité',
         'description' => 'Faites glisser une opportunité ici ou utilisez + pour en créer une.',
     ],
+
+    'lost-move' => 'Les opportunités perdues ne peuvent pas être déplacées. Restaurez-les d\'abord.',
 ];

@@ -11,6 +11,9 @@ return [
 
     'form' => [
         'fields' => [
+            'teams'                    => 'Sales Teams',
+            'teams-helper-text'        => 'Teams whose pipeline shows this stage. Leave empty to share it with all teams.',
+            'all-teams'                => 'All teams',
             'name'                     => 'Stage Name',
             'is-won'                   => 'Is Won Stage?',
             'is-won-helper-text'       => 'Opportunities moved to this stage are marked as won (probability 100%).',
@@ -21,6 +24,7 @@ return [
 
     'table' => [
         'columns' => [
+            'teams'         => 'Sales Teams',
             'name'          => 'Stage Name',
             'is-won'        => 'Won Stage',
             'requirements'  => 'Requirements',

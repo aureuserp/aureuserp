@@ -22,7 +22,7 @@ it('creates the crm tables', function (string $table) {
     'crm_stages',
     'crm_tags',
     'crm_lost_reasons',
-    'crm_lead_tags',
+    'crm_tag_rel',
     'crm_activity_logs',
 ]);
 

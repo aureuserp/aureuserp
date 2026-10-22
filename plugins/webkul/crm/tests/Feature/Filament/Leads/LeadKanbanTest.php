@@ -8,9 +8,11 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
+use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\UTMSource;
 
 require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
 
@@ -118,11 +120,7 @@ it('opens on the current user leads', function () {
 
     $component = Livewire::test(KanbanLeads::class);
 
-    expect($component->get('kanbanFilters'))->toBe([
-        'user_id'  => $user->id,
-        'team_id'  => null,
-        'priority' => null,
-    ]);
+    expect($component->get('kanbanFilters'))->toBe([...KanbanLeads::emptyKanbanFilters(), 'user_id' => $user->id]);
 
     expect(leadKanbanCardIds($component->instance()))->toContain($mine->id)
         ->not->toContain($theirs->id);
@@ -401,4 +399,31 @@ it('shows no left sub-navigation because the leads section has a single item', f
 
     expect(Livewire::test(KanbanLeads::class)->instance()->getSubNavigation())->toBe([])
         ->and(Livewire::test(ListLeads::class)->instance()->getSubNavigation())->toBe([]);
+});
+
+describe('list view filters on the board', function () {
+    it('filters by status, tags and source like the list', function () {
+        CrmTestHelper::actingAsCrmUser(['lead']);
+
+        $tag = Tag::query()->create(['name' => 'Lead board tag '.uniqid()]);
+        $source = UTMSource::query()->create(['name' => 'Lead board source '.uniqid()]);
+
+        $tagged = CrmTestHelper::lead();
+        $tagged->tags()->attach($tag->id);
+        $fromSource = CrmTestHelper::lead(['utm_source_id' => $source->id]);
+        $unassigned = CrmTestHelper::lead();
+        $unassigned->forceFill(['user_id' => null])->saveQuietly();
+        $lost = CrmTestHelper::lead();
+        $lost->markAsLost(null);
+
+        $ids = fn (array $filters): array => leadKanbanCardIds(Livewire::test(KanbanLeads::class)
+            ->set('kanbanFilters', [...KanbanLeads::emptyKanbanFilters(), ...$filters])
+            ->instance());
+
+        expect($ids([]))->not->toContain($lost->id)
+            ->and($ids(['status' => 'lost']))->toBe([$lost->id])
+            ->and($ids(['status' => 'unassigned']))->toContain($unassigned->id)->not->toContain($tagged->id)
+            ->and($ids(['tags' => [$tag->id]]))->toBe([$tagged->id])
+            ->and($ids(['utm_source_id' => $source->id]))->toBe([$fromSource->id]);
+    });
 });

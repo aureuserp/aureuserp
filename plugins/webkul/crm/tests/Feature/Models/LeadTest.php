@@ -369,7 +369,7 @@ it('reports whether a record is a lead, won or lost', function () {
         ->and($lostOpportunity->isLost())->toBeTrue();
 });
 
-it('attaches tags through the crm_lead_tags pivot', function () {
+it('attaches tags through the crm_tag_rel table', function () {
     CrmTestHelper::actingAs();
 
     $opportunity = CrmTestHelper::opportunity();
@@ -380,7 +380,7 @@ it('attaches tags through the crm_lead_tags pivot', function () {
     expect($opportunity->tags()->pluck('crm_tags.id')->sort()->values()->all())
         ->toBe($tags->pluck('id')->sort()->values()->all());
 
-    $this->assertDatabaseHas('crm_lead_tags', ['lead_id' => $opportunity->id, 'tag_id' => $tags->first()->id]);
+    $this->assertDatabaseHas('crm_tag_rel', ['lead_id' => $opportunity->id, 'tag_id' => $tags->first()->id]);
 });
 
 it('lists only scheduled activities as crm activities', function () {

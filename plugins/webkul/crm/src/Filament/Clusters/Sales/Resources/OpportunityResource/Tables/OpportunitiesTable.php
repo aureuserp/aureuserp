@@ -17,6 +17,8 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
@@ -47,6 +49,13 @@ class OpportunitiesTable
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-revenue'))
                     ->money(fn (Lead $record): ?string => $record->company?->currency?->code)
                     ->sortable(),
+                TextColumn::make('recurring_revenue')
+                    ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
+                    ->money(fn (Lead $record): ?string => $record->company?->currency?->code)
+                    ->description(fn (Lead $record): ?string => $record->recurringPlan?->name)
+                    ->sortable()
+                    ->visible(fn (): bool => RecurringPlanResource::isRecurringRevenueEnabled())
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('probability')
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.probability'))
                     ->numeric(decimalPlaces: 0)
@@ -166,6 +175,7 @@ class OpportunitiesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    MergeLeadsBulkAction::make(),
                     RestoreBulkAction::make()
                         ->label(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.label'))
                         ->successNotification(

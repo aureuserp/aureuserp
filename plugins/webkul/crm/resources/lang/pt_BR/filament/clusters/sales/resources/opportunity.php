@@ -171,6 +171,18 @@ return [
     ],
 
     'actions' => [
+        'new-quotation' => [
+            'label'             => 'Nova cotação',
+            'modal-heading'     => 'Nova cotação',
+            'modal-description' => 'Esta oportunidade ainda não tem cliente. Escolha o cliente da cotação.',
+            'submit'            => 'Continuar',
+            'subheading'        => 'Da oportunidade: :name',
+        ],
+
+        'open-opportunity' => [
+            'label' => 'Oportunidade',
+        ],
+
         'won' => [
             'label' => 'Ganha',
 
@@ -209,6 +221,24 @@ return [
                 'title' => 'Oportunidade perdida',
                 'body'  => 'A oportunidade foi marcada como perdida e movida para a visualização Perdidas.',
             ],
+        ],
+    ],
+
+    'quotations' => [
+        'title' => 'Cotações',
+
+        'columns' => [
+            'number'      => 'Número',
+            'date'        => 'Data',
+            'customer'    => 'Cliente',
+            'salesperson' => 'Vendedor',
+            'total'       => 'Total',
+            'status'      => 'Status',
+        ],
+
+        'empty' => [
+            'heading'     => 'Nenhuma cotação ainda',
+            'description' => 'Use "Nova cotação" para criar uma cotação a partir desta oportunidade.',
         ],
     ],
 ];

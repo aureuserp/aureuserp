@@ -171,6 +171,18 @@ return [
     ],
 
     'actions' => [
+        'new-quotation' => [
+            'label'             => 'New Quotation',
+            'modal-heading'     => 'New quotation',
+            'modal-description' => 'This opportunity has no customer yet. Choose the customer of the quotation.',
+            'submit'            => 'Continue',
+            'subheading'        => 'From opportunity: :name',
+        ],
+
+        'open-opportunity' => [
+            'label' => 'Opportunity',
+        ],
+
         'won' => [
             'label' => 'Won',
 
@@ -209,6 +221,24 @@ return [
                 'title' => 'Opportunity lost',
                 'body'  => 'The opportunity has been marked as lost and moved to the Lost view.',
             ],
+        ],
+    ],
+
+    'quotations' => [
+        'title' => 'Quotations',
+
+        'columns' => [
+            'number'      => 'Number',
+            'date'        => 'Date',
+            'customer'    => 'Customer',
+            'salesperson' => 'Salesperson',
+            'total'       => 'Total',
+            'status'      => 'Status',
+        ],
+
+        'empty' => [
+            'heading'     => 'No quotations yet',
+            'description' => 'Use "New Quotation" to create a quotation from this opportunity.',
         ],
     ],
 ];

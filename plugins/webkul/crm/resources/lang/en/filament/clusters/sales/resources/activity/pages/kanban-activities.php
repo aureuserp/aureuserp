@@ -5,6 +5,7 @@ return [
 
     'filters' => [
         'everyone' => 'Everyone',
+        'all'      => 'All',
     ],
 
     'empty-state' => [

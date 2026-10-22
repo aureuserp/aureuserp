@@ -5,6 +5,7 @@ return [
 
     'filters' => [
         'everyone' => 'Tout le monde',
+        'all'      => 'Tous',
     ],
 
     'empty-state' => [

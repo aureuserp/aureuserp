@@ -11,6 +11,9 @@ return [
 
     'form' => [
         'fields' => [
+            'teams'                    => 'Equipes de vendas',
+            'teams-helper-text'        => 'Equipes cujo pipeline mostra esta etapa. Deixe vazio para compartilhá-la com todas as equipes.',
+            'all-teams'                => 'Todas as equipes',
             'name'                     => 'Nome da etapa',
             'is-won'                   => 'É etapa de ganho?',
             'is-won-helper-text'       => 'As oportunidades movidas para esta etapa são marcadas como ganhas (probabilidade de 100%).',
@@ -21,6 +24,7 @@ return [
 
     'table' => [
         'columns' => [
+            'teams'         => 'Equipes de vendas',
             'name'          => 'Nome da etapa',
             'is-won'        => 'Etapa de ganho',
             'requirements'  => 'Requisitos',

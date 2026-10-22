@@ -5,6 +5,7 @@ return [
 
     'filters' => [
         'everyone' => 'الجميع',
+        'all'      => 'الكل',
     ],
 
     'empty-state' => [

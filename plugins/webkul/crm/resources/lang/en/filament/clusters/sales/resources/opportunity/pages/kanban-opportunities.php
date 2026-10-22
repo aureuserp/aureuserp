@@ -19,6 +19,7 @@ return [
         'salesperson' => 'Salesperson',
         'team'        => 'Sales Team',
         'priority'    => 'Priority',
+        'status'      => 'Status',
     ],
 
     'quick-create' => [
@@ -29,4 +30,6 @@ return [
         'heading'     => 'No opportunities',
         'description' => 'Drag an opportunity here or use + to create one.',
     ],
+
+    'lost-move' => 'Lost opportunities cannot be moved. Restore them first.',
 ];

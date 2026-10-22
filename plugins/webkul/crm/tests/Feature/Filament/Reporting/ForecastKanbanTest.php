@@ -74,6 +74,7 @@ it('starts on the current user upcoming closings', function () {
         'user_id' => $user->id,
         'team_id' => null,
         'period'  => 'upcoming',
+        'presets' => [],
     ]);
 });
 
@@ -178,6 +179,7 @@ it('clears every filter on reset', function () {
         'user_id' => null,
         'team_id' => null,
         'period'  => 'all',
+        'presets' => [],
     ]);
 });
 
@@ -306,4 +308,23 @@ it('offers the other report views as toggle buttons in the header', function () 
         ->assertActionHasColor('view_graph', 'gray')
         ->assertActionExists('view_summary')
         ->assertActionExists('view_list');
+});
+
+it('applies the list toggle filters (won, lost) on the board', function () {
+    CrmTestHelper::actingAs(['view_any_crm_forecast']);
+
+    $won = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id, 'expected_closing_date' => now()->addMonth()->toDateString()]);
+    $lost = CrmTestHelper::opportunity(['expected_closing_date' => now()->addMonth()->toDateString()]);
+    $lost->markAsLost(null);
+
+    $ids = fn (array $presets): array => collect(forecastColumns(Livewire::test(KanbanForecast::class)
+        ->set('kanbanFilters.user_id', null)
+        ->set('kanbanFilters.period', 'all')
+        ->set('kanbanFilters.presets', $presets)))
+        ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
+        ->all();
+
+    expect($ids([]))->toContain($won->id)->not->toContain($lost->id)
+        ->and($ids(['lost']))->toContain($lost->id)->not->toContain($won->id)
+        ->and($ids(['won']))->toContain($won->id)->not->toContain($lost->id);
 });
