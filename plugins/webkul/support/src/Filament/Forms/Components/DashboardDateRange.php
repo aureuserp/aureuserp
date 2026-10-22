@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
@@ -35,6 +36,20 @@ class DashboardDateRange
                 ->ranges(static::ranges())
                 ->alwaysShowCalendar()
                 ->live()
+                ->afterStateHydrated(function ($state, Get $get, Set $set) use ($name, $startKey, $endKey) {
+                    if (filled($state)) {
+                        return;
+                    }
+
+                    $start = static::toDate($get($startKey));
+                    $end = static::toDate($get($endKey));
+
+                    if (blank($start) || blank($end)) {
+                        return;
+                    }
+
+                    $set($name, Carbon::parse($start)->format('d/m/Y').' - '.Carbon::parse($end)->format('d/m/Y'));
+                })
                 ->afterStateUpdated(function ($state, Set $set) use ($startKey, $endKey) {
                     [$start, $end] = static::split($state);
 

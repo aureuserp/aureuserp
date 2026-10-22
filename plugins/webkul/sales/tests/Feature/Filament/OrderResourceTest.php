@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -204,6 +203,6 @@ it('refuses to open a sale order owned by another company', function () {
         'view_sale_order',
     ]);
 
-    expect(fn () => Livewire::test(ViewOrder::class, ['record' => $order->id]))
-        ->toThrow(ModelNotFoundException::class);
+    Livewire::test(ViewOrder::class, ['record' => $order->id])
+        ->assertNotFound();
 });

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -271,6 +270,6 @@ it('refuses to open a delivery owned by another company', function () {
         'view_inventory_delivery',
     ]);
 
-    expect(fn () => Livewire::test(ViewDelivery::class, ['record' => $delivery->id]))
-        ->toThrow(ModelNotFoundException::class);
+    Livewire::test(ViewDelivery::class, ['record' => $delivery->id])
+        ->assertNotFound();
 });

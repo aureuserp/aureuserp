@@ -50,6 +50,8 @@ export class PluginManagementPage {
 
         await expect(this.erpLocators.pluginName.first()).toBeVisible();
 
+        const pluginTitle = (await this.erpLocators.pluginName.first().innerText()).trim();
+
         await this.erpLocators.pluginActionsButton.first().click();
         await expect(this.erpLocators.pluginDropdownPanel).toBeVisible();
 
@@ -63,7 +65,7 @@ export class PluginManagementPage {
         await this.erpLocators.pluginInstallOption.click();
         await expect(this.erpLocators.pluginInstallConfirmButton).toBeVisible();
         await this.erpLocators.pluginInstallConfirmButton.click();
-        await this.expectActionSucceeded('install', pluginName);
+        await this.expectActionSucceeded('install', pluginTitle);
     }
 
     /**
@@ -172,19 +174,33 @@ export class PluginManagementPage {
     }
 
     /**
-     * Wait for the action's success notification; surface the plugin name
-     * immediately if the app reports a failure instead
+     * Wait for the action to finish and verify its outcome from the plugin lists.
+     * The toast is not a completion signal: it is flashed to the page the action
+     * redirects to and auto-dismisses, so it can be gone before it is observed.
      */
     private async expectActionSucceeded(action: PluginAction, pluginTitle: string) {
-        const successNotification = action === 'install'
-            ? this.erpLocators.pluginInstallSuccessNotification
-            : this.erpLocators.pluginUninstallSuccessNotification;
+        const confirmButton = action === 'install'
+            ? this.erpLocators.pluginInstallConfirmButton
+            : this.erpLocators.pluginUninstallConfirmButton;
+        const tab = action === 'install' ? 'not_installed' : 'installed';
+
+        await expect(confirmButton).toBeHidden({ timeout: 320_000 });
+        await this.page.waitForLoadState('networkidle');
+
         const failureNotification = this.erpLocators.pluginActionFailedNotification;
+        const failureMessage = await failureNotification.isVisible()
+            ? await failureNotification.innerText()
+            : null;
 
-        await expect(successNotification.or(failureNotification).first()).toBeVisible({ timeout: 320_000 });
+        await this.gotoPluginTab(tab);
+        await this.showAllPluginsOnOnePage();
 
-        if (await failureNotification.isVisible()) {
-            throw new Error(`Failed to ${action} plugin "${pluginTitle}" - the app reported: ${await failureNotification.innerText()}`);
+        const stillListed = await this.erpLocators.pluginName
+            .filter({ hasText: new RegExp(`^\\s*${pluginTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`) })
+            .count();
+
+        if (stillListed > 0) {
+            throw new Error(`Failed to ${action} plugin "${pluginTitle}"${failureMessage ? ` - the app reported: ${failureMessage}` : ' - it is still listed on the "' + tab + '" tab'}`);
         }
 
         console.log(`${action === 'install' ? 'Installed' : 'Uninstalled'} plugin: ${pluginTitle}`);

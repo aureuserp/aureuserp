@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -222,6 +221,6 @@ it('refuses to open an internal transfer owned by another company', function () 
         'view_inventory_internal',
     ]);
 
-    expect(fn () => Livewire::test(ViewInternal::class, ['record' => $transfer->id]))
-        ->toThrow(ModelNotFoundException::class);
+    Livewire::test(ViewInternal::class, ['record' => $transfer->id])
+        ->assertNotFound();
 });

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -194,6 +193,6 @@ it('refuses to open a receipt owned by another company', function () {
         'view_inventory_receipt',
     ]);
 
-    expect(fn () => Livewire::test(ViewReceipt::class, ['record' => $receipt->id]))
-        ->toThrow(ModelNotFoundException::class);
+    Livewire::test(ViewReceipt::class, ['record' => $receipt->id])
+        ->assertNotFound();
 });

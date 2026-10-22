@@ -132,6 +132,11 @@ class Order extends Model
         return $this->belongsTo(Company::class)->withTrashed();
     }
 
+    public function orderLines()
+    {
+        return $this->hasMany(OrderLine::class, 'order_id');
+    }
+
     public function partner()
     {
         return $this->belongsTo(Partner::class);
@@ -326,10 +331,23 @@ class Order extends Model
             ? PriceList::query()->whereKey($this->price_list_id)->value('currency_id')
             : null;
 
+        $companyCurrencyId = Company::query()->whereKey($this->company_id)->value('currency_id');
+
         $this->currency_id = $priceListCurrencyId
-            ?? Company::query()->whereKey($this->company_id)->value('currency_id')
+            ?? $companyCurrencyId
             ?? $this->currency_id
             ?? default_currency_id();
+
+        if ($companyCurrencyId && $this->currency_id && (int) $this->currency_id !== (int) $companyCurrencyId) {
+            $companyCurrency = Currency::find($companyCurrencyId);
+            $orderCurrency   = Currency::find($this->currency_id);
+
+            $this->currency_rate = ($companyCurrency && $orderCurrency)
+                ? (float) $orderCurrency->getConversionRate($companyCurrency, $orderCurrency)
+                : 1.0;
+        } else {
+            $this->currency_rate = 1.0;
+        }
     }
 
     public function computeWarehouseId()
