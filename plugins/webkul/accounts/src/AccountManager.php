@@ -9,6 +9,7 @@ use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Account\Services\DynamicLineSynchronizer;
 use Webkul\Account\Services\ExchangeDifferenceRecorder;
+use Webkul\Account\Services\JournalPoster;
 use Webkul\Account\Services\MoveCalculator;
 use Webkul\Account\Services\MoveWorkflow;
 use Webkul\Account\Services\PaymentRegistrar;
@@ -123,5 +124,10 @@ class AccountManager
     public function createExchangeDifferenceMoves(array $differences): array
     {
         return $this->exchangeDifferences->postDifferences($differences);
+    }
+
+    public function posting(): JournalPoster
+    {
+        return app(JournalPoster::class);
     }
 }

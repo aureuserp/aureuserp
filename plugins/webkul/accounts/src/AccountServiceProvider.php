@@ -28,6 +28,7 @@ use Webkul\Account\Models\PaymentTerm;
 use Webkul\Account\Models\ProductCompanyAccount;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Observers\CompanyObserver;
+use Webkul\Account\Services\PostingValidatorRegistry;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
@@ -126,6 +127,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2026_07_30_120000_create_products_category_company_accounts_table',
                 '2026_07_30_120001_create_partners_partner_company_properties_table',
                 '2026_08_03_130000_seed_accounts_sequences',
+                '2026_10_22_100000_add_source_document_to_accounts_account_moves_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -401,5 +403,6 @@ class AccountServiceProvider extends PackageServiceProvider
 
         $this->app->singleton('tax', TaxManager::class);
         $this->app->singleton('account', AccountManager::class);
+        $this->app->singleton(PostingValidatorRegistry::class);
     }
 }
