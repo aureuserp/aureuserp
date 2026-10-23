@@ -270,7 +270,7 @@
     @apply rounded-t-lg border border-b-0 border-gray-200 bg-white px-0 shadow-[inset_0_-1px_0_0_var(--color-gray-200)] dark:border-white/10 dark:bg-gray-900 dark:shadow-[inset_0_-1px_0_0_rgb(255_255_255/0.1)];
 }
 
-.fi-page-content > .fi-sc:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained):not(:has(> .fi-sc-tabs-tab))) {
+.fi-page-content > .fi-sc:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs:not(.fi-contained)):not(:has(> .fi-grid-col > .fi-sc-component > .fi-sc-tabs > .fi-sc-tabs-tab)) {
     @apply gap-y-0;
 }
 
