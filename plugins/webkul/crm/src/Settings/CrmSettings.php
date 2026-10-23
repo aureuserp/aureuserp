@@ -44,6 +44,15 @@ class CrmSettings extends Settings
      */
     public ?string $auto_assignment_run_at;
 
+    /**
+     * Optional predictive lead scoring variables (stage and sales team are always used).
+     *
+     * @var array<int, string>
+     */
+    public array $scoring_variables;
+
+    public ?string $scoring_start_date;
+
     public static function group(): string
     {
         return 'crm';

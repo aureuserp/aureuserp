@@ -28,7 +28,9 @@ return [
     ],
 
     'actions' => [
-        'archive' => 'Archivar',
+        'archive'             => 'Archivar',
+        'archive-heading'     => 'Archivar nivel',
+        'archive-description' => 'El nivel pasa a Archivados. Los contactos lo conservan; restáurelo desde la pestaña Archivados.',
     ],
 
     'tabs' => [

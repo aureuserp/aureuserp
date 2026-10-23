@@ -61,12 +61,14 @@ class CrmServiceProvider extends PackageServiceProvider
                 '2026_10_22_000022_create_crm_stage_team_rel_table',
                 '2026_10_22_000023_create_crm_quotation_partners_table',
                 '2026_10_22_000024_create_crm_recurring_plans_table',
+                '2026_10_23_000026_create_crm_lead_scoring_tables',
             ])
             ->runsMigrations()
             ->hasSettings([
                 '2026_10_22_000011_create_crm_settings',
                 '2026_10_22_000012_add_use_leads_to_crm_settings',
                 '2026_10_22_000025_add_use_recurring_revenues_to_crm_settings',
+                '2026_10_23_000027_add_lead_scoring_to_crm_settings',
             ])
             ->runsSettings()
             ->hasDependencies([

@@ -7,6 +7,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
 use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Services\LeadScoring;
 
 class CreateLead extends CreateRecord
 {
@@ -32,5 +33,10 @@ class CreateLead extends CreateRecord
             ->success()
             ->title(__('crm::filament/clusters/leads/resources/lead/pages/create-lead.notification.title'))
             ->body(__('crm::filament/clusters/leads/resources/lead/pages/create-lead.notification.body'));
+    }
+
+    protected function afterCreate(): void
+    {
+        app(LeadScoring::class)->refresh($this->getRecord()->load('tags'));
     }
 }

@@ -5,11 +5,14 @@ namespace Webkul\Crm\Filament\Clusters\Configurations\Pages;
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Actions\Action;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\SettingsPage;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
@@ -20,6 +23,7 @@ use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
 use Webkul\Crm\Services\LeadAssignment;
+use Webkul\Crm\Services\LeadScoring;
 use Webkul\Crm\Settings\CrmSettings;
 
 class ManageSettings extends SettingsPage
@@ -132,12 +136,68 @@ class ManageSettings extends SettingsPage
                                     ->visible(fn (Get $get): bool => (bool) $get('use_auto_assignment') && $get('auto_assignment_action') === 'auto'),
                             ]),
                     ]),
+                Section::make($label('scoring.section'))
+                    ->description($label('scoring.description'))
+                    ->columns(2)
+                    ->schema([
+                        CheckboxList::make('scoring_variables')
+                            ->label($label('scoring.variables'))
+                            ->helperText($label('scoring.variables-helper'))
+                            ->options(collect(LeadScoring::VARIABLES)->mapWithKeys(fn (string $variable): array => [$variable => __('crm::filament/lead-scoring.variables.'.$variable)])->all())
+                            ->columns(2),
+                        DatePicker::make('scoring_start_date')
+                            ->label($label('scoring.start-date'))
+                            ->helperText($label('scoring.start-date-helper'))
+                            ->maxDate(now()),
+                        Actions::make([
+                            Action::make('updateProbabilities')
+                                ->label($label('scoring.update'))
+                                ->icon('heroicon-o-arrow-path')
+                                ->requiresConfirmation()
+                                ->modalDescription($label('scoring.update-description'))
+                                ->action(function (Get $get): void {
+                                    $settings = app(CrmSettings::class);
+                                    $settings->scoring_variables = array_values(array_intersect(LeadScoring::VARIABLES, (array) $get('scoring_variables')));
+                                    $settings->scoring_start_date = filled($get('scoring_start_date')) ? (string) $get('scoring_start_date') : null;
+                                    $settings->save();
+
+                                    $count = app(LeadScoring::class)->rebuildAndRescore();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title(__('crm::filament/clusters/configurations/pages/manage-settings.form.scoring.updated', ['count' => $count]))
+                                        ->send();
+                                }),
+                        ])->columnSpanFull(),
+                    ]),
             ]);
+    }
+
+    protected bool $scoringChanged = false;
+
+    protected function afterSave(): void
+    {
+        if (! $this->scoringChanged) {
+            return;
+        }
+
+        $count = app(LeadScoring::class)->rebuildAndRescore();
+
+        Notification::make()
+            ->success()
+            ->title(__('crm::filament/clusters/configurations/pages/manage-settings.form.scoring.updated', ['count' => $count]))
+            ->send();
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $current = app(CrmSettings::class);
+
+        $data['scoring_variables'] = array_values(array_intersect(LeadScoring::VARIABLES, (array) ($data['scoring_variables'] ?? [])));
+        $data['scoring_start_date'] = filled($data['scoring_start_date'] ?? null) ? (string) $data['scoring_start_date'] : null;
+
+        $this->scoringChanged = $data['scoring_variables'] !== array_values((array) $current->scoring_variables)
+            || $data['scoring_start_date'] !== $current->scoring_start_date;
 
         $isRepeated = ($data['use_auto_assignment'] ?? false) && ($data['auto_assignment_action'] ?? 'manual') === 'auto';
 

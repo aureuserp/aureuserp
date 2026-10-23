@@ -28,7 +28,9 @@ return [
     ],
 
     'actions' => [
-        'archive' => 'Archive',
+        'archive'             => 'Archive',
+        'archive-heading'     => 'Archive recurring plan',
+        'archive-description' => 'The plan is moved to Archived. Opportunities keep it; restore it from the Archived tab.',
     ],
 
     'tabs' => [

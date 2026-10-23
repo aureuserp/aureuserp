@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Schemas\TagForm;
+use Webkul\Crm\Filament\Support\ProbabilityHint;
 use Webkul\Crm\Models\RecurringPlan;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
@@ -63,7 +64,8 @@ class OpportunityForm
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('%')
-                                            ->default(10),
+                                            ->placeholder(__('crm::filament/lead-scoring.automatic'))
+                                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::formResetAction()]),
                                         TextInput::make('recurring_revenue')
                                             ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
                                             ->numeric()

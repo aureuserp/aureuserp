@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
+use Webkul\Crm\Filament\Support\ProbabilityHint;
 use Webkul\Crm\Models\Lead;
 
 class LeadInfolist
@@ -41,8 +42,9 @@ class LeadInfolist
                             ->weight(FontWeight::Bold),
                         TextEntry::make('probability')
                             ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.probability'))
-                            ->numeric(decimalPlaces: 0)
-                            ->suffix('%'),
+                            ->numeric(decimalPlaces: 2)
+                            ->suffix('%')
+                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::viewResetAction()]),
                         Grid::make(['default' => 1, 'lg' => 2])
                             ->schema([
                                 Group::make()

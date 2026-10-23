@@ -110,6 +110,9 @@ class PartnerLevelResource extends Resource
                 DeleteAction::make()
                     ->label($label('actions.archive'))
                     ->icon('heroicon-o-archive-box')
+                    ->modalHeading($label('actions.archive-heading'))
+                    ->modalDescription($label('actions.archive-description'))
+                    ->modalSubmitActionLabel($label('actions.archive'))
                     ->successNotification(Notification::make()->success()->title($label('notifications.archived'))),
                 ForceDeleteAction::make()
                     ->successNotification(Notification::make()->success()->title($label('notifications.deleted'))),
@@ -119,7 +122,10 @@ class PartnerLevelResource extends Resource
                     RestoreBulkAction::make(),
                     DeleteBulkAction::make()
                         ->label($label('actions.archive'))
-                        ->icon('heroicon-o-archive-box'),
+                        ->icon('heroicon-o-archive-box')
+                        ->modalHeading($label('actions.archive-heading'))
+                        ->modalDescription($label('actions.archive-description'))
+                        ->modalSubmitActionLabel($label('actions.archive')),
                 ]),
             ]);
     }

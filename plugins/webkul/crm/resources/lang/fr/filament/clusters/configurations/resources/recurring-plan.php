@@ -28,7 +28,9 @@ return [
     ],
 
     'actions' => [
-        'archive' => 'Archiver',
+        'archive'             => 'Archiver',
+        'archive-heading'     => 'Archiver le plan récurrent',
+        'archive-description' => 'Le plan passe dans Archivés. Les opportunités le conservent ; restaurez-le depuis l\'onglet Archivés.',
     ],
 
     'tabs' => [

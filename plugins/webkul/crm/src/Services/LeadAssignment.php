@@ -5,7 +5,9 @@ namespace Webkul\Crm\Services;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Models\LeadConversion;
 use Webkul\Crm\Models\TeamMember;
+use Webkul\Crm\Settings\CrmSettings;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\Scopes\CompanyScope;
 
@@ -17,6 +19,10 @@ class LeadAssignment
 
     public function run(?Team $onlyTeam = null): array
     {
+        if (! app(CrmSettings::class)->use_auto_assignment) {
+            return ['teams' => 0, 'salespeople' => 0];
+        }
+
         $teams = $this->eligibleTeams($onlyTeam);
 
         if ($teams->isEmpty()) {
@@ -107,6 +113,15 @@ class LeadAssignment
 
             $lead->user_id = $member->user_id;
             $lead->save();
+
+            if ($lead->isLead() && ($team->crmTeam?->use_opportunities ?? true)) {
+                app(LeadConverter::class)->convert($lead, [
+                    'action'   => LeadConversion::ACTION_CONVERT,
+                    'customer' => LeadConversion::CUSTOMER_NONE,
+                    'user_id'  => $member->user_id,
+                    'team_id'  => $team->getKey(),
+                ]);
+            }
 
             $load[$member->getKey()] = $load[$member->getKey()] + 1;
 

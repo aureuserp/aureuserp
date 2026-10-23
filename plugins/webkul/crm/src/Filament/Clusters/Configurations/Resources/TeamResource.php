@@ -28,6 +28,7 @@ use Webkul\Crm\Models\CrmTeam;
 use Webkul\Crm\Models\MailAlias;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Policies\TeamPolicy;
+use Webkul\Crm\Settings\CrmSettings;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource as BaseTeamResource;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource as BaseUserResource;
@@ -79,6 +80,7 @@ class TeamResource extends BaseTeamResource
             Section::make($label('section'))
                 ->description($label('section-description'))
                 ->relationship('crmTeam')
+                ->visible(fn (): bool => static::usesRuleBasedAssignment())
                 ->schema([
                     Text::make(fn (?CrmTeam $record): string => static::getCapacitySummary((int) $record?->team_id))
                         ->visible(fn (?CrmTeam $record): bool => filled($record?->team_id))
@@ -270,6 +272,7 @@ class TeamResource extends BaseTeamResource
                                 ->authorize(fn (): bool => UserResource::canCreate()))
                             ->createOptionUsing(fn (array $data, Get $get): int => static::createSalesperson($data, $get('../../company_id'))),
                         TextInput::make('assignment_max')
+                            ->visible(fn (): bool => static::usesRuleBasedAssignment())
                             ->label($label('fields.capacity'))
                             ->helperText(fn (?TeamMember $record): string => $record
                                 ? __('crm::filament/assignment.members.fields.capacity-assigned', ['count' => $record->leadsAssignedLastMonth()])
@@ -280,6 +283,7 @@ class TeamResource extends BaseTeamResource
                             ->default(30)
                             ->required(),
                         Toggle::make('assignment_optout')
+                            ->visible(fn (): bool => static::usesRuleBasedAssignment())
                             ->label($label('fields.paused'))
                             ->helperText($label('fields.paused-helper'))
                             ->inline(false),
@@ -288,6 +292,7 @@ class TeamResource extends BaseTeamResource
                             ->default(true)
                             ->inline(false),
                         AssignmentRuleFields::make()
+                            ->visible(fn (): bool => static::usesRuleBasedAssignment())
                             ->columnSpanFull(),
                     ])
                     ->columns(4)
@@ -298,6 +303,11 @@ class TeamResource extends BaseTeamResource
                     ->reorderable(false)
                     ->addActionLabel($label('actions.add')),
             ]);
+    }
+
+    public static function usesRuleBasedAssignment(): bool
+    {
+        return (bool) app(CrmSettings::class)->use_auto_assignment;
     }
 
     public static function getCapacitySummary(int $teamId): string

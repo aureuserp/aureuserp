@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Filament\Clusters\Configurations\Pages\ManageSettings;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
 use Webkul\Crm\Models\CrmTeam;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\TeamMember;
@@ -334,4 +335,23 @@ describe('rule-based assignment', function () {
 
         expect(AssignLeads::nextRun($settings, $from)->equalTo($from->copy()->addHours(3)))->toBeTrue();
     });
+});
+
+it('hides assignment on the sales team and does not assign when rule-based assignment is off', function () {
+    CrmTestHelper::actingAs();
+
+    $settings = app(CrmSettings::class);
+    $settings->use_auto_assignment = false;
+    $settings->save();
+
+    expect(TeamResource::usesRuleBasedAssignment())->toBeFalse();
+
+    $team = assignmentTeam();
+    app(TeamMembership::class)->addMember($team, assignmentSeller()->id);
+
+    $lead = assignmentLead(['team_id' => $team->id]);
+    $lead->forceFill(['team_id' => $team->id])->saveQuietly();
+
+    expect(app(LeadAssignment::class)->run($team))->toBe(['teams' => 0, 'salespeople' => 0])
+        ->and($lead->fresh()->user_id)->toBeNull();
 });

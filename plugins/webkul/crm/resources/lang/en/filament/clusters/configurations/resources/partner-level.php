@@ -28,7 +28,9 @@ return [
     ],
 
     'actions' => [
-        'archive' => 'Archive',
+        'archive'             => 'Archive',
+        'archive-heading'     => 'Archive level',
+        'archive-description' => 'The level is moved to Archived. Contacts keep it; restore it from the Archived tab.',
     ],
 
     'tabs' => [

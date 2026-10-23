@@ -105,6 +105,15 @@ class ConvertToOpportunityAction extends Action
                     ->searchable(),
             ])
             ->action(function (Lead $record, array $data, Action $action): void {
+                if ((float) $record->probability >= 100) {
+                    Notification::make()
+                        ->danger()
+                        ->title(__('crm::filament/lead-scoring.convert-100'))
+                        ->send();
+
+                    $action->halt();
+                }
+
                 $isValid = (($data['customer'] ?? null) !== 'link' || static::customersFor($record)->whereKey($data['partner_id'] ?? null)->exists())
                     && (blank($data['user_id'] ?? null) || static::salespeopleFor($record)->whereKey($data['user_id'])->exists())
                     && (blank($data['team_id'] ?? null) || static::teamsFor($record)->whereKey($data['team_id'])->exists());

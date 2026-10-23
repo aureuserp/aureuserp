@@ -28,7 +28,9 @@ return [
     ],
 
     'actions' => [
-        'archive' => 'Arquivar',
+        'archive'             => 'Arquivar',
+        'archive-heading'     => 'Arquivar plano recorrente',
+        'archive-description' => 'O plano vai para Arquivados. As oportunidades o mantêm; restaure-o na aba Arquivados.',
     ],
 
     'tabs' => [

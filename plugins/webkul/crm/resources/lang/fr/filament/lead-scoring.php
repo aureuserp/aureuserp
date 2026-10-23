@@ -1,0 +1,38 @@
+<?php
+
+return [
+    'automatic'   => 'Automatique',
+    'reset'       => 'Utiliser la probabilité calculée',
+    'convert-100' => 'Une piste à 100 % de probabilité ne peut pas être convertie. Baissez d\'abord sa probabilité.',
+
+    'popover' => [
+        'badge'      => 'Probabilité calculée par IA',
+        'chances'    => 'Chances de gagner calculées par IA pour',
+        'no-team'    => 'Pas d\'équipe commerciale',
+        'no-history' => 'Pas encore assez d\'historique de gains et de pertes pour calculer une probabilité.',
+        'manual'     => 'La probabilité a été saisie à la main ; voici celle calculée.',
+        'positives'  => 'Principaux facteurs positifs',
+        'negatives'  => 'Principaux facteurs négatifs',
+    ],
+
+    'factors' => [
+        'stage'         => 'Étape :value',
+        'phone-valid'   => 'A un numéro de téléphone valide',
+        'phone-invalid' => 'N\'a pas de numéro de téléphone valide',
+        'email-valid'   => 'A une adresse e-mail valide',
+        'email-invalid' => 'N\'a pas d\'adresse e-mail valide',
+        'country'       => 'Situé en :value',
+        'state'         => 'Situé en :value',
+        'source'        => 'Provient de :value',
+        'tag'           => 'Étiqueté :value',
+    ],
+
+    'variables' => [
+        'country_id'    => 'Pays',
+        'state_id'      => 'État',
+        'phone'         => 'Qualité du téléphone',
+        'email'         => 'Qualité de l\'e-mail',
+        'utm_source_id' => 'Source',
+        'tags'          => 'Étiquettes',
+    ],
+];

@@ -18,6 +18,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Schemas\TagForm;
+use Webkul\Crm\Filament\Support\ProbabilityHint;
 
 class LeadForm
 {
@@ -40,9 +41,10 @@ class LeadForm
                             ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.probability'))
                             ->numeric()
                             ->minValue(0)
-                            ->maxValue(100)
+                            ->maxValue(99.99)
                             ->suffix('%')
-                            ->default(10)
+                            ->placeholder(__('crm::filament/lead-scoring.automatic'))
+                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::formResetAction()])
                             ->extraFieldWrapperAttributes(['style' => 'max-width: 12rem;']),
                         Grid::make(['default' => 1, 'lg' => 2])
                             ->schema([

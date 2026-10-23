@@ -16,6 +16,18 @@ return [
     ],
 
     'form' => [
+        'scoring' => [
+            'section'            => 'Puntuación predictiva de leads',
+            'description'        => 'La probabilidad de ganar cada lead y oportunidad abiertos se calcula a partir de su historial de ganados y perdidos. La etapa y el equipo de ventas siempre se usan.',
+            'variables'          => 'Considerar también',
+            'variables-helper'   => 'Qué datos de un registro tiene en cuenta la probabilidad.',
+            'start-date'         => 'Considerar leads creados a partir del',
+            'start-date-helper'  => 'Déjelo vacío para usar todo el historial.',
+            'update'             => 'Actualizar probabilidades',
+            'update-description' => 'Guarda estas opciones, vuelve a aprender del historial de ganados y perdidos y recalcula todos los registros abiertos.',
+            'updated'            => 'Probabilidades actualizadas para :count registro(s) abierto(s).',
+        ],
+
         'sections' => [
             'crm' => 'CRM',
         ],

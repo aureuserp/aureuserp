@@ -28,7 +28,9 @@ return [
     ],
 
     'actions' => [
-        'archive' => 'Archivar',
+        'archive'             => 'Archivar',
+        'archive-heading'     => 'Archivar plan recurrente',
+        'archive-description' => 'El plan pasa a Archivados. Las oportunidades lo conservan; restáurelo desde la pestaña Archivados.',
     ],
 
     'tabs' => [

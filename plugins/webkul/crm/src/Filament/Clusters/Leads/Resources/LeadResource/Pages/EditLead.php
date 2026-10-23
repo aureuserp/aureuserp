@@ -12,6 +12,7 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToO
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
 use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
+use Webkul\Crm\Services\LeadScoring;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLead extends EditRecord
@@ -61,5 +62,10 @@ class EditLead extends EditRecord
         return MarkAsLostAction::make()
             ->record(fn () => $this->getRecord())
             ->after(fn () => $this->redirect(LeadResource::getUrl('view', ['record' => $this->getRecord()])));
+    }
+
+    protected function afterSave(): void
+    {
+        app(LeadScoring::class)->refresh($this->getRecord()->load('tags'));
     }
 }

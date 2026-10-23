@@ -12,6 +12,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\Mar
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
 use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
+use Webkul\Crm\Services\LeadScoring;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditOpportunity extends EditRecord
@@ -68,5 +69,10 @@ class EditOpportunity extends EditRecord
         return MarkAsLostAction::make()
             ->record(fn () => $this->getRecord())
             ->after(fn () => $this->redirect(OpportunityResource::getUrl('view', ['record' => $this->getRecord()])));
+    }
+
+    protected function afterSave(): void
+    {
+        app(LeadScoring::class)->refresh($this->getRecord()->load('tags'));
     }
 }

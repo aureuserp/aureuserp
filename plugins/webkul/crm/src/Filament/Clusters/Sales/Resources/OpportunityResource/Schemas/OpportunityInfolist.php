@@ -10,6 +10,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
+use Webkul\Crm\Filament\Support\ProbabilityHint;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
@@ -56,8 +57,9 @@ class OpportunityInfolist
                                             ->money(fn (Lead $record): ?string => $record->company?->currency?->code),
                                         TextEntry::make('probability')
                                             ->label(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.general.entries.probability'))
-                                            ->numeric(decimalPlaces: 0)
-                                            ->suffix('%'),
+                                            ->numeric(decimalPlaces: 2)
+                                            ->suffix('%')
+                                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::viewResetAction()]),
                                         TextEntry::make('recurring_revenue')
                                             ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
                                             ->money(fn (Lead $record): ?string => $record->company?->currency?->code)

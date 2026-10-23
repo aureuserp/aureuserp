@@ -14,6 +14,7 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Crm\Database\Factories\LeadFactory;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Services\LeadScoring;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Quotation;
 use Webkul\Sale\Models\Team;
@@ -59,6 +60,8 @@ class Lead extends Model
         'recurring_revenue',
         'recurring_plan_id',
         'probability',
+        'automated_probability',
+        'is_automated_probability',
         'priority',
         'expected_closing_date',
         'assigned_at',
@@ -79,14 +82,16 @@ class Lead extends Model
     ];
 
     protected $casts = [
-        'expected_revenue'      => 'decimal:4',
-        'recurring_revenue'     => 'decimal:4',
-        'probability'           => 'decimal:2',
-        'priority'              => OpportunityPriority::class,
-        'expected_closing_date' => 'date',
-        'assigned_at'           => 'datetime',
-        'closed_at'             => 'datetime',
-        'converted_at'          => 'datetime',
+        'expected_revenue'         => 'decimal:4',
+        'recurring_revenue'        => 'decimal:4',
+        'probability'              => 'decimal:2',
+        'automated_probability'    => 'decimal:2',
+        'is_automated_probability' => 'boolean',
+        'priority'                 => OpportunityPriority::class,
+        'expected_closing_date'    => 'date',
+        'assigned_at'              => 'datetime',
+        'closed_at'                => 'datetime',
+        'converted_at'             => 'datetime',
     ];
 
     public function getModelTitle(): string
@@ -341,6 +346,10 @@ class Lead extends Model
 
             $lead->recurring_revenue ??= 0;
 
+            if (! $lead->exists && ! array_key_exists('is_automated_probability', $lead->getAttributes())) {
+                $lead->is_automated_probability = ($lead->getAttributes()['probability'] ?? null) === null;
+            }
+
             $lead->probability ??= 0;
 
             $lead->priority ??= OpportunityPriority::Low;
@@ -366,6 +375,15 @@ class Lead extends Model
             if ($lead->isDirty('user_id')) {
                 $lead->assigned_at = $lead->user_id ? now() : null;
             }
+
+            $isSystemChange = $lead->isDirty('is_automated_probability')
+                || ($lead->isDirty('stage_id') && (float) $lead->probability === 100.0)
+                || $lead->isDirty('deleted_at');
+
+            if ($lead->isDirty('probability') && ! $isSystemChange) {
+                $lead->is_automated_probability = $lead->automated_probability !== null
+                    && abs((float) $lead->probability - (float) $lead->automated_probability) < 0.01;
+            }
         });
 
         static::saving(function (self $lead): void {
@@ -379,10 +397,30 @@ class Lead extends Model
                 $lead->closed_at ??= now();
             } elseif ($lead->getOriginal('stage_id') && Stage::query()->whereKey($lead->getOriginal('stage_id'))->where('is_won', true)->exists()) {
                 $lead->closed_at = null;
+
+                $lead->is_automated_probability = true;
             }
         });
 
+        static::saved(function (self $lead): void {
+            $scoringFields = ['stage_id', 'team_id', 'country_id', 'state_id', 'utm_source_id', 'email', 'phone', 'probability', 'is_automated_probability', 'type'];
+
+            if ($lead->wasRecentlyCreated || $lead->wasChanged($scoringFields)) {
+                app(LeadScoring::class)->refresh($lead);
+            }
+
+            if (! $lead->wasRecentlyCreated && $lead->wasChanged('stage_id') && Stage::query()->whereKey([$lead->stage_id, $lead->getOriginal('stage_id')])->where('is_won', true)->exists()) {
+                LeadScoring::scheduleRefresh();
+            }
+        });
+
+        static::deleted(fn () => LeadScoring::scheduleRefresh());
+
+        static::restored(fn () => LeadScoring::scheduleRefresh());
+
         static::restoring(function (self $lead): void {
+            $lead->is_automated_probability = true;
+
             $lead->lost_reason_id = null;
 
             $lead->lost_feedback = null;
