@@ -1,0 +1,93 @@
+<?php
+
+return [
+    'model-label'        => 'Motivo de perda',
+    'plural-model-label' => 'Motivos de perda',
+
+    'navigation' => [
+        'title' => 'Motivos de perda',
+        'group' => 'Funil',
+    ],
+
+    'form' => [
+        'fields' => [
+            'name' => 'Descrição',
+        ],
+    ],
+
+    'table' => [
+        'columns' => [
+            'name'       => 'Descrição',
+            'created-by' => 'Criado por',
+            'created-at' => 'Criado em',
+            'updated-at' => 'Atualizado em',
+        ],
+
+        'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Motivo de perda atualizado',
+                    'body'  => 'O motivo de perda foi atualizado com sucesso.',
+                ],
+            ],
+
+            'restore' => [
+                'notification' => [
+                    'title' => 'Motivo de perda restaurado',
+                    'body'  => 'O motivo de perda foi restaurado com sucesso.',
+                ],
+            ],
+
+            'delete' => [
+                'label' => 'Arquivar',
+
+                'modal' => [
+                    'heading'     => 'Arquivar motivo de perda',
+                    'description' => 'O motivo de perda será movido para a aba Arquivados. Você pode restaurá-lo a qualquer momento.',
+                ],
+
+                'notification' => [
+                    'title' => 'Motivo de perda arquivado',
+                    'body'  => 'O motivo de perda foi arquivado com sucesso.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'title' => 'Motivo de perda excluído',
+                    'body'  => 'O motivo de perda foi excluído permanentemente.',
+                ],
+            ],
+        ],
+
+        'bulk-actions' => [
+            'restore' => [
+                'notification' => [
+                    'title' => 'Motivos de perda restaurados',
+                    'body'  => 'Os motivos de perda foram restaurados com sucesso.',
+                ],
+            ],
+
+            'delete' => [
+                'label' => 'Arquivar',
+
+                'modal' => [
+                    'heading'     => 'Arquivar motivos de perda selecionados',
+                    'description' => 'Os motivos de perda selecionados serão movidos para a aba Arquivados. Você pode restaurá-los a qualquer momento.',
+                ],
+
+                'notification' => [
+                    'title' => 'Motivos de perda arquivados',
+                    'body'  => 'Os motivos de perda foram arquivados com sucesso.',
+                ],
+            ],
+
+            'force-delete' => [
+                'notification' => [
+                    'title' => 'Motivos de perda excluídos',
+                    'body'  => 'Os motivos de perda foram excluídos permanentemente.',
+                ],
+            ],
+        ],
+    ],
+];

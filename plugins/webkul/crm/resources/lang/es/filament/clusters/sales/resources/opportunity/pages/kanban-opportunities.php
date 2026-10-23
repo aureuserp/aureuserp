@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'breadcrumb' => 'Kanban',
+
+    'header-actions' => [
+        'list' => [
+            'label' => 'Lista',
+        ],
+    ],
+
+    'search' => 'Buscar...',
+
+    'filters' => [
+        'heading'     => 'Filtros',
+        'toggle'      => 'Mostrar/ocultar filtros',
+        'reset'       => 'Restablecer',
+        'all'         => 'Todos',
+        'salesperson' => 'Comercial',
+        'team'        => 'Equipo de ventas',
+        'priority'    => 'Prioridad',
+        'status'      => 'Estado',
+    ],
+
+    'quick-create' => [
+        'heading' => 'Creación rápida de oportunidad',
+    ],
+
+    'empty-state' => [
+        'heading'     => 'Sin oportunidades',
+        'description' => 'Arrastre una oportunidad aquí o use + para crear una.',
+    ],
+
+    'lost-move' => 'Las oportunidades perdidas no se pueden mover. Restáurelas primero.',
+];

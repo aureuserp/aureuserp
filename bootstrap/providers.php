@@ -11,6 +11,7 @@ use Webkul\Barcode\BarcodeServiceProvider;
 use Webkul\Blog\BlogServiceProvider;
 use Webkul\Chatter\ChatterServiceProvider;
 use Webkul\Contact\ContactServiceProvider;
+use Webkul\Crm\CrmServiceProvider;
 use Webkul\Employee\EmployeeServiceProvider;
 use Webkul\Field\FieldServiceProvider;
 use Webkul\FullCalendar\FullCalendarServiceProvider;
@@ -46,6 +47,7 @@ return [
     BlogServiceProvider::class,
     ChatterServiceProvider::class,
     ContactServiceProvider::class,
+    CrmServiceProvider::class,
     EmployeeServiceProvider::class,
     FieldServiceProvider::class,
     InventoryServiceProvider::class,

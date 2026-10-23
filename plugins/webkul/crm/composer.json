@@ -1,0 +1,30 @@
+{
+    "name": "webkul/crm",
+    "description": "Customer relationship management",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Crm\\CrmServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Crm\\": "src/",
+            "Webkul\\Crm\\Database\\Factories\\": "database/factories/",
+            "Webkul\\Crm\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Crm\\Tests\\": "tests/"
+        }
+    }
+}
