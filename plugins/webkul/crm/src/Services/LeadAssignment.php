@@ -40,7 +40,37 @@ class LeadAssignment
         return ['teams' => $teamsAssigned, 'salespeople' => $salespeopleAssigned];
     }
 
-    protected function eligibleTeams(?Team $onlyTeam): Collection
+    public function assignLead(Lead $lead): void
+    {
+        if (! app(CrmSettings::class)->use_auto_assignment || ! $lead->exists || $lead->trashed()) {
+            return;
+        }
+
+        $lead->loadMissing(['tags', 'stage']);
+
+        if ($lead->stage?->is_won) {
+            return;
+        }
+
+        $teams = $this->eligibleTeams(null, syncMembers: false);
+
+        if (blank($lead->team_id)) {
+            $team = $this->pickTeam($lead, $teams, $teams->mapWithKeys(fn (Team $team): array => [$team->getKey() => $this->teamCapacity($team)]));
+
+            if (! $team) {
+                return;
+            }
+
+            $lead->team_id = $team->getKey();
+            $lead->save();
+        }
+
+        if (blank($lead->user_id) && ($team = $teams->firstWhere('id', $lead->team_id))) {
+            $this->assignSalespeople($team, $lead);
+        }
+    }
+
+    protected function eligibleTeams(?Team $onlyTeam, bool $syncMembers = true): Collection
     {
         $teams = Team::query()
             ->withoutGlobalScopes([CompanyScope::class])
@@ -48,7 +78,9 @@ class LeadAssignment
             ->when($onlyTeam, fn (Builder $query): Builder => $query->whereKey($onlyTeam->getKey()))
             ->get();
 
-        $teams->each(fn (Team $team) => $this->membership->sync($team));
+        if ($syncMembers) {
+            $teams->each(fn (Team $team) => $this->membership->sync($team));
+        }
 
         return $teams
             ->each(fn (Team $team) => $team->load(['crmTeam', 'crmMembers']))
@@ -62,22 +94,19 @@ class LeadAssignment
 
         $assigned = 0;
 
-        foreach ($this->openLeads()->whereNull('team_id')->whereNull('user_id')->limit(self::BATCH)->get() as $lead) {
-            $candidates = $teams->filter(fn (Team $team): bool => $remaining[$team->getKey()] > 0
-                && (blank($team->company_id) || (int) $team->company_id === (int) $lead->company_id)
-                && $this->acceptsType($team, $lead)
-                && AssignmentRules::matches($lead, $team->crmTeam?->assignment_domain));
+        foreach ($this->openLeads()->whereNull('team_id')->limit(self::BATCH)->get() as $lead) {
+            $team = $this->pickTeam($lead, $teams, $remaining);
 
-            if ($candidates->isEmpty()) {
+            if (! $team) {
                 continue;
             }
-
-            $team = $candidates->sortByDesc(fn (Team $team): int => $remaining[$team->getKey()])->first();
 
             $lead->team_id = $team->getKey();
             $lead->save();
 
-            $remaining[$team->getKey()] = $remaining[$team->getKey()] - 1;
+            if (blank($lead->user_id)) {
+                $remaining[$team->getKey()] = $remaining[$team->getKey()] - 1;
+            }
 
             $assigned++;
         }
@@ -85,7 +114,25 @@ class LeadAssignment
         return $assigned;
     }
 
-    protected function assignSalespeople(Team $team): int
+    protected function pickTeam(Lead $lead, Collection $teams, Collection $remaining): ?Team
+    {
+        $matching = $teams->filter(fn (Team $team): bool => (blank($team->company_id) || (int) $team->company_id === (int) $lead->company_id)
+            && $this->acceptsType($team, $lead)
+            && AssignmentRules::matches($lead, $team->crmTeam?->assignment_domain));
+
+        if (filled($lead->user_id)) {
+            $salespersonTeams = $matching->filter(fn (Team $team): bool => $team->crmMembers->contains('user_id', $lead->user_id));
+
+            return ($salespersonTeams->isNotEmpty() ? $salespersonTeams : $matching)->first();
+        }
+
+        return $matching
+            ->filter(fn (Team $team): bool => ($remaining[$team->getKey()] ?? 0) > 0)
+            ->sortByDesc(fn (Team $team): int => $remaining[$team->getKey()])
+            ->first();
+    }
+
+    protected function assignSalespeople(Team $team, ?Lead $onlyLead = null): int
     {
         $members = $team->crmMembers
             ->filter(fn (TeamMember $member): bool => $member->is_active && ! $member->assignment_optout && $member->assignment_max > 0)
@@ -99,7 +146,11 @@ class LeadAssignment
 
         $assigned = 0;
 
-        foreach ($this->openLeads()->where('team_id', $team->getKey())->whereNull('user_id')->limit(self::BATCH)->get() as $lead) {
+        $leads = $onlyLead
+            ? collect([$onlyLead])
+            : $this->openLeads()->where('team_id', $team->getKey())->whereNull('user_id')->limit(self::BATCH)->get();
+
+        foreach ($leads as $lead) {
             $candidates = $members->filter(fn (TeamMember $member): bool => $load[$member->getKey()] < $member->assignment_max
                 && AssignmentRules::matches($lead, $member->assignment_domain));
 

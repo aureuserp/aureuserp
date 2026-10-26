@@ -31,7 +31,7 @@ trait ManagesStageKanbanColumns
             ->exists();
     }
 
-    protected function createKanbanColumn(string $name): void
+    protected function createKanbanColumn(string $name): Model
     {
         $stage = Stage::query()->create([
             'name'     => $name,
@@ -46,6 +46,8 @@ trait ManagesStageKanbanColumns
             $stage->getKey(),
             ...$stages->where('is_won', true)->modelKeys(),
         ]);
+
+        return $stage;
     }
 
     protected function currentKanbanTeamId(): ?int

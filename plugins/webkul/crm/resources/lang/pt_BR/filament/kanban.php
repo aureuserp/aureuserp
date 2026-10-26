@@ -27,4 +27,13 @@ return [
             'body'  => 'Ainda tem :count registro. Mova-o para outra coluna primeiro.|Ainda tem :count registros. Mova-os para outra coluna primeiro.',
         ],
     ],
+
+    'progress' => [
+        'label'   => 'Atividades nesta etapa',
+        'planned' => 'Atividades planejadas',
+        'today'   => 'Atividades para hoje',
+        'overdue' => 'Atividades atrasadas',
+        'none'    => 'Sem atividades',
+        'total'   => 'Receita esperada',
+    ],
 ];

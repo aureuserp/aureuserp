@@ -30,7 +30,7 @@ class RecurringPlanResource extends Resource
 
     protected static ?string $cluster = Configurations::class;
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -57,11 +57,6 @@ class RecurringPlanResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('crm::filament/clusters/configurations/resources/recurring-plan.navigation.title');
-    }
-
-    public static function getNavigationGroup(): string
-    {
-        return __('crm::filament/clusters/configurations/resources/lost-reason.navigation.group');
     }
 
     public static function getEloquentQuery(): Builder

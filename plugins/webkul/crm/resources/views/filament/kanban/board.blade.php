@@ -4,7 +4,8 @@
     $hasFilters = $board->hasFilters();
     $hasSearch = $board->isSearchable();
     $hasLoading = $board->hasLoading();
-    $activeFilterCount = collect($this->kanbanFilters)->filter(fn ($v) => filled($v))->count();
+    $defaultKanbanFilters = method_exists($this, 'defaultKanbanFilters') ? $this->defaultKanbanFilters() : [];
+    $activeFilterCount = collect($this->kanbanFilters)->filter(fn ($v, $key) => filled($v) && $v !== ($defaultKanbanFilters[$key] ?? null))->count();
 @endphp
 
 <div
@@ -16,7 +17,7 @@
         collapsible: @js($board->isCollapsible()),
         dragConstraints: @js($board->getDragConstraints()),
     })"
-    class="fi-kanban-board"
+    class="fi-kanban-board crm-kanban-board"
 >
     @if($hasFilters || $hasSearch)
         <div class="crm-kanban-toolbar">
@@ -103,7 +104,7 @@
         </div>
     @endif
 
-    <div class="relative flex gap-4 items-start overflow-x-auto pb-4" style="min-height: 60vh;" wire:ignore.self>
+    <div class="crm-kanban-columns relative flex gap-4 items-start overflow-x-auto pb-4" wire:ignore.self>
         @foreach($columns as $column)
             @include($board->getColumnView(), ['column' => $column, 'board' => $board])
         @endforeach
@@ -111,25 +112,27 @@
         @if(method_exists($this, 'canAddKanbanColumn') && $this->canAddKanbanColumn())
             <div
                 x-data="{ adding: false, name: '', saving: false }"
-                style="flex: 0 0 {{ $board->getColumnWidth() }}; width: {{ $board->getColumnWidth() }}; padding: 2px;"
-                class="crm-kanban-add-column"
+                x-on:click="if (! adding) { adding = true; $nextTick(() => $refs.newColumnName.focus()) }"
+                x-bind:class="adding ? 'cursor-default' : 'cursor-pointer hover:border-primary-400 hover:bg-primary-50/40 dark:hover:bg-primary-400/5'"
+                style="width: {{ $board->getColumnWidth() }};"
+                class="crm-kanban-add-column group flex shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-4 transition dark:border-white/15"
             >
-                <div x-show="! adding">
-                    <x-filament::button
-                        color="gray"
-                        outlined
-                        icon="heroicon-m-plus"
-                        x-on:click="adding = true; $nextTick(() => $refs.newColumnName.focus())"
-                        style="width: 100%; justify-content: flex-start;"
-                    >
-                        {{ $this->getAddKanbanColumnLabel() }}
-                    </x-filament::button>
-                </div>
+                <button
+                    type="button"
+                    x-show="! adding"
+                    class="flex flex-col items-center gap-2 text-gray-400 transition group-hover:text-primary-600 dark:text-gray-500 dark:group-hover:text-primary-400"
+                >
+                    <span class="flex h-14 w-14 items-center justify-center rounded-full transition group-hover:bg-primary-50 dark:group-hover:bg-primary-400/10">
+                        <x-filament::icon icon="heroicon-o-plus" class="h-10 w-10" />
+                    </span>
+                    <span class="text-sm font-semibold">{{ $this->getAddKanbanColumnLabel() }}</span>
+                </button>
 
                 <div
                     x-show="adding"
                     x-cloak
-                    class="rounded-xl bg-gray-50 p-3 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10"
+                    x-on:click.stop
+                    class="w-full rounded-xl bg-gray-50 p-3 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10"
                 >
                     <x-filament::input.wrapper>
                         <x-filament::input
@@ -139,7 +142,7 @@
                             maxlength="255"
                             :placeholder="__('crm::filament/kanban.add-column.placeholder')"
                             :aria-label="$this->getAddKanbanColumnLabel()"
-                            x-on:keydown.enter.prevent="if (! saving && name.trim()) { saving = true; $wire.addKanbanColumn(name).then((created) => { saving = false; if (created) { name = ''; $refs.newColumnName.focus(); } }) }"
+                            x-on:keydown.enter.prevent="if (! saving && name.trim()) { saving = true; $wire.addKanbanColumn(name).then((column) => { saving = false; if (column) { name = ''; adding = false; window.crmHighlightKanbanColumn(column) } }) }"
                             x-on:keydown.escape="adding = false; name = ''"
                         />
                     </x-filament::input.wrapper>
@@ -148,7 +151,7 @@
                         <x-filament::button
                             size="sm"
                             x-bind:disabled="saving || ! name.trim()"
-                            x-on:click="saving = true; $wire.addKanbanColumn(name).then((created) => { saving = false; if (created) { name = ''; $refs.newColumnName.focus(); } })"
+                            x-on:click="saving = true; $wire.addKanbanColumn(name).then((column) => { saving = false; if (column) { name = ''; adding = false; window.crmHighlightKanbanColumn(column) } })"
                         >
                             {{ __('crm::filament/kanban.add-column.add') }}
                         </x-filament::button>
@@ -165,6 +168,54 @@
             </div>
         @endif
     </div>
+
+    <script>
+        (() => {
+            window.crmFitKanbanBoard ??= (board) => {
+                const row = board?.querySelector('.crm-kanban-columns');
+
+                if (! row) {
+                    return;
+                }
+
+                let below = row.offsetHeight - row.clientHeight;
+
+                for (let element = row; element && element !== document.body; element = element.parentElement) {
+                    const style = getComputedStyle(element);
+
+                    below += parseFloat(style.paddingBottom) + parseFloat(style.marginBottom) + parseFloat(style.borderBottomWidth);
+                }
+
+                document.documentElement.style.setProperty('--crm-board-offset', (row.getBoundingClientRect().top + window.scrollY + below) + 'px');
+                document.documentElement.dataset.crmBoardFitted = 'true';
+            };
+
+            const fitAll = () => document.querySelectorAll('.crm-kanban-board').forEach((board) => window.crmFitKanbanBoard(board));
+
+            window.crmHighlightKanbanColumn ??= (value) => setTimeout(() => {
+                const column = document.querySelector(`.crm-kanban-board [data-kanban-column][data-column-value="${CSS.escape(String(value))}"]`)?.closest('.fi-kanban-column');
+
+                if (! column) {
+                    return;
+                }
+
+                column.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                column.classList.remove('crm-kanban-column-new');
+                void column.offsetWidth;
+                column.classList.add('crm-kanban-column-new');
+                setTimeout(() => column.classList.remove('crm-kanban-column-new'), 2800);
+            }, 50);
+
+            window.crmFitKanbanBoard(document.currentScript?.closest('.crm-kanban-board'));
+
+            if (! window.crmKanbanFitListening) {
+                window.crmKanbanFitListening = true;
+                window.addEventListener('resize', fitAll);
+                window.addEventListener('load', fitAll);
+                document.addEventListener('livewire:navigated', fitAll);
+            }
+        })();
+    </script>
 
     <x-filament-actions::modals />
 </div>

@@ -7,7 +7,9 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\Kanb
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Models\Stage;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\ActivityType;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
@@ -67,13 +69,13 @@ it('renders with the forecast permission and is forbidden without', function () 
     Livewire::test(KanbanForecast::class)->assertForbidden();
 });
 
-it('starts on the current user upcoming closings', function () {
-    $user = CrmTestHelper::actingAs(['view_any_crm_forecast']);
+it('starts without a default filter', function () {
+    CrmTestHelper::actingAs(['view_any_crm_forecast']);
 
     expect(Livewire::test(KanbanForecast::class)->get('kanbanFilters'))->toBe([
-        'user_id' => $user->id,
+        'user_id' => null,
         'team_id' => null,
-        'period'  => 'upcoming',
+        'period'  => 'all',
         'presets' => [],
     ]);
 });
@@ -327,4 +329,45 @@ it('applies the list toggle filters (won, lost) on the board', function () {
     expect($ids([]))->toContain($won->id)->not->toContain($lost->id)
         ->and($ids(['lost']))->toContain($lost->id)->not->toContain($won->id)
         ->and($ids(['won']))->toContain($won->id)->not->toContain($lost->id);
+});
+
+it('shows the activity progress of each month and filters a month from it', function () {
+    $user = CrmTestHelper::actingAs(['view_any_crm_forecast']);
+
+    $month = forecastMonth(1);
+    $closing = today()->startOfMonth()->addMonth()->addDays(5)->toDateString();
+
+    $overdue = CrmTestHelper::opportunity(['expected_closing_date' => $closing]);
+    $overdue->addMessage([
+        'type'             => 'activity',
+        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->value('id'),
+        'date_deadline'    => now()->subDay()->toDateString(),
+        'assigned_to'      => $user->id,
+    ]);
+    $quiet = CrmTestHelper::opportunity(['expected_closing_date' => $closing]);
+
+    $component = Livewire::test(KanbanForecast::class);
+    $progress = $component->instance()->kanbanColumnProgress(forecastColumn($component, $month));
+
+    expect($progress['overdue'])->toBeGreaterThanOrEqual(1)
+        ->and($progress['none'])->toBeGreaterThanOrEqual(1);
+
+    $component->call('toggleKanbanActivityFilter', $month, 'overdue');
+
+    expect(forecastColumn($component, $month)->records->modelKeys())
+        ->toContain($overdue->id)
+        ->not->toContain($quiet->id);
+});
+
+it('marks won and lost opportunities with a ribbon', function () {
+    CrmTestHelper::actingAs(['view_any_crm_forecast']);
+
+    $won = CrmTestHelper::opportunity([
+        'expected_closing_date' => today()->addMonth()->toDateString(),
+        'stage_id'              => Stage::query()->where('is_won', true)->value('id'),
+    ]);
+
+    Livewire::test(KanbanForecast::class)
+        ->assertSee($won->name)
+        ->assertSeeHtml('bg-success-600');
 });

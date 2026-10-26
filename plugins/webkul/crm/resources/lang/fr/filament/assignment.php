@@ -66,6 +66,8 @@ return [
     ],
 
     'team' => [
+        'company-helper'         => 'Sociétés activées dans la barre du haut. Pour créer une équipe d\'une autre société, passez d\'abord à celle-ci.',
+        'company-not-active'     => 'Cette société n\'est pas active. Passez-y d\'abord dans la barre du haut.',
         'section'                => 'Règles d\'attribution',
         'section-description'    => 'Les pistes que l\'attribution basée sur des règles donne à cette équipe.',
         'capacity'               => ':assigned pistes attribuées ces 30 derniers jours sur un maximum de :max.',

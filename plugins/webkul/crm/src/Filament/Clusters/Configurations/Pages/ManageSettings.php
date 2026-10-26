@@ -21,9 +21,12 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Carbon;
 use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Filament\Clusters\Configurations;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Models\RevealRule;
 use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
+use Webkul\Crm\Services\VisitsToLeads;
 use Webkul\Crm\Settings\CrmSettings;
 
 class ManageSettings extends SettingsPage
@@ -170,10 +173,60 @@ class ManageSettings extends SettingsPage
                                 }),
                         ])->columnSpanFull(),
                     ]),
+                Section::make($label('lead-generation.section'))
+                    ->description($label('lead-generation.description'))
+                    ->columns(2)
+                    ->schema([
+                        Toggle::make('visits_to_leads')
+                            ->label($label('lead-generation.visits-to-leads'))
+                            ->helperText(fn (): string => VisitsToLeads::websiteAvailable() ? $label('lead-generation.helper') : $label('lead-generation.website-missing'))
+                            ->disabled(fn (): bool => ! VisitsToLeads::websiteAvailable())
+                            ->live(),
+                        Text::make(fn (): string => static::activeRevealRuleCount() > 0
+                            ? __('crm::filament/clusters/configurations/pages/manage-settings.form.lead-generation.active-rules', ['count' => static::activeRevealRuleCount()])
+                            : $label('lead-generation.no-rules'))
+                            ->color(fn (): string => static::activeRevealRuleCount() > 0 ? 'success' : 'warning')
+                            ->weight('medium')
+                            ->visible(fn (Get $get): bool => (bool) $get('visits_to_leads'))
+                            ->columnSpanFull(),
+                        Actions::make([
+                            Action::make('manageRevealRules')
+                                ->label($label('lead-generation.manage-rules'))
+                                ->icon('heroicon-o-cursor-arrow-ripple')
+                                ->color('gray')
+                                ->url(fn (): string => RevealRuleResource::getUrl('index'))
+                                ->visible(fn (): bool => RevealRuleResource::canViewAny()),
+                            Action::make('generateLeadsForExistingVisitors')
+                                ->label($label('lead-generation.generate-existing'))
+                                ->icon('heroicon-o-user-plus')
+                                ->color('gray')
+                                ->requiresConfirmation()
+                                ->modalDescription(fn (): string => __('crm::filament/clusters/configurations/pages/manage-settings.form.lead-generation.generate-help', ['count' => static::visitorsWithoutLeadCount()]))
+                                ->visible(fn (Get $get): bool => (bool) $get('visits_to_leads') && VisitsToLeads::enabled() && static::activeRevealRuleCount() > 0 && static::visitorsWithoutLeadCount() > 0)
+                                ->action(function (): void {
+                                    $count = app(VisitsToLeads::class)->generateForExistingVisitors();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title(__('crm::filament/clusters/configurations/pages/manage-settings.form.lead-generation.generated', ['count' => $count]))
+                                        ->send();
+                                }),
+                        ]),
+                    ]),
             ]);
     }
 
     protected bool $scoringChanged = false;
+
+    public static function activeRevealRuleCount(): int
+    {
+        return once(fn (): int => RevealRule::query()->where('is_active', true)->count());
+    }
+
+    public static function visitorsWithoutLeadCount(): int
+    {
+        return (int) app(VisitsToLeads::class)->visitorsWithoutLeadQuery()?->count();
+    }
 
     protected function afterSave(): void
     {

@@ -130,10 +130,45 @@
         </div>
     </div>
 
-    {{-- Column summary --}}
-    @if($summary)
-        <div class="px-3 pb-1 text-xs text-gray-500 dark:text-gray-400">
-            {{ $summary }}
+    @php
+        $progress = method_exists($this, 'kanbanColumnProgress') ? $this->kanbanColumnProgress($column) : [];
+        $progressTotal = array_sum($progress);
+        $activeProgress = $progressTotal ? ($this->kanbanActivityFilter[$column->value] ?? null) : null;
+        $progressColors = [
+            'planned' => 'bg-success-500',
+            'today'   => 'bg-warning-400',
+            'overdue' => 'bg-danger-500',
+            'none'    => 'bg-gray-300 dark:bg-gray-600',
+        ];
+    @endphp
+
+    @if($summary || $progressTotal)
+        <div class="flex items-center gap-3 px-3 pb-2">
+            @if($progressTotal)
+                <div class="flex h-2.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10" role="group" aria-label="{{ __('crm::filament/kanban.progress.label') }}">
+                    @foreach($progressColors as $state => $progressColor)
+                        @if(($progress[$state] ?? 0) > 0)
+                            <button
+                                type="button"
+                                wire:click="toggleKanbanActivityFilter('{{ $column->value }}', '{{ $state }}')"
+                                title="{{ __('crm::filament/kanban.progress.'.$state) }}: {{ $progress[$state] }}"
+                                aria-label="{{ __('crm::filament/kanban.progress.'.$state) }}: {{ $progress[$state] }}"
+                                aria-pressed="{{ $activeProgress === $state ? 'true' : 'false' }}"
+                                style="width: {{ round($progress[$state] / $progressTotal * 100, 2) }}%;"
+                                @class([
+                                    'h-full transition hover:opacity-80',
+                                    $progressColor,
+                                    'opacity-30' => $activeProgress && $activeProgress !== $state,
+                                ])
+                            ></button>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
+
+            @if($summary)
+                <span class="shrink-0 text-xs font-semibold text-gray-700 dark:text-gray-300" title="{{ __('crm::filament/kanban.progress.total') }}">{{ $summary }}</span>
+            @endif
         </div>
     @endif
 

@@ -2,6 +2,7 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -12,6 +13,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +36,7 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource as BaseUserResource;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Models\User;
+use Webkul\Support\Services\CompanyContext;
 
 class TeamResource extends BaseTeamResource
 {
@@ -73,7 +76,16 @@ class TeamResource extends BaseTeamResource
 
         $salesComponents = $schema->getComponents(withHidden: true);
 
-        static::findSalesMembersSelect($salesComponents)?->hidden();
+        static::findSalesSelect($salesComponents, 'sales_team_members')?->hidden();
+
+        static::findSalesSelect($salesComponents, 'company_id')
+            ?->relationship('company', 'name', fn (Builder $query): Builder => $query->whereKey(app(CompanyContext::class)->activeIds()))
+            ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                if (filled($value) && ! in_array((int) $value, array_map('intval', app(CompanyContext::class)->activeIds()), true)) {
+                    $fail(__('crm::filament/assignment.team.company-not-active'));
+                }
+            })
+            ->helperText(__('crm::filament/assignment.team.company-helper'));
 
         return $schema->components([
             ...$salesComponents,
@@ -93,10 +105,10 @@ class TeamResource extends BaseTeamResource
         ]);
     }
 
-    protected static function findSalesMembersSelect(array $components): ?Select
+    protected static function findSalesSelect(array $components, string $name): ?Select
     {
         foreach ($components as $component) {
-            if ($component instanceof Select && $component->getName() === 'sales_team_members') {
+            if ($component instanceof Select && $component->getName() === $name) {
                 return $component;
             }
 
@@ -105,7 +117,7 @@ class TeamResource extends BaseTeamResource
             }
 
             foreach ($component->getChildSchemas(withHidden: true) as $childSchema) {
-                if ($found = static::findSalesMembersSelect($childSchema->getComponents(withHidden: true))) {
+                if ($found = static::findSalesSelect($childSchema->getComponents(withHidden: true), $name)) {
                     return $found;
                 }
             }

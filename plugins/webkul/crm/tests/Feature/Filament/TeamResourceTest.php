@@ -133,3 +133,17 @@ it('does not create a salesperson in a company the user cannot use', function ()
         'name' => 'Other', 'email' => 'other.company@example.test', 'password' => 'secret123', 'roles' => [],
     ], $otherCompany->id);
 })->throws(HttpException::class);
+
+it('only lets a team be created for a company that is switched on', function () {
+    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    $otherCompany = Company::factory()->create();
+    $user->allowedCompanies()->syncWithoutDetaching([$otherCompany->id]);
+
+    Livewire::test(CreateTeam::class)
+        ->fillForm(['name' => 'Other company team', 'company_id' => $otherCompany->id, 'is_active' => true])
+        ->call('create')
+        ->assertHasFormErrors(['company_id']);
+
+    expect(Team::query()->withoutGlobalScopes()->where('name', 'Other company team')->exists())->toBeFalse();
+});

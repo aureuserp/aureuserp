@@ -17,6 +17,7 @@ use Webkul\Website\Filament\Customer\Auth\Register;
 use Webkul\Website\Filament\Customer\Clusters\Account;
 use Webkul\Website\Filament\Customer\Resources\PageResource;
 use Webkul\Website\Models\Page;
+use Webkul\Website\Services\VisitorTracker;
 use Webkul\Website\Settings\ContactSettings;
 
 class WebsitePlugin implements Plugin
@@ -65,6 +66,10 @@ class WebsitePlugin implements Plugin
                             ->sort(2)
                             ->visible(fn (): bool => (bool) count(Account::getClusteredComponents())),
                     ])
+                    ->renderHook(
+                        PanelsRenderHook::BODY_END,
+                        fn (): string => '<script>try{document.cookie="'.VisitorTracker::TIMEZONE_COOKIE.'="+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+";path=/;max-age=31536000;samesite=lax"}catch(e){}</script>',
+                    )
                     ->navigationItems($this->getNavigationItems()->toArray())
                     ->renderHook(
                         PanelsRenderHook::TOPBAR_END,

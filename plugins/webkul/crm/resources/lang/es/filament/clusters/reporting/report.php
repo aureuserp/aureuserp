@@ -21,14 +21,17 @@ return [
     ],
 
     'filters' => [
-        'measure'       => 'Medida',
-        'group-by'      => 'Agrupar por',
-        'split-by'      => 'Dividir por',
-        'no-split'      => 'Sin división',
-        'chart-type'    => 'Gráfico',
-        'quick-filters' => 'Filtros',
-        'salespeople'   => 'Comerciales',
-        'teams'         => 'Equipos de ventas',
+        'clear'          => 'Borrar filtros',
+        'heading'        => 'Filtros',
+        'reset'          => 'Restablecer',
+        'measure'        => 'Medida',
+        'group-by'       => 'Agrupar por',
+        'split-by'       => 'Dividir por',
+        'no-split'       => 'Sin división',
+        'chart-type'     => 'Gráfico',
+        'quick-filters'  => 'Filtros',
+        'salespeople'    => 'Comerciales',
+        'teams'          => 'Equipos de ventas',
     ],
 
     'dimensions' => [

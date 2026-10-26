@@ -120,6 +120,7 @@ class LeadInfolist
                                                 TextEntry::make('medium.name')->label(__('crm::filament/clusters/leads/resources/lead.form.fields.medium'))->placeholder('—'),
                                                 TextEntry::make('source.name')->label(__('crm::filament/clusters/leads/resources/lead.form.fields.source'))->placeholder('—'),
                                                 TextEntry::make('referred_by')->label(__('crm::filament/clusters/leads/resources/lead.form.fields.referred-by'))->placeholder('—'),
+                                                TextEntry::make('reveal_ip')->label(__('crm::visits-to-leads.ip-address'))->visible(fn ($record): bool => filled($record?->reveal_ip)),
                                             ])
                                             ->columns(1),
                                         Fieldset::make(__('crm::filament/clusters/leads/resources/lead.form.fieldsets.analysis'))

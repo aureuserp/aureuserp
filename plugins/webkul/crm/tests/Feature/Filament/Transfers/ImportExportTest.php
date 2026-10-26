@@ -7,7 +7,6 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Actions\CrmExportAction;
-use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\KanbanLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
@@ -88,7 +87,7 @@ it('shows import and export next to the create button on the leads and pipeline 
     'pipeline' => ListOpportunities::class,
 ]);
 
-it('shows import and export on the leads and pipeline kanban boards', function (string $page) {
+it('shows import and export on the leads list and the pipeline board', function (string $page) {
     CrmTestHelper::actingAsCrmUser(['lead', 'opportunity', 'stage']);
 
     Livewire::test($page)
@@ -96,7 +95,7 @@ it('shows import and export on the leads and pipeline kanban boards', function (
         ->assertActionVisible('export')
         ->assertActionVisible('create');
 })->with([
-    'leads board'    => KanbanLeads::class,
+    'leads list'     => ListLeads::class,
     'pipeline board' => KanbanOpportunities::class,
 ]);
 

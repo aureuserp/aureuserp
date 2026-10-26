@@ -11,6 +11,10 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
@@ -27,69 +31,14 @@ use Webkul\Crm\Models\Lead;
 
 class LeadsTable
 {
-    public static function configure(Table $table): Table
+    public static function configure(Table $table, bool $grid = false): Table
     {
+        $table = $grid
+            ? $table->columns(static::gridColumns())->contentGrid(['md' => 2, 'xl' => 3, '2xl' => 4])
+            : $table->columns(static::listColumns());
+
         return $table
-            ->columns([
-                TextColumn::make('name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))
-                    ->weight('medium')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('contact_name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.contact-name'))
-                    ->searchable()
-                    ->placeholder('—'),
-                TextColumn::make('company_name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.company-name'))
-                    ->searchable()
-                    ->placeholder('—'),
-                TextColumn::make('email')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.email'))
-                    ->searchable()
-                    ->placeholder('—'),
-                TextColumn::make('phone')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.phone'))
-                    ->placeholder('—')
-                    ->toggleable(),
-                TextColumn::make('city')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.city'))
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('country.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.country'))
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('user.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.salesperson'))
-                    ->placeholder('—')
-                    ->sortable(),
-                TextColumn::make('team.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.team'))
-                    ->placeholder('—')
-                    ->toggleable(),
-                TextColumn::make('priority')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.priority'))
-                    ->badge()
-                    ->sortable(),
-                TextColumn::make('tags.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.tags'))
-                    ->badge()
-                    ->toggleable(),
-                TextColumn::make('source.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.source'))
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('lostReason.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.lost-reason'))
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('created_at')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.created-at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
-            ])
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['user', 'team', 'country', 'tags']))
             ->defaultSort('created_at', 'desc')
             ->groups([
                 Group::make('user.name')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.salesperson'))->collapsible(),
@@ -156,5 +105,124 @@ class LeadsTable
                     ForceDeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function listColumns(): array
+    {
+        $label = fn (string $key): string => __('crm::filament/clusters/leads/resources/lead.table.columns.'.$key);
+
+        return [
+            TextColumn::make('name')
+                ->label($label('name'))
+                ->weight('medium')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('contact_name')
+                ->label($label('contact-name'))
+                ->searchable()
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('company_name')
+                ->label($label('company-name'))
+                ->searchable()
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('email')
+                ->label($label('email'))
+                ->searchable()
+                ->placeholder('—')
+                ->toggleable(),
+            TextColumn::make('phone')
+                ->label($label('phone'))
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('city')
+                ->label($label('city'))
+                ->placeholder('—')
+                ->toggleable(),
+            TextColumn::make('country.name')
+                ->label($label('country'))
+                ->placeholder('—')
+                ->toggleable(),
+            TextColumn::make('user.name')
+                ->label($label('salesperson'))
+                ->placeholder('—')
+                ->sortable()
+                ->toggleable(),
+            TextColumn::make('team.name')
+                ->label($label('team'))
+                ->placeholder('—')
+                ->toggleable(),
+            TextColumn::make('priority')
+                ->label($label('priority'))
+                ->badge()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('tags.name')
+                ->label($label('tags'))
+                ->badge()
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('source.name')
+                ->label($label('source'))
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('lostReason.name')
+                ->label($label('lost-reason'))
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('created_at')
+                ->label($label('created-at'))
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+        ];
+    }
+
+    public static function gridColumns(): array
+    {
+        $label = fn (string $key): string => __('crm::filament/clusters/leads/resources/lead.table.columns.'.$key);
+
+        return [
+            Stack::make([
+                TextColumn::make('name')
+                    ->label($label('name'))
+                    ->weight(FontWeight::SemiBold)
+                    ->searchable(['name', 'contact_name', 'company_name', 'email'])
+                    ->sortable(),
+                TextColumn::make('contact_name')
+                    ->label($label('contact-name'))
+                    ->state(fn (Lead $record): ?string => $record->contact_name ?: $record->company_name)
+                    ->color('gray'),
+                TextColumn::make('email')
+                    ->label($label('email'))
+                    ->icon('heroicon-o-envelope')
+                    ->color('gray')
+                    ->limit(40),
+                TextColumn::make('city')
+                    ->label($label('city'))
+                    ->state(fn (Lead $record): ?string => collect([$record->city, $record->country?->name])->filter()->implode(', ') ?: null)
+                    ->icon('heroicon-o-map-pin')
+                    ->color('gray'),
+                TextColumn::make('tags.name')
+                    ->label($label('tags'))
+                    ->badge()
+                    ->color('info'),
+                Split::make([
+                    TextColumn::make('priority')
+                        ->label($label('priority'))
+                        ->formatStateUsing(fn (?OpportunityPriority $state): string => str_repeat('★', $state?->value ?? 0).str_repeat('☆', 3 - ($state?->value ?? 0)))
+                        ->tooltip(fn (Lead $record): ?string => $record->priority?->getLabel())
+                        ->color('warning')
+                        ->size(TextSize::Large)
+                        ->sortable(),
+                    TextColumn::make('user.name')
+                        ->label($label('salesperson'))
+                        ->icon('heroicon-o-user-circle')
+                        ->color('gray')
+                        ->alignEnd()
+                        ->sortable(),
+                ]),
+            ])->space(2),
+        ];
     }
 }

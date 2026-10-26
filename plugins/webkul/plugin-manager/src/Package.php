@@ -155,7 +155,7 @@ class Package extends BasePackage
             'author'         => $composerData['authors'][0]['name'] ?? null,
             'summary'        => $composerData['description'] ?? null,
             'description'    => $composerData['description'] ?? null,
-            'latest_version' => $this->version ?? null,
+            'latest_version' => $composerData['version'] ?? '1.0.0',
             'license'        => $composerData['license'] ?? null,
             'sort'           => $this->sort ?? null,
             'is_active'      => true,

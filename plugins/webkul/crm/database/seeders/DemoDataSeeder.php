@@ -5,15 +5,29 @@ namespace Webkul\Crm\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Webkul\Account\Models\Product;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\ActivityType;
+use Webkul\Crm\Models\CrmTeam;
 use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Models\LeadConversion;
 use Webkul\Crm\Models\LostReason;
+use Webkul\Crm\Models\MailAlias;
+use Webkul\Crm\Models\PartnerLevel;
+use Webkul\Crm\Models\RecurringPlan;
 use Webkul\Crm\Models\Stage;
 use Webkul\Crm\Models\Tag;
+use Webkul\Crm\Models\TeamMember;
+use Webkul\Crm\Services\LeadConverter;
+use Webkul\Crm\Services\LeadScoring;
+use Webkul\Crm\Services\Mail\InboundEmailProcessor;
 use Webkul\Partner\Models\Partner;
+use Webkul\Sale\Facades\SaleOrder;
+use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Country;
@@ -37,7 +51,7 @@ class DemoDataSeeder extends Seeder
 
     public function run(): void
     {
-        if (Lead::withTrashed()->where('name', 'Office Furniture Refresh')->exists()) {
+        if (Lead::withTrashed()->withoutGlobalScopes()->where('name', 'ERP Implementation')->exists()) {
             $this->command?->warn('CRM demo data already exists, skipping.');
 
             return;
@@ -60,26 +74,67 @@ class DemoDataSeeder extends Seeder
         $leads = $this->seedLeads();
         $opportunities = $this->seedOpportunities();
 
+        $this->seedConversions($leads);
         $this->seedScheduledActivities([...$leads, ...$opportunities]);
         $this->seedDoneActivities([...$leads, ...$opportunities]);
+        $this->seedQuotations($opportunities);
+        $this->seedInboundEmails();
+
+        app(LeadScoring::class)->rebuildAndRescore();
 
         $this->command?->info('CRM demo data created: '.count($leads).' leads, '.count($opportunities).' opportunities.');
     }
 
     protected function seedUsers(User $admin): void
     {
-        foreach (['admin', 'john', 'priya', 'emma'] as $key) {
-            $this->users[$key] = $admin->id;
+        $this->users['admin'] = $admin->id;
+
+        foreach (['john' => 'John Carter', 'priya' => 'Priya Nair', 'emma' => 'Emma Wilson'] as $key => $name) {
+            $this->users[$key] = User::query()->firstOrCreate(
+                ['email' => str_replace(' ', '.', strtolower($name)).'@demo-crm.test'],
+                ['name' => $name, 'password' => Str::random(32), 'default_company_id' => $this->companyId, 'is_active' => true, 'resource_permission' => 'global'],
+            )->id;
         }
     }
 
     protected function seedTeams(): void
     {
-        foreach (['Direct Sales' => 'john', 'Website' => 'priya', 'Pre-Sales' => 'emma'] as $name => $leader) {
+        $teams = [
+            'Direct Sales' => ['john', ['US', 'CA', 'GB', 'AU'], 'sales'],
+            'Website'      => ['priya', ['IN'], 'website'],
+            'Pre-Sales'    => ['emma', ['FR', 'DE', 'AE'], 'presales'],
+        ];
+
+        foreach ($teams as $name => [$leader, $countries, $alias]) {
             $team = Team::query()->withoutGlobalScopes()->firstOrCreate(
                 ['name' => $name, 'company_id' => $this->companyId],
                 ['user_id' => $this->users[$leader], 'creator_id' => $this->users['admin'], 'is_active' => true],
             );
+
+            $team->members()->syncWithoutDetaching([$this->users[$leader], $this->users['admin']]);
+
+            CrmTeam::query()->updateOrCreate(['team_id' => $team->id], [
+                'use_leads'         => true,
+                'use_opportunities' => true,
+                'assignment_optout' => false,
+                'assignment_domain' => [
+                    'match'      => 'all',
+                    'conditions' => [['field' => 'country_id', 'operator' => 'in', 'value' => array_values(array_filter(array_map(fn (string $code): ?int => $this->countryId($code), $countries)))]],
+                ],
+            ]);
+
+            foreach ([$this->users[$leader] => 30, $this->users['admin'] => 10] as $userId => $capacity) {
+                TeamMember::query()->updateOrCreate(
+                    ['team_id' => $team->id, 'user_id' => $userId],
+                    ['is_active' => true, 'assignment_optout' => false, 'assignment_max' => $capacity],
+                );
+            }
+
+            MailAlias::query()->updateOrCreate(['team_id' => $team->id], [
+                'alias_name'    => $alias,
+                'alias_domain'  => 'demo-crm.test',
+                'alias_contact' => MailAlias::CONTACT_EVERYONE,
+            ]);
 
             $this->teams[$name] = $team->id;
         }
@@ -122,6 +177,19 @@ class DemoDataSeeder extends Seeder
             );
 
             $this->customers[$name] = $partner->id;
+        }
+
+        foreach (['Acme Corporation' => 'Gold', 'Globex Systems' => 'Silver', 'Deco Addict' => 'Bronze'] as $customer => $levelName) {
+            $level = PartnerLevel::query()->where('name', $levelName)->first();
+
+            if (! $level) {
+                continue;
+            }
+
+            DB::table('crm_partners')->updateOrInsert(
+                ['partner_id' => $this->customers[$customer]],
+                ['level_id' => $level->id, 'level_weight' => $level->partner_weight, 'created_at' => now(), 'updated_at' => now()],
+            );
         }
     }
 
@@ -233,6 +301,18 @@ class DemoDataSeeder extends Seeder
 
             $opportunity->tags()->sync(array_map(fn (string $tag): int => $this->tags[$tag], $tags));
 
+            $recurring = [
+                'Annual Maintenance Contract' => [800, 'Yearly'],
+                'CRM Licences (50 seats)'     => [1500, 'Monthly'],
+                'Cloud Migration Consulting'  => [2500, 'Monthly'],
+            ][$name] ?? null;
+
+            Lead::withTrashed()->whereKey($opportunity->id)->update([
+                'color'             => $index % 4 === 0 ? ($index % 11) + 1 : 0,
+                'recurring_revenue' => $recurring[0] ?? 0,
+                'recurring_plan_id' => $recurring ? RecurringPlan::query()->where('name', $recurring[1])->value('id') : null,
+            ]);
+
             $closedAt = $closingInMonths !== null && $closingInMonths < 0
                 ? today()->addMonths($closingInMonths)->startOfMonth()->addDays(12)
                 : null;
@@ -249,6 +329,97 @@ class DemoDataSeeder extends Seeder
 
             return $opportunity;
         })->all();
+    }
+
+    protected function seedConversions(array $leads): void
+    {
+        foreach (['Bulk order for co-working space', 'Partnership opportunity'] as $name) {
+            $lead = collect($leads)->first(fn (Lead $lead): bool => $lead->name === $name);
+
+            if ($lead && ! $lead->trashed()) {
+                app(LeadConverter::class)->convert($lead->fresh(), [
+                    'action'   => LeadConversion::ACTION_CONVERT,
+                    'customer' => LeadConversion::CUSTOMER_CREATE,
+                ]);
+            }
+        }
+    }
+
+    protected function seedQuotations(array $opportunities): void
+    {
+        $product = Product::query()->first();
+
+        if (! $product) {
+            return;
+        }
+
+        foreach (['Warehouse Shelving' => 12, 'Showroom Fit-out' => 25, 'ERP Implementation' => 5] as $name => $quantity) {
+            $opportunity = collect($opportunities)->first(fn (Lead $lead): bool => $lead->name === $name);
+
+            if (! $opportunity?->partner_id) {
+                continue;
+            }
+
+            $order = Order::query()->create([
+                'partner_id'     => $opportunity->partner_id,
+                'company_id'     => $this->companyId,
+                'user_id'        => $opportunity->user_id,
+                'team_id'        => $opportunity->team_id,
+                'origin'         => $opportunity->name,
+                'date_order'     => now(),
+                'validity_date'  => now()->addDays(30),
+                'currency_rate'  => 1,
+            ]);
+
+            $order->forceFill(['opportunity_id' => $opportunity->id])->saveQuietly();
+
+            $line = $order->lines()->create([
+                'company_id'           => $this->companyId,
+                'currency_id'          => $order->currency_id,
+                'order_partner_id'     => $order->partner_id,
+                'salesman_id'          => $order->user_id,
+                'product_id'           => $product->id,
+                'product_uom_id'       => $product->uom_id,
+                'name'                 => $product->name,
+                'product_uom_qty'      => $quantity,
+                'product_qty'          => $quantity,
+                'qty_delivered_method' => 'manual',
+                'price_unit'           => $product->price,
+                'creator_id'           => $this->users['admin'],
+            ]);
+
+            $line->taxes()->sync($product->productTaxes->modelKeys());
+
+            SaleOrder::computeSaleOrderLine($line->fresh());
+            SaleOrder::computeSaleOrder($order->fresh());
+        }
+    }
+
+    protected function seedInboundEmails(): void
+    {
+        $emails = [
+            ['website@demo-crm.test', 'Rahul Verma', 'rahul.verma@example.com', 'Need 40 workstations for our Pune office', 'demo-inbound-1@example.com', null],
+            ['presales@demo-crm.test', 'Clara Dubois', 'clara.dubois@example.com', 'Consulting for warehouse automation', 'demo-inbound-2@example.com', null],
+            ['website@demo-crm.test', 'Rahul Verma', 'rahul.verma@example.com', 'Re: Need 40 workstations for our Pune office', 'demo-inbound-3@example.com', 'demo-inbound-1@example.com'],
+        ];
+
+        foreach ($emails as [$to, $fromName, $fromEmail, $subject, $messageId, $inReplyTo]) {
+            $headers = [
+                "From: {$fromName} <{$fromEmail}>",
+                "To: {$to}",
+                "Subject: {$subject}",
+                "Message-ID: <{$messageId}>",
+                'Date: '.now()->toRfc2822String(),
+                'Content-Type: text/plain; charset=UTF-8',
+            ];
+
+            if ($inReplyTo) {
+                $headers[] = "In-Reply-To: <{$inReplyTo}>";
+                $headers[] = "References: <{$inReplyTo}>";
+            }
+
+            app(InboundEmailProcessor::class)->process(implode("\r\n", $headers)."\r\n\r\nHello,\r\n\r\n{$subject}. Please send a quote.\r\n\r\nThanks,\r\n{$fromName}\r\n");
+        }
     }
 
     protected function seedScheduledActivities(array $records): void

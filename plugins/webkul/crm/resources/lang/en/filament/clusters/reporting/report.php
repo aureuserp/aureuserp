@@ -21,14 +21,17 @@ return [
     ],
 
     'filters' => [
-        'measure'       => 'Measure',
-        'group-by'      => 'Group by',
-        'split-by'      => 'Split by',
-        'no-split'      => 'No split',
-        'chart-type'    => 'Chart',
-        'quick-filters' => 'Filters',
-        'salespeople'   => 'Salespeople',
-        'teams'         => 'Sales Teams',
+        'clear'          => 'Clear filters',
+        'heading'        => 'Filters',
+        'reset'          => 'Reset',
+        'measure'        => 'Measure',
+        'group-by'       => 'Group by',
+        'split-by'       => 'Split by',
+        'no-split'       => 'No split',
+        'chart-type'     => 'Chart',
+        'quick-filters'  => 'Filters',
+        'salespeople'    => 'Salespeople',
+        'teams'          => 'Sales Teams',
     ],
 
     'dimensions' => [

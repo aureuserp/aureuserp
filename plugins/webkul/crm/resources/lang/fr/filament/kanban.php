@@ -27,4 +27,13 @@ return [
             'body'  => 'Il contient encore :count enregistrement. Déplacez-le d\'abord vers une autre colonne.|Il contient encore :count enregistrements. Déplacez-les d\'abord vers une autre colonne.',
         ],
     ],
+
+    'progress' => [
+        'label'   => 'Activités de cette étape',
+        'planned' => 'Activités planifiées',
+        'today'   => 'Activités dues aujourd\'hui',
+        'overdue' => 'Activités en retard',
+        'none'    => 'Aucune activité',
+        'total'   => 'Revenu attendu',
+    ],
 ];

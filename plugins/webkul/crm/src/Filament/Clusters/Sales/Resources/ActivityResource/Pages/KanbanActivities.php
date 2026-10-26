@@ -8,7 +8,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
@@ -19,6 +18,7 @@ use Webkul\Crm\Models\Activity;
 use Webkul\Support\Models\ActivityType;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
+use Wezlo\FilamentKanban\KanbanColumn;
 
 class KanbanActivities extends ListRecords
 {
@@ -30,18 +30,23 @@ class KanbanActivities extends ListRecords
 
     protected static string $resource = ActivityResource::class;
 
+    public array $kanbanActivityFilter = [];
+
+    protected bool $ignoreKanbanActivityFilter = false;
+
+    protected ?array $kanbanProgress = null;
+
     public function mount(): void
     {
         parent::mount();
 
         $this->resetKanbanFilters();
-
-        $this->kanbanFilters['assigned_to'] = Auth::id();
     }
 
     public function resetKanbanFilters(): void
     {
         $this->kanbanFilters = static::emptyKanbanFilters();
+        $this->kanbanActivityFilter = [];
     }
 
     public static function emptyKanbanFilters(): array
@@ -63,9 +68,71 @@ class KanbanActivities extends ListRecords
         $dueStatus = ActivityDueStatus::tryFrom((string) ($filters['due_status'] ?? ''));
         $typeIds = static::kanbanFilterValues($filters, 'activity_type_id');
 
-        return $query
+        $query
             ->when($dueStatus, fn (Builder $query): Builder => $query->dueStatus($dueStatus))
             ->when($typeIds, fn (Builder $query): Builder => $query->whereIn('activity_type_id', $typeIds));
+
+        if ($this->ignoreKanbanActivityFilter) {
+            return $query;
+        }
+
+        foreach ($this->kanbanActivityFilter as $typeId => $state) {
+            if (! ActivityDueStatus::tryFrom($state)) {
+                continue;
+            }
+
+            $query->where(fn (Builder $query): Builder => $query
+                ->where('activity_type_id', '!=', $typeId)
+                ->orWhere(fn (Builder $query): Builder => $query->dueStatus($state)));
+        }
+
+        return $query;
+    }
+
+    public function toggleKanbanActivityFilter(string $typeId, string $state): void
+    {
+        if (! ActivityDueStatus::tryFrom($state)) {
+            return;
+        }
+
+        if (($this->kanbanActivityFilter[$typeId] ?? null) === $state) {
+            unset($this->kanbanActivityFilter[$typeId]);
+
+            return;
+        }
+
+        $this->kanbanActivityFilter[$typeId] = $state;
+    }
+
+    public function kanbanColumnProgress(KanbanColumn $column): array
+    {
+        $this->kanbanProgress ??= $this->computeKanbanProgress();
+
+        return $this->kanbanProgress[$column->value] ?? [];
+    }
+
+    protected function computeKanbanProgress(): array
+    {
+        $this->ignoreKanbanActivityFilter = true;
+
+        try {
+            $activities = $this->getKanbanQuery($this->getKanbanBoard())
+                ->reorder()
+                ->setEagerLoads([])
+                ->get(['chatter_messages.id', 'chatter_messages.activity_type_id', 'chatter_messages.date_deadline']);
+        } finally {
+            $this->ignoreKanbanActivityFilter = false;
+        }
+
+        $progress = [];
+
+        foreach ($activities as $activity) {
+            $progress[(string) $activity->activity_type_id] ??= [];
+            $state = $activity->getDueStatus()->value;
+            $progress[(string) $activity->activity_type_id][$state] = ($progress[(string) $activity->activity_type_id][$state] ?? 0) + 1;
+        }
+
+        return $progress;
     }
 
     public function kanbanColumnAction(): Action
@@ -108,24 +175,10 @@ class KanbanActivities extends ListRecords
         return $kanban
             ->relationshipColumn('activityType', 'name', ActivityType::class, orderAttribute: 'sort', foreignKey: 'activity_type_id')
             ->excludeColumns($hiddenTypeIds)
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->orderBy('date_deadline'))
-            ->cardTitle(fn (Activity $record): string => $record->lead?->name ?? '—')
-            ->cardDescription(fn (Activity $record): string => collect([
-                $record->summary,
-                $record->date_deadline?->translatedFormat('M j, Y'),
-            ])->filter()->implode(' · '))
-            ->cardBadges(fn (Activity $record): array => array_values(array_filter([
-                ['label' => $record->getDueStatus()->getLabel(), 'color' => $record->getDueStatus()->getColor()],
-                $record->assignedTo ? ['label' => $record->assignedTo->name, 'color' => 'gray'] : null,
-                $record->lead?->partner ? ['label' => $record->lead->partner->name, 'color' => 'info'] : null,
-            ])))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['lead.partner', 'activityType', 'assignedTo'])->orderBy('date_deadline'))
+            ->cardTitle(fn (Activity $record): string => $record->summary ?: ($record->activityType?->name ?? '—'))
             ->recordUrl(fn (Activity $record): ?string => LeadResourceResolver::viewUrl($record->lead))
             ->cardFooterActions([
-                Action::make('open')
-                    ->label(__('crm::filament/clusters/sales/resources/activity.actions.open.label'))
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn (Activity $record): ?string => LeadResourceResolver::viewUrl($record->lead)),
                 Action::make('done')
                     ->label(__('crm::filament/clusters/sales/resources/activity.actions.done.label'))
                     ->tooltip(__('crm::filament/clusters/sales/resources/activity.actions.done.label'))
@@ -184,6 +237,6 @@ class KanbanActivities extends ListRecords
             ->columnWidth('300px')
             ->boardView('crm::filament.kanban.board')
             ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.card');
+            ->cardView('crm::filament.kanban.activity-card');
     }
 }

@@ -9,6 +9,7 @@ use Webkul\Crm\Models\Stage;
 use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
 use Wezlo\FilamentKanban\KanbanColumn;
 
@@ -50,19 +51,19 @@ function pipelineTeam(array $attributes = []): Team
     ]);
 }
 
-it('opens on the current user\'s opportunities', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+it('opens without a default filter, showing every salesperson\'s opportunities', function () {
+    CrmTestHelper::actingAsCrmUser(['opportunity']);
 
     $mine = CrmTestHelper::opportunity();
     $someoneElses = CrmTestHelper::opportunity(['user_id' => pipelineOtherUserId()]);
 
     $component = Livewire::test(KanbanOpportunities::class)
         ->assertOk()
-        ->assertSet('kanbanFilters', [...KanbanOpportunities::emptyKanbanFilters(), 'user_id' => $user->id]);
+        ->assertSet('kanbanFilters', KanbanOpportunities::emptyKanbanFilters());
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($mine->id)
-        ->not->toContain($someoneElses->id);
+        ->toContain($someoneElses->id);
 });
 
 it('opens a team\'s pipeline when ?team= is given', function () {
@@ -377,5 +378,110 @@ describe('list view filters on the board', function () {
             ->call('moveRecord', (string) $lost->id, (string) CrmTestHelper::wonStage()->id, [(string) $lost->id]);
 
         expect(Lead::withTrashed()->find($lost->id)->stage_id)->toBe(CrmTestHelper::firstStage()->id);
+    });
+});
+
+function pipelineActivity(Lead $lead, ?string $deadline): void
+{
+    $lead->addMessage([
+        'type'             => 'activity',
+        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->value('id'),
+        'date_deadline'    => $deadline,
+        'summary'          => 'Pipeline card activity',
+        'assigned_to'      => auth()->id(),
+    ]);
+}
+
+describe('pipeline cards', function () {
+    it('opens the record with one click and renders the card details', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $tag = Tag::query()->create(['name' => 'Card tag '.uniqid(), 'color' => '#10b981']);
+        $opportunity = CrmTestHelper::opportunity(['name' => 'Card details '.uniqid(), 'expected_revenue' => 1500, 'priority' => OpportunityPriority::High]);
+        $opportunity->tags()->attach($tag->id);
+
+        Livewire::test(KanbanOpportunities::class)
+            ->assertSee($opportunity->name)
+            ->assertSee($tag->name)
+            ->assertSeeHtml('window.location.href')
+            ->assertSeeHtml('setKanbanCardPriority');
+    });
+
+    it('sets the priority from the stars and clears it when the same star is clicked again', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $opportunity = CrmTestHelper::opportunity(['priority' => OpportunityPriority::Low]);
+        $component = Livewire::test(KanbanOpportunities::class);
+
+        $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::High->value);
+
+        expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::High);
+
+        $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::High->value);
+
+        expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::Low);
+    });
+
+    it('sets a card colour from the palette and ignores unknown colours', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $opportunity = CrmTestHelper::opportunity();
+        $component = Livewire::test(KanbanOpportunities::class);
+
+        $component->call('setKanbanCardColor', (string) $opportunity->id, 10);
+
+        expect($opportunity->fresh()->color)->toBe(10);
+
+        $component->call('setKanbanCardColor', (string) $opportunity->id, 99);
+
+        expect($opportunity->fresh()->color)->toBe(10);
+    });
+
+    it('counts each stage by activity state and filters a column from the progress bar', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $stage = Stage::query()->where('is_won', false)->orderBy('sort')->firstOrFail();
+
+        $overdue = CrmTestHelper::opportunity(['stage_id' => $stage->id]);
+        pipelineActivity($overdue, now()->subDays(2)->toDateString());
+        $planned = CrmTestHelper::opportunity(['stage_id' => $stage->id]);
+        pipelineActivity($planned, now()->addDays(4)->toDateString());
+        $none = CrmTestHelper::opportunity(['stage_id' => $stage->id]);
+
+        $component = Livewire::test(KanbanOpportunities::class);
+        $progress = $component->instance()->kanbanColumnProgress(pipelineBoardColumn($component, $stage));
+
+        expect($progress['overdue'])->toBeGreaterThanOrEqual(1)
+            ->and($progress['planned'])->toBeGreaterThanOrEqual(1)
+            ->and($progress['none'])->toBeGreaterThanOrEqual(1);
+
+        $component->call('toggleKanbanActivityFilter', (string) $stage->id, 'overdue');
+
+        expect(pipelineBoardColumn($component, $stage)->records->modelKeys())
+            ->toContain($overdue->id)
+            ->not->toContain($planned->id)
+            ->not->toContain($none->id);
+
+        $component->call('toggleKanbanActivityFilter', (string) $stage->id, 'overdue');
+
+        expect(pipelineBoardColumn($component, $stage)->records->modelKeys())->toContain($overdue->id, $planned->id, $none->id);
+    });
+
+    it('deletes a card only with the delete permission', function () {
+        CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+        $opportunity = CrmTestHelper::opportunity();
+
+        Livewire::test(KanbanOpportunities::class)
+            ->callAction('deleteKanbanCard', arguments: ['record' => (string) $opportunity->id]);
+
+        expect(Lead::withTrashed()->find($opportunity->id))->toBeNull();
+
+        CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update']));
+
+        $kept = CrmTestHelper::opportunity();
+
+        Livewire::test(KanbanOpportunities::class)
+            ->assertActionHidden('deleteKanbanCard', arguments: ['record' => (string) $kept->id]);
     });
 });

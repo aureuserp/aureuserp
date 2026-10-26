@@ -34,6 +34,8 @@ return [
                 'fields' => [
                     'is-header-visible' => 'Le menu d\'en-tête est visible',
                     'is-footer-visible' => 'Le menu de pied de page est visible',
+                    'is-tracked'        => 'Suivre les visiteurs',
+                    'is-tracked-helper' => 'Enregistrer les pages vues des visiteurs sur cette page.',
                 ],
             ],
         ],
@@ -156,6 +158,7 @@ return [
                 'entries' => [
                     'is-header-visible' => 'Le menu d\'en-tête est visible',
                     'is-footer-visible' => 'Le menu de pied de page est visible',
+                    'is-tracked'        => 'Suivre les visiteurs',
                 ],
             ],
         ],

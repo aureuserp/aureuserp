@@ -2,6 +2,7 @@
 
 namespace Webkul\Crm\Filament\Support\Reports\Pages;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
@@ -19,6 +20,8 @@ use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 abstract class ReportGraph extends Page
 {
     use HasCrmClusterNavigation, HasFiltersForm;
+
+    protected const FILTER_KEYS = ['split_by', 'presets', 'user_ids', 'team_ids'];
 
     public static function canAccess(array $parameters = []): bool
     {
@@ -52,7 +55,7 @@ abstract class ReportGraph extends Page
                     $query->getModel()->getQualifiedKeyName(),
                     $report::applyFilters(
                         static::getResource()::getEloquentQuery(),
-                        [...$report::getDefaultFilters(), ...array_filter($this->filters ?? [], fn (mixed $value): bool => $value !== null)],
+                        [...$report::getDefaultFilters(), ...($this->filters ?? [])],
                     )->reorder()->pluck($query->getModel()->getQualifiedKeyName()),
                 )),
         ];
@@ -67,7 +70,23 @@ abstract class ReportGraph extends Page
         $label = fn (string $key): string => __('crm::filament/clusters/reporting/report.filters.'.$key);
 
         return $schema->components([
-            Section::make()
+            Section::make($label('heading'))
+                ->headerActions([
+                    Action::make('clearFilters')
+                        ->label($label('clear'))
+                        ->icon('heroicon-m-funnel')
+                        ->color('gray')
+                        ->link()
+                        ->visible(fn (): bool => $this->hasActiveFilters())
+                        ->action(fn () => $this->getFiltersForm()->fill([...$this->filters ?? [], 'split_by' => null, 'presets' => [], 'user_ids' => [], 'team_ids' => []])),
+                    Action::make('resetFilters')
+                        ->label($label('reset'))
+                        ->icon('heroicon-m-x-mark')
+                        ->color('danger')
+                        ->link()
+                        ->visible(fn (): bool => $this->hasChangedFilters())
+                        ->action(fn () => $this->getFiltersForm()->fill()),
+                ])
                 ->columns(['md' => 2, 'xl' => 4])
                 ->schema([
                     Select::make('measure')
@@ -120,6 +139,18 @@ abstract class ReportGraph extends Page
                         ->searchable(),
                 ]),
         ]);
+    }
+
+    public function hasActiveFilters(): bool
+    {
+        return collect(self::FILTER_KEYS)->contains(fn (string $key): bool => filled($this->filters[$key] ?? null));
+    }
+
+    public function hasChangedFilters(): bool
+    {
+        $defaults = [...$this->getReport()::getDefaultFilters(), 'user_ids' => [], 'team_ids' => []];
+
+        return collect($defaults)->contains(fn (mixed $default, string $key): bool => (filled($this->filters[$key] ?? null) ? $this->filters[$key] : null) != (filled($default) ? $default : null));
     }
 
     public function content(Schema $schema): Schema

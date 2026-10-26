@@ -30,6 +30,10 @@ class ContactSettings extends Settings
 
     public ?string $slack;
 
+    public bool $contact_form_enabled;
+
+    public string $contact_form_action;
+
     public static function group(): string
     {
         return 'website_contact';

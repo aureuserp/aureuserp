@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Crm\Database\Factories\LeadFactory;
+use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Quotation;
@@ -37,6 +39,20 @@ class Lead extends Model
     public const TYPE_LEAD = 'lead';
 
     public const TYPE_OPPORTUNITY = 'opportunity';
+
+    public const COLORS = [
+        1  => '#F06050',
+        2  => '#F4A460',
+        3  => '#F7CD1F',
+        4  => '#6CC1ED',
+        5  => '#814968',
+        6  => '#EB7E7F',
+        7  => '#2C8397',
+        8  => '#475577',
+        9  => '#D6145F',
+        10 => '#30C381',
+        11 => '#9365B8',
+    ];
 
     protected $table = 'crm_leads';
 
@@ -63,6 +79,7 @@ class Lead extends Model
         'automated_probability',
         'is_automated_probability',
         'priority',
+        'color',
         'expected_closing_date',
         'assigned_at',
         'closed_at',
@@ -78,6 +95,8 @@ class Lead extends Model
         'utm_medium_id',
         'utm_source_id',
         'referred_by',
+        'reveal_ip',
+        'reveal_rule_id',
         'creator_id',
     ];
 
@@ -88,6 +107,7 @@ class Lead extends Model
         'automated_probability'    => 'decimal:2',
         'is_automated_probability' => 'boolean',
         'priority'                 => OpportunityPriority::class,
+        'color'                    => 'integer',
         'expected_closing_date'    => 'date',
         'assigned_at'              => 'datetime',
         'closed_at'                => 'datetime',
@@ -257,6 +277,26 @@ class Lead extends Model
         return $this->hasMany(LeadMerge::class, 'lead_id');
     }
 
+    public function activityState(): ?ActivityDueStatus
+    {
+        $statuses = $this->crmActivities->map(fn (Activity $activity): ActivityDueStatus => $activity->getDueStatus());
+
+        return collect([ActivityDueStatus::Overdue, ActivityDueStatus::Today, ActivityDueStatus::Planned])
+            ->first(fn (ActivityDueStatus $status): bool => $statuses->contains($status));
+    }
+
+    public function scopeActivityState(Builder $query, string $state): Builder
+    {
+        $has = fn (string $status): \Closure => fn (Builder $query): Builder => $query->whereHas('crmActivities', fn (Builder $query): Builder => $query->dueStatus($status));
+
+        return match ($state) {
+            ActivityDueStatus::Overdue->value => $query->where($has(ActivityDueStatus::Overdue->value)),
+            ActivityDueStatus::Today->value   => $query->where($has(ActivityDueStatus::Today->value))->whereNot($has(ActivityDueStatus::Overdue->value)),
+            ActivityDueStatus::Planned->value => $query->where($has(ActivityDueStatus::Planned->value))->whereNot($has(ActivityDueStatus::Overdue->value))->whereNot($has(ActivityDueStatus::Today->value)),
+            default                           => $query->whereDoesntHave('crmActivities'),
+        };
+    }
+
     public function crmActivities(): HasMany
     {
         return $this->hasMany(Activity::class, 'messageable_id');
@@ -280,6 +320,16 @@ class Lead extends Model
     public function medium(): BelongsTo
     {
         return $this->belongsTo(UTMMedium::class, 'utm_medium_id');
+    }
+
+    public function revealRule(): BelongsTo
+    {
+        return $this->belongsTo(RevealRule::class, 'reveal_rule_id');
+    }
+
+    public function visitors(): BelongsToMany
+    {
+        return $this->belongsToMany('Webkul\\Website\\Models\\Visitor', 'crm_lead_visitor_rel', 'lead_id', 'visitor_id');
     }
 
     public function source(): BelongsTo
@@ -364,9 +414,11 @@ class Lead extends Model
 
             $lead->stage_id ??= Stage::query()->orderBy('sort')->value('id');
 
-            $lead->creator_id ??= Auth::id();
-
-            $lead->user_id ??= Auth::id();
+            foreach (['creator_id', 'user_id'] as $attribute) {
+                if (! array_key_exists($attribute, $lead->getAttributes())) {
+                    $lead->{$attribute} = Auth::id();
+                }
+            }
 
             $lead->assigned_at ??= $lead->user_id ? now() : null;
         });
@@ -413,6 +465,8 @@ class Lead extends Model
                 LeadScoring::scheduleRefresh();
             }
         });
+
+        static::created(fn (self $lead) => app(LeadAssignment::class)->assignLead($lead));
 
         static::deleted(fn () => LeadScoring::scheduleRefresh());
 

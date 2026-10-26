@@ -66,6 +66,8 @@ return [
     ],
 
     'team' => [
+        'company-helper'         => 'Empresas ativadas na barra superior. Para criar uma equipe de outra empresa, mude para ela primeiro.',
+        'company-not-active'     => 'Esta empresa não está ativa. Mude para ela na barra superior primeiro.',
         'section'                => 'Regras de atribuição',
         'section-description'    => 'Quais leads a atribuição baseada em regras dá a esta equipe.',
         'capacity'               => ':assigned leads atribuídos nos últimos 30 dias de um máximo de :max.',

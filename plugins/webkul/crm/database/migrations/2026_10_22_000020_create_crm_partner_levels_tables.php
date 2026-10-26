@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -34,14 +33,6 @@ return new class extends Migration
 
             $table->timestamps();
         });
-
-        $now = now();
-
-        DB::table('crm_partner_levels')->insert([
-            ['name' => 'Gold', 'sort' => 1, 'partner_weight' => 3, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Silver', 'sort' => 2, 'partner_weight' => 2, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Bronze', 'sort' => 3, 'partner_weight' => 1, 'created_at' => $now, 'updated_at' => $now],
-        ]);
     }
 
     public function down(): void

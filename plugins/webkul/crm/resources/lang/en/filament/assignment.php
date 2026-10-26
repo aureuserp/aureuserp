@@ -66,6 +66,8 @@ return [
     ],
 
     'team' => [
+        'company-helper'         => 'Companies switched on in the top bar. To create a team for another company, switch to it first.',
+        'company-not-active'     => 'This company is not active. Switch to it in the top bar first.',
         'section'                => 'Assignment Rules',
         'section-description'    => 'Which leads rule-based assignment gives this team.',
         'capacity'               => ':assigned leads assigned in the last 30 days on a maximum of :max.',

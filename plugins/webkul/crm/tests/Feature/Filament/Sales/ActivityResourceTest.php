@@ -443,8 +443,8 @@ it('uses the crm activity types as kanban columns', function () {
         ->not->toContain((string) $otherPluginType->id);
 });
 
-it('opens the board on the current user\'s activities', function () {
-    $user = actingAsActivityPlanner();
+it('opens the board without a default filter, showing everyone\'s activities', function () {
+    actingAsActivityPlanner();
 
     $opportunity = CrmTestHelper::opportunity();
 
@@ -452,14 +452,14 @@ it('opens the board on the current user\'s activities', function () {
     $someoneElses = scheduledCrmActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
     $component = Livewire::test(KanbanActivities::class)
-        ->assertSet('kanbanFilters', [...KanbanActivities::emptyKanbanFilters(), 'assigned_to' => $user->id]);
+        ->assertSet('kanbanFilters', KanbanActivities::emptyKanbanFilters());
 
     $ids = collect($component->instance()->getKanbanColumns())
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
         ->all();
 
     expect($ids)->toContain($mine->id)
-        ->not->toContain($someoneElses->id);
+        ->toContain($someoneElses->id);
 });
 
 it('changes the activity type when a card is moved to another column', function () {
@@ -536,4 +536,44 @@ it('filters the board by due status and activity type like the list', function (
 
     expect($ids(['due_status' => 'overdue']))->toContain($overdue->id)->not->toContain($planned->id)
         ->and($ids(['activity_type_id' => [crmActivityType('Call')->id]]))->toContain($planned->id)->not->toContain($overdue->id);
+});
+
+it('renders activity cards like the pipeline cards and marks an activity done from the card', function () {
+    actingAsActivityPlanner();
+
+    $opportunity = CrmTestHelper::opportunity(['name' => 'Activity card opportunity']);
+    $activity = scheduledCrmActivity($opportunity, ['summary' => 'Card summary call', 'activity_type_id' => crmActivityType('Call')->id]);
+
+    $component = Livewire::test(KanbanActivities::class)
+        ->assertSee('Card summary call')
+        ->assertSee('Activity card opportunity')
+        ->assertSeeHtml('window.location.href')
+        ->assertSeeHtml("actionName: 'done'");
+
+    $component->callAction('kanbanCardFooter', arguments: ['record' => (string) $activity->id, 'actionName' => 'done']);
+
+    expect(Activity::query()->find($activity->id))->toBeNull();
+});
+
+it('shows the due-status progress of each activity type and filters a column from it', function () {
+    actingAsActivityPlanner();
+
+    $call = crmActivityType('Call');
+    $opportunity = CrmTestHelper::opportunity();
+
+    $overdue = scheduledCrmActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->subDays(2)->toDateString()]);
+    $planned = scheduledCrmActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->addDays(5)->toDateString()]);
+
+    $component = Livewire::test(KanbanActivities::class);
+    $column = collect($component->instance()->getKanbanColumns())->firstWhere('value', (string) $call->id);
+    $progress = $component->instance()->kanbanColumnProgress($column);
+
+    expect($progress['overdue'] ?? 0)->toBeGreaterThanOrEqual(1)
+        ->and($progress['planned'] ?? 0)->toBeGreaterThanOrEqual(1);
+
+    $component->call('toggleKanbanActivityFilter', (string) $call->id, 'overdue');
+
+    expect(collect($component->instance()->getKanbanColumns())->firstWhere('value', (string) $call->id)->records->modelKeys())
+        ->toContain($overdue->id)
+        ->not->toContain($planned->id);
 });

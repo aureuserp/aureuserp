@@ -9,17 +9,22 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Console\Commands\FetchInboundEmails;
+use Webkul\Crm\Console\Commands\ProcessVisitsToLeads;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
+use Webkul\Crm\Listeners\CreateLeadFromVisitor;
+use Webkul\Crm\Livewire\QuotationInvoiceSummary;
 use Webkul\Crm\Models\CrmPartner;
 use Webkul\Crm\Models\CrmTeam;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\MailAlias;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Services\ActivityLogRecorder;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
@@ -27,6 +32,7 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\Team;
+use Webkul\Website\Events\VisitorTracked;
 
 class CrmServiceProvider extends PackageServiceProvider
 {
@@ -62,6 +68,20 @@ class CrmServiceProvider extends PackageServiceProvider
                 '2026_10_22_000023_create_crm_quotation_partners_table',
                 '2026_10_22_000024_create_crm_recurring_plans_table',
                 '2026_10_23_000026_create_crm_lead_scoring_tables',
+                '2026_10_26_000028_create_crm_reveal_rules_table',
+                '2026_10_26_000029_create_crm_reveal_rule_countries_table',
+                '2026_10_26_000030_create_crm_reveal_rule_states_table',
+                '2026_10_26_000031_create_crm_reveal_rule_tags_table',
+                '2026_10_26_000032_create_crm_reveal_views_table',
+                '2026_10_26_000033_create_crm_lead_visitor_rel_table',
+                '2026_10_26_000034_add_reveal_columns_to_crm_leads_table',
+                '2026_10_26_000036_create_crm_lead_industries_table',
+                '2026_10_26_000037_create_crm_lead_roles_table',
+                '2026_10_26_000038_create_crm_lead_seniorities_table',
+                '2026_10_26_000039_create_crm_reveal_rule_industries_table',
+                '2026_10_26_000040_create_crm_reveal_rule_roles_table',
+                '2026_10_26_000041_add_contact_columns_to_crm_reveal_rules_table',
+                '2026_10_26_000042_add_color_to_crm_leads_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -69,6 +89,7 @@ class CrmServiceProvider extends PackageServiceProvider
                 '2026_10_22_000012_add_use_leads_to_crm_settings',
                 '2026_10_22_000025_add_use_recurring_revenues_to_crm_settings',
                 '2026_10_23_000027_add_lead_scoring_to_crm_settings',
+                '2026_10_26_000035_add_visits_to_leads_to_crm_settings',
             ])
             ->runsSettings()
             ->hasDependencies([
@@ -98,10 +119,18 @@ class CrmServiceProvider extends PackageServiceProvider
 
         Livewire::component('crm-report-chart', ReportChart::class);
 
+        if (class_exists(InvoiceSummary::class)) {
+            Livewire::component('crm-quotation-invoice-summary', QuotationInvoiceSummary::class);
+        }
+
         $this->app->make(ActivityLogRecorder::class)->register();
 
         if ($this->app->runningInConsole()) {
-            $this->commands([AssignLeads::class, FetchInboundEmails::class]);
+            $this->commands([AssignLeads::class, FetchInboundEmails::class, ProcessVisitsToLeads::class]);
+        }
+
+        if (class_exists(VisitorTracked::class)) {
+            Event::listen(VisitorTracked::class, CreateLeadFromVisitor::class);
         }
 
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {

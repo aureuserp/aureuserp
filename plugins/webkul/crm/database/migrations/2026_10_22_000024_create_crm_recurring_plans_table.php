@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -29,15 +28,6 @@ return new class extends Migration
             $table->decimal('recurring_revenue', 15, 4)->default(0)->after('expected_revenue');
             $table->foreignId('recurring_plan_id')->nullable()->after('recurring_revenue')->constrained('crm_recurring_plans')->nullOnDelete();
         });
-
-        $now = now();
-
-        DB::table('crm_recurring_plans')->insert([
-            ['name' => 'Monthly', 'number_of_months' => 1, 'sort' => 1, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Yearly', 'number_of_months' => 12, 'sort' => 2, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Over 3 years', 'number_of_months' => 36, 'sort' => 3, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Over 5 years', 'number_of_months' => 60, 'sort' => 4, 'created_at' => $now, 'updated_at' => $now],
-        ]);
     }
 
     public function down(): void

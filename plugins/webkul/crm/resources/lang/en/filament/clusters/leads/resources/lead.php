@@ -11,6 +11,7 @@ return [
     'views' => [
         'kanban' => 'Kanban',
         'list'   => 'List',
+        'grid'   => 'Grid',
     ],
 
     'global-search' => [

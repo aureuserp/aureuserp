@@ -10,7 +10,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Actions\CrmExportAction;
@@ -18,6 +17,7 @@ use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Concerns\AppliesKanbanListFilters;
+use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
 use Webkul\Crm\Filament\Exports\OpportunityExporter;
 use Webkul\Crm\Filament\Imports\OpportunityImporter;
@@ -32,7 +32,7 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class KanbanOpportunities extends ListRecords
 {
-    use AppliesKanbanListFilters, HasKanbanBoard, ManagesStageKanbanColumns {
+    use AppliesKanbanListFilters, HasKanbanBoard, ManagesOpportunityKanbanCards, ManagesStageKanbanColumns {
         AppliesKanbanListFilters::getKanbanQuery insteadof HasKanbanBoard;
         HasKanbanBoard::getKanbanQuery as getBaseKanbanQuery;
         HasKanbanBoard::moveRecord as moveBaseRecord;
@@ -48,7 +48,6 @@ class KanbanOpportunities extends ListRecords
 
         $this->kanbanFilters = [
             ...static::emptyKanbanFilters(),
-            'user_id' => $teamId ? null : Auth::id(),
             'team_id' => $teamId ?: null,
         ];
     }
@@ -56,6 +55,7 @@ class KanbanOpportunities extends ListRecords
     public function resetKanbanFilters(): void
     {
         $this->kanbanFilters = static::emptyKanbanFilters();
+        $this->kanbanActivityFilter = [];
     }
 
     public static function emptyKanbanFilters(): array
@@ -87,7 +87,13 @@ class KanbanOpportunities extends ListRecords
             ->when($status === 'won', fn (Builder $query): Builder => $query->won())
             ->when($status === 'unassigned', fn (Builder $query): Builder => $query->whereNull('crm_leads.user_id'))
             ->when($stageIds, fn (Builder $query): Builder => $query->whereIn('crm_leads.stage_id', $stageIds))
-            ->when($tagIds, fn (Builder $query): Builder => $query->whereHas('tags', fn (Builder $query): Builder => $query->whereIn('crm_tags.id', $tagIds)));
+            ->when($tagIds, fn (Builder $query): Builder => $query->whereHas('tags', fn (Builder $query): Builder => $query->whereIn('crm_tags.id', $tagIds)))
+            ->when(! $this->ignoreKanbanActivityFilter, fn (Builder $query): Builder => $this->applyKanbanActivityFilter($query));
+    }
+
+    protected function kanbanColumnKeyExpression(): string
+    {
+        return 'crm_leads.stage_id';
     }
 
     public function getTitle(): string
@@ -133,7 +139,7 @@ class KanbanOpportunities extends ListRecords
         return $kanban
             ->relationshipColumn('stage', 'name', Stage::class, orderAttribute: 'sort')
             ->excludeColumns(Stage::hiddenColumnsForTeam($this->kanbanFilters['team_id'] ?? null))
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['partner', 'user', 'tags', 'company.currency', 'recurringPlan']))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(static::KANBAN_CARD_RELATIONS))
             ->columnColor(fn (KanbanColumn $column): string => in_array($column->value, $wonStageIds, true) ? 'success' : 'gray')
             ->cardTitle(fn (Lead $record): string => $record->name)
             ->cardDescription(fn (Lead $record): string => collect([
@@ -250,7 +256,7 @@ class KanbanOpportunities extends ListRecords
             ->columnWidth('300px')
             ->boardView('crm::filament.kanban.board')
             ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.card');
+            ->cardView('crm::filament.kanban.opportunity-card');
     }
 
     public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void

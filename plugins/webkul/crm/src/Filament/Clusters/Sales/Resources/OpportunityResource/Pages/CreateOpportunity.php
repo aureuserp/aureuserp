@@ -5,6 +5,7 @@ namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
 
 class CreateOpportunity extends CreateRecord
@@ -30,6 +31,8 @@ class CreateOpportunity extends CreateRecord
 
     protected function afterCreate(): void
     {
+        app(LeadAssignment::class)->assignLead($this->getRecord()->load('tags'));
+
         app(LeadScoring::class)->refresh($this->getRecord()->load('tags'));
     }
 }

@@ -12,6 +12,9 @@ class DatabaseSeeder extends Seeder
             ActivityTypeSeeder::class,
             LostReasonSeeder::class,
             StageSeeder::class,
+            TagSeeder::class,
+            RecurringPlanSeeder::class,
+            PartnerLevelSeeder::class,
         ]);
     }
 }

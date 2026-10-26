@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webkul\Crm\Filament\Clusters\Leads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\CreateLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\EditLead;
-use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\KanbanLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
@@ -136,8 +135,7 @@ class LeadResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => KanbanLeads::route('/'),
-            'list'    => ListLeads::route('/list'),
+            'index'   => ListLeads::route('/'),
             'create'  => CreateLead::route('/create'),
             'view'    => ViewLead::route('/{record}'),
             'edit'    => EditLead::route('/{record}/edit'),
@@ -145,16 +143,16 @@ class LeadResource extends Resource
         ];
     }
 
-    public static function getViewSwitcherActions(string $currentPage): array
+    public static function getViewSwitcherActions(string $currentLayout): array
     {
-        $showList = $currentPage === 'index';
-
-        return [
-            Action::make($showList ? 'listView' : 'kanbanView')
-                ->label(__('crm::filament/clusters/leads/resources/lead.views.'.($showList ? 'list' : 'kanban')))
-                ->icon($showList ? 'heroicon-o-list-bullet' : 'heroicon-o-view-columns')
-                ->color('gray')
-                ->url(fn (): string => static::getUrl($showList ? 'list' : 'index')),
-        ];
+        return collect(ListLeads::LAYOUTS)
+            ->map(fn (string $icon, string $layout): Action => Action::make($layout.'Layout')
+                ->label(__('crm::filament/clusters/leads/resources/lead.views.'.$layout))
+                ->icon($icon)
+                ->color($layout === $currentLayout ? 'primary' : 'gray')
+                ->outlined($layout !== $currentLayout)
+                ->url(fn (): string => static::getUrl('index', $layout === ListLeads::DEFAULT_LAYOUT ? [] : ['layout' => $layout])))
+            ->values()
+            ->all();
     }
 }

@@ -55,7 +55,7 @@ class ReportChart extends ChartWidget
 
     protected function getReportFilters(): array
     {
-        return [...$this->getReport()::getDefaultFilters(), ...array_filter($this->pageFilters ?? [], fn (mixed $value): bool => $value !== null)];
+        return [...$this->getReport()::getDefaultFilters(), ...($this->pageFilters ?? [])];
     }
 
     public function getHeading(): string

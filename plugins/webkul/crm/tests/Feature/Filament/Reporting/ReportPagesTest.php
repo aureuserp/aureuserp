@@ -374,3 +374,21 @@ describe('forecast export', function () {
             ->and($row['forecast_status'])->toBe(__('crm::filament/clusters/reporting/report.presets.ongoing'));
     });
 });
+
+it('clears every optional graph filter, the split included, and keeps it cleared', function (string $page, array $permissions) {
+    CrmTestHelper::actingAs($permissions);
+
+    $component = Livewire::test($page)
+        ->set('filters.split_by', null)
+        ->set('filters.presets', [])
+        ->set('filters.user_ids', [])
+        ->set('filters.team_ids', []);
+
+    expect($component->instance()->hasActiveFilters())->toBeFalse()
+        ->and($component->get('filters.split_by'))->toBeNull()
+        ->and($component->instance()->hasChangedFilters())->toBeTrue();
+})->with([
+    'pipeline'   => [GraphPipelineAnalysis::class, ['view_any_crm_pipeline::analysis']],
+    'leads'      => [GraphLeadAnalysis::class, ['view_any_crm_lead::analysis']],
+    'activities' => [GraphActivityAnalysis::class, ['view_any_crm_activity::analysis']],
+]);

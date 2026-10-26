@@ -53,6 +53,8 @@ class CrmSettings extends Settings
 
     public ?string $scoring_start_date;
 
+    public bool $visits_to_leads;
+
     public static function group(): string
     {
         return 'crm';

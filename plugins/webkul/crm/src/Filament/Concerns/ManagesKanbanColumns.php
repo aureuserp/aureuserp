@@ -15,7 +15,7 @@ trait ManagesKanbanColumns
 
     abstract protected function kanbanColumnExists(string $name, ?Model $except = null): bool;
 
-    abstract protected function createKanbanColumn(string $name): void;
+    abstract protected function createKanbanColumn(string $name): Model;
 
     abstract protected function findKanbanColumnRecord(string $value): ?Model;
 
@@ -27,24 +27,24 @@ trait ManagesKanbanColumns
 
     abstract protected function countKanbanColumnRecords(Model $record): int;
 
-    public function addKanbanColumn(mixed $name): bool
+    public function addKanbanColumn(mixed $name): ?string
     {
         abort_unless($this->canAddKanbanColumn(), 403);
 
         $name = trim((string) $name);
 
         if (! $this->isValidKanbanColumnName($name)) {
-            return false;
+            return null;
         }
 
-        $this->createKanbanColumn($name);
+        $column = $this->createKanbanColumn($name);
 
         Notification::make()
             ->success()
             ->title(__('crm::filament/kanban.add-column.created', ['name' => $name]))
             ->send();
 
-        return true;
+        return (string) $column->getKey();
     }
 
     public function canEditKanbanColumn(string $value): bool

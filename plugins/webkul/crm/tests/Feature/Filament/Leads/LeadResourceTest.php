@@ -468,3 +468,22 @@ it('lists only the current company\'s teams in the leads team filter', function 
     expect($teamIds)->toContain($ownTeam->id)
         ->and($teamIds)->not->toContain($foreignTeam->id);
 });
+
+it('shows the number of records on each view tab of the opportunity list', function () {
+    $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+
+    $views = Livewire::test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
+
+    $expected = fn (string $key): int => $views[$key]->modifyQuery(OpportunityResource::getEloquentQuery())->count();
+
+    expect($views['default']->getBadge())->toBe(OpportunityResource::getEloquentQuery()->count())
+        ->and($views['my_pipeline']->getBadge())->toBe($expected('my_pipeline'))
+        ->and($views['open']->getBadge())->toBe($expected('open'))
+        ->and($views['lost']->getBadge())->toBe($expected('lost'));
+
+    CrmTestHelper::opportunity(['user_id' => $user->id]);
+
+    $views = Livewire::test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
+
+    expect($views['my_pipeline']->getBadge())->toBe(Lead::query()->withoutTrashed()->where('type', Lead::TYPE_OPPORTUNITY)->where('user_id', $user->id)->count());
+});

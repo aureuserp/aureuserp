@@ -27,4 +27,13 @@ return [
             'body'  => 'It still has :count record. Move it to another column first.|It still has :count records. Move them to another column first.',
         ],
     ],
+
+    'progress' => [
+        'label'   => 'Activities in this stage',
+        'planned' => 'Planned activities',
+        'today'   => 'Activities due today',
+        'overdue' => 'Overdue activities',
+        'none'    => 'No activities',
+        'total'   => 'Expected revenue',
+    ],
 ];

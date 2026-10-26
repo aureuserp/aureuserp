@@ -4,11 +4,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Webkul\Crm\CrmServiceProvider;
+use Webkul\Crm\Database\Seeders\DatabaseSeeder;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Models\ActivityType;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\LostReason;
+use Webkul\Crm\Models\PartnerLevel;
+use Webkul\Crm\Models\RecurringPlan;
 use Webkul\Crm\Models\Stage;
+use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
 
 require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
@@ -47,6 +51,26 @@ it('seeds the four crm activity types', function () {
     expect($names->all())->toContain('Email', 'Call', 'Meeting', 'To-Do')
         ->and($names->intersect(['Email', 'Call', 'Meeting', 'To-Do'])->count())->toBe(4)
         ->and($names->duplicates())->toBeEmpty();
+});
+
+it('seeds the default tags, recurring plans and partner levels', function () {
+    expect(Tag::query()->pluck('name')->all())->toContain('Product', 'Software', 'Services', 'Training', 'Consulting', 'Upsell')
+        ->and(RecurringPlan::query()->orderBy('sort')->pluck('number_of_months', 'name')->only(['Monthly', 'Yearly', 'Over 3 years', 'Over 5 years'])->all())
+        ->toBe(['Monthly' => 1, 'Yearly' => 12, 'Over 3 years' => 36, 'Over 5 years' => 60])
+        ->and(PartnerLevel::query()->pluck('partner_weight', 'name')->only(['Gold', 'Silver', 'Bronze'])->all())
+        ->toBe(['Gold' => 3, 'Silver' => 2, 'Bronze' => 1]);
+});
+
+it('does not duplicate or overwrite the defaults when seeding again', function () {
+    Tag::query()->where('name', 'Product')->update(['color' => '#000000']);
+    $tagCount = Tag::query()->count();
+
+    (new DatabaseSeeder)->run();
+
+    expect(Tag::query()->count())->toBe($tagCount)
+        ->and(Tag::query()->where('name', 'Product')->value('color'))->toBe('#000000')
+        ->and(RecurringPlan::query()->where('name', 'Monthly')->count())->toBe(1)
+        ->and(PartnerLevel::query()->where('name', 'Gold')->count())->toBe(1);
 });
 
 it('depends on the contacts and sales plugins', function () {

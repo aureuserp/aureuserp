@@ -355,3 +355,39 @@ it('hides assignment on the sales team and does not assign when rule-based assig
     expect(app(LeadAssignment::class)->run($team))->toBe(['teams' => 0, 'salespeople' => 0])
         ->and($lead->fresh()->user_id)->toBeNull();
 });
+
+it('gives a new lead the team whose rules it matches, keeping its salesperson', function () {
+    $user = CrmTestHelper::actingAs();
+
+    $india = Country::query()->where('code', 'IN')->value('id');
+
+    $team = assignmentTeam(['match' => 'all', 'conditions' => [
+        ['field' => 'country_id', 'operator' => 'in', 'value' => [$india]],
+        ['field' => 'city', 'operator' => 'contains', 'value' => 'Delhi'],
+    ]]);
+    $team->members()->attach($user->id);
+    app(TeamMembership::class)->sync($team);
+
+    $delhi = CrmTestHelper::lead(['country_id' => $india, 'city' => 'Delhi', 'team_id' => null]);
+    $mumbai = CrmTestHelper::lead(['country_id' => $india, 'city' => 'Mumbai', 'team_id' => null]);
+
+    expect($delhi->fresh()->team_id)->toBe($team->id)
+        ->and($delhi->fresh()->user_id)->toBe($user->id)
+        ->and($mumbai->fresh()->team_id)->toBeNull();
+});
+
+it('assigns a team to leads that already have a salesperson when assignment runs', function () {
+    $user = CrmTestHelper::actingAs();
+
+    $team = assignmentTeam();
+    $team->members()->attach($user->id);
+    app(TeamMembership::class)->sync($team);
+
+    $lead = CrmTestHelper::lead();
+    $lead->forceFill(['team_id' => null, 'user_id' => $user->id])->saveQuietly();
+
+    app(LeadAssignment::class)->run();
+
+    expect($lead->fresh()->team_id)->toBe($team->id)
+        ->and($lead->fresh()->user_id)->toBe($user->id);
+});

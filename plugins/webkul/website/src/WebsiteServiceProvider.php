@@ -6,13 +6,20 @@ use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Website\Console\Commands\DeleteInactiveVisitors;
+use Webkul\Website\Console\Commands\ImportIpCountries;
 use Webkul\Website\Http\Responses\LogoutResponse;
+use Webkul\Website\Listeners\TrackWebsiteVisit;
+use Webkul\Website\Services\VisitorTracker;
 
 class WebsiteServiceProvider extends PackageServiceProvider
 {
@@ -30,6 +37,8 @@ class WebsiteServiceProvider extends PackageServiceProvider
                 '2025_03_10_064655_alter_partners_partners_table',
                 '2026_08_03_100000_add_last_login_at_to_partners_partners_table',
                 '2026_08_13_000001_make_website_pages_translatable',
+                '2026_10_26_000001_create_website_visitors_tables',
+                '2026_10_26_000002_create_website_ip_countries_table',
             ])
             ->runsMigrations()
             ->hasSeeder('Webkul\\Website\\Database\Seeders\\DatabaseSeeder')
@@ -41,6 +50,7 @@ class WebsiteServiceProvider extends PackageServiceProvider
             })
             ->hasSettings([
                 '2025_03_10_094021_create_website_contact_settings',
+                '2026_10_26_000003_add_contact_form_to_website_contact_settings',
             ])
             ->runsSettings()
             ->hasUninstallCommand(function (UninstallCommand $command) {})
@@ -67,6 +77,28 @@ class WebsiteServiceProvider extends PackageServiceProvider
             }
 
             $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
+
+            app(VisitorTracker::class)->linkPartner($event->user, request()->cookie(VisitorTracker::COOKIE));
+        });
+
+        EncryptCookies::except([VisitorTracker::COOKIE, VisitorTracker::TIMEZONE_COOKIE]);
+
+        Event::listen(RequestHandled::class, TrackWebsiteVisit::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([DeleteInactiveVisitors::class, ImportIpCountries::class]);
+        }
+
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            $schedule->command('website:import-ip-countries')
+                ->monthlyOn(5, '03:00')
+                ->withoutOverlapping()
+                ->when(fn (): bool => Package::isPluginInstalled(self::$name));
+
+            $schedule->command('website:delete-inactive-visitors')
+                ->daily()
+                ->withoutOverlapping()
+                ->when(fn (): bool => Package::isPluginInstalled(self::$name));
         });
     }
 

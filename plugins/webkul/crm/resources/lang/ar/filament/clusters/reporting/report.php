@@ -21,14 +21,17 @@ return [
     ],
 
     'filters' => [
-        'measure'       => 'المقياس',
-        'group-by'      => 'تجميع حسب',
-        'split-by'      => 'تقسيم حسب',
-        'no-split'      => 'بدون تقسيم',
-        'chart-type'    => 'المخطط',
-        'quick-filters' => 'عوامل التصفية',
-        'salespeople'   => 'مندوبو المبيعات',
-        'teams'         => 'فرق المبيعات',
+        'clear'          => 'مسح عوامل التصفية',
+        'heading'        => 'عوامل التصفية',
+        'reset'          => 'إعادة تعيين',
+        'measure'        => 'المقياس',
+        'group-by'       => 'تجميع حسب',
+        'split-by'       => 'تقسيم حسب',
+        'no-split'       => 'بدون تقسيم',
+        'chart-type'     => 'المخطط',
+        'quick-filters'  => 'عوامل التصفية',
+        'salespeople'    => 'مندوبو المبيعات',
+        'teams'          => 'فرق المبيعات',
     ],
 
     'dimensions' => [
