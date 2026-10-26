@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Services;
 
+use Illuminate\Support\Arr;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
@@ -59,13 +60,13 @@ class DynamicLineSynchronizer
         }
 
         foreach ($changes['tax_lines_to_update'] as $attributes) {
-            unset($attributes['tax_ids']);
+            $record = $attributes['record'];
 
-            $attributes['record']->update($attributes);
+            $record->update(Arr::only($attributes, $record->getFillable()));
 
-            $attributes['record']->computeCreditAndDebit();
+            $record->computeCreditAndDebit();
 
-            $attributes['record']->save();
+            $record->save();
         }
     }
 
@@ -154,22 +155,22 @@ class DynamicLineSynchronizer
             $attributes['name'] = "Tax Rounding ({$biggest->name})";
             $attributes['account_id'] = $biggest->account_id;
             $attributes['tax_repartition_line_id'] = $biggest->tax_repartition_line_id;
-            $attributes['tax_ids'] = $biggest->taxes->pluck('id')->toArray();
+
+            $taxIds = $biggest->taxes->pluck('id')->all();
         } elseif ($move->invoiceCashRounding->strategy === 'add_invoice_line') {
             $attributes['name'] = $move->invoiceCashRounding->name;
             $attributes['account_id'] = $diffBalance > 0.0 && $move->invoiceCashRounding->loss_account_id
                 ? $move->invoiceCashRounding->loss_account_id
                 : $move->invoiceCashRounding->profit_account_id;
-            $attributes['tax_ids'] = [];
         }
 
-        if ($existing) {
-            $existing->update($attributes);
+        $line = $existing ?? new MoveLine;
 
-            return $existing;
-        }
+        $line->fill($attributes)->save();
 
-        return MoveLine::create($attributes);
+        $line->taxes()->sync($taxIds ?? []);
+
+        return $line;
     }
 
     public function syncPaymentTermLines(AccountMove $move): void

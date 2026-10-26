@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveFactory;
@@ -733,7 +734,7 @@ class Move extends Model
             $defaults['restrict_partner_id'] = $restrictPartnerId;
         }
 
-        $splitAttributes = array_merge($this->toArray(), $defaults, ['id' => null]);
+        $splitAttributes = array_merge(Arr::only($this->getAttributes(), (new self)->getFillable()), $defaults);
 
         $remaining = float_round(
             $this->product->uom->computeQuantity(max(0, $this->product_qty - $qty), $this->uom, round: false),

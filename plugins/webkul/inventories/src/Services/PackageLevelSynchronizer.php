@@ -58,7 +58,6 @@ class PackageLevelSynchronizer
         $packageLevel = PackageLevel::create([
             'operation_id'            => $operation->id,
             'package_id'              => $package->id,
-            'location_id'             => $package->location_id,
             'destination_location_id' => $operation->sharedDestinationLocationId($unpacked) ?? $operation->destination_location_id,
             'company_id'              => $operation->company_id,
         ]);

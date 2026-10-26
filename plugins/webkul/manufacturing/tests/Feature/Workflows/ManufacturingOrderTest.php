@@ -282,3 +282,16 @@ it('records the producing lot on a lot-tracked finished product', function () {
         ->and((float) InventoryHelper::onHand($tracked, $this->stock))->toBe(5.0)
         ->and(InventoryHelper::quantOf($tracked, $this->stock, $lot->id))->not->toBeNull();
 });
+
+it('moves the finished move to the new finish date of a confirmed manufacturing order', function () {
+    $bom = ManufacturingHelper::bom($this->finished, [[$this->componentA, 2]]);
+    $order = ManufacturingHelper::order($this->warehouse, $this->finished, $bom, 5);
+
+    ManufacturingHelper::confirm($order);
+
+    $finishedAt = now()->addDays(10)->startOfMinute();
+
+    $order->refresh()->update(['finished_at' => $finishedAt]);
+
+    expect($order->refresh()->finishedMoves->first()->scheduled_at->equalTo($finishedAt))->toBeTrue();
+});

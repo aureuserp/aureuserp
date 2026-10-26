@@ -87,8 +87,11 @@ it('folds the rounding into the biggest tax line under the biggest-tax strategy'
     $lines = $invoice->refresh()->lines;
     $roundingLine = $lines->firstWhere('display_type', DisplayType::ROUNDING);
 
+    $taxLine = $lines->where('display_type', DisplayType::TAX)->firstWhere('tax_repartition_line_id', $roundingLine->tax_repartition_line_id);
+
     expect($roundingLine)->not->toBeNull()
         ->and($roundingLine->tax_repartition_line_id)->not->toBeNull()
+        ->and($roundingLine->taxes->pluck('id')->sort()->values()->all())->toBe($taxLine->taxes->pluck('id')->sort()->values()->all())
         ->and((float) $invoice->amount_total)->toBe(110.0)
         ->and((float) $lines->sum(fn ($l) => (float) $l->debit))
         ->toBe((float) $lines->sum(fn ($l) => (float) $l->credit));

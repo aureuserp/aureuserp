@@ -609,17 +609,12 @@ class Order extends Model
     public function computeFinishedMoves(): void
     {
         if ($this->state !== ManufacturingOrderState::DRAFT) {
-            $updatedValues = [];
+            $updatedValues = array_filter([
+                'scheduled_at' => $this->finished_at,
+                'deadline'     => $this->deadline_at,
+            ]);
 
-            if ($this->finished_at) {
-                $updatedValues['date'] = $this->finished_at;
-            }
-
-            if ($this->deadline_at) {
-                $updatedValues['deadline_at'] = $this->deadline_at;
-            }
-
-            if (! empty($updatedValues)) {
+            if ($updatedValues) {
                 $this->finishedMoves->each->update($updatedValues);
             }
 
@@ -707,7 +702,6 @@ class Order extends Model
             'warehouse_id'            => $this->destinationLocation->warehouse_id,
             'origin'                  => $this->product->name,
             'procurement_group_id'    => $this->procurementGroup?->id,
-            'propagate_cancel'        => $this->propagate_cancel,
             'move_destination_ids'    => ! $byproductId ? $moveDestinationIds : [],
             'cost_share'              => $costShare,
         ];
@@ -795,7 +789,6 @@ class Order extends Model
         bool $manualConsumption = false
     ): array {
         return [
-            'sort'                    => 10,
             'name'                    => 'New',
             'scheduled_at'            => $this->started_at,
             'deadline'                => $this->started_at,
@@ -813,7 +806,6 @@ class Order extends Model
             'origin'                  => $this->getOrigin(),
             'warehouse_id'            => $this->sourceLocation->warehouse_id,
             'procurement_group_id'    => $this->procurementGroup?->id,
-            'propagate_cancel'        => $this->propagate_cancel,
             'manual_consumption'      => $manualConsumption,
         ];
     }
@@ -831,12 +823,24 @@ class Order extends Model
             ->first();
 
         foreach ($movesFinishedValues as $moveFinishedValues) {
+            $destinationIds = $moveFinishedValues['move_destination_ids'] ?? [];
+
+            unset($moveFinishedValues['move_destination_ids']);
+
             if (isset($moveFinishedValues['byproduct_id']) && $movesByproductDict->has($moveFinishedValues['byproduct_id'])) {
-                $movesByproductDict->get($moveFinishedValues['byproduct_id'])->update($moveFinishedValues);
+                $move = $movesByproductDict->get($moveFinishedValues['byproduct_id']);
+
+                $move->update($moveFinishedValues);
             } elseif (isset($moveFinishedValues['product_id']) && $moveFinishedValues['product_id'] === $this->product_id && $moveFinished) {
-                $moveFinished->update($moveFinishedValues);
+                $move = $moveFinished;
+
+                $move->update($moveFinishedValues);
             } else {
-                $this->finishedMoves()->create($moveFinishedValues);
+                $move = $this->finishedMoves()->create($moveFinishedValues);
+            }
+
+            if ($destinationIds) {
+                $move->moveDestinations()->syncWithoutDetaching($destinationIds);
             }
         }
     }
