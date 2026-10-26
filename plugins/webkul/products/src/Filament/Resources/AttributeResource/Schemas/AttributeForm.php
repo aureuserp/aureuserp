@@ -4,12 +4,13 @@ namespace Webkul\Product\Filament\Resources\AttributeResource\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Webkul\Product\Enums\AttributeType;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
 class AttributeForm
 {
@@ -54,7 +55,18 @@ class AttributeForm
                                     ->minValue(0)
                                     ->maxValue(99999999999),
                             ])
-                            ->columns(3),
+                            ->table(fn ($livewire): array => array_values(array_filter([
+                                TableColumn::make('name')
+                                    ->label(__('products::filament/resources/attribute.form.sections.options.fields.name'))
+                                    ->markAsRequired(),
+                                in_array(data_get($livewire, 'data.type'), [AttributeType::COLOR, AttributeType::COLOR->value], strict: true)
+                                    ? TableColumn::make('color')
+                                        ->label(__('products::filament/resources/attribute.form.sections.options.fields.color'))
+                                    : null,
+                                TableColumn::make('extra_price')
+                                    ->label(__('products::filament/resources/attribute.form.sections.options.fields.extra-price'))
+                                    ->markAsRequired(),
+                            ]))),
                     ]),
             ]);
     }
