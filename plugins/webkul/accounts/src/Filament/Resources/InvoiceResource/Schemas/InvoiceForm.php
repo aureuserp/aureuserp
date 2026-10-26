@@ -87,7 +87,7 @@ class InvoiceForm
                                 ->color(fn ($record) => $record->payment_state->getColor())
                                 ->visible(fn ($record) => in_array($record?->payment_state, [PaymentState::PAID, PaymentState::REVERSED]))
                                 ->label(fn ($record) => $record->payment_state->getLabel())
-                                ->size(Size::ExtraLarge->value),
+                                ->size(Size::Large->value),
                         ]),
                         Group::make()
                             ->schema([

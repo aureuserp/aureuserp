@@ -119,6 +119,6 @@ trait ListsBlogPosts
 
         $query->orderBy('published_at', 'desc');
 
-        return $query->paginate(9);
+        return $query->paginate(12);
     }
 }

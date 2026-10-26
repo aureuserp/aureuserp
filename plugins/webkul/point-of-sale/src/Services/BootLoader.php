@@ -158,6 +158,7 @@ class BootLoader
             'cash_rounding'                 => $this->cashRounding($config),
             'can_edit_price'                => $this->canEditPrice($config),
             'product_endpoint'              => route('point-of-sale.till.configs.products.store', ['config' => $config->id]),
+            'product_lots_endpoint'         => route('point-of-sale.till.configs.products.lots', ['config' => $config->id, 'product' => '__product__']),
             'order_cancel_endpoint'         => route('point-of-sale.till.orders.cancel'),
             'draft_endpoint'                => route('point-of-sale.till.orders.drafts.store'),
             'order_refundable_endpoint'     => route('point-of-sale.till.orders.refundable', ['order' => '__order__']),
@@ -486,12 +487,6 @@ class BootLoader
             return [];
         }
 
-        $locationIds = $this->stockLocationIds($config);
-
-        if ($locationIds === []) {
-            return [];
-        }
-
         $trackedIds = $this->sellableProducts($config, $session)
             ->filter(fn ($product): bool => in_array(
                 $product->tracking?->value,
@@ -500,13 +495,24 @@ class BootLoader
             ))
             ->pluck('id');
 
-        if ($trackedIds->isEmpty()) {
+        return $this->lotsFor($config, $trackedIds->all());
+    }
+
+    public function lotsFor(Config $config, array $productIds): array
+    {
+        if ($productIds === [] || ! $config->operationType?->use_existing_lots) {
+            return [];
+        }
+
+        $locationIds = $this->stockLocationIds($config);
+
+        if ($locationIds === []) {
             return [];
         }
 
         return ProductQuantity::withoutGlobalScopes()
             ->whereIn('location_id', $locationIds)
-            ->whereIn('product_id', $trackedIds)
+            ->whereIn('product_id', $productIds)
             ->whereNotNull('lot_id')
             ->with('lot')
             ->get()

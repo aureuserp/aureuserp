@@ -3,12 +3,12 @@
     $changes = is_array($record->properties) ? $record->properties : [];
 @endphp
 
-<div {{ $attributes->merge($getExtraAttributes())->class(['ml-11']) }}>
+<div {{ $attributes->merge($getExtraAttributes())->class(['ml-8']) }}>
     @switch($record->type)
         {{-- Note & Comment --}}
         @case('note')
         @case('comment')
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-2">
                 {{-- Subject --}}
                 @if ($record->subject)
                     <div>
@@ -24,7 +24,7 @@
 
                 {{-- Body --}}
                 @if ($record->body)
-                    <div class="font-inter text-base leading-6 text-gray-900 dark:text-gray-100 overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
+                    <div class="font-inter text-sm leading-5 text-gray-900 dark:text-gray-100 overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
                         {!! \Webkul\Chatter\Support\ChatterMentions::render($record->body) !!}
                     </div>
                 @endif
@@ -32,7 +32,7 @@
                 {{-- Attachments --}}
                 @if ($record->attachments->isNotEmpty())
                     <section>
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             @foreach($record->attachments as $attachment)
                                 @php    
                                     $fileExtension = strtolower(pathinfo($attachment->original_file_name, PATHINFO_EXTENSION));
@@ -121,7 +121,7 @@
         {{-- Notification --}}
         @case('notification')
             @if ($record->body)
-                <div class="font-inter text-base text-gray-900 dark:text-gray-100 max-w-full">
+                <div class="font-inter text-sm text-gray-900 dark:text-gray-100 max-w-full">
                     {!! str($record->body)->sanitizeHtml() !!}
                 </div>
             @endif
@@ -131,9 +131,9 @@
                 ! empty($changes)
                 && $record->event !== 'created'
             )
-                <div class="mt-3 overflow-hidden rounded-xl shadow-sm ring-1 ring-black/5 bg-white/70 dark:bg-gray-900/60 dark:ring-white/5">
+                <div class="mt-2 overflow-hidden rounded-lg shadow-sm ring-1 ring-black/5 bg-white/70 dark:bg-gray-900/60 dark:ring-white/5">
                     <div class="divide-y divide-gray-200 dark:divide-gray-800">
-                        <div class="max-w-2xl mx-auto bg-gray-50/80 dark:bg-gray-950 rounded-lg p-3 space-y-2">
+                        <div class="max-w-2xl mx-auto bg-gray-50/80 dark:bg-gray-950 rounded-lg p-2.5 space-y-1.5">
                             @foreach($changes as $field => $change)
                                 @if(is_array($change))
                                     @php

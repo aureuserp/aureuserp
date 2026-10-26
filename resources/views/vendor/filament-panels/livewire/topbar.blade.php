@@ -41,47 +41,75 @@
             />
 
             @if ($isAdminPanel)
-                <x-filament::dropdown placement="bottom-start" teleport width="sm">
-                    <x-slot name="trigger">
-                        <x-filament::icon-button icon="icon-menu" />
-                    </x-slot>
+                <div
+                    x-data="{ isOpen: false }"
+                    x-on:keydown.escape.window="isOpen = false"
+                    class="fi-app-menu"
+                >
+                    <x-filament::icon-button
+                        icon="icon-menu"
+                        color="gray"
+                        :label="__('admin.app-menu.label')"
+                        x-on:click="isOpen = true"
+                    />
 
-                    <div
-                        class="grid grid-cols-2 gap-2 overflow-y-auto p-4 md:grid-cols-3"
-                        style="max-height: 80vh; grid-template-columns: repeat(3, minmax(0, 1fr));"
-                    >
-                        @foreach ($navigation as $group)
-                            @php
-                                $groupLabel = $group->getLabel();
-                                $groupIcon = $group->getIcon();
-                                $itemUrl = $group->getItems()->first()?->getUrl();
-                            @endphp
+                    <template x-teleport="body">
+                        <div
+                            x-cloak
+                            x-show="isOpen"
+                            x-transition.opacity.duration.150ms
+                            class="fi-app-menu-overlay"
+                        >
+                            <div class="fi-app-menu-backdrop" x-on:click="if (! window.matchMedia('(min-width: 768px)').matches) isOpen = false"></div>
 
-                            @if (! $groupLabel || ! $itemUrl || ! $groupIcon)
-                                @continue
-                            @endif
-
-                            <div
-                                @class([
-                                    'fi-topbar-item',
-                                    'fi-active' => $group->isActive(),
-                                ])
+                            <nav
+                                x-trap.noscroll="isOpen"
+                                aria-label="{{ __('admin.app-menu.label') }}"
+                                class="fi-app-menu-panel"
                             >
-                                <a
-                                    href="{{ $itemUrl }}"
-                                    class="fi-topbar-item-btn flex flex-col items-center justify-center gap-2 whitespace-nowrap rounded-lg p-4 text-center text-sm font-medium"
-                                >
-                                    <x-filament::icon
-                                        :icon="$groupIcon"
-                                        style="height: 64px; width: 64px"
+                                <div class="fi-app-menu-header">
+                                    <x-filament::icon-button
+                                        :icon="\Filament\Support\Icons\Heroicon::OutlinedXMark"
+                                        color="gray"
+                                        :label="__('admin.app-menu.close')"
+                                        x-on:click="isOpen = false"
+                                        class="fi-app-menu-close-btn"
                                     />
 
-                                    {{ $groupLabel }}
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                </x-filament::dropdown>
+                                    @if (filament()->auth()->check() && filament()->hasUserMenu())
+                                        <x-filament-panels::user-menu />
+                                    @endif
+                                </div>
+
+                                <div class="fi-app-menu-grid">
+                                    @foreach ($navigation as $group)
+                                        @php
+                                            $groupLabel = $group->getLabel();
+                                            $groupIcon = $group->getIcon();
+                                            $itemUrl = $group->getItems()->first()?->getUrl();
+                                        @endphp
+
+                                        @if (! $groupLabel || ! $itemUrl || ! $groupIcon)
+                                            @continue
+                                        @endif
+
+                                        <a
+                                            href="{{ $itemUrl }}"
+                                            @class([
+                                                'fi-app-menu-item',
+                                                'fi-active' => $group->isActive(),
+                                            ])
+                                        >
+                                            <x-filament::icon :icon="$groupIcon" />
+
+                                            <span>{{ $groupLabel }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </nav>
+                        </div>
+                    </template>
+                </div>
             @endif
         @endif
 
@@ -166,7 +194,7 @@
                             @if ($isAdminPanel)
                                 {{-- Admin panel: show active group name as a plain bold heading --}}
                                 <li class="fi-topbar-item">
-                                    <span class="px-3 py-2 text-xl font-bold">
+                                    <span class="fi-topbar-app-name">
                                         <a {{ \Filament\Support\generate_href_html($group->getItems()->first()->getUrl()) }}>
                                             {{ $groupLabel }}
                                         </a>

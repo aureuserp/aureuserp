@@ -37,7 +37,7 @@ class PluginsTable
                         ->label('')
                         ->state(true)
                         ->icon('heroicon-o-puzzle-piece')
-                        ->size(IconSize::TwoExtraLarge)
+                        ->size(IconSize::ExtraLarge)
                         ->color('primary')
                         ->visible(fn ($record) => ! $record?->package?->icon)
                         ->grow(false),

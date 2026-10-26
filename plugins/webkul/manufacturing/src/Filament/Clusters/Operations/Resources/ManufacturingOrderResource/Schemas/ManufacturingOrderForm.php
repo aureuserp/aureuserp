@@ -910,7 +910,7 @@ class ManufacturingOrderForm
                         Action::make('button_start')
                             ->icon('heroicon-m-play-circle')
                             ->color('success')
-                            ->size(Size::ExtraLarge)
+                            ->size(Size::Large)
                             ->databaseTransaction()
                             ->visible(function (?WorkOrder $record): bool {
                                 if (! $record) {
@@ -940,7 +940,7 @@ class ManufacturingOrderForm
                         Action::make('button_pending')
                             ->icon('heroicon-m-pause-circle')
                             ->color('warning')
-                            ->size(Size::ExtraLarge)
+                            ->size(Size::Large)
                             ->databaseTransaction()
                             ->visible(function (?WorkOrder $record): bool {
                                 if (! $record) {
@@ -970,7 +970,7 @@ class ManufacturingOrderForm
                             ->icon('heroicon-m-check-circle')
                             ->label(__('manufacturing::filament/clusters/operations/resources/manufacturing-order.form.tabs.work-orders.actions.done.label'))
                             ->color('primary')
-                            ->size(Size::ExtraLarge)
+                            ->size(Size::Large)
                             ->databaseTransaction()
                             ->visible(function (?WorkOrder $record): bool {
                                 if (! $record) {

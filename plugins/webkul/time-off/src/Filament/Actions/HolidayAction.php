@@ -34,12 +34,12 @@ class HolidayAction extends Action
                     ->hiddenLabel()
                     ->state(__('time-off::filament/actions/holiday-action.form.empty.public-holiday'))
                     ->color('gray')
-                    ->visible(fn (): bool => CalendarLeave::query()->doesntExist()),
+                    ->visible(fn (): bool => CalendarLeave::query()->where('time_type', 'leave')->doesntExist()),
 
                 RepeatableEntry::make('public_holidays')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.public-holiday'))
-                    ->state(fn (): Collection => CalendarLeave::query()->get())
-                    ->visible(fn (): bool => CalendarLeave::query()->exists())
+                    ->state(fn (): Collection => CalendarLeave::query()->where('time_type', 'leave')->get())
+                    ->visible(fn (): bool => CalendarLeave::query()->where('time_type', 'leave')->exists())
                     ->contained(false)
                     ->schema([
                         Grid::make(2)

@@ -204,26 +204,23 @@ class Package extends BasePackage
             Artisan::call('optimize:clear');
 
             if (app()->isProduction()) {
-                static::rebuildCachesInBackground();
+                if (app()->runningInConsole()) {
+                    Artisan::call('optimize');
+
+                    return;
+                }
+
+                app()->terminating(static function (): void {
+                    try {
+                        Artisan::call('optimize');
+                    } catch (Throwable $e) {
+                        report($e);
+                    }
+                });
             }
         } catch (Throwable $e) {
             report($e);
         }
-    }
-
-    protected static function rebuildCachesInBackground(): void
-    {
-        if (! app()->isProduction() || PHP_OS_FAMILY === 'Windows') {
-            return;
-        }
-
-        $command = sprintf(
-            '%s %s optimize > /dev/null 2>&1 &',
-            escapeshellarg(static::phpBinaryPath()),
-            escapeshellarg(base_path('artisan'))
-        );
-
-        exec($command);
     }
 
     public static function phpBinaryPath(): string

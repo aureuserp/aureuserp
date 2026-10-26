@@ -97,6 +97,10 @@ function uomName(line) {
                     {{ line.qty }} &times; {{ till.money(line.price_unit) }}<template v-if="uomName(line)"> / {{ uomName(line) }}</template><template v-if="line.discount"> &middot; &minus;{{ till.t('cart.discount', { percentage: line.discount }) }}</template>
                 </div>
 
+                <div v-if="line.lots?.length" class="text-xs">
+                    {{ till.t('receipt.lot-number', { numbers: line.lots.map((lot) => lot.lot_name).join(', ') }) }}
+                </div>
+
                 <div v-if="line.customer_note" class="text-xs italic">{{ line.customer_note }}</div>
             </div>
         </div>

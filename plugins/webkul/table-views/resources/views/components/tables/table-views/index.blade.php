@@ -11,11 +11,7 @@
         @lang('table-views::app.views.component.tables.table-views.title')
     </h4>
 
-    <div class="flex gap-x-4">
-        {{ $this->createTableViewAction }}
-        
-        {{ $this->resetTableViewAction }}
-    </div>
+    {{ $this->resetTableViewAction }}
 </div>
 
 @foreach ([
@@ -39,9 +35,9 @@
                     class="p-3"
                     :icon="$tableView->getIcon()"
                 >
-                    <div class="flex justify-between">
+                    <div class="flex min-w-0 justify-between gap-2">
                         <div
-                            class="w-full cursor-pointer select-none"
+                            class="min-w-0 flex-1 cursor-pointer truncate select-none"
                             wire:click="mountAction('applyTableView', {{ json_encode([
                                 'view_key' => $key, 
                                 'view_type' => $type
@@ -65,7 +61,9 @@
                                 class="h-4 w-4 text-gray-400 dark:text-gray-200"
                             />
                             
-                            {{ $this->getTableViewActionGroup($key, $type, $tableView) }}
+                            <div x-on:click.stop>
+                                {{ $this->getTableViewActionGroup($key, $type, $tableView) }}
+                            </div>
                         </div>
                     </div>
                 </x-filament::dropdown.list.item>

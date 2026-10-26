@@ -43,7 +43,7 @@ class OperationForm
                                     ->maxLength(255)
                                     ->autofocus()
                                     ->placeholder(__('manufacturing::filament/clusters/configurations/resources/operation.form.sections.general.fields.name-placeholder'))
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                     ->columnSpanFull(),
 
                                 Select::make('bill_of_material_id')

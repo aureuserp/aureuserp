@@ -171,6 +171,7 @@ class MessageAction extends Action
             ->label(__('chatter::filament/resources/actions/chatter/message-action.setup.title'))
             ->icon('heroicon-o-chat-bubble-left-right')
             ->modalIcon('heroicon-o-chat-bubble-left-right')
+            ->extraModalWindowAttributes(['class' => 'fi-chatter-modal'])
             ->modalSubmitAction(function ($action) {
                 $action->label(__('chatter::filament/resources/actions/chatter/message-action.setup.submit-title'));
                 $action->icon('heroicon-m-paper-airplane');

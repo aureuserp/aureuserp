@@ -3,13 +3,17 @@
 namespace Webkul\Field;
 
 use Filament\Panel;
-use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\HtmlString;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Models\Field;
 use Webkul\Field\Policies\FieldPolicy;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Support\Support\VersionedCss;
 
 class FieldServiceProvider extends PackageServiceProvider
 {
@@ -33,6 +37,8 @@ class FieldServiceProvider extends PackageServiceProvider
     {
         $this->registerCustomCss();
 
+        $this->registerProgressStepperSlot();
+
         Gate::policy(Field::class, FieldPolicy::class);
     }
 
@@ -46,7 +52,15 @@ class FieldServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('fields', __DIR__.'/../resources/dist/fields.css'),
+            VersionedCss::make('fields', __DIR__.'/../resources/dist/fields.css'),
         ], 'fields');
+    }
+
+    protected function registerProgressStepperSlot(): void
+    {
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::PAGE_SUB_NAVIGATION_TOP_AFTER,
+            fn (): HtmlString => new HtmlString(ProgressStepper::getSubNavigationSlotHtml()),
+        );
     }
 }

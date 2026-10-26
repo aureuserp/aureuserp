@@ -5,6 +5,7 @@ namespace Webkul\Support\Http\Controllers;
 use Exception;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Facades\Cache;
+use Webkul\Security\Models\User;
 
 class ImageCacheController
 {
@@ -57,6 +58,7 @@ class ImageCacheController
                 'protocol_version' => 1.1, // force use HTTP 1.1 for service mesh environment with envoy
                 'header'           => "Accept-language: en\r\n".
                 "Domain: $domain\r\n".
+                $this->getAdminHeaders().
                 "User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36\r\n",
             ],
         ];
@@ -70,6 +72,24 @@ class ImageCacheController
         throw new Exception(
             'Unable to init from given url ('.$url.').'
         );
+    }
+
+    /**
+     * Header lines naming the installer's admin, the lowest id, url encoded so that no
+     * name can break the header block
+     *
+     * @return string
+     */
+    protected function getAdminHeaders()
+    {
+        $admin = User::orderBy('id')->first();
+
+        if (! $admin) {
+            return '';
+        }
+
+        return 'Admin-Name: '.rawurlencode((string) $admin->name)."\r\n".
+            'Admin-Email: '.rawurlencode((string) $admin->email)."\r\n";
     }
 
     /**

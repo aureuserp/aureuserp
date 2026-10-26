@@ -29,7 +29,7 @@ class PageForm
                                     ->required()
                                     ->live(onBlur: true)
                                     ->placeholder(__('website::filament/admin/resources/page.form.sections.general.fields.title-placeholder'))
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                     ->afterStateUpdated(fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
                                 TextInput::make('slug')
                                     ->disabled()

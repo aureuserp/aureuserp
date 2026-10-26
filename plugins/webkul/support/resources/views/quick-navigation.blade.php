@@ -1,7 +1,5 @@
 @php
-    $kbd = 'inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-black/10 bg-gray-100 px-1.5 text-[11px] font-semibold leading-none text-gray-600 dark:border-white/10! dark:bg-zinc-800! dark:text-zinc-300!';
-    $kbdIcon = 'h-3.5 w-3.5';
-    $cmdSvg = '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></svg>';
+    $cmdSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></svg>';
 @endphp
 
 <div
@@ -133,34 +131,34 @@
             x-transition.opacity
             x-on:keydown.escape.window="handleEscape()"
             style="display: none;"
-            class="fixed inset-0 z-50 flex items-start justify-center px-4 pb-4 pt-[12vh]"
+            class="fi-quick-nav"
         >
-            <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" x-on:click="dismiss()"></div>
+            <div class="fi-quick-nav-backdrop" x-on:click="dismiss()"></div>
 
             <div
                 x-trap.noscroll="open"
-                class="relative flex max-h-[70vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-2xl dark:border-white/10! dark:bg-zinc-900!"
+                class="fi-quick-nav-panel"
             >
-                <div class="flex items-center gap-3 border-b border-black/5 px-4 py-3.5 dark:border-white/10!">
+                <div class="fi-quick-nav-header">
                     @if ($parentLabel)
                         <button
                             type="button"
                             wire:click="back()"
-                            class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-blue-50 px-2 py-1 text-sm font-medium text-blue-600 dark:bg-blue-500/15! dark:text-blue-300!"
+                            class="fi-quick-nav-back"
                         >
-                            <x-filament::icon icon="heroicon-o-chevron-left" class="h-4 w-4" />
+                            <x-filament::icon icon="heroicon-o-chevron-left" />
                             <span>{{ $parentLabel }}</span>
                         </button>
-                        <span class="shrink-0 text-gray-300 dark:text-zinc-600!">/</span>
+                        <span class="shrink-0 text-gray-300 dark:text-gray-600">/</span>
                     @else
                         <x-filament::icon
                             wire:loading.remove
                             wire:target="query"
                             icon="heroicon-o-magnifying-glass"
-                            class="h-5 w-5 shrink-0 text-gray-400"
+                            class="fi-quick-nav-search-icon"
                         />
 
-                        <x-filament::loading-indicator wire:loading wire:target="query" class="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                        <x-filament::loading-indicator wire:loading wire:target="query" class="fi-quick-nav-search-icon" />
                     @endif
 
                     <input
@@ -177,19 +175,17 @@
                         x-on:keydown.enter.prevent="select()"
                         placeholder="{{ __('support::quick-navigation.placeholder') }}"
                         autocomplete="off"
-                        class="flex-1 border-0 bg-transparent p-0 text-base text-gray-900 shadow-none outline-none placeholder:text-gray-400 focus:border-0 focus:outline-none focus:ring-0 dark:text-zinc-100!"
+                        class="fi-quick-nav-input"
                     />
 
-                    <kbd class="{{ $kbd }}">esc</kbd>
+                    <kbd class="fi-quick-nav-key">esc</kbd>
                 </div>
 
-                <div x-ref="results" class="overflow-y-auto p-1.5" wire:key="quick-navigation-results">
+                <div x-ref="results" class="fi-quick-nav-results" wire:key="quick-navigation-results">
                     @php $index = 0; @endphp
 
                     @forelse ($this->groups as $group)
-                        <div class="px-2.5 pb-1.5 pt-2.5 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-zinc-500!">
-                            {{ $group['label'] }}
-                        </div>
+                        <div class="fi-quick-nav-group-label">{{ $group['label'] }}</div>
 
                         @foreach ($group['items'] as $item)
                             <div
@@ -207,22 +203,22 @@
                                     x-on:click="close()"
                                 @endif
                                 x-on:mouseenter="active = {{ $index }}"
-                                :class="active === {{ $index }} ? 'is-active bg-blue-50 dark:bg-blue-500/15!' : ''"
-                                class="group flex w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2.5 text-left text-gray-900 dark:text-zinc-100!"
+                                x-bind:class="{ 'fi-active': active === {{ $index }} }"
+                                class="fi-quick-nav-item"
                             >
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 group-[.is-active]:bg-blue-100 group-[.is-active]:text-blue-600 dark:bg-zinc-800! dark:text-zinc-400! dark:group-[.is-active]:bg-blue-500/25! dark:group-[.is-active]:text-blue-300! [&>svg]:h-[1.15rem] [&>svg]:w-[1.15rem]">
+                                <span class="fi-quick-nav-item-icon">
                                     @if (! empty($item['icon']))
                                         {!! $item['icon'] !!}
                                     @else
-                                        <x-filament::icon icon="heroicon-o-chevron-right" class="h-[1.15rem] w-[1.15rem]" />
+                                        <x-filament::icon icon="heroicon-o-chevron-right" />
                                     @endif
                                 </span>
 
-                                <span class="flex min-w-0 flex-1 flex-col">
-                                    <span class="truncate text-sm font-medium">{{ $item['title'] }}</span>
+                                <span class="fi-quick-nav-item-text">
+                                    <span class="fi-quick-nav-item-label">{{ $item['title'] }}</span>
 
                                     @if (! empty($item['subtitle']))
-                                        <span class="truncate text-xs text-gray-400 dark:text-zinc-500!">{{ $item['subtitle'] }}</span>
+                                        <span class="fi-quick-nav-item-description">{{ $item['subtitle'] }}</span>
                                     @endif
                                 </span>
 
@@ -233,53 +229,56 @@
                                         wire:click.stop="toggleFavorite(@js($item['url']), @js($item['title']))"
                                         x-on:click.stop
                                         title="{{ ! empty($item['favorite']) ? __('support::quick-navigation.unpin') : __('support::quick-navigation.pin') }}"
-                                        class="shrink-0 rounded p-1 {{ ! empty($item['favorite']) ? 'text-amber-500' : 'text-gray-400 opacity-0 hover:text-amber-500 group-hover:opacity-100 group-[.is-active]:opacity-100 dark:text-zinc-500!' }}"
+                                        @class([
+                                            'fi-quick-nav-item-pin',
+                                            'fi-pinned' => ! empty($item['favorite']),
+                                        ])
                                     >
-                                        <x-filament::icon :icon="! empty($item['favorite']) ? 'heroicon-s-star' : 'heroicon-o-star'" class="h-4 w-4" />
+                                        <x-filament::icon :icon="! empty($item['favorite']) ? 'heroicon-s-star' : 'heroicon-o-star'" />
                                     </button>
                                 @endif
 
                                 @if (! empty($item['cluster']))
-                                    <x-filament::icon icon="heroicon-o-chevron-right" class="h-4 w-4 shrink-0 text-gray-400 group-[.is-active]:text-blue-500 dark:text-zinc-500!" />
+                                    <x-filament::icon icon="heroicon-o-chevron-right" class="fi-quick-nav-item-end" />
                                 @else
-                                    <x-filament::icon icon="heroicon-m-arrow-turn-down-left" class="h-4 w-4 shrink-0 text-gray-400 group-[.is-active]:text-blue-500 dark:text-zinc-500!" />
+                                    <x-filament::icon icon="heroicon-m-arrow-turn-down-left" class="fi-quick-nav-item-end" />
                                 @endif
                             </div>
 
                             @php $index++; @endphp
                         @endforeach
                     @empty
-                        <div class="px-4 py-9 text-center text-sm text-gray-400 dark:text-zinc-500!">
+                        <div class="fi-quick-nav-empty">
                             {{ trim($this->query) === '' ? __('support::quick-navigation.hint') : __('support::quick-navigation.empty') }}
                         </div>
                     @endforelse
                 </div>
 
-                <div class="flex items-center gap-5 border-t border-black/5 px-4 py-3 text-xs text-gray-500 dark:border-white/10! dark:text-zinc-400!">
-                    <span class="inline-flex items-center gap-1">
-                        <kbd class="{{ $kbd }}"><x-filament::icon icon="heroicon-m-arrow-up" class="{{ $kbdIcon }}" /></kbd>
-                        <kbd class="{{ $kbd }}"><x-filament::icon icon="heroicon-m-arrow-down" class="{{ $kbdIcon }}" /></kbd>
-                        <span class="ml-1">{{ __('support::quick-navigation.navigate') }}</span>
+                <div class="fi-quick-nav-footer">
+                    <span class="fi-quick-nav-hint">
+                        <kbd class="fi-quick-nav-key"><x-filament::icon icon="heroicon-m-arrow-up" /></kbd>
+                        <kbd class="fi-quick-nav-key"><x-filament::icon icon="heroicon-m-arrow-down" /></kbd>
+                        <span>{{ __('support::quick-navigation.navigate') }}</span>
                     </span>
-                    <span class="inline-flex items-center gap-1">
-                        <kbd class="{{ $kbd }}"><x-filament::icon icon="heroicon-m-arrow-turn-down-left" class="{{ $kbdIcon }}" /></kbd>
-                        <span class="ml-1">{{ __('support::quick-navigation.open') }}</span>
+                    <span class="fi-quick-nav-hint">
+                        <kbd class="fi-quick-nav-key"><x-filament::icon icon="heroicon-m-arrow-turn-down-left" /></kbd>
+                        <span>{{ __('support::quick-navigation.open') }}</span>
                     </span>
-                    <span class="inline-flex items-center gap-1">
-                        <kbd class="{{ $kbd }}">
+                    <span class="fi-quick-nav-hint">
+                        <kbd class="fi-quick-nav-key">
                             <span x-show="isMac" class="inline-flex">{!! $cmdSvg !!}</span>
                             <span x-show="! isMac">Ctrl</span>
                         </kbd>
-                        <kbd class="{{ $kbd }}"><x-filament::icon icon="heroicon-m-arrow-turn-down-left" class="{{ $kbdIcon }}" /></kbd>
-                        <span class="ml-1">{{ __('support::quick-navigation.new_tab_hint') }}</span>
+                        <kbd class="fi-quick-nav-key"><x-filament::icon icon="heroicon-m-arrow-turn-down-left" /></kbd>
+                        <span>{{ __('support::quick-navigation.new_tab_hint') }}</span>
                     </span>
-                    <span class="inline-flex items-center gap-1">
-                        <kbd class="{{ $kbd }}">
+                    <span class="fi-quick-nav-hint">
+                        <kbd class="fi-quick-nav-key">
                             <span x-show="isMac" class="inline-flex">{!! $cmdSvg !!}</span>
                             <span x-show="! isMac">Ctrl</span>
                         </kbd>
-                        <kbd class="{{ $kbd }}">S</kbd>
-                        <span class="ml-1">{{ __('support::quick-navigation.pin') }}</span>
+                        <kbd class="fi-quick-nav-key">S</kbd>
+                        <span>{{ __('support::quick-navigation.pin') }}</span>
                     </span>
                 </div>
             </div>

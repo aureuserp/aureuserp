@@ -87,6 +87,7 @@ class FiltersAction extends Action
                     ])
                     ->columns(2),
             ])
+            ->extraModalWindowAttributes(['class' => 'fi-chatter-modal'])
             ->modalSubmitAction(function ($action) {
                 $action->label(__('chatter::filament/resources/actions/chatter/filters-action.actions.apply'))->icon('heroicon-m-check');
             })

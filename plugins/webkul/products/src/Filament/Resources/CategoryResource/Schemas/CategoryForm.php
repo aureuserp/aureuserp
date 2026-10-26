@@ -24,7 +24,7 @@ class CategoryForm
                                     ->maxLength(255)
                                     ->autofocus()
                                     ->placeholder(__('products::filament/resources/category.form.sections.general.fields.name-placeholder'))
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                     ->unique(ignoreRecord: true),
                                 Select::make('parent_id')
                                     ->label(__('products::filament/resources/category.form.sections.general.fields.parent'))

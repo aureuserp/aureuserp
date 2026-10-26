@@ -7,6 +7,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
+use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
 use Throwable;
 use Webkul\Chatter\Mail\FollowerMail;
@@ -65,7 +66,7 @@ class FollowerAction extends Action
             ->tooltip(__('chatter::filament/resources/actions/chatter/follower-action.setup.tooltip'))
             ->modalIcon('heroicon-s-user-plus')
             ->badge(fn (Model $record): int => $record->followers()->count())
-            ->modalWidth('2xl')
+            ->modalWidth(Width::Large)
             ->slideOver(false)
             ->schema(function ($schema) {
                 return $schema
@@ -191,6 +192,7 @@ class FollowerAction extends Action
                     $livewire->dispatch('chatter.refresh');
                 }
             })
+            ->extraModalWindowAttributes(['class' => 'fi-chatter-modal'])
             ->modalSubmitAction(
                 fn ($action) => $action
                     ->label(__('chatter::filament/resources/actions/chatter/follower-action.setup.submit-action-title'))

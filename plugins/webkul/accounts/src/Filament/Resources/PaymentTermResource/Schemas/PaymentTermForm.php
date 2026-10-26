@@ -36,7 +36,7 @@ class PaymentTermForm
                                     ->required()
                                     ->label(__('accounts::filament/resources/payment-term.form.sections.fields.payment-term'))
                                     ->maxLength(255)
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                     ->columnSpan(1),
                                 Select::make('company_id')
                                     ->label(__('accounts::filament/resources/payment-term.form.sections.fields.company'))

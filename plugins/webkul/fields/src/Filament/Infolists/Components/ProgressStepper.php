@@ -5,10 +5,13 @@ namespace Webkul\Field\Filament\Infolists\Components;
 use BackedEnum;
 use Closure;
 use Filament\Infolists\Components\Entry;
+use Webkul\Field\Filament\Traits\RendersBesideSubNavigation;
 
 class ProgressStepper extends Entry
 {
-    protected string $view = 'fields::filament.infolists.components.progress-stepper';
+    use RendersBesideSubNavigation;
+
+    protected string $view = 'fields::filament.infolists.components.progress-stepper.index';
 
     protected mixed $options = [];
 

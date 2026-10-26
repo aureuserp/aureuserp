@@ -184,3 +184,34 @@ it('creates no operation for a service product', function () {
         ->and($order->operation_id)->toBeNull()
         ->and($order->has_failed_operation)->toBeFalse();
 });
+
+it('delivers a consumable good that tracks no inventory', function () {
+    $consumable = InventoryHelper::product(['is_storable' => false]);
+
+    $order = PointOfSale::syncOrder(PosHelper::orderPayload(
+        $this->config,
+        $this->session,
+        [PosHelper::line($consumable->id, 3, 20.0)],
+        [PosHelper::payment($this->cash, 60.0)],
+    ));
+
+    expect($order->operation_id)->not->toBeNull()
+        ->and($order->operation->state)->toBe(OperationState::DONE)
+        ->and($order->operation->moves()->where('product_id', $consumable->id)->exists())->toBeTrue();
+});
+
+it('includes a consumable good alongside storable goods in one delivery', function () {
+    $storable = InventoryHelper::product();
+    $consumable = InventoryHelper::product(['is_storable' => false]);
+
+    $order = PointOfSale::syncOrder(PosHelper::orderPayload(
+        $this->config,
+        $this->session,
+        [PosHelper::line($storable->id, 1, 20.0), PosHelper::line($consumable->id, 1, 20.0)],
+        [PosHelper::payment($this->cash, 40.0)],
+    ));
+
+    expect($order->operation->state)->toBe(OperationState::DONE)
+        ->and($order->operation->moves()->where('product_id', $storable->id)->exists())->toBeTrue()
+        ->and($order->operation->moves()->where('product_id', $consumable->id)->exists())->toBeTrue();
+});

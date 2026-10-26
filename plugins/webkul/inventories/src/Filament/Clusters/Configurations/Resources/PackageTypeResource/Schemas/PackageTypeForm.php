@@ -23,7 +23,7 @@ class PackageTypeForm
                             ->required()
                             ->maxLength(255)
                             ->autofocus()
-                            ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                            ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
 
                         Grid::make(2)
                             ->schema([

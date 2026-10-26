@@ -39,7 +39,6 @@ class SessionPickingGenerator
         $lines = $orders
             ->flatMap(fn (Order $order) => $order->lines)
             ->filter(fn (OrderLine $line): bool => $line->product?->type === ProductType::GOODS
-                && $line->product?->is_storable
                 && ! float_is_zero((float) $line->qty, precisionDigits: 4));
 
         if ($lines->isEmpty()) {

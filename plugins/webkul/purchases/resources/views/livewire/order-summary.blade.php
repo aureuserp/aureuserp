@@ -1,9 +1,9 @@
 <div>
     <style>
         .invoice-container {
-            width: 350px;
+            width: 320px;
             background-color: white;
-            padding: 20px;
+            padding: 12px 16px;
             border-radius: 12px;
         }
 
@@ -15,7 +15,7 @@
         .invoice-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            padding: 4px 0;
             font-size: 14px;
             color: #555;
         }
@@ -30,7 +30,7 @@
 
         .divider {
             border-bottom: 1px solid #ddd;
-            margin: 12px 0;
+            margin: 6px 0;
         }
 
         :is(.dark .divider) {

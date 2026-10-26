@@ -36,7 +36,7 @@ class WorkCenterForm
                                     ->maxLength(255)
                                     ->autofocus()
                                     ->placeholder(__('manufacturing::filament/clusters/configurations/resources/work-center.form.sections.general.fields.name-placeholder'))
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                     ->columnSpanFull(),
 
                                 TextInput::make('code')

@@ -1,4 +1,4 @@
-<footer class="px-6 py-12 bg-gradient-to-r from-blue-50 via-purple-50 to-blue-100" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+<footer class="px-6 py-12 bg-linear-to-r from-primary-50 via-primary-50/40 to-primary-100" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 	<div class="container max-w-6xl mx-auto">
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 			<!-- Logo and Description Column -->

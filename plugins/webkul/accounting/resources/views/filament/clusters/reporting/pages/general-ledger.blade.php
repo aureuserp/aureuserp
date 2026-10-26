@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="space-y-6">
+    <div class="space-y-4">
         {{-- Filters --}}
         {{ $this->form }}
 
@@ -41,7 +41,7 @@
             
             {{-- General Ledger Table --}}
             <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5!">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-white/5!">
+                <table class="text-sm min-w-full divide-y divide-gray-200 dark:divide-white/5!">
                     <colgroup>
                         <col style="width: 50px;">
                         <col style="min-width: 250px;">
@@ -55,14 +55,14 @@
 
                     <thead class="bg-gray-50/50 dark:bg-white/5">
                         <tr>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.date') }}</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.communication') }}</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.partner') }}</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.balance') }}</th>
+                            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
+                            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
+                            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.date') }}</th>
+                            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.communication') }}</th>
+                            <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.partner') }}</th>
+                            <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.debit') }}</th>
+                            <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.credit') }}</th>
+                            <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{{ __('accounting::filament/clusters/reporting.common.balance') }}</th>
                         </tr>
                     </thead>
                     
@@ -85,7 +85,7 @@
                                         x-data="{ loading: false }"
                                         @click="loading = true; $wire.toggleAccountLines({{ $account->id }}).then(() => loading = false)"
                                     >
-                                        <td class="px-4 py-3 whitespace-nowrap">
+                                        <td class="px-3 py-2 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <svg x-show="!loading" class="w-4 h-4 transition-transform @if($this->isAccountExpanded($account->id)) rotate-90 @endif" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -93,25 +93,25 @@
                                                 <x-filament::loading-indicator x-show="loading" x-cloak class="h-4 w-4" />
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap">
+                                        <td class="px-3 py-2 whitespace-nowrap">
                                             <span class="font-medium text-gray-900 dark:text-white">
                                                 {{ $account->code }} {{ $account->name }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3"></td>
-                                        <td class="px-4 py-3"></td>
-                                        <td class="px-4 py-3"></td>
-                                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                                        <td class="px-3 py-2"></td>
+                                        <td class="px-3 py-2"></td>
+                                        <td class="px-3 py-2"></td>
+                                        <td class="px-3 py-2 text-right whitespace-nowrap">
                                             <span class="text-gray-900 dark:text-white">
                                                 {{ number_format($account->period_debit, 2) }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                                        <td class="px-3 py-2 text-right whitespace-nowrap">
                                             <span class="text-gray-900 dark:text-white">
                                                 {{ number_format($account->period_credit, 2) }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-right whitespace-nowrap font-semibold">
+                                        <td class="px-3 py-2 text-right whitespace-nowrap font-semibold">
                                             <span class="text-gray-900 dark:text-white">
                                                 {{ number_format($account->ending_balance, 2) }}
                                             </span>
@@ -121,28 +121,28 @@
                                     {{-- Opening Balance Row --}}
                                     @if($account->opening_balance != 0 && $this->isAccountExpanded($account->id))
                                         <tr class="bg-white dark:bg-gray-900">
-                                            <td class="px-4 py-2"></td>
-                                            <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm">
+                                            <td class="px-3 py-1.5"></td>
+                                            <td class="px-3 py-1.5 pl-8 whitespace-nowrap text-sm">
                                                 <span class="italic text-gray-600 dark:text-gray-400">
                                                     Opening Balance
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                            <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}
                                             </td>
-                                            <td class="px-4 py-2"></td>
-                                            <td class="px-4 py-2"></td>
-                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                            <td class="px-3 py-1.5"></td>
+                                            <td class="px-3 py-1.5"></td>
+                                            <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
                                                     {{ $account->opening_balance > 0 ? number_format($account->opening_balance, 2) : '' }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                            <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
                                                     {{ $account->opening_balance < 0 ? number_format(abs($account->opening_balance), 2) : '' }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                            <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="font-semibold text-gray-600 dark:text-gray-400">{{ number_format($account->opening_balance, 2) }}</span>
                                             </td>
                                         </tr>
@@ -159,8 +159,8 @@
                                             @endphp
 
                                             <tr class="bg-white dark:bg-gray-900">
-                                            <td class="px-4 py-2"></td>
-                                            <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                            <td class="px-3 py-1.5"></td>
+                                            <td class="px-3 py-1.5 pl-8 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $move['move_name'] }}
 
                                                 @if($move['ref'])
@@ -169,28 +169,28 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                            <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ \Carbon\Carbon::parse($move['date'])->format('M d, Y') }}
                                             </td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                            <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 @if ($move['move_type'] == 'entry')
                                                     {{ $move['name'] }}
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                            <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $move['partner_name'] }}
                                             </td>
-                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                            <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
                                                     {{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                            <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
                                                     {{ $move['credit'] > 0 ? number_format($move['credit'], 2) : '' }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                            <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="font-medium text-gray-600 dark:text-gray-400">
                                                     {{ number_format($runningBalance, 2) }}
                                                 </span>
@@ -204,26 +204,26 @@
                             <tbody>
                                 {{-- Total Row --}}
                                 <tr class="bg-gray-100/80 dark:bg-white/5 font-semibold border-t-2 border-gray-300 dark:border-white/5!">
-                                    <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3 text-gray-900 dark:text-white">
+                                    <td class="px-3 py-2"></td>
+                                    <td class="px-3 py-2 text-gray-900 dark:text-white">
                                         Total General Ledger
                                     </td>
-                                    <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                                    <td class="px-3 py-2"></td>
+                                    <td class="px-3 py-2"></td>
+                                    <td class="px-3 py-2"></td>
+                                    <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
                                         {{ number_format($totalDebit, 2) }}
                                     </td>
-                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                                    <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
                                         {{ number_format($totalCredit, 2) }}
                                     </td>
-                                    <td class="px-4 py-3"></td>
+                                    <td class="px-3 py-2"></td>
                                 </tr>
                             </tbody>
                         @else
                             <tbody>
                                 <tr>
-                                    <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="9" class="px-3 py-6 text-center text-gray-500 dark:text-gray-400">
                                         No accounts with transactions in this period
                                     </td>
                                 </tr>

@@ -143,6 +143,7 @@ class LogAction extends Action
             ->label(__('chatter::filament/resources/actions/chatter/log-action.setup.title'))
             ->icon('heroicon-o-chat-bubble-oval-left')
             ->modalIcon('heroicon-o-chat-bubble-oval-left')
+            ->extraModalWindowAttributes(['class' => 'fi-chatter-modal'])
             ->modalSubmitAction(function ($action) {
                 $action->label(__('chatter::filament/resources/actions/chatter/log-action.setup.submit-title'));
 

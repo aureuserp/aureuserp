@@ -183,7 +183,7 @@ class WorkOrdersTable
                     ->hiddenLabel()
                     ->icon('heroicon-m-play-circle')
                     ->color('success')
-                    ->size(Size::ExtraLarge)
+                    ->size(Size::Large)
                     ->visible(function (WorkOrder $record): bool {
                         $productionState = $record->manufacturingOrder?->state;
 
@@ -205,7 +205,7 @@ class WorkOrdersTable
                     ->hiddenLabel()
                     ->icon('heroicon-m-pause-circle')
                     ->color('warning')
-                    ->size(Size::ExtraLarge)
+                    ->size(Size::Large)
                     ->visible(function (WorkOrder $record): bool {
                         $productionState = $record->manufacturingOrder?->state;
 
@@ -226,7 +226,7 @@ class WorkOrdersTable
                     ->hiddenLabel()
                     ->icon('heroicon-m-check-circle')
                     ->color('primary')
-                    ->size(Size::ExtraLarge)
+                    ->size(Size::Large)
                     ->visible(function (WorkOrder $record): bool {
                         $productionState = $record->manufacturingOrder?->state;
 

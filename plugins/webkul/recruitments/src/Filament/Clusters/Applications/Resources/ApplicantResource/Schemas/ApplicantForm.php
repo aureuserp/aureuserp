@@ -83,7 +83,7 @@ class ApplicantForm
                                                 ->outlined(false)
                                                 ->icon(fn ($record) => $record?->priority >= 1 ? 'heroicon-s-star' : 'heroicon-o-star')
                                                 ->color('warning')
-                                                ->size(Size::ExtraLarge)
+                                                ->size(Size::Large)
                                                 ->iconButton()
                                                 ->tooltip(__('recruitments::filament/clusters/applications/resources/applicant.form.sections.general-information.fields.evaluation-good'))
                                                 ->action(function ($record) {
@@ -99,7 +99,7 @@ class ApplicantForm
                                                 ->hiddenLabel()
                                                 ->icon(fn ($record) => $record?->priority >= 2 ? 'heroicon-s-star' : 'heroicon-o-star')
                                                 ->color('warning')
-                                                ->size(Size::ExtraLarge)
+                                                ->size(Size::Large)
                                                 ->iconButton()
                                                 ->tooltip(__('recruitments::filament/clusters/applications/resources/applicant.form.sections.general-information.fields.evaluation-very-good'))
                                                 ->action(function ($record) {
@@ -115,7 +115,7 @@ class ApplicantForm
                                                 ->hiddenLabel()
                                                 ->icon(fn ($record) => $record?->priority >= 3 ? 'heroicon-s-star' : 'heroicon-o-star')
                                                 ->color('warning')
-                                                ->size(Size::ExtraLarge)
+                                                ->size(Size::Large)
                                                 ->iconButton()
                                                 ->tooltip(__('recruitments::filament/clusters/applications/resources/applicant.form.sections.general-information.fields.evaluation-very-excellent'))
                                                 ->action(function ($record) {

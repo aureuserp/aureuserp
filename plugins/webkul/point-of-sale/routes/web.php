@@ -14,6 +14,7 @@ use Webkul\PointOfSale\Http\Controllers\API\V1\OrderInvoiceController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderInvoicePdfController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderRefundController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\OrderSyncController;
+use Webkul\PointOfSale\Http\Controllers\API\V1\ProductLotController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\ReceiptController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\RegisterListController;
 use Webkul\PointOfSale\Http\Controllers\API\V1\SalesDetailsController;
@@ -41,6 +42,7 @@ Route::name('point-of-sale.till.')
         Route::delete('floors/{floor}/background', [FloorPlanController::class, 'destroyBackground'])->name('floors.background.destroy');
         Route::get('sessions/{session}/boot', [BootController::class, 'show'])->name('sessions.boot');
         Route::post('configs/{config}/products', [TerminalProductController::class, 'store'])->name('configs.products.store');
+        Route::get('configs/{config}/products/{product}/lots', [ProductLotController::class, 'index'])->whereNumber('product')->name('configs.products.lots');
 
         Route::get('registers', [RegisterListController::class, 'index'])->name('registers');
         Route::post('registers/{config}/discard', [RegisterListController::class, 'discard'])->name('registers.discard');

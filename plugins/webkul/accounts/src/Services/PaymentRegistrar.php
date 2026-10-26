@@ -139,18 +139,22 @@ class PaymentRegistrar
             ? $register->payment_difference
             : -$register->payment_difference;
 
+        $writeOffBalance = $register->currency->convert(
+            $writeOffAmountCurrency,
+            $register->company->currency,
+            $register->company,
+            $register->payment_date
+        );
+
         $attributes['write_off_line_vals'][] = [
             'name'            => 'Write Off',
             'account_id'      => $register->writeoff_account_id,
             'partner_id'      => $register->partner_id,
             'currency_id'     => $register->currency_id,
             'amount_currency' => $writeOffAmountCurrency,
-            'balance'         => $register->currency->convert(
-                $writeOffAmountCurrency,
-                $register->company->currency,
-                $register->company,
-                $register->payment_date
-            ),
+            'balance'         => $writeOffBalance,
+            'debit'           => $writeOffBalance > 0.0 ? $writeOffBalance : 0.0,
+            'credit'          => $writeOffBalance < 0.0 ? -$writeOffBalance : 0.0,
         ];
 
         return $attributes;

@@ -1,9 +1,9 @@
 <div>
     <style>
         .invoice-container {
-            width: 350px;
+            width: 320px;
             background-color: white;
-            padding: 20px;
+            padding: 12px 16px;
             border-radius: 12px;
         }
 
@@ -15,7 +15,7 @@
         .invoice-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            padding: 4px 0;
             font-size: 14px;
             color: #555;
             gap: 8px;
@@ -31,7 +31,7 @@
 
         .invoice-item.font-bold span {
             font-weight: 700 !important;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .invoice-item.font-semibold span {
@@ -44,7 +44,7 @@
 
         .divider {
             border-bottom: 1px solid #ddd;
-            margin: 12px 0;
+            margin: 6px 0;
         }
 
         :is(.dark .divider) {
@@ -129,7 +129,7 @@
             @if ($reconcilablePayments && $reconcilablePayments['outstanding'])
                 <div class="divider"></div>
 
-                <div class="mt-4 font-semibold">
+                <div class="mt-2 text-sm font-semibold">
                     {{ $reconcilablePayments['title'] }}
                 </div>
 

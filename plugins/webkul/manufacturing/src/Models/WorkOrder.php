@@ -231,7 +231,7 @@ class WorkOrder extends Model implements Sortable
         }
 
         $qtyProduction = $this->manufacturingOrder->uom->computeQuantity(
-            $this->quantity_producing ?: $this->quantity_production,
+            (float) $this->quantity_producing ?: $this->quantity_production,
             $this->manufacturingOrder->product->uom
         );
 
@@ -340,7 +340,7 @@ class WorkOrder extends Model implements Sortable
 
         $this->duration_per_unit = round($this->duration / max($this->quantity_produced, 1), 2);
 
-        if ($this->expected_duration) {
+        if ((float) $this->expected_duration) {
             $this->duration_percent = (int) round(max(
                 -2147483648,
                 min(
@@ -772,7 +772,7 @@ class WorkOrder extends Model implements Sortable
 
     public function buildProductivityLogAttributes(float $duration, Carbon $dateStart, ?Carbon $dateEnd = null): array
     {
-        if (! $this->expected_duration || $duration <= $this->expected_duration) {
+        if (! (float) $this->expected_duration || $duration <= $this->expected_duration) {
             $lossId = WorkCenterProductivityLoss::where('loss_type', 'productive')->first();
 
             if (! $lossId) {
