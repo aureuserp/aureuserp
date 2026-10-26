@@ -234,6 +234,16 @@
     @apply flex flex-row items-center gap-1 py-2.5;
 }
 
+.plugins-table .fi-ta-content-grid .fi-ta-record-content-ctn {
+    @apply relative;
+}
+
+.plugins-table .fi-ta-content-grid .fi-ta-record-content-ctn .fi-ta-actions {
+    position: absolute;
+    inset-block-end: 10px;
+    inset-inline-end: 0;
+}
+
 .fi-fo-checkbox-list-options {
     @apply gap-2;
 }

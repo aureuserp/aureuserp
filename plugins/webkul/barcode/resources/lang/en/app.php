@@ -10,6 +10,7 @@ return [
         'label'       => 'Navigation',
         'open'        => 'Open navigation',
         'coming-soon' => 'Coming soon',
+        'back-office' => 'Back Office',
     ],
 
     'auth' => [
