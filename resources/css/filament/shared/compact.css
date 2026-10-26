@@ -77,9 +77,12 @@
 .fi-ta-checkbox:not(.fi-inline),
 .fi-ta-select:not(.fi-inline),
 .fi-ta-toggle:not(.fi-inline),
-.fi-ta-text-input:not(.fi-inline),
 .fi-ta-image:not(.fi-inline) {
     @apply py-2.5;
+}
+
+.fi-ta-text-input:not(.fi-inline) {
+    @apply py-px;
 }
 
 .fi-ta-cell:has(.fi-ta-actions),
@@ -216,6 +219,19 @@
 
 .fi-masonry > .fi-sc > .fi-grid-col {
     @apply mb-4 break-inside-avoid last:mb-0;
+}
+
+.fi-ta-cell.fi-ta-summary-row-heading-cell:first-child,
+.fi-ta-cell.fi-ta-summary-header-cell:first-child {
+    @apply ps-4;
+}
+
+.fi-ta-cell.fi-ta-summary-row-heading-cell {
+    @apply py-2.5;
+}
+
+.fi-ta-text-summary {
+    @apply flex flex-row items-center gap-1 py-2.5;
 }
 
 .fi-fo-checkbox-list-options {
