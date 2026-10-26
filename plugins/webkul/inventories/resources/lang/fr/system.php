@@ -27,7 +27,9 @@ return [
         ],
 
         'return' => [
-            'origin' => 'Retour de :operation_name',
+            'origin'               => 'Retour de :operation_name',
+            'return-of-return'     => 'Le transfert :operation est un retour et ne peut pas être retourné à nouveau.',
+            'more-than-returnable' => 'Vous ne pouvez pas retourner plus de :quantity :uom de :product.',
         ],
     ],
 

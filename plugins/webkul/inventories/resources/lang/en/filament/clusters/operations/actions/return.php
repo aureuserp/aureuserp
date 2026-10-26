@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'label' => 'Return',
+    'label'                     => 'Return',
+    'return-of-return-disabled' => 'Returning a return is turned off in the inventory operation settings.',
 
     'modal' => [
         'form' => [

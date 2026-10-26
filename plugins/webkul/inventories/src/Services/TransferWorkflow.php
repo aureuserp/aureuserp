@@ -3,6 +3,9 @@
 namespace Webkul\Inventory\Services;
 
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType;
@@ -16,6 +19,7 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\PluginManager\Package;
 
 class TransferWorkflow
@@ -49,7 +53,7 @@ class TransferWorkflow
             ]);
 
         if ($moves->isEmpty()) {
-            throw new \Exception(__('inventories::system.inventory-manager.check-availability.no-moves'));
+            throw new Exception(__('inventories::system.inventory-manager.check-availability.no-moves'));
         }
 
         app(MoveReserver::class)->reserve($moves);
@@ -107,11 +111,50 @@ class TransferWorkflow
 
     public function createReturn(Operation $operation, array $moveQuantities = []): Operation
     {
-        $sourceMoves = Move::query()
-            ->whereIn('id', array_keys($moveQuantities))
-            ->where('operation_id', $operation->id)
-            ->get();
+        return DB::transaction(function () use ($operation, $moveQuantities): Operation {
+            $sourceMoves = Move::query()
+                ->whereIn('id', array_keys($moveQuantities))
+                ->where('operation_id', $operation->id)
+                ->lockForUpdate()
+                ->get();
 
+            $this->assertReturnable($operation, $sourceMoves, $moveQuantities);
+
+            return $this->buildReturn($operation, $sourceMoves, $moveQuantities);
+        });
+    }
+
+    protected function assertReturnable(Operation $operation, Collection $sourceMoves, array $moveQuantities): void
+    {
+        $settings = app(OperationSettings::class);
+
+        if ($operation->return_id && ! $settings->enable_returning_returns) {
+            throw new Exception(__('inventories::system.inventory-manager.return.return-of-return', ['operation' => $operation->name]));
+        }
+
+        if ($settings->enable_returning_more_than_received) {
+            return;
+        }
+
+        foreach ($sourceMoves as $move) {
+            $entry = $moveQuantities[$move->id];
+
+            $quantity = (float) (is_array($entry) ? ($entry['quantity'] ?? 0) : $entry);
+
+            $returnable = $move->returnableQuantity();
+
+            if (float_compare($quantity, $returnable, precisionRounding: $move->uom->rounding) > 0) {
+                throw new Exception(__('inventories::system.inventory-manager.return.more-than-returnable', [
+                    'product'  => $move->product->name,
+                    'quantity' => $returnable,
+                    'uom'      => $move->uom->name,
+                ]));
+            }
+        }
+    }
+
+    protected function buildReturn(Operation $operation, Collection $sourceMoves, array $moveQuantities): Operation
+    {
         foreach ($sourceMoves as $move) {
             app(MoveReserver::class)->release(
                 $move->moveDestinations->filter(

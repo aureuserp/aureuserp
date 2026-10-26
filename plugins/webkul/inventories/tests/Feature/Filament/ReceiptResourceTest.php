@@ -10,6 +10,8 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Page
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\EditReceipt;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\ListReceipts;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\ViewReceipt;
+use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -144,6 +146,52 @@ it('offers the return action only once the receipt is done', function () {
     Livewire::test(ViewReceipt::class, ['record' => $receipt->id])
         ->assertOk()
         ->assertActionVisible(OperationActions\ReturnAction::class);
+});
+
+function doneDeliveryReturn(): Operation
+{
+    $warehouse = InventoryHelper::warehouse();
+    $product = InventoryHelper::product();
+
+    InventoryHelper::stockUp($product, $warehouse->lotStockLocation, 5);
+
+    $delivery = InventoryHelper::delivery($warehouse, [[$product, 5]]);
+
+    Inventory::confirmTransfer($delivery);
+    InventoryHelper::pick($delivery->refresh()->moves->first(), 5);
+    Inventory::completeTransfer($delivery->refresh());
+
+    $return = Inventory::createReturn($delivery->refresh(), [$delivery->moves->first()->id => 5]);
+
+    InventoryHelper::pick($return->refresh()->moves->first(), 5);
+    Inventory::completeTransfer($return->refresh());
+
+    return $return->refresh();
+}
+
+it('shows the return action disabled on a done return while returning returns is off', function () {
+    FilamentHelper::actingAs(['view_any_inventory_receipt', 'view_inventory_receipt']);
+
+    $return = doneDeliveryReturn();
+
+    expect($return->state)->toBe(OperationState::DONE);
+
+    Livewire::test(ViewReceipt::class, ['record' => $return->id])
+        ->assertOk()
+        ->assertActionVisible(OperationActions\ReturnAction::class)
+        ->assertActionDisabled(OperationActions\ReturnAction::class);
+});
+
+it('enables the return action on a done return when returning returns is allowed', function () {
+    $settings = app(OperationSettings::class);
+    $settings->enable_returning_returns = true;
+    $settings->save();
+
+    FilamentHelper::actingAs(['view_any_inventory_receipt', 'view_inventory_receipt']);
+
+    Livewire::test(ViewReceipt::class, ['record' => doneDeliveryReturn()->id])
+        ->assertOk()
+        ->assertActionEnabled(OperationActions\ReturnAction::class);
 });
 
 it('hides the validate and cancel actions on a done receipt', function () {

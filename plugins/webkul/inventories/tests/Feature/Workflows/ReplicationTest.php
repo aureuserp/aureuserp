@@ -3,6 +3,7 @@
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
+use Webkul\Inventory\Settings\OperationSettings;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/InventoryHelper.php';
@@ -261,6 +262,10 @@ it('keeps a counted quant with a zero quantity instead of sweeping it', function
 });
 
 it('returns the reserved quantity to stock when a return of a return is created', function () {
+    $settings = app(OperationSettings::class);
+    $settings->enable_returning_returns = true;
+    $settings->save();
+
     $operation = replicationDelivery($this->warehouse, $this->product, 10, 10);
 
     $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);

@@ -27,7 +27,9 @@ return [
         ],
 
         'return' => [
-            'origin' => 'إرجاع :operation_name',
+            'origin'               => 'إرجاع :operation_name',
+            'return-of-return'     => 'التحويل :operation هو عملية إرجاع ولا يمكن إرجاعه مرة أخرى.',
+            'more-than-returnable' => 'لا يمكنك إرجاع أكثر من :quantity :uom من :product.',
         ],
     ],
 

@@ -8,6 +8,7 @@ use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
+use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Models\UOMCategory;
 
@@ -296,6 +297,69 @@ it('leaves the original receipt untouched by the return', function () {
     expect($operation->state)->toBe(OperationState::DONE)
         ->and($operation->moves)->toHaveCount(1)
         ->and((float) $operation->moves->first()->product_uom_qty)->toBe(10.0);
+});
+
+it('refuses to return more than was received', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    expect(fn () => Inventory::createReturn($operation, [$operation->moves->first()->id => 11]))
+        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'))
+        ->and(InventoryHelper::returnOf($operation))->toBeNull();
+});
+
+it('counts returns that are still pending when checking the returnable quantity', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $moveId = $operation->moves->first()->id;
+
+    Inventory::createReturn($operation, [$moveId => 6]);
+
+    expect(fn () => Inventory::createReturn($operation->refresh(), [$moveId => 5]))
+        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
+
+    $second = Inventory::createReturn($operation->refresh(), [$moveId => 4]);
+
+    expect((float) $second->moves->first()->product_uom_qty)->toBe(4.0);
+});
+
+it('refuses to return a return', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
+
+    Inventory::completeTransfer($return->refresh());
+
+    expect(fn () => Inventory::createReturn($return->refresh(), [$return->moves->first()->id => 2]))
+        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.return.return-of-return'), ':'));
+});
+
+it('returns more than was received when the setting allows it', function () {
+    $settings = app(OperationSettings::class);
+    $settings->enable_returning_more_than_received = true;
+    $settings->save();
+
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 12]);
+
+    expect((float) $return->moves->first()->product_uom_qty)->toBe(12.0);
+});
+
+it('returns a return when the setting allows it', function () {
+    $settings = app(OperationSettings::class);
+    $settings->enable_returning_returns = true;
+    $settings->save();
+
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
+
+    Inventory::completeTransfer($return->refresh());
+
+    $returnOfReturn = Inventory::createReturn($return->refresh(), [$return->moves->first()->id => 2]);
+
+    expect($returnOfReturn->return_id)->toBe($return->id)
+        ->and((float) $returnOfReturn->moves->first()->product_uom_qty)->toBe(2.0);
 });
 
 it('receives more than the demanded quantity without a backorder', function () {
