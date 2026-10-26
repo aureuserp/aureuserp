@@ -16,7 +16,6 @@ use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +26,7 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\MassConvertLeadsBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Lead;
 
 class LeadsTable
@@ -46,30 +46,9 @@ class LeadsTable
                 Group::make('source.name')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.source'))->collapsible(),
                 Group::make('priority')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.priority'))->collapsible(),
             ])
+            ->filtersFormColumns(2)
             ->filters([
-                SelectFilter::make('user_id')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.salesperson'))
-                    ->relationship('user', 'name')
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('team_id')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.team'))
-                    ->relationship('team', 'name', fn (Builder $query): Builder => $query->where(owned_by_company(current_company_id())))
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('tags')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.tags'))
-                    ->relationship('tags', 'name')
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('priority')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.priority'))
-                    ->options(OpportunityPriority::class),
-                SelectFilter::make('utm_source_id')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.source'))
-                    ->relationship('source', 'name')
-                    ->multiple()
-                    ->preload(),
+                LeadTableFilters::leads(),
             ])
             ->recordActions([
                 ActivityTableAction::make()

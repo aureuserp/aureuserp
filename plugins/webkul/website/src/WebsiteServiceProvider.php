@@ -3,7 +3,6 @@
 namespace Webkul\Website;
 
 use Filament\Panel;
-use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Console\Scheduling\Schedule;
@@ -15,6 +14,7 @@ use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Support\Support\VersionedCss;
 use Webkul\Website\Console\Commands\DeleteInactiveVisitors;
 use Webkul\Website\Console\Commands\ImportIpCountries;
 use Webkul\Website\Http\Responses\LogoutResponse;
@@ -114,7 +114,7 @@ class WebsiteServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('website', __DIR__.'/../resources/dist/website.css'),
+            VersionedCss::make('website', __DIR__.'/../resources/dist/website.css'),
         ], 'website');
     }
 }

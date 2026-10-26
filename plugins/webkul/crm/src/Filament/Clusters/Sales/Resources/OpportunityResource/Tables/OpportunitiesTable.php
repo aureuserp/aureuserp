@@ -12,16 +12,15 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
-use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Lead;
 
 class OpportunitiesTable
@@ -120,31 +119,9 @@ class OpportunitiesTable
                     ->collapsible(),
             ])))
             ->defaultSort('created_at', 'desc')
+            ->filtersFormColumns(2)
             ->filters([
-                SelectFilter::make('stage_id')
-                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.stage'))
-                    ->relationship('stage', 'name')
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('team_id')
-                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.team'))
-                    ->relationship('team', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->hidden($withinTeam),
-                SelectFilter::make('user_id')
-                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.salesperson'))
-                    ->relationship('user', 'name')
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('tags')
-                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.tags'))
-                    ->relationship('tags', 'name')
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('priority')
-                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.filters.priority'))
-                    ->options(OpportunityPriority::class),
+                LeadTableFilters::opportunities(withinTeam: $withinTeam),
             ])
             ->recordActions([
                 ActivityTableAction::make()

@@ -1,6 +1,5 @@
 <?php
 
-use Filament\Actions\Action;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\CreateOpportunity;
@@ -59,20 +58,6 @@ function opportunityActivity(Lead $lead, array $attributes = []): Activity
     ]);
 
     return Activity::query()->findOrFail($message->getKey());
-}
-
-/**
- * Names of the workflow actions the floating record bar shows.
- *
- * @return array<int, string>
- */
-function floatingBarActionNames(object $page): array
-{
-    return collect($page->getFloatingRecordActions())
-        ->filter(fn (?Action $action): bool => (bool) $action?->isVisible())
-        ->map(fn (Action $action): string => $action->getName())
-        ->values()
-        ->all();
 }
 
 it('lists the current user\'s open opportunities by default', function () {
@@ -407,17 +392,12 @@ it('hides restore and force delete without their permissions', function () {
         ->assertActionHidden('forceDelete');
 });
 
-it('shows Won and Lost in the floating record bar of the view and edit pages', function (string $page) {
+it('shows Won and Lost as header actions on the view and edit pages', function (string $page) {
     actingAsOpportunityManager();
 
     $opportunity = CrmTestHelper::opportunity();
 
-    $component = Livewire::test($page, ['record' => $opportunity->id])->assertOk();
-
-    expect(floatingBarActionNames($component->instance()))->toBe(['markAsWon', 'markAsLost'])
-        ->and($component->instance()->getFloatingRecordTabs())->toHaveCount(2);
-
-    $component
+    Livewire::test($page, ['record' => $opportunity->id])
         ->assertActionVisible('markAsWon')
         ->assertActionVisible('markAsLost');
 })->with([
@@ -425,7 +405,7 @@ it('shows Won and Lost in the floating record bar of the view and edit pages', f
     'edit' => [EditOpportunity::class],
 ]);
 
-it('only offers the floating actions that apply to the record', function (string $state, array $expected) {
+it('only offers the header actions that apply to the record', function (string $state, bool $wonVisible, bool $lostVisible) {
     actingAsOpportunityManager();
 
     $opportunity = CrmTestHelper::opportunity();
@@ -435,12 +415,12 @@ it('only offers the floating actions that apply to the record', function (string
         'lost' => $opportunity->markAsLost(null),
     };
 
-    $component = Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id]);
-
-    expect(floatingBarActionNames($component->instance()))->toBe($expected);
+    Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])
+        ->{$wonVisible ? 'assertActionVisible' : 'assertActionHidden'}('markAsWon')
+        ->{$lostVisible ? 'assertActionVisible' : 'assertActionHidden'}('markAsLost');
 })->with([
-    'won'  => ['won', ['markAsLost']],
-    'lost' => ['lost', []],
+    'won'  => ['won', false, true],
+    'lost' => ['lost', false, false],
 ]);
 
 it('hides Won and Lost without the update and delete permissions', function () {
@@ -448,9 +428,9 @@ it('hides Won and Lost without the update and delete permissions', function () {
 
     $opportunity = CrmTestHelper::opportunity();
 
-    $component = Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id]);
-
-    expect(floatingBarActionNames($component->instance()))->toBe([]);
+    Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])
+        ->assertActionHidden('markAsWon')
+        ->assertActionHidden('markAsLost');
 });
 
 it('registers the activities relation manager on opportunities', function () {

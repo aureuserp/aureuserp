@@ -15,11 +15,6 @@ return [
         'heading'     => 'Filtres',
         'toggle'      => 'Afficher/masquer les filtres',
         'reset'       => 'Réinitialiser',
-        'all'         => 'Tous',
-        'salesperson' => 'Vendeur',
-        'team'        => 'Équipe commerciale',
-        'priority'    => 'Priorité',
-        'status'      => 'Statut',
     ],
 
     'quick-create' => [
@@ -49,7 +44,6 @@ return [
         'expected-revenue'   => 'Revenu attendu',
         'customer'           => 'Client',
         'tags'               => 'Étiquettes',
-        'priority'           => 'Priorité',
         'activities'         => 'Activités',
         'activities-planned' => ':count activité planifiée|:count activités planifiées',
         'activities-today'   => 'Activité due aujourd\'hui',
@@ -57,6 +51,5 @@ return [
         'no-activities'      => 'Planifiez des activités pour avancer.',
         'schedule-activity'  => 'Planifier une activité',
         'today'              => 'Aujourd\'hui',
-        'salesperson'        => 'Vendeur',
     ],
 ];

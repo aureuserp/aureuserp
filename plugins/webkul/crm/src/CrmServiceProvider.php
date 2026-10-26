@@ -3,7 +3,6 @@
 namespace Webkul\Crm;
 
 use Filament\Panel;
-use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +31,7 @@ use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\Team;
+use Webkul\Support\Support\VersionedCss;
 use Webkul\Website\Events\VisitorTracked;
 
 class CrmServiceProvider extends PackageServiceProvider
@@ -114,7 +114,7 @@ class CrmServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentAsset::register([
-            Css::make('crm', __DIR__.'/../resources/dist/crm.css'),
+            VersionedCss::make('crm', __DIR__.'/../resources/dist/crm.css'),
         ], 'crm');
 
         Livewire::component('crm-report-chart', ReportChart::class);

@@ -121,14 +121,6 @@ return [
             'expected-closing' => 'Fechamento previsto',
         ],
 
-        'filters' => [
-            'stage'       => 'Etapa',
-            'team'        => 'Equipe de vendas',
-            'salesperson' => 'Vendedor',
-            'tags'        => 'Tags',
-            'priority'    => 'Prioridade',
-        ],
-
         'actions' => [
             'schedule-activity' => [
                 'label' => 'Agendar atividade',

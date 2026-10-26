@@ -53,23 +53,12 @@
     color: inherit;
 }
 
-.crm-record-action-bar {
-    width: max-content;
-    max-width: 100%;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
+.fi-ta-ctn .crm-kanban-board {
+    padding: 1rem 1rem 0;
 }
 
-.crm-record-action-bar-divider {
-    align-self: stretch;
-    width: 1px;
-    margin-inline: 0.25rem;
-    background-color: var(--gray-200);
-}
-
-.dark .crm-record-action-bar-divider {
-    background-color: var(--gray-700);
+.fi-ta-main:has(> .crm-kanban-board) > .fi-ta-content-ctn {
+    display: none;
 }
 
 .crm-kanban-board .fi-kanban-column,

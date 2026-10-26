@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\CreateLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\EditLead;
@@ -15,6 +16,8 @@ use Webkul\Crm\Models\LostReason;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\TableViews\Models\TableView;
+use Webkul\TableViews\Models\TableViewFavorite;
 
 require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
 
@@ -486,4 +489,35 @@ it('shows the number of records on each view tab of the opportunity list', funct
     $views = Livewire::test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
 
     expect($views['my_pipeline']->getBadge())->toBe(Lead::query()->withoutTrashed()->where('type', Lead::TYPE_OPPORTUNITY)->where('user_id', $user->id)->count());
+});
+
+it('counts a saved view with its own filters and keeps the current filters', function () {
+    $user = CrmTestHelper::actingAsCrmUser(['lead']);
+
+    CrmTestHelper::lead(['priority' => OpportunityPriority::High]);
+    CrmTestHelper::lead(['priority' => OpportunityPriority::Low]);
+
+    $view = TableView::query()->create([
+        'name'            => 'High priority leads',
+        'filterable_type' => ListLeads::class,
+        'user_id'         => $user->id,
+        'is_public'       => false,
+        'filters'         => ['tableFilters' => ['queryBuilder' => ['rules' => ['r1' => ['type' => 'priority', 'data' => ['operator' => 'is', 'settings' => ['values' => [OpportunityPriority::High->value]]]]]]]],
+    ]);
+
+    TableViewFavorite::query()->create(['view_type' => 'saved', 'view_key' => $view->id, 'filterable_type' => ListLeads::class, 'user_id' => $user->id, 'is_favorite' => true]);
+
+    $component = Livewire::test(ListLeads::class);
+    $tabs = $component->instance()->getCachedFavoriteTableViews();
+
+    expect($tabs[$view->id]->getBadge())->toBe(Lead::query()->where('type', Lead::TYPE_LEAD)->where('priority', OpportunityPriority::High)->count())
+        ->and($component->get('tableFilters.queryBuilder.rules') ?? [])->toBeEmpty();
+});
+
+it('opens the save view form with add to favorites switched on', function () {
+    CrmTestHelper::actingAsCrmUser(['lead']);
+
+    Livewire::test(ListLeads::class)
+        ->mountAction('createTableView')
+        ->assertSchemaStateSet(['is_favorite' => true]);
 });

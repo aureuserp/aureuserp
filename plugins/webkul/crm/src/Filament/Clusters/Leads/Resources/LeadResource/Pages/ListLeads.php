@@ -13,18 +13,14 @@ use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Tables\LeadsTable;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
-use Webkul\Crm\Filament\Concerns\ShowsTableViewCounts;
+use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
 use Webkul\Crm\Filament\Exports\LeadExporter;
 use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ListLeads extends ListRecords
 {
-    use HasCrmClusterNavigation, HasTableViews, ShowsTableViewCounts {
-        ShowsTableViewCounts::getCachedFavoriteTableViews insteadof HasTableViews;
-        HasTableViews::getCachedFavoriteTableViews as getBaseCachedFavoriteTableViews;
-    }
+    use HasCrmClusterNavigation, HasCrmTableViews;
 
     public const DEFAULT_LAYOUT = 'list';
 

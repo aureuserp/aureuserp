@@ -10,18 +10,14 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Filament\Actions\CrmExportAction;
 use Webkul\Crm\Filament\Actions\CrmImportAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
-use Webkul\Crm\Filament\Concerns\ShowsTableViewCounts;
+use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
 use Webkul\Crm\Filament\Exports\OpportunityExporter;
 use Webkul\Crm\Filament\Imports\OpportunityImporter;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ListOpportunities extends ListRecords
 {
-    use HasTableViews, ShowsTableViewCounts {
-        ShowsTableViewCounts::getCachedFavoriteTableViews insteadof HasTableViews;
-        HasTableViews::getCachedFavoriteTableViews as getBaseCachedFavoriteTableViews;
-    }
+    use HasCrmTableViews;
 
     protected static string $resource = OpportunityResource::class;
 

@@ -4,11 +4,14 @@ namespace Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages;
 
 use Webkul\Crm\Filament\Actions\CrmExportAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
+use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
 use Webkul\Crm\Filament\Exports\QuotationExporter;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQuotations as BaseListQuotations;
 
 class ListQuotations extends BaseListQuotations
 {
+    use HasCrmTableViews;
+
     protected static string $resource = QuotationResource::class;
 
     public function getTitle(): string
@@ -23,5 +26,10 @@ class ListQuotations extends BaseListQuotations
                 ->exporter(QuotationExporter::class),
             ...parent::getHeaderActions(),
         ];
+    }
+
+    public function getPresetTableViews(): array
+    {
+        return parent::getPresetTableViews();
     }
 }

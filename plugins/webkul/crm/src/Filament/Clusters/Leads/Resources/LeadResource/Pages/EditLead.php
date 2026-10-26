@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
 
-use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -11,16 +10,14 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
-use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLead extends EditRecord
 {
-    use HasCrmClusterNavigation, HasFloatingRecordActionBar, HasRecordNavigationTabs {
+    use HasCrmClusterNavigation, HasRecordNavigationTabs {
         HasCrmClusterNavigation::getSubNavigation insteadof HasRecordNavigationTabs;
         HasCrmClusterNavigation::getSubNavigationPosition insteadof HasRecordNavigationTabs;
-        HasFloatingRecordActionBar::getHeaderWidgets insteadof HasRecordNavigationTabs;
     }
 
     protected static string $resource = LeadResource::class;
@@ -36,32 +33,14 @@ class EditLead extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ConvertToOpportunityAction::make(),
+            MarkAsLostAction::make()
+                ->after(fn () => $this->redirect(LeadResource::getUrl('view', ['record' => $this->getRecord()]))),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
             ViewAction::make(),
         ];
-    }
-
-    public function getFloatingRecordActions(): array
-    {
-        return [
-            $this->convertToOpportunityAction,
-            $this->markAsLostAction,
-        ];
-    }
-
-    public function convertToOpportunityAction(): Action
-    {
-        return ConvertToOpportunityAction::make()
-            ->record(fn () => $this->getRecord());
-    }
-
-    public function markAsLostAction(): Action
-    {
-        return MarkAsLostAction::make()
-            ->record(fn () => $this->getRecord())
-            ->after(fn () => $this->redirect(LeadResource::getUrl('view', ['record' => $this->getRecord()])));
     }
 
     protected function afterSave(): void

@@ -15,11 +15,6 @@ return [
         'heading'     => 'Filters',
         'toggle'      => 'Toggle filters',
         'reset'       => 'Reset',
-        'all'         => 'All',
-        'salesperson' => 'Salesperson',
-        'team'        => 'Sales Team',
-        'priority'    => 'Priority',
-        'status'      => 'Status',
     ],
 
     'quick-create' => [
@@ -49,7 +44,6 @@ return [
         'expected-revenue'   => 'Expected revenue',
         'customer'           => 'Customer',
         'tags'               => 'Tags',
-        'priority'           => 'Priority',
         'activities'         => 'Activities',
         'activities-planned' => ':count planned activity|:count planned activities',
         'activities-today'   => 'Activity due today',
@@ -57,6 +51,5 @@ return [
         'no-activities'      => 'Schedule activities to help you get things done.',
         'schedule-activity'  => 'Schedule an activity',
         'today'              => 'Today',
-        'salesperson'        => 'Salesperson',
     ],
 ];

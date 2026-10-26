@@ -17,7 +17,7 @@
         collapsible: @js($board->isCollapsible()),
         dragConstraints: @js($board->getDragConstraints()),
     })"
-    class="fi-kanban-board crm-kanban-board"
+    class="fi-kanban-board crm-kanban-board relative"
 >
     @if($hasFilters || $hasSearch)
         <div class="crm-kanban-toolbar">
@@ -99,7 +99,7 @@
 
     {{-- Loading overlay --}}
     @if($hasLoading)
-        <div wire:loading.delay class="fi-kanban-loading absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-gray-900/60 rounded-xl">
+        <div wire:loading.flex class="fi-kanban-loading absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-gray-900/60 rounded-xl">
             <x-filament::loading-indicator class="h-8 w-8 text-primary-500" />
         </div>
     @endif

@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages;
 
-use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -11,15 +10,12 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
-use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditOpportunity extends EditRecord
 {
-    use HasFloatingRecordActionBar, HasRecordNavigationTabs {
-        HasFloatingRecordActionBar::getHeaderWidgets insteadof HasRecordNavigationTabs;
-    }
+    use HasRecordNavigationTabs;
 
     protected static string $resource = OpportunityResource::class;
 
@@ -35,6 +31,10 @@ class EditOpportunity extends EditRecord
     {
         return [
             NewQuotationAction::make(),
+            MarkAsWonAction::make()
+                ->after(fn () => $this->refreshRecord()),
+            MarkAsLostAction::make()
+                ->after(fn () => $this->redirect(OpportunityResource::getUrl('view', ['record' => $this->getRecord()]))),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
@@ -47,28 +47,6 @@ class EditOpportunity extends EditRecord
         $this->record = OpportunityResource::getEloquentQuery()->findOrFail($this->getRecord()->getKey());
 
         $this->fillForm();
-    }
-
-    public function getFloatingRecordActions(): array
-    {
-        return [
-            $this->markAsWonAction,
-            $this->markAsLostAction,
-        ];
-    }
-
-    public function markAsWonAction(): Action
-    {
-        return MarkAsWonAction::make()
-            ->record(fn () => $this->getRecord())
-            ->after(fn () => $this->refreshRecord());
-    }
-
-    public function markAsLostAction(): Action
-    {
-        return MarkAsLostAction::make()
-            ->record(fn () => $this->getRecord())
-            ->after(fn () => $this->redirect(OpportunityResource::getUrl('view', ['record' => $this->getRecord()])));
     }
 
     protected function afterSave(): void

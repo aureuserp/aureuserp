@@ -5,14 +5,19 @@ namespace Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Tables;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Sale\Models\Team;
 
 class TeamsTable
 {
     public static function configure(Table $table): Table
     {
+        $label = fn (string $key): string => __('crm::filament/clusters/sales/resources/team.table.'.$key);
+
         return $table
             ->columns([
                 ColorColumn::make('color')
@@ -42,6 +47,16 @@ class TeamsTable
                     ->label(__('crm::filament/clusters/sales/resources/team.table.columns.company'))
                     ->placeholder('—')
                     ->toggleable(),
+            ])
+            ->filtersFormColumns(2)
+            ->filters([
+                LeadTableFilters::make([
+                    TextConstraint::make('name')->label($label('columns.name'))->icon('heroicon-o-user-group'),
+                    LeadTableFilters::relationship('user', $label('filters.team-leader'), 'heroicon-o-user'),
+                    LeadTableFilters::relationship('members', $label('columns.members'), 'heroicon-o-users'),
+                    LeadTableFilters::relationship('company', $label('columns.company'), 'heroicon-o-building-office-2'),
+                    DateConstraint::make('created_at')->label($label('filters.created-at')),
+                ]),
             ])
             ->defaultSort('sort')
             ->recordUrl(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record]))

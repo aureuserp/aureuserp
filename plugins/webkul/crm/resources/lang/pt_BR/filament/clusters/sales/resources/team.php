@@ -17,6 +17,11 @@ return [
             'company'            => 'Empresa',
         ],
 
+        'filters' => [
+            'team-leader' => 'Líder da equipe',
+            'created-at'  => 'Criado em',
+        ],
+
         'actions' => [
             'pipeline' => [
                 'label' => 'Funil',

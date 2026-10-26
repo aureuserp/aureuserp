@@ -6,16 +6,12 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
-use Webkul\Crm\Filament\Concerns\ShowsTableViewCounts;
+use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ListActivities extends ListRecords
 {
-    use HasTableViews, ShowsTableViewCounts {
-        ShowsTableViewCounts::getCachedFavoriteTableViews insteadof HasTableViews;
-        HasTableViews::getCachedFavoriteTableViews as getBaseCachedFavoriteTableViews;
-    }
+    use HasCrmTableViews;
 
     protected static string $resource = ActivityResource::class;
 

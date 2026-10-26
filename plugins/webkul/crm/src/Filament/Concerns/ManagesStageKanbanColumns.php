@@ -13,6 +13,8 @@ trait ManagesStageKanbanColumns
 {
     use ManagesKanbanColumns;
 
+    abstract protected function kanbanTeamFilterId(): ?int;
+
     public function canAddKanbanColumn(): bool
     {
         return StageResource::canCreate();
@@ -52,9 +54,9 @@ trait ManagesStageKanbanColumns
 
     protected function currentKanbanTeamId(): ?int
     {
-        $teamId = $this->kanbanFilters['team_id'] ?? null;
+        $teamId = $this->kanbanTeamFilterId();
 
-        if (blank($teamId) || is_array($teamId)) {
+        if (blank($teamId)) {
             return null;
         }
 

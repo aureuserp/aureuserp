@@ -17,6 +17,11 @@ return [
             'company'            => 'الشركة',
         ],
 
+        'filters' => [
+            'team-leader' => 'قائد الفريق',
+            'created-at'  => 'تاريخ الإنشاء',
+        ],
+
         'actions' => [
             'pipeline' => [
                 'label' => 'مسار المبيعات',

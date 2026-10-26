@@ -107,12 +107,11 @@ it('limits a kanban export to the board filters', function () {
 
     $someoneElse = CrmTestHelper::opportunity(['name' => 'Board export other', 'user_id' => $otherUser->id]);
 
-    $page = Livewire::test(KanbanOpportunities::class)->instance();
+    $page = Livewire::test(KanbanOpportunities::class)->call('loadView', 'my_pipeline')->instance();
 
     $boardIds = (fn () => $this->getKanbanQuery($this->getKanbanBoard()))->call($page)->pluck('crm_leads.id');
 
-    expect($page->kanbanFilters['user_id'])->toBe($user->id)
-        ->and($boardIds)->toContain($mine->id)
+    expect($boardIds)->toContain($mine->id)
         ->and($boardIds)->not->toContain($someoneElse->id);
 });
 

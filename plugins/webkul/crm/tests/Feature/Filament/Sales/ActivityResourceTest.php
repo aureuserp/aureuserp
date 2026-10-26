@@ -452,7 +452,7 @@ it('opens the board without a default filter, showing everyone\'s activities', f
     $someoneElses = scheduledCrmActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
     $component = Livewire::test(KanbanActivities::class)
-        ->assertSet('kanbanFilters', KanbanActivities::emptyKanbanFilters());
+        ->assertSet('activeTableView', 'default');
 
     $ids = collect($component->instance()->getKanbanColumns())
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
@@ -528,14 +528,16 @@ it('filters the board by due status and activity type like the list', function (
     $planned = scheduledCrmActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString(), 'activity_type_id' => crmActivityType('Call')->id]);
 
     $ids = fn (array $filters): array => collect(Livewire::test(KanbanActivities::class)
-        ->set('kanbanFilters', [...KanbanActivities::emptyKanbanFilters(), 'assigned_to' => auth()->id(), ...$filters])
+        ->set('tableFilters', $filters)
         ->instance()
         ->getKanbanColumns())
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
         ->all();
 
-    expect($ids(['due_status' => 'overdue']))->toContain($overdue->id)->not->toContain($planned->id)
-        ->and($ids(['activity_type_id' => [crmActivityType('Call')->id]]))->toContain($planned->id)->not->toContain($overdue->id);
+    $callRule = ['type' => 'activityType', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) crmActivityType('Call')->id]]]];
+
+    expect($ids(['due_status' => ['value' => 'overdue']]))->toContain($overdue->id)->not->toContain($planned->id)
+        ->and($ids(['queryBuilder' => ['rules' => ['call' => $callRule]]]))->toContain($planned->id)->not->toContain($overdue->id);
 });
 
 it('renders activity cards like the pipeline cards and marks an activity done from the card', function () {

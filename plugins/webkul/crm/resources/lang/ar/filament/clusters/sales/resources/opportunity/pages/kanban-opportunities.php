@@ -15,11 +15,6 @@ return [
         'heading'     => 'عوامل التصفية',
         'toggle'      => 'إظهار/إخفاء عوامل التصفية',
         'reset'       => 'إعادة تعيين',
-        'all'         => 'الكل',
-        'salesperson' => 'مندوب المبيعات',
-        'team'        => 'فريق المبيعات',
-        'priority'    => 'الأولوية',
-        'status'      => 'الحالة',
     ],
 
     'quick-create' => [
@@ -49,7 +44,6 @@ return [
         'expected-revenue'   => 'الإيراد المتوقع',
         'customer'           => 'العميل',
         'tags'               => 'الوسوم',
-        'priority'           => 'الأولوية',
         'activities'         => 'الأنشطة',
         'activities-planned' => ':count نشاط مخطط|:count أنشطة مخططة',
         'activities-today'   => 'نشاط مستحق اليوم',
@@ -57,6 +51,5 @@ return [
         'no-activities'      => 'جدول الأنشطة لإنجاز عملك.',
         'schedule-activity'  => 'جدولة نشاط',
         'today'              => 'اليوم',
-        'salesperson'        => 'مندوب المبيعات',
     ],
 ];

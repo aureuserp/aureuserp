@@ -17,6 +17,11 @@ return [
             'company'            => 'Company',
         ],
 
+        'filters' => [
+            'team-leader' => 'Team Leader',
+            'created-at'  => 'Created At',
+        ],
+
         'actions' => [
             'pipeline' => [
                 'label' => 'Pipeline',

@@ -12,20 +12,24 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables\OpportunitiesTable;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
 use Webkul\Crm\Models\Lead;
+use Webkul\TableViews\Filament\Components\PresetView;
 
 class ManageTeamOpportunities extends ManageRelatedRecords
 {
-    use HasCrmClusterNavigation;
+    use HasCrmClusterNavigation, HasCrmTableViews;
 
     protected static string $resource = TeamResource::class;
 
@@ -94,5 +98,18 @@ class ManageTeamOpportunities extends ManageRelatedRecords
                             ->body(__('crm::filament/clusters/sales/resources/team/pages/manage-team-opportunities.header-actions.create.notification.body')),
                     ),
             ]);
+    }
+
+    public function getPresetTableViews(): array
+    {
+        return array_map(
+            fn (PresetView $view): PresetView => $view->setAsDefault(false),
+            (new ListOpportunities)->getPresetTableViews(),
+        );
+    }
+
+    protected function getTableViewCountQuery(): Builder
+    {
+        return OpportunityResource::getEloquentQuery()->where('team_id', $this->getRecord()->getKey());
     }
 }

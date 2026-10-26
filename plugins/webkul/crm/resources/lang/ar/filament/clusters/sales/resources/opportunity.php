@@ -121,14 +121,6 @@ return [
             'expected-closing' => 'الإغلاق المتوقع',
         ],
 
-        'filters' => [
-            'stage'       => 'المرحلة',
-            'team'        => 'فريق المبيعات',
-            'salesperson' => 'مندوب المبيعات',
-            'tags'        => 'الوسوم',
-            'priority'    => 'الأولوية',
-        ],
-
         'actions' => [
             'schedule-activity' => [
                 'label' => 'جدولة نشاط',

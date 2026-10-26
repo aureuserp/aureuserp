@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
 
-use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -13,16 +12,14 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
-use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
 use Webkul\Crm\Models\Lead;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewLead extends ViewRecord
 {
-    use HasCrmClusterNavigation, HasFloatingRecordActionBar, HasRecordNavigationTabs {
+    use HasCrmClusterNavigation, HasRecordNavigationTabs {
         HasCrmClusterNavigation::getSubNavigation insteadof HasRecordNavigationTabs;
         HasCrmClusterNavigation::getSubNavigationPosition insteadof HasRecordNavigationTabs;
-        HasFloatingRecordActionBar::getHeaderWidgets insteadof HasRecordNavigationTabs;
     }
 
     protected static string $resource = LeadResource::class;
@@ -30,6 +27,9 @@ class ViewLead extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            ConvertToOpportunityAction::make(),
+            MarkAsLostAction::make()
+                ->after(fn () => $this->refreshRecord()),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
@@ -52,26 +52,5 @@ class ViewLead extends ViewRecord
         $this->record = LeadResource::getEloquentQuery()->findOrFail($this->getRecord()->getKey());
 
         $this->fillForm();
-    }
-
-    public function getFloatingRecordActions(): array
-    {
-        return [
-            $this->convertToOpportunityAction,
-            $this->markAsLostAction,
-        ];
-    }
-
-    public function convertToOpportunityAction(): Action
-    {
-        return ConvertToOpportunityAction::make()
-            ->record(fn () => $this->getRecord());
-    }
-
-    public function markAsLostAction(): Action
-    {
-        return MarkAsLostAction::make()
-            ->record(fn () => $this->getRecord())
-            ->after(fn () => $this->refreshRecord());
     }
 }

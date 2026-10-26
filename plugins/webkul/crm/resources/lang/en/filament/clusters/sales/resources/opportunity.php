@@ -121,14 +121,6 @@ return [
             'expected-closing' => 'Expected Closing',
         ],
 
-        'filters' => [
-            'stage'       => 'Stage',
-            'team'        => 'Sales Team',
-            'salesperson' => 'Salesperson',
-            'tags'        => 'Tags',
-            'priority'    => 'Priority',
-        ],
-
         'actions' => [
             'schedule-activity' => [
                 'label' => 'Schedule Activity',

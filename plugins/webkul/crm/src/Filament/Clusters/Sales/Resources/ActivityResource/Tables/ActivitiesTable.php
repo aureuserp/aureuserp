@@ -9,6 +9,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
@@ -17,6 +19,7 @@ use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\MarkActivityAsDoneAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\RescheduleActivityAction;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Activity;
 
 class ActivitiesTable
@@ -81,21 +84,19 @@ class ActivitiesTable
                     ->date()
                     ->collapsible(),
             ])
+            ->filtersFormColumns(2)
             ->filters([
                 SelectFilter::make('due_status')
                     ->label(__('crm::filament/clusters/sales/resources/activity.table.filters.due-status'))
                     ->options(ActivityDueStatus::class)
                     ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null) ? $query->dueStatus($data['value']) : $query),
-                SelectFilter::make('activity_type_id')
-                    ->label(__('crm::filament/clusters/sales/resources/activity.table.filters.activity-type'))
-                    ->relationship('activityType', 'name')
-                    ->multiple()
-                    ->preload(),
-                SelectFilter::make('assigned_to')
-                    ->label(__('crm::filament/clusters/sales/resources/activity.table.filters.assigned-to'))
-                    ->relationship('assignedTo', 'name')
-                    ->multiple()
-                    ->preload(),
+                LeadTableFilters::make([
+                    LeadTableFilters::relationship('activityType', __('crm::filament/clusters/sales/resources/activity.table.filters.activity-type'), 'heroicon-o-squares-2x2'),
+                    LeadTableFilters::relationship('assignedTo', __('crm::filament/clusters/sales/resources/activity.table.filters.assigned-to'), 'heroicon-o-user-circle'),
+                    TextConstraint::make('summary')->label(__('crm::filament/clusters/sales/resources/activity.table.columns.summary'))->icon('heroicon-o-document-text'),
+                    DateConstraint::make('date_deadline')->label(__('crm::filament/clusters/sales/resources/activity.table.columns.due-date')),
+                    DateConstraint::make('created_at')->label(__('crm::filament/clusters/sales/resources/activity.table.columns.created-at')),
+                ]),
             ])
             ->recordUrl(fn (Activity $record): ?string => $withinRecord ? null : LeadResourceResolver::viewUrl($record->lead))
             ->recordActions([

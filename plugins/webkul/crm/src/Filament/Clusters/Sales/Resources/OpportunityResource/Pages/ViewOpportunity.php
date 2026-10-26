@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages;
 
-use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -13,15 +12,12 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
-use Webkul\Crm\Filament\Concerns\HasFloatingRecordActionBar;
 use Webkul\Crm\Models\Lead;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewOpportunity extends ViewRecord
 {
-    use HasFloatingRecordActionBar, HasRecordNavigationTabs {
-        HasFloatingRecordActionBar::getHeaderWidgets insteadof HasRecordNavigationTabs;
-    }
+    use HasRecordNavigationTabs;
 
     protected static string $resource = OpportunityResource::class;
 
@@ -29,6 +25,10 @@ class ViewOpportunity extends ViewRecord
     {
         return [
             NewQuotationAction::make(),
+            MarkAsWonAction::make()
+                ->after(fn () => $this->refreshRecord()),
+            MarkAsLostAction::make()
+                ->after(fn () => $this->refreshRecord()),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
@@ -51,27 +51,5 @@ class ViewOpportunity extends ViewRecord
         $this->record = OpportunityResource::getEloquentQuery()->findOrFail($this->getRecord()->getKey());
 
         $this->fillForm();
-    }
-
-    public function getFloatingRecordActions(): array
-    {
-        return [
-            $this->markAsWonAction,
-            $this->markAsLostAction,
-        ];
-    }
-
-    public function markAsWonAction(): Action
-    {
-        return MarkAsWonAction::make()
-            ->record(fn () => $this->getRecord())
-            ->after(fn () => $this->refreshRecord());
-    }
-
-    public function markAsLostAction(): Action
-    {
-        return MarkAsLostAction::make()
-            ->record(fn () => $this->getRecord())
-            ->after(fn () => $this->refreshRecord());
     }
 }

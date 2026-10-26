@@ -6,9 +6,12 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource as ConfigurationTeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
+use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
 
 class ListTeams extends ListRecords
 {
+    use HasCrmTableViews;
+
     protected static string $resource = TeamResource::class;
 
     protected function getHeaderActions(): array
