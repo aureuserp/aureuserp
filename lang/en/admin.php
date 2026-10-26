@@ -23,4 +23,9 @@ return [
         'point-of-sale' => 'Point of Sale',
         'barcode'       => 'Barcode',
     ],
+
+    'app-menu' => [
+        'label' => 'Apps',
+        'close' => 'Close',
+    ],
 ];

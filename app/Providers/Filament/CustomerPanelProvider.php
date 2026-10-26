@@ -9,6 +9,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -31,6 +32,8 @@ class CustomerPanelProvider extends PanelProvider
             ->favicon(asset('images/favicon.ico'))
             ->brandLogo(asset('images/logo.svg'))
             ->darkMode(false)
+            ->theme(asset('css/filament/customer/theme.css').'?v='.filemtime(public_path('css/filament/customer/theme.css')))
+            ->simplePageMaxContentWidth(Width::Small)
             ->brandLogoHeight('2rem')
             ->colors([
                 'primary' => Color::Blue,

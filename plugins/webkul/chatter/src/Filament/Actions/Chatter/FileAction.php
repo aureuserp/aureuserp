@@ -153,12 +153,13 @@ class FileAction extends Action
                     $livewire->dispatch('chatter.refresh');
                 }
             })
+            ->extraModalWindowAttributes(['class' => 'fi-chatter-modal'])
             ->modalSubmitAction(
                 fn ($action) => $action
                     ->label(__('chatter::filament/resources/actions/chatter/file-action.setup.modal-submit-action-label'))
                     ->icon('heroicon-m-paper-airplane')
             )
-            ->modalWidth(Width::TwoExtraLarge)
+            ->modalWidth(Width::ExtraLarge)
             ->slideOver(false);
     }
 }

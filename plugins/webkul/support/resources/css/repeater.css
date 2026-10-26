@@ -21,14 +21,14 @@
     }
 
     & > table {
-        @apply block w-full bg-white divide-y divide-gray-200 shadow-sm rounded-xl ring-1 ring-gray-950/5 dark:divide-white/10 dark:bg-gray-900 dark:ring-white/10;
+        @apply block w-full bg-white divide-y divide-gray-200 shadow-xs rounded-lg ring-1 ring-gray-200 dark:divide-white/10 dark:bg-gray-900 dark:ring-white/10;
 
         & > thead {
             @apply hidden whitespace-nowrap;
 
             & > tr {
                 & > th {
-                    @apply border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-950 first-of-type:rounded-tl-xl last-of-type:rounded-tr-xl dark:border-white/5 dark:bg-white/5 dark:text-white [&:not(:first-of-type)]:border-s [&:not(:last-of-type)]:border-e;
+                    @apply border-gray-200 bg-gray-50 px-3 py-2 text-(length:--text-2xs) font-semibold tracking-[0.04em] text-gray-500 uppercase first-of-type:rounded-tl-lg last-of-type:rounded-tr-lg dark:border-white/5 dark:bg-white/5 dark:text-gray-400 [&:not(:first-of-type)]:border-s [&:not(:last-of-type)]:border-e;
 
                     &.fi-resizable-column {
                         @apply relative;
@@ -53,7 +53,19 @@
                     }
 
                     &.fi-fo-table-repeater-empty-header-cell {
-                        @apply w-1;
+                        @apply w-1 py-0 align-middle;
+
+                        & > .fi-dropdown {
+                            @apply flex justify-center;
+
+                            & > .fi-dropdown-trigger > .fi-icon-btn {
+                                @apply m-0 size-6;
+                            }
+
+                            & .fi-dropdown-panel {
+                                @apply text-start text-sm font-normal tracking-normal text-gray-950 normal-case dark:text-white;
+                            }
+                        }
                     }
                 }
             }
@@ -80,7 +92,7 @@
             @apply block divide-y divide-gray-200 dark:divide-white/5;
 
             & > tr {
-                @apply grid gap-6 p-6;
+                @apply grid gap-4 p-4;
 
                     &.fi-hidden {
                         @apply hidden;
@@ -136,7 +148,7 @@
             }
 
             & .fi-fo-table-repeater-actions {
-                @apply @xl:px-3 @xl:py-2;
+                @apply @xl:px-3 @xl:py-1.5;
             }
         }
          &.fo-compact {
@@ -179,7 +191,7 @@
                     @apply lg:table-row lg:p-0;
 
                     & > td {
-                        @apply lg:table-cell lg:px-3 lg:py-2;
+                        @apply lg:table-cell lg:px-3 lg:py-1.5;
 
                         &.fi-hidden {
                             @apply lg:table-cell;
@@ -205,7 +217,7 @@
             }
 
             & .fi-fo-table-repeater-actions {
-                @apply lg:px-3 lg:py-2;
+                @apply lg:px-3 lg:py-1.5;
             }
         }
         &.fo-compact {

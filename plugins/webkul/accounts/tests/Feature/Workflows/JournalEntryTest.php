@@ -56,3 +56,14 @@ it('refuses to post a manual journal entry with no lines', function () {
     expect(fn () => AccountHelper::post($entry))
         ->toThrow(Exception::class, __('accounts::account-manager.post-action-validate.lines-required'));
 });
+
+it('refuses to post an unbalanced manual journal entry', function () {
+    $entry = AccountHelper::journalEntry();
+    AccountHelper::entryLine($entry, $this->debitAccount, debit: 100, credit: 0);
+    AccountHelper::entryLine($entry, $this->creditAccount, debit: 0, credit: 60);
+
+    expect(fn () => AccountHelper::post($entry))
+        ->toThrow(Exception::class, __('accounts::account-manager.post-action-validate.unbalanced'));
+
+    expect($entry->refresh()->state)->toBe(MoveState::DRAFT);
+});

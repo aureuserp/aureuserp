@@ -21,4 +21,9 @@ class ViewPost extends ViewRecord
     {
         return $this->getRecord()->title;
     }
+
+    public function getHeading(): string|Htmlable
+    {
+        return '';
+    }
 }

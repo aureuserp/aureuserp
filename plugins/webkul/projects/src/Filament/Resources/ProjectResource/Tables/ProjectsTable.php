@@ -228,7 +228,7 @@ class ProjectsTable
                     ->hiddenLabel()
                     ->icon(fn (Project $record): string => $record->is_favorite_by_user ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Project $record): string => $record->is_favorite_by_user ? 'warning' : 'gray')
-                    ->size('xl')
+                    ->size('lg')
                     ->action(function (Project $record): void {
                         $record->favoriteUsers()->toggle([Auth::id()]);
 

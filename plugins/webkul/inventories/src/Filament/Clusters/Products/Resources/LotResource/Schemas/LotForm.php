@@ -35,7 +35,7 @@ class LotForm
                             ->maxLength(255)
                             ->autofocus()
                             ->placeholder(__('inventories::filament/clusters/products/resources/lot.form.sections.general.fields.name-placeholder'))
-                            ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                            ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
                         Group::make()
                             ->schema([
                                 Select::make('product_id')

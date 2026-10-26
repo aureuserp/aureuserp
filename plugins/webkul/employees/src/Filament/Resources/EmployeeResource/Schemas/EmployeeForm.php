@@ -53,7 +53,7 @@ class EmployeeForm
                                             ->label(__('employees::filament/resources/employee.form.sections.fields.name'))
                                             ->required()
                                             ->maxLength(255)
-                                            ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                            ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                             ->columnSpan(1),
                                         TextInput::make('job_title')
                                             ->label(__('employees::filament/resources/employee.form.sections.fields.job-title'))

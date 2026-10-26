@@ -25,7 +25,7 @@ class TeamForm
                                     ->required()
                                     ->label(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.name'))
                                     ->maxLength(255)
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;'])
                                     ->columnSpan(1),
                             ])->columns(2),
                         Fieldset::make(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.fieldset.team-details.title'))

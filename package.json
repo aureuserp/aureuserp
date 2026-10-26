@@ -2,10 +2,12 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "vite build && npm run build:theme",
+        "build:theme": "tailwindcss -i resources/css/filament/admin/theme.css -o public/css/filament/admin/theme.css --minify && tailwindcss -i resources/css/filament/customer/theme.css -o public/css/filament/customer/theme.css --minify",
         "dev": "vite"
     },
     "devDependencies": {
+        "@tailwindcss/cli": "^4.3.0",
         "@tailwindcss/postcss": "^4.1.12",
         "@tailwindcss/vite": "^4.3.0",
         "@vitejs/plugin-vue": "^5.2.0",

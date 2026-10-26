@@ -1,6 +1,6 @@
 <x-filament-widgets::widget>
     <div class="flex flex-col gap-y-6">
-        <x-filament::tabs>
+        <x-filament::tabs class="fi-chip-tabs">
             <x-filament::tabs.item
                 :active="$activeTab === 'all'"
                 wire:click="$set('activeTab', 'all')"

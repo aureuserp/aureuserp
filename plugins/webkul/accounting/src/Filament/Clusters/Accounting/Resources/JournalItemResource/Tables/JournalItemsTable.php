@@ -54,7 +54,7 @@ class JournalItemsTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('reference')
+                TextColumn::make('move.reference')
                     ->placeholder('-')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.columns.reference'))
                     ->searchable()
@@ -169,7 +169,7 @@ class JournalItemsTable
                             ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.filters.number')),
                         TextConstraint::make('name')
                             ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.filters.label')),
-                        TextConstraint::make('reference')
+                        TextConstraint::make('move.reference')
                             ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.filters.reference')),
                         TextConstraint::make('matching_number')
                             ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.filters.matching-number')),

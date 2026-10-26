@@ -10,12 +10,12 @@
         </div>
     @endif
 
-    <div class="rounded-xl p-3 shadow-sm ring-1 ring-gray-200 overflow-x-hidden bg-gray-50/80 dark:bg-gray-800/50 dark:ring-gray-800 space-y-1">
-        <div class="grid grid-cols-3 gap-6">
+    <div class="rounded-lg p-2.5 shadow-sm ring-1 ring-gray-200 overflow-x-hidden bg-gray-50/80 dark:bg-gray-800/50 dark:ring-gray-800 space-y-1">
+        <div class="grid grid-cols-3 gap-4">
 
             {{-- Activity Type --}}
             @if ($record->activityType?->name)
-                <div class="flex flex-col gap-2.5 w-fit">
+                <div class="flex flex-col gap-1.5 w-fit">
                     <span class="text-xs font-semibold tracking-wider text-gray-900 dark:text-gray-400">
                         @lang('chatter::views/filament/infolists/components/activities/content-text-entry.activity')
                     </span>
@@ -28,7 +28,7 @@
 
             {{-- Assigned To --}}
             @if ($record->assignedTo)
-                <div class="flex flex-col gap-2.5 w-fit">
+                <div class="flex flex-col gap-1.5 w-fit">
                     <span class="text-xs font-semibold tracking-wider text-gray-900 dark:text-gray-400">
                         @lang('chatter::views/filament/infolists/components/activities/content-text-entry.assigned-to')
                     </span>
@@ -73,7 +73,7 @@
                             : 'text-green-700 dark:text-green-400');
                 @endphp
 
-                <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1.5">
                     <span class="text-xs font-semibold tracking-wider text-gray-900 dark:text-gray-400">
                         @lang('chatter::views/filament/infolists/components/activities/content-text-entry.due-date')
                     </span>
@@ -93,7 +93,7 @@
 
             {{-- Summary --}}
             @if ($record->summary)
-                <div class="flex flex-col gap-2.5 col-span-full">
+                <div class="flex flex-col gap-1.5 col-span-full">
                     <span class="text-xs font-semibold tracking-wider text-gray-900 dark:text-gray-400">
                         @lang('chatter::views/filament/infolists/components/activities/content-text-entry.summary')
                     </span>

@@ -14,7 +14,7 @@
                 {{
                     \Filament\Support\prepare_inherited_attributes($attributes)
                         ->merge($getExtraAttributes(), escape: false)
-                        ->class(['flex flex-col gap-3'])
+                        ->class(['flex flex-col gap-2'])
                 }}
             >
                 @php $lastDateLabel = null; @endphp
@@ -54,7 +54,7 @@
 
                     <article
                         @class([
-                            'rounded-xl px-3 py-2 text-base overflow-x-hidden [overflow-wrap:anywhere] space-y-1 m-0.5',
+                            'rounded-lg px-2.5 py-1.5 text-sm overflow-x-hidden [overflow-wrap:anywhere] space-y-1 m-0.5',
                             'ring-black/5  dark:ring-white/5' => data_get($container->getRecord(), 'type') !== 'note',
                             'shadow-sm ring-1 ring-amber-100 dark:ring-amber-950 bg-amber-50 dark:bg-amber-900' => data_get($container->getRecord(), 'type') === 'note',
                         ])

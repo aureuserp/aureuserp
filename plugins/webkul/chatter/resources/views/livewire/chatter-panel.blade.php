@@ -8,7 +8,7 @@
 
             .chatter-panel > .fi-modal-header {
                 display: flex;
-                padding: 15px 24px !important;
+                padding: 15px 20px !important;
                 margin-top: -64px;
                 background-color: var(--color-white);
                 position: absolute;
@@ -53,7 +53,7 @@
 
     <div class="chatter-panel">
         <div class="fi-modal-header flex fi-sticky fi-vertical-align-center">
-            <div class="flex items-center gap-5 flex-1" style="gap: 20px;">
+            <div class="flex items-center gap-3 flex-1">
                 <div class="fi-modal-icon-ctn">
                     <div class="fi-modal-icon-bg fi-color fi-color-primary">
                         {{ \Filament\Support\generate_icon_html('heroicon-s-chat-bubble-left-right', size: \Filament\Support\Enums\IconSize::Large) }}
@@ -82,8 +82,8 @@
             </div>
         </div>
 
-        <div class="chatter-panel-container p-6 w-full">
-            <div class="p-2 flex items-center justify-end gap-2">
+        <div class="chatter-panel-container p-4 w-full">
+            <div class="pb-2 flex items-center justify-end gap-2">
                 @foreach (['fileAction', 'followerAction', 'filtersAction'] as $action)
                     @if ($this->{$action}->isVisible())
                         {{ $this->{$action} }}
@@ -131,7 +131,7 @@
 
                 @php $hasActivities = $this->record->activities && $this->record->activities->isNotEmpty(); @endphp
 
-                <div class="{{ $hasActivities ? 'space-y-6' : '' }}">
+                <div class="{{ $hasActivities ? 'space-y-4' : '' }}">
                     @if ($hasActivities)
                         <div wire:key="activities-{{ $this->refreshTick }}">
                             {{ $this->activityInfolist }}

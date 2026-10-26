@@ -156,19 +156,25 @@ class BillOfMaterial extends Model
         $quantityMultiplier = $this->getQuantityMultiplier($quantity);
 
         return (float) $this->getMatchedLines($selectedAttributeValueIds)
-            ->sum(fn (BillOfMaterialLine $line): float => round(
-                ((float) $line->quantity * $quantityMultiplier) * (float) ($line->product?->cost ?? 0),
-                2,
-            ));
+            ->sum(function (BillOfMaterialLine $line) use ($quantityMultiplier): float {
+                $qty = $line->uom && $line->product?->uom
+                    ? $line->uom->computeQuantity((float) $line->quantity, $line->product->uom, false)
+                    : (float) $line->quantity;
+
+                return round(($qty * $quantityMultiplier) * (float) ($line->product?->cost ?? 0), 2);
+            });
     }
 
     public function getUnitComponentCost(array $selectedAttributeValueIds = []): float
     {
         return (float) $this->getMatchedLines($selectedAttributeValueIds)
-            ->sum(fn (BillOfMaterialLine $line): float => round(
-                (float) $line->quantity * (float) ($line->product?->cost ?? 0),
-                2,
-            ));
+            ->sum(function (BillOfMaterialLine $line): float {
+                $qty = $line->uom && $line->product?->uom
+                    ? $line->uom->computeQuantity((float) $line->quantity, $line->product->uom, false)
+                    : (float) $line->quantity;
+
+                return round($qty * (float) ($line->product?->cost ?? 0), 2);
+            });
     }
 
     public function getOperationDuration(float $quantity, array $selectedAttributeValueIds = [], ?Product $product = null): float

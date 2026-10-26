@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <main class="w-full max-w-lg px-6 py-12 bg-white shadow-sm fi-simple-main place-self-center ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 sm:rounded-xl sm:px-12">
+    <main class="w-full max-w-sm px-6 py-6 bg-white shadow-sm fi-simple-main place-self-center ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 sm:rounded-xl sm:px-6">
         @if (filament()->hasRegistration())
             <header class="flex flex-col items-center mb-6 fi-simple-header">
                 <h1 class="text-2xl font-bold tracking-tight text-center fi-simple-header-heading text-gray-950 dark:text-white">

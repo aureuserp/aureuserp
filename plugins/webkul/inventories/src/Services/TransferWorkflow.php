@@ -206,7 +206,7 @@ class TransferWorkflow
             'quantity'                => 0,
             'is_picked'               => false,
             'is_refund'               => $isRefund,
-            'uom_id'                  => $move->product->uom_id,
+            'uom_id'                  => $move->uom_id,
             'operation_id'            => $return->id,
             'state'                   => MoveState::DRAFT,
             'scheduled_at'            => now(),

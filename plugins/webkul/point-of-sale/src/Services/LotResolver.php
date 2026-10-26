@@ -22,12 +22,12 @@ class LotResolver
 
         $move->lines()->delete();
 
-        $lots->each(function (OrderLineLot $orderLineLot) use ($order, $move, $line): void {
+        $lineQty = abs((float) $line->qty);
+
+        $lots->each(function (OrderLineLot $orderLineLot) use ($order, $move, $line, $lineQty): void {
             $lot = $this->resolveLot($order, $line, $orderLineLot);
 
-            $quantity = $line->product?->tracking === ProductTracking::SERIAL
-                ? 1.0
-                : (float) ($orderLineLot->qty ?: abs((float) $line->qty));
+            $quantity = $line->product?->tracking === ProductTracking::SERIAL ? 1.0 : $lineQty;
 
             MoveLine::create([
                 'move_id'                 => $move->id,

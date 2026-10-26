@@ -63,7 +63,7 @@ class PartnerForm
                                     ->maxLength(255)
                                     ->columnSpan(2)
                                     ->placeholder(fn (Get $get): string => $get('account_type') === AccountType::INDIVIDUAL ? 'John Doe' : 'ACME Corp')
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
                                 Select::make('parent_id')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.company'))
                                     ->relationship(

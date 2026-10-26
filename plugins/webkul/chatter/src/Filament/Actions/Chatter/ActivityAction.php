@@ -228,6 +228,6 @@ class ActivityAction extends Action
                 $action->icon('heroicon-m-paper-airplane');
             })
             ->slideOver(false)
-            ->extraModalWindowAttributes(['class' => 'activity-modal']);
+            ->extraModalWindowAttributes(['class' => 'activity-modal fi-chatter-modal']);
     }
 }

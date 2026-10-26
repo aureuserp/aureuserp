@@ -23,4 +23,9 @@ return [
         'point-of-sale' => 'Ponto de Venda',
         'barcode'       => 'Código de barras',
     ],
+
+    'app-menu' => [
+        'label' => 'Aplicativos',
+        'close' => 'Fechar',
+    ],
 ];

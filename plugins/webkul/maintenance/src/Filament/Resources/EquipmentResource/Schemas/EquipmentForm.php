@@ -30,7 +30,7 @@ class EquipmentForm
                                     ->required()
                                     ->maxLength(255)
                                     ->autofocus()
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
 
                                 Textarea::make('note')
                                     ->label(__('maintenance::filament/resources/equipment.form.sections.general.fields.note'))

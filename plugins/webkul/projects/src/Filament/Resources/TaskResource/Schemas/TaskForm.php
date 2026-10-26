@@ -49,7 +49,7 @@ class TaskForm
                                     ->maxLength(255)
                                     ->autofocus()
                                     ->placeholder(__('projects::filament/resources/task.form.sections.general.fields.title-placeholder'))
-                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                                    ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
                                 ToggleButtons::make('state')
                                     ->required()
                                     ->default(TaskState::IN_PROGRESS)

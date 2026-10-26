@@ -1,0 +1,237 @@
+.fi-main {
+    @apply px-4 md:px-5 lg:px-6;
+}
+
+.fi-page-content {
+    @apply gap-y-4;
+}
+
+.fi-page-header-main-ctn {
+    @apply gap-y-4 py-5;
+}
+
+.fi-page.fi-page-has-sub-navigation .fi-page-main {
+    @apply gap-4;
+}
+
+.fi-section:not(.fi-section-not-contained):not(.fi-divided) > .fi-section-content-ctn > .fi-section-content {
+    @apply p-4;
+}
+
+.fi-sc-component,
+.fi-fo-field {
+    @apply gap-y-1.5;
+}
+
+.fi-fo-table-repeater > table > tbody > tr > td .fi-sc-component,
+.fi-fo-table-repeater > table > tbody > tr > td .fi-fo-field {
+    @apply lg:gap-y-0 @xl:gap-y-0;
+}
+
+.fi-sc.fi-sc-has-gap {
+    @apply gap-4;
+}
+
+.fi-sc-form,
+.fi-sc-flex {
+    @apply gap-4;
+}
+
+.fi-input,
+.fi-fo-textarea textarea,
+.fi-fo-date-time-picker .fi-fo-date-time-picker-display-text-input {
+    @apply py-1;
+}
+
+.fi-select-input div[x-ref='select'] {
+    @apply min-h-8;
+}
+
+.fi-select-input .fi-select-input-btn {
+    @apply min-h-8 py-1;
+}
+
+.fi-input-wrp select.fi-select-input {
+    @apply py-1;
+}
+
+.fi-page-sub-navigation-sidebar {
+    @apply gap-y-2;
+}
+
+.fi-select-input .fi-select-input-ctn-multiple .fi-select-input-value-ctn {
+    @apply min-h-8 py-1;
+}
+
+.fi-select-input .fi-select-input-value-badges-ctn {
+    @apply gap-1;
+}
+
+.fi-ta-header-cell {
+    @apply py-2.5;
+}
+
+.fi-ta-text:not(.fi-inline),
+.fi-ta-icon:not(.fi-inline),
+.fi-ta-color:not(.fi-inline),
+.fi-ta-checkbox:not(.fi-inline),
+.fi-ta-select:not(.fi-inline),
+.fi-ta-toggle:not(.fi-inline),
+.fi-ta-text-input:not(.fi-inline),
+.fi-ta-image:not(.fi-inline) {
+    @apply py-2.5;
+}
+
+.fi-ta-cell:has(.fi-ta-actions),
+.fi-ta-cell:has(.fi-ta-record-checkbox),
+.fi-ta-cell:has(.fi-ta-page-checkbox),
+.fi-ta-cell:has(.fi-ta-group-checkbox) {
+    @apply py-2.5;
+}
+
+.fi-ta-header-toolbar {
+    @apply px-4 py-2.5;
+}
+
+.fi-ta-filters-above-content-ctn {
+    @apply px-4 py-2.5;
+}
+
+.fi-modal-content {
+    @apply gap-y-4 px-5 py-5;
+}
+
+.fi-wi-stats-overview-stat {
+    @apply px-4 py-3;
+}
+
+.fi-pagination {
+    @apply px-4 py-2.5;
+}
+
+.fi-no-database.fi-modal .fi-modal-window-ctn > .fi-modal-window .fi-modal-content {
+    @apply p-0;
+}
+
+.fi-ta-table > tbody > tr > .fi-ta-cell:has(.fi-ta-reorder-handle) {
+    @apply w-1 ps-4 pe-2;
+}
+
+.fi-topbar-nav-groups {
+    @apply gap-x-1;
+}
+
+.fi-topbar-item-btn {
+    @apply px-2.5 py-1.5;
+}
+
+.fi-btn.fi-chatter-btn {
+    @apply px-2;
+
+    & > .fi-icon {
+        @apply size-4;
+    }
+}
+
+.fi-dropdown-list-item {
+    @apply px-2 py-1.5;
+}
+
+.fi-dropdown-header {
+    @apply px-3 py-2;
+}
+
+.fi-ta-col-manager-dropdown .fi-ta-col-manager,
+.fi-ta-ctn .fi-ta-header-toolbar .fi-ta-col-manager-dropdown .fi-ta-col-manager,
+.fi-ta-filters-dropdown .fi-ta-filters,
+.fi-ta-ctn .fi-ta-header-toolbar .fi-ta-filters-dropdown .fi-ta-filters {
+    @apply p-4;
+}
+
+.fi-ta-col-manager {
+    @apply gap-3;
+
+    & .fi-ta-col-manager-items {
+        @apply -mt-2 gap-x-4;
+    }
+
+    & .fi-ta-col-manager-item {
+        @apply gap-2 pt-2;
+    }
+}
+
+.fi-ta-filters {
+    @apply gap-4;
+}
+
+.fi-simple-main {
+    @apply my-10 p-6 sm:p-6;
+}
+
+.fi-simple-header .fi-logo {
+    @apply mb-2;
+}
+
+.fi-simple-header-heading {
+    @apply text-xl;
+}
+
+.fi-simple-page-content {
+    @apply gap-y-4;
+}
+
+.fi-modal-window.fi-chatter-modal {
+    & .fi-modal-header {
+        @apply gap-x-3 px-4 py-3;
+    }
+
+    & .fi-modal-content {
+        @apply gap-y-3 px-4 py-3;
+    }
+
+    & .fi-modal-footer {
+        @apply px-4 py-3;
+    }
+
+    & .fi-sc {
+        @apply gap-3;
+    }
+
+    & .fi-fo-rich-editor-toolbar {
+        @apply gap-x-1 gap-y-0.5 px-2 py-1;
+    }
+
+    & .fi-fo-rich-editor-content {
+        @apply px-3 py-2;
+    }
+}
+
+.fi-chip-tabs ~ * .fi-section-header {
+    @apply py-2;
+}
+
+.fi-masonry > .fi-sc {
+    @apply block gap-4 lg:columns-2;
+}
+
+.fi-masonry > .fi-sc > .fi-grid-col {
+    @apply mb-4 break-inside-avoid last:mb-0;
+}
+
+.fi-fo-checkbox-list-options {
+    @apply gap-2;
+}
+
+.fi-fo-checkbox-list-option-description {
+    @apply text-xs leading-tight;
+}
+
+.fi-sc-tabs.fi-contained {
+    & > .fi-tabs {
+        @apply px-1 py-1.5;
+    }
+
+    & > .fi-sc-tabs-tab.fi-active {
+        @apply p-4;
+    }
+}

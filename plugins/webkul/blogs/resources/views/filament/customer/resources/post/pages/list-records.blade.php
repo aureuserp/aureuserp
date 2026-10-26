@@ -1,41 +1,63 @@
 @if ($records->count())
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @foreach ($records as $record)
             @php
                 $postUrl = $record->category
                     ? self::getResource()::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug])
                     : self::getResource()::getUrl('index');
+
+                $excerpt = trim(strip_tags((string) $record->sub_title));
+
+                if ($excerpt === '' || $excerpt === trim(strip_tags((string) $record->title))) {
+                    $excerpt = trim(html_entity_decode(strip_tags(str_replace(['<br>', '</p>'], ' ', (string) $record->content))));
+                }
             @endphp
 
-            <div class="max-w-md overflow-hidden bg-white shadow-md rounded-xl md:max-w-2xl">
-                <a href="{{ $postUrl }}" class="block md:shrink-0">
+            <article class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md dark:bg-gray-900 dark:ring-white/10">
+                <a href="{{ $postUrl }}" class="block aspect-[2/1] w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                     @if ($record->image_url)
-                        <img class="object-cover w-full h-48 md:h-full md:w-48" src="{{$record->image_thumb_url}}" alt="Blog post featured image" loading="lazy" decoding="async" width="600" height="300" style="aspect-ratio: 2 / 1" />
+                        <img
+                            class="size-full object-cover transition duration-300 group-hover:scale-105"
+                            src="{{ $record->image_thumb_url }}"
+                            alt="{{ $record->title }}"
+                            loading="lazy"
+                            decoding="async"
+                            width="600"
+                            height="300"
+                        />
                     @else
-                        <div class="object-cover w-full h-48 rounded-md bg-primary-500 md:h-full md:w-48" style="aspect-ratio: 2 / 1"></div>
+                        <div class="flex size-full items-center justify-center bg-primary-50 text-primary-400 dark:bg-primary-950 dark:text-primary-500">
+                            <x-filament::icon :icon="\Filament\Support\Icons\Heroicon::OutlinedPhoto" class="size-8" />
+                        </div>
                     @endif
                 </a>
 
-                <div class="p-6">
-                    <a href="{{ $postUrl }}" class="block">
-                        <div class="text-sm font-semibold tracking-wide uppercase text-primary-500">
-                            {{ $record->category?->name }}
-                        </div>
+                <div class="flex flex-1 flex-col gap-2 p-4">
+                    @if ($record->category)
+                        <a
+                            href="{{ $this->getCategoryFilterUrl($record->category) }}"
+                            class="text-xs font-semibold tracking-wide text-primary-600 uppercase hover:text-primary-500 dark:text-primary-400"
+                        >
+                            {{ $record->category->name }}
+                        </a>
+                    @endif
 
-                        <div class="block mt-1 text-lg font-medium leading-tight text-black">
-                            {{ $record->title }}
-                        </div>
-
-                        <p class="mt-2 text-gray-500">
-                            {!! \Illuminate\Support\Str::limit(str($record->sub_title ?? $record->content)->sanitizeHtml(), 150, $end='...') !!}
-                        </p>
+                    <a href="{{ $postUrl }}" class="line-clamp-2 text-sm font-semibold leading-snug text-gray-950 group-hover:text-primary-600 dark:text-white dark:group-hover:text-primary-400">
+                        {{ $record->title }}
                     </a>
 
+                    @if (filled($excerpt))
+                        <p class="line-clamp-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                            {{ \Illuminate\Support\Str::limit($excerpt, 160) }}
+                        </p>
+                    @endif
+
                     @if ($record->tags->count())
-                        <div class="flex flex-wrap gap-4 mt-4">
+                        <div class="flex flex-wrap gap-1.5">
                             @foreach ($record->tags as $tag)
                                 <x-filament::badge
                                     tag="a"
+                                    size="sm"
                                     :href="$this->getTagFilterUrl($tag)"
                                     :color="$tag->color ? \Filament\Support\Colors\Color::hex($tag->color) : 'primary'"
                                     :icon="$this->isTagActive($tag) ? \Filament\Support\Icons\Heroicon::XMark : null"
@@ -48,34 +70,32 @@
                         </div>
                     @endif
 
-                    <div class="flex items-center mt-4">
+                    <div class="mt-auto flex items-center gap-2 border-t border-gray-100 pt-3 dark:border-white/10">
                         <x-filament-panels::avatar.user
-                            class="mr-4"
+                            size="sm"
                             :user="$record->creator"
                         />
 
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">
+                        <div class="min-w-0 text-xs leading-4">
+                            <p class="truncate font-medium text-gray-950 dark:text-white">
                                 {{ $record->creator->name }}
                             </p>
 
-                            <p class="text-sm text-gray-500">
-                                {{ $record->published_at->format('F j, Y').' · '.$record->reading_time }}
+                            <p class="text-gray-500 dark:text-gray-400">
+                                {{ $record->published_at->format('M j, Y').' · '.$record->reading_time }}
                             </p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </article>
         @endforeach
     </div>
 
     <x-filament::pagination :paginator="$records" />
 @else
-    <div class="flex flex-col items-center justify-center py-12 text-center">
-        <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd" d="M4.5 3.75A.75.75 0 0 1 5.25 3h13.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.28.53L12 15.81l-6.22 4.97a.75.75 0 0 1-1.28-.53V3.75ZM6 4.5v14.69l5.47-4.38a.75.75 0 0 1 .92 0l5.47 4.38V4.5H6Z" clip-rule="evenodd"/>
-        </svg>
-        <p class="mt-4 text-lg font-semibold text-gray-700">{{ __('blogs::filament/customer/resources/post/pages/list-records.empty.title') }}</p>
-        <p class="mt-2 text-gray-500">{{ __('blogs::filament/customer/resources/post/pages/list-records.empty.description') }}</p>
-    </div>
+    <x-filament::empty-state
+        :icon="\Filament\Support\Icons\Heroicon::OutlinedBookmark"
+        :heading="__('blogs::filament/customer/resources/post/pages/list-records.empty.title')"
+        :description="__('blogs::filament/customer/resources/post/pages/list-records.empty.description')"
+    />
 @endif

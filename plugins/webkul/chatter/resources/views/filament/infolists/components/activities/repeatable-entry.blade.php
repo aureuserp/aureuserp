@@ -18,7 +18,7 @@
                 {{
                     \Filament\Support\prepare_inherited_attributes($attributes)
                         ->merge($getExtraAttributes(), escape: false)
-                        ->class('flex flex-col gap-4')
+                        ->class('flex flex-col gap-3')
                 }}
             >
                 @foreach ($childComponentContainers as $container)
@@ -29,7 +29,7 @@
 
                     <article
                         @class([
-                            'container rounded-xl px-4 text-base space-y-1',
+                            'container rounded-lg px-3 text-sm space-y-1',
                             'bg-gray-50 dark:bg-gray-800/50' => $isNote,
                             'bg-white/70 dark:bg-gray-900/60' => ! $isNote,
                         ])

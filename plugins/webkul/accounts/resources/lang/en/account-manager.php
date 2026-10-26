@@ -12,6 +12,7 @@ return [
         'lines-required'       => 'Please add at least one line to the invoice.',
         'draft-state-required' => 'Only invoices in draft state can be confirmed.',
         'journal-archived'     => 'You cannot confirm an invoice with an archived journal.',
+        'unbalanced'           => 'This journal entry is unbalanced and cannot be posted. Total debit must equal total credit.',
     ],
 
     'documents' => [

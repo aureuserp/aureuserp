@@ -3,12 +3,12 @@
 namespace Webkul\Chatter;
 
 use Filament\Panel;
-use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Webkul\Chatter\Livewire\ChatterPanel;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Support\Support\VersionedCss;
 
 class ChatterServiceProvider extends PackageServiceProvider
 {
@@ -48,7 +48,7 @@ class ChatterServiceProvider extends PackageServiceProvider
     public function registerCustomCss()
     {
         FilamentAsset::register([
-            Css::make('chatter', __DIR__.'/../resources/dist/chatter.css'),
+            VersionedCss::make('chatter', __DIR__.'/../resources/dist/chatter.css'),
         ], 'chatter');
     }
 }

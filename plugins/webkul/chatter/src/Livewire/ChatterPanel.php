@@ -169,7 +169,8 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
         return FileAction::make('file')
             ->visible($this->isFileActionVisible)
             ->hiddenLabel()
-            ->record($this->record);
+            ->record($this->record)
+            ->size('sm');
     }
 
     public function followerAction(): FollowerAction
@@ -178,7 +179,8 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             ->visible($this->isFollowerActionVisible)
             ->setFollowerMailView($this->followerMailViewPath)
             ->setResource($this->resourceClass)
-            ->record($this->record);
+            ->record($this->record)
+            ->size('sm');
     }
 
     public function removeFollower($partnerId)
@@ -198,7 +200,8 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
     public function filtersAction(): FiltersAction
     {
         return FiltersAction::make('filters')
-            ->visible(fn () => $this->tab === 'messages');
+            ->visible(fn () => $this->tab === 'messages')
+            ->size('sm');
     }
 
     protected function normalizeActivityPlans(mixed $activityPlans): Collection

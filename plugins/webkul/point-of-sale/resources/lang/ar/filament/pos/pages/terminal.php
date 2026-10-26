@@ -490,15 +490,16 @@ return [
     ],
 
     'receipt' => [
-        'phone'     => 'هاتف:',
-        'served-by' => 'قدّمها :cashier',
-        'untaxed'   => 'المبلغ غير الخاضع للضريبة',
-        'rounding'  => 'التقريب',
-        'total'     => 'الإجمالي',
-        'change'    => 'الباقي',
-        'order'     => 'الطلب :order',
-        'new-order' => 'طلب جديد',
-        'guests'    => ':count ضيوف',
+        'phone'      => 'هاتف:',
+        'served-by'  => 'قدّمها :cashier',
+        'lot-number' => 'رقم الدفعة :numbers',
+        'untaxed'    => 'المبلغ غير الخاضع للضريبة',
+        'rounding'   => 'التقريب',
+        'total'      => 'الإجمالي',
+        'change'     => 'الباقي',
+        'order'      => 'الطلب :order',
+        'new-order'  => 'طلب جديد',
+        'guests'     => ':count ضيوف',
     ],
 
     'install' => [

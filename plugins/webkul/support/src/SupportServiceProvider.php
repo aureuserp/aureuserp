@@ -2,8 +2,8 @@
 
 namespace Webkul\Support;
 
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
-use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -23,6 +23,7 @@ use Webkul\Support\Database\Dialects\PostgresDialect;
 use Webkul\Support\Http\Controllers\CompanyContextController;
 use Webkul\Support\Livewire\QuickNavigation;
 use Webkul\Support\Services\CompanyContext;
+use Webkul\Support\Support\VersionedCss;
 use Webkul\Support\Traits\HasFilamentDefaults;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
@@ -123,6 +124,28 @@ class SupportServiceProvider extends PackageServiceProvider
             },
         );
 
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
+            function (): string {
+                $page = Livewire::current();
+
+                if (! method_exists($page, 'getRecordNavigationTabs')) {
+                    return '';
+                }
+
+                $navigationItems = collect($page->getRecordNavigationTabs())
+                    ->filter(fn (NavigationItem $item): bool => $item->isVisible());
+
+                if ($navigationItems->isEmpty()) {
+                    return '';
+                }
+
+                return view('support::filament.pages.record-navigation', [
+                    'navigationItems' => $navigationItems,
+                ])->render();
+            },
+        );
+
         Livewire::component('quick-navigation', QuickNavigation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
@@ -133,7 +156,7 @@ class SupportServiceProvider extends PackageServiceProvider
         ])->where(['filename' => '[ \w\\.\\/\\-\\@\(\)\=]+']);
 
         FilamentAsset::register([
-            Css::make('support', __DIR__.'/../resources/dist/support.css'),
+            VersionedCss::make('support', __DIR__.'/../resources/dist/support.css'),
         ], 'support');
 
         $this->registerFilamentDefaults();

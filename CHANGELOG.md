@@ -1,3 +1,84 @@
+# 🚀 CHANGELOG — v1.7.0
+
+### 🧩 Features
+
+* Added a compact admin panel theme
+* Added the Point of Sale (POS) plugin: registers and sessions, orders, refunds, payment methods, floors and tables for restaurant mode, and receipt printing
+* Added price lists for sales orders
+* Added quotation preview and PDF export with dark-mode styling
+* Added manufacturing orders and corrected inventory adjustment counting in the Barcode plugin
+* Added company ID validation on API writes so users can only write to their allowed companies
+* Added success notifications to create/edit/delete actions across resources
+* Added Invoice and Purchase dashboards with row navigation, clickable top bills and invoices, and foreign-currency amounts converted to the company currency
+
+### ✨ Improvements
+
+* Upgraded Filament packages from v5.7.6 to v5.10.2
+* Hid soft-deleted products from product selections
+* Required confirmation before deleting a product line in receipts
+* Plugin install now runs migrations and seeders with `--force` and clears the settings cache
+* Improved custom field validation handling
+* Fixed price rules columns and the price list navigation layout
+* Made the Lot on-hand quantity column sortable
+* Removed the non-functional sort on the variant combinations column
+* Added blog tag search and fixed blog search
+* Added `asset_url` configuration to `config/app.php` for asset management
+* Updated README and database configuration requirements
+* Improved relationship queries to include soft-deleted records
+* Added a Playwright issue-reporting workflow
+* [Security] Blocked SVG uploads and dropped preserved filenames on the public disk
+* [Security] Active-user check and throttling on API login attempts
+* [Security] API tokens now expire and are revoked on password change
+* [Security] Prevented invalid attributes in model mass assignment
+* [Security] Escaped output to prevent stored XSS in payment term notes, quotation terms notes, Rule form/infolist location and operation names, holiday names, skill-type colors, and account-tag colors
+* Added missing and corrected mismatched translation keys across 12 plugins
+
+### 🐛 Fixes
+
+* #1627 [fixed] - Exchange rate validation now accepts decimal values
+* #1641 [fixed] - Product IN/OUT tab now shows the correct unit next to quantities
+* #1638 [fixed] - BOM and Manufacturing Order costs are correct when a component's unit of measure differs from the product's cost unit
+* #1630 [fixed] - POS sale of a lot-tracked product now completes the delivery and updates the lot's On-Hand Quantity
+* #1615 [fixed] - Deleting the auto-generated Tax line no longer lets an unbalanced Journal Entry be posted
+* #1614 [fixed] - Tax line in a manual Journal Entry is now saved with a Balance, so the Journal Items Balance total is correct
+* #1519 [fixed] - Added quotation preview and PDF export with dark-mode styling
+* #1612 [fixed] - Credit note created from an invoice now keeps the taxes on its invoice lines
+* #1611 [fixed] - Manufacturing work orders no longer appear as Public Holidays in Time Off
+* #1610 [fixed] - Overview calendar no longer drops the last day of a time-off request or hides half-day requests
+* #1608 [fixed] - Time-off types set to "No Limit" are no longer refused when a request exceeds the employee's balance
+* #1607 [fixed] - Recruitment dashboard chart and cards now respect the Job Position, Stages and Status filters
+* #1597 [fixed] - Receipt of a lot-tracked product can be validated when "Locations" is turned off
+* #1592 [fixed] - Opening a Buy or Manufacture rule no longer shows a 500 error page
+* #1590 [fixed] - Reversing a manual journal entry now swaps debit and credit
+* #1589 [fixed] - Reversing a manual journal entry no longer redirects to a 404 page
+* #1587 [fixed] - Returning a receipt no longer switches the line to the product's default unit
+* #1586 [fixed] - Journal entry created from a payment now uses the payment Memo as its Reference
+* #1585 [fixed] - Return action no longer allows returning more than was received or ignoring quantities already returned
+* #1581 [fixed] - Deleting a product category no longer shows a false "deleted successfully" notice
+* #1577 [fixed] - Barcode number is now unique
+* #1569 [fixed] - Fixed Purchase Order bill confirmation
+* #1560 [fixed] - Searching a single digit in global search no longer crashes
+* #1555 [fixed] - Fixed wrong Discount Amount display
+* #1552 [fixed] - Deleting a Payment Term used on a Sales Order is now blocked with a warning
+* #1549 [fixed] - Restoring a deleted Quotation no longer fails with a server error
+* #1547 [fixed] - Branch address details now show on the Company view page
+* #1546 [fixed] - Fixed "Stage Name" filter crash on Recruitment Stages
+* #1545 [fixed] - Fixed "UOM" filter crash on Inventory Quantities
+* #1544 [fixed] - Fixed "Created By" filter crash on Leave Types
+* #1543 [fixed] - Fixed "Department" filter crash on Sales Activity Plans
+* #1541 [fixed] - Product form no longer shows IDs in Account Properties for restricted companies
+* #1538 [fixed] - Soft-deleted products no longer appear in Quantity Adjustments reporting
+* #1535 [fixed] - Lot/Serial number is no longer required for quantity-tracked products
+* #1533 [fixed] - Product list now shows the correct currency for companies with a different currency
+* #1527 [fixed] - Fixed error when confirming a draft quotation containing a soft-deleted product
+* #1526 [fixed] - Fixed exception when adjusting quantity of a soft-deleted product
+* [fixed] - Fixed location selection error when creating an operation type with a disabled location
+* [fixed] - Fixed division by zero in the Manufacturing work order duration
+* [fixed] - Fixed NaN money values in the POS offline order history receipt
+* [fixed] - Excluded draft moves from dashboard totals and fixed the invoiced label on invoice dashboard widgets
+* [fixed] - Fixed `EmployeeFactory` writing values its columns do not accept
+* [fixed] - Fixed Sales plugin contributions loading before the plugin is installed
+
 # 🚀 CHANGELOG — v1.6.0
 
 ### 🧩 Features

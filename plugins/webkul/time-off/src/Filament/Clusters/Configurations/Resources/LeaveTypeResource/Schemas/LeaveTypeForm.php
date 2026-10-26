@@ -35,7 +35,7 @@ class LeaveTypeForm
                                             ->required()
                                             ->maxLength(255)
                                             ->live(onBlur: true)
-                                            ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                                            ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
                                         Group::make()
                                             ->schema([
                                                 Group::make()

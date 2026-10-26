@@ -1,0 +1,8 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../shared/theme.css';
+@import '../shared/compact.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../plugins/webkul/*/src/**/*.php';
+@source '../../../../plugins/webkul/*/resources/views/**/*.blade.php';

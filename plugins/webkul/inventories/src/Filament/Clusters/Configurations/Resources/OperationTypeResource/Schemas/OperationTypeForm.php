@@ -44,7 +44,7 @@ class OperationTypeForm
                             ->maxLength(255)
                             ->autofocus()
                             ->placeholder(__('inventories::filament/clusters/configurations/resources/operation-type.form.sections.general.fields.operator-type-placeholder'))
-                            ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
+                            ->extraInputAttributes(['style' => 'font-size: 1.25rem;height: 2.5rem;']),
                     ])->columnSpanFull(),
 
                 Tabs::make()

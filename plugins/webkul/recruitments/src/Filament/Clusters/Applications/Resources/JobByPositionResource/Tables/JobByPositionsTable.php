@@ -104,7 +104,7 @@ class JobByPositionsTable
                         })
                         ->icon(null)
                         ->color('primary')
-                        ->size(Size::Large),
+                        ->size(Size::Medium),
                     Action::make('total_applications')
                         ->label(function ($record) {
                             $totalApplicantCount = $record->total_applicants_count ?? 0;
@@ -114,7 +114,7 @@ class JobByPositionsTable
                             ]);
                         })
                         ->color('primary')
-                        ->size(Size::Large)
+                        ->size(Size::Medium)
                         ->action(function ($record) {
                             return redirect(ApplicantResource::getUrl('index', [
                                 'tableFilters' => [

@@ -3491,6 +3491,10 @@ export class Till {
         return ['lot', 'serial'].includes(this.trackingFor(productId))
     }
 
+    isLotTrackedLine(productId) {
+        return this.trackingFor(productId) === 'lot' && this.lotsEnabled
+    }
+
     get lotsEnabled() {
         return Boolean(this.config.use_create_lots || this.config.use_existing_lots)
     }
@@ -3517,14 +3521,74 @@ export class Till {
         return this.lotsByProduct.get(productId) ?? []
     }
 
-    openLots(lineUuid) {
-        const line = this.activeOrder?.lines.find((entry) => entry.uuid === lineUuid)
+    lotUsage(productId, lotName, excludeLineUuid = null) {
+        return this.state.orders
+            .filter((order) => order.state === 'draft')
+            .flatMap((order) => order.lines)
+            .filter((line) => line.product_id === productId && line.uuid !== excludeLineUuid)
+            .reduce((total, line) => {
+                const lots = line.lots ?? []
 
-        if (!line || !this.isEditable()) {
+                if (!lots.some((lot) => lot.lot_name === lotName)) {
+                    return total
+                }
+
+                return total + (lots.length === 1 ? Number(line.qty) : Math.sign(line.qty) * Number(lots.find((lot) => lot.lot_name === lotName).qty ?? 1))
+            }, 0)
+    }
+
+    remainingLotQty(lot, excludeLineUuid = null) {
+        return floatRound(Number(lot.free_qty ?? 0) - this.lotUsage(lot.product_id, lot.name, excludeLineUuid), { precisionDigits: 4 })
+    }
+
+    availableLotsFor(productId, excludeLineUuid = null) {
+        return this.existingLotsFor(productId).filter((lot) => floatCompare(this.remainingLotQty(lot, excludeLineUuid), 0, { precisionDigits: 4 }) > 0)
+    }
+
+    async refreshLots(productId) {
+        const template = this.config.product_lots_endpoint
+
+        if (!template || !navigator.onLine || !this.config.use_existing_lots) {
             return
         }
 
-        const existing = this.existingLotsFor(line.product_id)
+        const controller = new AbortController()
+
+        const timer = setTimeout(() => controller.abort(), 3000)
+
+        try {
+            const response = await fetch(template.replace('__product__', productId), {
+                headers: { Accept: 'application/json' },
+                signal: controller.signal,
+            })
+
+            if (response.ok) {
+                const body = await response.json()
+
+                this.lotsByProduct.set(productId, body.data ?? [])
+            }
+        } catch {
+        } finally {
+            clearTimeout(timer)
+        }
+    }
+
+    async openLots(lineUuid) {
+        const target = this.activeOrder?.lines.find((entry) => entry.uuid === lineUuid)
+
+        if (!target || !this.isEditable()) {
+            return
+        }
+
+        await this.refreshLots(target.product_id)
+
+        const line = this.activeOrder?.lines.find((entry) => entry.uuid === lineUuid)
+
+        if (!line) {
+            return
+        }
+
+        const existing = this.availableLotsFor(line.product_id, line.uuid)
 
         if (!this.canCreateLots && !existing.length) {
             this.state.lotError = this.t('lots.none-available')
@@ -3605,7 +3669,10 @@ export class Till {
         const names = this.state.lotRows.map((row) => String(row).trim()).filter(Boolean)
 
         if (!this.canCreateLots) {
-            const available = this.existingLotsFor(line.product_id).map((lot) => lot.name)
+            const available = [
+                ...this.availableLotsFor(line.product_id, line.uuid).map((lot) => lot.name),
+                ...(line.lots ?? []).map((lot) => lot.lot_name),
+            ]
 
             const unknown = names.filter((name) => !available.includes(name))
 
@@ -3747,7 +3814,7 @@ export class Till {
             return null
         }
 
-        const existing = order.lines.find((line) => (
+        const existing = !this.isLotTrackedLine(productId) && order.lines.find((line) => (
             line.product_id === productId
             && line.discount === 0
             && !line.price_overridden
@@ -4578,10 +4645,9 @@ export class Till {
                 const lineTotals = this.lineTotals(line)
 
                 return {
+                    ...line,
                     id: line.uuid,
                     full_product_name: this.master.products.get(line.product_id)?.name ?? '',
-                    qty: line.qty,
-                    price_unit: line.price_unit,
                     price_subtotal_incl: floatRound(lineTotals.subtotal + lineTotals.tax, { precisionDigits: 4 }),
                 }
             }),
@@ -4862,6 +4928,17 @@ export class Till {
         }
 
         const line = this.activeLine
+
+        if (line && this.isLotTrackedLine(line.product_id) && line.lots?.length) {
+            const added = this.addProduct(line.product_id)
+
+            this.state.lotLineUuid = added.uuid
+            this.state.lotRows = [code]
+
+            this.confirmLots()
+
+            return true
+        }
 
         if (line && this.isTracked(line.product_id) && this.lotsEnabled) {
             this.state.lotLineUuid = line.uuid

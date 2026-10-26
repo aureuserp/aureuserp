@@ -222,7 +222,8 @@ class RoleResource extends RolesRoleResource
                     ->collapsed()
                     ->persistCollapsed()
                     ->schema([
-                        Grid::make()
+                        Grid::make(1)
+                            ->extraAttributes(['class' => 'fi-masonry'])
                             ->schema(function () use ($plugin) {
                                 return collect($plugin)
                                     ->flatMap(function ($entity) {
@@ -242,13 +243,11 @@ class RoleResource extends RolesRoleResource
                                             Fieldset::make($fieldsetLabel)
                                                 ->schema([
                                                     static::getCheckBoxListComponentForResource($entity)->hiddenLabel(),
-                                                ])
-                                                ->columnSpan(static::shield()->getSectionColumnSpan()),
+                                                ]),
                                         ];
                                     })
                                     ->toArray();
-                            })
-                            ->columns(static::shield()->getGridColumns()),
+                            }),
                     ]);
             })
             ->toArray();
@@ -319,9 +318,29 @@ class RoleResource extends RolesRoleResource
         array|int|string|null $columns = null,
         array|int|string|null $columnSpan = null
     ): Component {
+        $actions = ['force_delete_any', 'force_delete', 'delete_any', 'restore_any', 'view_any', 'delete', 'restore', 'reorder', 'create', 'update', 'view'];
+
+        $descriptions = [];
+
+        foreach (array_keys($options) as $key) {
+            foreach ($actions as $action) {
+                if (str_starts_with($key, $action.'_') || $key === $action) {
+                    $transKey = 'security::filament/resources/role.permission-descriptions.'.$action;
+                    $translated = __($transKey);
+
+                    if ($translated !== $transKey) {
+                        $descriptions[$key] = $translated;
+                    }
+
+                    break;
+                }
+            }
+        }
+
         return CheckboxList::make($name)
             ->hiddenLabel()
             ->options(fn (): array => $options)
+            ->descriptions($descriptions)
             ->searchable($searchable)
             ->bulkToggleable()
             ->afterStateHydrated(function (Component $component, string $operation, ?Model $record) use ($options): void {

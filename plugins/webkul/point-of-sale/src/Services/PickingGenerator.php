@@ -82,7 +82,6 @@ class PickingGenerator
     protected function movesStock(OrderLine $line): bool
     {
         return $line->product?->type === ProductType::GOODS
-            && $line->product?->is_storable
             && ! float_is_zero((float) $line->qty, precisionDigits: 4);
     }
 

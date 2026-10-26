@@ -490,15 +490,16 @@ return [
     ],
 
     'receipt' => [
-        'phone'     => 'Tel.:',
-        'served-by' => 'Atendido por :cashier',
-        'untaxed'   => 'Base imponible',
-        'rounding'  => 'Redondeo',
-        'total'     => 'TOTAL',
-        'change'    => 'Cambio',
-        'order'     => 'Pedido :order',
-        'new-order' => 'Nuevo pedido',
-        'guests'    => '{1} :count comensal|[2,*] :count comensales',
+        'phone'      => 'Tel.:',
+        'served-by'  => 'Atendido por :cashier',
+        'lot-number' => 'Número de lote :numbers',
+        'untaxed'    => 'Base imponible',
+        'rounding'   => 'Redondeo',
+        'total'      => 'TOTAL',
+        'change'     => 'Cambio',
+        'order'      => 'Pedido :order',
+        'new-order'  => 'Nuevo pedido',
+        'guests'     => '{1} :count comensal|[2,*] :count comensales',
     ],
 
     'install' => [
