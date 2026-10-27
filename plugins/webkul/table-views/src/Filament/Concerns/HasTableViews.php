@@ -476,6 +476,6 @@ trait HasTableViews
                 ($this->deleteTableViewAction())($args)
                     ->visible(fn () => $key == $tableView->isDeletable()),
             ])->dropdown(false),
-        ])->dropdownPlacement('bottom-end');
+        ])->dropdownPlacement('bottom-start')->dropdownTeleport();
     }
 }
