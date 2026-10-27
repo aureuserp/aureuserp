@@ -2,10 +2,6 @@
 
 return [
     'header-actions' => [
-        'restore' => [
-            'label' => 'استعادة',
-        ],
-
         'force-delete' => [
             'notification' => [
                 'title' => 'تم حذف الفرصة',

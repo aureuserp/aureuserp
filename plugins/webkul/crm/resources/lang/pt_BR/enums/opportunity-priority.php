@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'Low'      => 'Baixa',
-    'Medium'   => 'Média',
-    'High'     => 'Alta',
-    'VeryHigh' => 'Muito alta',
+    'low'       => 'Baixa',
+    'medium'    => 'Média',
+    'high'      => 'Alta',
+    'very-high' => 'Muito alta',
 ];

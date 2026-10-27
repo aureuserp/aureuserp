@@ -4,12 +4,13 @@ namespace Webkul\Crm\Filament\Support\Reports\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Locked;
+use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
-use Webkul\Crm\Filament\Support\Reports\Report;
 
 class ReportChart extends ChartWidget
 {
@@ -60,42 +61,17 @@ class ReportChart extends ChartWidget
 
     public function getHeading(): string
     {
-        $report = $this->getReport();
-
-        $filters = $this->getReportFilters();
-
-        return __('crm::filament/clusters/reporting/report.chart.heading', [
-            'measure' => $report::getMeasure($filters['measure'])->label,
-            'group'   => ($report::getDimension($filters['group_by']) ?? $report::getDimension($report::getDefaultGroupBy()))->label,
-        ]);
+        return static::heading($this->getReport(), $this->getReportFilters());
     }
 
     protected function getType(): string
     {
-        return in_array($type = $this->getReportFilters()['chart_type'], [Report::CHART_BAR, Report::CHART_LINE, Report::CHART_PIE], true)
-            ? $type
-            : Report::CHART_BAR;
+        return static::chartType($this->getReportFilters())->value;
     }
 
     protected function getOptions(): array
     {
-        if ($this->getType() === Report::CHART_PIE) {
-            return [
-                'scales' => [
-                    'x' => ['display' => false],
-                    'y' => ['display' => false],
-                ],
-            ];
-        }
-
-        $isStacked = $this->getType() === Report::CHART_BAR && filled($this->getReportFilters()['split_by']);
-
-        return [
-            'scales' => [
-                'x' => ['stacked' => $isStacked],
-                'y' => ['stacked' => $isStacked, 'beginAtZero' => true],
-            ],
-        ];
+        return static::options($this->getReportFilters());
     }
 
     protected function getData(): array
@@ -106,13 +82,62 @@ class ReportChart extends ChartWidget
 
         $filters = $this->getReportFilters();
 
-        $isPie = $this->getType() === Report::CHART_PIE;
+        return static::data($report, $report::applyFilters($this->resource::getEloquentQuery(), $filters), $filters);
+    }
+
+    public static function build(string $report, Builder $query, array $filters): array
+    {
+        return [
+            'heading' => static::heading($report, $filters),
+            'type'    => static::chartType($filters)->value,
+            'data'    => static::data($report, $query, $filters),
+            'options' => static::options($filters),
+        ];
+    }
+
+    public static function heading(string $report, array $filters): string
+    {
+        return __('crm::filament/clusters/reporting/report.chart.heading', [
+            'measure' => $report::getMeasure($filters['measure'] ?? null)->label,
+            'group'   => ($report::getDimension($filters['group_by'] ?? null) ?? $report::getDimension($report::getDefaultGroupBy()))->label,
+        ]);
+    }
+
+    public static function chartType(array $filters): ReportChartType
+    {
+        return ReportChartType::tryFrom((string) ($filters['chart_type'] ?? '')) ?? ReportChartType::BAR;
+    }
+
+    public static function options(array $filters): array
+    {
+        if (static::chartType($filters) === ReportChartType::PIE) {
+            return [
+                'scales' => [
+                    'x' => ['display' => false],
+                    'y' => ['display' => false],
+                ],
+            ];
+        }
+
+        $isStacked = static::chartType($filters) === ReportChartType::BAR && filled($filters['split_by'] ?? null);
+
+        return [
+            'scales' => [
+                'x' => ['stacked' => $isStacked],
+                'y' => ['stacked' => $isStacked, 'beginAtZero' => true],
+            ],
+        ];
+    }
+
+    public static function data(string $report, Builder $query, array $filters): array
+    {
+        $isPie = static::chartType($filters) === ReportChartType::PIE;
 
         $data = $report::aggregate(
-            $report::applyFilters($this->resource::getEloquentQuery(), $filters),
-            (string) $filters['group_by'],
-            $isPie ? null : $filters['split_by'],
-            (string) $filters['measure'],
+            $query,
+            (string) ($filters['group_by'] ?? $report::getDefaultGroupBy()),
+            $isPie ? null : ($filters['split_by'] ?? null),
+            (string) ($filters['measure'] ?? $report::getDefaultMeasure()),
         );
 
         if ($isPie) {

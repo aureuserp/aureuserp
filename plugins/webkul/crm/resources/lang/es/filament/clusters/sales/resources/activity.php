@@ -80,7 +80,8 @@ return [
         ],
 
         'done' => [
-            'label' => 'Marcar como hecha',
+            'label'             => 'Marcar como hecha',
+            'bulk-notification' => ':count actividad(es) marcada(s) como hecha(s).',
 
             'modal' => [
                 'heading' => 'Marcar actividad como hecha',
@@ -95,6 +96,11 @@ return [
                 'title' => 'Actividad realizada',
                 'body'  => 'La actividad se ha marcado como hecha y se ha registrado en la oportunidad.',
             ],
+        ],
+
+        'snooze' => [
+            'label'        => 'Posponer :days d',
+            'notification' => 'Actividad pospuesta hasta el :date.',
         ],
 
         'reschedule' => [

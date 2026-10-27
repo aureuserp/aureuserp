@@ -10,8 +10,6 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -26,188 +24,184 @@ class LeadForm
     {
         return $schema
             ->components([
-                Section::make()
+                Group::make()
                     ->schema([
-                        TextInput::make('name')
-                            ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))
-                            ->hiddenLabel()
-                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.name-placeholder'))
-                            ->required()
-                            ->maxLength(255)
-                            ->autofocus()
-                            ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
-                            ->columnSpanFull(),
-                        TextInput::make('probability')
-                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.probability'))
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(99.99)
-                            ->suffix('%')
-                            ->placeholder(__('crm::filament/lead-scoring.automatic'))
-                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::formResetAction()])
-                            ->extraFieldWrapperAttributes(['style' => 'max-width: 12rem;']),
-                        Grid::make(['default' => 1, 'lg' => 2])
+                        Section::make(__('crm::filament/clusters/leads/resources/lead.form.sections.general'))
                             ->schema([
-                                Group::make()
+                                TextInput::make('name')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))
+                                    ->hiddenLabel()
+                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.name-placeholder'))
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->autofocus()
+                                    ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
+                                    ->columnSpanFull(),
+                                TextInput::make('probability')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.probability'))
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(99.99)
+                                    ->suffix('%')
+                                    ->placeholder(__('crm::filament/lead-scoring.automatic'))
+                                    ->afterLabel([ProbabilityHint::component(), ProbabilityHint::formResetAction()])
+                                    ->extraFieldWrapperAttributes(['style' => 'max-width: 12rem;']),
+                                Grid::make(['default' => 1, 'lg' => 2])
                                     ->schema([
-                                        TextInput::make('company_name')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.company-name'))
-                                            ->maxLength(255),
-                                        Fieldset::make(__('crm::filament/clusters/leads/resources/lead.form.fields.address'))
+                                        Group::make()
                                             ->schema([
-                                                TextInput::make('street1')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.street1'))
-                                                    ->hiddenLabel()
-                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.street1'))
-                                                    ->maxLength(255)
-                                                    ->columnSpanFull(),
-                                                TextInput::make('street2')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.street2'))
-                                                    ->hiddenLabel()
-                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.street2'))
-                                                    ->maxLength(255)
-                                                    ->columnSpanFull(),
-                                                TextInput::make('city')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.city'))
-                                                    ->hiddenLabel()
-                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.city'))
+                                                TextInput::make('company_name')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.company-name'))
                                                     ->maxLength(255),
-                                                TextInput::make('zip')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.zip'))
-                                                    ->hiddenLabel()
-                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.zip'))
+                                                Fieldset::make(__('crm::filament/clusters/leads/resources/lead.form.fields.address'))
+                                                    ->schema([
+                                                        TextInput::make('street1')
+                                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.street1'))
+                                                            ->hiddenLabel()
+                                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.street1'))
+                                                            ->maxLength(255)
+                                                            ->columnSpanFull(),
+                                                        TextInput::make('street2')
+                                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.street2'))
+                                                            ->hiddenLabel()
+                                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.street2'))
+                                                            ->maxLength(255)
+                                                            ->columnSpanFull(),
+                                                        TextInput::make('city')
+                                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.city'))
+                                                            ->hiddenLabel()
+                                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.city'))
+                                                            ->maxLength(255),
+                                                        TextInput::make('zip')
+                                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.zip'))
+                                                            ->hiddenLabel()
+                                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.zip'))
+                                                            ->maxLength(255),
+                                                        Select::make('state_id')
+                                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.state'))
+                                                            ->hiddenLabel()
+                                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.state'))
+                                                            ->relationship(
+                                                                name: 'state',
+                                                                titleAttribute: 'name',
+                                                                modifyQueryUsing: fn (Get $get, Builder $query): Builder => $query->where('country_id', $get('country_id')),
+                                                            )
+                                                            ->searchable()
+                                                            ->preload(),
+                                                        Select::make('country_id')
+                                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.country'))
+                                                            ->hiddenLabel()
+                                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.country'))
+                                                            ->relationship('country', 'name')
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->live()
+                                                            ->afterStateUpdated(fn (Set $set) => $set('state_id', null)),
+                                                    ])
+                                                    ->columns(2),
+                                                TextInput::make('website')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.website'))
+                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.website-placeholder'))
+                                                    ->url()
                                                     ->maxLength(255),
-                                                Select::make('state_id')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.state'))
-                                                    ->hiddenLabel()
-                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.state'))
-                                                    ->relationship(
-                                                        name: 'state',
-                                                        titleAttribute: 'name',
-                                                        modifyQueryUsing: fn (Get $get, Builder $query): Builder => $query->where('country_id', $get('country_id')),
-                                                    )
-                                                    ->searchable()
-                                                    ->preload(),
-                                                Select::make('country_id')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.country'))
-                                                    ->hiddenLabel()
-                                                    ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.country'))
-                                                    ->relationship('country', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->live()
-                                                    ->afterStateUpdated(fn (Set $set) => $set('state_id', null)),
-                                            ])
-                                            ->columns(3),
-                                        TextInput::make('website')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.website'))
-                                            ->placeholder(__('crm::filament/clusters/leads/resources/lead.form.fields.website-placeholder'))
-                                            ->url()
-                                            ->maxLength(255),
-                                        Select::make('user_id')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.salesperson'))
-                                            ->relationship('user', 'name', modifyQueryUsing: fn (Builder $query, Get $get): Builder => static::scopeSalespeople($query, $get('company_id')))
-                                            ->searchable()
-                                            ->preload()
-                                            ->default(fn (): ?int => auth()->id()),
-                                        Select::make('team_id')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.team'))
-                                            ->relationship('team', 'name', modifyQueryUsing: fn (Builder $query, Get $get): Builder => $query->where(owned_by_company($get('company_id'))))
-                                            ->searchable()
-                                            ->preload(),
-                                    ]),
-                                Group::make()
-                                    ->schema([
-                                        TextInput::make('contact_name')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.contact-name'))
-                                            ->maxLength(255),
-                                        TextInput::make('email')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.email'))
-                                            ->email()
-                                            ->maxLength(255),
-                                        TextInput::make('job_title')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.job-position'))
-                                            ->maxLength(255),
-                                        TextInput::make('phone')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.phone'))
-                                            ->tel()
-                                            ->maxLength(255),
-                                        Select::make('priority')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.priority'))
-                                            ->options(OpportunityPriority::class)
-                                            ->default(OpportunityPriority::Low),
-                                        Select::make('tags')
-                                            ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.tags'))
-                                            ->relationship('tags', 'name')
-                                            ->multiple()
-                                            ->searchable()
-                                            ->preload()
-                                            ->createOptionForm(fn (Schema $schema): Schema => TagForm::configure($schema)),
+                                            ]),
+                                        Group::make()
+                                            ->schema([
+                                                TextInput::make('contact_name')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.contact-name'))
+                                                    ->maxLength(255),
+                                                TextInput::make('email')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.email'))
+                                                    ->email()
+                                                    ->maxLength(255),
+                                                TextInput::make('job_title')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.job-position'))
+                                                    ->maxLength(255),
+                                                TextInput::make('phone')
+                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.phone'))
+                                                    ->tel()
+                                                    ->maxLength(255),
+                                            ]),
                                     ]),
                             ]),
-                    ]),
-                Tabs::make()
-                    ->tabs([
-                        Tab::make(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
-                            ->icon('heroicon-o-pencil-square')
+                        Section::make(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
                             ->schema([
                                 RichEditor::make('description')
                                     ->label(__('crm::filament/clusters/leads/resources/lead.form.tabs.notes'))
                                     ->hiddenLabel(),
                             ]),
-                        Tab::make(__('crm::filament/clusters/leads/resources/lead.form.tabs.extra-info'))
-                            ->icon('heroicon-o-information-circle')
+                    ])
+                    ->columnSpan(['lg' => 2]),
+                Group::make()
+                    ->schema([
+                        Section::make(__('crm::filament/clusters/leads/resources/lead.form.sections.sales'))
                             ->schema([
-                                Grid::make(['default' => 1, 'lg' => 2])
-                                    ->schema([
-                                        Fieldset::make(__('crm::filament/clusters/leads/resources/lead.form.fieldsets.marketing'))
-                                            ->schema([
-                                                Select::make('company_id')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.company'))
-                                                    ->relationship('company', 'name')
-                                                    ->live()
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->default(fn (): ?int => current_company_id()),
-                                                Select::make('utm_campaign_id')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.campaign'))
-                                                    ->relationship('campaign', 'name')
-                                                    ->searchable()
-                                                    ->preload(),
-                                                Select::make('utm_medium_id')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.medium'))
-                                                    ->relationship('medium', 'name')
-                                                    ->searchable()
-                                                    ->preload(),
-                                                Select::make('utm_source_id')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.source'))
-                                                    ->relationship('source', 'name')
-                                                    ->searchable()
-                                                    ->preload(),
-                                                TextInput::make('referred_by')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.referred-by'))
-                                                    ->maxLength(255),
-                                            ])
-                                            ->columns(1),
-                                        Fieldset::make(__('crm::filament/clusters/leads/resources/lead.form.fieldsets.analysis'))
-                                            ->schema([
-                                                TextEntry::make('assigned_at')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.assignment-date'))
-                                                    ->dateTime()
-                                                    ->placeholder('—'),
-                                                TextEntry::make('closed_at')
-                                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.closed-date'))
-                                                    ->dateTime()
-                                                    ->placeholder('—'),
-                                            ])
-                                            ->columns(1),
-                                    ]),
+                                Select::make('user_id')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.salesperson'))
+                                    ->relationship('user', 'name', modifyQueryUsing: fn (Builder $query, Get $get): Builder => static::scopeSalespeople($query, $get('company_id')))
+                                    ->searchable()
+                                    ->preload()
+                                    ->default(fn (): ?int => auth()->id()),
+                                Select::make('team_id')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.team'))
+                                    ->relationship('team', 'name', modifyQueryUsing: fn (Builder $query, Get $get): Builder => $query->where(owned_by_company($get('company_id'))))
+                                    ->searchable()
+                                    ->preload(),
+                                Select::make('priority')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.priority'))
+                                    ->options(OpportunityPriority::class)
+                                    ->default(OpportunityPriority::LOW),
+                                Select::make('tags')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.tags'))
+                                    ->relationship('tags', 'name')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm(fn (Schema $schema): Schema => TagForm::configure($schema)),
+                            ]),
+                        Section::make(__('crm::filament/clusters/leads/resources/lead.form.fieldsets.marketing'))
+                            ->schema([
+                                Select::make('company_id')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.company'))
+                                    ->relationship('company', 'name')
+                                    ->live()
+                                    ->searchable()
+                                    ->preload()
+                                    ->default(fn (): ?int => current_company_id()),
+                                Select::make('utm_campaign_id')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.campaign'))
+                                    ->relationship('campaign', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                Select::make('utm_medium_id')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.medium'))
+                                    ->relationship('medium', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                Select::make('utm_source_id')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.source'))
+                                    ->relationship('source', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                TextInput::make('referred_by')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.referred-by'))
+                                    ->maxLength(255),
+                            ]),
+                        Section::make(__('crm::filament/clusters/leads/resources/lead.form.fieldsets.analysis'))
+                            ->schema([
+                                TextEntry::make('assigned_at')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.assignment-date'))
+                                    ->dateTime()
+                                    ->placeholder('—'),
+                                TextEntry::make('closed_at')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.closed-date'))
+                                    ->dateTime()
+                                    ->placeholder('—'),
                             ]),
                     ])
-                    ->persistTabInQueryString()
-                    ->columnSpanFull(),
+                    ->columnSpan(['lg' => 1]),
             ])
-            ->columns(1);
+            ->columns(3);
     }
 
     public static function scopeSalespeople(Builder $query, mixed $companyId): Builder

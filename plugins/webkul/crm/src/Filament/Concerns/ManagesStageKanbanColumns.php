@@ -3,6 +3,7 @@
 namespace Webkul\Crm\Filament\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Schemas\StageForm;
 use Webkul\Crm\Models\Lead;
@@ -33,21 +34,24 @@ trait ManagesStageKanbanColumns
             ->exists();
     }
 
-    protected function createKanbanColumn(string $name): Model
+    protected function createKanbanColumn(string $name, array $attributes = []): Model
     {
         $stage = Stage::query()->create([
+            ...Arr::only($attributes, ['requirements']),
             'name'     => $name,
-            'is_won'   => false,
-            'team_ids' => array_filter([$this->currentKanbanTeamId()]),
+            'is_won'   => (bool) ($attributes['is_won'] ?? false),
+            'team_ids' => filled($attributes['team_ids'] ?? null) ? $attributes['team_ids'] : array_filter([$this->currentKanbanTeamId()]),
         ]);
 
         $stages = Stage::query()->whereKeyNot($stage->getKey())->orderBy('sort')->get();
 
-        Stage::setNewOrder([
-            ...$stages->where('is_won', false)->modelKeys(),
-            $stage->getKey(),
-            ...$stages->where('is_won', true)->modelKeys(),
-        ]);
+        Stage::setNewOrder($stage->is_won
+            ? [...$stages->modelKeys(), $stage->getKey()]
+            : [
+                ...$stages->where('is_won', false)->modelKeys(),
+                $stage->getKey(),
+                ...$stages->where('is_won', true)->modelKeys(),
+            ]);
 
         return $stage;
     }

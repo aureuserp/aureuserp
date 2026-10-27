@@ -5,25 +5,26 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Webkul\Crm\Console\Commands\AssignLeads;
-use Webkul\Crm\Filament\Clusters\Configurations\Pages\ManageSettings;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
-use Webkul\Crm\Models\CrmTeam;
+use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageCRM;
+use Webkul\Crm\Models\CRMTeam;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Services\AssignmentRules;
 use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\TeamMembership;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Country;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->multi_teams = false;
     $settings->use_auto_assignment = true;
     $settings->auto_assignment_action = 'manual';
@@ -32,28 +33,28 @@ beforeEach(function () {
     $settings->auto_assignment_run_at = null;
     $settings->save();
 
-    CrmTeam::query()->update(['assignment_optout' => true]);
+    CRMTeam::query()->update(['assignment_optout' => true]);
 });
 
 function assignmentSeller(string $name = 'Seller'): User
 {
-    return User::withoutEvents(fn (): User => User::factory()->create(['name' => $name, 'default_company_id' => CrmTestHelper::companyId(), 'is_active' => true]));
+    return User::withoutEvents(fn (): User => User::factory()->create(['name' => $name, 'default_company_id' => CRMHelper::companyId(), 'is_active' => true]));
 }
 
 function assignmentTeam(array $rules = []): Team
 {
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId(), 'is_active' => true]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
 
     app(TeamMembership::class)->sync($team);
 
-    CrmTeam::query()->where('team_id', $team->id)->update(['assignment_optout' => false, 'assignment_domain' => $rules ? json_encode($rules) : null]);
+    CRMTeam::query()->where('team_id', $team->id)->update(['assignment_optout' => false, 'assignment_domain' => $rules ? json_encode($rules) : null]);
 
     return $team->fresh();
 }
 
 function assignmentLead(array $attributes = []): Lead
 {
-    $lead = CrmTestHelper::lead($attributes);
+    $lead = CRMHelper::lead($attributes);
 
     $lead->forceFill(['user_id' => null, 'team_id' => null])->saveQuietly();
 
@@ -62,9 +63,9 @@ function assignmentLead(array $attributes = []): Lead
 
 describe('settings page', function () {
     it('shows multi teams and rule-based assignment with its running options', function () {
-        CrmTestHelper::actingAs(['page_crm_manage_settings']);
+        CRMHelper::actingAs(['page_crm_manage_c_r_m']);
 
-        Livewire::test(ManageSettings::class)
+        Livewire::test(ManageCRM::class)
             ->assertSuccessful()
             ->assertFormFieldExists('multi_teams')
             ->assertFormFieldExists('use_auto_assignment')
@@ -72,32 +73,32 @@ describe('settings page', function () {
             ->call('save')
             ->assertHasNoFormErrors();
 
-        $settings = app(CrmSettings::class)->refresh();
+        $settings = app(CRMSettings::class)->refresh();
 
         expect($settings->auto_assignment_action)->toBe('auto')
             ->and($settings->auto_assignment_run_at)->not->toBeNull();
     });
 
     it('clears the next run when assignment is manual', function () {
-        CrmTestHelper::actingAs(['page_crm_manage_settings']);
+        CRMHelper::actingAs(['page_crm_manage_c_r_m']);
 
-        Livewire::test(ManageSettings::class)
+        Livewire::test(ManageCRM::class)
             ->fillForm(['use_auto_assignment' => true, 'auto_assignment_action' => 'manual'])
             ->call('save');
 
-        expect(app(CrmSettings::class)->refresh()->auto_assignment_run_at)->toBeNull();
+        expect(app(CRMSettings::class)->refresh()->auto_assignment_run_at)->toBeNull();
     });
 
     it('is forbidden without its page permission', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        Livewire::test(ManageSettings::class)->assertForbidden();
+        Livewire::test(ManageCRM::class)->assertForbidden();
     });
 });
 
 describe('team members', function () {
     it('syncs crm members with the sales team members', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $team = assignmentTeam();
         $user = assignmentSeller();
@@ -114,7 +115,7 @@ describe('team members', function () {
     });
 
     it('removes a salesperson from other teams when multi teams is off', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $first = assignmentTeam();
         $second = assignmentTeam();
@@ -128,9 +129,9 @@ describe('team members', function () {
     });
 
     it('keeps a salesperson in several teams when multi teams is on', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $settings = app(CrmSettings::class);
+        $settings = app(CRMSettings::class);
         $settings->multi_teams = true;
         $settings->save();
 
@@ -147,7 +148,7 @@ describe('team members', function () {
 
 describe('assignment rule conditions', function () {
     it('matches leads on field conditions, all or any', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $lead = assignmentLead(['probability' => 30, 'email' => 'Buyer@Example.com', 'city' => null]);
 
@@ -158,13 +159,13 @@ describe('assignment rule conditions', function () {
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('email', 'contains', 'example')]]))->toBeTrue()
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('email', 'not_contains', 'example')]]))->toBeFalse()
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('city', 'not_set')]]))->toBeTrue()
-            ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('type', 'in', [Lead::TYPE_OPPORTUNITY])]]))->toBeFalse()
+            ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('type', 'in', [LeadType::OPPORTUNITY])]]))->toBeFalse()
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('probability', '>=', 40), $condition('city', 'not_set')]]))->toBeFalse()
             ->and(AssignmentRules::matches($lead, ['match' => 'any', 'conditions' => [$condition('probability', '>=', 40), $condition('city', 'not_set')]]))->toBeTrue();
     });
 
     it('gives the same result in a lead query as for a single lead', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $high = assignmentLead(['probability' => 50]);
         $low = assignmentLead(['probability' => 10]);
@@ -179,11 +180,11 @@ describe('assignment rule conditions', function () {
     });
 
     it('drops incomplete conditions and unknown fields when saved', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $team = assignmentTeam();
 
-        $crmTeam = CrmTeam::query()->where('team_id', $team->id)->first();
+        $crmTeam = CRMTeam::query()->where('team_id', $team->id)->first();
         $crmTeam->update(['assignment_domain' => [
             'match'      => 'all',
             'conditions' => [
@@ -204,7 +205,7 @@ describe('assignment rule conditions', function () {
     });
 
     it('assigns only leads matching the team conditions', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $team = assignmentTeam(['conditions' => [['field' => 'probability', 'operator' => '>=', 'value' => 20]]]);
         app(TeamMembership::class)->addMember($team, assignmentSeller()->id);
@@ -221,7 +222,7 @@ describe('assignment rule conditions', function () {
 
 describe('rule-based assignment', function () {
     it('matches leads against assignment rules', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $us = Country::query()->where('code', 'US')->value('id');
 
@@ -230,11 +231,11 @@ describe('rule-based assignment', function () {
         expect(AssignmentRules::matches($lead, null))->toBeTrue()
             ->and(AssignmentRules::matches($lead, ['country_ids' => [$us]]))->toBeTrue()
             ->and(AssignmentRules::matches($lead, ['country_ids' => [$us + 1]]))->toBeFalse()
-            ->and(AssignmentRules::matches($lead, ['lead_types' => [Lead::TYPE_OPPORTUNITY]]))->toBeFalse();
+            ->and(AssignmentRules::matches($lead, ['lead_types' => [LeadType::OPPORTUNITY]]))->toBeFalse();
     });
 
     it('assigns matching leads to the team and spreads them by member capacity', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $us = Country::query()->where('code', 'US')->value('id');
         $fr = Country::query()->where('code', 'FR')->value('id');
@@ -260,7 +261,7 @@ describe('rule-based assignment', function () {
     });
 
     it('respects the 30-day capacity, paused members and skipped teams', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
         $team = assignmentTeam();
         $paused = assignmentSeller('Paused');
@@ -279,7 +280,7 @@ describe('rule-based assignment', function () {
         expect(collect([$first->fresh(), $second->fresh()])->where('user_id', $active->id))->toHaveCount(1)
             ->and(collect([$first->fresh(), $second->fresh()])->where('user_id', $paused->id))->toHaveCount(0);
 
-        CrmTeam::query()->where('team_id', $team->id)->update(['assignment_optout' => true]);
+        CRMTeam::query()->where('team_id', $team->id)->update(['assignment_optout' => true]);
 
         $third = assignmentLead();
 
@@ -289,7 +290,7 @@ describe('rule-based assignment', function () {
     });
 
     it('does not assign lost or already-owned leads to a team', function () {
-        $owner = CrmTestHelper::actingAs();
+        $owner = CRMHelper::actingAs();
 
         $team = assignmentTeam();
         app(TeamMembership::class)->addMember($team, assignmentSeller()->id);
@@ -297,7 +298,7 @@ describe('rule-based assignment', function () {
         $lost = assignmentLead();
         $lost->markAsLost(null);
 
-        $owned = CrmTestHelper::lead(['team_id' => null, 'user_id' => $owner->id]);
+        $owned = CRMHelper::lead(['team_id' => null, 'user_id' => $owner->id]);
         $owned->forceFill(['team_id' => null])->saveQuietly();
 
         app(LeadAssignment::class)->run();
@@ -307,27 +308,27 @@ describe('rule-based assignment', function () {
     });
 
     it('runs from the command only when repeated assignment is due', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $settings = app(CrmSettings::class);
+        $settings = app(CRMSettings::class);
         $settings->auto_assignment_action = 'auto';
         $settings->auto_assignment_run_at = now()->addHour()->toIso8601String();
         $settings->save();
 
         Artisan::call('crm:assign-leads', ['--scheduled' => true]);
 
-        expect(app(CrmSettings::class)->refresh()->auto_assignment_run_at)->toBe($settings->auto_assignment_run_at);
+        expect(app(CRMSettings::class)->refresh()->auto_assignment_run_at)->toBe($settings->auto_assignment_run_at);
 
         $settings->auto_assignment_run_at = now()->subMinute()->toIso8601String();
         $settings->save();
 
         Artisan::call('crm:assign-leads', ['--scheduled' => true]);
 
-        expect(Carbon::parse(app(CrmSettings::class)->refresh()->auto_assignment_run_at)->isFuture())->toBeTrue();
+        expect(Carbon::parse(app(CRMSettings::class)->refresh()->auto_assignment_run_at)->isFuture())->toBeTrue();
     });
 
     it('plans the next run from the interval', function () {
-        $settings = app(CrmSettings::class);
+        $settings = app(CRMSettings::class);
         $settings->auto_assignment_interval_number = 3;
         $settings->auto_assignment_interval_type = 'hours';
 
@@ -338,9 +339,9 @@ describe('rule-based assignment', function () {
 });
 
 it('hides assignment on the sales team and does not assign when rule-based assignment is off', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_auto_assignment = false;
     $settings->save();
 
@@ -357,7 +358,7 @@ it('hides assignment on the sales team and does not assign when rule-based assig
 });
 
 it('gives a new lead the team whose rules it matches, keeping its salesperson', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
     $india = Country::query()->where('code', 'IN')->value('id');
 
@@ -368,8 +369,8 @@ it('gives a new lead the team whose rules it matches, keeping its salesperson', 
     $team->members()->attach($user->id);
     app(TeamMembership::class)->sync($team);
 
-    $delhi = CrmTestHelper::lead(['country_id' => $india, 'city' => 'Delhi', 'team_id' => null]);
-    $mumbai = CrmTestHelper::lead(['country_id' => $india, 'city' => 'Mumbai', 'team_id' => null]);
+    $delhi = CRMHelper::lead(['country_id' => $india, 'city' => 'Delhi', 'team_id' => null]);
+    $mumbai = CRMHelper::lead(['country_id' => $india, 'city' => 'Mumbai', 'team_id' => null]);
 
     expect($delhi->fresh()->team_id)->toBe($team->id)
         ->and($delhi->fresh()->user_id)->toBe($user->id)
@@ -377,17 +378,56 @@ it('gives a new lead the team whose rules it matches, keeping its salesperson', 
 });
 
 it('assigns a team to leads that already have a salesperson when assignment runs', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
     $team = assignmentTeam();
     $team->members()->attach($user->id);
     app(TeamMembership::class)->sync($team);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
     $lead->forceFill(['team_id' => null, 'user_id' => $user->id])->saveQuietly();
 
     app(LeadAssignment::class)->run();
 
     expect($lead->fresh()->team_id)->toBe($team->id)
         ->and($lead->fresh()->user_id)->toBe($user->id);
+});
+
+describe('assign leads modal', function () {
+    it('lists the unassigned records of the team and the team-less ones matching its rules', function () {
+        $country = Country::query()->firstOrFail();
+        $otherCountry = Country::query()->whereKeyNot($country->id)->firstOrFail();
+
+        $team = assignmentTeam(['match' => 'all', 'conditions' => [['field' => 'country_id', 'operator' => 'in', 'value' => [$country->id]]]]);
+
+        $inTeam = assignmentLead();
+        $inTeam->forceFill(['team_id' => $team->id])->saveQuietly();
+        $matching = assignmentLead(['country_id' => $country->id]);
+        $notMatching = assignmentLead(['country_id' => $otherCountry->id]);
+        $alreadyAssigned = assignmentLead(['country_id' => $country->id]);
+        $alreadyAssigned->forceFill(['user_id' => assignmentSeller()->id])->saveQuietly();
+
+        $ids = app(LeadAssignment::class)->candidates($team)->pluck('id')->all();
+
+        expect($ids)->toContain($inTeam->id, $matching->id)
+            ->not->toContain($notMatching->id)
+            ->not->toContain($alreadyAssigned->id);
+    });
+
+    it('assigns only the selected records', function () {
+        $team = assignmentTeam();
+        $seller = assignmentSeller();
+        app(TeamMembership::class)->addMember($team, $seller->id, ['assignment_max' => 30]);
+
+        $selected = assignmentLead();
+        $skipped = assignmentLead();
+        $selected->forceFill(['team_id' => $team->id])->saveQuietly();
+        $skipped->forceFill(['team_id' => $team->id])->saveQuietly();
+
+        $assigned = app(LeadAssignment::class)->assignSelected($team->fresh(), [$selected->id]);
+
+        expect($assigned)->toBe(1)
+            ->and(Lead::withTrashed()->find($selected->id)->user_id)->toBe($seller->id)
+            ->and(Lead::withTrashed()->find($skipped->id)->user_id)->toBeNull();
+    });
 });

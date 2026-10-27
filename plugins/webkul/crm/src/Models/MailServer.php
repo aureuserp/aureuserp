@@ -7,17 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Enums\MailServerEncryption;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class MailServer extends Model
 {
-    public const ENCRYPTION_SSL = 'ssl';
-
-    public const ENCRYPTION_TLS = 'tls';
-
-    public const ENCRYPTION_NONE = 'none';
-
     protected $table = 'crm_mail_servers';
 
     protected $fillable = [
@@ -38,7 +33,7 @@ class MailServer extends Model
 
     protected $attributes = [
         'port'                 => 993,
-        'encryption'           => self::ENCRYPTION_SSL,
+        'encryption'           => MailServerEncryption::SSL->value,
         'validate_certificate' => true,
         'folder'               => 'INBOX',
         'is_active'            => true,
@@ -50,6 +45,7 @@ class MailServer extends Model
 
     protected $casts = [
         'port'                 => 'integer',
+        'encryption'           => MailServerEncryption::class,
         'validate_certificate' => 'boolean',
         'password'             => 'encrypted',
         'is_active'            => 'boolean',

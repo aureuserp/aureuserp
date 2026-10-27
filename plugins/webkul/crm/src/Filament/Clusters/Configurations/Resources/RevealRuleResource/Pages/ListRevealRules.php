@@ -5,11 +5,11 @@ namespace Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResour
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 
 class ListRevealRules extends ListRecords
 {
-    use HasCrmClusterNavigation;
+    use HasCRMClusterNavigation;
 
     protected static string $resource = RevealRuleResource::class;
 

@@ -2,24 +2,20 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages;
 
-use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
-use Livewire\Attributes\Url;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByStatusChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByTypeChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByUserChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 
 class GraphActivities extends Page
 {
-    use HasCrmClusterNavigation;
+    use HasCRMClusterNavigation;
 
     protected static string $resource = ActivityResource::class;
-
-    #[Url]
-    public string $scope = 'mine';
 
     public static function canAccess(array $parameters = []): bool
     {
@@ -36,18 +32,15 @@ class GraphActivities extends Page
         return __('crm::filament/clusters/sales/resources/activity.views.graph');
     }
 
+    public function getRecordNavigationTabs(): array
+    {
+        return ActivityResource::getViewTabs('graph');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('toggleScope')
-                ->label(fn (): string => $this->scope === 'all'
-                    ? __('crm::filament/clusters/sales/resources/activity/pages/graph-activities.scope.show-mine')
-                    : __('crm::filament/clusters/sales/resources/activity/pages/graph-activities.scope.show-all'))
-                ->icon(fn (): string => $this->scope === 'all' ? 'heroicon-o-user' : 'heroicon-o-users')
-                ->color('gray')
-                ->link()
-                ->url(fn (): string => ActivityResource::getUrl('graph', ['scope' => $this->scope === 'all' ? 'mine' : 'all'])),
-            ...ActivityResource::getViewSwitcherActions('graph'),
+            ScheduleActivityAction::make(),
         ];
     }
 
@@ -64,12 +57,5 @@ class GraphActivities extends Page
     public function getHeaderWidgetsColumns(): int|array
     {
         return 2;
-    }
-
-    public function getWidgetData(): array
-    {
-        return [
-            'scope' => $this->scope,
-        ];
     }
 }

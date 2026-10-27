@@ -47,14 +47,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Stages deleted',
-                    'body'  => 'The stages have been deleted successfully.',
-                ],
-            ],
-        ],
     ],
 ];

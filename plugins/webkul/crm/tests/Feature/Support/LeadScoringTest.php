@@ -2,23 +2,23 @@
 
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
-use Webkul\Crm\Filament\Clusters\Configurations\Pages\ManageSettings;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
-use Webkul\Crm\Models\CrmTeam;
-use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageLeadScoring;
+use Webkul\Crm\Models\CRMTeam;
 use Webkul\Crm\Models\LeadConversion;
 use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Crm\Services\TeamMembership;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->scoring_variables = ['phone', 'email'];
     $settings->scoring_start_date = null;
     $settings->save();
@@ -26,27 +26,27 @@ beforeEach(function () {
 
 function scoringTeam(): Team
 {
-    return Team::factory()->create(['company_id' => CrmTestHelper::companyId(), 'is_active' => true]);
+    return Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
 }
 
 function scoringHistory(Team $team, int $won = 6, int $lost = 6): void
 {
-    $wonStage = CrmTestHelper::wonStage();
-    $firstStage = CrmTestHelper::firstStage();
+    $wonStage = CRMHelper::wonStage();
+    $firstStage = CRMHelper::firstStage();
 
     for ($i = 0; $i < $won; $i++) {
-        CrmTestHelper::opportunity(['team_id' => $team->id, 'stage_id' => $wonStage->id, 'phone' => '+1 555 010 00'.$i, 'email' => "won{$i}@customer.test"]);
+        CRMHelper::opportunity(['team_id' => $team->id, 'stage_id' => $wonStage->id, 'phone' => '+1 555 010 00'.$i, 'email' => "won{$i}@customer.test"]);
     }
 
     for ($i = 0; $i < $lost; $i++) {
-        CrmTestHelper::opportunity(['team_id' => $team->id, 'stage_id' => $firstStage->id, 'phone' => null, 'email' => null])->markAsLost(null);
+        CRMHelper::opportunity(['team_id' => $team->id, 'stage_id' => $firstStage->id, 'phone' => null, 'email' => null])->markAsLost(null);
     }
 
     app(LeadScoring::class)->rebuild();
 }
 
 it('learns won and lost counts per team', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $team = scoringTeam();
     scoringHistory($team, 3, 2);
@@ -59,15 +59,15 @@ it('learns won and lost counts per team', function () {
 });
 
 it('scores records like the won ones higher and explains why', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $team = scoringTeam();
     scoringHistory($team);
 
     $scoring = app(LeadScoring::class);
 
-    $good = CrmTestHelper::opportunity(['team_id' => $team->id, 'phone' => '+1 555 999 1234', 'email' => 'good@customer.test', 'probability' => null]);
-    $bad = CrmTestHelper::opportunity(['team_id' => $team->id, 'phone' => null, 'email' => null, 'probability' => null]);
+    $good = CRMHelper::opportunity(['team_id' => $team->id, 'phone' => '+1 555 999 1234', 'email' => 'good@customer.test', 'probability' => null]);
+    $bad = CRMHelper::opportunity(['team_id' => $team->id, 'phone' => null, 'email' => null, 'probability' => null]);
 
     $goodScore = $scoring->score($good->fresh())['probability'];
     $badScore = $scoring->score($bad->fresh())['probability'];
@@ -79,22 +79,22 @@ it('scores records like the won ones higher and explains why', function () {
 });
 
 it('gives no score without won or lost history', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     DB::table('crm_lead_scoring_frequencies')->delete();
 
-    $lead = CrmTestHelper::lead(['team_id' => scoringTeam()->id]);
+    $lead = CRMHelper::lead(['team_id' => scoringTeam()->id]);
 
     expect(app(LeadScoring::class)->score($lead)['probability'])->toBeNull();
 });
 
 it('follows the computed probability until it is set by hand, and can go back to it', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $team = scoringTeam();
     scoringHistory($team);
 
-    $lead = CrmTestHelper::opportunity(['team_id' => $team->id, 'phone' => '+1 555 999 1234', 'email' => 'auto@customer.test', 'probability' => null])->fresh();
+    $lead = CRMHelper::opportunity(['team_id' => $team->id, 'phone' => '+1 555 999 1234', 'email' => 'auto@customer.test', 'probability' => null])->fresh();
 
     expect($lead->is_automated_probability)->toBeTrue()
         ->and((float) $lead->probability)->toBe((float) $lead->automated_probability);
@@ -113,68 +113,68 @@ it('follows the computed probability until it is set by hand, and can go back to
 });
 
 it('keeps a probability given when the record is created', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead(['probability' => 25])->fresh();
+    $lead = CRMHelper::lead(['probability' => 25])->fresh();
 
     expect($lead->is_automated_probability)->toBeFalse()
         ->and((float) $lead->probability)->toBe(25.0);
 });
 
 it('relearns when a record is won or lost', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $team = scoringTeam();
 
-    $opportunity = CrmTestHelper::opportunity(['team_id' => $team->id]);
-    $opportunity->update(['stage_id' => CrmTestHelper::wonStage()->id]);
+    $opportunity = CRMHelper::opportunity(['team_id' => $team->id]);
+    $opportunity->update(['stage_id' => CRMHelper::wonStage()->id]);
 
     expect((float) DB::table('crm_lead_scoring_frequencies')->where('team_id', $team->id)->where('variable', LeadScoring::TOTAL)->value('won_count'))->toBe(1.0);
 });
 
 it('updates probabilities from the settings page', function () {
-    CrmTestHelper::actingAs(['page_crm_manage_settings']);
+    CRMHelper::actingAs(['page_crm_manage_lead_scoring']);
 
-    Livewire::test(ManageSettings::class)
+    Livewire::test(ManageLeadScoring::class)
         ->assertFormFieldExists('scoring_variables')
         ->assertFormFieldExists('scoring_start_date')
         ->fillForm(['scoring_variables' => ['country_id', 'tags']])
         ->callAction(TestAction::make('updateProbabilities')->schemaComponent('form'))
         ->assertNotified();
 
-    expect(app(CrmSettings::class)->refresh()->scoring_variables)->toBe(['country_id', 'tags']);
+    expect(app(CRMSettings::class)->refresh()->scoring_variables)->toBe(['country_id', 'tags']);
 });
 
 it('converts a lead to an opportunity when assignment gives it a salesperson', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_auto_assignment = true;
     $settings->save();
 
     $team = scoringTeam();
     $team->members()->attach($user->id);
     app(TeamMembership::class)->sync($team);
-    CrmTeam::query()->where('team_id', $team->id)->update(['assignment_optout' => false]);
+    CRMTeam::query()->where('team_id', $team->id)->update(['assignment_optout' => false]);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
     $lead->forceFill(['user_id' => null, 'team_id' => $team->id])->saveQuietly();
 
     app(LeadAssignment::class)->run($team);
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->fresh()->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->fresh()->user_id)->toBe($user->id)
         ->and(LeadConversion::query()->where('original_lead_id', $lead->id)->exists())->toBeTrue();
 });
 
 it('refuses to convert a lead at 100 percent', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
     DB::table('crm_leads')->where('id', $lead->id)->update(['probability' => 100]);
 
     Livewire::test(ViewLead::class, ['record' => $lead->getRouteKey()])
         ->callAction('convertToOpportunity', data: ['customer' => 'none']);
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_LEAD);
+    expect($lead->fresh()->type)->toBe(LeadType::LEAD);
 });

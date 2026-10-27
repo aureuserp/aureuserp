@@ -7,17 +7,21 @@ return [
 
     'page' => [
         'title' => 'Pistes similaires : :name',
-        'back'  => 'Retour à l\'enregistrement',
 
         'empty' => [
             'heading'     => 'Aucun enregistrement similaire',
             'description' => 'Aucune autre piste ou opportunité n\'a le même e-mail, téléphone ou client.',
         ],
+
+        'views' => [
+            'kanban' => 'Kanban',
+            'list'   => 'Liste',
+            'graph'  => 'Graphique',
+        ],
     ],
 
     'badges' => [
-        'current' => 'Cet enregistrement',
-        'lost'    => 'Perdue',
+        'lost' => 'Perdue',
     ],
 
     'merge' => [
@@ -48,5 +52,24 @@ return [
                 'body'  => ':count enregistrement(s) fusionné(s) dans « :name ».',
             ],
         ],
+    ],
+
+    'table' => [
+        'columns' => [
+            'name'        => 'Piste',
+            'type'        => 'Type',
+            'contact'     => 'Nom du contact',
+            'email'       => 'E-mail',
+            'phone'       => 'Téléphone',
+            'stage'       => 'Étape',
+            'salesperson' => 'Vendeur',
+            'team'        => 'Équipe commerciale',
+            'created-at'  => 'Créé le',
+        ],
+    ],
+
+    'graph' => [
+        'heading' => 'Enregistrements par étape',
+        'dataset' => 'Enregistrements',
     ],
 ];

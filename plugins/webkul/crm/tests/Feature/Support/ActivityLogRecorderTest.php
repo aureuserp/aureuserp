@@ -1,6 +1,7 @@
 <?php
 
 use Webkul\Chatter\Models\Message;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\ActivityType;
@@ -9,10 +10,10 @@ use Webkul\Crm\Services\ActivityLogRecorder;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
     app()->setLocale('en');
 });
@@ -38,14 +39,14 @@ function scheduleLoggedCallActivity(Lead $lead, array $attributes = []): Message
 }
 
 it('logs an activity marked as done from my activities with a snapshot of the lead', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
     $assignee = User::query()->whereKeyNot($user->id)->firstOrFail();
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-    $opportunity = CrmTestHelper::opportunity([
+    $opportunity = CRMHelper::opportunity([
         'team_id'  => $team->id,
-        'stage_id' => CrmTestHelper::firstStage()->id,
+        'stage_id' => CRMHelper::firstStage()->id,
     ]);
 
     $message = scheduleLoggedCallActivity($opportunity, ['assigned_to' => $assignee->id]);
@@ -58,11 +59,11 @@ it('logs an activity marked as done from my activities with a snapshot of the le
 
     $log = $logs->first();
 
-    expect($log->lead_type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($log->lead_type)->toBe(LeadType::OPPORTUNITY)
         ->and($log->activity_type_id)->toBe(crmCallActivityTypeId())
         ->and($log->user_id)->toBe($opportunity->user_id)
         ->and($log->team_id)->toBe($team->id)
-        ->and($log->stage_id)->toBe(CrmTestHelper::firstStage()->id)
+        ->and($log->stage_id)->toBe(CRMHelper::firstStage()->id)
         ->and($log->company_id)->toBe($opportunity->company_id)
         ->and($log->assigned_to)->toBe($assignee->id)
         ->and($log->done_by)->toBe($user->id)
@@ -75,19 +76,19 @@ it('logs an activity marked as done from my activities with a snapshot of the le
 });
 
 it('keeps the lead type of a lead in the log', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Activity::query()->findOrFail(scheduleLoggedCallActivity($lead)->id)->markAsDone();
 
-    expect(ActivityLog::query()->where('lead_id', $lead->id)->value('lead_type'))->toBe(Lead::TYPE_LEAD);
+    expect(ActivityLog::query()->where('lead_id', $lead->id)->value('lead_type'))->toBe(LeadType::LEAD);
 });
 
 it('logs an activity marked as done from the chatter panel', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $message = scheduleLoggedCallActivity($opportunity);
 
@@ -103,14 +104,14 @@ it('logs an activity marked as done from the chatter panel', function () {
         ->and($logs->first()->summary)->toBe('Discuss pricing');
 });
 
-it('does not log a cancelled activity', function (bool $asCrmActivity) {
-    CrmTestHelper::actingAs();
+it('does not log a cancelled activity', function (bool $asCRMActivity) {
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $message = scheduleLoggedCallActivity($opportunity);
 
-    $asCrmActivity
+    $asCRMActivity
         ? Activity::query()->findOrFail($message->id)->delete()
         : $opportunity->activities()->findOrFail($message->id)->delete();
 
@@ -121,9 +122,9 @@ it('does not log a cancelled activity', function (bool $asCrmActivity) {
 ]);
 
 it('does not log an activity cancelled after an unrelated comment', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $message = scheduleLoggedCallActivity($opportunity);
 
@@ -135,10 +136,10 @@ it('does not log an activity cancelled after an unrelated comment', function () 
 });
 
 it('does not log a done message posted on another lead', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
-    $otherOpportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
+    $otherOpportunity = CRMHelper::opportunity();
 
     $message = scheduleLoggedCallActivity($opportunity);
 
@@ -150,9 +151,9 @@ it('does not log a done message posted on another lead', function () {
 });
 
 it('ignores activities done on records that are not leads', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
     $logCount = ActivityLog::query()->count();
 
@@ -170,9 +171,9 @@ it('ignores activities done on records that are not leads', function () {
 });
 
 it('logs each done activity exactly once', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $first = scheduleLoggedCallActivity($opportunity, ['summary' => 'First call']);
     $second = scheduleLoggedCallActivity($opportunity, ['summary' => 'Second call']);
@@ -187,9 +188,9 @@ it('logs each done activity exactly once', function () {
 });
 
 it('uses one done message for one activity only', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $first = scheduleLoggedCallActivity($opportunity);
     $second = scheduleLoggedCallActivity($opportunity);
@@ -203,9 +204,9 @@ it('uses one done message for one activity only', function () {
 });
 
 it('logs every activity when several are marked as done', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     foreach (['First call', 'Second call', 'Third call'] as $summary) {
         Activity::query()->findOrFail(scheduleLoggedCallActivity($opportunity, ['summary' => $summary])->id)->markAsDone();
@@ -216,9 +217,9 @@ it('logs every activity when several are marked as done', function () {
 });
 
 it('loads the related records of a log entry', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     Activity::query()->findOrFail(scheduleLoggedCallActivity($opportunity)->id)->markAsDone();
 
@@ -232,9 +233,9 @@ it('loads the related records of a log entry', function () {
 });
 
 it('does not log a cancelled activity without type or summary after an unrelated comment', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $message = $opportunity->addMessage([
         'type'             => 'activity',
@@ -252,14 +253,14 @@ it('does not log a cancelled activity without type or summary after an unrelated
 });
 
 it('registers its listeners only once', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $recorder = app(ActivityLogRecorder::class);
 
     $recorder->register();
     $recorder->register();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     Activity::query()->findOrFail(scheduleLoggedCallActivity($opportunity)->id)->markAsDone();
 

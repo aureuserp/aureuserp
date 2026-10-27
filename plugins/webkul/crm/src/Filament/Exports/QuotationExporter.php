@@ -18,26 +18,24 @@ class QuotationExporter extends Exporter
 
     public static function getColumns(): array
     {
-        $label = fn (string $key): string => __('crm::filament/transfers.columns.'.$key);
-
         $enumLabel = fn (mixed $state): string => $state instanceof HasLabel ? (string) $state->getLabel() : (string) ($state->value ?? $state);
 
         return [
-            ExportColumn::make('name')->label($label('number')),
-            ExportColumn::make('partner.name')->label($label('customer')),
-            ExportColumn::make('date_order')->label($label('order-date')),
-            ExportColumn::make('validity_date')->label($label('expiration'))->enabledByDefault(false),
-            ExportColumn::make('commitment_date')->label($label('delivery-date'))->enabledByDefault(false),
-            ExportColumn::make('user.name')->label($label('salesperson')),
-            ExportColumn::make('team.name')->label($label('team')),
-            ExportColumn::make('client_order_ref')->label($label('customer-reference'))->enabledByDefault(false),
-            ExportColumn::make('origin')->label($label('source-document'))->enabledByDefault(false),
-            ExportColumn::make('amount_untaxed')->label($label('untaxed-amount')),
-            ExportColumn::make('amount_tax')->label($label('taxes')),
-            ExportColumn::make('amount_total')->label($label('total')),
-            ExportColumn::make('currency.name')->label($label('currency')),
-            ExportColumn::make('state')->label($label('status'))->formatStateUsing($enumLabel),
-            ExportColumn::make('invoice_status')->label($label('invoice-status'))->formatStateUsing($enumLabel),
+            ExportColumn::make('name')->label(__('crm::filament/transfers.columns.number')),
+            ExportColumn::make('partner.name')->label(__('crm::filament/transfers.columns.customer')),
+            ExportColumn::make('date_order')->label(__('crm::filament/transfers.columns.order-date')),
+            ExportColumn::make('validity_date')->label(__('crm::filament/transfers.columns.expiration'))->enabledByDefault(false),
+            ExportColumn::make('commitment_date')->label(__('crm::filament/transfers.columns.delivery-date'))->enabledByDefault(false),
+            ExportColumn::make('user.name')->label(__('crm::filament/transfers.columns.salesperson')),
+            ExportColumn::make('team.name')->label(__('crm::filament/transfers.columns.team')),
+            ExportColumn::make('client_order_ref')->label(__('crm::filament/transfers.columns.customer-reference'))->enabledByDefault(false),
+            ExportColumn::make('origin')->label(__('crm::filament/transfers.columns.source-document'))->enabledByDefault(false),
+            ExportColumn::make('amount_untaxed')->label(__('crm::filament/transfers.columns.untaxed-amount')),
+            ExportColumn::make('amount_tax')->label(__('crm::filament/transfers.columns.taxes')),
+            ExportColumn::make('amount_total')->label(__('crm::filament/transfers.columns.total')),
+            ExportColumn::make('currency.name')->label(__('crm::filament/transfers.columns.currency')),
+            ExportColumn::make('state')->label(__('crm::filament/transfers.columns.status'))->formatStateUsing($enumLabel),
+            ExportColumn::make('invoice_status')->label(__('crm::filament/transfers.columns.invoice-status'))->formatStateUsing($enumLabel),
         ];
     }
 

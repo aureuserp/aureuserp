@@ -4,27 +4,27 @@ use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Models\Stage;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 /**
  * Signs in a user who can use the pipeline board and has the given stage abilities.
  *
  * @param  array<int, string>  $stageAffixes
  */
-function actingAsStageColumnManager(array $stageAffixes = CrmTestHelper::ALL_AFFIXES): void
+function actingAsStageColumnManager(array $stageAffixes = CRMHelper::ALL_AFFIXES): void
 {
-    CrmTestHelper::actingAs([
-        ...CrmTestHelper::permissionsFor(['opportunity']),
-        ...CrmTestHelper::permissionsFor(['stage'], $stageAffixes),
+    CRMHelper::actingAs([
+        ...CRMHelper::permissionsFor(['opportunity']),
+        ...CRMHelper::permissionsFor(['stage'], $stageAffixes),
     ]);
 }
 
 it('adds a stage from the board just before the won stage(s)', function () {
     actingAsStageColumnManager();
 
-    CrmTestHelper::wonStage();
+    CRMHelper::wonStage();
 
     Livewire::test(KanbanOpportunities::class)
         ->call('addKanbanColumn', '  Negotiation (board test)  ')
@@ -38,6 +38,57 @@ it('adds a stage from the board just before the won stage(s)', function () {
         ->and($stages->where('is_won', true)->min('sort'))->toBeGreaterThan($stage->sort)
         ->and($stages->where('is_won', false)->max('sort'))->toEqual($stage->sort)
         ->and($stages->last()->is_won)->toBeTrue();
+});
+
+it('adds a stage from the add stage modal', function () {
+    actingAsStageColumnManager();
+
+    CRMHelper::wonStage();
+
+    Livewire::test(KanbanOpportunities::class)
+        ->callAction('addKanbanColumn', data: ['name' => 'Modal stage'])
+        ->assertHasNoActionErrors()
+        ->assertNotified(__('crm::filament/kanban.add-column.created', ['name' => 'Modal stage']));
+
+    $stage = Stage::query()->where('name', 'Modal stage')->firstOrFail();
+
+    expect($stage->is_won)->toBeFalse()
+        ->and(Stage::query()->where('is_won', true)->min('sort'))->toBeGreaterThan($stage->sort);
+});
+
+it('adds a won stage from the modal at the end of the board', function () {
+    actingAsStageColumnManager();
+
+    CRMHelper::wonStage();
+
+    Livewire::test(KanbanOpportunities::class)
+        ->callAction('addKanbanColumn', data: ['name' => 'Modal won stage', 'is_won' => true])
+        ->assertHasNoActionErrors();
+
+    $stage = Stage::query()->where('name', 'Modal won stage')->firstOrFail();
+
+    expect($stage->is_won)->toBeTrue()
+        ->and(Stage::query()->orderBy('sort')->get()->last()->is($stage))->toBeTrue();
+});
+
+it('keeps the add stage modal open on a duplicate name', function () {
+    actingAsStageColumnManager();
+
+    Stage::factory()->create(['name' => 'Modal duplicate stage']);
+
+    Livewire::test(KanbanOpportunities::class)
+        ->callAction('addKanbanColumn', data: ['name' => 'Modal duplicate stage'])
+        ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Modal duplicate stage']))
+        ->assertActionMounted('addKanbanColumn');
+
+    expect(Stage::query()->where('name', 'Modal duplicate stage')->count())->toBe(1);
+});
+
+it('hides the add stage modal without the create stage permission', function () {
+    actingAsStageColumnManager(['view_any', 'view']);
+
+    Livewire::test(KanbanOpportunities::class)
+        ->assertActionHidden('addKanbanColumn');
 });
 
 it('shows the new stage as a board column right away', function () {
@@ -183,10 +234,10 @@ it('refuses to delete a stage that still holds records', function (string $holde
     $stage = Stage::factory()->create(['name' => 'Busy board stage']);
 
     match ($holder) {
-        'opportunity'      => CrmTestHelper::opportunity(['stage_id' => $stage->id]),
-        'lead'             => CrmTestHelper::lead(['stage_id' => $stage->id]),
-        'lost opportunity' => CrmTestHelper::opportunity(['stage_id' => $stage->id])->markAsLost(null),
-        'lost lead'        => CrmTestHelper::lead(['stage_id' => $stage->id])->markAsLost(null),
+        'opportunity'      => CRMHelper::opportunity(['stage_id' => $stage->id]),
+        'lead'             => CRMHelper::lead(['stage_id' => $stage->id]),
+        'lost opportunity' => CRMHelper::opportunity(['stage_id' => $stage->id])->markAsLost(null),
+        'lost lead'        => CRMHelper::lead(['stage_id' => $stage->id])->markAsLost(null),
     };
 
     Livewire::test(KanbanOpportunities::class)

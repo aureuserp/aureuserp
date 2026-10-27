@@ -38,9 +38,9 @@
                 <span class="crm-pls-row crm-pls-muted">{{ __('crm::filament/lead-scoring.popover.manual') }}</span>
             @endif
 
-            @foreach (['positives' => 'crm-pls-up', 'negatives' => 'crm-pls-down'] as $group => $class)
+            @foreach (['positives' => ['crm-pls-up', __('crm::filament/lead-scoring.popover.positives')], 'negatives' => ['crm-pls-down', __('crm::filament/lead-scoring.popover.negatives')]] as $group => [$class, $groupTitle])
                 @if (! empty($explanation[$group]))
-                    <span class="crm-pls-title">{{ __('crm::filament/lead-scoring.popover.'.$group) }}</span>
+                    <span class="crm-pls-title">{{ $groupTitle }}</span>
 
                     @foreach ($explanation[$group] as $factor)
                         <span class="crm-pls-row">

@@ -9,24 +9,24 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\P
 use Webkul\Crm\Models\ActivityPlan;
 use Webkul\Support\Models\ActivityPlan as SupportActivityPlan;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('lists only crm activity plans', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     $crmPlan = ActivityPlan::query()->create([
         'name'       => 'Onboarding (crm test)',
         'plugin'     => 'crm',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
     $salesPlan = SupportActivityPlan::query()->create([
         'name'       => 'Order follow-up (sales test)',
         'plugin'     => 'sales',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -42,12 +42,12 @@ it('uses the crm model and has no separate create page', function () {
 });
 
 it('creates an activity plan owned by crm from the list page', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     Livewire::test(ListActivityPlans::class)
         ->callAction('create', data: [
             'name'       => 'Qualification (crm test)',
-            'company_id' => CrmTestHelper::companyId(),
+            'company_id' => CRMHelper::companyId(),
             'is_active'  => true,
         ])
         ->assertHasNoActionErrors();
@@ -60,7 +60,7 @@ it('creates an activity plan owned by crm from the list page', function () {
 });
 
 it('requires a name to create an activity plan', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     Livewire::test(ListActivityPlans::class)
         ->callAction('create', data: ['name' => ''])
@@ -68,12 +68,12 @@ it('requires a name to create an activity plan', function () {
 });
 
 it('shows a crm activity plan', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     $plan = ActivityPlan::query()->create([
         'name'       => 'Demo plan (crm test)',
         'plugin'     => 'crm',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -82,12 +82,12 @@ it('shows a crm activity plan', function () {
 });
 
 it('edits a crm activity plan and keeps it owned by crm', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     $plan = ActivityPlan::query()->create([
         'name'       => 'Renewal (crm test)',
         'plugin'     => 'crm',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -104,7 +104,7 @@ it('edits a crm activity plan and keeps it owned by crm', function () {
 });
 
 it('forbids the crm activity plans with only the sales and support permissions', function () {
-    CrmTestHelper::actingAs([
+    CRMHelper::actingAs([
         'view_any_sale_activity::plan',
         'create_sale_activity::plan',
         'view_any_support_activity::plan',
@@ -114,12 +114,12 @@ it('forbids the crm activity plans with only the sales and support permissions',
 });
 
 it('forbids editing a crm activity plan without the update permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_activity::plan', 'view_crm_activity::plan']);
+    CRMHelper::actingAs(['view_any_crm_activity::plan', 'view_crm_activity::plan']);
 
     $plan = ActivityPlan::query()->create([
         'name'       => 'Read only (crm test)',
         'plugin'     => 'crm',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -128,19 +128,19 @@ it('forbids editing a crm activity plan without the update permission', function
 });
 
 it('scopes the activity plans resource query to crm records', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     $crmPlan = ActivityPlan::query()->create([
         'name'       => 'Scoped crm plan (crm test)',
         'plugin'     => 'crm',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
     $salesPlan = SupportActivityPlan::query()->create([
         'name'       => 'Scoped sales plan (sales test)',
         'plugin'     => 'sales',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -151,12 +151,12 @@ it('scopes the activity plans resource query to crm records', function () {
 });
 
 it('does not open another app\'s activity plan from crm by its url', function (string $page) {
-    CrmTestHelper::actingAsCrmUser(['activity::plan']);
+    CRMHelper::actingAsCRMUser(['activity::plan']);
 
     $salesPlan = SupportActivityPlan::query()->create([
         'name'       => 'Url guessed plan (sales test)',
         'plugin'     => 'sales',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 

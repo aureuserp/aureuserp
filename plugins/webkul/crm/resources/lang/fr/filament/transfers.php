@@ -19,6 +19,7 @@ return [
         'job-title'          => 'Poste',
         'email'              => 'E-mail',
         'phone'              => 'Téléphone',
+        'mobile'             => 'Mobile',
         'website'            => 'Site web',
         'street1'            => 'Rue',
         'street2'            => 'Rue 2',

@@ -39,15 +39,6 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'تم حذف الوسوم',
-                    'body'  => 'تم حذف الوسوم بنجاح.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [

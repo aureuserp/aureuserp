@@ -1,44 +1,44 @@
 <?php
 
 use Livewire\Livewire;
-use Webkul\Crm\Filament\Clusters\Configurations\Pages\ManageSettings;
 use Webkul\Crm\Filament\Clusters\Leads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageCRM;
+use Webkul\Crm\Settings\CRMSettings;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 afterEach(function () {
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_leads = true;
     $settings->save();
 });
 
 function setQualificationStep(bool $enabled): void
 {
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_leads = $enabled;
     $settings->save();
 }
 
 it('shows the leads toggle on the settings page and saves it', function () {
-    CrmTestHelper::actingAs(['page_crm_manage_settings']);
+    CRMHelper::actingAs(['page_crm_manage_c_r_m']);
 
-    Livewire::test(ManageSettings::class)
+    Livewire::test(ManageCRM::class)
         ->assertFormFieldExists('use_leads')
         ->fillForm(['use_leads' => false])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect(app(CrmSettings::class)->refresh()->use_leads)->toBeFalse();
+    expect(app(CRMSettings::class)->refresh()->use_leads)->toBeFalse();
 });
 
 it('shows the leads menu and list when the qualification step is on', function () {
-    CrmTestHelper::actingAsCrmUser(['lead']);
+    CRMHelper::actingAsCRMUser(['lead']);
 
     setQualificationStep(true);
 
@@ -50,7 +50,7 @@ it('shows the leads menu and list when the qualification step is on', function (
 });
 
 it('hides the leads menu and blocks the list and create when the qualification step is off', function () {
-    CrmTestHelper::actingAsCrmUser(['lead']);
+    CRMHelper::actingAsCRMUser(['lead']);
 
     setQualificationStep(false);
 
@@ -62,9 +62,9 @@ it('hides the leads menu and blocks the list and create when the qualification s
 });
 
 it('still opens an existing lead when the qualification step is off', function () {
-    CrmTestHelper::actingAsCrmUser(['lead']);
+    CRMHelper::actingAsCRMUser(['lead']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     setQualificationStep(false);
 

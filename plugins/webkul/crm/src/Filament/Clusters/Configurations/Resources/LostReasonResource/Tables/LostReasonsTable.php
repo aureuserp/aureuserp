@@ -2,17 +2,15 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Crm\Filament\Actions\RecordBulkActions;
+use Webkul\Crm\Filament\Exports\LostReasonExporter;
 
 class LostReasonsTable
 {
@@ -77,34 +75,7 @@ class LostReasonsTable
                     ),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    RestoreBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.restore.notification.title'))
-                                ->body(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.restore.notification.body')),
-                        ),
-                    DeleteBulkAction::make()
-                        ->label(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.delete.label'))
-                        ->icon('heroicon-o-archive-box')
-                        ->modalHeading(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.delete.modal.heading'))
-                        ->modalDescription(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.delete.modal.description'))
-                        ->modalSubmitActionLabel(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.delete.label'))
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.delete.notification.title'))
-                                ->body(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.delete.notification.body')),
-                        ),
-                    ForceDeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('crm::filament/clusters/configurations/resources/lost-reason.table.bulk-actions.force-delete.notification.body')),
-                        ),
-                ]),
+                RecordBulkActions::make(exporter: LostReasonExporter::class, archivable: true),
             ]);
     }
 }

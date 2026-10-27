@@ -3,12 +3,6 @@
 return [
     'breadcrumb' => 'Kanban',
 
-    'header-actions' => [
-        'list' => [
-            'label' => 'Lista',
-        ],
-    ],
-
     'search' => 'Buscar...',
 
     'filters' => [
@@ -48,7 +42,7 @@ return [
         'activities-planned' => ':count actividad planificada|:count actividades planificadas',
         'activities-today'   => 'Actividad para hoy',
         'activities-overdue' => 'Actividad vencida',
-        'no-activities'      => 'Programe actividades para avanzar.',
+        'no-activities'      => 'Aún no hay ninguna actividad prevista. Añade una para planificar el siguiente paso.',
         'schedule-activity'  => 'Programar una actividad',
         'today'              => 'Hoy',
     ],

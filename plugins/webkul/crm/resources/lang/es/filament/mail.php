@@ -14,28 +14,6 @@ return [
         'contact'             => 'Aceptar correos de',
     ],
 
-    'alias-contacts' => [
-        'everyone'  => 'Todos',
-        'partners'  => 'Contactos autenticados',
-        'followers' => 'Solo seguidores',
-        'employees' => 'Empleados autenticados',
-    ],
-
-    'alias-contacts-help' => [
-        'everyone'  => 'Cualquier dirección de correo puede crear un lead.',
-        'partners'  => 'Solo direcciones de contactos o usuarios existentes.',
-        'followers' => 'Solo el líder y los miembros del equipo.',
-        'employees' => 'Solo direcciones de usuarios o empleados.',
-    ],
-
-    'statuses' => [
-        'lead_created' => 'Lead creado',
-        'reply_added'  => 'Añadido al lead',
-        'rejected'     => 'Rechazado',
-        'ignored'      => 'Ignorado',
-        'failed'       => 'Fallido',
-    ],
-
     'reasons' => [
         'no-sender'   => 'El correo no tiene una dirección de remitente válida.',
         'auto-reply'  => 'Respuesta automática (fuera de la oficina, rebote o lista de correo).',

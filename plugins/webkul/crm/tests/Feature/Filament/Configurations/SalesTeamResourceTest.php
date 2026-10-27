@@ -9,16 +9,16 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\Vie
 use Webkul\Crm\Policies\TeamPolicy;
 use Webkul\Sale\Models\Team;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('lists sales teams with the crm team permission', function () {
-    CrmTestHelper::actingAsCrmUser(['team']);
+    CRMHelper::actingAsCRMUser(['team']);
 
     $team = Team::factory()->create([
         'name'       => 'Direct Sales (crm test)',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -27,11 +27,11 @@ it('lists sales teams with the crm team permission', function () {
 });
 
 it('shows a sales team', function () {
-    CrmTestHelper::actingAsCrmUser(['team']);
+    CRMHelper::actingAsCRMUser(['team']);
 
     $team = Team::factory()->create([
         'name'       => 'Inside Sales (crm test)',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
     ]);
 
     Livewire::test(ViewTeam::class, ['record' => $team->getRouteKey()])
@@ -39,11 +39,11 @@ it('shows a sales team', function () {
 });
 
 it('edits a sales team', function () {
-    CrmTestHelper::actingAsCrmUser(['team']);
+    CRMHelper::actingAsCRMUser(['team']);
 
     $team = Team::factory()->create([
         'name'       => 'Field Sales (crm test)',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
     ]);
 
@@ -63,13 +63,13 @@ it('edits a sales team', function () {
 });
 
 it('shows the configuration menu on the sales team record pages', function () {
-    CrmTestHelper::actingAs([
-        ...CrmTestHelper::permissionsFor(['team']),
+    CRMHelper::actingAs([
+        ...CRMHelper::permissionsFor(['team']),
         'view_any_crm_stage',
         'view_any_crm_tag',
     ]);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
     $component = Livewire::test(ViewTeam::class, ['record' => $team->getRouteKey()]);
 
@@ -77,13 +77,13 @@ it('shows the configuration menu on the sales team record pages', function () {
 });
 
 it('forbids the crm sales teams with only the sales team permissions', function () {
-    CrmTestHelper::actingAs([
+    CRMHelper::actingAs([
         'view_any_sale_team',
         'view_sale_team',
         'update_sale_team',
     ]);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
     Livewire::test(ListTeams::class)->assertForbidden();
     Livewire::test(ViewTeam::class, ['record' => $team->getRouteKey()])->assertForbidden();
@@ -91,15 +91,15 @@ it('forbids the crm sales teams with only the sales team permissions', function 
 });
 
 it('forbids editing a sales team without the crm update permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'update_sale_team']);
+    CRMHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'update_sale_team']);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
     Livewire::test(EditTeam::class, ['record' => $team->getRouteKey()])->assertForbidden();
 });
 
 it('authorizes the sales teams resource against the crm team policy', function () {
-    expect(TeamResource::getCrmPolicy())->toBe(TeamPolicy::class)
+    expect(TeamResource::getCRMPolicy())->toBe(TeamPolicy::class)
         ->and(TeamResource::getCluster())->toBe(Configurations::class)
         ->and(TeamResource::getNavigationSort())->toBe(1)
         ->and(TeamResource::getModelLabel())->toBe(__('crm::filament/clusters/configurations/resources/team.model-label'))

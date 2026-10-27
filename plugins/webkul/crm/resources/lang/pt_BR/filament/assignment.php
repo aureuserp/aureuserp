@@ -3,16 +3,34 @@
 return [
     'rules' => [
         'title'         => 'Regras de atribuição',
-        'match'         => 'Corresponder',
-        'match-all'     => 'Todas as regras a seguir',
-        'match-any'     => 'Qualquer uma das regras a seguir',
         'conditions'    => 'Condições',
         'field'         => 'Campo',
         'operator'      => 'Operador',
         'value'         => 'Valor',
-        'add-condition' => 'Adicionar condição',
-        'matching'      => '{1} :count registro aberto corresponde a estas regras|[0,*] :count registros abertos correspondem a estas regras',
-        'no-conditions' => 'Sem condições: todos os leads são aceitos.',
+        'add-condition' => 'Nova regra',
+
+        'heading-all' => 'Corresponder a todas as regras a seguir:',
+        'heading-any' => 'Corresponder a qualquer uma das regras a seguir:',
+        'records'     => '{0} Nenhum registro corresponde|{1} :count registro|[2,*] :count registros',
+        'breakdown'   => ':leads leads · :opportunities oportunidades',
+
+        'records-modal' => [
+            'heading'     => 'Registros correspondentes',
+            'description' => 'Leads e oportunidades abertos ainda não atribuídos que atendem a estas regras. Os que já estão em uma equipe (ou, para um membro, já têm vendedor) ficam de fora.',
+            'empty'       => 'Nenhum lead ou oportunidade aberto atende a estas regras.',
+            'showing'     => 'Mostrando os :shown mais recentes de :total registros.',
+            'close'       => 'Fechar',
+
+            'columns' => [
+                'name'             => 'Nome',
+                'type'             => 'Tipo',
+                'contact'          => 'Contato',
+                'email'            => 'E-mail',
+                'salesperson'      => 'Vendedor',
+                'expected-revenue' => 'Receita esperada',
+                'stage'            => 'Etapa',
+            ],
+        ],
 
         'fields' => [
             'type'                  => 'Tipo',
@@ -40,29 +58,6 @@ return [
             'utm_source_id'         => 'Origem',
             'referred_by'           => 'Indicado por',
         ],
-
-        'operators' => [
-            'contains'     => 'contém',
-            'not_contains' => 'não contém',
-            '='            => 'é igual a',
-            '!='           => 'não é igual a',
-            'starts_with'  => 'começa com',
-            'set'          => 'está definido',
-            'not_set'      => 'não está definido',
-            '>'            => 'maior que',
-            '>='           => 'maior ou igual a',
-            '<'            => 'menor que',
-            '<='           => 'menor ou igual a',
-            'in'           => 'está em',
-            'not_in'       => 'não está em',
-
-            'date' => [
-                '>='      => 'é em ou depois de',
-                '<='      => 'é em ou antes de',
-                'set'     => 'está definido',
-                'not_set' => 'não está definido',
-            ],
-        ],
     ],
 
     'team' => [
@@ -70,16 +65,24 @@ return [
         'company-not-active'     => 'Esta empresa não está ativa. Mude para ela na barra superior primeiro.',
         'section'                => 'Regras de atribuição',
         'section-description'    => 'Quais leads a atribuição baseada em regras dá a esta equipe.',
-        'capacity'               => ':assigned leads atribuídos nos últimos 30 dias de um máximo de :max.',
+        'capacity'               => ':assigned leads atribuídos este mês de um máximo de :max',
         'use-leads'              => 'Leads',
         'use-opportunities'      => 'Oportunidades',
         'skip-assignment'        => 'Ignorar atribuição automática',
         'skip-assignment-helper' => 'Os leads não são atribuídos automaticamente a esta equipe.',
 
         'assign-leads' => [
-            'label'        => 'Atribuir leads',
-            'description'  => 'Atribuir agora os leads sem vendedor desta equipe aos seus membros, conforme as regras de atribuição.',
-            'notification' => ':count lead(s) atribuído(s) a vendedores.',
+            'label'          => 'Atribuir leads',
+            'heading'        => 'Atribuir leads',
+            'description'    => 'Escolha os leads a distribuir. Cada um vai para o membro da equipe com mais espaço livre.',
+            'submit'         => 'Atribuir',
+            'records'        => 'Leads a atribuir',
+            'empty'          => 'Selecione pelo menos um lead.',
+            'skipped'        => 'Não foi possível distribuir :count (sem espaço livre ou as regras do membro não batem).',
+            'capacity'       => 'Espaço livre: :members',
+            'no-members'     => 'Nenhum membro da equipe pode receber leads agora.',
+            'nothing'        => 'Nenhum lead para atribuir agora.',
+            'notification'   => ':count lead(s) atribuído(s) a vendedores.',
         ],
     ],
 
@@ -96,7 +99,6 @@ return [
             'salesperson'       => 'Vendedor',
             'capacity'          => 'Máx. de leads (30 dias)',
             'capacity-helper'   => 'Número máximo de leads atribuídos a este vendedor em 30 dias.',
-            'capacity-assigned' => ':count atribuídos nos últimos 30 dias.',
             'paused'            => 'Pausar atribuição',
             'paused-helper'     => 'Este vendedor não recebe novos leads automaticamente.',
             'active'            => 'Ativo',
@@ -118,7 +120,7 @@ return [
 
         'notifications' => [
             'added'        => 'Membro adicionado',
-            'removed-from' => 'Removido de: :teams (Várias equipes está desativado).',
+            'removed-from' => 'Removido de: :teams (Vendedores em várias equipes está desativado).',
 
             'single-team' => [
                 'title' => 'Um vendedor só pode estar em uma equipe',

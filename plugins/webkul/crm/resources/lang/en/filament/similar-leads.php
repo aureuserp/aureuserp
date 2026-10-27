@@ -7,17 +7,21 @@ return [
 
     'page' => [
         'title' => 'Similar leads: :name',
-        'back'  => 'Back to record',
 
         'empty' => [
             'heading'     => 'No similar records',
             'description' => 'No other lead or opportunity has the same email, phone or customer.',
         ],
+
+        'views' => [
+            'kanban' => 'Kanban',
+            'list'   => 'List',
+            'graph'  => 'Graph',
+        ],
     ],
 
     'badges' => [
-        'current' => 'This record',
-        'lost'    => 'Lost',
+        'lost' => 'Lost',
     ],
 
     'merge' => [
@@ -48,5 +52,24 @@ return [
                 'body'  => ':count record(s) were merged into ":name".',
             ],
         ],
+    ],
+
+    'table' => [
+        'columns' => [
+            'name'        => 'Lead',
+            'type'        => 'Type',
+            'contact'     => 'Contact Name',
+            'email'       => 'Email',
+            'phone'       => 'Phone',
+            'stage'       => 'Stage',
+            'salesperson' => 'Salesperson',
+            'team'        => 'Sales Team',
+            'created-at'  => 'Created On',
+        ],
+    ],
+
+    'graph' => [
+        'heading' => 'Records by stage',
+        'dataset' => 'Records',
     ],
 ];

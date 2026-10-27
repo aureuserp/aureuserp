@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'model-label'        => 'قاعدة تحويل الزيارات',
-    'plural-model-label' => 'قواعد تحويل الزيارات إلى عملاء محتملين',
+    'model-label'        => 'قاعدة تحويل الزوار',
+    'plural-model-label' => 'قواعد تحويل الزوار إلى عملاء محتملين',
 
     'navigation' => [
-        'title' => 'قواعد تحويل الزيارات',
+        'title' => 'قواعد تحويل الزوار',
         'group' => 'توليد العملاء المحتملين',
     ],
 
@@ -31,8 +31,6 @@ return [
         'company'                  => 'الشركة',
         'company-helper'           => 'فارغ = شركة العميل أو أول شركة نشطة.',
         'lead-for'                 => 'تتبع البيانات',
-        'lead-for-companies'       => 'الشركات',
-        'lead-for-people'          => 'الشركات وجهات الاتصال التابعة لها',
         'industries'               => 'القطاعات',
         'industries-helper'        => 'اكتب اسماً لإضافة قطاع جديد.',
         'filter-on-size'           => 'التصفية حسب الحجم',
@@ -41,8 +39,6 @@ return [
         'employees'                => 'موظف',
         'gdpr'                     => 'تأكد مما إذا كان عليك الالتزام باللائحة العامة لحماية البيانات عند تخزين البيانات الشخصية.',
         'contact-filter'           => 'تصفية جهات الاتصال حسب',
-        'contact-filter-role'      => 'الدور',
-        'contact-filter-seniority' => 'الأقدمية',
         'extra-contacts'           => 'عدد جهات الاتصال',
         'extra-contacts-helper'    => 'من 1 إلى 5 جهات اتصال لكل شركة.',
         'preferred-role'           => 'الدور المفضل',
@@ -52,9 +48,11 @@ return [
         'sections' => [
             'traffic'          => 'شروط حركة الموقع',
             'generation'       => 'شروط توليد الفرص',
+            'lead-generation'  => 'شروط توليد العملاء المحتملين',
             'contact-filter'   => 'تصفية جهات الاتصال',
             'lead-data'        => 'بيانات العميل المحتمل',
             'opportunity-data' => 'بيانات الفرصة',
+            'settings'         => 'الإعدادات',
         ],
     ],
 
@@ -70,5 +68,19 @@ return [
         'leads'         => 'العملاء المحتملون',
         'opportunities' => 'الفرص',
         'active'        => 'نشطة',
+    ],
+
+    'pages' => [
+        'leads' => [
+            'navigation' => 'العملاء المحتملون المُنشؤون',
+            'title'      => 'العملاء المحتملون المُنشؤون: :rule',
+
+            'columns' => [
+                'name'       => 'الاسم',
+                'country'    => 'الدولة',
+                'stage'      => 'المرحلة',
+                'created-at' => 'تاريخ الإنشاء',
+            ],
+        ],
     ],
 ];

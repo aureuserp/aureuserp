@@ -30,12 +30,6 @@ return [
         'validate-certificate-helper' => 'Turn off only for servers with a self-signed certificate.',
         'active'                      => 'Active',
         'active-helper'               => 'Read every minute for new emails.',
-
-        'encryptions' => [
-            'ssl'  => 'SSL/TLS (port 993)',
-            'tls'  => 'STARTTLS (port 143)',
-            'none' => 'None (port 143)',
-        ],
     ],
 
     'table' => [

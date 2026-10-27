@@ -3,16 +3,34 @@
 return [
     'rules' => [
         'title'         => 'Règles d\'attribution',
-        'match'         => 'Correspondance',
-        'match-all'     => 'Toutes les règles suivantes',
-        'match-any'     => 'L\'une des règles suivantes',
         'conditions'    => 'Conditions',
         'field'         => 'Champ',
         'operator'      => 'Opérateur',
         'value'         => 'Valeur',
-        'add-condition' => 'Ajouter une condition',
-        'matching'      => '{1} :count enregistrement ouvert correspond à ces règles|[0,*] :count enregistrements ouverts correspondent à ces règles',
-        'no-conditions' => 'Aucune condition : toutes les pistes sont acceptées.',
+        'add-condition' => 'Nouvelle règle',
+
+        'heading-all' => 'Correspond à toutes les règles suivantes :',
+        'heading-any' => 'Correspond à l\'une des règles suivantes :',
+        'records'     => '{0} Aucun enregistrement correspondant|{1} :count enregistrement|[2,*] :count enregistrements',
+        'breakdown'   => ':leads pistes · :opportunities opportunités',
+
+        'records-modal' => [
+            'heading'     => 'Enregistrements correspondants',
+            'description' => 'Pistes et opportunités ouvertes pas encore attribuées et correspondant à ces règles. Celles déjà dans une équipe (ou, pour un membre, déjà avec un vendeur) sont exclues.',
+            'empty'       => 'Aucune piste ou opportunité ouverte ne correspond à ces règles.',
+            'showing'     => 'Affichage des :shown plus récents sur :total enregistrements.',
+            'close'       => 'Fermer',
+
+            'columns' => [
+                'name'             => 'Nom',
+                'type'             => 'Type',
+                'contact'          => 'Contact',
+                'email'            => 'E-mail',
+                'salesperson'      => 'Vendeur',
+                'expected-revenue' => 'Revenu attendu',
+                'stage'            => 'Étape',
+            ],
+        ],
 
         'fields' => [
             'type'                  => 'Type',
@@ -40,29 +58,6 @@ return [
             'utm_source_id'         => 'Source',
             'referred_by'           => 'Recommandé par',
         ],
-
-        'operators' => [
-            'contains'     => 'contient',
-            'not_contains' => 'ne contient pas',
-            '='            => 'est égal à',
-            '!='           => 'n\'est pas égal à',
-            'starts_with'  => 'commence par',
-            'set'          => 'est défini',
-            'not_set'      => 'n\'est pas défini',
-            '>'            => 'supérieur à',
-            '>='           => 'supérieur ou égal à',
-            '<'            => 'inférieur à',
-            '<='           => 'inférieur ou égal à',
-            'in'           => 'est parmi',
-            'not_in'       => 'n\'est pas parmi',
-
-            'date' => [
-                '>='      => 'est le ou après le',
-                '<='      => 'est le ou avant le',
-                'set'     => 'est défini',
-                'not_set' => 'n\'est pas défini',
-            ],
-        ],
     ],
 
     'team' => [
@@ -70,16 +65,24 @@ return [
         'company-not-active'     => 'Cette société n\'est pas active. Passez-y d\'abord dans la barre du haut.',
         'section'                => 'Règles d\'attribution',
         'section-description'    => 'Les pistes que l\'attribution basée sur des règles donne à cette équipe.',
-        'capacity'               => ':assigned pistes attribuées ces 30 derniers jours sur un maximum de :max.',
+        'capacity'               => ':assigned pistes attribuées ce mois-ci sur un maximum de :max',
         'use-leads'              => 'Pistes',
         'use-opportunities'      => 'Opportunités',
         'skip-assignment'        => 'Ignorer l\'assignation automatique',
         'skip-assignment-helper' => 'Les pistes ne sont pas assignées automatiquement à cette équipe.',
 
         'assign-leads' => [
-            'label'        => 'Assigner les pistes',
-            'description'  => 'Assigner maintenant les pistes sans vendeur de cette équipe à ses membres, selon les règles d\'assignation.',
-            'notification' => ':count piste(s) assignée(s) aux vendeurs.',
+            'label'          => 'Assigner les pistes',
+            'heading'        => 'Attribuer des pistes',
+            'description'    => 'Choisissez les pistes à répartir. Chacune va au membre de l\'équipe qui a le plus de place libre.',
+            'submit'         => 'Attribuer',
+            'records'        => 'Pistes à attribuer',
+            'empty'          => 'Sélectionnez au moins une piste.',
+            'skipped'        => 'Impossible de répartir :count (pas de place libre, ou les règles du membre ne correspondent pas).',
+            'capacity'       => 'Place libre : :members',
+            'no-members'     => 'Aucun membre de l\'équipe ne peut recevoir de pistes pour le moment.',
+            'nothing'        => 'Aucune piste à attribuer pour le moment.',
+            'notification'   => ':count piste(s) assignée(s) aux vendeurs.',
         ],
     ],
 
@@ -96,7 +99,6 @@ return [
             'salesperson'       => 'Vendeur',
             'capacity'          => 'Pistes max. (30 jours)',
             'capacity-helper'   => 'Nombre maximal de pistes assignées à ce vendeur sur 30 jours.',
-            'capacity-assigned' => ':count attribuées ces 30 derniers jours.',
             'paused'            => 'Suspendre l\'assignation',
             'paused-helper'     => 'Ce vendeur ne reçoit plus de nouvelles pistes automatiquement.',
             'active'            => 'Actif',
@@ -118,7 +120,7 @@ return [
 
         'notifications' => [
             'added'        => 'Membre ajouté',
-            'removed-from' => 'Retiré de : :teams (Équipes multiples désactivé).',
+            'removed-from' => 'Retiré de : :teams (Commerciaux dans plusieurs équipes désactivé).',
 
             'single-team' => [
                 'title' => 'Un vendeur ne peut être que dans une seule équipe',

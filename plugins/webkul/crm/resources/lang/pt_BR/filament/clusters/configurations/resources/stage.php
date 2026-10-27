@@ -47,14 +47,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Etapas excluídas',
-                    'body'  => 'As etapas foram excluídas com sucesso.',
-                ],
-            ],
-        ],
     ],
 ];

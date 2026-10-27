@@ -8,10 +8,6 @@ return [
     ],
 
     'header-actions' => [
-        'kanban' => [
-            'label' => 'Kanban',
-        ],
-
         'create' => [
             'label' => 'Nouvelle opportunité',
 

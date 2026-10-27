@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages;
 
-use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
@@ -38,7 +37,6 @@ class EditOpportunity extends EditRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
-            ViewAction::make(),
         ];
     }
 

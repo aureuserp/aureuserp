@@ -1,6 +1,8 @@
 <?php
 
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadConversionCustomer;
+use Webkul\Crm\Enums\QuotationPartnerAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ManageQuotations;
@@ -11,24 +13,24 @@ use Webkul\Crm\Models\QuotationPartner;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\OrderState;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 require_once __DIR__.'/../../../../../sales/tests/Helpers/SaleHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function quotationOpportunityPermissions(): array
 {
     return [
-        ...CrmTestHelper::permissionsFor(['opportunity']),
-        ...CrmTestHelper::permissionsFor(['quotation']),
+        ...CRMHelper::permissionsFor(['opportunity']),
+        ...CRMHelper::permissionsFor(['quotation']),
     ];
 }
 
 it('shows "New Quotation" on an open or won opportunity but not on a lost one', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $won = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
-    $lost = CrmTestHelper::opportunity();
+    $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
+    $lost = CRMHelper::opportunity();
     $lost->markAsLost(null);
 
     Livewire::test(ViewOpportunity::class, ['record' => $won->getRouteKey()])
@@ -39,10 +41,10 @@ it('shows "New Quotation" on an open or won opportunity but not on a lost one', 
 });
 
 it('goes straight to the quotation form when the opportunity has a customer', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $opportunity = CrmTestHelper::opportunity(['partner_id' => $partner->id]);
+    $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $opportunity = CRMHelper::opportunity(['partner_id' => $partner->id]);
 
     Livewire::test(ViewOpportunity::class, ['record' => $opportunity->getRouteKey()])
         ->callAction('newQuotation')
@@ -50,9 +52,9 @@ it('goes straight to the quotation form when the opportunity has a customer', fu
 });
 
 it('creates the customer first when asked to', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $opportunity = CrmTestHelper::opportunity(['partner_id' => null, 'contact_name' => 'New Buyer', 'company_name' => null, 'email' => 'new.buyer@customer.test']);
+    $opportunity = CRMHelper::opportunity(['partner_id' => null, 'contact_name' => 'New Buyer', 'company_name' => null, 'email' => 'new.buyer@customer.test']);
 
     Livewire::test(ViewOpportunity::class, ['record' => $opportunity->getRouteKey()])
         ->callAction('newQuotation', data: ['customer' => 'create'])
@@ -62,11 +64,11 @@ it('creates the customer first when asked to', function () {
 });
 
 it('links an existing customer or none', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $linked = CrmTestHelper::opportunity(['partner_id' => null]);
-    $unlinked = CrmTestHelper::opportunity(['partner_id' => null]);
+    $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $linked = CRMHelper::opportunity(['partner_id' => null]);
+    $unlinked = CRMHelper::opportunity(['partner_id' => null]);
 
     Livewire::test(ViewOpportunity::class, ['record' => $linked->getRouteKey()])
         ->callAction('newQuotation', data: ['customer' => 'link', 'partner_id' => $partner->id])
@@ -81,14 +83,14 @@ it('links an existing customer or none', function () {
 });
 
 it('only offers "Do not link" to users who cannot edit the opportunity', function () {
-    CrmTestHelper::actingAs([
+    CRMHelper::actingAs([
         'view_any_crm_opportunity', 'view_crm_opportunity',
-        ...CrmTestHelper::permissionsFor(['quotation']),
+        ...CRMHelper::permissionsFor(['quotation']),
     ]);
 
-    $opportunity = CrmTestHelper::opportunity(['partner_id' => null]);
+    $opportunity = CRMHelper::opportunity(['partner_id' => null]);
 
-    expect(NewQuotationAction::customerChoices($opportunity))->toBe(['none']);
+    expect(NewQuotationAction::customerChoices($opportunity))->toBe([LeadConversionCustomer::NONE]);
 
     Livewire::test(ViewOpportunity::class, ['record' => $opportunity->getRouteKey()])
         ->callAction('newQuotation', data: ['customer' => 'create']);
@@ -97,10 +99,10 @@ it('only offers "Do not link" to users who cannot edit the opportunity', functio
 });
 
 it('fills the quotation from the opportunity', function () {
-    $user = CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    $user = CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $opportunity = CrmTestHelper::opportunity(['partner_id' => $partner->id, 'user_id' => $user->id, 'name' => 'Office chairs']);
+    $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $opportunity = CRMHelper::opportunity(['partner_id' => $partner->id, 'user_id' => $user->id, 'name' => 'Office chairs']);
 
     Livewire::withQueryParams(['opportunity' => $opportunity->id])
         ->test(CreateQuotation::class)
@@ -110,7 +112,7 @@ it('fills the quotation from the opportunity', function () {
 });
 
 it('ignores an opportunity that does not exist or cannot be seen', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
     $page = Livewire::withQueryParams(['opportunity' => 999999])->test(CreateQuotation::class);
 
@@ -118,9 +120,9 @@ it('ignores an opportunity that does not exist or cannot be seen', function () {
 });
 
 it('lists the quotations of the opportunity in its Quotations tab', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $quotation = SaleHelper::order(['state' => OrderState::DRAFT]);
     $quotation->forceFill(['opportunity_id' => $opportunity->id])->saveQuietly();
@@ -138,18 +140,18 @@ it('lists the quotations of the opportunity in its Quotations tab', function () 
 });
 
 it('records the customer choice of each New Quotation and the quotation then saved', function () {
-    CrmTestHelper::actingAs(quotationOpportunityPermissions());
+    CRMHelper::actingAs(quotationOpportunityPermissions());
 
-    $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $withCustomer = CrmTestHelper::opportunity(['partner_id' => $partner->id]);
-    $withoutCustomer = CrmTestHelper::opportunity(['partner_id' => null, 'contact_name' => 'Fresh Buyer', 'email' => 'fresh.buyer@customer.test']);
+    $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $withCustomer = CRMHelper::opportunity(['partner_id' => $partner->id]);
+    $withoutCustomer = CRMHelper::opportunity(['partner_id' => null, 'contact_name' => 'Fresh Buyer', 'email' => 'fresh.buyer@customer.test']);
 
     Livewire::test(ViewOpportunity::class, ['record' => $withCustomer->getRouteKey()])->callAction('newQuotation');
     Livewire::test(ViewOpportunity::class, ['record' => $withoutCustomer->getRouteKey()])->callAction('newQuotation', data: ['customer' => 'create']);
 
-    expect(QuotationPartner::query()->where('opportunity_id', $withCustomer->id)->value('action'))->toBe(QuotationPartner::ACTION_EXISTING)
+    expect(QuotationPartner::query()->where('opportunity_id', $withCustomer->id)->value('action'))->toBe(QuotationPartnerAction::EXISTING)
         ->and(QuotationPartner::query()->where('opportunity_id', $withoutCustomer->id)->first())
-        ->action->toBe(QuotationPartner::ACTION_CREATE)
+        ->action->toBe(QuotationPartnerAction::CREATE)
         ->partner_id->toBe($withoutCustomer->fresh()->partner_id);
 
     $quotation = SaleHelper::order(['state' => OrderState::DRAFT]);

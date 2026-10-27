@@ -26,13 +26,11 @@ class ManageRecurringPlans extends ManageRecords
 
     public function getTabs(): array
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/configurations/resources/recurring-plan.tabs.'.$key);
-
         return [
-            'active' => Tab::make($label('active'))
+            'active' => Tab::make(__('crm::filament/clusters/configurations/resources/recurring-plan.tabs.active'))
                 ->badge(fn (): int => RecurringPlan::query()->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()),
-            'archived' => Tab::make($label('archived'))
+            'archived' => Tab::make(__('crm::filament/clusters/configurations/resources/recurring-plan.tabs.archived'))
                 ->badge(fn (): int => RecurringPlan::onlyTrashed()->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->onlyTrashed()),
         ];

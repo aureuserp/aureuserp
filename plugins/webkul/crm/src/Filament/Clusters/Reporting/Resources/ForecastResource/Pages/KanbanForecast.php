@@ -2,19 +2,22 @@
 
 namespace Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages;
 
-use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables\OpportunitiesTable;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasKanbanTableViews;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
-use Webkul\Crm\Filament\Support\Reports\ForecastReport;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Models\Lead;
@@ -24,7 +27,10 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class KanbanForecast extends ListRecords
 {
-    use HasCrmClusterNavigation, HasKanbanBoard, ManagesOpportunityKanbanCards;
+    use HasCRMClusterNavigation, HasKanbanBoard, HasKanbanTableViews, ManagesOpportunityKanbanCards {
+        HasKanbanTableViews::content insteadof HasKanbanBoard;
+        HasKanbanTableViews::getKanbanQuery insteadof HasKanbanBoard;
+    }
 
     protected static string $resource = ForecastResource::class;
 
@@ -32,27 +38,26 @@ class KanbanForecast extends ListRecords
 
     protected const UPCOMING_MONTHS = 3;
 
-    public function mount(): void
+    protected function getTableViewsListPage(): ListRecords
     {
-        parent::mount();
-
-        $this->resetKanbanFilters();
+        return new ListOpportunities;
     }
 
-    public function resetKanbanFilters(): void
+    protected function configureKanbanBaseTable(Table $table): Table
     {
-        $this->kanbanFilters = $this->defaultKanbanFilters();
-        $this->kanbanActivityFilter = [];
+        return OpportunitiesTable::configure($table);
     }
 
-    public function defaultKanbanFilters(): array
+    protected function modifyKanbanQuery(Builder $query): Builder
     {
-        return [
-            'user_id' => null,
-            'team_id' => null,
-            'period'  => 'all',
-            'presets' => [],
-        ];
+        $query
+            ->with(static::KANBAN_CARD_RELATIONS)
+            ->withGlobalScope(SoftDeletingScope::class, new SoftDeletingScope)
+            ->where(fn (Builder $query): Builder => $query
+                ->whereNull('crm_leads.expected_closing_date')
+                ->orWhereDate('crm_leads.expected_closing_date', '>=', today()->startOfMonth()));
+
+        return $this->ignoreKanbanActivityFilter ? $query : $this->applyKanbanActivityFilter($query);
     }
 
     public function getTitle(): string
@@ -65,22 +70,14 @@ class KanbanForecast extends ListRecords
         return __('crm::filament/clusters/reporting/report.views.kanban');
     }
 
-    protected function getHeaderActions(): array
+    public function getRecordNavigationTabs(): array
     {
-        return [
-            ...ForecastResource::getViewSwitcherActions('index'),
-            ...ForecastResource::getExportActions(fn (Builder $query): Builder => $query->whereIn(
-                'crm_leads.id',
-                $this->getKanbanQuery($this->getKanbanBoard())->reorder()->pluck('crm_leads.id'),
-            )),
-        ];
+        return ForecastResource::getViewTabs('index');
     }
 
     public function kanban(KanbanBoard $kanban): KanbanBoard
     {
         $currency = Report::getCurrencyCode();
-
-        $label = fn (string $key): string => __('crm::filament/clusters/reporting/resources/forecast.kanban.'.$key);
 
         return $kanban
             ->recordUrl(fn (Lead $record): string => OpportunityResource::getUrl('view', ['record' => $record]))
@@ -89,35 +86,9 @@ class KanbanForecast extends ListRecords
 
                 return $total > 0 ? Number::currency($total, $currency) : null;
             })
-            ->searchable(['name', 'email', 'partner.name'])
-            ->filters([
-                Select::make('user_id')
-                    ->label($label('filters.salesperson'))
-                    ->options(fn (): array => Report::getSalespersonOptions())
-                    ->searchable()
-                    ->placeholder($label('filters.all')),
-                Select::make('team_id')
-                    ->label($label('filters.team'))
-                    ->options(fn (): array => Report::getTeamOptions())
-                    ->searchable()
-                    ->placeholder($label('filters.all')),
-                Select::make('period')
-                    ->label($label('filters.period'))
-                    ->options([
-                        'upcoming' => $label('filters.upcoming'),
-                        'all'      => $label('filters.all-dates'),
-                    ])
-                    ->selectablePlaceholder(false),
-                Select::make('presets')
-                    ->label($label('filters.presets'))
-                    ->options(fn (): array => collect(static::kanbanPresets())->map(fn (array $preset): string => $preset['label'])->all())
-                    ->multiple()
-                    ->placeholder($label('filters.all')),
-            ])
-            ->filtersColumns(1)
             ->emptyState(
-                $label('empty-state.heading'),
-                $label('empty-state.description'),
+                __('crm::filament/clusters/reporting/resources/forecast.kanban.empty-state.heading'),
+                __('crm::filament/clusters/reporting/resources/forecast.kanban.empty-state.description'),
                 'heroicon-o-arrow-trending-up',
             )
             ->columnWidth('300px')
@@ -166,47 +137,7 @@ class KanbanForecast extends ListRecords
                 return $column;
             });
 
-        if (($this->kanbanFilters['period'] ?? 'all') === 'upcoming') {
-            $columns = $columns->reject(fn (KanbanColumn $column): bool => $column->value === self::NONE_COLUMN && $column->count === 0);
-        }
-
         return $columns->values()->all();
-    }
-
-    public static function kanbanPresets(): array
-    {
-        return collect(ForecastReport::presets())
-            ->only(['unassigned', 'ongoing', 'won', 'lost', 'created_this_year', 'closed_this_year'])
-            ->all();
-    }
-
-    protected function getKanbanQuery(KanbanBoard $board): Builder
-    {
-        $filters = $this->kanbanFilters;
-
-        $presets = array_intersect_key(static::kanbanPresets(), array_flip(array_filter((array) ($filters['presets'] ?? []))));
-
-        $query = ForecastResource::getEloquentQuery()
-            ->with(static::KANBAN_CARD_RELATIONS)
-            ->when(! isset($presets['lost']), fn (Builder $query): Builder => $query->whereNull('crm_leads.deleted_at'));
-
-        foreach ($presets as $preset) {
-            $query = $preset['query']($query);
-        }
-
-        $query
-            ->when(filled($filters['user_id'] ?? null), fn (Builder $query): Builder => $query->where('crm_leads.user_id', $filters['user_id']))
-            ->when(filled($filters['team_id'] ?? null), fn (Builder $query): Builder => $query->where('crm_leads.team_id', $filters['team_id']))
-            ->when(($filters['period'] ?? 'all') === 'upcoming', fn (Builder $query): Builder => $query->whereDate('crm_leads.expected_closing_date', '>=', today()->startOfMonth()));
-
-        if (filled($search = $this->kanbanSearch)) {
-            $query->where(fn (Builder $query): Builder => $query
-                ->where('crm_leads.name', 'like', "%{$search}%")
-                ->orWhere('crm_leads.email', 'like', "%{$search}%")
-                ->orWhereHas('partner', fn (Builder $query): Builder => $query->where('name', 'like', "%{$search}%")));
-        }
-
-        return $this->ignoreKanbanActivityFilter ? $query : $this->applyKanbanActivityFilter($query);
     }
 
     protected function kanbanColumnKeyExpression(): string
@@ -216,7 +147,7 @@ class KanbanForecast extends ListRecords
 
     public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void
     {
-        $record = ForecastResource::getEloquentQuery()->whereNull('crm_leads.deleted_at')->find($recordId);
+        $record = ForecastResource::getEloquentQuery()->withoutTrashed()->find($recordId);
 
         if (! $record || ! OpportunityResource::canEdit($record)) {
             Notification::make()

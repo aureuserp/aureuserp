@@ -30,12 +30,6 @@ return [
         'validate-certificate-helper' => 'Desactívelo solo para servidores con un certificado autofirmado.',
         'active'                      => 'Activo',
         'active-helper'               => 'Se revisa cada minuto en busca de correos nuevos.',
-
-        'encryptions' => [
-            'ssl'  => 'SSL/TLS (puerto 993)',
-            'tls'  => 'STARTTLS (puerto 143)',
-            'none' => 'Ninguno (puerto 143)',
-        ],
     ],
 
     'table' => [

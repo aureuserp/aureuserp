@@ -4,6 +4,12 @@ return [
     'model-label'        => 'الفرصة',
     'plural-model-label' => 'الفرص',
 
+    'views' => [
+        'kanban' => 'كانبان',
+        'list'   => 'قائمة',
+        'graph'  => 'رسم بياني',
+    ],
+
     'navigation' => [
         'title' => 'مسار مبيعاتي',
     ],
@@ -145,8 +151,6 @@ return [
 
         'bulk-actions' => [
             'restore' => [
-                'label' => 'استعادة',
-
                 'notification' => [
                     'title' => 'تم استعادة الفرص',
                     'body'  => 'تمت استعادة الفرص إلى مسار المبيعات.',
@@ -169,10 +173,6 @@ return [
             'modal-description' => 'لا يوجد عميل لهذه الفرصة بعد. اختر عميل عرض السعر.',
             'submit'            => 'متابعة',
             'subheading'        => 'من الفرصة: :name',
-        ],
-
-        'open-opportunity' => [
-            'label' => 'الفرصة',
         ],
 
         'won' => [

@@ -30,12 +30,6 @@ return [
         'validate-certificate-helper' => 'أوقفه فقط للخوادم ذات الشهادة الموقعة ذاتيًا.',
         'active'                      => 'نشط',
         'active-helper'               => 'يُفحص كل دقيقة بحثًا عن رسائل جديدة.',
-
-        'encryptions' => [
-            'ssl'  => 'SSL/TLS (المنفذ 993)',
-            'tls'  => 'STARTTLS (المنفذ 143)',
-            'none' => 'بدون (المنفذ 143)',
-        ],
     ],
 
     'table' => [

@@ -2,25 +2,17 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource\Pages\ManageRecurringPlans;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource\Schemas\RecurringPlanForm;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource\Tables\RecurringPlansTable;
 use Webkul\Crm\Models\RecurringPlan;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 
 class RecurringPlanResource extends Resource
 {
@@ -36,7 +28,7 @@ class RecurringPlanResource extends Resource
 
     public static function isRecurringRevenueEnabled(): bool
     {
-        return (bool) app(CrmSettings::class)->use_recurring_revenues;
+        return (bool) app(CRMSettings::class)->use_recurring_revenues;
     }
 
     public static function canViewAny(): bool
@@ -66,75 +58,12 @@ class RecurringPlanResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/configurations/resources/recurring-plan.form.'.$key);
-
-        return $schema
-            ->components([
-                TextInput::make('name')
-                    ->label($label('name'))
-                    ->placeholder($label('name-placeholder'))
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('number_of_months')
-                    ->label($label('months'))
-                    ->helperText($label('months-helper'))
-                    ->numeric()
-                    ->integer()
-                    ->minValue(1)
-                    ->default(1)
-                    ->required(),
-            ])
-            ->columns(1);
+        return RecurringPlanForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/configurations/resources/recurring-plan.'.$key);
-
-        return $table
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withCount('leads'))
-            ->columns([
-                TextColumn::make('name')
-                    ->label($label('table.columns.name'))
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('number_of_months')
-                    ->label($label('table.columns.months'))
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('leads_count')
-                    ->label($label('table.columns.opportunities'))
-                    ->numeric(),
-            ])
-            ->defaultSort('sort')
-            ->reorderable('sort')
-            ->recordActions([
-                EditAction::make()
-                    ->hidden(fn (RecurringPlan $record): bool => $record->trashed())
-                    ->successNotification(Notification::make()->success()->title($label('notifications.updated'))),
-                RestoreAction::make()
-                    ->successNotification(Notification::make()->success()->title($label('notifications.restored'))),
-                DeleteAction::make()
-                    ->label($label('actions.archive'))
-                    ->icon('heroicon-o-archive-box')
-                    ->modalHeading($label('actions.archive-heading'))
-                    ->modalDescription($label('actions.archive-description'))
-                    ->modalSubmitActionLabel($label('actions.archive'))
-                    ->successNotification(Notification::make()->success()->title($label('notifications.archived'))),
-                ForceDeleteAction::make()
-                    ->successNotification(Notification::make()->success()->title($label('notifications.deleted'))),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    RestoreBulkAction::make(),
-                    DeleteBulkAction::make()
-                        ->label($label('actions.archive'))
-                        ->icon('heroicon-o-archive-box')
-                        ->modalHeading($label('actions.archive-heading'))
-                        ->modalDescription($label('actions.archive-description'))
-                        ->modalSubmitActionLabel($label('actions.archive')),
-                ]),
-            ]);
+        return RecurringPlansTable::configure($table);
     }
 
     public static function getPages(): array

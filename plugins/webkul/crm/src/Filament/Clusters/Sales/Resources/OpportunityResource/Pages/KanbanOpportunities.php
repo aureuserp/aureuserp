@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Webkul\Crm\Enums\OpportunityPriority;
-use Webkul\Crm\Filament\Actions\CrmExportAction;
-use Webkul\Crm\Filament\Actions\CrmImportAction;
+use Webkul\Crm\Filament\Actions\CRMExportAction;
+use Webkul\Crm\Filament\Actions\CRMImportAction;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Concerns\HasKanbanTableViews;
@@ -92,20 +92,20 @@ class KanbanOpportunities extends ListRecords
         return __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.breadcrumb');
     }
 
+    public function getRecordNavigationTabs(): array
+    {
+        return OpportunityResource::getViewTabs('index');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('listView')
-                ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.header-actions.list.label'))
-                ->icon('heroicon-o-list-bullet')
-                ->color('gray')
-                ->url(fn (): string => OpportunityResource::getUrl('list')),
-            CrmImportAction::make()
+            CRMImportAction::make()
                 ->importer(OpportunityImporter::class)
                 ->visible(fn (): bool => OpportunityResource::canCreate()),
-            CrmExportAction::make()
+            CRMExportAction::make()
                 ->exporter(OpportunityExporter::class)
-                ->modifyQueryUsing(fn (Builder $query): Builder => CrmExportAction::limitToVisibleRecords(
+                ->modifyQueryUsing(fn (Builder $query): Builder => CRMExportAction::limitToVisibleRecords(
                     $query->whereIn('crm_leads.id', $this->getKanbanQuery($this->getKanbanBoard())->reorder()->pluck('crm_leads.id')),
                 )),
             Action::make('create')
@@ -138,7 +138,7 @@ class KanbanOpportunities extends ListRecords
                     : null,
             ])->filter()->implode(' · '))
             ->cardBadges(fn (Lead $record): array => collect([
-                $record->priority && $record->priority !== OpportunityPriority::Low
+                $record->priority && $record->priority !== OpportunityPriority::LOW
                     ? ['label' => $record->priority->getLabel(), 'color' => $record->priority->getColor()]
                     : null,
                 $record->user ? ['label' => $record->user->name, 'color' => 'gray'] : null,
@@ -176,7 +176,7 @@ class KanbanOpportunities extends ListRecords
                         Select::make('priority')
                             ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.priority'))
                             ->options(OpportunityPriority::class)
-                            ->default(OpportunityPriority::Low),
+                            ->default(OpportunityPriority::LOW),
                     ])
                     ->action(function (array $data): void {
                         Lead::create([

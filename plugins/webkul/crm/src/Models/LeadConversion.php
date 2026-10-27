@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Enums\LeadConversionAction;
+use Webkul\Crm\Enums\LeadConversionCustomer;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -13,16 +15,6 @@ use Webkul\Support\Models\Company;
 
 class LeadConversion extends Model
 {
-    public const ACTION_CONVERT = 'convert';
-
-    public const ACTION_MERGE = 'merge';
-
-    public const CUSTOMER_CREATE = 'create';
-
-    public const CUSTOMER_LINK = 'link';
-
-    public const CUSTOMER_NONE = 'none';
-
     protected $table = 'crm_lead_conversions';
 
     protected $fillable = [
@@ -37,6 +29,11 @@ class LeadConversion extends Model
         'team_id',
         'company_id',
         'creator_id',
+    ];
+
+    protected $casts = [
+        'action'   => LeadConversionAction::class,
+        'customer' => LeadConversionCustomer::class,
     ];
 
     public function lead(): BelongsTo

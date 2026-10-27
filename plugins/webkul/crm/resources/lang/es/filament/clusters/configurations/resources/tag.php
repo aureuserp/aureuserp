@@ -39,15 +39,6 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Etiquetas eliminadas',
-                    'body'  => 'Las etiquetas se han eliminado correctamente.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [

@@ -2,12 +2,11 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources;
 
-use Filament\Actions\Action;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Filament\Clusters\Sales;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\GraphActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\KanbanActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\ListActivities;
@@ -78,34 +77,24 @@ class ActivityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => KanbanActivities::route('/'),
-            'list'   => ListActivities::route('/list'),
+            'index'  => ListActivities::route('/'),
+            'kanban' => KanbanActivities::route('/kanban'),
             'graph'  => GraphActivities::route('/graph'),
         ];
     }
 
-    public static function getViewSwitcherActions(string $currentPage): array
+    public static function getViewTabs(string $current): array
     {
-        return [
-            ...static::getViewSwitcherButtons($currentPage),
-            ScheduleActivityAction::make(),
-        ];
-    }
+        $tab = fn (string $page, string $label, string $icon): NavigationItem => NavigationItem::make($page)
+            ->label($label)
+            ->icon($icon)
+            ->url(static::getUrl($page))
+            ->isActiveWhen(fn (): bool => $page === $current);
 
-    protected static function getViewSwitcherButtons(string $currentPage): array
-    {
-        return collect([
-            'index'  => ['heroicon-o-view-columns', 'kanban'],
-            'list'   => ['heroicon-o-list-bullet', 'list'],
-            'graph'  => ['heroicon-o-chart-bar', 'graph'],
-        ])
-            ->except($currentPage)
-            ->map(fn (array $view, string $page): Action => Action::make($view[1].'View')
-                ->label(__('crm::filament/clusters/sales/resources/activity.views.'.$view[1]))
-                ->icon($view[0])
-                ->color('gray')
-                ->url(fn (): string => static::getUrl($page)))
-            ->values()
-            ->all();
+        return [
+            $tab('index', __('crm::filament/clusters/sales/resources/activity.views.list'), 'heroicon-o-list-bullet'),
+            $tab('kanban', __('crm::filament/clusters/sales/resources/activity.views.kanban'), 'heroicon-o-view-columns'),
+            $tab('graph', __('crm::filament/clusters/sales/resources/activity.views.graph'), 'heroicon-o-chart-bar'),
+        ];
     }
 }

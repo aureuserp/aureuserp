@@ -12,24 +12,13 @@ return [
 
     'chart' => [
         'heading' => ':measure por :group',
-
-        'types' => [
-            'bar'  => 'Barras',
-            'line' => 'Líneas',
-            'pie'  => 'Circular',
-        ],
     ],
 
     'filters' => [
-        'clear'          => 'Borrar filtros',
-        'heading'        => 'Filtros',
-        'reset'          => 'Restablecer',
         'measure'        => 'Medida',
-        'group-by'       => 'Agrupar por',
         'split-by'       => 'Dividir por',
         'no-split'       => 'Sin división',
         'chart-type'     => 'Gráfico',
-        'quick-filters'  => 'Filtros',
         'salespeople'    => 'Comerciales',
         'teams'          => 'Equipos de ventas',
     ],
@@ -87,7 +76,6 @@ return [
         'lost' => 'Perdido',
 
         'columns' => [
-            'group'            => '',
             'name'             => 'Nombre',
             'type'             => 'Tipo',
             'customer'         => 'Cliente',
@@ -115,5 +103,15 @@ return [
     'empty-state' => [
         'heading'     => 'Aún no hay datos',
         'description' => 'Pruebe a quitar algunos filtros.',
+    ],
+
+    'tabs' => [
+        'leads'         => 'Leads',
+        'opportunities' => 'Oportunidades',
+        'mine'          => 'Míos',
+        'won'           => 'Ganados',
+        'lost'          => 'Perdidos',
+        'my-activities' => 'Mis actividades',
+        'this-month'    => 'Este mes',
     ],
 ];

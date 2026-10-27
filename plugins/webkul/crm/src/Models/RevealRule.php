@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Enums\RevealRuleContactFilter;
+use Webkul\Crm\Enums\RevealRuleLeadFor;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -17,14 +20,6 @@ use Webkul\Support\Models\State;
 
 class RevealRule extends Model
 {
-    public const LEAD_FOR_COMPANIES = 'companies';
-
-    public const LEAD_FOR_PEOPLE = 'people';
-
-    public const CONTACT_FILTER_ROLE = 'role';
-
-    public const CONTACT_FILTER_SENIORITY = 'seniority';
-
     public const MAX_EXTRA_CONTACTS = 5;
 
     protected $table = 'crm_reveal_rules';
@@ -52,13 +47,16 @@ class RevealRule extends Model
     ];
 
     protected $casts = [
-        'is_active'        => 'boolean',
-        'sort'             => 'integer',
-        'priority'         => OpportunityPriority::class,
-        'filter_on_size'   => 'boolean',
-        'company_size_min' => 'integer',
-        'company_size_max' => 'integer',
-        'extra_contacts'   => 'integer',
+        'is_active'           => 'boolean',
+        'sort'                => 'integer',
+        'lead_for'            => RevealRuleLeadFor::class,
+        'lead_type'           => LeadType::class,
+        'contact_filter_type' => RevealRuleContactFilter::class,
+        'priority'            => OpportunityPriority::class,
+        'filter_on_size'      => 'boolean',
+        'company_size_min'    => 'integer',
+        'company_size_max'    => 'integer',
+        'extra_contacts'      => 'integer',
     ];
 
     public function team(): BelongsTo

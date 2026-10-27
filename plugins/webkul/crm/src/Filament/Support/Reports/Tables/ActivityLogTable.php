@@ -6,60 +6,55 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Models\ActivityLog;
-use Webkul\Crm\Models\Lead;
 
 class ActivityLogTable
 {
     public static function configure(Table $table): Table
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/reporting/report.table.columns.'.$key);
-
         return $table
             ->columns([
                 TextColumn::make('done_at')
-                    ->label($label('done-at'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.done-at'))
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('activityType.name')
-                    ->label($label('activity-type'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.activity-type'))
                     ->badge()
                     ->placeholder('—'),
                 TextColumn::make('summary')
-                    ->label($label('summary'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.summary'))
                     ->searchable()
                     ->limit(50)
                     ->placeholder('—'),
                 TextColumn::make('lead.name')
-                    ->label($label('lead'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.lead'))
                     ->searchable()
                     ->weight('medium')
                     ->placeholder('—'),
                 TextColumn::make('lead_type')
-                    ->label($label('type'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.type'))
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => $state === Lead::TYPE_LEAD ? __('crm::models/lead.title') : __('crm::models/opportunity.title'))
-                    ->color(fn (?string $state): string => $state === Lead::TYPE_LEAD ? 'gray' : 'info')
                     ->toggleable(),
                 TextColumn::make('assignedTo.name')
-                    ->label($label('assigned-to'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.assigned-to'))
                     ->placeholder('—'),
                 TextColumn::make('doneBy.name')
-                    ->label($label('done-by'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.done-by'))
                     ->placeholder('—'),
                 TextColumn::make('user.name')
-                    ->label($label('salesperson'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.salesperson'))
                     ->placeholder('—')
                     ->toggleable(),
                 TextColumn::make('team.name')
-                    ->label($label('team'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.team'))
                     ->placeholder('—')
                     ->toggleable(),
                 TextColumn::make('stage.name')
-                    ->label($label('stage'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.stage'))
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('date_deadline')
-                    ->label($label('due-date'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.due-date'))
                     ->date()
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),

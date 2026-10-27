@@ -59,35 +59,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'restore' => [
-                'notification' => [
-                    'title' => 'Motivos de pérdida restaurados',
-                    'body'  => 'Los motivos de pérdida se han restaurado correctamente.',
-                ],
-            ],
-
-            'delete' => [
-                'label' => 'Archivar',
-
-                'modal' => [
-                    'heading'     => 'Archivar motivos de pérdida seleccionados',
-                    'description' => 'Los motivos de pérdida seleccionados se moverán a la pestaña Archivados. Puede restaurarlos en cualquier momento.',
-                ],
-
-                'notification' => [
-                    'title' => 'Motivos de pérdida archivados',
-                    'body'  => 'Los motivos de pérdida se han archivado correctamente.',
-                ],
-            ],
-
-            'force-delete' => [
-                'notification' => [
-                    'title' => 'Motivos de pérdida eliminados',
-                    'body'  => 'Los motivos de pérdida se han eliminado permanentemente.',
-                ],
-            ],
-        ],
     ],
 ];

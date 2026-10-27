@@ -4,25 +4,11 @@ namespace Webkul\Crm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Crm\Enums\MailAliasContact;
 use Webkul\Sale\Models\Team;
 
 class MailAlias extends Model
 {
-    public const CONTACT_EVERYONE = 'everyone';
-
-    public const CONTACT_PARTNERS = 'partners';
-
-    public const CONTACT_FOLLOWERS = 'followers';
-
-    public const CONTACT_EMPLOYEES = 'employees';
-
-    public const CONTACTS = [
-        self::CONTACT_EVERYONE,
-        self::CONTACT_PARTNERS,
-        self::CONTACT_FOLLOWERS,
-        self::CONTACT_EMPLOYEES,
-    ];
-
     protected $table = 'crm_mail_aliases';
 
     protected $fillable = [
@@ -30,6 +16,10 @@ class MailAlias extends Model
         'alias_name',
         'alias_domain',
         'alias_contact',
+    ];
+
+    protected $casts = [
+        'alias_contact' => MailAliasContact::class,
     ];
 
     public function team(): BelongsTo
@@ -67,7 +57,7 @@ class MailAlias extends Model
 
             $alias->alias_domain = static::normalizeDomain($alias->alias_domain);
 
-            $alias->alias_contact = in_array($alias->alias_contact, self::CONTACTS, true) ? $alias->alias_contact : self::CONTACT_EVERYONE;
+            $alias->alias_contact ??= MailAliasContact::EVERYONE;
         });
     }
 }

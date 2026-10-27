@@ -40,26 +40,6 @@ class RevealRulePolicy
         return $user->can('delete_any_crm_reveal::rule');
     }
 
-    public function forceDelete(User $user, RevealRule $revealRule): bool
-    {
-        return $user->can('force_delete_crm_reveal::rule');
-    }
-
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_crm_reveal::rule');
-    }
-
-    public function restore(User $user, RevealRule $revealRule): bool
-    {
-        return $user->can('restore_crm_reveal::rule');
-    }
-
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_crm_reveal::rule');
-    }
-
     public function reorder(User $user): bool
     {
         return $user->can('reorder_crm_reveal::rule');

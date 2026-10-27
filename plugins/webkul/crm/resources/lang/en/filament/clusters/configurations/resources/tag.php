@@ -39,15 +39,6 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags have been deleted successfully.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [

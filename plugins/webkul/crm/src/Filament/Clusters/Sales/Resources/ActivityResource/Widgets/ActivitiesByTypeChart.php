@@ -40,9 +40,9 @@ class ActivitiesByTypeChart extends ChartWidget
         $types = $activities->map(fn (Activity $activity): string => $activity->activityType?->name ?? '—')->unique()->sort()->values();
 
         $colors = [
-            ActivityDueStatus::Overdue->value => '#ef4444',
-            ActivityDueStatus::Today->value   => '#f59e0b',
-            ActivityDueStatus::Planned->value => '#22c55e',
+            ActivityDueStatus::OVERDUE->value => '#ef4444',
+            ActivityDueStatus::TODAY->value   => '#f59e0b',
+            ActivityDueStatus::PLANNED->value => '#22c55e',
         ];
 
         return [

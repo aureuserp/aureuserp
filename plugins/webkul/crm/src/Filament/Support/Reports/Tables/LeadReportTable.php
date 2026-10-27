@@ -15,71 +15,67 @@ class LeadReportTable
     {
         $currency = Report::getCurrencyCode();
 
-        $label = fn (string $key): string => __('crm::filament/clusters/reporting/report.table.columns.'.$key);
-
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label($label('name'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.name'))
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
                 TextColumn::make('type')
-                    ->label($label('type'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.type'))
                     ->badge()
-                    ->formatStateUsing(fn (Lead $record): string => $record->isLead() ? __('crm::models/lead.title') : __('crm::models/opportunity.title'))
-                    ->color(fn (Lead $record): string => $record->isLead() ? 'gray' : 'info')
                     ->toggleable(),
                 TextColumn::make('partner.name')
-                    ->label($label('customer'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.customer'))
                     ->searchable()
                     ->placeholder('—'),
                 TextColumn::make('stage.name')
-                    ->label($label('stage'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.stage'))
                     ->badge()
                     ->color(fn (Lead $record): string => $record->trashed() ? 'danger' : ($record->isWon() ? 'success' : 'primary'))
                     ->formatStateUsing(fn (Lead $record, ?string $state): ?string => $record->trashed() ? __('crm::filament/clusters/reporting/report.table.lost') : $state),
                 TextColumn::make('expected_revenue')
-                    ->label($label('expected-revenue'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.expected-revenue'))
                     ->money($currency)
                     ->sortable()
                     ->summarize(Sum::make()->money($currency)),
                 TextColumn::make('probability')
-                    ->label($label('probability'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.probability'))
                     ->numeric(decimalPlaces: 0)
                     ->suffix('%')
                     ->sortable(),
                 TextColumn::make('user.name')
-                    ->label($label('salesperson'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.salesperson'))
                     ->placeholder('—'),
                 TextColumn::make('team.name')
-                    ->label($label('team'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.team'))
                     ->placeholder('—'),
                 TextColumn::make('expected_closing_date')
-                    ->label($label('expected-closing'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.expected-closing'))
                     ->date()
                     ->sortable()
                     ->placeholder('—'),
                 TextColumn::make('created_at')
-                    ->label($label('created-at'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.created-at'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('closed_at')
-                    ->label($label('closed-at'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.closed-at'))
                     ->date()
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
                 TextColumn::make('lostReason.name')
-                    ->label($label('lost-reason'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.lost-reason'))
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('country.name')
-                    ->label($label('country'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.country'))
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('city')
-                    ->label($label('city'))
+                    ->label(__('crm::filament/clusters/reporting/report.table.columns.city'))
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

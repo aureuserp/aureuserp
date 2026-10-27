@@ -5,14 +5,13 @@ namespace Webkul\Crm\Services;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Throwable;
+use Webkul\Crm\Enums\AssignmentRuleMatch;
+use Webkul\Crm\Enums\AssignmentRuleOperator;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\Lead;
 
 class AssignmentRules
 {
-    public const MATCH_ALL = 'all';
-
-    public const MATCH_ANY = 'any';
-
     public const FIELDS = [
         'type'                  => 'choice',
         'name'                  => 'text',
@@ -40,16 +39,6 @@ class AssignmentRules
         'referred_by'           => 'text',
     ];
 
-    public const OPERATORS = [
-        'text'   => ['contains', 'not_contains', '=', '!=', 'starts_with', 'set', 'not_set'],
-        'number' => ['=', '!=', '>', '>=', '<', '<='],
-        'choice' => ['in', 'not_in', 'set', 'not_set'],
-        'tags'   => ['in', 'not_in', 'set', 'not_set'],
-        'date'   => ['>=', '<=', 'set', 'not_set'],
-    ];
-
-    public const VALUELESS_OPERATORS = ['set', 'not_set'];
-
     public static function matches(Lead $lead, ?array $rules): bool
     {
         $rules = static::normalize($rules);
@@ -60,7 +49,7 @@ class AssignmentRules
 
         $results = array_map(fn (array $condition): bool => static::conditionMatches($lead, $condition), $rules['conditions']);
 
-        return $rules['match'] === self::MATCH_ANY
+        return $rules['match'] === AssignmentRuleMatch::ANY->value
             ? in_array(true, $results, true)
             : ! in_array(false, $results, true);
     }
@@ -77,7 +66,7 @@ class AssignmentRules
             foreach ($rules['conditions'] as $condition) {
                 $query->where(
                     fn (Builder $query) => static::applyCondition($query, $condition),
-                    boolean: $rules['match'] === self::MATCH_ANY ? 'or' : 'and',
+                    boolean: $rules['match'] === AssignmentRuleMatch::ANY->value ? 'or' : 'and',
                 );
             }
         });
@@ -100,7 +89,7 @@ class AssignmentRules
         ];
 
         return [
-            'match'      => ($rules['match'] ?? null) === self::MATCH_ANY ? self::MATCH_ANY : self::MATCH_ALL,
+            'match'      => (AssignmentRuleMatch::tryFrom((string) ($rules['match'] ?? '')) ?? AssignmentRuleMatch::ALL)->value,
             'conditions' => array_values(array_filter(array_map(static::normalizeCondition(...), $conditions))),
         ];
     }
@@ -112,21 +101,21 @@ class AssignmentRules
 
     public static function operatorsFor(?string $field): array
     {
-        return self::OPERATORS[static::fieldType($field)] ?? [];
+        return AssignmentRuleOperator::forFieldType(static::fieldType($field));
     }
 
     protected static function normalizeCondition(array $condition): ?array
     {
         $field = $condition['field'] ?? null;
-        $operator = $condition['operator'] ?? null;
+        $operator = AssignmentRuleOperator::tryFrom((string) ($condition['operator'] ?? ''));
         $type = static::fieldType($field);
 
-        if (! $type || ! in_array($operator, self::OPERATORS[$type], true)) {
+        if (! $type || ! in_array($operator, AssignmentRuleOperator::forFieldType($type), true)) {
             return null;
         }
 
-        if (in_array($operator, self::VALUELESS_OPERATORS, true)) {
-            return ['field' => $field, 'operator' => $operator, 'value' => null];
+        if ($operator->isValueless()) {
+            return ['field' => $field, 'operator' => $operator->value, 'value' => null];
         }
 
         $value = $condition['value'] ?? null;
@@ -142,7 +131,7 @@ class AssignmentRules
             return null;
         }
 
-        return ['field' => $field, 'operator' => $operator, 'value' => $value];
+        return ['field' => $field, 'operator' => $operator->value, 'value' => $value];
     }
 
     protected static function normalizeDate(mixed $value): ?string
@@ -163,7 +152,7 @@ class AssignmentRules
         $values = array_filter((array) $value, fn (mixed $item): bool => is_scalar($item) && filled($item));
 
         $values = $field === 'type'
-            ? array_intersect(array_map('strval', $values), [Lead::TYPE_LEAD, Lead::TYPE_OPPORTUNITY])
+            ? array_intersect(array_map('strval', $values), array_keys(LeadType::options()))
             : array_map('intval', $values);
 
         return array_values(array_unique($values));
@@ -175,12 +164,12 @@ class AssignmentRules
 
         foreach (['lead_types' => 'type', 'country_ids' => 'country_id', 'tag_ids' => 'tag_ids', 'source_ids' => 'utm_source_id'] as $key => $field) {
             if (filled($rules[$key] ?? null)) {
-                $conditions[] = ['field' => $field, 'operator' => 'in', 'value' => $rules[$key]];
+                $conditions[] = ['field' => $field, 'operator' => AssignmentRuleOperator::IN->value, 'value' => $rules[$key]];
             }
         }
 
         if (filled($rules['min_priority'] ?? null)) {
-            $conditions[] = ['field' => 'priority', 'operator' => '>=', 'value' => $rules['min_priority']];
+            $conditions[] = ['field' => 'priority', 'operator' => AssignmentRuleOperator::GREATER_THAN_OR_EQUAL->value, 'value' => $rules['min_priority']];
         }
 
         return $conditions;
@@ -188,26 +177,27 @@ class AssignmentRules
 
     protected static function conditionMatches(Lead $lead, array $condition): bool
     {
-        ['field' => $field, 'operator' => $operator, 'value' => $value] = $condition;
+        ['field' => $field, 'value' => $value] = $condition;
+        $operator = AssignmentRuleOperator::from($condition['operator']);
 
         if (static::fieldType($field) === 'tags') {
             $tagIds = $lead->tags->pluck('id')->map(fn (mixed $id): int => (int) $id);
 
             return match ($operator) {
-                'in'      => $tagIds->intersect($value)->isNotEmpty(),
-                'not_in'  => $tagIds->intersect($value)->isEmpty(),
-                'set'     => $tagIds->isNotEmpty(),
-                'not_set' => $tagIds->isEmpty(),
+                AssignmentRuleOperator::IN      => $tagIds->intersect($value)->isNotEmpty(),
+                AssignmentRuleOperator::NOT_IN  => $tagIds->intersect($value)->isEmpty(),
+                AssignmentRuleOperator::SET     => $tagIds->isNotEmpty(),
+                AssignmentRuleOperator::NOT_SET => $tagIds->isEmpty(),
             };
         }
 
         $actual = $lead->getAttributes()[$field] ?? null;
 
-        if ($operator === 'set') {
+        if ($operator === AssignmentRuleOperator::SET) {
             return filled($actual);
         }
 
-        if ($operator === 'not_set') {
+        if ($operator === AssignmentRuleOperator::NOT_SET) {
             return blank($actual);
         }
 
@@ -216,54 +206,55 @@ class AssignmentRules
             'number' => static::compare($actual === null ? null : (float) $actual, $operator, (float) $value),
             'date'   => static::compare(blank($actual) ? null : Carbon::parse($actual)->toDateString(), $operator, $value),
             'choice' => match ($operator) {
-                'in'     => filled($actual) && in_array((string) $actual, array_map('strval', $value), true),
-                'not_in' => blank($actual) || ! in_array((string) $actual, array_map('strval', $value), true),
+                AssignmentRuleOperator::IN     => filled($actual) && in_array((string) $actual, array_map('strval', $value), true),
+                AssignmentRuleOperator::NOT_IN => blank($actual) || ! in_array((string) $actual, array_map('strval', $value), true),
             },
         };
     }
 
-    protected static function textMatches(mixed $actual, string $operator, string $value): bool
+    protected static function textMatches(mixed $actual, AssignmentRuleOperator $operator, string $value): bool
     {
         $actual = mb_strtolower(trim((string) $actual));
         $value = mb_strtolower($value);
 
         return match ($operator) {
-            'contains'     => str_contains($actual, $value),
-            'not_contains' => ! str_contains($actual, $value),
-            'starts_with'  => str_starts_with($actual, $value),
-            '='            => $actual === $value,
-            '!='           => $actual !== $value,
+            AssignmentRuleOperator::CONTAINS     => str_contains($actual, $value),
+            AssignmentRuleOperator::NOT_CONTAINS => ! str_contains($actual, $value),
+            AssignmentRuleOperator::STARTS_WITH  => str_starts_with($actual, $value),
+            AssignmentRuleOperator::EQUALS       => $actual === $value,
+            AssignmentRuleOperator::NOT_EQUALS   => $actual !== $value,
         };
     }
 
-    protected static function compare(float|string|null $actual, string $operator, float|string $value): bool
+    protected static function compare(float|string|null $actual, AssignmentRuleOperator $operator, float|string $value): bool
     {
         if ($actual === null) {
-            return $operator === '!=';
+            return $operator === AssignmentRuleOperator::NOT_EQUALS;
         }
 
         return match ($operator) {
-            '='  => $actual == $value,
-            '!=' => $actual != $value,
-            '>'  => $actual > $value,
-            '>=' => $actual >= $value,
-            '<'  => $actual < $value,
-            '<=' => $actual <= $value,
+            AssignmentRuleOperator::EQUALS                => $actual == $value,
+            AssignmentRuleOperator::NOT_EQUALS            => $actual != $value,
+            AssignmentRuleOperator::GREATER_THAN          => $actual > $value,
+            AssignmentRuleOperator::GREATER_THAN_OR_EQUAL => $actual >= $value,
+            AssignmentRuleOperator::LESS_THAN             => $actual < $value,
+            AssignmentRuleOperator::LESS_THAN_OR_EQUAL    => $actual <= $value,
         };
     }
 
     protected static function applyCondition(Builder $query, array $condition): void
     {
-        ['field' => $field, 'operator' => $operator, 'value' => $value] = $condition;
+        ['field' => $field, 'value' => $value] = $condition;
+        $operator = AssignmentRuleOperator::from($condition['operator']);
 
         if (static::fieldType($field) === 'tags') {
             $inTags = fn (Builder $query): Builder => $query->whereIn('crm_tags.id', $value);
 
             match ($operator) {
-                'in'      => $query->whereHas('tags', $inTags),
-                'not_in'  => $query->whereDoesntHave('tags', $inTags),
-                'set'     => $query->has('tags'),
-                'not_set' => $query->doesntHave('tags'),
+                AssignmentRuleOperator::IN      => $query->whereHas('tags', $inTags),
+                AssignmentRuleOperator::NOT_IN  => $query->whereDoesntHave('tags', $inTags),
+                AssignmentRuleOperator::SET     => $query->has('tags'),
+                AssignmentRuleOperator::NOT_SET => $query->doesntHave('tags'),
             };
 
             return;
@@ -271,7 +262,7 @@ class AssignmentRules
 
         $column = $query->getModel()->qualifyColumn($field);
 
-        if ($operator === 'set') {
+        if ($operator === AssignmentRuleOperator::SET) {
             $query->whereNotNull($column);
 
             if (static::fieldType($field) === 'text') {
@@ -281,7 +272,7 @@ class AssignmentRules
             return;
         }
 
-        if ($operator === 'not_set') {
+        if ($operator === AssignmentRuleOperator::NOT_SET) {
             $query->where(fn (Builder $query): Builder => static::fieldType($field) === 'text'
                 ? $query->whereNull($column)->orWhere($column, '')
                 : $query->whereNull($column));
@@ -293,19 +284,19 @@ class AssignmentRules
 
         match (static::fieldType($field)) {
             'text' => match ($operator) {
-                'contains'     => $query->where($column, 'like', '%'.$like($value).'%'),
-                'not_contains' => $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhere($column, 'not like', '%'.$like($value).'%')),
-                'starts_with'  => $query->where($column, 'like', $like($value).'%'),
-                '='            => $query->where($column, $value),
-                '!='           => $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhere($column, '!=', $value)),
+                AssignmentRuleOperator::CONTAINS     => $query->where($column, 'like', '%'.$like($value).'%'),
+                AssignmentRuleOperator::NOT_CONTAINS => $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhere($column, 'not like', '%'.$like($value).'%')),
+                AssignmentRuleOperator::STARTS_WITH  => $query->where($column, 'like', $like($value).'%'),
+                AssignmentRuleOperator::EQUALS       => $query->where($column, $value),
+                AssignmentRuleOperator::NOT_EQUALS   => $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhere($column, '!=', $value)),
             },
-            'number' => $operator === '!='
+            'number' => $operator === AssignmentRuleOperator::NOT_EQUALS
                 ? $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhere($column, '!=', $value))
-                : $query->where($column, $operator, $value),
-            'date'   => $query->whereDate($column, $operator, $value),
+                : $query->where($column, $operator->value, $value),
+            'date'   => $query->whereDate($column, $operator->value, $value),
             'choice' => match ($operator) {
-                'in'     => $query->whereIn($column, $value),
-                'not_in' => $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhereNotIn($column, $value)),
+                AssignmentRuleOperator::IN     => $query->whereIn($column, $value),
+                AssignmentRuleOperator::NOT_IN => $query->where(fn (Builder $query): Builder => $query->whereNull($column)->orWhereNotIn($column, $value)),
             },
         };
     }

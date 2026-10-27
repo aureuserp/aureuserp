@@ -47,14 +47,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'تم حذف المراحل',
-                    'body'  => 'تم حذف المراحل بنجاح.',
-                ],
-            ],
-        ],
     ],
 ];

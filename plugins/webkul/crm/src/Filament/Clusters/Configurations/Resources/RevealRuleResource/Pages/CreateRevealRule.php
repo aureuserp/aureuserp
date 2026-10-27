@@ -4,11 +4,11 @@ namespace Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResour
 
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 
 class CreateRevealRule extends CreateRecord
 {
-    use HasCrmClusterNavigation;
+    use HasCRMClusterNavigation;
 
     protected static string $resource = RevealRuleResource::class;
 

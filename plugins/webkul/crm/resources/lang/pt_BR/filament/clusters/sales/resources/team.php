@@ -28,4 +28,27 @@ return [
             ],
         ],
     ],
+
+    'grid' => [
+        'new-opportunities'  => '{1} :count nova oportunidade|[0,*] :count novas oportunidades',
+        'quotations'         => '{1} :count cotação|[0,*] :count cotações',
+        'configuration'      => 'Configuração',
+        'menu'               => 'Menu da equipe',
+        'open-opportunities' => '{1} :count oportunidade aberta|[0,*] :count oportunidades abertas',
+        'orders-to-invoice'  => '{1} :count pedido a faturar|[0,*] :count pedidos a faturar',
+        'chart'              => 'Novas oportunidades por semana',
+        'target-progress'    => 'Faturado este mês: :invoiced de :target',
+    ],
+
+    'grid-menu' => [
+        'view'          => 'Visualizar',
+        'reporting'     => 'Relatórios',
+        'leads'         => 'Leads',
+        'opportunities' => 'Oportunidades',
+        'quotations'    => 'Cotações',
+        'sales-orders'  => 'Pedidos de venda',
+        'forecast'      => 'Previsão',
+        'activities'    => 'Atividades',
+        'no-color'      => 'Sem cor',
+    ],
 ];

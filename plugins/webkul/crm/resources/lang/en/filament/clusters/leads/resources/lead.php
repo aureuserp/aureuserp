@@ -8,21 +8,19 @@ return [
         'title' => 'Leads',
     ],
 
-    'views' => [
-        'kanban' => 'Kanban',
-        'list'   => 'List',
-        'grid'   => 'Grid',
-    ],
-
     'global-search' => [
         'contact' => 'Contact',
         'company' => 'Company',
     ],
 
     'form' => [
+        'sections' => [
+            'general' => 'Lead',
+            'sales'   => 'Sales',
+        ],
+
         'tabs' => [
             'notes'      => 'Notes',
-            'extra-info' => 'Extra Info',
         ],
 
         'fieldsets' => [
@@ -116,21 +114,10 @@ return [
                 'action'     => 'Conversion action',
                 'duplicates' => 'Similar leads and opportunities to merge',
 
-                'action-options' => [
-                    'convert' => 'Convert to opportunity',
-                    'merge'   => 'Merge with existing opportunities',
-                ],
-
                 'customer'          => 'Customer',
                 'existing-customer' => 'Existing Customer',
                 'salesperson'       => 'Salesperson',
                 'team'              => 'Sales Team',
-
-                'customer-options' => [
-                    'create' => 'Create a new customer',
-                    'link'   => 'Link to an existing customer',
-                    'none'   => 'Do not link to a customer',
-                ],
             ],
 
             'notification' => [

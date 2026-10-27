@@ -8,10 +8,6 @@ return [
     ],
 
     'header-actions' => [
-        'kanban' => [
-            'label' => 'كانبان',
-        ],
-
         'create' => [
             'label' => 'فرصة جديدة',
 

@@ -8,16 +8,6 @@ return [
     ],
 
     'kanban' => [
-        'filters' => [
-            'salesperson' => 'Salesperson',
-            'team'        => 'Sales Team',
-            'period'      => 'Expected Closing',
-            'upcoming'    => 'Upcoming closings',
-            'all-dates'   => 'Any date',
-            'presets'     => 'Filters',
-            'all'         => 'All',
-        ],
-
         'empty-state' => [
             'heading'     => 'No opportunities to forecast',
             'description' => 'Set an expected closing date on your opportunities to see them here.',

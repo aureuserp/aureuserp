@@ -8,21 +8,19 @@ return [
         'title' => 'Leads',
     ],
 
-    'views' => [
-        'kanban' => 'Kanban',
-        'list'   => 'Lista',
-        'grid'   => 'Grade',
-    ],
-
     'global-search' => [
         'contact' => 'Contato',
         'company' => 'Empresa',
     ],
 
     'form' => [
+        'sections' => [
+            'general' => 'Lead',
+            'sales'   => 'Vendas',
+        ],
+
         'tabs' => [
             'notes'      => 'Notas',
-            'extra-info' => 'Informações extras',
         ],
 
         'fieldsets' => [
@@ -116,21 +114,10 @@ return [
                 'action'     => 'Ação de conversão',
                 'duplicates' => 'Leads e oportunidades semelhantes para mesclar',
 
-                'action-options' => [
-                    'convert' => 'Converter em oportunidade',
-                    'merge'   => 'Mesclar com oportunidades existentes',
-                ],
-
                 'customer'          => 'Cliente',
                 'existing-customer' => 'Cliente existente',
                 'salesperson'       => 'Vendedor',
                 'team'              => 'Equipe de vendas',
-
-                'customer-options' => [
-                    'create' => 'Criar um novo cliente',
-                    'link'   => 'Vincular a um cliente existente',
-                    'none'   => 'Não vincular a um cliente',
-                ],
             ],
 
             'notification' => [

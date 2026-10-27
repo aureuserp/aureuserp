@@ -9,13 +9,13 @@ use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ListTeams;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Tables\TeamsTable;
-use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
+use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
 use Webkul\Crm\Policies\TeamPolicy;
 use Webkul\Sale\Models\Team;
 
 class TeamResource extends Resource
 {
-    use HasCrmAuthorization;
+    use HasCRMAuthorization;
 
     protected static ?string $model = Team::class;
 
@@ -31,7 +31,7 @@ class TeamResource extends Resource
 
     protected static bool $isGloballySearchable = false;
 
-    public static function getCrmPolicy(): string
+    public static function getCRMPolicy(): string
     {
         return TeamPolicy::class;
     }

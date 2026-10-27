@@ -77,29 +77,6 @@ return [
             ],
         ],
 
-        'bulk-actions' => [
-            'restore' => [
-                'notification' => [
-                    'title' => 'تم استعادة خطط الأنشطة',
-                    'body'  => 'تم استعادة خطط الأنشطة بنجاح.',
-                ],
-            ],
-
-            'delete' => [
-                'notification' => [
-                    'title' => 'تم حذف خطط الأنشطة',
-                    'body'  => 'تم حذف خطط الأنشطة بنجاح.',
-                ],
-            ],
-
-            'force-delete' => [
-                'notification' => [
-                    'title' => 'تم حذف خطط الأنشطة نهائياً',
-                    'body'  => 'تم حذف خطط الأنشطة نهائياً بنجاح.',
-                ],
-            ],
-        ],
-
         'empty-state' => [
             'create' => [
                 'notification' => [

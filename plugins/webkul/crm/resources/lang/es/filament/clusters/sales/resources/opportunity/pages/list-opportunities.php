@@ -9,10 +9,6 @@ return [
         'create' => [
             'label' => 'Nueva oportunidad',
         ],
-
-        'kanban' => [
-            'label' => 'Kanban',
-        ],
     ],
 
     'tabs' => [

@@ -29,7 +29,7 @@ class ContactFormHandler
 
     public static function crmUsesLeads(): bool
     {
-        return static::crmAvailable() && (bool) app('Webkul\\Crm\\Settings\\CrmSettings')->use_leads;
+        return static::crmAvailable() && (bool) app('Webkul\\Crm\\Settings\\CRMSettings')->use_leads;
     }
 
     public static function actionOptions(): array

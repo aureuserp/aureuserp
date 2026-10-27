@@ -59,35 +59,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'restore' => [
-                'notification' => [
-                    'title' => 'Lost reasons restored',
-                    'body'  => 'The lost reasons have been restored successfully.',
-                ],
-            ],
-
-            'delete' => [
-                'label' => 'Archive',
-
-                'modal' => [
-                    'heading'     => 'Archive selected lost reasons',
-                    'description' => 'The selected lost reasons will move to the Archived tab. You can restore them at any time.',
-                ],
-
-                'notification' => [
-                    'title' => 'Lost reasons archived',
-                    'body'  => 'The lost reasons have been archived successfully.',
-                ],
-            ],
-
-            'force-delete' => [
-                'notification' => [
-                    'title' => 'Lost reasons deleted',
-                    'body'  => 'The lost reasons have been permanently deleted.',
-                ],
-            ],
-        ],
     ],
 ];

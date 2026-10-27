@@ -7,6 +7,8 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Validation\ValidationException;
+use Webkul\Crm\Enums\LeadConversionCustomer;
+use Webkul\Crm\Enums\QuotationPartnerAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
@@ -24,26 +26,21 @@ class NewQuotationAction extends Action
     {
         parent::setUp();
 
-        $label = fn (string $key): string => __('crm::filament/clusters/sales/resources/opportunity.actions.new-quotation.'.$key);
-
         $this
-            ->label($label('label'))
+            ->label(__('crm::filament/clusters/sales/resources/opportunity.actions.new-quotation.label'))
             ->icon('heroicon-o-document-plus')
             ->color('primary')
             ->visible(fn (Lead $record): bool => ! $record->isLead() && ! $record->trashed() && QuotationResource::canCreate())
             ->authorize(fn (Lead $record): bool => QuotationResource::canCreate() && OpportunityResource::canView($record))
-            ->modalHeading($label('modal-heading'))
-            ->modalDescription($label('modal-description'))
-            ->modalSubmitActionLabel($label('submit'))
+            ->modalHeading(__('crm::filament/clusters/sales/resources/opportunity.actions.new-quotation.modal-heading'))
+            ->modalDescription(__('crm::filament/clusters/sales/resources/opportunity.actions.new-quotation.modal-description'))
+            ->modalSubmitActionLabel(__('crm::filament/clusters/sales/resources/opportunity.actions.new-quotation.submit'))
             ->modalHidden(fn (Lead $record): bool => filled($record->partner_id))
             ->schema(fn (Lead $record): array => filled($record->partner_id) ? [] : [
                 Radio::make('customer')
                     ->label(__('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer'))
-                    ->options(array_intersect_key([
-                        'create' => __('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer-options.create'),
-                        'link'   => __('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer-options.link'),
-                        'none'   => __('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer-options.none'),
-                    ], array_flip(static::customerChoices($record))))
+                    ->options(collect(static::customerChoices($record))->mapWithKeys(fn (LeadConversionCustomer $choice): array => [$choice->value => $choice->getLabel()])->all())
+                    ->enum(LeadConversionCustomer::class)
                     ->default(static::customerChoices($record)[0])
                     ->required()
                     ->live(),
@@ -57,11 +54,11 @@ class NewQuotationAction extends Action
                         ->pluck('name', 'id')
                         ->all())
                     ->getOptionLabelUsing(fn ($value): ?string => ConvertToOpportunityAction::customersFor($record)->find($value)?->name)
-                    ->visible(fn (Get $get): bool => $get('customer') === 'link')
-                    ->required(fn (Get $get): bool => $get('customer') === 'link'),
+                    ->visible(fn (Get $get): bool => $get('customer') === LeadConversionCustomer::LINK)
+                    ->required(fn (Get $get): bool => $get('customer') === LeadConversionCustomer::LINK),
             ])
             ->action(function (Lead $record, array $data, Action $action): void {
-                $choice = $data['customer'] ?? 'none';
+                $choice = $data['customer'] ?? LeadConversionCustomer::NONE;
 
                 abort_unless(in_array($choice, static::customerChoices($record), true), 403);
 
@@ -69,15 +66,15 @@ class NewQuotationAction extends Action
 
                 if (! $hadCustomer) {
                     match ($choice) {
-                        'create' => $record->partner()->associate($record->createCustomer())->save(),
-                        'link'   => $this->linkCustomer($record, $data['partner_id'] ?? null),
-                        default  => null,
+                        LeadConversionCustomer::CREATE => $record->partner()->associate($record->createCustomer())->save(),
+                        LeadConversionCustomer::LINK   => $this->linkCustomer($record, $data['partner_id'] ?? null),
+                        default                        => null,
                     };
                 }
 
                 QuotationPartner::query()->create([
                     'opportunity_id' => $record->getKey(),
-                    'action'         => $hadCustomer ? QuotationPartner::ACTION_EXISTING : $choice,
+                    'action'         => $hadCustomer ? QuotationPartnerAction::EXISTING : QuotationPartnerAction::from($choice->value),
                     'partner_id'     => $record->partner_id,
                     'company_id'     => $record->company_id,
                 ]);
@@ -88,7 +85,7 @@ class NewQuotationAction extends Action
 
     public static function customerChoices(Lead $record): array
     {
-        return OpportunityResource::canEdit($record) ? ['create', 'link', 'none'] : ['none'];
+        return OpportunityResource::canEdit($record) ? LeadConversionCustomer::cases() : [LeadConversionCustomer::NONE];
     }
 
     protected function linkCustomer(Lead $record, mixed $partnerId): void

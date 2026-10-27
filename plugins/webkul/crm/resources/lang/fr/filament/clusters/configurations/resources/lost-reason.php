@@ -59,35 +59,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'restore' => [
-                'notification' => [
-                    'title' => 'Motifs de perte restaurés',
-                    'body'  => 'Les motifs de perte ont été restaurés avec succès.',
-                ],
-            ],
-
-            'delete' => [
-                'label' => 'Archiver',
-
-                'modal' => [
-                    'heading'     => 'Archiver les motifs de perte sélectionnés',
-                    'description' => 'Les motifs de perte sélectionnés seront déplacés dans l\'onglet Archivés. Vous pouvez les restaurer à tout moment.',
-                ],
-
-                'notification' => [
-                    'title' => 'Motifs de perte archivés',
-                    'body'  => 'Les motifs de perte ont été archivés avec succès.',
-                ],
-            ],
-
-            'force-delete' => [
-                'notification' => [
-                    'title' => 'Motifs de perte supprimés',
-                    'body'  => 'Les motifs de perte ont été définitivement supprimés.',
-                ],
-            ],
-        ],
     ],
 ];

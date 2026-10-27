@@ -4,12 +4,13 @@ namespace Webkul\Crm\Listeners;
 
 use Throwable;
 use Webkul\Crm\Services\VisitsToLeads;
+use Webkul\Website\Events\VisitorTracked;
 
 class CreateLeadFromVisitor
 {
     public function __construct(protected VisitsToLeads $visitsToLeads) {}
 
-    public function handle(object $event): void
+    public function handle(VisitorTracked $event): void
     {
         if (! VisitsToLeads::enabled()) {
             return;

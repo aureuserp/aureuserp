@@ -71,30 +71,28 @@ class ManageQuotations extends ManageRelatedRecords
 
     public function table(Table $table): Table
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/sales/resources/opportunity.quotations.columns.'.$key);
-
         return $table
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['partner', 'user', 'currency']))
             ->columns([
                 TextColumn::make('name')
-                    ->label($label('number'))
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.quotations.columns.number'))
                     ->searchable()
                     ->weight('bold'),
                 TextColumn::make('date_order')
-                    ->label($label('date'))
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.quotations.columns.date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('partner.name')
-                    ->label($label('customer')),
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.quotations.columns.customer')),
                 TextColumn::make('user.name')
-                    ->label($label('salesperson'))
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.quotations.columns.salesperson'))
                     ->placeholder('—'),
                 TextColumn::make('amount_total')
-                    ->label($label('total'))
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.quotations.columns.total'))
                     ->money(fn (Quotation $record): ?string => $record->currency?->code)
                     ->sortable(),
                 TextColumn::make('state')
-                    ->label($label('status'))
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.quotations.columns.status'))
                     ->badge(),
             ])
             ->defaultSort('id', 'desc')

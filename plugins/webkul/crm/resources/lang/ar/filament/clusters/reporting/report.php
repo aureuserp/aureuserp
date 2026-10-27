@@ -12,24 +12,13 @@ return [
 
     'chart' => [
         'heading' => ':measure حسب :group',
-
-        'types' => [
-            'bar'  => 'أعمدة',
-            'line' => 'خطي',
-            'pie'  => 'دائري',
-        ],
     ],
 
     'filters' => [
-        'clear'          => 'مسح عوامل التصفية',
-        'heading'        => 'عوامل التصفية',
-        'reset'          => 'إعادة تعيين',
         'measure'        => 'المقياس',
-        'group-by'       => 'تجميع حسب',
         'split-by'       => 'تقسيم حسب',
         'no-split'       => 'بدون تقسيم',
         'chart-type'     => 'المخطط',
-        'quick-filters'  => 'عوامل التصفية',
         'salespeople'    => 'مندوبو المبيعات',
         'teams'          => 'فرق المبيعات',
     ],
@@ -87,7 +76,6 @@ return [
         'lost' => 'خاسرة',
 
         'columns' => [
-            'group'            => '',
             'name'             => 'الاسم',
             'type'             => 'النوع',
             'customer'         => 'العميل',
@@ -115,5 +103,15 @@ return [
     'empty-state' => [
         'heading'     => 'لا توجد بيانات بعد',
         'description' => 'جرّب إزالة بعض عوامل التصفية.',
+    ],
+
+    'tabs' => [
+        'leads'         => 'العملاء المحتملون',
+        'opportunities' => 'الفرص',
+        'mine'          => 'الخاصة بي',
+        'won'           => 'المكسوبة',
+        'lost'          => 'المفقودة',
+        'my-activities' => 'أنشطتي',
+        'this-month'    => 'هذا الشهر',
     ],
 ];

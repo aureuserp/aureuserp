@@ -5,6 +5,8 @@ namespace Webkul\Crm\Services;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Webkul\Crm\Enums\LeadConversionAction;
+use Webkul\Crm\Enums\LeadConversionCustomer;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\LeadConversion;
@@ -18,7 +20,7 @@ class LeadConverter
     public function convert(Lead $lead, array $options, ?Collection $duplicates = null): LeadConversion
     {
         return DB::transaction(function () use ($lead, $options, $duplicates): LeadConversion {
-            $duplicates = ($options['action'] ?? LeadConversion::ACTION_CONVERT) === LeadConversion::ACTION_MERGE
+            $duplicates = ($options['action'] ?? LeadConversionAction::CONVERT) === LeadConversionAction::MERGE
                 ? ($duplicates ?? collect())->reject(fn (Lead $record): bool => $record->is($lead))->values()
                 : collect();
 
@@ -29,8 +31,8 @@ class LeadConverter
                 'original_lead_id' => $lead->getKey(),
                 'lead_name'        => $lead->name,
                 'opportunity_id'   => $opportunity->getKey(),
-                'action'           => $merged->isNotEmpty() ? LeadConversion::ACTION_MERGE : LeadConversion::ACTION_CONVERT,
-                'customer'         => $options['customer'] ?? LeadConversion::CUSTOMER_NONE,
+                'action'           => $merged->isNotEmpty() ? LeadConversionAction::MERGE : LeadConversionAction::CONVERT,
+                'customer'         => $options['customer'] ?? LeadConversionCustomer::NONE,
                 'partner_id'       => $opportunity->partner_id,
                 'user_id'          => $opportunity->user_id,
                 'team_id'          => $opportunity->team_id,
@@ -53,10 +55,10 @@ class LeadConverter
             $salespeople = array_values(array_unique(array_map('intval', array_filter((array) ($options['salespeople'] ?? [])))));
             $deduplicate = (bool) ($options['deduplicate'] ?? false);
             $forceAssignment = (bool) ($options['force_assignment'] ?? false);
-            $customer = $options['customer'] ?? LeadConversion::CUSTOMER_NONE;
+            $customer = $options['customer'] ?? LeadConversionCustomer::NONE;
 
             $massConversion = LeadMassConversion::query()->create([
-                'action'           => $deduplicate ? LeadConversion::ACTION_MERGE : LeadConversion::ACTION_CONVERT,
+                'action'           => $deduplicate ? LeadConversionAction::MERGE : LeadConversionAction::CONVERT,
                 'customer'         => $customer,
                 'deduplicate'      => $deduplicate,
                 'force_assignment' => $forceAssignment,
@@ -94,7 +96,7 @@ class LeadConverter
                 $duplicates = $deduplicate && $duplicatesFor ? $duplicatesFor($lead) : collect();
 
                 [$opportunity, $merged] = $this->convertOne($lead, [
-                    'customer'   => $customer === LeadConversion::CUSTOMER_NONE ? LeadConversion::CUSTOMER_NONE : LeadConversion::CUSTOMER_LINK,
+                    'customer'   => $customer === LeadConversionCustomer::NONE ? LeadConversionCustomer::NONE : LeadConversionCustomer::LINK,
                     'partner_id' => $this->massCustomerFor($lead, $customer),
                     'user_id'    => $userId,
                     'team_id'    => filled($options['team_id'] ?? null) ? $options['team_id'] : $lead->team_id,
@@ -130,9 +132,9 @@ class LeadConverter
         return [$opportunity->refresh(), $merged];
     }
 
-    protected function massCustomerFor(Lead $lead, string $customer): ?int
+    protected function massCustomerFor(Lead $lead, LeadConversionCustomer $customer): ?int
     {
-        if ($customer === LeadConversion::CUSTOMER_NONE || filled($lead->partner_id)) {
+        if ($customer === LeadConversionCustomer::NONE || filled($lead->partner_id)) {
             return $lead->partner_id;
         }
 
@@ -140,7 +142,7 @@ class LeadConverter
             ? ConvertToOpportunityAction::customersFor($lead)->whereRaw('LOWER(email) = ?', [mb_strtolower(trim($lead->email))])->orderBy('id')->value('id')
             : null;
 
-        if ($existing || $customer === LeadConversion::CUSTOMER_LINK) {
+        if ($existing || $customer === LeadConversionCustomer::LINK) {
             return $existing;
         }
 

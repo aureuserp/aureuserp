@@ -5,11 +5,11 @@ namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\MailServerResource\Pages\ManageMailServers;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\MailServerResource\Schemas\MailServerForm;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\MailServerResource\Tables\MailServersTable;
 use Webkul\Crm\Models\MailServer;
+use Webkul\Support\Filament\Clusters\Settings;
 
 class MailServerResource extends Resource
 {
@@ -17,7 +17,7 @@ class MailServerResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-inbox-stack';
 
-    protected static ?string $cluster = Configurations::class;
+    protected static ?string $cluster = Settings::class;
 
     protected static ?int $navigationSort = 1;
 

@@ -6,12 +6,13 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
-use Webkul\Crm\Filament\Concerns\HasCrmTableViews;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
+use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class ListActivities extends ListRecords
 {
-    use HasCrmTableViews;
+    use HasCRMTableViews;
 
     protected static string $resource = ActivityResource::class;
 
@@ -25,9 +26,16 @@ class ListActivities extends ListRecords
         return __('crm::filament/clusters/sales/resources/activity.views.list');
     }
 
+    public function getRecordNavigationTabs(): array
+    {
+        return ActivityResource::getViewTabs('index');
+    }
+
     protected function getHeaderActions(): array
     {
-        return ActivityResource::getViewSwitcherActions('list');
+        return [
+            ScheduleActivityAction::make(),
+        ];
     }
 
     public function getPresetTableViews(): array

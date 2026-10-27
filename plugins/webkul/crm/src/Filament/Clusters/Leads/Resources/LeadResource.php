@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources;
 
-use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -14,21 +13,21 @@ use Webkul\Crm\Filament\Clusters\Leads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\CreateLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\EditLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
+use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ManageActivities;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Schemas\LeadForm;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Schemas\LeadInfolist;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Tables\LeadsTable;
-use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
-use Webkul\Crm\Filament\RelationManagers\ActivitiesRelationManager;
+use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
 use Webkul\Crm\Filament\Support\SimilarLeads as SimilarLeadsNavigation;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Policies\LeadRecordPolicy;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 
 class LeadResource extends Resource
 {
-    use HasCrmAuthorization;
+    use HasCRMAuthorization;
 
     protected static ?string $model = Lead::class;
 
@@ -42,14 +41,14 @@ class LeadResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function getCrmPolicy(): string
+    public static function getCRMPolicy(): string
     {
         return LeadRecordPolicy::class;
     }
 
     public static function isQualificationStepEnabled(): bool
     {
-        return (bool) app(CrmSettings::class)->use_leads;
+        return (bool) app(CRMSettings::class)->use_leads;
     }
 
     public static function canViewAny(): bool
@@ -114,13 +113,6 @@ class LeadResource extends Resource
         return LeadsTable::configure($table);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            ActivitiesRelationManager::class,
-        ];
-    }
-
     public static function getRecordSubNavigation(Page $page): array
     {
         return [
@@ -128,6 +120,7 @@ class LeadResource extends Resource
                 ViewLead::class,
                 EditLead::class,
             ]),
+            ...ManageActivities::navigationItems($page),
             ...SimilarLeadsNavigation::navigationItems($page, SimilarLeads::class),
         ];
     }
@@ -135,24 +128,12 @@ class LeadResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => ListLeads::route('/'),
-            'create'  => CreateLead::route('/create'),
-            'view'    => ViewLead::route('/{record}'),
-            'edit'    => EditLead::route('/{record}/edit'),
-            'similar' => SimilarLeads::route('/{record}/similar'),
+            'index'      => ListLeads::route('/'),
+            'create'     => CreateLead::route('/create'),
+            'view'       => ViewLead::route('/{record}'),
+            'edit'       => EditLead::route('/{record}/edit'),
+            'similar'    => SimilarLeads::route('/{record}/similar'),
+            'activities' => ManageActivities::route('/{record}/activities'),
         ];
-    }
-
-    public static function getViewSwitcherActions(string $currentLayout): array
-    {
-        return collect(ListLeads::LAYOUTS)
-            ->map(fn (string $icon, string $layout): Action => Action::make($layout.'Layout')
-                ->label(__('crm::filament/clusters/leads/resources/lead.views.'.$layout))
-                ->icon($icon)
-                ->color($layout === $currentLayout ? 'primary' : 'gray')
-                ->outlined($layout !== $currentLayout)
-                ->url(fn (): string => static::getUrl('index', $layout === ListLeads::DEFAULT_LAYOUT ? [] : ['layout' => $layout])))
-            ->values()
-            ->all();
     }
 }

@@ -16,6 +16,15 @@ class Sql
         };
     }
 
+    public static function text(string $expression): string
+    {
+        return match (DB::connection()->getDriverName()) {
+            'sqlsrv'           => "cast({$expression} as nvarchar(255))",
+            'mysql', 'mariadb' => "cast({$expression} as char)",
+            default            => "cast({$expression} as text)",
+        };
+    }
+
     public static function daysBetween(string $from, string $to): string
     {
         return match (DB::connection()->getDriverName()) {

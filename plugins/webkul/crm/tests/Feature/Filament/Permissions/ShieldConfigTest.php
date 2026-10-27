@@ -17,22 +17,22 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\Activi
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
     $this->shield = require __DIR__.'/../../../../config/filament-shield.php';
 });
 
 /**
- * The policy that authorizes a CRM resource: its `getCrmPolicy()` for resources that reuse
+ * The policy that authorizes a CRM resource: its `getCRMPolicy()` for resources that reuse
  * another plugin's model, otherwise the policy Laravel resolves for the resource model.
  */
 function crmShieldPolicyFor(string $resource): object
 {
-    if (method_exists($resource, 'getCrmPolicy')) {
-        return app($resource::getCrmPolicy());
+    if (method_exists($resource, 'getCRMPolicy')) {
+        return app($resource::getCRMPolicy());
     }
 
     $policy = Gate::getPolicyFor($resource::getModel());
@@ -57,7 +57,7 @@ it('has a policy method for every ability of every managed crm resource', functi
 
 it('only lists abilities known to the permission affixes', function () {
     foreach ($this->shield['resources']['manage'] as $resource => $abilities) {
-        expect($abilities)->each->toBeIn(CrmTestHelper::ALL_AFFIXES)
+        expect($abilities)->each->toBeIn(CRMHelper::ALL_AFFIXES)
             ->and(array_unique($abilities))->toHaveCount(count($abilities));
     }
 });

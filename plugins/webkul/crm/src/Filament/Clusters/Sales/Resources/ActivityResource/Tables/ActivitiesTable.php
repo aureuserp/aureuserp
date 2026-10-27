@@ -16,8 +16,14 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Enums\ActivityDueStatus;
+use Webkul\Crm\Filament\Actions\RecordBulkActions;
+use Webkul\Crm\Filament\Actions\SendLeadEmailAction;
+use Webkul\Crm\Filament\Actions\SendLeadSMSAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\MarkActivitiesAsDoneBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\MarkActivityAsDoneAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\RescheduleActivityAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\SnoozeActivityAction;
+use Webkul\Crm\Filament\Exports\ActivityExporter;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Activity;
@@ -100,6 +106,17 @@ class ActivitiesTable
             ])
             ->recordUrl(fn (Activity $record): ?string => $withinRecord ? null : LeadResourceResolver::viewUrl($record->lead))
             ->recordActions([
+                SendLeadEmailAction::make()
+                    ->label(__('crm::filament/lead-actions.send-email.short-label'))
+                    ->color('primary')
+                    ->link(),
+                SendLeadSMSAction::make()
+                    ->label(__('crm::filament/lead-actions.send-sms.short-label'))
+                    ->color('primary')
+                    ->link(),
+                SnoozeActivityAction::make()
+                    ->color('primary')
+                    ->link(),
                 MarkActivityAsDoneAction::make()
                     ->iconButton()
                     ->tooltip(__('crm::filament/clusters/sales/resources/activity.actions.done.label')),
@@ -124,14 +141,21 @@ class ActivitiesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label(__('crm::filament/clusters/sales/resources/activity.actions.cancel.bulk-label'))
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/sales/resources/activity.actions.cancel.notification.title'))
-                                ->body(__('crm::filament/clusters/sales/resources/activity.actions.cancel.notification.body')),
-                        ),
+                    BulkActionGroup::make([
+                        RecordBulkActions::export(ActivityExporter::class),
+                        DeleteBulkAction::make()
+                            ->label(__('crm::filament/clusters/sales/resources/activity.actions.cancel.bulk-label'))
+                            ->icon('heroicon-o-x-circle')
+                            ->successNotification(
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('crm::filament/clusters/sales/resources/activity.actions.cancel.notification.title'))
+                                    ->body(__('crm::filament/clusters/sales/resources/activity.actions.cancel.notification.body')),
+                            ),
+                    ])->dropdown(false),
+                    BulkActionGroup::make([
+                        MarkActivitiesAsDoneBulkAction::make(),
+                    ])->dropdown(false),
                 ]),
             ])
             ->emptyStateHeading(__('crm::filament/clusters/sales/resources/activity.table.empty-state.heading'))

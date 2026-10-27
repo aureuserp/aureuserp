@@ -14,28 +14,6 @@ return [
         'contact'             => 'Accepter les e-mails de',
     ],
 
-    'alias-contacts' => [
-        'everyone'  => 'Tout le monde',
-        'partners'  => 'Partenaires authentifiés',
-        'followers' => 'Abonnés uniquement',
-        'employees' => 'Employés authentifiés',
-    ],
-
-    'alias-contacts-help' => [
-        'everyone'  => 'Toute adresse e-mail peut créer une piste.',
-        'partners'  => 'Uniquement les adresses de contacts ou d\'utilisateurs existants.',
-        'followers' => 'Uniquement le responsable et les membres de l\'équipe.',
-        'employees' => 'Uniquement les adresses d\'utilisateurs ou d\'employés.',
-    ],
-
-    'statuses' => [
-        'lead_created' => 'Piste créée',
-        'reply_added'  => 'Ajouté à la piste',
-        'rejected'     => 'Rejeté',
-        'ignored'      => 'Ignoré',
-        'failed'       => 'Échec',
-    ],
-
     'reasons' => [
         'no-sender'   => 'L\'e-mail n\'a pas d\'adresse d\'expéditeur valide.',
         'auto-reply'  => 'Réponse automatique (absence, rebond ou liste de diffusion).',

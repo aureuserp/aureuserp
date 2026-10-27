@@ -80,7 +80,8 @@ return [
         ],
 
         'done' => [
-            'label' => 'Marquer comme terminée',
+            'label'             => 'Marquer comme terminée',
+            'bulk-notification' => ':count activité(s) marquée(s) comme terminée(s).',
 
             'modal' => [
                 'heading' => 'Marquer l\'activité comme terminée',
@@ -95,6 +96,11 @@ return [
                 'title' => 'Activité terminée',
                 'body'  => 'L\'activité a été marquée comme terminée et consignée sur l\'opportunité.',
             ],
+        ],
+
+        'snooze' => [
+            'label'        => 'Reporter :days j',
+            'notification' => 'Activité reportée jusqu\'au :date.',
         ],
 
         'reschedule' => [

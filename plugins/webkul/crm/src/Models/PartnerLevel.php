@@ -34,7 +34,7 @@ class PartnerLevel extends Model
 
     public function partners(): HasMany
     {
-        return $this->hasMany(CrmPartner::class, 'level_id');
+        return $this->hasMany(CRMPartner::class, 'level_id');
     }
 
     protected static function booted(): void

@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'model-label'        => 'Regra de visitas em leads',
-    'plural-model-label' => 'Regras de visitas em leads',
+    'model-label'        => 'Regra de visitantes em leads',
+    'plural-model-label' => 'Regras de visitantes em leads',
 
     'navigation' => [
-        'title' => 'Regras de visitas em leads',
+        'title' => 'Regras de visitantes em leads',
         'group' => 'Geração de leads',
     ],
 
@@ -31,8 +31,6 @@ return [
         'company'                  => 'Empresa',
         'company-helper'           => 'Vazio = a empresa do cliente ou a primeira empresa ativa.',
         'lead-for'                 => 'Rastreamento de dados',
-        'lead-for-companies'       => 'Empresas',
-        'lead-for-people'          => 'Empresas e seus contatos',
         'industries'               => 'Setores',
         'industries-helper'        => 'Digite um nome para adicionar um setor.',
         'filter-on-size'           => 'Filtrar por porte',
@@ -41,8 +39,6 @@ return [
         'employees'                => 'funcionários',
         'gdpr'                     => 'Verifique se você precisa cumprir a LGPD/GDPR para armazenar dados pessoais.',
         'contact-filter'           => 'Filtrar contatos por',
-        'contact-filter-role'      => 'Função',
-        'contact-filter-seniority' => 'Senioridade',
         'extra-contacts'           => 'Número de contatos',
         'extra-contacts-helper'    => 'De 1 a 5 contatos por empresa.',
         'preferred-role'           => 'Função preferida',
@@ -52,9 +48,11 @@ return [
         'sections' => [
             'traffic'          => 'Condições de tráfego do site',
             'generation'       => 'Condições de geração de oportunidades',
+            'lead-generation'  => 'Condições de geração de leads',
             'contact-filter'   => 'Filtro de contatos',
             'lead-data'        => 'Dados do lead',
             'opportunity-data' => 'Dados da oportunidade',
+            'settings'         => 'Configurações',
         ],
     ],
 
@@ -70,5 +68,19 @@ return [
         'leads'         => 'Leads',
         'opportunities' => 'Oportunidades',
         'active'        => 'Ativa',
+    ],
+
+    'pages' => [
+        'leads' => [
+            'navigation' => 'Leads gerados',
+            'title'      => 'Leads gerados: :rule',
+
+            'columns' => [
+                'name'       => 'Nome',
+                'country'    => 'País',
+                'stage'      => 'Etapa',
+                'created-at' => 'Criado em',
+            ],
+        ],
     ],
 ];

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
@@ -12,9 +13,9 @@ use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function activityLogReportType(string $name): ActivityType
 {
@@ -31,7 +32,7 @@ function activityLogReportType(string $name): ActivityType
 function activityLogReportUser(): User
 {
     return User::withoutEvents(fn (): User => User::factory()->create([
-        'default_company_id' => CrmTestHelper::companyId(),
+        'default_company_id' => CRMHelper::companyId(),
         'is_active'          => true,
     ]));
 }
@@ -95,11 +96,11 @@ function activityLogReportTotals(array $result): array
 
 describe('logging', function () {
     it('logs an activity marked as done, with the lead details at that moment', function () {
-        $user = CrmTestHelper::actingAs([]);
+        $user = CRMHelper::actingAs([]);
 
-        $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+        $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
         $stage = Stage::factory()->create(['name' => 'Activity Log Stage']);
-        $lead = CrmTestHelper::opportunity(['team_id' => $team->id, 'stage_id' => $stage->id]);
+        $lead = CRMHelper::opportunity(['team_id' => $team->id, 'stage_id' => $stage->id]);
         $type = activityLogReportType('Log Test Call');
 
         $activity = activityLogReportSchedule($lead, $type, 'Discuss the contract');
@@ -107,14 +108,14 @@ describe('logging', function () {
 
         $log = ActivityLog::query()->where('lead_id', $lead->id)->sole();
 
-        expect($log->lead_type)->toBe(Lead::TYPE_OPPORTUNITY)
+        expect($log->lead_type)->toBe(LeadType::OPPORTUNITY)
             ->and($log->activity_type_id)->toBe($type->id)
             ->and($log->assigned_to)->toBe($user->id)
             ->and($log->done_by)->toBe($user->id)
             ->and($log->user_id)->toBe($lead->user_id)
             ->and($log->team_id)->toBe($team->id)
             ->and($log->stage_id)->toBe($stage->id)
-            ->and($log->company_id)->toBe(CrmTestHelper::companyId())
+            ->and($log->company_id)->toBe(CRMHelper::companyId())
             ->and($log->summary)->toBe('Discuss the contract')
             ->and($log->note)->toStartWith('Log Test Call done')
             ->and($log->done_at)->not->toBeNull()
@@ -122,19 +123,19 @@ describe('logging', function () {
     });
 
     it('logs activities done on leads with the lead type', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::lead();
+        $lead = CRMHelper::lead();
 
         activityLogReportSchedule($lead, activityLogReportType('Log Lead Email'))->markAsDone();
 
-        expect(ActivityLog::query()->where('lead_id', $lead->id)->sole()->lead_type)->toBe(Lead::TYPE_LEAD);
+        expect(ActivityLog::query()->where('lead_id', $lead->id)->sole()->lead_type)->toBe(LeadType::LEAD);
     });
 
     it('does not log a cancelled activity', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
 
         $activity = activityLogReportSchedule($lead, activityLogReportType('Log Cancelled Call'));
         $activity->delete();
@@ -144,9 +145,9 @@ describe('logging', function () {
     });
 
     it('keeps the salesperson of the moment even after the lead is reassigned', function () {
-        $user = CrmTestHelper::actingAs([]);
+        $user = CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
 
         activityLogReportSchedule($lead, activityLogReportType('Log Reassigned Call'))->markAsDone();
 
@@ -160,9 +161,9 @@ describe('logging', function () {
 
 describe('counting', function () {
     it('counts only completed activities, never cancelled or still scheduled ones', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
         $type = activityLogReportType('Count Test Call');
 
         activityLogReportSchedule($lead, $type, 'First done')->markAsDone();
@@ -178,9 +179,9 @@ describe('counting', function () {
     });
 
     it('builds the default graph: completion month split by activity type', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
         $call = activityLogReportType('Default Graph Call');
         $email = activityLogReportType('Default Graph Email');
 
@@ -214,12 +215,12 @@ describe('counting', function () {
 
 describe('presets', function () {
     it('applies the quick filter', function (string $preset, array $expected) {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $other = activityLogReportUser();
 
-        $opportunity = CrmTestHelper::opportunity();
-        $lead = CrmTestHelper::lead();
+        $opportunity = CRMHelper::opportunity();
+        $lead = CRMHelper::lead();
 
         $logs = [
             'recent mine opportunity' => activityLogReportLog($opportunity, ['done_at' => now()->subMonth()]),
@@ -249,11 +250,11 @@ describe('presets', function () {
     });
 
     it('filters by the salesperson and team recorded on the log', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $other = activityLogReportUser();
-        $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-        $lead = CrmTestHelper::opportunity();
+        $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
+        $lead = CRMHelper::opportunity();
 
         $mine = activityLogReportLog($lead, ['team_id' => $team->id]);
         $theirs = activityLogReportLog($lead, ['user_id' => $other->id, 'team_id' => null]);
@@ -267,9 +268,9 @@ describe('presets', function () {
 
 describe('grouping', function () {
     it('groups by activity type', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
         $call = activityLogReportType('Group Call');
         $meeting = activityLogReportType('Group Meeting');
 
@@ -285,10 +286,10 @@ describe('grouping', function () {
     });
 
     it('groups by salesperson', function () {
-        $user = CrmTestHelper::actingAs([]);
+        $user = CRMHelper::actingAs([]);
 
         $other = activityLogReportUser();
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
 
         activityLogReportLog($lead);
         activityLogReportLog($lead, ['user_id' => $other->id]);
@@ -303,11 +304,11 @@ describe('grouping', function () {
     });
 
     it('groups by stage in the pipeline order', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $earlier = Stage::factory()->create(['name' => 'Group Stage Earlier']);
         $later = Stage::factory()->create(['name' => 'Group Stage Later']);
-        $lead = CrmTestHelper::opportunity();
+        $lead = CRMHelper::opportunity();
 
         activityLogReportLog($lead, ['stage_id' => $later->id]);
         activityLogReportLog($lead, ['stage_id' => $earlier->id]);
@@ -320,11 +321,11 @@ describe('grouping', function () {
     });
 
     it('groups by the expected closing month of the lead', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $may = CrmTestHelper::opportunity(['expected_closing_date' => '2026-05-10']);
-        $august = CrmTestHelper::opportunity(['expected_closing_date' => '2026-08-01']);
-        $undated = CrmTestHelper::opportunity(['expected_closing_date' => null]);
+        $may = CRMHelper::opportunity(['expected_closing_date' => '2026-05-10']);
+        $august = CRMHelper::opportunity(['expected_closing_date' => '2026-08-01']);
+        $undated = CRMHelper::opportunity(['expected_closing_date' => null]);
 
         activityLogReportLog($may);
         activityLogReportLog($may);
@@ -338,9 +339,9 @@ describe('grouping', function () {
     });
 
     it('reads the lead expected closing date live, not from the log', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity(['expected_closing_date' => '2026-05-10']);
+        $lead = CRMHelper::opportunity(['expected_closing_date' => '2026-05-10']);
 
         activityLogReportLog($lead);
 
@@ -352,10 +353,10 @@ describe('grouping', function () {
     });
 
     it('groups by the record type the activity was done on', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $opportunity = CrmTestHelper::opportunity();
-        $lead = CrmTestHelper::lead();
+        $opportunity = CRMHelper::opportunity();
+        $lead = CRMHelper::lead();
 
         activityLogReportLog($opportunity);
         activityLogReportLog($lead);

@@ -8,21 +8,19 @@ return [
         'title' => 'Pistes',
     ],
 
-    'views' => [
-        'kanban' => 'Kanban',
-        'list'   => 'Liste',
-        'grid'   => 'Grille',
-    ],
-
     'global-search' => [
         'contact' => 'Contact',
         'company' => 'Société',
     ],
 
     'form' => [
+        'sections' => [
+            'general' => 'Piste',
+            'sales'   => 'Ventes',
+        ],
+
         'tabs' => [
             'notes'      => 'Notes',
-            'extra-info' => 'Informations complémentaires',
         ],
 
         'fieldsets' => [
@@ -116,21 +114,10 @@ return [
                 'action'     => 'Action de conversion',
                 'duplicates' => 'Pistes et opportunités similaires à fusionner',
 
-                'action-options' => [
-                    'convert' => 'Convertir en opportunité',
-                    'merge'   => 'Fusionner avec des opportunités existantes',
-                ],
-
                 'customer'          => 'Client',
                 'existing-customer' => 'Client existant',
                 'salesperson'       => 'Vendeur',
                 'team'              => 'Équipe commerciale',
-
-                'customer-options' => [
-                    'create' => 'Créer un nouveau client',
-                    'link'   => 'Lier à un client existant',
-                    'none'   => 'Ne pas lier à un client',
-                ],
             ],
 
             'notification' => [

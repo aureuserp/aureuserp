@@ -3,6 +3,7 @@
 use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
@@ -13,9 +14,9 @@ use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Models\Stage;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 /**
  * Two of the current user's opportunities in one stage and one in another, filtered to that user only.
@@ -27,10 +28,10 @@ function reportChartFixture(): array
     $firstStage = Stage::factory()->create(['name' => 'Chart Stage Alpha']);
     $secondStage = Stage::factory()->create(['name' => 'Chart Stage Beta']);
 
-    CrmTestHelper::opportunity(['stage_id' => $firstStage->id]);
-    CrmTestHelper::opportunity(['stage_id' => $firstStage->id]);
-    CrmTestHelper::lead(['stage_id' => $secondStage->id]);
-    CrmTestHelper::opportunity(['stage_id' => $secondStage->id]);
+    CRMHelper::opportunity(['stage_id' => $firstStage->id]);
+    CRMHelper::opportunity(['stage_id' => $firstStage->id]);
+    CRMHelper::lead(['stage_id' => $secondStage->id]);
+    CRMHelper::opportunity(['stage_id' => $secondStage->id]);
 
     return [$firstStage, $secondStage, [
         'measure'  => 'count',
@@ -42,7 +43,7 @@ function reportChartFixture(): array
 }
 
 it('renders for each report resource with the page filters', function (string $resource, string $permission) {
-    CrmTestHelper::actingAs([$permission]);
+    CRMHelper::actingAs([$permission]);
 
     /** @var class-string<Report> $report */
     $report = $resource::getReport();
@@ -68,12 +69,12 @@ it('only accepts the four report resources', function () {
 });
 
 it('aborts when mounted with a class that is not a report resource', function (string $resource) {
-    CrmTestHelper::actingAs([
+    CRMHelper::actingAs([
         'view_any_crm_forecast',
         'view_any_crm_pipeline::analysis',
         'view_any_crm_lead::analysis',
         'view_any_crm_activity::analysis',
-        ...CrmTestHelper::permissionsFor(['lead', 'opportunity']),
+        ...CRMHelper::permissionsFor(['lead', 'opportunity']),
     ]);
 
     Livewire::test(ReportChart::class, ['resource' => $resource, 'pageFilters' => []])->assertForbidden();
@@ -84,7 +85,7 @@ it('aborts when mounted with a class that is not a report resource', function (s
 ]);
 
 it('aborts without the report permission', function (string $resource, string $otherPermission) {
-    CrmTestHelper::actingAs([$otherPermission]);
+    CRMHelper::actingAs([$otherPermission]);
 
     Livewire::test(ReportChart::class, ['resource' => $resource, 'pageFilters' => []])->assertForbidden();
 })->with([
@@ -95,7 +96,7 @@ it('aborts without the report permission', function (string $resource, string $o
 ]);
 
 it('locks the resource property against changes from the browser', function () {
-    CrmTestHelper::actingAs(['view_any_crm_forecast', 'view_any_crm_pipeline::analysis']);
+    CRMHelper::actingAs(['view_any_crm_forecast', 'view_any_crm_pipeline::analysis']);
 
     $component = Livewire::test(ReportChart::class, ['resource' => ForecastResource::class, 'pageFilters' => []]);
 
@@ -106,24 +107,24 @@ it('locks the resource property against changes from the browser', function () {
 });
 
 it('re-checks the permission when the data is loaded', function () {
-    CrmTestHelper::actingAs(['view_any_crm_pipeline::analysis']);
+    CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
     $component = Livewire::test(ReportChart::class, ['resource' => PipelineAnalysisResource::class, 'pageFilters' => []]);
 
-    CrmTestHelper::actingAs([]);
+    CRMHelper::actingAs([]);
 
     expect(fn () => $component->invade()->getData())
         ->toThrow(HttpException::class);
 });
 
 it('draws a bar chart with one dataset per split, stacked', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead::analysis']);
+    CRMHelper::actingAs(['view_any_crm_lead::analysis']);
 
     [$firstStage, $secondStage, $filters] = reportChartFixture();
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => Report::CHART_BAR],
+        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => ReportChartType::BAR->value],
     ]);
 
     $data = $component->invade()->getData();
@@ -148,13 +149,13 @@ it('draws a bar chart with one dataset per split, stacked', function () {
 });
 
 it('does not stack a bar chart without a split', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead::analysis']);
+    CRMHelper::actingAs(['view_any_crm_lead::analysis']);
 
     [, , $filters] = reportChartFixture();
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => '', 'chart_type' => Report::CHART_BAR],
+        'pageFilters' => [...$filters, 'split_by' => '', 'chart_type' => ReportChartType::BAR->value],
     ]);
 
     $data = $component->invade()->getData();
@@ -168,13 +169,13 @@ it('does not stack a bar chart without a split', function () {
 });
 
 it('does not stack a line chart even when split', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead::analysis']);
+    CRMHelper::actingAs(['view_any_crm_lead::analysis']);
 
     [, , $filters] = reportChartFixture();
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => Report::CHART_LINE],
+        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => ReportChartType::LINE->value],
     ]);
 
     $options = $component->invade()->getOptions();
@@ -185,13 +186,13 @@ it('does not stack a line chart even when split', function () {
 });
 
 it('draws a pie chart as a single dataset with a color per slice, ignoring the split', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead::analysis']);
+    CRMHelper::actingAs(['view_any_crm_lead::analysis']);
 
     [, , $filters] = reportChartFixture();
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => Report::CHART_PIE],
+        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => ReportChartType::PIE->value],
     ]);
 
     $data = $component->invade()->getData();
@@ -207,7 +208,7 @@ it('draws a pie chart as a single dataset with a color per slice, ignoring the s
 });
 
 it('falls back to a bar chart for an unknown chart type', function () {
-    CrmTestHelper::actingAs(['view_any_crm_forecast']);
+    CRMHelper::actingAs(['view_any_crm_forecast']);
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => ForecastResource::class,
@@ -218,7 +219,7 @@ it('falls back to a bar chart for an unknown chart type', function () {
 });
 
 it('uses the report defaults for filters the page does not set', function () {
-    CrmTestHelper::actingAs(['view_any_crm_pipeline::analysis']);
+    CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => PipelineAnalysisResource::class,
@@ -229,7 +230,7 @@ it('uses the report defaults for filters the page does not set', function () {
 });
 
 it('names the chart after the measure and group', function () {
-    CrmTestHelper::actingAs(['view_any_crm_activity::analysis']);
+    CRMHelper::actingAs(['view_any_crm_activity::analysis']);
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => ActivityAnalysisResource::class,

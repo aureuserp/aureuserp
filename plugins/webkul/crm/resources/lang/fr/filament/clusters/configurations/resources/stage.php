@@ -47,14 +47,5 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Étapes supprimées',
-                    'body'  => 'Les étapes ont été supprimées avec succès.',
-                ],
-            ],
-        ],
     ],
 ];

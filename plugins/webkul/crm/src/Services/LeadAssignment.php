@@ -4,10 +4,12 @@ namespace Webkul\Crm\Services;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Webkul\Crm\Enums\LeadConversionAction;
+use Webkul\Crm\Enums\LeadConversionCustomer;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\Lead;
-use Webkul\Crm\Models\LeadConversion;
 use Webkul\Crm\Models\TeamMember;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\Scopes\CompanyScope;
 
@@ -19,7 +21,7 @@ class LeadAssignment
 
     public function run(?Team $onlyTeam = null): array
     {
-        if (! app(CrmSettings::class)->use_auto_assignment) {
+        if (! app(CRMSettings::class)->use_auto_assignment) {
             return ['teams' => 0, 'salespeople' => 0];
         }
 
@@ -40,9 +42,53 @@ class LeadAssignment
         return ['teams' => $teamsAssigned, 'salespeople' => $salespeopleAssigned];
     }
 
+    public function candidates(Team $team): Builder
+    {
+        $team->loadMissing('crmTeam');
+
+        $settings = $team->crmTeam;
+
+        return $this->openLeads()
+            ->whereNull('user_id')
+            ->where(fn (Builder $query): Builder => $query
+                ->where('team_id', $team->getKey())
+                ->orWhere(fn (Builder $query): Builder => AssignmentRules::apply(
+                    $query->whereNull('team_id')->when($team->company_id, fn (Builder $query): Builder => $query->where('company_id', $team->company_id)),
+                    $settings?->assignment_domain,
+                )))
+            ->when($settings && ! $settings->use_leads, fn (Builder $query): Builder => $query->where('type', '!=', LeadType::LEAD))
+            ->when($settings && ! $settings->use_opportunities, fn (Builder $query): Builder => $query->where('type', '!=', LeadType::OPPORTUNITY));
+    }
+
+    public function assignSelected(Team $team, array $leadIds): int
+    {
+        if (! app(CRMSettings::class)->use_auto_assignment || $leadIds === []) {
+            return 0;
+        }
+
+        $team = $this->eligibleTeams($team)->first();
+
+        if (! $team) {
+            return 0;
+        }
+
+        $assigned = 0;
+
+        foreach ($this->candidates($team)->whereKey($leadIds)->get() as $lead) {
+            if (blank($lead->team_id)) {
+                $lead->team_id = $team->getKey();
+                $lead->save();
+            }
+
+            $assigned += $this->assignSalespeople($team, $lead);
+        }
+
+        return $assigned;
+    }
+
     public function assignLead(Lead $lead): void
     {
-        if (! app(CrmSettings::class)->use_auto_assignment || ! $lead->exists || $lead->trashed()) {
+        if (! app(CRMSettings::class)->use_auto_assignment || ! $lead->exists || $lead->trashed()) {
             return;
         }
 
@@ -167,8 +213,8 @@ class LeadAssignment
 
             if ($lead->isLead() && ($team->crmTeam?->use_opportunities ?? true)) {
                 app(LeadConverter::class)->convert($lead, [
-                    'action'   => LeadConversion::ACTION_CONVERT,
-                    'customer' => LeadConversion::CUSTOMER_NONE,
+                    'action'   => LeadConversionAction::CONVERT,
+                    'customer' => LeadConversionCustomer::NONE,
                     'user_id'  => $member->user_id,
                     'team_id'  => $team->getKey(),
                 ]);

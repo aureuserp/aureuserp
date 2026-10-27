@@ -14,28 +14,6 @@ return [
         'contact'             => 'Accept emails from',
     ],
 
-    'alias-contacts' => [
-        'everyone'  => 'Everyone',
-        'partners'  => 'Authenticated Partners',
-        'followers' => 'Followers only',
-        'employees' => 'Authenticated Employees',
-    ],
-
-    'alias-contacts-help' => [
-        'everyone'  => 'Any email address can create a lead.',
-        'partners'  => 'Only email addresses of existing contacts or users.',
-        'followers' => 'Only the team leader and the team members.',
-        'employees' => 'Only email addresses of users or employees.',
-    ],
-
-    'statuses' => [
-        'lead_created' => 'Lead created',
-        'reply_added'  => 'Added to lead',
-        'rejected'     => 'Rejected',
-        'ignored'      => 'Ignored',
-        'failed'       => 'Failed',
-    ],
-
     'reasons' => [
         'no-sender'   => 'The email has no valid sender address.',
         'auto-reply'  => 'Automatic reply (out of office, bounce or mailing list).',

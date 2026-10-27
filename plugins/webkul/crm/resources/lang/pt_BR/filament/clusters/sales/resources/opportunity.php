@@ -4,6 +4,12 @@ return [
     'model-label'        => 'Oportunidade',
     'plural-model-label' => 'Oportunidades',
 
+    'views' => [
+        'kanban' => 'Kanban',
+        'list'   => 'Lista',
+        'graph'  => 'Gráfico',
+    ],
+
     'navigation' => [
         'title' => 'Meu funil',
     ],
@@ -145,8 +151,6 @@ return [
 
         'bulk-actions' => [
             'restore' => [
-                'label' => 'Restaurar',
-
                 'notification' => [
                     'title' => 'Oportunidades restauradas',
                     'body'  => 'As oportunidades foram restauradas no funil.',
@@ -169,10 +173,6 @@ return [
             'modal-description' => 'Esta oportunidade ainda não tem cliente. Escolha o cliente da cotação.',
             'submit'            => 'Continuar',
             'subheading'        => 'Da oportunidade: :name',
-        ],
-
-        'open-opportunity' => [
-            'label' => 'Oportunidade',
         ],
 
         'won' => [

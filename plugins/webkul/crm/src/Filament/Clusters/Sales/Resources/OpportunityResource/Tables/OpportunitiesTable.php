@@ -5,6 +5,7 @@ namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Table
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
@@ -15,11 +16,19 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Crm\Filament\Actions\ArchiveLeadsBulkAction;
+use Webkul\Crm\Filament\Actions\DuplicateLeadsBulkAction;
+use Webkul\Crm\Filament\Actions\MarkLeadsAsLostBulkAction;
 use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
+use Webkul\Crm\Filament\Actions\SendLeadEmailAction;
+use Webkul\Crm\Filament\Actions\SendLeadsEmailBulkAction;
+use Webkul\Crm\Filament\Actions\SendLeadSMSAction;
+use Webkul\Crm\Filament\Actions\SendLeadsSMSBulkAction;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
+use Webkul\Crm\Filament\Exports\OpportunityExporter;
 use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Lead;
 
@@ -131,6 +140,8 @@ class OpportunitiesTable
                     ViewAction::make(),
                     EditAction::make()
                         ->hidden(fn (Lead $record): bool => $record->trashed()),
+                    SendLeadEmailAction::make(),
+                    SendLeadSMSAction::make(),
                     MarkAsWonAction::make(),
                     MarkAsLostAction::make(),
                     RestoreAction::make()
@@ -152,22 +163,35 @@ class OpportunitiesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    MergeLeadsBulkAction::make(),
-                    RestoreBulkAction::make()
-                        ->label(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.label'))
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.notification.title'))
-                                ->body(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.notification.body')),
-                        ),
-                    ForceDeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.force-delete.notification.body')),
-                        ),
+                    BulkActionGroup::make([
+                        ExportBulkAction::make()
+                            ->label(__('crm::filament/transfers.actions.export.label'))
+                            ->icon('heroicon-o-arrow-up-tray')
+                            ->exporter(OpportunityExporter::class),
+                        ArchiveLeadsBulkAction::make(),
+                        RestoreBulkAction::make()
+                            ->label(__('crm::filament/lead-actions.unarchive.label'))
+                            ->successNotification(
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.notification.title'))
+                                    ->body(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.notification.body')),
+                            ),
+                        DuplicateLeadsBulkAction::make(),
+                        ForceDeleteBulkAction::make()
+                            ->successNotification(
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.force-delete.notification.title'))
+                                    ->body(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.force-delete.notification.body')),
+                            ),
+                    ])->dropdown(false),
+                    BulkActionGroup::make([
+                        MarkLeadsAsLostBulkAction::make(),
+                        MergeLeadsBulkAction::make(),
+                        SendLeadsEmailBulkAction::make(),
+                        SendLeadsSMSBulkAction::make(),
+                    ])->dropdown(false),
                 ]),
             ]);
     }

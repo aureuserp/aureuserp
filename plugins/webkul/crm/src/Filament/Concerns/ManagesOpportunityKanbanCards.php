@@ -6,16 +6,16 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Crm\Enums\KanbanActivityState;
+use Webkul\Crm\Enums\LeadColor;
 use Webkul\Crm\Enums\OpportunityPriority;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Models\Lead;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 trait ManagesOpportunityKanbanCards
 {
     public const KANBAN_CARD_RELATIONS = ['partner', 'user', 'tags', 'company.currency', 'recurringPlan', 'crmActivities.activityType'];
-
-    public const KANBAN_ACTIVITY_STATES = ['planned', 'today', 'overdue', 'none'];
 
     public array $kanbanActivityFilter = [];
 
@@ -33,14 +33,14 @@ trait ManagesOpportunityKanbanCards
             return;
         }
 
-        $lead->update(['priority' => $lead->priority?->value === $priority ? OpportunityPriority::Low : $priority]);
+        $lead->update(['priority' => $lead->priority?->value === $priority ? OpportunityPriority::LOW : $priority]);
     }
 
     public function setKanbanCardColor(string $recordId, int $color): void
     {
         $lead = $this->findEditableKanbanCard($recordId);
 
-        if (! $lead || ($color !== 0 && ! array_key_exists($color, Lead::COLORS))) {
+        if (! $lead || ($color !== 0 && ! LeadColor::tryFrom($color))) {
             return;
         }
 
@@ -51,7 +51,7 @@ trait ManagesOpportunityKanbanCards
     {
         $lead = Lead::query()->find($recordId);
 
-        return $lead && OpportunityResource::canEdit($lead) ? $lead : null;
+        return $lead && LeadResourceResolver::resourceFor($lead)::canEdit($lead) ? $lead : null;
     }
 
     public function deleteKanbanCardAction(): Action
@@ -62,7 +62,7 @@ trait ManagesOpportunityKanbanCards
             ->color('danger')
             ->modalHeading(fn (?Lead $record): string => __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.delete-heading', ['name' => $record?->name]))
             ->modalDescription(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.delete-description'))
-            ->authorize(fn (?Lead $record): bool => $record && OpportunityResource::canForceDelete($record))
+            ->authorize(fn (?Lead $record): bool => $record && LeadResourceResolver::resourceFor($record)::canForceDelete($record))
             ->action(function (Lead $record): void {
                 $record->forceDelete();
 
@@ -77,13 +77,13 @@ trait ManagesOpportunityKanbanCards
     {
         return ActivityTableAction::make('scheduleKanbanActivity')
             ->record(fn (array $arguments): ?Lead => Lead::query()->find($arguments['record'] ?? null))
-            ->authorize(fn (?Lead $record): bool => $record && OpportunityResource::canEdit($record));
+            ->authorize(fn (?Lead $record): bool => $record && LeadResourceResolver::resourceFor($record)::canEdit($record));
     }
 
     protected function applyKanbanActivityFilter(Builder $query): Builder
     {
         foreach ($this->kanbanActivityFilter as $columnValue => $state) {
-            if (! in_array($state, static::KANBAN_ACTIVITY_STATES, true)) {
+            if (! KanbanActivityState::tryFrom((string) $state)) {
                 continue;
             }
 
@@ -97,7 +97,7 @@ trait ManagesOpportunityKanbanCards
 
     public function toggleKanbanActivityFilter(string $columnValue, string $state): void
     {
-        if (! in_array($state, static::KANBAN_ACTIVITY_STATES, true)) {
+        if (! KanbanActivityState::tryFrom($state)) {
             return;
         }
 
@@ -114,7 +114,7 @@ trait ManagesOpportunityKanbanCards
     {
         $this->kanbanProgress ??= $this->computeKanbanProgress();
 
-        return $this->kanbanProgress[$column->value] ?? array_fill_keys(static::KANBAN_ACTIVITY_STATES, 0);
+        return $this->kanbanProgress[$column->value] ?? KanbanActivityState::emptyCounts();
     }
 
     protected function computeKanbanProgress(): array
@@ -141,14 +141,14 @@ trait ManagesOpportunityKanbanCards
 
         foreach ($records as $record) {
             $state = match (true) {
-                $record->overdue_activities > 0 => 'overdue',
-                $record->today_activities > 0   => 'today',
-                $record->planned_activities > 0 => 'planned',
-                default                         => 'none',
+                $record->overdue_activities > 0 => KanbanActivityState::OVERDUE,
+                $record->today_activities > 0   => KanbanActivityState::TODAY,
+                $record->planned_activities > 0 => KanbanActivityState::PLANNED,
+                default                         => KanbanActivityState::NONE,
             };
 
-            $progress[(string) $record->kanban_column_key] ??= array_fill_keys(static::KANBAN_ACTIVITY_STATES, 0);
-            $progress[(string) $record->kanban_column_key][$state]++;
+            $progress[(string) $record->kanban_column_key] ??= KanbanActivityState::emptyCounts();
+            $progress[(string) $record->kanban_column_key][$state->value]++;
         }
 
         return $progress;

@@ -5,12 +5,12 @@ use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Pages\ManageStages;
 use Webkul\Crm\Models\Stage;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('lists the pipeline stages', function () {
-    CrmTestHelper::actingAsCrmUser(['stage']);
+    CRMHelper::actingAsCRMUser(['stage']);
 
     $qualified = Stage::factory()->create(['name' => 'Qualified (test)']);
     $won = Stage::factory()->won()->create(['name' => 'Won (test)']);
@@ -20,7 +20,7 @@ it('lists the pipeline stages', function () {
 });
 
 it('creates a stage with the won flag and requirements', function () {
-    CrmTestHelper::actingAsCrmUser(['stage']);
+    CRMHelper::actingAsCRMUser(['stage']);
 
     Livewire::test(ManageStages::class)
         ->callAction('create', data: [
@@ -38,7 +38,7 @@ it('creates a stage with the won flag and requirements', function () {
 });
 
 it('requires a name to create a stage', function () {
-    CrmTestHelper::actingAsCrmUser(['stage']);
+    CRMHelper::actingAsCRMUser(['stage']);
 
     Livewire::test(ManageStages::class)
         ->callAction('create', data: ['name' => ''])
@@ -46,7 +46,7 @@ it('requires a name to create a stage', function () {
 });
 
 it('edits a stage', function () {
-    CrmTestHelper::actingAsCrmUser(['stage']);
+    CRMHelper::actingAsCRMUser(['stage']);
 
     $stage = Stage::factory()->create(['name' => 'Proposition (test)', 'is_won' => false]);
 
@@ -66,7 +66,7 @@ it('edits a stage', function () {
 });
 
 it('deletes a stage', function () {
-    CrmTestHelper::actingAsCrmUser(['stage']);
+    CRMHelper::actingAsCRMUser(['stage']);
 
     $stage = Stage::factory()->create(['name' => 'Obsolete (test)']);
 
@@ -77,7 +77,7 @@ it('deletes a stage', function () {
 });
 
 it('hides edit and delete without the update and delete permissions', function () {
-    CrmTestHelper::actingAs(['view_any_crm_stage', 'view_crm_stage']);
+    CRMHelper::actingAs(['view_any_crm_stage', 'view_crm_stage']);
 
     $stage = Stage::factory()->create(['name' => 'Read only (test)']);
 
@@ -88,7 +88,7 @@ it('hides edit and delete without the update and delete permissions', function (
 });
 
 it('reorders stages with the reorder permission', function () {
-    CrmTestHelper::actingAsCrmUser(['stage']);
+    CRMHelper::actingAsCRMUser(['stage']);
 
     $first = Stage::factory()->create(['name' => 'First (test)']);
     $second = Stage::factory()->create(['name' => 'Second (test)']);
@@ -105,7 +105,7 @@ it('reorders stages with the reorder permission', function () {
 });
 
 it('does not allow reordering stages without the reorder permission', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['stage'], ['view_any', 'view', 'create', 'update']));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['stage'], ['view_any', 'view', 'create', 'update']));
 
     $first = Stage::factory()->create(['name' => 'First (test)']);
     $second = Stage::factory()->create(['name' => 'Second (test)']);
@@ -120,7 +120,7 @@ it('does not allow reordering stages without the reorder permission', function (
 });
 
 it('forbids the stages page without crm stage permissions', function () {
-    CrmTestHelper::actingAs(['view_any_sale_team', 'view_any_crm_tag']);
+    CRMHelper::actingAs(['view_any_sale_team', 'view_any_crm_tag']);
 
     Livewire::test(ManageStages::class)->assertForbidden();
 });

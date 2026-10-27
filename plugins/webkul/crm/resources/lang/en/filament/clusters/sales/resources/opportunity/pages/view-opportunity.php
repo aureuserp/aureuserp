@@ -2,10 +2,6 @@
 
 return [
     'header-actions' => [
-        'restore' => [
-            'label' => 'Restore',
-        ],
-
         'force-delete' => [
             'notification' => [
                 'title' => 'Opportunity deleted',

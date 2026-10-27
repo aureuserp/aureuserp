@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\RevealViewState;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\RevealRule;
 use Webkul\Crm\Models\RevealView;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
@@ -30,7 +32,7 @@ class VisitsToLeads
 
     public static function enabled(): bool
     {
-        return static::websiteAvailable() && (bool) app(CrmSettings::class)->visits_to_leads;
+        return static::websiteAvailable() && (bool) app(CRMSettings::class)->visits_to_leads;
     }
 
     public function activeRules(): Collection
@@ -62,7 +64,7 @@ class VisitsToLeads
         return $this->matchingRules($visitor, $ip, $url)
             ->map(fn (RevealRule $rule): RevealView => RevealView::query()->firstOrCreate(
                 ['visitor_id' => $visitor->getKey(), 'reveal_rule_id' => $rule->getKey()],
-                ['reveal_ip' => $ip, 'url' => filled($url) ? mb_substr($url, 0, 2000) : null, 'reveal_state' => RevealView::STATE_TO_PROCESS],
+                ['reveal_ip' => $ip, 'url' => filled($url) ? mb_substr($url, 0, 2000) : null, 'reveal_state' => RevealViewState::TO_PROCESS],
             ));
     }
 
@@ -70,7 +72,7 @@ class VisitsToLeads
     {
         $views = RevealView::query()
             ->where('visitor_id', $visitorId)
-            ->where('reveal_state', RevealView::STATE_TO_PROCESS)
+            ->where('reveal_state', RevealViewState::TO_PROCESS)
             ->whereHas('rule', fn (Builder $query): Builder => $query->where('is_active', true))
             ->with('rule')
             ->get()
@@ -97,7 +99,7 @@ class VisitsToLeads
         $count = 0;
 
         RevealView::query()
-            ->where('reveal_state', RevealView::STATE_TO_PROCESS)
+            ->where('reveal_state', RevealViewState::TO_PROCESS)
             ->distinct()
             ->pluck('visitor_id')
             ->each(function (int $visitorId) use (&$count): void {
@@ -170,7 +172,7 @@ class VisitsToLeads
             $partner = $visitor->partner;
 
             $lead = Lead::query()->create([
-                'type'           => app(CrmSettings::class)->use_leads && $rule->lead_type === Lead::TYPE_LEAD ? Lead::TYPE_LEAD : Lead::TYPE_OPPORTUNITY,
+                'type'           => app(CRMSettings::class)->use_leads && $rule->lead_type === LeadType::LEAD ? LeadType::LEAD : LeadType::OPPORTUNITY,
                 'name'           => collect([$this->leadName($visitor, $country), $rule->suffix])->filter()->implode(' - '),
                 'partner_id'     => $partner?->getKey(),
                 'contact_name'   => $partner?->name,
@@ -213,16 +215,16 @@ class VisitsToLeads
     protected function description(Model $visitor, RevealRule $rule, ?string $ip, ?string $url, ?Country $country, ?string $timezone): string
     {
         $rows = collect([
-            'rule'         => $rule->name,
-            'ip'           => $ip,
-            'country'      => $country?->name,
-            'timezone'     => $timezone,
-            'language'     => $visitor->lang,
-            'landing-page' => $url,
-            'first-visit'  => $visitor->created_at?->toDateTimeString(),
+            __('crm::visits-to-leads.description.rule')         => $rule->name,
+            __('crm::visits-to-leads.description.ip')           => $ip,
+            __('crm::visits-to-leads.description.country')      => $country?->name,
+            __('crm::visits-to-leads.description.timezone')     => $timezone,
+            __('crm::visits-to-leads.description.language')     => $visitor->lang,
+            __('crm::visits-to-leads.description.landing-page') => $url,
+            __('crm::visits-to-leads.description.first-visit')  => $visitor->created_at?->toDateTimeString(),
         ])->filter(fn (?string $value): bool => filled($value));
 
-        $items = $rows->map(fn (string $value, string $key): string => '<li><strong>'.e(__('crm::visits-to-leads.description.'.$key)).':</strong> '.e($value).'</li>')->implode('');
+        $items = $rows->map(fn (string $value, string $label): string => '<li><strong>'.e($label).':</strong> '.e($value).'</li>')->implode('');
 
         return '<p>'.e(__('crm::visits-to-leads.description.intro')).'</p><ul>'.$items.'</ul>';
     }

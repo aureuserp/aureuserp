@@ -48,9 +48,9 @@ class Activity extends Message
     public function scopeDueStatus(Builder $query, ActivityDueStatus|string $status): Builder
     {
         return match (ActivityDueStatus::from($status instanceof ActivityDueStatus ? $status->value : $status)) {
-            ActivityDueStatus::Overdue => $query->overdue(),
-            ActivityDueStatus::Today   => $query->dueToday(),
-            ActivityDueStatus::Planned => $query->planned(),
+            ActivityDueStatus::OVERDUE => $query->overdue(),
+            ActivityDueStatus::TODAY   => $query->dueToday(),
+            ActivityDueStatus::PLANNED => $query->planned(),
         };
     }
 

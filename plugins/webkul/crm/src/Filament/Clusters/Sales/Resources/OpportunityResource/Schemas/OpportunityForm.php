@@ -17,7 +17,6 @@ use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Schemas\TagForm;
 use Webkul\Crm\Filament\Support\ProbabilityHint;
-use Webkul\Crm\Models\RecurringPlan;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Partner\Models\Partner;
@@ -75,7 +74,8 @@ class OpportunityForm
                                             ->visible(fn (): bool => RecurringPlanResource::isRecurringRevenueEnabled()),
                                         Select::make('recurring_plan_id')
                                             ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.plan'))
-                                            ->options(fn (): array => RecurringPlan::query()->orderBy('sort')->pluck('name', 'id')->all())
+                                            ->relationship('recurringPlan', 'name', fn (Builder $query): Builder => $query->withoutTrashed()->orderBy('sort'))
+                                            ->preload()
                                             ->required(fn (Get $get): bool => (float) $get('recurring_revenue') > 0)
                                             ->visible(fn (): bool => RecurringPlanResource::isRecurringRevenueEnabled()),
                                     ]),
@@ -145,7 +145,7 @@ class OpportunityForm
                                 Select::make('priority')
                                     ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.priority'))
                                     ->options(OpportunityPriority::class)
-                                    ->default(OpportunityPriority::Low),
+                                    ->default(OpportunityPriority::LOW),
                                 Select::make('tags')
                                     ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.tags'))
                                     ->relationship('tags', 'name')

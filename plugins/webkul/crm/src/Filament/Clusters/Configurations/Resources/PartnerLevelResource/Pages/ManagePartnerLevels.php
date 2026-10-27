@@ -26,13 +26,11 @@ class ManagePartnerLevels extends ManageRecords
 
     public function getTabs(): array
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/configurations/resources/partner-level.tabs.'.$key);
-
         return [
-            'active' => Tab::make($label('active'))
+            'active' => Tab::make(__('crm::filament/clusters/configurations/resources/partner-level.tabs.active'))
                 ->badge(fn (): int => PartnerLevel::query()->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()),
-            'archived' => Tab::make($label('archived'))
+            'archived' => Tab::make(__('crm::filament/clusters/configurations/resources/partner-level.tabs.archived'))
                 ->badge(fn (): int => PartnerLevel::onlyTrashed()->count())
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->onlyTrashed()),
         ];

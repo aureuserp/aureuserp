@@ -17,10 +17,10 @@ use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\Quotation;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 require_once __DIR__.'/../../../../../sales/tests/Helpers/SaleHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function crmQuotation(array $attributes = []): Order
 {
@@ -62,7 +62,7 @@ function crmQuotationHeaderActions(object $page): array
 }
 
 it('is labelled My Quotations', function () {
-    CrmTestHelper::actingAsCrmUser(['quotation']);
+    CRMHelper::actingAsCRMUser(['quotation']);
 
     expect(QuotationResource::getNavigationLabel())->toBe(__('crm::filament/clusters/sales/resources/quotation.navigation.title'))
         ->and(QuotationResource::getNavigationLabel())->toBe('My Quotations');
@@ -75,7 +75,7 @@ it('is labelled My Quotations', function () {
 });
 
 it('lists quotations with the crm quotation permissions', function () {
-    CrmTestHelper::actingAsCrmUser(['quotation']);
+    CRMHelper::actingAsCRMUser(['quotation']);
 
     $quotation = crmQuotation();
 
@@ -86,13 +86,13 @@ it('lists quotations with the crm quotation permissions', function () {
 });
 
 it('loads the create page with the crm quotation permissions', function () {
-    CrmTestHelper::actingAs(['view_any_crm_quotation', 'create_crm_quotation']);
+    CRMHelper::actingAs(['view_any_crm_quotation', 'create_crm_quotation']);
 
     Livewire::test(CreateQuotation::class)->assertOk();
 });
 
 it('forbids the crm quotation pages without the crm permissions', function (string $page, array $permissions) {
-    CrmTestHelper::actingAs($permissions);
+    CRMHelper::actingAs($permissions);
 
     Livewire::test($page)->assertForbidden();
 })->with([
@@ -103,7 +103,7 @@ it('forbids the crm quotation pages without the crm permissions', function (stri
 ]);
 
 it('forbids editing a quotation with only the sales permissions', function () {
-    CrmTestHelper::actingAs(['view_any_sale_quotation', 'view_sale_quotation', 'update_sale_quotation']);
+    CRMHelper::actingAs(['view_any_sale_quotation', 'view_sale_quotation', 'update_sale_quotation']);
 
     $quotation = crmQuotation();
 
@@ -111,7 +111,7 @@ it('forbids editing a quotation with only the sales permissions', function () {
 });
 
 it('allows viewing a quotation that the order scopes return', function () {
-    $user = CrmTestHelper::actingAs(['view_crm_quotation']);
+    $user = CRMHelper::actingAs(['view_crm_quotation']);
 
     $quotation = Quotation::query()->findOrFail(crmQuotation()->id);
 
@@ -119,7 +119,7 @@ it('allows viewing a quotation that the order scopes return', function () {
 });
 
 it('refuses to view a quotation that the order scopes hide', function () {
-    $user = CrmTestHelper::actingAs(['view_crm_quotation']);
+    $user = CRMHelper::actingAs(['view_crm_quotation']);
 
     $foreign = crmQuotation(['company_id' => Company::factory()->create()->id]);
 
@@ -130,7 +130,7 @@ it('refuses to view a quotation that the order scopes hide', function () {
 });
 
 it('refuses to view a quotation without the view permission', function () {
-    $user = CrmTestHelper::actingAs(['view_any_crm_quotation']);
+    $user = CRMHelper::actingAs(['view_any_crm_quotation']);
 
     $quotation = Quotation::query()->findOrFail(crmQuotation()->id);
 
@@ -138,7 +138,7 @@ it('refuses to view a quotation without the view permission', function () {
 });
 
 it('swaps the sales confirm action for the crm one on the edit and view pages', function (string $page) {
-    CrmTestHelper::actingAsCrmUser(['quotation']);
+    CRMHelper::actingAsCRMUser(['quotation']);
 
     $quotation = crmQuotation();
 
@@ -158,7 +158,7 @@ it('swaps the sales confirm action for the crm one on the edit and view pages', 
 ]);
 
 it('confirms a quotation and stays in crm', function () {
-    CrmTestHelper::actingAsCrmUser(['quotation']);
+    CRMHelper::actingAsCRMUser(['quotation']);
 
     $quotation = crmQuotation();
 
@@ -174,7 +174,7 @@ it('confirms a quotation and stays in crm', function () {
 });
 
 it('hides confirm once the quotation is a sales order', function () {
-    CrmTestHelper::actingAsCrmUser(['quotation']);
+    CRMHelper::actingAsCRMUser(['quotation']);
 
     $quotation = crmQuotation(['state' => OrderState::SALE]);
 

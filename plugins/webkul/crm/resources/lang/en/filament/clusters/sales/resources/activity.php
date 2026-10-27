@@ -80,7 +80,8 @@ return [
         ],
 
         'done' => [
-            'label' => 'Mark as Done',
+            'label'             => 'Mark as Done',
+            'bulk-notification' => ':count activity(ies) marked as done.',
 
             'modal' => [
                 'heading' => 'Mark activity as done',
@@ -95,6 +96,11 @@ return [
                 'title' => 'Activity done',
                 'body'  => 'The activity has been marked as done and logged on the opportunity.',
             ],
+        ],
+
+        'snooze' => [
+            'label'        => 'Snooze :daysd',
+            'notification' => 'Activity snoozed until :date.',
         ],
 
         'reschedule' => [

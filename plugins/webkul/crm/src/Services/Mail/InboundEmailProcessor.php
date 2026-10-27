@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
+use Webkul\Crm\Enums\InboundEmailStatus;
+use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\MailAliasContact;
 use Webkul\Crm\Models\InboundEmail;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\MailAlias;
 use Webkul\Crm\Models\MailServer;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -35,7 +38,7 @@ class InboundEmailProcessor
             return $existing;
         }
 
-        $log = fn (string $status, ?string $reason = null, ?Lead $lead = null, ?MailAlias $alias = null): InboundEmail => InboundEmail::query()->create([
+        $log = fn (InboundEmailStatus $status, ?string $reason = null, ?Lead $lead = null, ?MailAlias $alias = null): InboundEmail => InboundEmail::query()->create([
             'mail_server_id' => $server?->getKey(),
             'alias_id'       => $alias?->getKey(),
             'lead_id'        => $lead?->getKey(),
@@ -52,34 +55,34 @@ class InboundEmailProcessor
 
         try {
             if (blank($email->fromEmail)) {
-                return $log(InboundEmail::STATUS_IGNORED, __('crm::filament/mail.reasons.no-sender'));
+                return $log(InboundEmailStatus::IGNORED, __('crm::filament/mail.reasons.no-sender'));
             }
 
             if ($email->isAutoReply) {
-                return $log(InboundEmail::STATUS_IGNORED, __('crm::filament/mail.reasons.auto-reply'));
+                return $log(InboundEmailStatus::IGNORED, __('crm::filament/mail.reasons.auto-reply'));
             }
 
             $aliases = $this->activeAliases();
 
             if ($aliases->contains(fn (MailAlias $alias): bool => $this->isAliasAddress($alias, $email->fromEmail))) {
-                return $log(InboundEmail::STATUS_IGNORED, __('crm::filament/mail.reasons.from-alias'));
+                return $log(InboundEmailStatus::IGNORED, __('crm::filament/mail.reasons.from-alias'));
             }
 
             if ($lead = $this->findThreadLead($email)) {
                 DB::transaction(fn () => $this->postEmail($lead, $email));
 
-                return $log(InboundEmail::STATUS_REPLY_ADDED, null, $lead);
+                return $log(InboundEmailStatus::REPLY_ADDED, null, $lead);
             }
 
             $alias = $aliases->first(fn (MailAlias $alias): bool => collect($email->recipients)->contains(fn (string $recipient): bool => $this->isAliasAddress($alias, $recipient)));
 
             if (! $alias) {
-                return $log(InboundEmail::STATUS_IGNORED, __('crm::filament/mail.reasons.no-alias'));
+                return $log(InboundEmailStatus::IGNORED, __('crm::filament/mail.reasons.no-alias'));
             }
 
             if (! $this->isSenderAllowed($alias, $email->fromEmail)) {
-                return $log(InboundEmail::STATUS_REJECTED, __('crm::filament/mail.reasons.not-allowed', [
-                    'contact' => __('crm::filament/mail.alias-contacts.'.$alias->alias_contact),
+                return $log(InboundEmailStatus::REJECTED, __('crm::filament/mail.reasons.not-allowed', [
+                    'contact' => $alias->alias_contact->getLabel(),
                 ]), null, $alias);
             }
 
@@ -91,11 +94,11 @@ class InboundEmailProcessor
                 return $lead;
             });
 
-            return $log(InboundEmail::STATUS_LEAD_CREATED, null, $lead, $alias);
+            return $log(InboundEmailStatus::LEAD_CREATED, null, $lead, $alias);
         } catch (Throwable $exception) {
             report($exception);
 
-            return $log(InboundEmail::STATUS_FAILED, mb_substr($exception->getMessage(), 0, 1000));
+            return $log(InboundEmailStatus::FAILED, mb_substr($exception->getMessage(), 0, 1000));
         }
     }
 
@@ -155,9 +158,9 @@ class InboundEmailProcessor
         $fromEmail = mb_strtolower($fromEmail);
 
         return match ($alias->alias_contact) {
-            MailAlias::CONTACT_PARTNERS  => $this->findPartner($fromEmail) !== null || $this->isUserEmail($fromEmail),
-            MailAlias::CONTACT_FOLLOWERS => $this->isTeamMemberEmail($alias, $fromEmail),
-            MailAlias::CONTACT_EMPLOYEES => $this->isUserEmail($fromEmail) || $this->isEmployeeEmail($fromEmail),
+            MailAliasContact::PARTNERS   => $this->findPartner($fromEmail) !== null || $this->isUserEmail($fromEmail),
+            MailAliasContact::FOLLOWERS  => $this->isTeamMemberEmail($alias, $fromEmail),
+            MailAliasContact::EMPLOYEES  => $this->isUserEmail($fromEmail) || $this->isEmployeeEmail($fromEmail),
             default                      => true,
         };
     }
@@ -168,12 +171,12 @@ class InboundEmailProcessor
 
         $partner = $this->findPartner($email->fromEmail);
 
-        $usesLeads = app(CrmSettings::class)->use_leads && ($team->crmTeam?->use_leads ?? true);
+        $usesLeads = app(CRMSettings::class)->use_leads && ($team->crmTeam?->use_leads ?? true);
 
         $lead = new Lead;
 
         $lead->forceFill([
-            'type'         => $usesLeads ? Lead::TYPE_LEAD : Lead::TYPE_OPPORTUNITY,
+            'type'         => $usesLeads ? LeadType::LEAD : LeadType::OPPORTUNITY,
             'name'         => mb_substr(filled($email->subject) ? $email->subject : __('crm::filament/mail.no-subject', ['email' => $email->fromEmail]), 0, 255),
             'email'        => $email->fromEmail,
             'contact_name' => $email->fromName ?? $partner?->name,

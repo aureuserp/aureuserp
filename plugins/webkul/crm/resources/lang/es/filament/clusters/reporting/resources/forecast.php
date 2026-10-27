@@ -8,16 +8,6 @@ return [
     ],
 
     'kanban' => [
-        'filters' => [
-            'salesperson' => 'Comercial',
-            'team'        => 'Equipo de ventas',
-            'period'      => 'Cierre previsto',
-            'upcoming'    => 'Próximos cierres',
-            'all-dates'   => 'Cualquier fecha',
-            'presets'     => 'Filtros',
-            'all'         => 'Todos',
-        ],
-
         'empty-state' => [
             'heading'     => 'No hay oportunidades para prever',
             'description' => 'Defina una fecha de cierre prevista en sus oportunidades para verlas aquí.',

@@ -3,12 +3,10 @@
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource;
-use Webkul\Crm\Filament\Clusters\Configurations\Resources\CompanyResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
-use Webkul\Crm\Filament\Clusters\Configurations\Resources\UserResource;
 use Webkul\Crm\Filament\Clusters\Leads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Reporting;
@@ -47,8 +45,6 @@ return [
             LostReasonResource::class       => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             ActivityTypeResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             ActivityPlanResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            UserResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            CompanyResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             TeamResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             ForecastResource::class         => ['view_any'],
             PipelineAnalysisResource::class => ['view_any'],

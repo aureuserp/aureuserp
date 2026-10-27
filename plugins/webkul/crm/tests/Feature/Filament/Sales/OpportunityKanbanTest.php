@@ -2,6 +2,7 @@
 
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
@@ -16,9 +17,9 @@ use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
 use Wezlo\FilamentKanban\KanbanColumn;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 /**
  * Ids of every card on the pipeline board, across all columns.
@@ -53,17 +54,17 @@ function pipelineRule(string $type, array $values, string $operator = 'isRelated
 function pipelineTeam(array $attributes = []): Team
 {
     return Team::factory()->create([
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
         'is_active'  => true,
         ...$attributes,
     ]);
 }
 
 it('opens without a default filter, showing every salesperson\'s opportunities', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $mine = CrmTestHelper::opportunity();
-    $someoneElses = CrmTestHelper::opportunity(['user_id' => pipelineOtherUserId()]);
+    $mine = CRMHelper::opportunity();
+    $someoneElses = CRMHelper::opportunity(['user_id' => pipelineOtherUserId()]);
 
     $component = Livewire::test(KanbanOpportunities::class)
         ->assertOk()
@@ -75,12 +76,12 @@ it('opens without a default filter, showing every salesperson\'s opportunities',
 });
 
 it('opens a team\'s pipeline when ?team= is given', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $team = pipelineTeam();
 
-    $teamDeal = CrmTestHelper::opportunity(['team_id' => $team->id, 'user_id' => pipelineOtherUserId()]);
-    $mineWithoutTeam = CrmTestHelper::opportunity();
+    $teamDeal = CRMHelper::opportunity(['team_id' => $team->id, 'user_id' => pipelineOtherUserId()]);
+    $mineWithoutTeam = CRMHelper::opportunity();
 
     $component = Livewire::withQueryParams(['team' => $team->id])
         ->test(KanbanOpportunities::class)
@@ -93,25 +94,25 @@ it('opens a team\'s pipeline when ?team= is given', function () {
 });
 
 it('resets the table filters on the board', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $someoneElses = CrmTestHelper::opportunity(['user_id' => pipelineOtherUserId()]);
+    $someoneElses = CRMHelper::opportunity(['user_id' => pipelineOtherUserId()]);
 
     $component = Livewire::test(KanbanOpportunities::class)
-        ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::High->value], 'is'))
+        ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::HIGH->value], 'is'))
         ->call('resetTableFiltersForm');
 
     expect(pipelineBoardRecordIds($component))->toContain($someoneElses->id);
 });
 
 it('filters the board by priority', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $high = CrmTestHelper::opportunity(['priority' => OpportunityPriority::High]);
-    $low = CrmTestHelper::opportunity(['priority' => OpportunityPriority::Low]);
+    $high = CRMHelper::opportunity(['priority' => OpportunityPriority::HIGH]);
+    $low = CRMHelper::opportunity(['priority' => OpportunityPriority::LOW]);
 
     $component = Livewire::test(KanbanOpportunities::class)
-        ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::High->value], 'is'));
+        ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::HIGH->value], 'is'));
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($high->id)
@@ -119,10 +120,10 @@ it('filters the board by priority', function () {
 });
 
 it('searches cards by name', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $match = CrmTestHelper::opportunity(['name' => 'Zebra kanban search deal']);
-    $other = CrmTestHelper::opportunity(['name' => 'Unrelated deal']);
+    $match = CRMHelper::opportunity(['name' => 'Zebra kanban search deal']);
+    $other = CRMHelper::opportunity(['name' => 'Unrelated deal']);
 
     $component = Livewire::test(KanbanOpportunities::class)
         ->set('tableSearch', 'Zebra kanban');
@@ -133,10 +134,10 @@ it('searches cards by name', function () {
 });
 
 it('uses the stages, in order, as columns and colours won stages green', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $wonStage = CrmTestHelper::wonStage();
-    $firstStage = CrmTestHelper::firstStage();
+    $wonStage = CRMHelper::wonStage();
+    $firstStage = CRMHelper::firstStage();
 
     $component = Livewire::test(KanbanOpportunities::class);
 
@@ -152,13 +153,13 @@ it('uses the stages, in order, as columns and colours won stages green', functio
 });
 
 it('sums the expected revenue of each column', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $stage = Stage::factory()->create(['name' => 'Revenue summary stage']);
     $emptyStage = Stage::factory()->create(['name' => 'Empty summary stage']);
 
-    CrmTestHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 1000]);
-    CrmTestHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 500]);
+    CRMHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 1000]);
+    CRMHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 500]);
 
     $component = Livewire::test(KanbanOpportunities::class);
 
@@ -172,12 +173,12 @@ it('sums the expected revenue of each column', function () {
 });
 
 it('hides lost opportunities and leads from the board', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $open = CrmTestHelper::opportunity();
-    $lost = CrmTestHelper::opportunity();
+    $open = CRMHelper::opportunity();
+    $lost = CRMHelper::opportunity();
     $lost->markAsLost(null, 'Gone');
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     $component = Livewire::test(KanbanOpportunities::class);
 
@@ -188,11 +189,11 @@ it('hides lost opportunities and leads from the board', function () {
 });
 
 it('shows the pipeline list tabs on the board and filters the cards by the chosen tab', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $mine = CrmTestHelper::opportunity();
-    $someoneElses = CrmTestHelper::opportunity(['user_id' => pipelineOtherUserId()]);
-    $lost = CrmTestHelper::opportunity();
+    $mine = CRMHelper::opportunity();
+    $someoneElses = CRMHelper::opportunity(['user_id' => pipelineOtherUserId()]);
+    $lost = CRMHelper::opportunity();
     $lost->markAsLost(null);
 
     $component = Livewire::test(KanbanOpportunities::class)->assertSet('activeTableView', 'default');
@@ -210,17 +211,17 @@ it('shows the pipeline list tabs on the board and filters the cards by the chose
 });
 
 it('shows views saved on the pipeline list as board tabs and applies their filters', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+    $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $high = CrmTestHelper::opportunity(['priority' => OpportunityPriority::High]);
-    $low = CrmTestHelper::opportunity(['priority' => OpportunityPriority::Low]);
+    $high = CRMHelper::opportunity(['priority' => OpportunityPriority::HIGH]);
+    $low = CRMHelper::opportunity(['priority' => OpportunityPriority::LOW]);
 
     $view = TableView::query()->create([
         'name'            => 'High priority',
         'filterable_type' => ListOpportunities::class,
         'user_id'         => $user->id,
         'is_public'       => false,
-        'filters'         => ['tableFilters' => ['queryBuilder' => ['rules' => ['r1' => ['type' => 'priority', 'data' => ['operator' => 'is', 'settings' => ['values' => [OpportunityPriority::High->value]]]]]]]],
+        'filters'         => ['tableFilters' => ['queryBuilder' => ['rules' => ['r1' => ['type' => 'priority', 'data' => ['operator' => 'is', 'settings' => ['values' => [OpportunityPriority::HIGH->value]]]]]]]],
     ]);
 
     TableViewFavorite::query()->create(['view_type' => 'saved', 'view_key' => $view->id, 'filterable_type' => ListOpportunities::class, 'user_id' => $user->id, 'is_favorite' => true]);
@@ -231,10 +232,10 @@ it('shows views saved on the pipeline list as board tabs and applies their filte
 });
 
 it('saves a view from the board for the pipeline list', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     Livewire::test(KanbanOpportunities::class)
-        ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::High->value], 'is'))
+        ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::HIGH->value], 'is'))
         ->callAction('createTableView', data: ['name' => 'Board high priority', 'is_favorite' => true, 'is_public' => false])
         ->assertHasNoActionErrors();
 
@@ -246,7 +247,7 @@ it('saves a view from the board for the pipeline list', function () {
 });
 
 it('quick-creates an opportunity in the column\'s stage and the current company', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+    $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
     $stage = Stage::factory()->create(['name' => 'Quick create stage']);
 
@@ -261,17 +262,17 @@ it('quick-creates an opportunity in the column\'s stage and the current company'
     $lead = Lead::query()->where('name', 'Quick kanban deal')->firstOrFail();
 
     expect($lead->stage_id)->toBe($stage->id)
-        ->and($lead->company_id)->toBe(CrmTestHelper::companyId())
-        ->and($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+        ->and($lead->company_id)->toBe(CRMHelper::companyId())
+        ->and($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->team_id)->toBeNull()
         ->and((float) $lead->expected_revenue)->toBe(2500.0);
 });
 
 it('requires a name to quick-create an opportunity', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $stage = CrmTestHelper::firstStage();
+    $stage = CRMHelper::firstStage();
 
     Livewire::test(KanbanOpportunities::class)
         ->callAction('kanbanColumn', data: ['name' => ''], arguments: ['column' => (string) $stage->id])
@@ -279,20 +280,20 @@ it('requires a name to quick-create an opportunity', function () {
 });
 
 it('quick-creates in the filtered team when it belongs to the current company', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $team = pipelineTeam();
 
     Livewire::test(KanbanOpportunities::class)
         ->set('tableFilters', pipelineRule('team', [$team->id]))
-        ->callAction('kanbanColumn', data: ['name' => 'Team quick deal'], arguments: ['column' => (string) CrmTestHelper::firstStage()->id])
+        ->callAction('kanbanColumn', data: ['name' => 'Team quick deal'], arguments: ['column' => (string) CRMHelper::firstStage()->id])
         ->assertHasNoActionErrors();
 
     expect(Lead::query()->where('name', 'Team quick deal')->value('team_id'))->toBe($team->id);
 });
 
 it('ignores a tampered team filter from another company when quick-creating', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $otherCompany = Company::factory()->create();
 
@@ -300,23 +301,23 @@ it('ignores a tampered team filter from another company when quick-creating', fu
 
     Livewire::test(KanbanOpportunities::class)
         ->set('tableFilters', pipelineRule('team', [$foreignTeam->id]))
-        ->callAction('kanbanColumn', data: ['name' => 'Tampered team deal'], arguments: ['column' => (string) CrmTestHelper::firstStage()->id])
+        ->callAction('kanbanColumn', data: ['name' => 'Tampered team deal'], arguments: ['column' => (string) CRMHelper::firstStage()->id])
         ->assertHasNoActionErrors();
 
     $lead = Lead::query()->where('name', 'Tampered team deal')->firstOrFail();
 
     expect($lead->team_id)->toBeNull()
-        ->and($lead->company_id)->toBe(CrmTestHelper::companyId());
+        ->and($lead->company_id)->toBe(CRMHelper::companyId());
 });
 
 it('falls back to the first stage when quick-creating into an unknown stage', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     Livewire::test(KanbanOpportunities::class)
         ->callAction('kanbanColumn', data: [
             'name'     => 'Unknown stage deal',
             'stage_id' => 999999999,
-        ], arguments: ['column' => (string) CrmTestHelper::firstStage()->id])
+        ], arguments: ['column' => (string) CRMHelper::firstStage()->id])
         ->assertHasNoActionErrors();
 
     expect(Lead::query()->where('name', 'Unknown stage deal')->value('stage_id'))
@@ -324,17 +325,17 @@ it('falls back to the first stage when quick-creating into an unknown stage', fu
 });
 
 it('hides quick create without the create permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_opportunity', 'view_crm_opportunity']);
+    CRMHelper::actingAs(['view_any_crm_opportunity', 'view_crm_opportunity']);
 
     Livewire::test(KanbanOpportunities::class)
         ->assertOk()
-        ->assertActionHidden('kanbanColumn', ['column' => (string) CrmTestHelper::firstStage()->id]);
+        ->assertActionHidden('kanbanColumn', ['column' => (string) CRMHelper::firstStage()->id]);
 });
 
 it('moves a card to another stage', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $opportunity = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+    $opportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
 
     $target = Stage::factory()->create(['name' => 'Move target stage']);
 
@@ -348,11 +349,11 @@ it('moves a card to another stage', function () {
 });
 
 it('marks a card as won when it is dropped into a won stage', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $opportunity = CrmTestHelper::opportunity(['probability' => 20]);
+    $opportunity = CRMHelper::opportunity(['probability' => 20]);
 
-    $wonStage = CrmTestHelper::wonStage();
+    $wonStage = CRMHelper::wonStage();
 
     Livewire::test(KanbanOpportunities::class)
         ->call('moveRecord', (string) $opportunity->id, (string) $wonStage->id, []);
@@ -366,34 +367,34 @@ it('marks a card as won when it is dropped into a won stage', function () {
 });
 
 it('refuses to move a card without the update permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_opportunity', 'view_crm_opportunity']);
+    CRMHelper::actingAs(['view_any_crm_opportunity', 'view_crm_opportunity']);
 
-    $firstStage = CrmTestHelper::firstStage();
+    $firstStage = CRMHelper::firstStage();
 
-    $opportunity = CrmTestHelper::opportunity(['stage_id' => $firstStage->id]);
+    $opportunity = CRMHelper::opportunity(['stage_id' => $firstStage->id]);
 
     Livewire::test(KanbanOpportunities::class)
-        ->call('moveRecord', (string) $opportunity->id, (string) CrmTestHelper::wonStage()->id, [])
+        ->call('moveRecord', (string) $opportunity->id, (string) CRMHelper::wonStage()->id, [])
         ->assertNotified();
 
     expect($opportunity->refresh()->stage_id)->toBe($firstStage->id);
 });
 
 it('forbids the board without the view any permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead']);
+    CRMHelper::actingAs(['view_any_crm_lead']);
 
     Livewire::test(KanbanOpportunities::class)->assertForbidden();
 });
 
 describe('list view filters on the board', function () {
     it('filters by the open, unassigned, won and lost tabs', function () {
-        $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+        $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $open = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
-        $won = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
-        $lost = CrmTestHelper::opportunity();
+        $open = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
+        $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
+        $lost = CRMHelper::opportunity();
         $lost->markAsLost(null);
-        $unassigned = CrmTestHelper::opportunity();
+        $unassigned = CRMHelper::opportunity();
         $unassigned->forceFill(['user_id' => null])->saveQuietly();
 
         $component = Livewire::test(KanbanOpportunities::class);
@@ -407,22 +408,22 @@ describe('list view filters on the board', function () {
     });
 
     it('hides lost opportunities unless the Lost tab is chosen', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $lost = CrmTestHelper::opportunity();
+        $lost = CRMHelper::opportunity();
         $lost->markAsLost(null);
 
         expect(pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)))->not->toContain($lost->id);
     });
 
     it('filters by stages and tags', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $first = CrmTestHelper::firstStage();
+        $first = CRMHelper::firstStage();
         $tag = Tag::query()->create(['name' => 'Board tag '.uniqid()]);
 
-        $inStage = CrmTestHelper::opportunity(['stage_id' => $first->id]);
-        $tagged = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
+        $inStage = CRMHelper::opportunity(['stage_id' => $first->id]);
+        $tagged = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
         $tagged->tags()->attach($tag->id);
 
         $byStage = pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)->set('tableFilters', pipelineRule('stage', [$first->id])));
@@ -433,16 +434,16 @@ describe('list view filters on the board', function () {
     });
 
     it('does not move lost opportunities on the board', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $lost = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+        $lost = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
         $lost->markAsLost(null);
 
         Livewire::test(KanbanOpportunities::class)
             ->call('loadView', 'lost')
-            ->call('moveRecord', (string) $lost->id, (string) CrmTestHelper::wonStage()->id, [(string) $lost->id]);
+            ->call('moveRecord', (string) $lost->id, (string) CRMHelper::wonStage()->id, [(string) $lost->id]);
 
-        expect(Lead::withTrashed()->find($lost->id)->stage_id)->toBe(CrmTestHelper::firstStage()->id);
+        expect(Lead::withTrashed()->find($lost->id)->stage_id)->toBe(CRMHelper::firstStage()->id);
     });
 });
 
@@ -459,10 +460,10 @@ function pipelineActivity(Lead $lead, ?string $deadline): void
 
 describe('pipeline cards', function () {
     it('opens the record with one click and renders the card details', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
         $tag = Tag::query()->create(['name' => 'Card tag '.uniqid(), 'color' => '#10b981']);
-        $opportunity = CrmTestHelper::opportunity(['name' => 'Card details '.uniqid(), 'expected_revenue' => 1500, 'priority' => OpportunityPriority::High]);
+        $opportunity = CRMHelper::opportunity(['name' => 'Card details '.uniqid(), 'expected_revenue' => 1500, 'priority' => OpportunityPriority::HIGH]);
         $opportunity->tags()->attach($tag->id);
 
         Livewire::test(KanbanOpportunities::class)
@@ -473,24 +474,24 @@ describe('pipeline cards', function () {
     });
 
     it('sets the priority from the stars and clears it when the same star is clicked again', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $opportunity = CrmTestHelper::opportunity(['priority' => OpportunityPriority::Low]);
+        $opportunity = CRMHelper::opportunity(['priority' => OpportunityPriority::LOW]);
         $component = Livewire::test(KanbanOpportunities::class);
 
-        $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::High->value);
+        $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::HIGH->value);
 
-        expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::High);
+        expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::HIGH);
 
-        $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::High->value);
+        $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::HIGH->value);
 
-        expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::Low);
+        expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::LOW);
     });
 
     it('sets a card colour from the palette and ignores unknown colours', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $opportunity = CrmTestHelper::opportunity();
+        $opportunity = CRMHelper::opportunity();
         $component = Livewire::test(KanbanOpportunities::class);
 
         $component->call('setKanbanCardColor', (string) $opportunity->id, 10);
@@ -503,15 +504,15 @@ describe('pipeline cards', function () {
     });
 
     it('counts each stage by activity state and filters a column from the progress bar', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
         $stage = Stage::query()->where('is_won', false)->orderBy('sort')->firstOrFail();
 
-        $overdue = CrmTestHelper::opportunity(['stage_id' => $stage->id]);
+        $overdue = CRMHelper::opportunity(['stage_id' => $stage->id]);
         pipelineActivity($overdue, now()->subDays(2)->toDateString());
-        $planned = CrmTestHelper::opportunity(['stage_id' => $stage->id]);
+        $planned = CRMHelper::opportunity(['stage_id' => $stage->id]);
         pipelineActivity($planned, now()->addDays(4)->toDateString());
-        $none = CrmTestHelper::opportunity(['stage_id' => $stage->id]);
+        $none = CRMHelper::opportunity(['stage_id' => $stage->id]);
 
         $component = Livewire::test(KanbanOpportunities::class);
         $progress = $component->instance()->kanbanColumnProgress(pipelineBoardColumn($component, $stage));
@@ -533,18 +534,18 @@ describe('pipeline cards', function () {
     });
 
     it('deletes a card only with the delete permission', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $opportunity = CrmTestHelper::opportunity();
+        $opportunity = CRMHelper::opportunity();
 
         Livewire::test(KanbanOpportunities::class)
             ->callAction('deleteKanbanCard', arguments: ['record' => (string) $opportunity->id]);
 
         expect(Lead::withTrashed()->find($opportunity->id))->toBeNull();
 
-        CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update']));
+        CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update']));
 
-        $kept = CrmTestHelper::opportunity();
+        $kept = CRMHelper::opportunity();
 
         Livewire::test(KanbanOpportunities::class)
             ->assertActionHidden('deleteKanbanCard', arguments: ['record' => (string) $kept->id]);

@@ -9,6 +9,7 @@ use Filament\Actions\Imports\Models\Import;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Crm\Filament\Concerns\UsesAbsoluteDownloadUrls;
@@ -29,128 +30,126 @@ abstract class LeadRecordImporter extends Importer
 
     protected static ?string $model = Lead::class;
 
-    abstract protected static function getLeadType(): string;
+    abstract protected static function getLeadType(): LeadType;
 
     abstract protected static function getPolicy(): string;
 
     protected static function leadColumns(): array
     {
-        $label = fn (string $key): string => __('crm::filament/transfers.columns.'.$key);
-
         return [
             ImportColumn::make('id')
-                ->label($label('id'))
-                ->guess(['id', 'ID', $label('id')])
+                ->label(__('crm::filament/transfers.columns.id'))
+                ->guess(['id', 'ID', __('crm::filament/transfers.columns.id')])
                 ->integer()
                 ->fillRecordUsing(fn (): null => null)
                 ->ignoreBlankState(),
             ImportColumn::make('name')
-                ->label($label('name'))
-                ->guess(['name', 'title', $label('name')])
+                ->label(__('crm::filament/transfers.columns.name'))
+                ->guess(['name', 'title', __('crm::filament/transfers.columns.name')])
                 ->requiredMappingForNewRecordsOnly()
                 ->rules(['required', 'max:255'])
-                ->example(static::getLeadType() === Lead::TYPE_LEAD ? 'Website enquiry: 50 chairs' : 'Office furniture refresh'),
+                ->example(static::getLeadType() === LeadType::LEAD ? 'Website enquiry: 50 chairs' : 'Office furniture refresh'),
             ImportColumn::make('contact_name')
-                ->label($label('contact-name'))
-                ->guess(['contact', 'contact name', $label('contact-name')])
+                ->label(__('crm::filament/transfers.columns.contact-name'))
+                ->guess(['contact', 'contact name', __('crm::filament/transfers.columns.contact-name')])
                 ->rules(['nullable', 'max:255'])
                 ->example('Laura Bennett')
                 ->ignoreBlankState(),
             ImportColumn::make('company_name')
-                ->label($label('company-name'))
-                ->guess(['company', 'company name', $label('company-name')])
+                ->label(__('crm::filament/transfers.columns.company-name'))
+                ->guess(['company', 'company name', __('crm::filament/transfers.columns.company-name')])
                 ->rules(['nullable', 'max:255'])
                 ->example('Bennett Design Studio')
                 ->ignoreBlankState(),
             ImportColumn::make('job_title')
-                ->label($label('job-title'))
+                ->label(__('crm::filament/transfers.columns.job-title'))
                 ->rules(['nullable', 'max:255'])
                 ->ignoreBlankState(),
             ImportColumn::make('email')
-                ->label($label('email'))
-                ->guess(['email', 'e-mail', $label('email')])
+                ->label(__('crm::filament/transfers.columns.email'))
+                ->guess(['email', 'e-mail', __('crm::filament/transfers.columns.email')])
                 ->rules(['nullable', 'email', 'max:255'])
                 ->example('laura@example.com')
                 ->ignoreBlankState(),
             ImportColumn::make('phone')
-                ->label($label('phone'))
-                ->guess(['phone', 'mobile', $label('phone')])
+                ->label(__('crm::filament/transfers.columns.phone'))
+                ->guess(['phone', 'mobile', __('crm::filament/transfers.columns.phone')])
                 ->rules(['nullable', 'max:255'])
                 ->example('+1 555 0101')
                 ->ignoreBlankState(),
             ImportColumn::make('website')
-                ->label($label('website'))
+                ->label(__('crm::filament/transfers.columns.website'))
                 ->rules(['nullable', 'max:255'])
                 ->ignoreBlankState(),
             ImportColumn::make('street1')
-                ->label($label('street1'))
+                ->label(__('crm::filament/transfers.columns.street1'))
                 ->rules(['nullable', 'max:255']),
             ImportColumn::make('street2')
-                ->label($label('street2'))
+                ->label(__('crm::filament/transfers.columns.street2'))
                 ->rules(['nullable', 'max:255'])
                 ->ignoreBlankState(),
             ImportColumn::make('city')
-                ->label($label('city'))
+                ->label(__('crm::filament/transfers.columns.city'))
                 ->rules(['nullable', 'max:255'])
                 ->example('Chicago')
                 ->ignoreBlankState(),
             ImportColumn::make('zip')
-                ->label($label('zip'))
+                ->label(__('crm::filament/transfers.columns.zip'))
                 ->rules(['nullable', 'max:255'])
                 ->ignoreBlankState(),
             ImportColumn::make('country')
-                ->label($label('country'))
+                ->label(__('crm::filament/transfers.columns.country'))
                 ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveCountry($state))
                 ->example('United States')
                 ->ignoreBlankState(),
             ImportColumn::make('stage')
-                ->label($label('stage'))
+                ->label(__('crm::filament/transfers.columns.stage'))
                 ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveStage($state))
                 ->ignoreBlankState()
                 ->example('New'),
             ImportColumn::make('user')
-                ->label($label('salesperson'))
-                ->guess(['salesperson', 'user', 'owner', $label('salesperson')])
+                ->label(__('crm::filament/transfers.columns.salesperson'))
+                ->guess(['salesperson', 'user', 'owner', __('crm::filament/transfers.columns.salesperson')])
                 ->relationship(resolveUsing: fn (?string $state, LeadRecordImporter $importer): ?Model => $importer->resolveSalesperson($state))
                 ->ignoreBlankState(),
             ImportColumn::make('team')
-                ->label($label('team'))
-                ->guess(['team', 'sales team', $label('team')])
+                ->label(__('crm::filament/transfers.columns.team'))
+                ->guess(['team', 'sales team', __('crm::filament/transfers.columns.team')])
                 ->relationship(resolveUsing: fn (?string $state, LeadRecordImporter $importer): ?Model => $importer->resolveTeam($state))
                 ->ignoreBlankState(),
             ImportColumn::make('priority')
-                ->label($label('priority'))
+                ->label(__('crm::filament/transfers.columns.priority'))
                 ->castStateUsing(fn (mixed $state): ?OpportunityPriority => static::castPriority($state))
-                ->example(OpportunityPriority::Medium->getLabel())
+                ->example(OpportunityPriority::MEDIUM->getLabel())
                 ->ignoreBlankState(),
             ImportColumn::make('probability')
-                ->label($label('probability'))
+                ->label(__('crm::filament/transfers.columns.probability'))
                 ->numeric(decimalPlaces: 2)
                 ->rules(['nullable', 'numeric', 'min:0', 'max:100'])
                 ->example('20')
                 ->ignoreBlankState(),
             ImportColumn::make('tags')
-                ->label($label('tags'))
+                ->label(__('crm::filament/transfers.columns.tags'))
                 ->multiple(',')
                 ->fillRecordUsing(fn (): null => null)
                 ->saveRelationshipsUsing(fn (Lead $record, ?array $state) => $record->tags()->sync(static::resolveTags($state ?? [])))
                 ->example('Product, Upsell')
                 ->ignoreBlankState(),
             ImportColumn::make('source')
-                ->label($label('source'))
-                ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveByName(UTMSource::class, $state, 'source'))
+                ->label(__('crm::filament/transfers.columns.source'))
+                ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveByName(UTMSource::class, $state, __('crm::filament/transfers.columns.source')))
                 ->ignoreBlankState(),
             ImportColumn::make('medium')
-                ->label($label('medium'))
-                ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveByName(UTMMedium::class, $state, 'medium'))
+                ->label(__('crm::filament/transfers.columns.medium'))
+                ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveByName(UTMMedium::class, $state, __('crm::filament/transfers.columns.medium')))
                 ->ignoreBlankState(),
             ImportColumn::make('campaign')
-                ->label($label('campaign'))
-                ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveByName(UtmCampaign::class, $state, 'campaign'))
+                ->label(__('crm::filament/transfers.columns.campaign'))
+                ->relationship(resolveUsing: fn (?string $state): ?Model => static::resolveByName(UtmCampaign::class, $state, __('crm::filament/transfers.columns.campaign')))
                 ->ignoreBlankState(),
             ImportColumn::make('description')
-                ->label($label('notes'))
-                ->guess(['notes', 'description', $label('notes')])
+                ->label(__('crm::filament/transfers.columns.notes'))
+                ->guess(['notes', 'description', __('crm::filament/transfers.columns.notes')])
                 ->ignoreBlankState(),
         ];
     }
@@ -197,7 +196,7 @@ abstract class LeadRecordImporter extends Importer
             'company_id'  => $this->getDefaultCompanyId(),
             'creator_id'  => $user?->getKey(),
             'user_id'     => $user?->getKey(),
-            'probability' => static::getLeadType() === Lead::TYPE_LEAD ? 10 : 0,
+            'probability' => static::getLeadType() === LeadType::LEAD ? 10 : 0,
         ]);
 
         return $record;
@@ -299,7 +298,7 @@ abstract class LeadRecordImporter extends Importer
             ]));
     }
 
-    protected static function resolveByName(string $model, ?string $state, string $column): ?Model
+    protected static function resolveByName(string $model, ?string $state, string $field): ?Model
     {
         if (blank($state)) {
             return null;
@@ -307,7 +306,7 @@ abstract class LeadRecordImporter extends Importer
 
         return $model::query()->withoutGlobalScopes([CompanyScope::class])->where('name', trim($state))->first()
             ?? throw new RowImportFailedException(__('crm::filament/transfers.errors.not-found', [
-                'field' => __('crm::filament/transfers.columns.'.$column),
+                'field' => $field,
                 'value' => $state,
             ]));
     }
@@ -323,7 +322,7 @@ abstract class LeadRecordImporter extends Importer
         foreach (OpportunityPriority::cases() as $priority) {
             if (
                 (string) $priority->value === $state
-                || strcasecmp($priority->name, Str::studly($state)) === 0
+                || strcasecmp($priority->name, Str::snake($state)) === 0
                 || strcasecmp((string) $priority->getLabel(), $state) === 0
             ) {
                 return $priority;

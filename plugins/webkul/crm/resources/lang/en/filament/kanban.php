@@ -4,9 +4,7 @@ return [
     'add-column' => [
         'stage'         => 'Add Stage',
         'activity-type' => 'Add Activity Type',
-        'placeholder'   => 'Name…',
         'add'           => 'Add',
-        'cancel'        => 'Cancel',
         'created'       => '":name" added',
         'exists'        => '":name" already exists',
     ],
@@ -28,12 +26,15 @@ return [
         ],
     ],
 
+    'empty' => [
+        'heading'           => 'Nothing here yet',
+        'description'       => 'Drag a card here or create a new one.',
+        'board-heading'     => 'No records to show',
+        'board-description' => 'Nothing matches this view or the current filters.',
+    ],
+
     'progress' => [
-        'label'   => 'Activities in this stage',
-        'planned' => 'Planned activities',
-        'today'   => 'Activities due today',
-        'overdue' => 'Overdue activities',
-        'none'    => 'No activities',
-        'total'   => 'Expected revenue',
+        'label' => 'Activities in this stage',
+        'total' => 'Expected revenue',
     ],
 ];

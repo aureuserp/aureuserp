@@ -28,4 +28,27 @@ return [
             ],
         ],
     ],
+
+    'grid' => [
+        'new-opportunities'  => '{1} :count فرصة جديدة|[0,*] :count فرص جديدة',
+        'quotations'         => '{1} :count عرض سعر|[0,*] :count عروض أسعار',
+        'configuration'      => 'الإعدادات',
+        'menu'               => 'قائمة الفريق',
+        'open-opportunities' => '{1} :count فرصة مفتوحة|[0,*] :count فرص مفتوحة',
+        'orders-to-invoice'  => '{1} :count طلب للفوترة|[0,*] :count طلبات للفوترة',
+        'chart'              => 'الفرص الجديدة أسبوعيًا',
+        'target-progress'    => 'المفوتر هذا الشهر: :invoiced من :target',
+    ],
+
+    'grid-menu' => [
+        'view'          => 'عرض',
+        'reporting'     => 'التقارير',
+        'leads'         => 'العملاء المحتملون',
+        'opportunities' => 'الفرص',
+        'quotations'    => 'عروض الأسعار',
+        'sales-orders'  => 'أوامر البيع',
+        'forecast'      => 'التوقعات',
+        'activities'    => 'الأنشطة',
+        'no-color'      => 'بدون لون',
+    ],
 ];

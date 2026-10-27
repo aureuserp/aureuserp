@@ -5,15 +5,15 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\KanbanAc
 use Webkul\Crm\Models\Lead;
 use Webkul\Support\Models\ActivityType;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
-function actingAsActivityTypeColumnManager(array $affixes = CrmTestHelper::ALL_AFFIXES): void
+function actingAsActivityTypeColumnManager(array $affixes = CRMHelper::ALL_AFFIXES): void
 {
-    CrmTestHelper::actingAs([
-        ...CrmTestHelper::permissionsFor(['activity', 'opportunity']),
-        ...CrmTestHelper::permissionsFor(['activity::type'], $affixes),
+    CRMHelper::actingAs([
+        ...CRMHelper::permissionsFor(['activity', 'opportunity']),
+        ...CRMHelper::permissionsFor(['activity::type'], $affixes),
     ]);
 }
 
@@ -31,7 +31,7 @@ function boardActivityType(string $name, string $plugin = 'crm'): ActivityType
 
 function scheduleOnBoardType(ActivityType $type, ?Lead $lead = null): void
 {
-    ($lead ?? CrmTestHelper::opportunity())->addMessage([
+    ($lead ?? CRMHelper::opportunity())->addMessage([
         'type'             => 'activity',
         'activity_type_id' => $type->id,
         'date_deadline'    => now()->addDay()->toDateString(),
@@ -158,7 +158,7 @@ it('refuses to delete an activity type while activities are scheduled with it', 
 
     $type = boardActivityType('Busy board type');
 
-    $lead = CrmTestHelper::opportunity();
+    $lead = CRMHelper::opportunity();
 
     scheduleOnBoardType($type, $lead);
 
@@ -220,9 +220,9 @@ it('lets the crm activity type permissions alone manage a crm column', function 
 });
 
 it('does not let the support activity type permissions manage a crm column', function () {
-    CrmTestHelper::actingAs([
-        ...CrmTestHelper::permissionsFor(['activity', 'opportunity']),
-        ...array_map(fn (string $affix): string => "{$affix}_support_activity::type", CrmTestHelper::ALL_AFFIXES),
+    CRMHelper::actingAs([
+        ...CRMHelper::permissionsFor(['activity', 'opportunity']),
+        ...array_map(fn (string $affix): string => "{$affix}_support_activity::type", CRMHelper::ALL_AFFIXES),
     ]);
 
     $type = boardActivityType('Support permission board type');

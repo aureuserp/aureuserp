@@ -4,11 +4,10 @@ namespace Webkul\Crm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Crm\Enums\RevealViewState;
 
 class RevealView extends Model
 {
-    public const STATE_TO_PROCESS = 'to_process';
-
     protected $table = 'crm_reveal_views';
 
     protected $fillable = [
@@ -17,6 +16,10 @@ class RevealView extends Model
         'url',
         'reveal_state',
         'reveal_rule_id',
+    ];
+
+    protected $casts = [
+        'reveal_state' => RevealViewState::class,
     ];
 
     public function rule(): BelongsTo

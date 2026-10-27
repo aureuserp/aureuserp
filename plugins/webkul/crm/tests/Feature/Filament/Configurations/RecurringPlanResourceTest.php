@@ -5,14 +5,14 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource\Pages\ManageRecurringPlans;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\EditOpportunity;
 use Webkul\Crm\Models\RecurringPlan;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_recurring_revenues = true;
     $settings->save();
 });
@@ -23,7 +23,7 @@ it('has the default recurring plans', function () {
 });
 
 it('creates and edits recurring plans with the permission', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['recurring::plan']));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['recurring::plan']));
 
     $monthly = RecurringPlan::query()->where('name', 'Monthly')->firstOrFail();
 
@@ -38,10 +38,10 @@ it('creates and edits recurring plans with the permission', function () {
     expect(RecurringPlan::query()->where('name', 'Quarterly')->value('number_of_months'))->toBe(3);
 });
 
-it('hides recurring plans when Recurring Revenues is off', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['recurring::plan']));
+it('hides recurring plans when Recurring Revenue Plans is off', function () {
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['recurring::plan']));
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_recurring_revenues = false;
     $settings->save();
 
@@ -49,10 +49,10 @@ it('hides recurring plans when Recurring Revenues is off', function () {
 });
 
 it('stores the recurring revenue of an opportunity and its monthly amount', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $yearly = RecurringPlan::query()->where('name', 'Yearly')->firstOrFail();
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     Livewire::test(EditOpportunity::class, ['record' => $opportunity->getRouteKey()])
         ->fillForm(['recurring_revenue' => 1200, 'recurring_plan_id' => null])

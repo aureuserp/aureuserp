@@ -4,6 +4,7 @@ namespace Webkul\Crm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -33,6 +34,7 @@ class ActivityLog extends Model
     ];
 
     protected $casts = [
+        'lead_type'           => LeadType::class,
         'date_deadline'       => 'date',
         'activity_created_at' => 'datetime',
         'done_at'             => 'datetime',

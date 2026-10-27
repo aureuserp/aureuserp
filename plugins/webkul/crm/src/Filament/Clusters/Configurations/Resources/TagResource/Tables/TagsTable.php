@@ -2,15 +2,15 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Crm\Filament\Actions\RecordBulkActions;
+use Webkul\Crm\Filament\Exports\TagExporter;
 
 class TagsTable
 {
@@ -53,15 +53,7 @@ class TagsTable
                     ),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/configurations/resources/tag.table.bulk-actions.delete.notification.title'))
-                                ->body(__('crm::filament/clusters/configurations/resources/tag.table.bulk-actions.delete.notification.body')),
-                        ),
-                ]),
+                RecordBulkActions::make(exporter: TagExporter::class),
             ]);
     }
 }

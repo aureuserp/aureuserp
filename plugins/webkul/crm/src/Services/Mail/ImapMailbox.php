@@ -2,9 +2,9 @@
 
 namespace Webkul\Crm\Services\Mail;
 
-use IMAP\Connection;
 use RuntimeException;
 use Throwable;
+use Webkul\Crm\Enums\MailServerEncryption;
 use Webkul\Crm\Models\MailServer;
 
 class ImapMailbox
@@ -61,12 +61,12 @@ class ImapMailbox
     public function mailboxReference(): string
     {
         $flags = match ($this->server->encryption) {
-            MailServer::ENCRYPTION_SSL => '/imap/ssl',
-            MailServer::ENCRYPTION_TLS => '/imap/tls',
+            MailServerEncryption::SSL  => '/imap/ssl',
+            MailServerEncryption::TLS  => '/imap/tls',
             default                    => '/imap/notls',
         };
 
-        if (! $this->server->validate_certificate && $this->server->encryption !== MailServer::ENCRYPTION_NONE) {
+        if (! $this->server->validate_certificate && $this->server->encryption !== MailServerEncryption::NONE) {
             $flags .= '/novalidate-cert';
         }
 

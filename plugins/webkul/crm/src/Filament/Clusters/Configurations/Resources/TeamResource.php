@@ -2,45 +2,39 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
-use Closure;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Component;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Text;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Navigation\NavigationItem;
+use Filament\Resources\Pages\Page;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Unique;
+use Webkul\Crm\Filament\Actions\RecordBulkActions;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\CreateTeam;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\EditTeam;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ListTeams;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamAlias;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamAssignment;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamMembers;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ViewTeam;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
-use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Schemas\TeamForm;
+use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
+use Webkul\Crm\Filament\Exports\TeamExporter;
 use Webkul\Crm\Filament\Support\AssignmentRuleFields;
-use Webkul\Crm\Models\CrmTeam;
-use Webkul\Crm\Models\MailAlias;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Policies\TeamPolicy;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource as BaseTeamResource;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource as BaseUserResource;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Models\User;
-use Webkul\Support\Services\CompanyContext;
 
 class TeamResource extends BaseTeamResource
 {
-    use HasCrmAuthorization;
+    use HasCRMAuthorization;
 
     protected static ?string $cluster = Configurations::class;
 
@@ -63,155 +57,27 @@ class TeamResource extends BaseTeamResource
         return __('crm::filament/clusters/configurations/resources/team.navigation.title');
     }
 
-    public static function getCrmPolicy(): string
+    public static function getCRMPolicy(): string
     {
         return TeamPolicy::class;
     }
 
-    public static function form(Schema $schema): Schema
+    public static function table(Table $table): Table
     {
-        $schema = parent::form($schema);
-
-        $label = fn (string $key): string => __('crm::filament/assignment.team.'.$key);
-
-        $salesComponents = $schema->getComponents(withHidden: true);
-
-        static::findSalesSelect($salesComponents, 'sales_team_members')?->hidden();
-
-        static::findSalesSelect($salesComponents, 'company_id')
-            ?->relationship('company', 'name', fn (Builder $query): Builder => $query->whereKey(app(CompanyContext::class)->activeIds()))
-            ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
-                if (filled($value) && ! in_array((int) $value, array_map('intval', app(CompanyContext::class)->activeIds()), true)) {
-                    $fail(__('crm::filament/assignment.team.company-not-active'));
-                }
-            })
-            ->helperText(__('crm::filament/assignment.team.company-helper'));
-
-        return $schema->components([
-            ...$salesComponents,
-            Section::make($label('section'))
-                ->description($label('section-description'))
-                ->relationship('crmTeam')
-                ->visible(fn (): bool => static::usesRuleBasedAssignment())
-                ->schema([
-                    Text::make(fn (?CrmTeam $record): string => static::getCapacitySummary((int) $record?->team_id))
-                        ->visible(fn (?CrmTeam $record): bool => filled($record?->team_id))
-                        ->columnSpanFull(),
-                    AssignmentRuleFields::make(framed: false)
-                        ->columnSpanFull(),
-                ]),
-            static::getAliasSection(),
-            static::getMembersSection(),
-        ]);
-    }
-
-    protected static function findSalesSelect(array $components, string $name): ?Select
-    {
-        foreach ($components as $component) {
-            if ($component instanceof Select && $component->getName() === $name) {
-                return $component;
-            }
-
-            if (! $component instanceof Component) {
-                continue;
-            }
-
-            foreach ($component->getChildSchemas(withHidden: true) as $childSchema) {
-                if ($found = static::findSalesSelect($childSchema->getComponents(withHidden: true), $name)) {
-                    return $found;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public static function getAliasSection(): Section
-    {
-        $label = fn (string $key, array $replace = []): string => __('crm::filament/mail.alias.'.$key, $replace);
-
-        return Section::make($label('section'))
-            ->description($label('section-description'))
-            ->relationship('crmAlias')
-            ->columns(3)
-            ->schema([
-                TextInput::make('alias_name')
-                    ->label($label('name'))
-                    ->helperText($label('name-helper'))
-                    ->regex('/^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*$/')
-                    ->validationMessages(['regex' => $label('name-invalid'), 'unique' => $label('name-taken')])
-                    ->unique(
-                        MailAlias::class,
-                        'alias_name',
-                        ignoreRecord: true,
-                        modifyRuleUsing: fn (Unique $rule, Get $get): Unique => filled($domain = MailAlias::normalizeDomain($get('alias_domain')))
-                            ? $rule->where('alias_domain', $domain)
-                            : $rule->whereNull('alias_domain'),
-                    )
-                    ->dehydrateStateUsing(fn (?string $state): ?string => MailAlias::normalizeName($state))
-                    ->suffix('@')
-                    ->maxLength(100),
-                TextInput::make('alias_domain')
-                    ->label($label('domain'))
-                    ->helperText($label('domain-helper'))
-                    ->placeholder('yourcompany.com')
-                    ->regex('/^@?(?!-)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/')
-                    ->validationMessages(['regex' => $label('domain-invalid')])
-                    ->requiredWith('alias_name')
-                    ->dehydrateStateUsing(fn (?string $state): ?string => MailAlias::normalizeDomain($state))
-                    ->maxLength(255),
-                Select::make('alias_contact')
-                    ->label($label('contact'))
-                    ->options(collect(MailAlias::CONTACTS)->mapWithKeys(fn (string $contact): array => [$contact => __('crm::filament/mail.alias-contacts.'.$contact)])->all())
-                    ->helperText(fn (Get $get): string => __('crm::filament/mail.alias-contacts-help.'.($get('alias_contact') ?: MailAlias::CONTACT_EVERYONE)))
-                    ->default(MailAlias::CONTACT_EVERYONE)
-                    ->selectablePlaceholder(false)
-                    ->live()
-                    ->required(),
+        return parent::table($table)
+            ->toolbarActions([
+                RecordBulkActions::make(exporter: TeamExporter::class, archivable: true, copyRelations: ['members']),
             ]);
     }
 
-    public static function getNewSalespersonFields(): array
+    public static function form(Schema $schema): Schema
     {
-        $label = fn (string $key): string => __('security::filament/resources/user.form.sections.'.$key);
-
-        return [
-            TextInput::make('name')
-                ->label($label('general-information.fields.name'))
-                ->required()
-                ->maxLength(255),
-            TextInput::make('email')
-                ->label($label('general-information.fields.email'))
-                ->email()
-                ->required()
-                ->unique(User::class, 'email')
-                ->maxLength(255),
-            TextInput::make('password')
-                ->label($label('general-information.fields.password'))
-                ->password()
-                ->revealable()
-                ->required()
-                ->rule('min:8')
-                ->maxLength(255),
-            TextInput::make('password_confirmation')
-                ->label($label('general-information.fields.password-confirmation'))
-                ->password()
-                ->revealable()
-                ->required()
-                ->same('password'),
-            Select::make('roles')
-                ->label($label('permissions.fields.roles'))
-                ->options(fn (): array => Role::query()->orderBy('name')->pluck('name', 'id')->all())
-                ->multiple()
-                ->required()
-                ->searchable()
-                ->columnSpanFull(),
-        ];
+        return TeamForm::configure($schema);
     }
 
     public static function createSalesperson(array $data, mixed $companyId): int
     {
-        abort_unless(UserResource::canCreate(), 403);
+        abort_unless(BaseUserResource::canCreate(), 403);
 
         $roleIds = Role::query()->whereKey((array) ($data['roles'] ?? []))->pluck('id')->all();
 
@@ -254,86 +120,9 @@ class TeamResource extends BaseTeamResource
             || $user->allowedCompanies()->whereKey($companyId)->exists();
     }
 
-    public static function getMembersSection(): Section
-    {
-        $label = fn (string $key): string => __('crm::filament/assignment.members.'.$key);
-
-        return Section::make($label('title'))
-            ->description($label('description'))
-            ->schema([
-                Repeater::make('crmMembers')
-                    ->relationship('crmMembers')
-                    ->hiddenLabel()
-                    ->schema([
-                        Select::make('user_id')
-                            ->label($label('fields.salesperson'))
-                            ->options(fn (Get $get): array => OpportunityForm::scopeSalespeople(User::query(), $get('../../company_id'))
-                                ->orderBy('name')
-                                ->pluck('name', 'id')
-                                ->all())
-                            ->searchable()
-                            ->required()
-                            ->distinct()
-                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                            ->live()
-                            ->createOptionForm(fn (): array => static::getNewSalespersonFields())
-                            ->createOptionModalHeading($label('new-salesperson.heading'))
-                            ->createOptionAction(fn (Action $action): Action => $action
-                                ->tooltip($label('new-salesperson.heading'))
-                                ->visible(fn (): bool => UserResource::canCreate())
-                                ->authorize(fn (): bool => UserResource::canCreate()))
-                            ->createOptionUsing(fn (array $data, Get $get): int => static::createSalesperson($data, $get('../../company_id'))),
-                        TextInput::make('assignment_max')
-                            ->visible(fn (): bool => static::usesRuleBasedAssignment())
-                            ->label($label('fields.capacity'))
-                            ->helperText(fn (?TeamMember $record): string => $record
-                                ? __('crm::filament/assignment.members.fields.capacity-assigned', ['count' => $record->leadsAssignedLastMonth()])
-                                : $label('fields.capacity-helper'))
-                            ->numeric()
-                            ->integer()
-                            ->minValue(0)
-                            ->default(30)
-                            ->required(),
-                        Toggle::make('assignment_optout')
-                            ->visible(fn (): bool => static::usesRuleBasedAssignment())
-                            ->label($label('fields.paused'))
-                            ->helperText($label('fields.paused-helper'))
-                            ->inline(false),
-                        Toggle::make('is_active')
-                            ->label($label('fields.active'))
-                            ->default(true)
-                            ->inline(false),
-                        AssignmentRuleFields::make()
-                            ->visible(fn (): bool => static::usesRuleBasedAssignment())
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(4)
-                    ->itemLabel(fn (array $state): ?string => filled($state['user_id'] ?? null) ? User::query()->whereKey($state['user_id'])->value('name') : null)
-                    ->collapsible()
-                    ->collapsed(fn (string $operation): bool => $operation !== 'create')
-                    ->defaultItems(0)
-                    ->reorderable(false)
-                    ->addActionLabel($label('actions.add')),
-            ]);
-    }
-
     public static function usesRuleBasedAssignment(): bool
     {
-        return (bool) app(CrmSettings::class)->use_auto_assignment;
-    }
-
-    public static function getCapacitySummary(int $teamId): string
-    {
-        $members = TeamMember::query()
-            ->where('team_id', $teamId)
-            ->where('is_active', true)
-            ->where('assignment_optout', false)
-            ->get();
-
-        return __('crm::filament/assignment.team.capacity', [
-            'assigned' => $members->sum(fn (TeamMember $member): int => $member->leadsAssignedLastMonth()),
-            'max'      => $members->sum('assignment_max'),
-        ]);
+        return (bool) app(CRMSettings::class)->use_auto_assignment;
     }
 
     public static function getRelations(): array
@@ -341,13 +130,45 @@ class TeamResource extends BaseTeamResource
         return [];
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        $items = $page->generateNavigationItems([
+            ViewTeam::class,
+            EditTeam::class,
+            ManageTeamAssignment::class,
+            ManageTeamMembers::class,
+            ManageTeamAlias::class,
+        ]);
+
+        $team = method_exists($page, 'getRecord') ? $page->getRecord() : null;
+
+        if (! $team instanceof Model) {
+            return $items;
+        }
+
+        $badges = [
+            ManageTeamMembers::getNavigationLabel()    => fn (): int => TeamMember::query()->where('team_id', $team->getKey())->count(),
+            ManageTeamAssignment::getNavigationLabel() => fn (): int => AssignmentRuleFields::matchingQuery($team->crmTeam?->assignment_domain ?? [], AssignmentRuleFields::unassignedToTeam())->count(),
+        ];
+
+        return array_map(
+            fn (NavigationItem $item): NavigationItem => isset($badges[$item->getLabel()])
+                ? $item->badge($badges[$item->getLabel()]())
+                : $item,
+            $items,
+        );
+    }
+
     public static function getPages(): array
     {
         return [
-            'index'  => ListTeams::route('/'),
-            'create' => CreateTeam::route('/create'),
-            'view'   => ViewTeam::route('/{record}'),
-            'edit'   => EditTeam::route('/{record}/edit'),
+            'index'      => ListTeams::route('/'),
+            'create'     => CreateTeam::route('/create'),
+            'view'       => ViewTeam::route('/{record}'),
+            'edit'       => EditTeam::route('/{record}/edit'),
+            'assignment' => ManageTeamAssignment::route('/{record}/assignment-rules'),
+            'members'    => ManageTeamMembers::route('/{record}/members'),
+            'alias'      => ManageTeamAlias::route('/{record}/email-alias'),
         ];
     }
 }

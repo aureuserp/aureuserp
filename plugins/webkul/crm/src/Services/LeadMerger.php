@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\LeadMerge;
@@ -23,13 +24,13 @@ class LeadMerger
     {
         return $records->sort(function (Lead $a, Lead $b): int {
             return [
-                $a->type === Lead::TYPE_OPPORTUNITY ? 0 : 1,
+                $a->type === LeadType::OPPORTUNITY ? 0 : 1,
                 $a->trashed() ? 1 : 0,
                 -1 * (int) ($a->stage?->sort ?? 0),
                 -1 * (float) $a->probability,
                 $a->getKey(),
             ] <=> [
-                $b->type === Lead::TYPE_OPPORTUNITY ? 0 : 1,
+                $b->type === LeadType::OPPORTUNITY ? 0 : 1,
                 $b->trashed() ? 1 : 0,
                 -1 * (int) ($b->stage?->sort ?? 0),
                 -1 * (float) $b->probability,
@@ -147,8 +148,8 @@ class LeadMerger
             $head->description = $descriptions->implode('<hr>');
         }
 
-        if ($others->contains(fn (Lead $lead): bool => $lead->type === Lead::TYPE_OPPORTUNITY)) {
-            $head->type = Lead::TYPE_OPPORTUNITY;
+        if ($others->contains(fn (Lead $lead): bool => $lead->type === LeadType::OPPORTUNITY)) {
+            $head->type = LeadType::OPPORTUNITY;
             $head->converted_at ??= now();
         }
 

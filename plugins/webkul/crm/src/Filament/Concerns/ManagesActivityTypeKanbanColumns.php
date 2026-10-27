@@ -37,7 +37,7 @@ trait ManagesActivityTypeKanbanColumns
             ->exists();
     }
 
-    protected function createKanbanColumn(string $name): Model
+    protected function createKanbanColumn(string $name, array $attributes = []): Model
     {
         return ActivityType::query()->create([
             'name'            => $name,

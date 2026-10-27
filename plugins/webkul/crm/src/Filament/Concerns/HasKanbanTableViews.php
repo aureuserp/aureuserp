@@ -14,7 +14,7 @@ use Wezlo\FilamentKanban\KanbanBoard;
 
 trait HasKanbanTableViews
 {
-    use HasCrmTableViews;
+    use HasCRMTableViews;
 
     protected bool $appliesKanbanTableView = true;
 
@@ -29,12 +29,29 @@ trait HasKanbanTableViews
 
     public function table(Table $table): Table
     {
-        return parent::table($table)
+        $table = $this->configureKanbanBaseTable($table)
             ->paginated(false)
             ->groups([])
-            ->columnManager(false)
             ->toolbarActions([])
             ->emptyState(fn () => view($this->getKanbanBoard()->getBoardView()));
+
+        foreach ($table->getColumns() as $column) {
+            if (! $column->isToggleable()) {
+                $column->toggleable();
+            }
+        }
+
+        return $table;
+    }
+
+    protected function configureKanbanBaseTable(Table $table): Table
+    {
+        return parent::table($table);
+    }
+
+    public function isKanbanCardFieldVisible(string $column): bool
+    {
+        return ! $this->getTable()->getColumn($column)?->isToggledHidden();
     }
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator

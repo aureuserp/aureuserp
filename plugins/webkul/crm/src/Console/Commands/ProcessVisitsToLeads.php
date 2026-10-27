@@ -10,12 +10,12 @@ class ProcessVisitsToLeads extends Command
     protected $signature = 'crm:visits-to-leads
         {--existing : Also apply the rules to visitors recorded before the setting was enabled}';
 
-    protected $description = 'Create CRM leads from website visits that match a Visits to Leads rule';
+    protected $description = 'Create CRM leads from website visits that match a Visitors to Leads rule';
 
     public function handle(VisitsToLeads $visitsToLeads): int
     {
         if (! VisitsToLeads::enabled()) {
-            $this->components->info('Visits to Leads is disabled in CRM settings, or the website plugin is not installed.');
+            $this->components->info('Visitors to Leads is disabled in CRM settings, or the website plugin is not installed.');
 
             return self::SUCCESS;
         }

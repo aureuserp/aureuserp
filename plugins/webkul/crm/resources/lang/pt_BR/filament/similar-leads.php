@@ -7,17 +7,21 @@ return [
 
     'page' => [
         'title' => 'Leads semelhantes: :name',
-        'back'  => 'Voltar ao registro',
 
         'empty' => [
             'heading'     => 'Nenhum registro semelhante',
             'description' => 'Nenhum outro lead ou oportunidade tem o mesmo e-mail, telefone ou cliente.',
         ],
+
+        'views' => [
+            'kanban' => 'Kanban',
+            'list'   => 'Lista',
+            'graph'  => 'Gráfico',
+        ],
     ],
 
     'badges' => [
-        'current' => 'Este registro',
-        'lost'    => 'Perdida',
+        'lost' => 'Perdida',
     ],
 
     'merge' => [
@@ -48,5 +52,24 @@ return [
                 'body'  => ':count registro(s) mesclado(s) em ":name".',
             ],
         ],
+    ],
+
+    'table' => [
+        'columns' => [
+            'name'        => 'Lead',
+            'type'        => 'Tipo',
+            'contact'     => 'Nome do contato',
+            'email'       => 'E-mail',
+            'phone'       => 'Telefone',
+            'stage'       => 'Etapa',
+            'salesperson' => 'Vendedor',
+            'team'        => 'Equipe de vendas',
+            'created-at'  => 'Criado em',
+        ],
+    ],
+
+    'graph' => [
+        'heading' => 'Registros por etapa',
+        'dataset' => 'Registros',
     ],
 ];

@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'model-label'        => 'Visits to Leads Rule',
-    'plural-model-label' => 'Visits to Leads Rules',
+    'model-label'        => 'Visitors to Leads Rule',
+    'plural-model-label' => 'Visitors to Leads Rules',
 
     'navigation' => [
-        'title' => 'Visits to Leads Rules',
+        'title' => 'Visitors to Leads Rules',
         'group' => 'Lead Generation',
     ],
 
@@ -31,8 +31,6 @@ return [
         'company'                  => 'Company',
         'company-helper'           => 'Empty = the customer\'s company or the first active company.',
         'lead-for'                 => 'Data Tracking',
-        'lead-for-companies'       => 'Companies',
-        'lead-for-people'          => 'Companies and their contacts',
         'industries'               => 'Industries',
         'industries-helper'        => 'Type a name to add a new industry.',
         'filter-on-size'           => 'Filter on Size',
@@ -41,8 +39,6 @@ return [
         'employees'                => 'employees',
         'gdpr'                     => 'Make sure you know if you have to be GDPR compliant for storing personal data.',
         'contact-filter'           => 'Filter Contacts On',
-        'contact-filter-role'      => 'Role',
-        'contact-filter-seniority' => 'Seniority',
         'extra-contacts'           => 'Number of Contacts',
         'extra-contacts-helper'    => '1 to 5 contacts per company.',
         'preferred-role'           => 'Preferred Role',
@@ -52,9 +48,11 @@ return [
         'sections' => [
             'traffic'          => 'Website Traffic Conditions',
             'generation'       => 'Opportunity Generation Conditions',
+            'lead-generation'  => 'Lead Generation Conditions',
             'contact-filter'   => 'Contact Filter',
             'lead-data'        => 'Lead Data',
             'opportunity-data' => 'Opportunity Data',
+            'settings'         => 'Settings',
         ],
     ],
 
@@ -70,5 +68,19 @@ return [
         'leads'         => 'Leads',
         'opportunities' => 'Opportunities',
         'active'        => 'Active',
+    ],
+
+    'pages' => [
+        'leads' => [
+            'navigation' => 'Generated Leads',
+            'title'      => 'Generated Leads: :rule',
+
+            'columns' => [
+                'name'       => 'Name',
+                'country'    => 'Country',
+                'stage'      => 'Stage',
+                'created-at' => 'Created',
+            ],
+        ],
     ],
 ];

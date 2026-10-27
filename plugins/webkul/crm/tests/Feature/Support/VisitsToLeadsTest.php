@@ -2,25 +2,31 @@
 
 use Illuminate\Support\Str;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Enums\RevealRuleContactFilter;
+use Webkul\Crm\Enums\RevealRuleLeadFor;
+use Webkul\Crm\Enums\RevealViewState;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource\Pages\CreateRevealRule;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource\Pages\ManageRevealRuleLeads;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource\Pages\ViewRevealRule;
 use Webkul\Crm\Listeners\CreateLeadFromVisitor;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\RevealRule;
 use Webkul\Crm\Models\RevealView;
 use Webkul\Crm\Models\Tag;
 use Webkul\Crm\Services\VisitsToLeads;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Country;
 use Webkul\Website\Events\VisitorTracked;
 use Webkul\Website\Models\Visitor;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
     TestBootstrapHelper::ensurePluginInstalled('website');
 
     RevealRule::query()->delete();
@@ -30,7 +36,7 @@ beforeEach(function () {
 
 function visitsToLeadsSetting(bool $enabled, bool $useLeads = true): void
 {
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->visits_to_leads = $enabled;
     $settings->use_leads = $useLeads;
     $settings->save();
@@ -49,7 +55,7 @@ function websiteVisitor(array $attributes = []): Visitor
 
 function revealRule(array $attributes = [], array $countryCodes = []): RevealRule
 {
-    $rule = RevealRule::query()->create(['name' => 'Rule '.uniqid(), 'lead_type' => Lead::TYPE_LEAD, ...$attributes]);
+    $rule = RevealRule::query()->create(['name' => 'Rule '.uniqid(), 'lead_type' => LeadType::LEAD, ...$attributes]);
 
     if ($countryCodes) {
         $rule->countries()->attach(Country::query()->whereIn('code', $countryCodes)->pluck('id'));
@@ -101,7 +107,7 @@ it('queues only the visits that match a rule URL expression', function () {
     expect(RevealView::query()->where('visitor_id', $visitor->id)->first())
         ->reveal_rule_id->toBe($rule->id)
         ->reveal_ip->toBe('203.0.113.7')
-        ->reveal_state->toBe(RevealView::STATE_TO_PROCESS);
+        ->reveal_state->toBe(RevealViewState::TO_PROCESS);
 });
 
 it('matches rules on the country of the visitor', function () {
@@ -117,7 +123,7 @@ it('matches rules on the country of the visitor', function () {
 
 it('creates the lead from the first matching rule and clears the queue', function () {
     $tag = Tag::query()->create(['name' => 'Visit tag '.uniqid()]);
-    $first = revealRule(['sort' => 1, 'suffix' => 'Pricing', 'priority' => OpportunityPriority::High->value]);
+    $first = revealRule(['sort' => 1, 'suffix' => 'Pricing', 'priority' => OpportunityPriority::HIGH->value]);
     $first->tags()->attach($tag->id);
     revealRule(['sort' => 2, 'suffix' => 'Second']);
 
@@ -128,10 +134,10 @@ it('creates the lead from the first matching rule and clears the queue', functio
     $service->queue($visitor, '203.0.113.7', siteUrl('/pages/pricing'));
     $lead = $service->processVisitor($visitor->id);
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and($lead->name)->toBe("Website visitor #{$visitor->id} (India) - Pricing")
         ->and($lead->reveal_rule_id)->toBe($first->id)
-        ->and($lead->priority)->toBe(OpportunityPriority::High)
+        ->and($lead->priority)->toBe(OpportunityPriority::HIGH)
         ->and($lead->tags->pluck('id')->all())->toBe([$tag->id])
         ->and($lead->country_id)->toBe($country->id)
         ->and($lead->reveal_ip)->toBe('203.0.113.7')
@@ -143,9 +149,9 @@ it('creates the lead from the first matching rule and clears the queue', functio
 it('creates an opportunity when leads are turned off', function () {
     visitsToLeadsSetting(true, useLeads: false);
 
-    $lead = app(VisitsToLeads::class)->leadForVisitor(websiteVisitor(), revealRule(['lead_type' => Lead::TYPE_LEAD]), null, null);
+    $lead = app(VisitsToLeads::class)->leadForVisitor(websiteVisitor(), revealRule(['lead_type' => LeadType::LEAD]), null, null);
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY);
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY);
 });
 
 it('creates only one lead per visitor', function () {
@@ -191,30 +197,30 @@ it('matches URL expressions on the path relative to the website', function () {
 });
 
 it('creates a rule with company and contact details from the form', function () {
-    CrmTestHelper::actingAsCrmUser(['reveal::rule']);
+    CRMHelper::actingAsCRMUser(['reveal::rule']);
 
     Livewire::test(CreateRevealRule::class)
         ->fillForm([
             'name'                => 'Form rule',
             'regex_url'           => '/pricing',
-            'lead_type'           => Lead::TYPE_OPPORTUNITY,
-            'lead_for'            => RevealRule::LEAD_FOR_PEOPLE,
+            'lead_type'           => LeadType::OPPORTUNITY,
+            'lead_for'            => RevealRuleLeadFor::PEOPLE,
             'company_size_min'    => 10,
             'company_size_max'    => 500,
-            'contact_filter_type' => RevealRule::CONTACT_FILTER_ROLE,
+            'contact_filter_type' => RevealRuleContactFilter::ROLE,
             'extra_contacts'      => 3,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
     expect(RevealRule::query()->where('name', 'Form rule')->first())
-        ->lead_for->toBe(RevealRule::LEAD_FOR_PEOPLE)
+        ->lead_for->toBe(RevealRuleLeadFor::PEOPLE)
         ->company_size_max->toBe(500)
         ->extra_contacts->toBe(3);
 });
 
 it('rejects an invalid URL expression and a company size range that ends before it starts', function () {
-    CrmTestHelper::actingAsCrmUser(['reveal::rule']);
+    CRMHelper::actingAsCRMUser(['reveal::rule']);
 
     Livewire::test(CreateRevealRule::class)
         ->fillForm(['name' => 'Bad rule', 'regex_url' => '([', 'company_size_min' => 500, 'company_size_max' => 10])
@@ -222,12 +228,44 @@ it('rejects an invalid URL expression and a company size range that ends before 
         ->assertHasFormErrors(['regex_url', 'company_size_max']);
 });
 
-it('hides the rules screen while Visits to Leads is off', function () {
-    CrmTestHelper::actingAsCrmUser(['reveal::rule']);
+it('hides the rules screen while Visitors to Leads is off', function () {
+    CRMHelper::actingAsCRMUser(['reveal::rule']);
 
     expect(RevealRuleResource::canViewAny())->toBeTrue();
 
     visitsToLeadsSetting(false);
 
     expect(RevealRuleResource::canViewAny())->toBeFalse();
+});
+
+it('shows a rule on its view page with view, edit and generated leads tabs', function () {
+    CRMHelper::actingAsCRMUser(['reveal::rule', 'lead', 'opportunity']);
+
+    $rule = revealRule(['name' => 'Tabbed rule'], ['IN']);
+    $generated = CRMHelper::lead(['name' => 'Generated by rule']);
+    $generated->forceFill(['reveal_rule_id' => $rule->id])->save();
+
+    $component = Livewire::test(ViewRevealRule::class, ['record' => $rule->getRouteKey()])
+        ->assertOk()
+        ->assertSee('Tabbed rule');
+
+    $tabs = collect($component->instance()->getRecordNavigationTabs())
+        ->mapWithKeys(fn ($tab): array => [$tab->getLabel() => $tab->getBadge()]);
+
+    expect($tabs->keys()->all())->toHaveCount(3)
+        ->and($tabs->get(ManageRevealRuleLeads::getNavigationLabel()))->toBe(1);
+});
+
+it('lists only the leads a rule generated on its generated leads tab', function () {
+    CRMHelper::actingAsCRMUser(['reveal::rule', 'lead', 'opportunity']);
+
+    $rule = revealRule(['name' => 'Listing rule']);
+    $generated = CRMHelper::lead(['name' => 'From this rule']);
+    $generated->forceFill(['reveal_rule_id' => $rule->id])->save();
+    $other = CRMHelper::lead(['name' => 'From nowhere']);
+
+    Livewire::test(ManageRevealRuleLeads::class, ['record' => $rule->getRouteKey()])
+        ->assertOk()
+        ->assertCanSeeTableRecords([$generated])
+        ->assertCanNotSeeTableRecords([$other]);
 });

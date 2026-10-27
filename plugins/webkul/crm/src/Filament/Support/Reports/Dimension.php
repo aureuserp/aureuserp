@@ -6,22 +6,18 @@ use Closure;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Carbon;
+use Webkul\Crm\Enums\DimensionKind;
+
+use function Illuminate\Support\enum_value;
 
 class Dimension
 {
-    protected const KIND_RELATION = 'relation';
-
-    protected const KIND_ATTRIBUTE = 'attribute';
-
-    protected const KIND_OPTIONS = 'options';
-
-    protected const KIND_MONTH = 'month';
-
     protected function __construct(
         public readonly string $label,
         public readonly string $expression,
-        protected readonly string $kind,
+        protected readonly DimensionKind $kind,
         protected readonly ?string $groupColumn = null,
         protected readonly ?Closure $resolveLabels = null,
         protected readonly ?Closure $resolveValue = null,
@@ -33,7 +29,7 @@ class Dimension
         return new self(
             label: $label,
             expression: $column,
-            kind: self::KIND_RELATION,
+            kind: DimensionKind::RELATION,
             groupColumn: "{$relationship}.{$titleAttribute}",
             resolveLabels: fn (array $keys): array => $model::query()
                 ->withoutGlobalScopes()
@@ -56,7 +52,7 @@ class Dimension
         return new self(
             label: $label,
             expression: $column,
-            kind: self::KIND_ATTRIBUTE,
+            kind: DimensionKind::ATTRIBUTE,
             groupColumn: $attribute,
         );
     }
@@ -66,7 +62,7 @@ class Dimension
         return new self(
             label: $label,
             expression: $column,
-            kind: self::KIND_OPTIONS,
+            kind: DimensionKind::OPTIONS,
             groupColumn: $attribute,
             resolveLabels: fn (array $keys): array => $options,
         );
@@ -77,7 +73,7 @@ class Dimension
         return new self(
             label: $label,
             expression: $dateExpression,
-            kind: self::KIND_MONTH,
+            kind: DimensionKind::MONTH,
             groupColumn: $attribute,
             resolveValue: $resolveValue ?? fn (Model $record): mixed => data_get($record, $attribute),
         );
@@ -85,7 +81,7 @@ class Dimension
 
     public function isMonth(): bool
     {
-        return $this->kind === self::KIND_MONTH;
+        return $this->kind === DimensionKind::MONTH;
     }
 
     public function getGroupColumn(): string
@@ -151,13 +147,13 @@ class Dimension
             ->label($this->label)
             ->titlePrefixedWithLabel(false);
 
-        if ($this->kind === self::KIND_OPTIONS) {
+        if ($this->kind === DimensionKind::OPTIONS) {
             $options = ($this->resolveLabels)([]);
 
-            return $group->getTitleFromRecordUsing(fn (Model $record): string => $options[(string) data_get($record, $this->groupColumn)] ?? static::getNoneLabel());
+            return $group->getTitleFromRecordUsing(fn (Model $record): string => $options[(string) enum_value(data_get($record, $this->groupColumn))] ?? static::getNoneLabel());
         }
 
-        if ($this->kind === self::KIND_RELATION || $this->kind === self::KIND_ATTRIBUTE) {
+        if ($this->kind === DimensionKind::RELATION || $this->kind === DimensionKind::ATTRIBUTE) {
             return $group->getTitleFromRecordUsing(fn (Model $record): string => filled($title = data_get($record, $this->groupColumn)) ? (string) $title : static::getNoneLabel());
         }
 
@@ -166,9 +162,9 @@ class Dimension
         return $group
             ->getKeyFromRecordUsing(fn (Model $record): ?string => $this->monthKeyFromRecord($record))
             ->getTitleFromRecordUsing(fn (Model $record): string => filled($key = $this->monthKeyFromRecord($record)) ? static::monthLabel($key) : static::getNoneLabel())
-            ->groupQueryUsing(fn (Builder $query): Builder => $query->groupByRaw($monthExpression))
-            ->orderQueryUsing(fn (Builder $query, string $direction): Builder => $query->orderByRaw("{$this->expression} ".($direction === 'desc' ? 'desc' : 'asc')))
-            ->scopeQueryByKeyUsing(fn (Builder $query, ?string $key): Builder => blank($key)
+            ->groupQueryUsing(fn (Builder|QueryBuilder $query): Builder|QueryBuilder => $query->groupByRaw($monthExpression))
+            ->orderQueryUsing(fn (Builder|QueryBuilder $query, string $direction): Builder|QueryBuilder => $query->orderByRaw("{$this->expression} ".($direction === 'desc' ? 'desc' : 'asc')))
+            ->scopeQueryByKeyUsing(fn (Builder|QueryBuilder $query, ?string $key): Builder|QueryBuilder => blank($key)
                 ? $query->whereRaw("{$this->expression} is null")
                 : $query->whereRaw("{$monthExpression} = ?", [$key]));
     }

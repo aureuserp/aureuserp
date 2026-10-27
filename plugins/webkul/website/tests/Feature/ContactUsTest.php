@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 use Webkul\Crm\Models\Lead;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Website\Filament\Customer\Pages\ContactUs;
@@ -237,7 +237,7 @@ it('hides the lead action and creates opportunities when CRM leads are turned of
 
     contactSettings(enabled: true, action: ContactFormHandler::ACTION_LEAD);
 
-    $crmSettings = app(CrmSettings::class);
+    $crmSettings = app(CRMSettings::class);
     $crmSettings->use_leads = false;
     $crmSettings->save();
 

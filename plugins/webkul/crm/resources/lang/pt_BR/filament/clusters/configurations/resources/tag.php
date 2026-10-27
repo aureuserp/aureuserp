@@ -39,15 +39,6 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Tags excluídas',
-                    'body'  => 'As tags foram excluídas com sucesso.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [

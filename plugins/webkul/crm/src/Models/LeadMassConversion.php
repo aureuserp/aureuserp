@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Enums\LeadConversionAction;
+use Webkul\Crm\Enums\LeadConversionCustomer;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -28,6 +30,8 @@ class LeadMassConversion extends Model
     ];
 
     protected $casts = [
+        'action'           => LeadConversionAction::class,
+        'customer'         => LeadConversionCustomer::class,
         'deduplicate'      => 'boolean',
         'force_assignment' => 'boolean',
         'converted_count'  => 'integer',

@@ -9,10 +9,10 @@ use Webkul\Crm\Models\ActivityType;
 use Webkul\Crm\Models\Lead;
 use Webkul\Sale\Models\Team;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
     app()->setLocale('en');
 });
@@ -22,7 +22,7 @@ beforeEach(function () {
  *
  * @param  array<string, mixed>  $attributes
  */
-function scheduleCrmActivity(Lead $lead, array $attributes = []): Activity
+function scheduleCRMActivity(Lead $lead, array $attributes = []): Activity
 {
     $message = $lead->addActivity([
         'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->where('name', 'Call')->value('id'),
@@ -37,7 +37,7 @@ function scheduleCrmActivity(Lead $lead, array $attributes = []): Activity
 /**
  * The most recent comment posted on the lead.
  */
-function latestCrmComment(Lead $lead): ?Message
+function latestCRMComment(Lead $lead): ?Message
 {
     return Message::query()
         ->where('messageable_type', $lead->getMorphClass())
@@ -48,13 +48,13 @@ function latestCrmComment(Lead $lead): ?Message
 }
 
 it('only includes activity messages scheduled on leads', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
-    $activity = scheduleCrmActivity($opportunity);
+    $opportunity = CRMHelper::opportunity();
+    $activity = scheduleCRMActivity($opportunity);
     $comment = $opportunity->addMessage(['type' => 'comment', 'body' => 'A plain comment']);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
     $teamActivity = $team->addActivity(['summary' => 'Team activity', 'date_deadline' => now()->addDay()]);
 
     $ids = Activity::query()->whereKey([$activity->id, $comment->id, $teamActivity->id])->pluck('id')->all();
@@ -63,22 +63,22 @@ it('only includes activity messages scheduled on leads', function () {
 });
 
 it('loads the lead an activity belongs to', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    expect(scheduleCrmActivity($opportunity)->lead->id)->toBe($opportunity->id);
+    expect(scheduleCRMActivity($opportunity)->lead->id)->toBe($opportunity->id);
 });
 
 it('filters activities by due status', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $overdue = scheduleCrmActivity($opportunity, ['date_deadline' => today()->subDays(2)]);
-    $today = scheduleCrmActivity($opportunity, ['date_deadline' => today()]);
-    $upcoming = scheduleCrmActivity($opportunity, ['date_deadline' => today()->addDays(2)]);
-    $undated = scheduleCrmActivity($opportunity);
+    $overdue = scheduleCRMActivity($opportunity, ['date_deadline' => today()->subDays(2)]);
+    $today = scheduleCRMActivity($opportunity, ['date_deadline' => today()]);
+    $upcoming = scheduleCRMActivity($opportunity, ['date_deadline' => today()->addDays(2)]);
+    $undated = scheduleCRMActivity($opportunity);
     $undated->forceFill(['date_deadline' => null])->saveQuietly();
 
     $ids = [$overdue->id, $today->id, $upcoming->id, $undated->id];
@@ -94,51 +94,51 @@ it('filters activities by due status', function () {
     expect($scoped('overdue'))->toBe([$overdue->id])
         ->and($scoped('dueToday'))->toBe([$today->id])
         ->and($scoped('planned'))->toBe(collect([$upcoming->id, $undated->id])->sort()->values()->all())
-        ->and($scoped('dueStatus', ActivityDueStatus::Overdue))->toBe([$overdue->id])
+        ->and($scoped('dueStatus', ActivityDueStatus::OVERDUE))->toBe([$overdue->id])
         ->and($scoped('dueStatus', 'today'))->toBe([$today->id])
         ->and($scoped('dueStatus', 'planned'))->toBe(collect([$upcoming->id, $undated->id])->sort()->values()->all());
 });
 
 it('rejects an unknown due status', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     Activity::query()->dueStatus('someday')->get();
 })->throws(ValueError::class);
 
 it('returns the due status of an activity', function (int $daysFromToday, ActivityDueStatus $expected) {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $activity = scheduleCrmActivity(CrmTestHelper::opportunity(), [
+    $activity = scheduleCRMActivity(CRMHelper::opportunity(), [
         'date_deadline' => today()->addDays($daysFromToday),
     ]);
 
     expect($activity->getDueStatus())->toBe($expected);
 })->with([
-    'overdue'  => [-3, ActivityDueStatus::Overdue],
-    'today'    => [0, ActivityDueStatus::Today],
-    'upcoming' => [5, ActivityDueStatus::Planned],
+    'overdue'  => [-3, ActivityDueStatus::OVERDUE],
+    'today'    => [0, ActivityDueStatus::TODAY],
+    'upcoming' => [5, ActivityDueStatus::PLANNED],
 ]);
 
 it('treats an activity without a deadline as planned', function () {
-    expect(ActivityDueStatus::fromDate(null))->toBe(ActivityDueStatus::Planned)
-        ->and(ActivityDueStatus::fromDate(Carbon::yesterday()))->toBe(ActivityDueStatus::Overdue)
-        ->and(ActivityDueStatus::fromDate(Carbon::today()))->toBe(ActivityDueStatus::Today)
-        ->and(ActivityDueStatus::fromDate(Carbon::tomorrow()))->toBe(ActivityDueStatus::Planned);
+    expect(ActivityDueStatus::fromDate(null))->toBe(ActivityDueStatus::PLANNED)
+        ->and(ActivityDueStatus::fromDate(Carbon::yesterday()))->toBe(ActivityDueStatus::OVERDUE)
+        ->and(ActivityDueStatus::fromDate(Carbon::today()))->toBe(ActivityDueStatus::TODAY)
+        ->and(ActivityDueStatus::fromDate(Carbon::tomorrow()))->toBe(ActivityDueStatus::PLANNED);
 });
 
 it('posts a done note on the lead and removes the activity when marked as done', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $activity = scheduleCrmActivity($opportunity, [
+    $activity = scheduleCRMActivity($opportunity, [
         'summary' => 'Follow up',
         'body'    => '<p>Ask about the budget</p>',
     ]);
 
     $activity->markAsDone('Went well');
 
-    $comment = latestCrmComment($opportunity);
+    $comment = latestCRMComment($opportunity);
 
     expect($comment)->not->toBeNull()
         ->and($comment->body)->toStartWith('Call done Follow up')
@@ -151,15 +151,15 @@ it('posts a done note on the lead and removes the activity when marked as done',
 });
 
 it('does not echo an empty body as the original note', function (string $emptyBody) {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $activity = scheduleCrmActivity($opportunity, ['summary' => 'Follow up', 'body' => $emptyBody]);
+    $activity = scheduleCRMActivity($opportunity, ['summary' => 'Follow up', 'body' => $emptyBody]);
 
     $activity->markAsDone();
 
-    $comment = latestCrmComment($opportunity);
+    $comment = latestCRMComment($opportunity);
 
     expect($comment->body)->toBe('Call done Follow up')
         ->and($comment->body)->not->toContain('Original Note');
@@ -170,18 +170,18 @@ it('does not echo an empty body as the original note', function (string $emptyBo
 ]);
 
 it('names the done note after the activity type only when there is no summary or feedback', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $activity = scheduleCrmActivity($opportunity, [
+    $activity = scheduleCRMActivity($opportunity, [
         'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->where('name', 'Meeting')->value('id'),
         'summary'          => null,
     ]);
 
     $activity->markAsDone();
 
-    expect(latestCrmComment($opportunity)->body)->toBe('Meeting done');
+    expect(latestCRMComment($opportunity)->body)->toBe('Meeting done');
 });
 
 it('labels and colours every due status', function (ActivityDueStatus $status, string $label, string $color) {
@@ -191,9 +191,9 @@ it('labels and colours every due status', function (ActivityDueStatus $status, s
         ->and($status->getColor())->toBe($color)
         ->and($status->getIcon())->toStartWith('heroicon-');
 })->with([
-    'overdue' => [ActivityDueStatus::Overdue, 'Overdue', 'danger'],
-    'today'   => [ActivityDueStatus::Today, 'Today', 'warning'],
-    'planned' => [ActivityDueStatus::Planned, 'Planned', 'success'],
+    'overdue' => [ActivityDueStatus::OVERDUE, 'Overdue', 'danger'],
+    'today'   => [ActivityDueStatus::TODAY, 'Today', 'warning'],
+    'planned' => [ActivityDueStatus::PLANNED, 'Planned', 'success'],
 ]);
 
 it('labels and colours every opportunity priority', function (OpportunityPriority $priority, string $label, string $color) {
@@ -202,10 +202,10 @@ it('labels and colours every opportunity priority', function (OpportunityPriorit
     expect($priority->getLabel())->toBe($label)
         ->and($priority->getColor())->toBe($color);
 })->with([
-    'low'       => [OpportunityPriority::Low, 'Low', 'gray'],
-    'medium'    => [OpportunityPriority::Medium, 'Medium', 'info'],
-    'high'      => [OpportunityPriority::High, 'High', 'warning'],
-    'very high' => [OpportunityPriority::VeryHigh, 'Very High', 'danger'],
+    'low'       => [OpportunityPriority::LOW, 'Low', 'gray'],
+    'medium'    => [OpportunityPriority::MEDIUM, 'Medium', 'info'],
+    'high'      => [OpportunityPriority::HIGH, 'High', 'warning'],
+    'very high' => [OpportunityPriority::VERY_HIGH, 'Very High', 'danger'],
 ]);
 
 it('translates every enum label in every supported language', function (string $locale) {

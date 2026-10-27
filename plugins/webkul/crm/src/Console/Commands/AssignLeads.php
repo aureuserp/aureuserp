@@ -5,7 +5,7 @@ namespace Webkul\Crm\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Webkul\Crm\Services\LeadAssignment;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 
 class AssignLeads extends Command
@@ -16,7 +16,7 @@ class AssignLeads extends Command
 
     protected $description = 'Assign leads to sales teams and salespeople using the CRM assignment rules';
 
-    public function handle(CrmSettings $settings, LeadAssignment $assignment): int
+    public function handle(CRMSettings $settings, LeadAssignment $assignment): int
     {
         if (! $settings->use_auto_assignment) {
             $this->components->info('Rule-based assignment is disabled in CRM settings.');
@@ -46,7 +46,7 @@ class AssignLeads extends Command
         return self::SUCCESS;
     }
 
-    public static function nextRun(CrmSettings $settings, ?Carbon $from = null): Carbon
+    public static function nextRun(CRMSettings $settings, ?Carbon $from = null): Carbon
     {
         $from ??= now();
 

@@ -4,9 +4,7 @@ return [
     'add-column' => [
         'stage'         => 'Adicionar etapa',
         'activity-type' => 'Adicionar tipo de atividade',
-        'placeholder'   => 'Nome…',
         'add'           => 'Adicionar',
-        'cancel'        => 'Cancelar',
         'created'       => '":name" adicionado',
         'exists'        => '":name" já existe',
     ],
@@ -28,12 +26,15 @@ return [
         ],
     ],
 
+    'empty' => [
+        'heading'           => 'Nada aqui ainda',
+        'description'       => 'Arraste um cartão para cá ou crie um novo.',
+        'board-heading'     => 'Nenhum registro para mostrar',
+        'board-description' => 'Nada corresponde a esta visualização ou aos filtros atuais.',
+    ],
+
     'progress' => [
-        'label'   => 'Atividades nesta etapa',
-        'planned' => 'Atividades planejadas',
-        'today'   => 'Atividades para hoje',
-        'overdue' => 'Atividades atrasadas',
-        'none'    => 'Sem atividades',
-        'total'   => 'Receita esperada',
+        'label' => 'Atividades nesta etapa',
+        'total' => 'Receita esperada',
     ],
 ];

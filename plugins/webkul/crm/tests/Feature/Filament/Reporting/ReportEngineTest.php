@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
+use Webkul\Crm\Enums\MeasureFormat;
+use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\ForecastReport;
@@ -12,7 +14,6 @@ use Webkul\Crm\Filament\Support\Reports\LeadReport;
 use Webkul\Crm\Filament\Support\Reports\LeadsAnalysisReport;
 use Webkul\Crm\Filament\Support\Reports\Measure;
 use Webkul\Crm\Filament\Support\Reports\PipelineReport;
-use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\Lead;
@@ -20,9 +21,9 @@ use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 /**
  * A query over just the given leads, so other records never affect the totals.
@@ -37,7 +38,7 @@ function reportEngineLeadQuery(array $leads): Builder
 function reportEngineUser(): User
 {
     return User::withoutEvents(fn (): User => User::factory()->create([
-        'default_company_id' => CrmTestHelper::companyId(),
+        'default_company_id' => CRMHelper::companyId(),
         'is_active'          => true,
     ]));
 }
@@ -62,7 +63,7 @@ describe('default filters', function () {
         expect($filters['measure'])->toBe('prorated_revenue')
             ->and($filters['group_by'])->toBe('expected_closing')
             ->and($filters['split_by'])->toBeNull()
-            ->and($filters['chart_type'])->toBe(Report::CHART_BAR)
+            ->and($filters['chart_type'])->toBe(ReportChartType::BAR->value)
             ->and($filters['presets'])->toEqualCanonicalizing(['my_pipeline', 'upcoming_closings', 'active'])
             ->and($filters['user_ids'])->toBe([])
             ->and($filters['team_ids'])->toBe([]);
@@ -74,7 +75,7 @@ describe('default filters', function () {
         expect($filters['measure'])->toBe('expected_revenue')
             ->and($filters['group_by'])->toBe('stage')
             ->and($filters['split_by'])->toBe('expected_closing')
-            ->and($filters['chart_type'])->toBe(Report::CHART_BAR)
+            ->and($filters['chart_type'])->toBe(ReportChartType::BAR->value)
             ->and($filters['presets'])->toBe(['active']);
     });
 
@@ -123,11 +124,11 @@ describe('default filters', function () {
 
 describe('applyFilters', function () {
     it('applies the My Pipeline and Unassigned presets', function () {
-        $user = CrmTestHelper::actingAs([]);
+        $user = CRMHelper::actingAs([]);
 
-        $mine = CrmTestHelper::opportunity();
-        $theirs = CrmTestHelper::opportunity(['user_id' => reportEngineUser()->id]);
-        $unassigned = CrmTestHelper::opportunity();
+        $mine = CRMHelper::opportunity();
+        $theirs = CRMHelper::opportunity(['user_id' => reportEngineUser()->id]);
+        $unassigned = CRMHelper::opportunity();
         Lead::query()->whereKey($unassigned->id)->update(['user_id' => null]);
 
         $leads = [$mine, $theirs, $unassigned];
@@ -139,11 +140,11 @@ describe('applyFilters', function () {
     });
 
     it('applies the Upcoming Closings, Active and Lost presets', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $upcoming = CrmTestHelper::opportunity(['expected_closing_date' => today()->addMonth()]);
-        $past = CrmTestHelper::opportunity(['expected_closing_date' => today()->subMonths(2)->startOfMonth()]);
-        $lost = CrmTestHelper::opportunity(['expected_closing_date' => today()->addMonth()]);
+        $upcoming = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth()]);
+        $past = CRMHelper::opportunity(['expected_closing_date' => today()->subMonths(2)->startOfMonth()]);
+        $lost = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth()]);
         $lost->markAsLost(null);
 
         $leads = [$upcoming, $past, $lost];
@@ -155,10 +156,10 @@ describe('applyFilters', function () {
     });
 
     it('applies the Won and Ongoing presets', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $won = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
-        $ongoing = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+        $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
+        $ongoing = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
 
         $leads = [$won, $ongoing];
 
@@ -169,11 +170,11 @@ describe('applyFilters', function () {
     });
 
     it('applies the Leads, Opportunities and Created This Year presets', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::lead();
-        $opportunity = CrmTestHelper::opportunity();
-        $oldOpportunity = CrmTestHelper::opportunity(['created_at' => now()->subYear()->startOfYear()]);
+        $lead = CRMHelper::lead();
+        $opportunity = CRMHelper::opportunity();
+        $oldOpportunity = CRMHelper::opportunity(['created_at' => now()->subYear()->startOfYear()]);
 
         $leads = [$lead, $opportunity, $oldOpportunity];
 
@@ -184,9 +185,9 @@ describe('applyFilters', function () {
     });
 
     it('ignores presets the report does not offer', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::lead();
+        $lead = CRMHelper::lead();
 
         expect(ForecastReport::presets())->not->toHaveKey('leads')
             ->and(ForecastReport::applyFilters(reportEngineLeadQuery([$lead]), ['presets' => ['leads', 'no_such_preset']])->count())
@@ -194,14 +195,14 @@ describe('applyFilters', function () {
     });
 
     it('filters by salespeople and sales teams', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $otherUser = reportEngineUser();
-        $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+        $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-        $mineInTeam = CrmTestHelper::opportunity(['team_id' => $team->id]);
-        $mineNoTeam = CrmTestHelper::opportunity(['team_id' => null]);
-        $theirsInTeam = CrmTestHelper::opportunity(['team_id' => $team->id, 'user_id' => $otherUser->id]);
+        $mineInTeam = CRMHelper::opportunity(['team_id' => $team->id]);
+        $mineNoTeam = CRMHelper::opportunity(['team_id' => null]);
+        $theirsInTeam = CRMHelper::opportunity(['team_id' => $team->id, 'user_id' => $otherUser->id]);
 
         $leads = [$mineInTeam, $mineNoTeam, $theirsInTeam];
 
@@ -216,15 +217,15 @@ describe('applyFilters', function () {
 
 describe('aggregate', function () {
     it('totals a relation dimension, labelled with the related names in their sort order', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $firstStage = Stage::factory()->create(['name' => 'Report Stage Alpha']);
         $secondStage = Stage::factory()->create(['name' => 'Report Stage Beta']);
 
         $leads = [
-            CrmTestHelper::opportunity(['stage_id' => $secondStage->id]),
-            CrmTestHelper::opportunity(['stage_id' => $firstStage->id]),
-            CrmTestHelper::opportunity(['stage_id' => $firstStage->id]),
+            CRMHelper::opportunity(['stage_id' => $secondStage->id]),
+            CRMHelper::opportunity(['stage_id' => $firstStage->id]),
+            CRMHelper::opportunity(['stage_id' => $firstStage->id]),
         ];
 
         $result = PipelineReport::aggregate(reportEngineLeadQuery($leads), 'stage', null, 'count');
@@ -236,13 +237,13 @@ describe('aggregate', function () {
     });
 
     it('labels a missing relation as "None"', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId(), 'name' => 'Report Team Gamma']);
+        $team = Team::factory()->create(['company_id' => CRMHelper::companyId(), 'name' => 'Report Team Gamma']);
 
         $leads = [
-            CrmTestHelper::opportunity(['team_id' => $team->id]),
-            CrmTestHelper::opportunity(['team_id' => null]),
+            CRMHelper::opportunity(['team_id' => $team->id]),
+            CRMHelper::opportunity(['team_id' => null]),
         ];
 
         $result = PipelineReport::aggregate(reportEngineLeadQuery($leads), 'team', null, 'count');
@@ -252,13 +253,13 @@ describe('aggregate', function () {
     });
 
     it('totals a salesperson dimension by user name', function () {
-        $user = CrmTestHelper::actingAs([]);
+        $user = CRMHelper::actingAs([]);
         $otherUser = reportEngineUser();
 
         $leads = [
-            CrmTestHelper::opportunity(),
-            CrmTestHelper::opportunity(),
-            CrmTestHelper::opportunity(['user_id' => $otherUser->id]),
+            CRMHelper::opportunity(),
+            CRMHelper::opportunity(),
+            CRMHelper::opportunity(['user_id' => $otherUser->id]),
         ];
 
         $result = PipelineReport::aggregate(reportEngineLeadQuery($leads), 'salesperson', null, 'count');
@@ -270,14 +271,14 @@ describe('aggregate', function () {
     });
 
     it('totals a month dimension with YYYY-MM keys, "None" first and months in order', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $leads = [
-            CrmTestHelper::opportunity(['expected_closing_date' => '2026-03-15']),
-            CrmTestHelper::opportunity(['expected_closing_date' => null]),
-            CrmTestHelper::opportunity(['expected_closing_date' => '2026-01-10']),
-            CrmTestHelper::opportunity(['expected_closing_date' => '2026-01-31']),
-            CrmTestHelper::opportunity(['expected_closing_date' => '2025-12-01']),
+            CRMHelper::opportunity(['expected_closing_date' => '2026-03-15']),
+            CRMHelper::opportunity(['expected_closing_date' => null]),
+            CRMHelper::opportunity(['expected_closing_date' => '2026-01-10']),
+            CRMHelper::opportunity(['expected_closing_date' => '2026-01-31']),
+            CRMHelper::opportunity(['expected_closing_date' => '2025-12-01']),
         ];
 
         $result = ForecastReport::aggregate(reportEngineLeadQuery($leads), 'expected_closing', null, 'count');
@@ -300,12 +301,12 @@ describe('aggregate', function () {
     });
 
     it('totals an options dimension with its option labels', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $leads = [
-            CrmTestHelper::lead(),
-            CrmTestHelper::opportunity(),
-            CrmTestHelper::opportunity(),
+            CRMHelper::lead(),
+            CRMHelper::opportunity(),
+            CRMHelper::opportunity(),
         ];
 
         $result = LeadsAnalysisReport::aggregate(reportEngineLeadQuery($leads), 'type', null, 'count');
@@ -317,16 +318,16 @@ describe('aggregate', function () {
     });
 
     it('splits a group into one series per split value', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $firstStage = Stage::factory()->create(['name' => 'Report Split Alpha']);
         $secondStage = Stage::factory()->create(['name' => 'Report Split Beta']);
 
         $leads = [
-            CrmTestHelper::lead(['stage_id' => $firstStage->id]),
-            CrmTestHelper::opportunity(['stage_id' => $firstStage->id]),
-            CrmTestHelper::opportunity(['stage_id' => $secondStage->id]),
-            CrmTestHelper::opportunity(['stage_id' => $secondStage->id]),
+            CRMHelper::lead(['stage_id' => $firstStage->id]),
+            CRMHelper::opportunity(['stage_id' => $firstStage->id]),
+            CRMHelper::opportunity(['stage_id' => $secondStage->id]),
+            CRMHelper::opportunity(['stage_id' => $secondStage->id]),
         ];
 
         $result = LeadsAnalysisReport::aggregate(reportEngineLeadQuery($leads), 'stage', 'type', 'count');
@@ -346,9 +347,9 @@ describe('aggregate', function () {
     });
 
     it('ignores a split by the same dimension as the group', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $leads = [CrmTestHelper::opportunity(), CrmTestHelper::opportunity()];
+        $leads = [CRMHelper::opportunity(), CRMHelper::opportunity()];
 
         $result = PipelineReport::aggregate(reportEngineLeadQuery($leads), 'stage', 'stage', 'count');
 
@@ -357,10 +358,10 @@ describe('aggregate', function () {
     });
 
     it('falls back to the default group for an unknown group key', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $stage = Stage::factory()->create(['name' => 'Report Fallback Stage']);
-        $leads = [CrmTestHelper::opportunity(['stage_id' => $stage->id])];
+        $leads = [CRMHelper::opportunity(['stage_id' => $stage->id])];
 
         $result = PipelineReport::aggregate(reportEngineLeadQuery($leads), 'not_a_dimension', null, 'count');
 
@@ -375,12 +376,12 @@ describe('aggregate', function () {
     });
 
     it('computes each measure', function (string $measure, float $expected) {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         $stage = Stage::factory()->create(['name' => 'Report Measure Stage']);
 
         $leads = [
-            CrmTestHelper::opportunity([
+            CRMHelper::opportunity([
                 'stage_id'         => $stage->id,
                 'expected_revenue' => 1000,
                 'probability'      => 50,
@@ -388,7 +389,7 @@ describe('aggregate', function () {
                 'assigned_at'      => Carbon::parse('2026-01-03 00:00:00'),
                 'closed_at'        => Carbon::parse('2026-01-11 00:00:00'),
             ]),
-            CrmTestHelper::opportunity([
+            CRMHelper::opportunity([
                 'stage_id'         => $stage->id,
                 'expected_revenue' => 3000,
                 'probability'      => 20,
@@ -412,9 +413,9 @@ describe('aggregate', function () {
     ]);
 
     it('aggregates every dimension with every measure, also as a split, without SQL errors', function (string $report) {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity(['closed_at' => now(), 'converted_at' => now()]);
+        $lead = CRMHelper::opportunity(['closed_at' => now(), 'converted_at' => now()]);
 
         $query = $report === ActivityReport::class
             ? ActivityLog::query()->whereIn('crm_activity_logs.lead_id', [$lead->id])
@@ -453,26 +454,26 @@ describe('aggregate', function () {
 });
 
 describe('measures', function () {
-    it('formats values', function (string $format, mixed $value, string $expected) {
+    it('formats values', function (MeasureFormat $format, mixed $value, string $expected) {
         expect((new Measure('Test', 'count(*)', $format))->format($value, 'USD'))->toBe($expected);
     })->with([
-        'currency'       => [Measure::FORMAT_CURRENCY, 1234.5, Number::currency(1234.5, 'USD')],
-        'days'           => [Measure::FORMAT_DAYS, 12.345, '12.3'],
-        'percent'        => [Measure::FORMAT_PERCENT, 45.56, '45.6%'],
-        'integer'        => [Measure::FORMAT_INTEGER, 1234.6, '1,235'],
-        'null as zero'   => [Measure::FORMAT_INTEGER, null, '0'],
-        'null currency'  => [Measure::FORMAT_CURRENCY, null, Number::currency(0, 'USD')],
+        'currency'       => [MeasureFormat::CURRENCY, 1234.5, Number::currency(1234.5, 'USD')],
+        'days'           => [MeasureFormat::DAYS, 12.345, '12.3'],
+        'percent'        => [MeasureFormat::PERCENT, 45.56, '45.6%'],
+        'integer'        => [MeasureFormat::INTEGER, 1234.6, '1,235'],
+        'null as zero'   => [MeasureFormat::INTEGER, null, '0'],
+        'null currency'  => [MeasureFormat::CURRENCY, null, Number::currency(0, 'USD')],
     ]);
 
     it('formats currency in the given currency', function () {
-        expect((new Measure('Revenue', 'sum(1)', Measure::FORMAT_CURRENCY))->format(10, 'EUR'))
+        expect((new Measure('Revenue', 'sum(1)', MeasureFormat::CURRENCY))->format(10, 'EUR'))
             ->toBe(Number::currency(10, 'EUR'));
     });
 
     it('rounds integers to whole numbers and other formats to two decimals', function () {
         expect((new Measure('Count', 'count(*)'))->round('2.6'))->toBe(3.0)
-            ->and((new Measure('Revenue', 'sum(1)', Measure::FORMAT_CURRENCY))->round('2.666'))->toBe(2.67)
-            ->and((new Measure('Days', 'avg(1)', Measure::FORMAT_DAYS))->round(null))->toBe(0.0);
+            ->and((new Measure('Revenue', 'sum(1)', MeasureFormat::CURRENCY))->round('2.666'))->toBe(2.67)
+            ->and((new Measure('Days', 'avg(1)', MeasureFormat::DAYS))->round(null))->toBe(0.0);
     });
 
     it('uses the expected aggregates on crm_leads', function () {
@@ -482,9 +483,9 @@ describe('measures', function () {
             ->and($measures['expected_revenue']->aggregate)->toBe('sum(crm_leads.expected_revenue)')
             ->and($measures['prorated_revenue']->aggregate)->toBe('sum(crm_leads.expected_revenue * crm_leads.probability / 100)')
             ->and($measures['probability']->aggregate)->toBe('avg(crm_leads.probability)')
-            ->and($measures['expected_revenue']->format)->toBe(Measure::FORMAT_CURRENCY)
-            ->and($measures['probability']->format)->toBe(Measure::FORMAT_PERCENT)
-            ->and($measures['days_to_close']->format)->toBe(Measure::FORMAT_DAYS);
+            ->and($measures['expected_revenue']->format)->toBe(MeasureFormat::CURRENCY)
+            ->and($measures['probability']->format)->toBe(MeasureFormat::PERCENT)
+            ->and($measures['days_to_close']->format)->toBe(MeasureFormat::DAYS);
     });
 });
 
@@ -501,9 +502,9 @@ describe('sql', function () {
     });
 
     it('extracts the YYYY-MM month of a date column', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity(['expected_closing_date' => '2026-07-19']);
+        $lead = CRMHelper::opportunity(['expected_closing_date' => '2026-07-19']);
 
         $month = Lead::query()
             ->whereKey($lead->id)
@@ -514,9 +515,9 @@ describe('sql', function () {
     });
 
     it('computes the days between two datetime columns', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
-        $lead = CrmTestHelper::opportunity([
+        $lead = CRMHelper::opportunity([
             'created_at' => Carbon::parse('2026-01-01 00:00:00'),
             'closed_at'  => Carbon::parse('2026-01-04 12:00:00'),
         ]);

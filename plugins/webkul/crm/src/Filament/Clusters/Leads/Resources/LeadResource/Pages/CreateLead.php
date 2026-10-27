@@ -4,21 +4,21 @@ namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
-use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
 
 class CreateLead extends CreateRecord
 {
-    use HasCrmClusterNavigation;
+    use HasCRMClusterNavigation;
 
     protected static string $resource = LeadResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['type'] = Lead::TYPE_LEAD;
+        $data['type'] = LeadType::LEAD;
 
         return $data;
     }

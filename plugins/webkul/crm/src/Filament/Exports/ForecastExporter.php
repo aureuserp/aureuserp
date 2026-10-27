@@ -20,11 +20,11 @@ class ForecastExporter extends OpportunityExporter
                 ->state(fn (Lead $record): float => round((float) $record->expected_revenue * (float) $record->probability / 100, 2)),
             ExportColumn::make('forecast_status')
                 ->label(__('crm::filament/transfers.columns.status'))
-                ->state(fn (Lead $record): string => __('crm::filament/clusters/reporting/report.presets.'.match (true) {
-                    $record->trashed() => 'lost',
-                    $record->isWon()   => 'won',
-                    default            => 'ongoing',
-                })),
+                ->state(fn (Lead $record): string => match (true) {
+                    $record->trashed() => __('crm::filament/clusters/reporting/report.presets.lost'),
+                    $record->isWon()   => __('crm::filament/clusters/reporting/report.presets.won'),
+                    default            => __('crm::filament/clusters/reporting/report.presets.ongoing'),
+                }),
         ]);
 
         return $columns;

@@ -1,9 +1,9 @@
 <?php
 
-use Filament\Actions\Action;
-use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
 use Webkul\Chatter\Models\Message;
+use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ManageActivities as ManageLeadActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\GraphActivities;
@@ -13,8 +13,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\Activi
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByTypeChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByUserChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ViewOpportunity;
-use Webkul\Crm\Filament\RelationManagers\ActivitiesRelationManager;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ManageActivities as ManageOpportunityActivities;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\Lead;
@@ -24,13 +23,13 @@ use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
 use Wezlo\FilamentKanban\KanbanColumn;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function actingAsActivityPlanner(): User
 {
-    return CrmTestHelper::actingAsCrmUser(['activity', 'opportunity', 'lead']);
+    return CRMHelper::actingAsCRMUser(['activity', 'opportunity', 'lead']);
 }
 
 function crmActivityType(string $name = 'Email'): ActivityType
@@ -43,7 +42,7 @@ function myActivitiesOtherUserId(): int
     return (int) User::query()->whereKeyNot(auth()->id())->value('id');
 }
 
-function scheduledCrmActivity(Lead $lead, array $attributes = []): Activity
+function scheduledCRMActivity(Lead $lead, array $attributes = []): Activity
 {
     $message = $lead->addMessage([
         'type'             => 'activity',
@@ -73,48 +72,65 @@ function leadHasAnyActivity(Lead $lead): bool
 it('opens on the kanban board and keeps the list and graph on their own urls', function () {
     $pages = ActivityResource::getPages();
 
-    expect($pages['index']->getPage())->toBe(KanbanActivities::class)
-        ->and($pages['list']->getPage())->toBe(ListActivities::class)
+    expect($pages['index']->getPage())->toBe(ListActivities::class)
+        ->and($pages['kanban']->getPage())->toBe(KanbanActivities::class)
         ->and($pages['graph']->getPage())->toBe(GraphActivities::class)
-        ->and(array_keys($pages))->toBe(['index', 'list', 'graph']);
+        ->and(array_keys($pages))->toBe(['index', 'kanban', 'graph']);
 
     expect(ActivityResource::getUrl('index'))->toEndWith('/crm/sales/activities')
-        ->and(ActivityResource::getUrl('list'))->toEndWith('/crm/sales/activities/list')
+        ->and(ActivityResource::getUrl('kanban'))->toEndWith('/crm/sales/activities/kanban')
         ->and(ActivityResource::getUrl('graph'))->toEndWith('/crm/sales/activities/graph');
 });
 
-it('only offers the views the user is not on', function (string $currentPage, array $expected) {
-    actingAsActivityPlanner();
-
-    $names = collect(ActivityResource::getViewSwitcherActions($currentPage))
-        ->map(fn (Action $action): string => $action->getName())
-        ->all();
-
-    expect($names)->toBe([...$expected, 'scheduleActivity']);
-})->with([
-    'kanban' => ['index', ['listView', 'graphView']],
-    'list'   => ['list', ['kanbanView', 'graphView']],
-    'graph'  => ['graph', ['kanbanView', 'listView']],
-]);
-
-it('shows the view toggle in each page header', function (string $page, array $visible, string $missing) {
+it('shows kanban, list and graph tabs on every activity view', function (string $page, array $active) {
     actingAsActivityPlanner();
 
     $component = Livewire::test($page)->assertOk();
 
-    foreach ($visible as $name) {
-        $component->assertActionVisible($name);
-    }
+    $tabs = collect($component->instance()->getRecordNavigationTabs());
 
-    $component->assertActionDoesNotExist($missing);
+    expect($tabs->map(fn ($tab): string => $tab->getLabel())->all())->toBe([
+        __('crm::filament/clusters/sales/resources/activity.views.list'),
+        __('crm::filament/clusters/sales/resources/activity.views.kanban'),
+        __('crm::filament/clusters/sales/resources/activity.views.graph'),
+    ])
+        ->and($tabs->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
+
+    $component->assertActionVisible('scheduleActivity')
+        ->assertActionDoesNotExist('listView');
 })->with([
-    'kanban' => [KanbanActivities::class, ['listView', 'graphView', 'scheduleActivity'], 'kanbanView'],
-    'list'   => [ListActivities::class, ['kanbanView', 'graphView', 'scheduleActivity'], 'listView'],
-    'graph'  => [GraphActivities::class, ['kanbanView', 'listView', 'scheduleActivity'], 'graphView'],
+    'list'   => [ListActivities::class, [true, false, false]],
+    'kanban' => [KanbanActivities::class, [false, true, false]],
+    'graph'  => [GraphActivities::class, [false, false, true]],
 ]);
 
+it('snoozes an activity by seven days from its due date or from today when overdue', function () {
+    actingAsActivityPlanner();
+
+    $upcoming = scheduledCRMActivity(CRMHelper::opportunity(), ['date_deadline' => today()->addDays(3)]);
+    $overdue = scheduledCRMActivity(CRMHelper::opportunity(), ['date_deadline' => today()->subDays(5)]);
+
+    Livewire::test(ListActivities::class)
+        ->callTableAction('snoozeActivity', $upcoming)
+        ->callTableAction('snoozeActivity', $overdue);
+
+    expect($upcoming->refresh()->date_deadline->toDateString())->toBe(today()->addDays(10)->toDateString())
+        ->and($overdue->refresh()->date_deadline->toDateString())->toBe(today()->addDays(7)->toDateString());
+});
+
+it('offers email, SMS and snooze on each activity row', function () {
+    actingAsActivityPlanner();
+
+    $activity = scheduledCRMActivity(CRMHelper::opportunity(['email' => 'row@acme.test']));
+
+    Livewire::test(ListActivities::class)
+        ->assertTableActionVisible('sendEmail', $activity)
+        ->assertTableActionVisible('sendSMS', $activity)
+        ->assertTableActionVisible('snoozeActivity', $activity);
+});
+
 it('forbids every view without the view any activity permission', function (string $page) {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     Livewire::test($page)->assertForbidden();
 })->with([
@@ -126,10 +142,10 @@ it('forbids every view without the view any activity permission', function (stri
 it('lists activities on leads and opportunities but not on other records', function () {
     actingAsActivityPlanner();
 
-    $onOpportunity = scheduledCrmActivity(CrmTestHelper::opportunity());
-    $onLead = scheduledCrmActivity(CrmTestHelper::lead());
+    $onOpportunity = scheduledCRMActivity(CRMHelper::opportunity());
+    $onLead = scheduledCRMActivity(CRMHelper::lead());
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId(), 'is_active' => true]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
 
     $onTeam = $team->addMessage([
         'type'             => 'activity',
@@ -151,11 +167,11 @@ it('lists activities on leads and opportunities but not on other records', funct
 it('hides the activities of lost leads and opportunities', function () {
     actingAsActivityPlanner();
 
-    $lostOpportunity = CrmTestHelper::opportunity();
-    $lostLead = CrmTestHelper::lead();
+    $lostOpportunity = CRMHelper::opportunity();
+    $lostLead = CRMHelper::lead();
 
-    $onLostOpportunity = scheduledCrmActivity($lostOpportunity);
-    $onLostLead = scheduledCrmActivity($lostLead);
+    $onLostOpportunity = scheduledCRMActivity($lostOpportunity);
+    $onLostLead = scheduledCRMActivity($lostLead);
 
     $lostOpportunity->markAsLost(null);
     $lostLead->markAsLost(null);
@@ -168,10 +184,10 @@ it('hides the activities of lost leads and opportunities', function () {
 it('shows the current user\'s activities by default and everyone\'s in the all view', function () {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $mine = scheduledCrmActivity($opportunity);
-    $someoneElses = scheduledCrmActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
+    $mine = scheduledCRMActivity($opportunity);
+    $someoneElses = scheduledCRMActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
     $component = Livewire::test(ListActivities::class)
         ->assertSet('activeTableView', 'my_activities')
@@ -186,12 +202,12 @@ it('shows the current user\'s activities by default and everyone\'s in the all v
 it('splits the user\'s activities by due status', function (string $view, string $visible) {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $activities = [
-        'overdue' => scheduledCrmActivity($opportunity, ['date_deadline' => now()->subDays(2)->toDateString()]),
-        'today'   => scheduledCrmActivity($opportunity, ['date_deadline' => now()->toDateString()]),
-        'planned' => scheduledCrmActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString()]),
+        'overdue' => scheduledCRMActivity($opportunity, ['date_deadline' => now()->subDays(2)->toDateString()]),
+        'today'   => scheduledCRMActivity($opportunity, ['date_deadline' => now()->toDateString()]),
+        'planned' => scheduledCRMActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString()]),
     ];
 
     Livewire::test(ListActivities::class)
@@ -207,7 +223,7 @@ it('splits the user\'s activities by due status', function (string $view, string
 it('schedules an activity on a chosen opportunity', function () {
     $user = actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity(['name' => 'Opportunity to follow up']);
+    $opportunity = CRMHelper::opportunity(['name' => 'Opportunity to follow up']);
 
     $type = crmActivityType('Call');
 
@@ -234,8 +250,8 @@ it('does not schedule on an opportunity outside the picker', function (string $c
     $user = actingAsActivityPlanner();
 
     $target = match ($case) {
-        'another company' => CrmTestHelper::opportunity(['company_id' => Company::factory()->create()->id]),
-        'lost'            => tap(CrmTestHelper::opportunity(), fn (Lead $lead) => $lead->markAsLost(null)),
+        'another company' => CRMHelper::opportunity(['company_id' => Company::factory()->create()->id]),
+        'lost'            => tap(CRMHelper::opportunity(), fn (Lead $lead) => $lead->markAsLost(null)),
     };
 
     Livewire::test(ListActivities::class)
@@ -250,9 +266,9 @@ it('does not schedule on an opportunity outside the picker', function (string $c
 })->with(['another company', 'lost']);
 
 it('does not schedule on an opportunity the user cannot edit', function () {
-    $user = CrmTestHelper::actingAs(['view_any_crm_activity', 'view_crm_activity', 'view_any_crm_opportunity', 'view_crm_opportunity']);
+    $user = CRMHelper::actingAs(['view_any_crm_activity', 'view_crm_activity', 'view_any_crm_opportunity', 'view_crm_opportunity']);
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     Livewire::test(ListActivities::class)
         ->callAction('scheduleActivity', data: [
@@ -267,7 +283,7 @@ it('does not schedule on an opportunity the user cannot edit', function () {
 });
 
 it('hides scheduling without access to the pipeline', function () {
-    CrmTestHelper::actingAsCrmUser(['activity']);
+    CRMHelper::actingAsCRMUser(['activity']);
 
     Livewire::test(ListActivities::class)->assertActionHidden('scheduleActivity');
 });
@@ -308,14 +324,11 @@ it('pre-fills the form for the column\'s type from a kanban column', function ()
 it('schedules on the record itself from its page without a picker', function () {
     $user = actingAsActivityPlanner();
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
-    Livewire::test(ActivitiesRelationManager::class, [
-        'ownerRecord' => $lead,
-        'pageClass'   => ViewOpportunity::class,
-    ])
-        ->assertActionVisible(TestAction::make('scheduleActivity')->table())
-        ->callAction(TestAction::make('scheduleActivity')->table(), data: [
+    Livewire::test(ManageLeadActivities::class, ['record' => $lead->id])
+        ->assertActionVisible('scheduleActivity')
+        ->callAction('scheduleActivity', data: [
             'activity_type_id' => crmActivityType('Meeting')->id,
             'date_deadline'    => now()->addDays(2)->toDateString(),
             'summary'          => 'Meet on the lead page',
@@ -329,20 +342,17 @@ it('schedules on the record itself from its page without a picker', function () 
 it('hides scheduling on a lost record\'s page', function () {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
     $opportunity->markAsLost(null);
 
-    Livewire::test(ActivitiesRelationManager::class, [
-        'ownerRecord' => Lead::withTrashed()->findOrFail($opportunity->id),
-        'pageClass'   => ViewOpportunity::class,
-    ])
-        ->assertActionHidden(TestAction::make('scheduleActivity')->table());
+    Livewire::test(ManageOpportunityActivities::class, ['record' => $opportunity->id])
+        ->assertActionHidden('scheduleActivity');
 });
 
 it('reschedules an activity', function () {
     $user = actingAsActivityPlanner();
 
-    $activity = scheduledCrmActivity(CrmTestHelper::opportunity());
+    $activity = scheduledCRMActivity(CRMHelper::opportunity());
 
     Livewire::test(ListActivities::class)
         ->callTableAction('rescheduleActivity', $activity, data: [
@@ -361,7 +371,7 @@ it('reschedules an activity', function () {
 it('requires a due date to reschedule', function () {
     actingAsActivityPlanner();
 
-    $activity = scheduledCrmActivity(CrmTestHelper::opportunity());
+    $activity = scheduledCRMActivity(CRMHelper::opportunity());
 
     Livewire::test(ListActivities::class)
         ->callTableAction('rescheduleActivity', $activity, data: ['date_deadline' => null])
@@ -371,9 +381,9 @@ it('requires a due date to reschedule', function () {
 it('marks an activity as done and logs it', function () {
     $user = actingAsActivityPlanner();
 
-    $lead = CrmTestHelper::opportunity();
+    $lead = CRMHelper::opportunity();
 
-    $activity = scheduledCrmActivity($lead, ['summary' => 'Proposal call']);
+    $activity = scheduledCRMActivity($lead, ['summary' => 'Proposal call']);
 
     Livewire::test(ListActivities::class)
         ->callTableAction('markActivityAsDone', $activity, data: ['feedback' => 'Went well'])
@@ -393,16 +403,16 @@ it('marks an activity as done and logs it', function () {
     expect($log->activity_type_id)->toBe(crmActivityType()->id)
         ->and($log->done_by)->toBe($user->id)
         ->and($log->summary)->toBe('Proposal call')
-        ->and($log->lead_type)->toBe(Lead::TYPE_OPPORTUNITY)
+        ->and($log->lead_type)->toBe(LeadType::OPPORTUNITY)
         ->and($log->done_at)->not->toBeNull();
 });
 
 it('cancels an activity without logging it as done', function () {
     actingAsActivityPlanner();
 
-    $lead = CrmTestHelper::opportunity();
+    $lead = CRMHelper::opportunity();
 
-    $activity = scheduledCrmActivity($lead);
+    $activity = scheduledCRMActivity($lead);
 
     Livewire::test(ListActivities::class)
         ->callTableAction('delete', $activity);
@@ -412,9 +422,9 @@ it('cancels an activity without logging it as done', function () {
 });
 
 it('hides done, reschedule and cancel without the activity permissions', function () {
-    CrmTestHelper::actingAs(['view_any_crm_activity', 'view_crm_activity', 'view_any_crm_opportunity']);
+    CRMHelper::actingAs(['view_any_crm_activity', 'view_crm_activity', 'view_any_crm_opportunity']);
 
-    $activity = scheduledCrmActivity(CrmTestHelper::opportunity());
+    $activity = scheduledCRMActivity(CRMHelper::opportunity());
 
     Livewire::test(ListActivities::class)
         ->assertTableActionHidden('markActivityAsDone', $activity)
@@ -446,10 +456,10 @@ it('uses the crm activity types as kanban columns', function () {
 it('opens the board without a default filter, showing everyone\'s activities', function () {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $mine = scheduledCrmActivity($opportunity);
-    $someoneElses = scheduledCrmActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
+    $mine = scheduledCRMActivity($opportunity);
+    $someoneElses = scheduledCRMActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
     $component = Livewire::test(KanbanActivities::class)
         ->assertSet('activeTableView', 'default');
@@ -465,7 +475,7 @@ it('opens the board without a default filter, showing everyone\'s activities', f
 it('changes the activity type when a card is moved to another column', function () {
     actingAsActivityPlanner();
 
-    $activity = scheduledCrmActivity(CrmTestHelper::opportunity());
+    $activity = scheduledCRMActivity(CRMHelper::opportunity());
 
     $meeting = crmActivityType('Meeting');
 
@@ -475,26 +485,18 @@ it('changes the activity type when a card is moved to another column', function 
     expect($activity->refresh()->activity_type_id)->toBe($meeting->id);
 });
 
-it('renders the graph page and switches its scope', function () {
+it('renders the graph page without a user scope toggle', function () {
     actingAsActivityPlanner();
 
     Livewire::test(GraphActivities::class)
         ->assertOk()
-        ->assertSet('scope', 'mine')
-        ->assertActionHasUrl('toggleScope', ActivityResource::getUrl('graph', ['scope' => 'all']));
-
-    $component = Livewire::withQueryParams(['scope' => 'all'])
-        ->test(GraphActivities::class)
-        ->assertSet('scope', 'all')
-        ->assertActionHasUrl('toggleScope', ActivityResource::getUrl('graph', ['scope' => 'mine']));
-
-    expect($component->instance()->getWidgetData())->toBe(['scope' => 'all']);
+        ->assertActionDoesNotExist('toggleScope');
 });
 
 it('renders the graph widgets', function (string $widget, string $scope) {
     actingAsActivityPlanner();
 
-    scheduledCrmActivity(CrmTestHelper::opportunity());
+    scheduledCRMActivity(CRMHelper::opportunity());
 
     Livewire::test($widget, ['scope' => $scope])->assertOk();
 })->with([
@@ -507,10 +509,10 @@ it('renders the graph widgets', function (string $widget, string $scope) {
 it('counts the user\'s activities in the mine scope and everyone\'s in the all scope', function () {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $mine = scheduledCrmActivity($opportunity);
-    $someoneElses = scheduledCrmActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
+    $mine = scheduledCRMActivity($opportunity);
+    $someoneElses = scheduledCRMActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
     $mineIds = ActivityResource::getScopedQuery('mine')->pluck('id')->all();
     $allIds = ActivityResource::getScopedQuery('all')->pluck('id')->all();
@@ -522,10 +524,10 @@ it('counts the user\'s activities in the mine scope and everyone\'s in the all s
 it('filters the board by due status and activity type like the list', function () {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $overdue = scheduledCrmActivity($opportunity, ['date_deadline' => now()->subDays(2)->toDateString()]);
-    $planned = scheduledCrmActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString(), 'activity_type_id' => crmActivityType('Call')->id]);
+    $overdue = scheduledCRMActivity($opportunity, ['date_deadline' => now()->subDays(2)->toDateString()]);
+    $planned = scheduledCRMActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString(), 'activity_type_id' => crmActivityType('Call')->id]);
 
     $ids = fn (array $filters): array => collect(Livewire::test(KanbanActivities::class)
         ->set('tableFilters', $filters)
@@ -543,8 +545,8 @@ it('filters the board by due status and activity type like the list', function (
 it('renders activity cards like the pipeline cards and marks an activity done from the card', function () {
     actingAsActivityPlanner();
 
-    $opportunity = CrmTestHelper::opportunity(['name' => 'Activity card opportunity']);
-    $activity = scheduledCrmActivity($opportunity, ['summary' => 'Card summary call', 'activity_type_id' => crmActivityType('Call')->id]);
+    $opportunity = CRMHelper::opportunity(['name' => 'Activity card opportunity']);
+    $activity = scheduledCRMActivity($opportunity, ['summary' => 'Card summary call', 'activity_type_id' => crmActivityType('Call')->id]);
 
     $component = Livewire::test(KanbanActivities::class)
         ->assertSee('Card summary call')
@@ -561,10 +563,10 @@ it('shows the due-status progress of each activity type and filters a column fro
     actingAsActivityPlanner();
 
     $call = crmActivityType('Call');
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $overdue = scheduledCrmActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->subDays(2)->toDateString()]);
-    $planned = scheduledCrmActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->addDays(5)->toDateString()]);
+    $overdue = scheduledCRMActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->subDays(2)->toDateString()]);
+    $planned = scheduledCRMActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->addDays(5)->toDateString()]);
 
     $component = Livewire::test(KanbanActivities::class);
     $column = collect($component->instance()->getKanbanColumns())->firstWhere('value', (string) $call->id);

@@ -18,41 +18,39 @@ abstract class LeadRecordExporter extends Exporter
 
     protected static function leadColumns(): array
     {
-        $label = fn (string $key): string => __('crm::filament/transfers.columns.'.$key);
-
         return [
-            ExportColumn::make('id')->label($label('id')),
-            ExportColumn::make('name')->label($label('name')),
-            ExportColumn::make('contact_name')->label($label('contact-name')),
-            ExportColumn::make('company_name')->label($label('company-name')),
-            ExportColumn::make('job_title')->label($label('job-title'))->enabledByDefault(false),
-            ExportColumn::make('email')->label($label('email')),
-            ExportColumn::make('phone')->label($label('phone')),
-            ExportColumn::make('website')->label($label('website'))->enabledByDefault(false),
-            ExportColumn::make('street1')->label($label('street1'))->enabledByDefault(false),
-            ExportColumn::make('street2')->label($label('street2'))->enabledByDefault(false),
-            ExportColumn::make('city')->label($label('city')),
-            ExportColumn::make('zip')->label($label('zip'))->enabledByDefault(false),
-            ExportColumn::make('country.name')->label($label('country')),
-            ExportColumn::make('stage.name')->label($label('stage')),
-            ExportColumn::make('user.name')->label($label('salesperson')),
-            ExportColumn::make('team.name')->label($label('team')),
+            ExportColumn::make('id')->label(__('crm::filament/transfers.columns.id')),
+            ExportColumn::make('name')->label(__('crm::filament/transfers.columns.name')),
+            ExportColumn::make('contact_name')->label(__('crm::filament/transfers.columns.contact-name')),
+            ExportColumn::make('company_name')->label(__('crm::filament/transfers.columns.company-name')),
+            ExportColumn::make('job_title')->label(__('crm::filament/transfers.columns.job-title'))->enabledByDefault(false),
+            ExportColumn::make('email')->label(__('crm::filament/transfers.columns.email')),
+            ExportColumn::make('phone')->label(__('crm::filament/transfers.columns.phone')),
+            ExportColumn::make('website')->label(__('crm::filament/transfers.columns.website'))->enabledByDefault(false),
+            ExportColumn::make('street1')->label(__('crm::filament/transfers.columns.street1'))->enabledByDefault(false),
+            ExportColumn::make('street2')->label(__('crm::filament/transfers.columns.street2'))->enabledByDefault(false),
+            ExportColumn::make('city')->label(__('crm::filament/transfers.columns.city')),
+            ExportColumn::make('zip')->label(__('crm::filament/transfers.columns.zip'))->enabledByDefault(false),
+            ExportColumn::make('country.name')->label(__('crm::filament/transfers.columns.country')),
+            ExportColumn::make('stage.name')->label(__('crm::filament/transfers.columns.stage')),
+            ExportColumn::make('user.name')->label(__('crm::filament/transfers.columns.salesperson')),
+            ExportColumn::make('team.name')->label(__('crm::filament/transfers.columns.team')),
             ExportColumn::make('priority')
-                ->label($label('priority'))
+                ->label(__('crm::filament/transfers.columns.priority'))
                 ->formatStateUsing(fn (mixed $state): string => $state instanceof OpportunityPriority ? $state->getLabel() : (string) $state),
-            ExportColumn::make('probability')->label($label('probability')),
+            ExportColumn::make('probability')->label(__('crm::filament/transfers.columns.probability')),
             ExportColumn::make('tags')
-                ->label($label('tags'))
+                ->label(__('crm::filament/transfers.columns.tags'))
                 ->state(fn (Lead $record): string => $record->tags->pluck('name')->implode(', ')),
-            ExportColumn::make('source.name')->label($label('source'))->enabledByDefault(false),
-            ExportColumn::make('medium.name')->label($label('medium'))->enabledByDefault(false),
-            ExportColumn::make('campaign.name')->label($label('campaign'))->enabledByDefault(false),
+            ExportColumn::make('source.name')->label(__('crm::filament/transfers.columns.source'))->enabledByDefault(false),
+            ExportColumn::make('medium.name')->label(__('crm::filament/transfers.columns.medium'))->enabledByDefault(false),
+            ExportColumn::make('campaign.name')->label(__('crm::filament/transfers.columns.campaign'))->enabledByDefault(false),
             ExportColumn::make('description')
-                ->label($label('notes'))
+                ->label(__('crm::filament/transfers.columns.notes'))
                 ->formatStateUsing(fn (?string $state): string => trim(strip_tags((string) $state)))
                 ->enabledByDefault(false),
-            ExportColumn::make('lostReason.name')->label($label('lost-reason'))->enabledByDefault(false),
-            ExportColumn::make('created_at')->label($label('created-at'))->enabledByDefault(false),
+            ExportColumn::make('lostReason.name')->label(__('crm::filament/transfers.columns.lost-reason'))->enabledByDefault(false),
+            ExportColumn::make('created_at')->label(__('crm::filament/transfers.columns.created-at'))->enabledByDefault(false),
         ];
     }
 

@@ -3,7 +3,7 @@
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
-use Webkul\Crm\CrmServiceProvider;
+use Webkul\Crm\CRMServiceProvider;
 use Webkul\Crm\Database\Seeders\DatabaseSeeder;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Models\ActivityType;
@@ -15,9 +15,9 @@ use Webkul\Crm\Models\Stage;
 use Webkul\Crm\Models\Tag;
 use Webkul\Sale\Models\Team;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('creates the crm tables', function (string $table) {
     expect(Schema::hasTable($table))->toBeTrue();
@@ -74,25 +74,25 @@ it('does not duplicate or overwrite the defaults when seeding again', function (
 });
 
 it('depends on the contacts and sales plugins', function () {
-    $provider = app()->getProvider(CrmServiceProvider::class);
+    $provider = app()->getProvider(CRMServiceProvider::class);
 
-    expect($provider)->toBeInstanceOf(CrmServiceProvider::class);
+    expect($provider)->toBeInstanceOf(CRMServiceProvider::class);
 
     $package = Closure::bind(function () {
         return $this->package;
-    }, $provider, CrmServiceProvider::class)();
+    }, $provider, CRMServiceProvider::class)();
 
     expect($package->name)->toBe('crm')
         ->and($package->dependencies)->toBe(['contacts', 'sales']);
 });
 
 it('registers the opportunities relation on sales teams', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-    $opportunity = CrmTestHelper::opportunity(['team_id' => $team->id]);
-    $otherOpportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity(['team_id' => $team->id]);
+    $otherOpportunity = CRMHelper::opportunity();
 
     $relation = $team->opportunities();
 

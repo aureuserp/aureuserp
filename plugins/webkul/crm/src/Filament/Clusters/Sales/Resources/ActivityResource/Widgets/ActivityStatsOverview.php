@@ -18,14 +18,14 @@ class ActivityStatsOverview extends StatsOverviewWidget
         $query = fn () => ActivityResource::getScopedQuery($this->scope);
 
         return [
-            Stat::make(ActivityDueStatus::Overdue->getLabel(), $query()->overdue()->count())
-                ->icon(ActivityDueStatus::Overdue->getIcon())
+            Stat::make(ActivityDueStatus::OVERDUE->getLabel(), $query()->overdue()->count())
+                ->icon(ActivityDueStatus::OVERDUE->getIcon())
                 ->color('danger'),
-            Stat::make(ActivityDueStatus::Today->getLabel(), $query()->dueToday()->count())
-                ->icon(ActivityDueStatus::Today->getIcon())
+            Stat::make(ActivityDueStatus::TODAY->getLabel(), $query()->dueToday()->count())
+                ->icon(ActivityDueStatus::TODAY->getIcon())
                 ->color('warning'),
-            Stat::make(ActivityDueStatus::Planned->getLabel(), $query()->planned()->count())
-                ->icon(ActivityDueStatus::Planned->getIcon())
+            Stat::make(ActivityDueStatus::PLANNED->getLabel(), $query()->planned()->count())
+                ->icon(ActivityDueStatus::PLANNED->getIcon())
                 ->color('success'),
             Stat::make(__('crm::filament/clusters/sales/resources/activity/pages/graph-activities.widgets.total'), $query()->count())
                 ->icon('heroicon-o-clock'),

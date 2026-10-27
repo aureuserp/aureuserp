@@ -10,14 +10,14 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\CreateCon
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\EditContact;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ListContacts;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ViewContact;
-use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
+use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
 use Webkul\Crm\Policies\ContactPolicy;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner as BasePartner;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 /**
  * The Contacts plugin's own permissions for the same partner records.
@@ -28,7 +28,7 @@ function contactsAppPartnerPermissions(): array
 {
     return array_map(
         fn (string $affix): string => "{$affix}_contact_partner",
-        CrmTestHelper::ALL_AFFIXES,
+        CRMHelper::ALL_AFFIXES,
     );
 }
 
@@ -37,7 +37,7 @@ function crmContact(array $attributes = []): Partner
     $partner = BasePartner::factory()->create([
         'account_type' => AccountType::INDIVIDUAL,
         'sub_type'     => 'partner',
-        'company_id'   => CrmTestHelper::companyId(),
+        'company_id'   => CRMHelper::companyId(),
         ...$attributes,
     ]);
 
@@ -67,12 +67,12 @@ function crmContactAccountingFields(): array
 }
 
 it('authorizes through the crm contact policy', function () {
-    expect(class_uses_recursive(ContactResource::class))->toContain(HasCrmAuthorization::class)
-        ->and(ContactResource::getCrmPolicy())->toBe(ContactPolicy::class);
+    expect(class_uses_recursive(ContactResource::class))->toContain(HasCRMAuthorization::class)
+        ->and(ContactResource::getCRMPolicy())->toBe(ContactPolicy::class);
 });
 
 it('lists contacts with the crm contact permissions', function () {
-    CrmTestHelper::actingAsCrmUser(['contact']);
+    CRMHelper::actingAsCRMUser(['contact']);
 
     $contact = crmContact(['name' => 'Crm Listed Contact']);
 
@@ -83,7 +83,7 @@ it('lists contacts with the crm contact permissions', function () {
 });
 
 it('creates a contact with the crm contact permissions', function () {
-    CrmTestHelper::actingAsCrmUser(['contact']);
+    CRMHelper::actingAsCRMUser(['contact']);
 
     Livewire::test(CreateContact::class)
         ->assertOk()
@@ -100,7 +100,7 @@ it('creates a contact with the crm contact permissions', function () {
 });
 
 it('requires a name to create a contact', function () {
-    CrmTestHelper::actingAsCrmUser(['contact']);
+    CRMHelper::actingAsCRMUser(['contact']);
 
     Livewire::test(CreateContact::class)
         ->fillForm(['name' => ''])
@@ -109,7 +109,7 @@ it('requires a name to create a contact', function () {
 });
 
 it('shows a contact with the crm contact permissions', function () {
-    CrmTestHelper::actingAsCrmUser(['contact']);
+    CRMHelper::actingAsCRMUser(['contact']);
 
     $contact = crmContact(['name' => 'Crm Viewed Contact']);
 
@@ -119,7 +119,7 @@ it('shows a contact with the crm contact permissions', function () {
 });
 
 it('edits a contact with the crm contact permissions', function () {
-    CrmTestHelper::actingAsCrmUser(['contact']);
+    CRMHelper::actingAsCRMUser(['contact']);
 
     $contact = crmContact(['name' => 'Crm Contact Before']);
 
@@ -133,7 +133,7 @@ it('edits a contact with the crm contact permissions', function () {
 });
 
 it('forbids the crm contact pages with only the contacts app permissions', function (string $page, bool $needsRecord) {
-    CrmTestHelper::actingAs(contactsAppPartnerPermissions());
+    CRMHelper::actingAs(contactsAppPartnerPermissions());
 
     $parameters = $needsRecord ? ['record' => crmContact()->id] : [];
 
@@ -146,7 +146,7 @@ it('forbids the crm contact pages with only the contacts app permissions', funct
 ]);
 
 it('forbids each crm contact page without its own permission', function (string $page, bool $needsRecord, array $affixes) {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['contact'], $affixes));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['contact'], $affixes));
 
     $parameters = $needsRecord ? ['record' => crmContact()->id] : [];
 
@@ -159,7 +159,7 @@ it('forbids each crm contact page without its own permission', function (string 
 ]);
 
 it('does not open the contacts app with only the crm contact permissions', function () {
-    CrmTestHelper::actingAsCrmUser(['contact']);
+    CRMHelper::actingAsCRMUser(['contact']);
 
     Livewire::test(ContactsAppListPartners::class)->assertForbidden();
 });

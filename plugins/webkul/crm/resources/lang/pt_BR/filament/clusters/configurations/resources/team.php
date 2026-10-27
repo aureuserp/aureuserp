@@ -7,4 +7,25 @@ return [
     'navigation' => [
         'title' => 'Equipes de vendas',
     ],
+
+    'pages' => [
+        'assignment' => [
+            'navigation' => 'Regras de atribuição',
+            'title'      => ':team — Regras de atribuição',
+        ],
+
+        'alias' => [
+            'navigation' => 'Alias de e-mail',
+            'title'      => ':team — Alias de e-mail',
+        ],
+
+        'members' => [
+            'title'         => ':team — Membros',
+            'inactive'      => 'Inativo',
+            'skipped'       => 'Ignora a atribuição automática',
+            'rules'         => '{1} :count regra|[0,*] :count regras',
+            'leads-30-days' => 'Leads (30 dias)',
+            'gauge'         => ':assigned de :max leads atribuídos nos últimos 30 dias',
+        ],
+    ],
 ];

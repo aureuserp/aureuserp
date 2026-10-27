@@ -5,17 +5,17 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\Kanba
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function stageTeam(): Team
 {
-    return Team::factory()->create(['company_id' => CrmTestHelper::companyId(), 'is_active' => true]);
+    return Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
 }
 
 it('links stages to sales teams through crm_stage_team_rel', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $team = stageTeam();
 
@@ -36,7 +36,7 @@ it('links stages to sales teams through crm_stage_team_rel', function () {
 });
 
 it('shows a team its own and the shared stages only', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $team = stageTeam();
     $otherTeam = stageTeam();
@@ -53,7 +53,7 @@ it('shows a team its own and the shared stages only', function () {
 });
 
 it('hides other teams\' stages on a team\'s pipeline board', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $team = stageTeam();
     $others = Stage::query()->create(['name' => 'Others '.uniqid(), 'team_ids' => [stageTeam()->id]]);
@@ -66,7 +66,7 @@ it('hides other teams\' stages on a team\'s pipeline board', function () {
 });
 
 it('links a stage added from a team\'s board to that team', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity', 'stage']);
+    CRMHelper::actingAsCRMUser(['opportunity', 'stage']);
 
     $team = stageTeam();
     $name = 'Board stage '.uniqid();

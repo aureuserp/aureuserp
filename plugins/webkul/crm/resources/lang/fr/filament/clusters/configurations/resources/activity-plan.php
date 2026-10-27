@@ -77,29 +77,6 @@ return [
             ],
         ],
 
-        'bulk-actions' => [
-            'restore' => [
-                'notification' => [
-                    'title' => 'Plans d\'activité restaurés',
-                    'body'  => 'Les plans d\'activité ont été restaurés avec succès.',
-                ],
-            ],
-
-            'delete' => [
-                'notification' => [
-                    'title' => 'Plans d\'activité supprimés',
-                    'body'  => 'Les plans d\'activité ont été supprimés avec succès.',
-                ],
-            ],
-
-            'force-delete' => [
-                'notification' => [
-                    'title' => 'Plans d\'activité définitivement supprimés',
-                    'body'  => 'Les plans d\'activité ont été définitivement supprimés avec succès.',
-                ],
-            ],
-        ],
-
         'empty-state' => [
             'create' => [
                 'notification' => [

@@ -12,9 +12,9 @@ use Webkul\Support\Enums\ActivityDelayFrom;
 use Webkul\Support\Enums\ActivityDelayUnit;
 use Webkul\Support\Models\ActivityType as SupportActivityType;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function crmActivityTypeAttributes(string $plugin, string $name): array
 {
@@ -29,7 +29,7 @@ function crmActivityTypeAttributes(string $plugin, string $name): array
 }
 
 it('lists only crm activity types', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     $crmType = ActivityType::query()->create(crmActivityTypeAttributes('crm', 'Demo call (crm test)'));
     $salesType = SupportActivityType::query()->create(crmActivityTypeAttributes('sales', 'Order follow-up (sales test)'));
@@ -44,7 +44,7 @@ it('uses the crm model for the activity types resource', function () {
 });
 
 it('creates an activity type owned by crm', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     Livewire::test(CreateActivityType::class)
         ->fillForm([
@@ -64,7 +64,7 @@ it('creates an activity type owned by crm', function () {
 });
 
 it('requires a name to create an activity type', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     Livewire::test(CreateActivityType::class)
         ->fillForm(['name' => ''])
@@ -73,7 +73,7 @@ it('requires a name to create an activity type', function () {
 });
 
 it('edits a crm activity type and keeps it owned by crm', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     $activityType = ActivityType::query()->create(crmActivityTypeAttributes('crm', 'Call back (crm test)'));
 
@@ -89,7 +89,7 @@ it('edits a crm activity type and keeps it owned by crm', function () {
 });
 
 it('shows a crm activity type', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     $activityType = ActivityType::query()->create(crmActivityTypeAttributes('crm', 'Lunch meeting (crm test)'));
 
@@ -98,7 +98,7 @@ it('shows a crm activity type', function () {
 });
 
 it('forbids the crm activity types with only the support and sales permissions', function () {
-    CrmTestHelper::actingAs([
+    CRMHelper::actingAs([
         'view_any_support_activity::type',
         'create_support_activity::type',
         'view_any_sale_activity::type',
@@ -110,7 +110,7 @@ it('forbids the crm activity types with only the support and sales permissions',
 });
 
 it('forbids editing a crm activity type without the update permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_activity::type', 'view_crm_activity::type']);
+    CRMHelper::actingAs(['view_any_crm_activity::type', 'view_crm_activity::type']);
 
     $activityType = ActivityType::query()->create(crmActivityTypeAttributes('crm', 'Read only (crm test)'));
 
@@ -129,7 +129,7 @@ it('scopes the activity types resource query to crm records', function () {
 });
 
 it('does not open another app\'s activity type from crm by its url', function (string $page) {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     $salesType = SupportActivityType::query()->create(crmActivityTypeAttributes('sales', 'Url guessed type (sales test)'));
 
@@ -140,7 +140,7 @@ it('does not open another app\'s activity type from crm by its url', function (s
 ]);
 
 it('keeps another app\'s activity type owned by that app', function () {
-    CrmTestHelper::actingAsCrmUser(['activity::type']);
+    CRMHelper::actingAsCRMUser(['activity::type']);
 
     $salesType = SupportActivityType::query()->create(crmActivityTypeAttributes('sales', 'Untouched type (sales test)'));
 

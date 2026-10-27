@@ -7,17 +7,21 @@ return [
 
     'page' => [
         'title' => 'Leads similares: :name',
-        'back'  => 'Volver al registro',
 
         'empty' => [
             'heading'     => 'No hay registros similares',
             'description' => 'Ningún otro lead u oportunidad tiene el mismo correo, teléfono o cliente.',
         ],
+
+        'views' => [
+            'kanban' => 'Kanban',
+            'list'   => 'Lista',
+            'graph'  => 'Gráfico',
+        ],
     ],
 
     'badges' => [
-        'current' => 'Este registro',
-        'lost'    => 'Perdido',
+        'lost' => 'Perdido',
     ],
 
     'merge' => [
@@ -48,5 +52,24 @@ return [
                 'body'  => 'Se fusionaron :count registro(s) en ":name".',
             ],
         ],
+    ],
+
+    'table' => [
+        'columns' => [
+            'name'        => 'Lead',
+            'type'        => 'Tipo',
+            'contact'     => 'Nombre del contacto',
+            'email'       => 'Correo electrónico',
+            'phone'       => 'Teléfono',
+            'stage'       => 'Etapa',
+            'salesperson' => 'Comercial',
+            'team'        => 'Equipo de ventas',
+            'created-at'  => 'Creado el',
+        ],
+    ],
+
+    'graph' => [
+        'heading' => 'Registros por etapa',
+        'dataset' => 'Registros',
     ],
 ];

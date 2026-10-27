@@ -17,6 +17,7 @@
         collapsible: @js($board->isCollapsible()),
         dragConstraints: @js($board->getDragConstraints()),
     })"
+    x-init="window.crmScheduleKanbanFit ? window.crmScheduleKanbanFit() : $nextTick(() => window.crmFitKanbanBoard?.($el))"
     class="fi-kanban-board crm-kanban-board relative"
 >
     @if($hasFilters || $hasSearch)
@@ -52,7 +53,7 @@
                         @class([
                             'relative flex items-center justify-center rounded-lg p-2 text-sm shadow-sm ring-1 transition duration-75',
                             'bg-white ring-gray-950/10 text-gray-700 hover:bg-gray-50 dark:bg-white/5 dark:ring-white/20 dark:text-gray-300 dark:hover:bg-white/10' => $activeFilterCount === 0,
-                            'bg-primary-50 ring-primary-200 text-primary-700 hover:bg-primary-100 dark:bg-primary-400/10 dark:ring-primary-400/30 dark:text-primary-400' => $activeFilterCount > 0,
+                            'crm-kanban-filter-active' => $activeFilterCount > 0,
                         ])
                     >
                         <x-filament::icon icon="heroicon-m-funnel" class="h-5 w-5" />
@@ -97,125 +98,43 @@
         </div>
     @endif
 
-    {{-- Loading overlay --}}
     @if($hasLoading)
-        <div wire:loading.flex class="fi-kanban-loading absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-gray-900/60 rounded-xl">
-            <x-filament::loading-indicator class="h-8 w-8 text-primary-500" />
+        <div class="crm-kanban-shimmer" aria-busy="true">
+            @include('crm::filament.kanban.shimmer-columns')
         </div>
     @endif
 
     <div class="crm-kanban-columns relative flex gap-4 items-start overflow-x-auto pb-4" wire:ignore.self>
-        @foreach($columns as $column)
+        <script>window.crmFitKanbanBoard?.(document.currentScript.closest('.crm-kanban-board'))</script>
+        @forelse($columns as $column)
             @include($board->getColumnView(), ['column' => $column, 'board' => $board])
-        @endforeach
+        @empty
+            <div class="crm-kanban-empty crm-kanban-empty-board">
+                <x-filament::icon icon="heroicon-o-inbox" class="h-10 w-10 text-gray-300 dark:text-gray-600" />
+                <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">{{ __('crm::filament/kanban.empty.board-heading') }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('crm::filament/kanban.empty.board-description') }}</p>
+            </div>
+        @endforelse
 
         @if(method_exists($this, 'canAddKanbanColumn') && $this->canAddKanbanColumn())
-            <div
-                x-data="{ adding: false, name: '', saving: false }"
-                x-on:click="if (! adding) { adding = true; $nextTick(() => $refs.newColumnName.focus()) }"
-                x-bind:class="adding ? 'cursor-default' : 'cursor-pointer hover:border-primary-400 hover:bg-primary-50/40 dark:hover:bg-primary-400/5'"
+            <button
+                type="button"
+                x-data="{ opening: false }"
+                x-on:click="if (opening) return; opening = true; $wire.mountAction('addKanbanColumn').finally(() => opening = false)"
+                x-bind:aria-busy="opening"
+                x-bind:class="{ 'crm-kanban-add-column-opening': opening }"
                 style="width: {{ $board->getColumnWidth() }};"
-                class="crm-kanban-add-column group flex shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-4 transition dark:border-white/15"
+                class="crm-kanban-add-column group flex shrink-0 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 p-4 text-gray-400 transition hover:border-primary-400 hover:bg-primary-50/40 hover:text-primary-600 dark:border-white/15 dark:text-gray-500 dark:hover:bg-primary-400/5 dark:hover:text-primary-400"
             >
-                <button
-                    type="button"
-                    x-show="! adding"
-                    class="flex flex-col items-center gap-2 text-gray-400 transition group-hover:text-primary-600 dark:text-gray-500 dark:group-hover:text-primary-400"
-                >
-                    <span class="flex h-14 w-14 items-center justify-center rounded-full transition group-hover:bg-primary-50 dark:group-hover:bg-primary-400/10">
-                        <x-filament::icon icon="heroicon-o-plus" class="h-10 w-10" />
-                    </span>
-                    <span class="text-sm font-semibold">{{ $this->getAddKanbanColumnLabel() }}</span>
-                </button>
-
-                <div
-                    x-show="adding"
-                    x-cloak
-                    x-on:click.stop
-                    class="w-full rounded-xl bg-gray-50 p-3 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10"
-                >
-                    <x-filament::input.wrapper>
-                        <x-filament::input
-                            type="text"
-                            x-ref="newColumnName"
-                            x-model="name"
-                            maxlength="255"
-                            :placeholder="__('crm::filament/kanban.add-column.placeholder')"
-                            :aria-label="$this->getAddKanbanColumnLabel()"
-                            x-on:keydown.enter.prevent="if (! saving && name.trim()) { saving = true; $wire.addKanbanColumn(name).then((column) => { saving = false; if (column) { name = ''; adding = false; window.crmHighlightKanbanColumn(column) } }) }"
-                            x-on:keydown.escape="adding = false; name = ''"
-                        />
-                    </x-filament::input.wrapper>
-
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
-                        <x-filament::button
-                            size="sm"
-                            x-bind:disabled="saving || ! name.trim()"
-                            x-on:click="saving = true; $wire.addKanbanColumn(name).then((column) => { saving = false; if (column) { name = ''; adding = false; window.crmHighlightKanbanColumn(column) } })"
-                        >
-                            {{ __('crm::filament/kanban.add-column.add') }}
-                        </x-filament::button>
-
-                        <x-filament::button
-                            size="sm"
-                            color="gray"
-                            x-on:click="adding = false; name = ''"
-                        >
-                            {{ __('crm::filament/kanban.add-column.cancel') }}
-                        </x-filament::button>
-                    </div>
-                </div>
-            </div>
+                <span class="flex h-14 w-14 items-center justify-center rounded-full transition group-hover:bg-primary-50 dark:group-hover:bg-primary-400/10">
+                    <x-filament::icon icon="heroicon-o-plus" class="h-10 w-10" x-show="! opening" />
+                    <x-filament::loading-indicator class="h-10 w-10" x-cloak x-show="opening" />
+                </span>
+                <span class="text-sm font-semibold">{{ $this->getAddKanbanColumnLabel() }}</span>
+            </button>
         @endif
     </div>
 
-    <script>
-        (() => {
-            window.crmFitKanbanBoard ??= (board) => {
-                const row = board?.querySelector('.crm-kanban-columns');
-
-                if (! row) {
-                    return;
-                }
-
-                let below = row.offsetHeight - row.clientHeight;
-
-                for (let element = row; element && element !== document.body; element = element.parentElement) {
-                    const style = getComputedStyle(element);
-
-                    below += parseFloat(style.paddingBottom) + parseFloat(style.marginBottom) + parseFloat(style.borderBottomWidth);
-                }
-
-                document.documentElement.style.setProperty('--crm-board-offset', (row.getBoundingClientRect().top + window.scrollY + below) + 'px');
-                document.documentElement.dataset.crmBoardFitted = 'true';
-            };
-
-            const fitAll = () => document.querySelectorAll('.crm-kanban-board').forEach((board) => window.crmFitKanbanBoard(board));
-
-            window.crmHighlightKanbanColumn ??= (value) => setTimeout(() => {
-                const column = document.querySelector(`.crm-kanban-board [data-kanban-column][data-column-value="${CSS.escape(String(value))}"]`)?.closest('.fi-kanban-column');
-
-                if (! column) {
-                    return;
-                }
-
-                column.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-                column.classList.remove('crm-kanban-column-new');
-                void column.offsetWidth;
-                column.classList.add('crm-kanban-column-new');
-                setTimeout(() => column.classList.remove('crm-kanban-column-new'), 2800);
-            }, 50);
-
-            window.crmFitKanbanBoard(document.currentScript?.closest('.crm-kanban-board'));
-
-            if (! window.crmKanbanFitListening) {
-                window.crmKanbanFitListening = true;
-                window.addEventListener('resize', fitAll);
-                window.addEventListener('load', fitAll);
-                document.addEventListener('livewire:navigated', fitAll);
-            }
-        })();
-    </script>
 
     <x-filament-actions::modals />
 </div>

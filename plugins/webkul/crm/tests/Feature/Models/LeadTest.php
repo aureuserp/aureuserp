@@ -1,5 +1,7 @@
 <?php
 
+use Webkul\Crm\Enums\LeadConversionCustomer;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\LostReason;
@@ -10,50 +12,50 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('fills type, first stage, creator, salesperson and assignment date when created', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
     $lead = Lead::query()->create([
         'name'       => 'Website redesign',
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
     ]);
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
-        ->and($lead->stage_id)->toBe(CrmTestHelper::firstStage()->id)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
+        ->and($lead->stage_id)->toBe(CRMHelper::firstStage()->id)
         ->and($lead->creator_id)->toBe($user->id)
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->assigned_at)->not->toBeNull();
 });
 
 it('keeps the given type, stage and salesperson when created', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $otherUser = User::query()->where('email', 'admin@example.com')->firstOrFail();
     $stage = Stage::query()->where('is_won', false)->orderByDesc('sort')->firstOrFail();
 
     $lead = Lead::query()->create([
         'name'       => 'Explicit lead',
-        'type'       => Lead::TYPE_LEAD,
+        'type'       => LeadType::LEAD,
         'stage_id'   => $stage->id,
         'user_id'    => $otherUser->id,
-        'company_id' => CrmTestHelper::companyId(),
+        'company_id' => CRMHelper::companyId(),
     ]);
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and($lead->stage_id)->toBe($stage->id)
         ->and($lead->user_id)->toBe($otherUser->id);
 });
 
 it('resets the assignment date when the salesperson changes', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
     $otherUser = User::query()->whereKeyNot($user->id)->firstOrFail();
 
-    $opportunity = CrmTestHelper::opportunity(['assigned_at' => now()->subMonth()]);
+    $opportunity = CRMHelper::opportunity(['assigned_at' => now()->subMonth()]);
 
     $opportunity->update(['user_id' => $otherUser->id]);
 
@@ -61,11 +63,11 @@ it('resets the assignment date when the salesperson changes', function () {
 });
 
 it('keeps the assignment date when the salesperson does not change', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $assignedAt = now()->subMonth()->startOfSecond();
 
-    $opportunity = CrmTestHelper::opportunity(['assigned_at' => $assignedAt]);
+    $opportunity = CRMHelper::opportunity(['assigned_at' => $assignedAt]);
 
     $opportunity->update(['name' => 'Renamed opportunity']);
 
@@ -73,9 +75,9 @@ it('keeps the assignment date when the salesperson does not change', function ()
 });
 
 it('clears the assignment date when the salesperson is removed', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $opportunity->update(['user_id' => null]);
 
@@ -83,15 +85,15 @@ it('clears the assignment date when the salesperson is removed', function () {
 });
 
 it('sets probability to 100 and the closing date when moved to a won stage', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity([
-        'stage_id'    => CrmTestHelper::firstStage()->id,
+    $opportunity = CRMHelper::opportunity([
+        'stage_id'    => CRMHelper::firstStage()->id,
         'probability' => 30,
         'closed_at'   => null,
     ]);
 
-    $opportunity->update(['stage_id' => CrmTestHelper::wonStage()->id]);
+    $opportunity->update(['stage_id' => CRMHelper::wonStage()->id]);
 
     $opportunity->refresh();
 
@@ -101,13 +103,13 @@ it('sets probability to 100 and the closing date when moved to a won stage', fun
 });
 
 it('clears the closing date when moved back out of a won stage', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+    $opportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
 
-    $opportunity->update(['stage_id' => CrmTestHelper::wonStage()->id]);
+    $opportunity->update(['stage_id' => CRMHelper::wonStage()->id]);
 
-    $opportunity->update(['stage_id' => CrmTestHelper::firstStage()->id]);
+    $opportunity->update(['stage_id' => CRMHelper::firstStage()->id]);
 
     $opportunity->refresh();
 
@@ -116,7 +118,7 @@ it('clears the closing date when moved back out of a won stage', function () {
 });
 
 it('does not touch the closing date when moving between open stages', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $openStages = Stage::query()->where('is_won', false)->orderBy('sort')->take(2)->get();
 
@@ -124,7 +126,7 @@ it('does not touch the closing date when moving between open stages', function (
         $openStages->push(Stage::factory()->create());
     }
 
-    $opportunity = CrmTestHelper::opportunity([
+    $opportunity = CRMHelper::opportunity([
         'stage_id'    => $openStages[0]->id,
         'probability' => 40,
     ]);
@@ -138,11 +140,11 @@ it('does not touch the closing date when moving between open stages', function (
 });
 
 it('marks an opportunity as won by moving it to the first won stage', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $wonStage = CrmTestHelper::wonStage();
+    $wonStage = CRMHelper::wonStage();
 
-    $opportunity = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
+    $opportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
 
     expect($opportunity->markAsWon())->toBeTrue();
 
@@ -154,11 +156,11 @@ it('marks an opportunity as won by moving it to the first won stage', function (
 });
 
 it('does not mark an opportunity as won when no won stage exists', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $firstStage = CrmTestHelper::firstStage();
+    $firstStage = CRMHelper::firstStage();
 
-    $opportunity = CrmTestHelper::opportunity(['stage_id' => $firstStage->id]);
+    $opportunity = CRMHelper::opportunity(['stage_id' => $firstStage->id]);
 
     Stage::query()->where('is_won', true)->update(['is_won' => false]);
 
@@ -167,11 +169,11 @@ it('does not mark an opportunity as won when no won stage exists', function () {
 });
 
 it('marks an opportunity as lost with a reason and feedback and archives it', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $lostReason = LostReason::factory()->create();
 
-    $opportunity = CrmTestHelper::opportunity(['probability' => 60]);
+    $opportunity = CRMHelper::opportunity(['probability' => 60]);
 
     $opportunity->markAsLost($lostReason->id, 'Went with a competitor');
 
@@ -188,9 +190,9 @@ it('marks an opportunity as lost with a reason and feedback and archives it', fu
 });
 
 it('clears the lost reason, feedback and closing date when restored', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $opportunity->markAsLost(LostReason::factory()->create()->id, 'Budget cut');
 
@@ -207,25 +209,25 @@ it('clears the lost reason, feedback and closing date when restored', function (
 });
 
 it('converts a lead into an opportunity and creates its customer', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
     $otherUser = User::query()->whereKeyNot($user->id)->firstOrFail();
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-    $lead = CrmTestHelper::lead([
+    $lead = CRMHelper::lead([
         'company_name' => 'Acme Industries',
         'email'        => 'sales@acme.test',
     ]);
 
     $converted = $lead->convertToOpportunity([
-        'customer' => 'create',
+        'customer' => LeadConversionCustomer::CREATE,
         'user_id'  => $otherUser->id,
         'team_id'  => $team->id,
     ]);
 
     $converted->refresh();
 
-    expect($converted->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($converted->type)->toBe(LeadType::OPPORTUNITY)
         ->and($converted->isLead())->toBeFalse()
         ->and($converted->partner_id)->not->toBeNull()
         ->and($converted->partner->name)->toBe('Acme Industries')
@@ -236,38 +238,38 @@ it('converts a lead into an opportunity and creates its customer', function () {
 });
 
 it('converts a lead into an opportunity linked to an existing customer', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $partner = Partner::factory()->create();
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     $partnerCount = Partner::query()->count();
 
-    $lead->convertToOpportunity(['customer' => 'link', 'partner_id' => $partner->id]);
+    $lead->convertToOpportunity(['customer' => LeadConversionCustomer::LINK, 'partner_id' => $partner->id]);
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->partner_id)->toBe($partner->id)
         ->and($lead->converted_at)->not->toBeNull()
         ->and(Partner::query()->count())->toBe($partnerCount);
 });
 
 it('converts a lead into an opportunity without a customer and keeps its salesperson and team', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-    $lead = CrmTestHelper::lead(['team_id' => $team->id, 'partner_id' => null]);
+    $lead = CRMHelper::lead(['team_id' => $team->id, 'partner_id' => null]);
 
     $partnerCount = Partner::query()->count();
 
-    $lead->convertToOpportunity(['customer' => 'none']);
+    $lead->convertToOpportunity(['customer' => LeadConversionCustomer::NONE]);
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->partner_id)->toBeNull()
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->team_id)->toBe($team->id)
@@ -276,9 +278,9 @@ it('converts a lead into an opportunity without a customer and keeps its salespe
 });
 
 it('creates a company customer when the lead has a company name', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead([
+    $lead = CRMHelper::lead([
         'company_name' => 'Globex Corporation',
         'contact_name' => 'Hank Scorpio',
         'job_title'    => 'CEO',
@@ -305,9 +307,9 @@ it('creates a company customer when the lead has a company name', function () {
 });
 
 it('creates an individual customer when the lead has no company name', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead([
+    $lead = CRMHelper::lead([
         'company_name' => null,
         'contact_name' => 'Jane Roe',
         'job_title'    => 'CTO',
@@ -323,9 +325,9 @@ it('creates an individual customer when the lead has no company name', function 
 });
 
 it('names an individual customer after the lead when there is no contact name', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead([
+    $lead = CRMHelper::lead([
         'name'         => 'Inbound enquiry',
         'company_name' => null,
         'contact_name' => null,
@@ -335,11 +337,11 @@ it('names an individual customer after the lead when there is no contact name', 
 });
 
 it('filters leads, opportunities, won and open records with scopes', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead(['stage_id' => CrmTestHelper::firstStage()->id]);
-    $openOpportunity = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::firstStage()->id]);
-    $wonOpportunity = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
+    $lead = CRMHelper::lead(['stage_id' => CRMHelper::firstStage()->id]);
+    $openOpportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
+    $wonOpportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
 
     $ids = [$lead->id, $openOpportunity->id, $wonOpportunity->id];
 
@@ -352,11 +354,11 @@ it('filters leads, opportunities, won and open records with scopes', function ()
 });
 
 it('reports whether a record is a lead, won or lost', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $lead = CrmTestHelper::lead(['stage_id' => CrmTestHelper::firstStage()->id]);
-    $wonOpportunity = CrmTestHelper::opportunity(['stage_id' => CrmTestHelper::wonStage()->id]);
-    $lostOpportunity = CrmTestHelper::opportunity();
+    $lead = CRMHelper::lead(['stage_id' => CRMHelper::firstStage()->id]);
+    $wonOpportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
+    $lostOpportunity = CRMHelper::opportunity();
 
     $lostOpportunity->markAsLost(null);
 
@@ -370,9 +372,9 @@ it('reports whether a record is a lead, won or lost', function () {
 });
 
 it('attaches tags through the crm_tag_rel table', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
     $tags = Tag::factory()->count(2)->create();
 
     $opportunity->tags()->attach($tags->pluck('id'));
@@ -384,9 +386,9 @@ it('attaches tags through the crm_tag_rel table', function () {
 });
 
 it('lists only scheduled activities as crm activities', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
     $activity = $opportunity->addActivity([
         'summary'       => 'Call the customer',

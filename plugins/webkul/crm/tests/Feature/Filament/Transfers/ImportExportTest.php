@@ -5,8 +5,9 @@ use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
-use Webkul\Crm\Filament\Actions\CrmExportAction;
+use Webkul\Crm\Filament\Actions\CRMExportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
@@ -23,9 +24,9 @@ use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 function transferOtherCompany(): Company
 {
@@ -76,7 +77,7 @@ function transferExportRow(string $exporter, $record): array
 }
 
 it('shows import and export next to the create button on the leads and pipeline lists', function (string $page) {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
     Livewire::test($page)
         ->assertActionVisible('import')
@@ -88,7 +89,7 @@ it('shows import and export next to the create button on the leads and pipeline 
 ]);
 
 it('shows import and export on the leads list and the pipeline board', function (string $page) {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity', 'stage']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity', 'stage']);
 
     Livewire::test($page)
         ->assertActionVisible('import')
@@ -100,12 +101,12 @@ it('shows import and export on the leads list and the pipeline board', function 
 ]);
 
 it('limits a kanban export to the board filters', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['opportunity', 'stage']);
+    $user = CRMHelper::actingAsCRMUser(['opportunity', 'stage']);
 
-    $mine = CrmTestHelper::opportunity(['name' => 'Board export mine', 'user_id' => $user->id]);
-    $otherUser = User::withoutEvents(fn (): User => User::factory()->create(['default_company_id' => CrmTestHelper::companyId(), 'is_active' => true]));
+    $mine = CRMHelper::opportunity(['name' => 'Board export mine', 'user_id' => $user->id]);
+    $otherUser = User::withoutEvents(fn (): User => User::factory()->create(['default_company_id' => CRMHelper::companyId(), 'is_active' => true]));
 
-    $someoneElse = CrmTestHelper::opportunity(['name' => 'Board export other', 'user_id' => $otherUser->id]);
+    $someoneElse = CRMHelper::opportunity(['name' => 'Board export other', 'user_id' => $otherUser->id]);
 
     $page = Livewire::test(KanbanOpportunities::class)->call('loadView', 'my_pipeline')->instance();
 
@@ -116,7 +117,7 @@ it('limits a kanban export to the board filters', function () {
 });
 
 it('hides import without the create permission', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['opportunity'], ['view_any', 'view']));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view']));
 
     Livewire::test(ListOpportunities::class)
         ->assertActionHidden('import')
@@ -124,7 +125,7 @@ it('hides import without the create permission', function () {
 });
 
 it('offers export only on my quotations', function () {
-    CrmTestHelper::actingAsCrmUser(['quotation']);
+    CRMHelper::actingAsCRMUser(['quotation']);
 
     Livewire::test(ListQuotations::class)
         ->assertActionVisible('export')
@@ -132,14 +133,14 @@ it('offers export only on my quotations', function () {
 });
 
 it('pins an export to the records visible in the request', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $visible = CrmTestHelper::opportunity(['name' => 'Visible export opp']);
+    $visible = CRMHelper::opportunity(['name' => 'Visible export opp']);
 
-    $query = CrmExportAction::limitToVisibleRecords(Lead::query()->whereKey($visible->getKey()));
+    $query = CRMExportAction::limitToVisibleRecords(Lead::query()->whereKey($visible->getKey()));
 
     $foreign = Lead::withoutGlobalScopes()->forceCreate([
-        'type'       => Lead::TYPE_OPPORTUNITY,
+        'type'       => LeadType::OPPORTUNITY,
         'name'       => 'Created after the export started',
         'company_id' => transferOtherCompany()->id,
     ]);
@@ -150,10 +151,10 @@ it('pins an export to the records visible in the request', function () {
 });
 
 it('creates an opportunity from an imported row with its related records', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+    $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $team = Team::factory()->create(['name' => 'Imported team (test)', 'company_id' => CrmTestHelper::companyId()]);
-    $partner = Partner::factory()->create(['name' => 'Imported customer (test)', 'company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['name' => 'Imported team (test)', 'company_id' => CRMHelper::companyId()]);
+    $partner = Partner::factory()->create(['name' => 'Imported customer (test)', 'company_id' => CRMHelper::companyId()]);
     $stage = Stage::factory()->create(['name' => 'Imported stage (test)']);
 
     $lead = transferImportRow(OpportunityImporter::class, [
@@ -170,8 +171,8 @@ it('creates an opportunity from an imported row with its related records', funct
         'email'                 => 'buyer@example.com',
     ]);
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
-        ->and($lead->company_id)->toBe(CrmTestHelper::companyId())
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
+        ->and($lead->company_id)->toBe(CRMHelper::companyId())
         ->and($lead->creator_id)->toBe($user->id)
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->partner_id)->toBe($partner->id)
@@ -179,25 +180,25 @@ it('creates an opportunity from an imported row with its related records', funct
         ->and($lead->stage_id)->toBe($stage->id)
         ->and((float) $lead->expected_revenue)->toBe(5000.0)
         ->and($lead->expected_closing_date->toDateString())->toBe('2026-12-31')
-        ->and($lead->priority)->toBe(OpportunityPriority::High)
+        ->and($lead->priority)->toBe(OpportunityPriority::HIGH)
         ->and($lead->tags->pluck('name')->sort()->values()->all())->toBe(['Imported A', 'Imported B']);
 });
 
 it('creates a lead with the lead defaults when cells are empty', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['lead']);
+    $user = CRMHelper::actingAsCRMUser(['lead']);
 
     $lead = transferImportRow(LeadImporter::class, ['name' => 'Imported lead', 'contact_name' => 'Jo Doe']);
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and((float) $lead->probability)->toBe(10.0)
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->stage_id)->not->toBeNull();
 });
 
 it('updates the record of a row that has its id', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $opportunity = CrmTestHelper::opportunity(['name' => 'Before import', 'expected_revenue' => 100, 'city' => 'Pune']);
+    $opportunity = CRMHelper::opportunity(['name' => 'Before import', 'expected_revenue' => 100, 'city' => 'Pune']);
 
     $updated = transferImportRow(OpportunityImporter::class, [
         'id'               => (string) $opportunity->id,
@@ -213,7 +214,7 @@ it('updates the record of a row that has its id', function () {
 });
 
 it('fails a row whose id is unknown, another type or another company', function (Closure $makeId) {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $id = $makeId();
 
@@ -223,23 +224,23 @@ it('fails a row whose id is unknown, another type or another company', function 
     expect(Lead::withoutGlobalScopes()->where('name', 'Hijacked')->exists())->toBeFalse();
 })->with([
     'unknown id'      => fn () => fn (): int => 99999999,
-    'a lead id'       => fn () => fn (): int => CrmTestHelper::lead()->id,
+    'a lead id'       => fn () => fn (): int => CRMHelper::lead()->id,
     'another company' => fn () => fn (): int => Lead::withoutGlobalScopes()->forceCreate([
-        'type'       => Lead::TYPE_OPPORTUNITY,
+        'type'       => LeadType::OPPORTUNITY,
         'name'       => 'Other company opportunity',
         'company_id' => transferOtherCompany()->id,
     ])->id,
 ]);
 
 it('fails a row that names an unknown team, salesperson, stage or customer', function (string $column) {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     expect(fn () => transferImportRow(OpportunityImporter::class, ['name' => 'Unknown relation', $column => 'Does not exist (test)']))
         ->toThrow(RowImportFailedException::class);
 })->with(['team', 'user', 'stage', 'partner', 'country', 'priority']);
 
 it('does not accept a team or customer of another company', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     $otherCompany = transferOtherCompany();
 
@@ -250,18 +251,18 @@ it('does not accept a team or customer of another company', function () {
 });
 
 it('rejects an invalid email', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
     expect(fn () => transferImportRow(OpportunityImporter::class, ['name' => 'Bad email', 'email' => 'not-an-email']))
         ->toThrow(ValidationException::class);
 });
 
 it('checks the create and update permissions of the user who started the import', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $opportunity = CrmTestHelper::opportunity();
+    $opportunity = CRMHelper::opportunity();
 
-    $readOnly = CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['opportunity'], ['view_any', 'view']));
+    $readOnly = CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view']));
 
     expect(fn () => transferImportRow(OpportunityImporter::class, ['name' => 'Not allowed'], $readOnly))
         ->toThrow(RowImportFailedException::class)
@@ -270,13 +271,13 @@ it('checks the create and update permissions of the user who started the import'
 });
 
 it('exports an opportunity with labels that the importer reads back', function () {
-    CrmTestHelper::actingAsCrmUser(['opportunity']);
+    CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $opportunity = CrmTestHelper::opportunity([
+    $opportunity = CRMHelper::opportunity([
         'name'                  => 'Round trip opp',
         'expected_revenue'      => 1234,
         'expected_closing_date' => '2026-11-30',
-        'priority'              => OpportunityPriority::High,
+        'priority'              => OpportunityPriority::HIGH,
     ]);
 
     $row = transferExportRow(OpportunityExporter::class, $opportunity);
@@ -284,7 +285,7 @@ it('exports an opportunity with labels that the importer reads back', function (
     expect($row['id'])->toBe((string) $opportunity->id)
         ->and($row['name'])->toBe('Round trip opp')
         ->and($row['expected_closing_date'])->toBe('2026-11-30')
-        ->and($row['priority'])->toBe(OpportunityPriority::High->getLabel());
+        ->and($row['priority'])->toBe(OpportunityPriority::HIGH->getLabel());
 
     $reimported = transferImportRow(OpportunityImporter::class, [
         'id'       => $row['id'],
@@ -295,13 +296,13 @@ it('exports an opportunity with labels that the importer reads back', function (
 
     expect($reimported->id)->toBe($opportunity->id)
         ->and($reimported->name)->toBe('Round trip opp (edited)')
-        ->and($reimported->priority)->toBe(OpportunityPriority::High);
+        ->and($reimported->priority)->toBe(OpportunityPriority::HIGH);
 });
 
 it('exports a lead without opportunity-only columns', function () {
-    CrmTestHelper::actingAsCrmUser(['lead']);
+    CRMHelper::actingAsCRMUser(['lead']);
 
-    $row = transferExportRow(LeadExporter::class, CrmTestHelper::lead(['name' => 'Exported lead']));
+    $row = transferExportRow(LeadExporter::class, CRMHelper::lead(['name' => 'Exported lead']));
 
     expect($row['name'])->toBe('Exported lead')
         ->and($row)->not->toHaveKey('expected_revenue');

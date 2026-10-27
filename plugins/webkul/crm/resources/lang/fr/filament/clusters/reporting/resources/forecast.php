@@ -8,16 +8,6 @@ return [
     ],
 
     'kanban' => [
-        'filters' => [
-            'salesperson' => 'Vendeur',
-            'team'        => 'Équipe commerciale',
-            'period'      => 'Clôture prévue',
-            'upcoming'    => 'Clôtures à venir',
-            'all-dates'   => 'Toutes les dates',
-            'presets'     => 'Filtres',
-            'all'         => 'Tous',
-        ],
-
         'empty-state' => [
             'heading'     => 'Aucune opportunité à prévoir',
             'description' => 'Définissez une date de clôture prévue sur vos opportunités pour les voir ici.',

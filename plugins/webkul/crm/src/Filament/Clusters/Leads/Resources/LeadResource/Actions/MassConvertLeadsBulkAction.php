@@ -10,9 +10,9 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Webkul\Crm\Enums\LeadConversionCustomer;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Models\Lead;
-use Webkul\Crm\Models\LeadConversion;
 use Webkul\Crm\Services\LeadConverter;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -28,39 +28,38 @@ class MassConvertLeadsBulkAction extends BulkAction
     {
         parent::setUp();
 
-        $label = fn (string $key): string => __('crm::filament/clusters/leads/resources/lead.actions.mass-convert.'.$key);
-
         $this
-            ->label($label('label'))
+            ->label(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.label'))
             ->icon('heroicon-o-arrow-right-circle')
             ->color('primary')
-            ->modalHeading($label('modal.heading'))
-            ->modalSubmitActionLabel($label('modal.submit'))
+            ->modalHeading(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.modal.heading'))
+            ->modalSubmitActionLabel(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.modal.submit'))
             ->modalWidth('lg')
             ->deselectRecordsAfterCompletion()
             ->schema([
                 Radio::make('customer')
                     ->label(__('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer'))
                     ->options([
-                        LeadConversion::CUSTOMER_CREATE => $label('form.customer-options.create'),
-                        LeadConversion::CUSTOMER_LINK   => $label('form.customer-options.link'),
-                        LeadConversion::CUSTOMER_NONE   => __('crm::filament/clusters/leads/resources/lead.actions.convert.form.customer-options.none'),
+                        LeadConversionCustomer::CREATE->value => __('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.customer-options.create'),
+                        LeadConversionCustomer::LINK->value   => __('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.customer-options.link'),
+                        LeadConversionCustomer::NONE->value   => LeadConversionCustomer::NONE->getLabel(),
                     ])
-                    ->default(LeadConversion::CUSTOMER_CREATE)
+                    ->enum(LeadConversionCustomer::class)
+                    ->default(LeadConversionCustomer::CREATE)
                     ->required(),
                 Toggle::make('deduplicate')
-                    ->label($label('form.deduplicate'))
-                    ->helperText($label('form.deduplicate-helper'))
+                    ->label(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.deduplicate'))
+                    ->helperText(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.deduplicate-helper'))
                     ->default(true),
                 Select::make('salespeople')
-                    ->label($label('form.salespeople'))
-                    ->helperText($label('form.salespeople-helper'))
+                    ->label(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.salespeople'))
+                    ->helperText(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.salespeople-helper'))
                     ->options(fn (): array => static::salespeople()->orderBy('name')->pluck('name', 'id')->all())
                     ->multiple()
                     ->searchable(),
                 Toggle::make('force_assignment')
-                    ->label($label('form.force-assignment'))
-                    ->helperText($label('form.force-assignment-helper')),
+                    ->label(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.force-assignment'))
+                    ->helperText(__('crm::filament/clusters/leads/resources/lead.actions.mass-convert.form.force-assignment-helper')),
                 Select::make('team_id')
                     ->label(__('crm::filament/clusters/leads/resources/lead.actions.convert.form.team'))
                     ->options(fn (): array => static::teams()->orderBy('name')->pluck('name', 'id')->all())

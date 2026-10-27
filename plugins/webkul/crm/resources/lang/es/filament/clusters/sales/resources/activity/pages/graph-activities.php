@@ -1,11 +1,6 @@
 <?php
 
 return [
-    'scope' => [
-        'show-all'  => 'Mostrar todos los usuarios',
-        'show-mine' => 'Mostrar solo las mías',
-    ],
-
     'widgets' => [
         'total'     => 'Total',
         'by-status' => 'Actividades por estado de vencimiento',

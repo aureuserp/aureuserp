@@ -2,14 +2,14 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Crm\Filament\Actions\RecordBulkActions;
+use Webkul\Crm\Filament\Exports\StageExporter;
 
 class StagesTable
 {
@@ -59,15 +59,7 @@ class StagesTable
                     ),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('crm::filament/clusters/configurations/resources/stage.table.bulk-actions.delete.notification.title'))
-                                ->body(__('crm::filament/clusters/configurations/resources/stage.table.bulk-actions.delete.notification.body')),
-                        ),
-                ]),
+                RecordBulkActions::make(exporter: StageExporter::class, copyRelations: ['teams']),
             ]);
     }
 }

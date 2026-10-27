@@ -5,16 +5,16 @@ namespace Webkul\Crm\Filament\Imports;
 use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Policies\LeadPolicy;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Scopes\CompanyScope;
 
 class OpportunityImporter extends LeadRecordImporter
 {
-    protected static function getLeadType(): string
+    protected static function getLeadType(): LeadType
     {
-        return Lead::TYPE_OPPORTUNITY;
+        return LeadType::OPPORTUNITY;
     }
 
     protected static function getPolicy(): string
@@ -24,27 +24,25 @@ class OpportunityImporter extends LeadRecordImporter
 
     public static function getColumns(): array
     {
-        $label = fn (string $key): string => __('crm::filament/transfers.columns.'.$key);
-
         $columns = static::leadColumns();
 
         array_splice($columns, 2, 0, [
             ImportColumn::make('partner')
-                ->label($label('customer'))
-                ->guess(['customer', 'partner', $label('customer')])
+                ->label(__('crm::filament/transfers.columns.customer'))
+                ->guess(['customer', 'partner', __('crm::filament/transfers.columns.customer')])
                 ->relationship(resolveUsing: fn (?string $state, OpportunityImporter $importer): ?Partner => $importer->resolveCustomer($state))
                 ->example('Azure Interior')
                 ->ignoreBlankState(),
             ImportColumn::make('expected_revenue')
-                ->label($label('expected-revenue'))
-                ->guess(['revenue', 'expected revenue', $label('expected-revenue')])
+                ->label(__('crm::filament/transfers.columns.expected-revenue'))
+                ->guess(['revenue', 'expected revenue', __('crm::filament/transfers.columns.expected-revenue')])
                 ->numeric(decimalPlaces: 2)
                 ->rules(['nullable', 'numeric', 'min:0'])
                 ->example('12000')
                 ->ignoreBlankState(),
             ImportColumn::make('expected_closing_date')
-                ->label($label('expected-closing'))
-                ->guess(['expected closing', 'closing date', $label('expected-closing')])
+                ->label(__('crm::filament/transfers.columns.expected-closing'))
+                ->guess(['expected closing', 'closing date', __('crm::filament/transfers.columns.expected-closing')])
                 ->rules(['nullable', 'date'])
                 ->example(now()->addMonth()->endOfMonth()->toDateString())
                 ->ignoreBlankState(),

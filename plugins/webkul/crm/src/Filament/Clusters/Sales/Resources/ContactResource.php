@@ -2,14 +2,10 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use Webkul\Contact\Filament\Resources\PartnerResource as BasePartnerResource;
 use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\CreateContact;
@@ -19,14 +15,16 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ManageAdd
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ManageBankAccounts;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ManageContacts;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ViewContact;
-use Webkul\Crm\Filament\Concerns\HasCrmAuthorization;
-use Webkul\Crm\Models\PartnerLevel;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Schemas\ContactForm;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Schemas\ContactInfolist;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Tables\ContactsTable;
+use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
 use Webkul\Crm\Policies\ContactPolicy;
 use Webkul\PluginManager\Package;
 
 class ContactResource extends BasePartnerResource
 {
-    use HasCrmAuthorization;
+    use HasCRMAuthorization;
 
     protected static ?string $slug = 'contacts';
 
@@ -40,7 +38,7 @@ class ContactResource extends BasePartnerResource
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
-    public static function getCrmPolicy(): string
+    public static function getCRMPolicy(): string
     {
         return ContactPolicy::class;
     }
@@ -60,60 +58,24 @@ class ContactResource extends BasePartnerResource
         return __('crm::filament/clusters/sales/resources/contact.navigation.title');
     }
 
+    public static function table(Table $table): Table
+    {
+        return ContactsTable::configure(parent::table($table));
+    }
+
     public static function form(Schema $schema): Schema
     {
-        $schema = parent::form($schema);
-
-        $label = fn (string $key): string => __('crm::filament/clusters/configurations/resources/partner-level.contact.'.$key);
-
-        return $schema->components([
-            ...$schema->getComponents(withHidden: true),
-            Section::make($label('section'))
-                ->relationship('crmPartner')
-                ->columns(2)
-                ->columnSpanFull()
-                ->schema([
-                    Select::make('level_id')
-                        ->label($label('level'))
-                        ->options(fn (): array => PartnerLevel::query()->orderBy('sort')->pluck('name', 'id')->all())
-                        ->searchable()
-                        ->live(),
-                    TextInput::make('level_weight')
-                        ->label($label('weight'))
-                        ->helperText($label('weight-helper'))
-                        ->placeholder(fn (Get $get): ?string => filled($get('level_id'))
-                            ? (string) PartnerLevel::query()->whereKey($get('level_id'))->value('partner_weight')
-                            : null)
-                        ->numeric()
-                        ->integer()
-                        ->minValue(0),
-                ]),
-        ]);
+        return ContactForm::configure(parent::form($schema));
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        $schema = parent::infolist($schema);
+        return ContactInfolist::configure(parent::infolist($schema));
+    }
 
-        $label = fn (string $key): string => __('crm::filament/clusters/configurations/resources/partner-level.contact.'.$key);
-
-        return $schema->components([
-            ...$schema->getComponents(withHidden: true),
-            Section::make($label('section'))
-                ->columns(2)
-                ->columnSpanFull()
-                ->schema([
-                    TextEntry::make('crmPartner.level.name')
-                        ->label($label('level'))
-                        ->placeholder('—'),
-                    TextEntry::make('level_weight')
-                        ->label($label('weight'))
-                        ->state(fn ($record): ?int => $record->crmPartner?->level_id || $record->crmPartner?->level_weight !== null
-                            ? $record->crmPartner->effectiveWeight()
-                            : null)
-                        ->placeholder('—'),
-                ]),
-        ]);
+    public static function getRelations(): array
+    {
+        return [];
     }
 
     public static function getNavigationItems(): array

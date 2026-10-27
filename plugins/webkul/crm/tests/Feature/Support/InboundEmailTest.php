@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\InboundEmailStatus;
+use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\MailAliasContact;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\InboundEmailResource\Pages\ManageInboundEmails;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\MailServerResource\Pages\ManageMailServers;
 use Webkul\Crm\Models\InboundEmail;
@@ -12,24 +15,24 @@ use Webkul\Crm\Services\Mail\ImapMailbox;
 use Webkul\Crm\Services\Mail\InboundEmailProcessor;
 use Webkul\Crm\Services\Mail\InboundMailFetcher;
 use Webkul\Crm\Services\Mail\ParsedEmail;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
     Storage::fake('public');
 
-    $settings = app(CrmSettings::class);
+    $settings = app(CRMSettings::class);
     $settings->use_leads = true;
     $settings->save();
 });
 
-function inboundAliasTeam(string $contact = MailAlias::CONTACT_EVERYONE, ?string $domain = 'example.com'): Team
+function inboundAliasTeam(string $contact = MailAliasContact::EVERYONE, ?string $domain = 'example.com'): Team
 {
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId(), 'is_active' => true]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
 
     MailAlias::query()->create(['team_id' => $team->id, 'alias_name' => 'sales', 'alias_domain' => $domain, 'alias_contact' => $contact]);
 
@@ -123,8 +126,8 @@ describe('processing', function () {
 
         $lead = Lead::query()->withoutGlobalScopes()->find($result->lead_id);
 
-        expect($result->status)->toBe(InboundEmail::STATUS_LEAD_CREATED)
-            ->and($lead->type)->toBe(Lead::TYPE_LEAD)
+        expect($result->status)->toBe(InboundEmailStatus::LEAD_CREATED)
+            ->and($lead->type)->toBe(LeadType::LEAD)
             ->and($lead->name)->toBe('Need 50 chairs')
             ->and($lead->email)->toBe('jane@customer.test')
             ->and($lead->contact_name)->toBe('Jane Buyer')
@@ -137,13 +140,13 @@ describe('processing', function () {
     it('creates an opportunity when the leads setting is off', function () {
         inboundAliasTeam();
 
-        $settings = app(CrmSettings::class);
+        $settings = app(CRMSettings::class);
         $settings->use_leads = false;
         $settings->save();
 
         $result = app(InboundEmailProcessor::class)->process(inboundRawEmail([]));
 
-        expect(Lead::query()->withoutGlobalScopes()->find($result->lead_id)->type)->toBe(Lead::TYPE_OPPORTUNITY);
+        expect(Lead::query()->withoutGlobalScopes()->find($result->lead_id)->type)->toBe(LeadType::OPPORTUNITY);
     });
 
     it('adds a reply to the lead it answers instead of creating a new one', function () {
@@ -159,7 +162,7 @@ describe('processing', function () {
             'In-Reply-To' => '<first@customer.test>',
         ], 'Also 10 tables.'));
 
-        expect($reply->status)->toBe(InboundEmail::STATUS_REPLY_ADDED)
+        expect($reply->status)->toBe(InboundEmailStatus::REPLY_ADDED)
             ->and($reply->lead_id)->toBe($first->lead_id)
             ->and(Lead::query()->withoutGlobalScopes()->where('email', 'jane@customer.test')->count())->toBe(1);
     });
@@ -171,8 +174,8 @@ describe('processing', function () {
 
         $leadId = $processor->process(inboundRawEmail([]))->lead_id;
 
-        expect($processor->process(inboundRawEmail(['To' => 'x@y.test', 'Subject' => "Update [Lead #{$leadId}]"]))->status)->toBe(InboundEmail::STATUS_REPLY_ADDED)
-            ->and($processor->process(inboundRawEmail(['From' => 'stranger@evil.test', 'To' => 'x@y.test', 'Subject' => "Update [Lead #{$leadId}]"]))->status)->toBe(InboundEmail::STATUS_IGNORED);
+        expect($processor->process(inboundRawEmail(['To' => 'x@y.test', 'Subject' => "Update [Lead #{$leadId}]"]))->status)->toBe(InboundEmailStatus::REPLY_ADDED)
+            ->and($processor->process(inboundRawEmail(['From' => 'stranger@evil.test', 'To' => 'x@y.test', 'Subject' => "Update [Lead #{$leadId}]"]))->status)->toBe(InboundEmailStatus::IGNORED);
     });
 
     it('skips duplicates, automatic replies, unknown addresses and mail loops', function () {
@@ -186,9 +189,9 @@ describe('processing', function () {
 
         expect($processor->process($raw)->id)->toBe($first->id)
             ->and(InboundEmail::query()->where('message_id', 'dup@customer.test')->count())->toBe(1)
-            ->and($processor->process(inboundRawEmail(['Auto-Submitted' => 'auto-replied']))->status)->toBe(InboundEmail::STATUS_IGNORED)
-            ->and($processor->process(inboundRawEmail(['To' => 'sales@other-domain.test']))->status)->toBe(InboundEmail::STATUS_IGNORED)
-            ->and($processor->process(inboundRawEmail(['From' => 'sales@example.com']))->status)->toBe(InboundEmail::STATUS_IGNORED);
+            ->and($processor->process(inboundRawEmail(['Auto-Submitted' => 'auto-replied']))->status)->toBe(InboundEmailStatus::IGNORED)
+            ->and($processor->process(inboundRawEmail(['To' => 'sales@other-domain.test']))->status)->toBe(InboundEmailStatus::IGNORED)
+            ->and($processor->process(inboundRawEmail(['From' => 'sales@example.com']))->status)->toBe(InboundEmailStatus::IGNORED);
     });
 
     it('matches aliases case-insensitively, with plus-addressing, in cc, and on any domain when none is set', function () {
@@ -196,22 +199,22 @@ describe('processing', function () {
 
         $result = app(InboundEmailProcessor::class)->process(inboundRawEmail(['To' => 'info@customer.test', 'Cc' => 'SALES+web@anything.test']));
 
-        expect($result->status)->toBe(InboundEmail::STATUS_LEAD_CREATED)
+        expect($result->status)->toBe(InboundEmailStatus::LEAD_CREATED)
             ->and($result->alias->team_id)->toBe($team->id);
     });
 
     it('applies "Accept emails from"', function () {
-        $team = inboundAliasTeam(MailAlias::CONTACT_PARTNERS);
+        $team = inboundAliasTeam(MailAliasContact::PARTNERS);
 
         $processor = app(InboundEmailProcessor::class);
 
         $rejected = $processor->process(inboundRawEmail(['From' => 'unknown@nobody.test']));
 
-        $user = CrmTestHelper::actingAs();
+        $user = CRMHelper::actingAs();
 
         $accepted = $processor->process(inboundRawEmail(['From' => $user->email]));
 
-        MailAlias::query()->where('team_id', $team->id)->update(['alias_contact' => MailAlias::CONTACT_FOLLOWERS]);
+        MailAlias::query()->where('team_id', $team->id)->update(['alias_contact' => MailAliasContact::FOLLOWERS]);
 
         $outsider = $processor->process(inboundRawEmail(['From' => 'someone@customer.test']));
 
@@ -219,10 +222,10 @@ describe('processing', function () {
 
         $member = $processor->process(inboundRawEmail(['From' => $user->email]));
 
-        expect($rejected->status)->toBe(InboundEmail::STATUS_REJECTED)
-            ->and($accepted->status)->toBe(InboundEmail::STATUS_LEAD_CREATED)
-            ->and($outsider->status)->toBe(InboundEmail::STATUS_REJECTED)
-            ->and($member->status)->toBe(InboundEmail::STATUS_LEAD_CREATED);
+        expect($rejected->status)->toBe(InboundEmailStatus::REJECTED)
+            ->and($accepted->status)->toBe(InboundEmailStatus::LEAD_CREATED)
+            ->and($outsider->status)->toBe(InboundEmailStatus::REJECTED)
+            ->and($member->status)->toBe(InboundEmailStatus::LEAD_CREATED);
     });
 
     it('saves attachments in the lead chatter', function () {
@@ -295,8 +298,8 @@ describe('fetching', function () {
 
         $counts = $fetcher->fetch($server);
 
-        expect($counts[InboundEmail::STATUS_LEAD_CREATED])->toBe(1)
-            ->and($counts[InboundEmail::STATUS_IGNORED])->toBe(1)
+        expect($counts[InboundEmailStatus::LEAD_CREATED])->toBe(1)
+            ->and($counts[InboundEmailStatus::IGNORED])->toBe(1)
             ->and($server->fresh()->last_fetched_at)->not->toBeNull()
             ->and($server->fresh()->last_error)->toBeNull();
     });
@@ -311,14 +314,14 @@ describe('fetching', function () {
 
 describe('screens', function () {
     it('shows the mail servers and received emails with their permissions', function () {
-        CrmTestHelper::actingAs(['view_any_crm_mail::server', 'view_any_crm_inbound::email']);
+        CRMHelper::actingAs(['view_any_crm_mail::server', 'view_any_crm_inbound::email']);
 
         Livewire::test(ManageMailServers::class)->assertOk();
         Livewire::test(ManageInboundEmails::class)->assertOk();
     });
 
     it('forbids the mail servers without permission', function () {
-        CrmTestHelper::actingAs([]);
+        CRMHelper::actingAs([]);
 
         Livewire::test(ManageMailServers::class)->assertForbidden();
     });

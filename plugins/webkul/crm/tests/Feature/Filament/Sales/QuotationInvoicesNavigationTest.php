@@ -9,9 +9,9 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ManageD
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ManageInvoices;
 use Webkul\Crm\Livewire\QuotationInvoiceSummary;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('keeps quotation invoices, deliveries and payments inside the CRM', function (string $resource) {
     expect($resource::getCluster())->toBe(Sales::class)

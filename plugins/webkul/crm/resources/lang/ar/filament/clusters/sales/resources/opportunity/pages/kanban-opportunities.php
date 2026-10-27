@@ -3,12 +3,6 @@
 return [
     'breadcrumb' => 'كانبان',
 
-    'header-actions' => [
-        'list' => [
-            'label' => 'قائمة',
-        ],
-    ],
-
     'search' => 'بحث...',
 
     'filters' => [
@@ -48,7 +42,7 @@ return [
         'activities-planned' => ':count نشاط مخطط|:count أنشطة مخططة',
         'activities-today'   => 'نشاط مستحق اليوم',
         'activities-overdue' => 'نشاط متأخر',
-        'no-activities'      => 'جدول الأنشطة لإنجاز عملك.',
+        'no-activities'      => 'لا يوجد نشاط مخطط بعد. أضف نشاطًا لتحديد خطوتك التالية.',
         'schedule-activity'  => 'جدولة نشاط',
         'today'              => 'اليوم',
     ],

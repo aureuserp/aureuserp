@@ -121,9 +121,16 @@ class KanbanActivities extends ListRecords
         return __('crm::filament/clusters/sales/resources/activity.views.kanban');
     }
 
+    public function getRecordNavigationTabs(): array
+    {
+        return ActivityResource::getViewTabs('kanban');
+    }
+
     protected function getHeaderActions(): array
     {
-        return ActivityResource::getViewSwitcherActions('index');
+        return [
+            ScheduleActivityAction::make(),
+        ];
     }
 
     public function kanban(KanbanBoard $kanban): KanbanBoard
@@ -175,7 +182,7 @@ class KanbanActivities extends ListRecords
                     ->icon('heroicon-o-plus')
             )
             ->columnSummary(function (Collection $records): ?string {
-                $overdue = $records->filter(fn (Activity $record): bool => $record->getDueStatus() === ActivityDueStatus::Overdue)->count();
+                $overdue = $records->filter(fn (Activity $record): bool => $record->getDueStatus() === ActivityDueStatus::OVERDUE)->count();
 
                 return $overdue > 0 ? __('crm::filament/clusters/sales/resources/activity/pages/kanban-activities.overdue-count', ['count' => $overdue]) : null;
             })

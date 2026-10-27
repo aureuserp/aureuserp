@@ -4,10 +4,10 @@ namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\InboundEmailResource\Pages\ManageInboundEmails;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\InboundEmailResource\Tables\InboundEmailsTable;
 use Webkul\Crm\Models\InboundEmail;
+use Webkul\Support\Filament\Clusters\Settings;
 
 class InboundEmailResource extends Resource
 {
@@ -15,7 +15,7 @@ class InboundEmailResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-envelope-open';
 
-    protected static ?string $cluster = Configurations::class;
+    protected static ?string $cluster = Settings::class;
 
     protected static ?int $navigationSort = 2;
 

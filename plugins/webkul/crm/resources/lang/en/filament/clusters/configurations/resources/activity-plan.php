@@ -77,29 +77,6 @@ return [
             ],
         ],
 
-        'bulk-actions' => [
-            'restore' => [
-                'notification' => [
-                    'title' => 'Activity Plans restored',
-                    'body'  => 'The activity plans has been restored successfully.',
-                ],
-            ],
-
-            'delete' => [
-                'notification' => [
-                    'title' => 'Activity Plans deleted',
-                    'body'  => 'The activity plans has been deleted successfully.',
-                ],
-            ],
-
-            'force-delete' => [
-                'notification' => [
-                    'title' => 'Activity Plans force deleted',
-                    'body'  => 'The activity plans has been force deleted successfully.',
-                ],
-            ],
-        ],
-
         'empty-state' => [
             'create' => [
                 'notification' => [

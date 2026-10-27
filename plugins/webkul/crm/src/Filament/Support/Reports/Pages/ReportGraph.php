@@ -2,30 +2,39 @@
 
 namespace Webkul\Crm\Filament\Support\Reports\Pages;
 
-use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\ToggleButtons;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
-use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\EmbeddedSchema;
-use Filament\Schemas\Components\Livewire;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
-use Webkul\Crm\Filament\Support\Reports\Report;
+use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\Session;
+use Webkul\Crm\Enums\ReportChartType;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 
-abstract class ReportGraph extends Page
+abstract class ReportGraph extends ListRecords
 {
-    use HasCrmClusterNavigation, HasFiltersForm;
+    use HasCRMClusterNavigation, HasCRMTableViews;
 
-    protected const FILTER_KEYS = ['split_by', 'presets', 'user_ids', 'team_ids'];
+    #[Session]
+    public ?string $graphMeasure = null;
 
-    public static function canAccess(array $parameters = []): bool
+    #[Session]
+    public ?string $graphSplitBy = null;
+
+    #[Session]
+    public ?string $graphChartType = null;
+
+    public function mount(): void
     {
-        return static::getResource()::canViewAny();
+        parent::mount();
+
+        $defaults = $this->getReport()::getDefaultFilters();
+
+        $this->graphMeasure ??= $defaults['measure'];
+        $this->graphSplitBy ??= $defaults['split_by'] ?? '';
+        $this->graphChartType ??= $defaults['chart_type'];
     }
 
     protected function getReport(): string
@@ -43,124 +52,62 @@ abstract class ReportGraph extends Page
         return __('crm::filament/clusters/reporting/report.views.graph');
     }
 
-    protected function getHeaderActions(): array
+    public function getRecordNavigationTabs(): array
+    {
+        return static::getResource()::getViewTabs(static::getResourcePageName());
+    }
+
+    public function getPresetTableViews(): array
+    {
+        return static::getResource()::getReportTableViews();
+    }
+
+    public function table(Table $table): Table
     {
         $report = $this->getReport();
 
-        return [
-            ...static::getResource()::getViewSwitcherActions(static::getResourcePageName()),
-            ...static::getResource()::getExportActions(fn (Builder $query): Builder => $query
-                ->withoutGlobalScope(SoftDeletingScope::class)
-                ->whereIn(
-                    $query->getModel()->getQualifiedKeyName(),
-                    $report::applyFilters(
-                        static::getResource()::getEloquentQuery(),
-                        [...$report::getDefaultFilters(), ...($this->filters ?? [])],
-                    )->reorder()->pluck($query->getModel()->getQualifiedKeyName()),
-                )),
-        ];
+        return static::getResource()::table($table)
+            ->filters(static::getResource()::getReportTableFilters())
+            ->groups($report::getTableGroups())
+            ->defaultGroup($report::getDefaultGroupBy())
+            ->paginated(false)
+            ->recordActions([])
+            ->toolbarActions([])
+            ->emptyState(fn () => view('crm::filament.reports.graph', $this->getGraph()));
     }
 
-    public function filtersForm(Schema $schema): Schema
+    public function getTableRecords(): Collection|Paginator|CursorPaginator
+    {
+        return new Collection;
+    }
+
+    public function getGraphFilters(): array
     {
         $report = $this->getReport();
 
         $defaults = $report::getDefaultFilters();
 
-        $label = fn (string $key): string => __('crm::filament/clusters/reporting/report.filters.'.$key);
+        $splitBy = $this->graphSplitBy === null ? $defaults['split_by'] : $this->graphSplitBy;
 
-        return $schema->components([
-            Section::make($label('heading'))
-                ->headerActions([
-                    Action::make('clearFilters')
-                        ->label($label('clear'))
-                        ->icon('heroicon-m-funnel')
-                        ->color('gray')
-                        ->link()
-                        ->visible(fn (): bool => $this->hasActiveFilters())
-                        ->action(fn () => $this->getFiltersForm()->fill([...$this->filters ?? [], 'split_by' => null, 'presets' => [], 'user_ids' => [], 'team_ids' => []])),
-                    Action::make('resetFilters')
-                        ->label($label('reset'))
-                        ->icon('heroicon-m-x-mark')
-                        ->color('danger')
-                        ->link()
-                        ->visible(fn (): bool => $this->hasChangedFilters())
-                        ->action(fn () => $this->getFiltersForm()->fill()),
-                ])
-                ->columns(['md' => 2, 'xl' => 4])
-                ->schema([
-                    Select::make('measure')
-                        ->label($label('measure'))
-                        ->options($report::getMeasureOptions())
-                        ->default($defaults['measure'])
-                        ->selectablePlaceholder(false)
-                        ->native(false),
-                    Select::make('group_by')
-                        ->label($label('group-by'))
-                        ->options($report::getDimensionOptions())
-                        ->default($defaults['group_by'])
-                        ->selectablePlaceholder(false)
-                        ->native(false),
-                    Select::make('split_by')
-                        ->label($label('split-by'))
-                        ->options($report::getDimensionOptions())
-                        ->default($defaults['split_by'])
-                        ->placeholder($label('no-split'))
-                        ->native(false),
-                    ToggleButtons::make('chart_type')
-                        ->label($label('chart-type'))
-                        ->options([
-                            Report::CHART_BAR  => __('crm::filament/clusters/reporting/report.chart.types.bar'),
-                            Report::CHART_LINE => __('crm::filament/clusters/reporting/report.chart.types.line'),
-                            Report::CHART_PIE  => __('crm::filament/clusters/reporting/report.chart.types.pie'),
-                        ])
-                        ->icons([
-                            Report::CHART_BAR  => 'heroicon-o-chart-bar',
-                            Report::CHART_LINE => 'heroicon-o-presentation-chart-line',
-                            Report::CHART_PIE  => 'heroicon-o-chart-pie',
-                        ])
-                        ->default($defaults['chart_type'])
-                        ->grouped(),
-                    Select::make('presets')
-                        ->label($label('quick-filters'))
-                        ->options($report::getPresetOptions())
-                        ->default($defaults['presets'])
-                        ->multiple()
-                        ->native(false),
-                    Select::make('user_ids')
-                        ->label($label('salespeople'))
-                        ->options(fn (): array => $report::getSalespersonOptions())
-                        ->multiple()
-                        ->searchable(),
-                    Select::make('team_ids')
-                        ->label($label('teams'))
-                        ->options(fn (): array => $report::getTeamOptions())
-                        ->multiple()
-                        ->searchable(),
-                ]),
-        ]);
+        return [
+            'measure'    => array_key_exists((string) $this->graphMeasure, $report::measures()) ? $this->graphMeasure : $defaults['measure'],
+            'group_by'   => $this->getTableGrouping()?->getId() ?? $defaults['group_by'],
+            'split_by'   => filled($splitBy) && $report::getDimension($splitBy) ? $splitBy : null,
+            'chart_type' => (ReportChartType::tryFrom((string) $this->graphChartType) ?? ReportChartType::from($defaults['chart_type']))->value,
+        ];
     }
 
-    public function hasActiveFilters(): bool
+    public function getGraph(): array
     {
-        return collect(self::FILTER_KEYS)->contains(fn (string $key): bool => filled($this->filters[$key] ?? null));
-    }
+        $report = $this->getReport();
 
-    public function hasChangedFilters(): bool
-    {
-        $defaults = [...$this->getReport()::getDefaultFilters(), 'user_ids' => [], 'team_ids' => []];
+        $filters = $this->getGraphFilters();
 
-        return collect($defaults)->contains(fn (mixed $default, string $key): bool => (filled($this->filters[$key] ?? null) ? $this->filters[$key] : null) != (filled($default) ? $default : null));
-    }
-
-    public function content(Schema $schema): Schema
-    {
-        return $schema->components([
-            EmbeddedSchema::make('filtersForm'),
-            Livewire::make(ReportChart::class, fn (): array => [
-                'resource'    => static::getResource(),
-                'pageFilters' => $this->filters,
-            ])->key(fn (): string => 'crm-report-chart-'.md5(json_encode($this->filters ?? []))),
-        ]);
+        return [
+            'filters'    => $filters,
+            'measures'   => $report::getMeasureOptions(),
+            'dimensions' => $report::getDimensionOptions(),
+            'chart'      => ReportChart::build($report, $this->getFilteredTableQuery(), $filters),
+        ];
     }
 }

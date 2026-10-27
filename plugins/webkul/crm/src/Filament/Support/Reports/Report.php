@@ -9,6 +9,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -16,12 +17,6 @@ use Webkul\Support\Models\Company;
 
 abstract class Report
 {
-    public const CHART_BAR = 'bar';
-
-    public const CHART_LINE = 'line';
-
-    public const CHART_PIE = 'pie';
-
     abstract public static function dimensions(): array;
 
     abstract public static function measures(): array;
@@ -37,9 +32,9 @@ abstract class Report
         return null;
     }
 
-    public static function getDefaultChartType(): string
+    public static function getDefaultChartType(): ReportChartType
     {
-        return self::CHART_BAR;
+        return ReportChartType::BAR;
     }
 
     public static function getSalespersonColumn(): string
@@ -63,7 +58,7 @@ abstract class Report
             'measure'    => static::getDefaultMeasure(),
             'group_by'   => static::getDefaultGroupBy(),
             'split_by'   => static::getDefaultSplitBy(),
-            'chart_type' => static::getDefaultChartType(),
+            'chart_type' => static::getDefaultChartType()->value,
             'presets'    => static::getDefaultPresets(),
             'user_ids'   => [],
             'team_ids'   => [],
@@ -212,7 +207,7 @@ abstract class Report
 
         return [
             TextColumn::make($groupDimension->getGroupColumn())
-                ->label(__('crm::filament/clusters/reporting/report.table.columns.group')),
+                ->label($groupDimension->label),
             ...collect(static::measures())
                 ->map(fn (Measure $measure, string $key): TextColumn => TextColumn::make('measure_'.$key)
                     ->label($measure->label)

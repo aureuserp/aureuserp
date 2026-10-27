@@ -35,14 +35,6 @@ php artisan crm:uninstall
 
 This removes the CRM tables and data.
 
-### Demo data (optional)
-
-```bash
-php artisan db:seed --class="Webkul\Crm\Database\Seeders\DemoDataSeeder"
-```
-
-This adds sample customers, leads, opportunities (open, won and lost), scheduled activities and a year of activity history, all assigned to `admin@example.com`. If the demo data is already there, it does nothing.
-
 ## Navigation
 
 | Menu | Pages |

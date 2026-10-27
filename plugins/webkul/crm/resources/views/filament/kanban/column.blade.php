@@ -1,4 +1,6 @@
 @php
+    use Webkul\Crm\Enums\KanbanActivityState;
+
     $color = $board->resolveColumnColor($column);
     $wipLimit = $board->getWipLimit($column->value);
     $isOverWip = $board->isOverWipLimit($column);
@@ -9,25 +11,9 @@
     $canEditColumn = method_exists($this, 'canEditKanbanColumn') && $this->canEditKanbanColumn($column->value);
     $canDeleteColumn = method_exists($this, 'canDeleteKanbanColumn') && $this->canDeleteKanbanColumn($column->value);
 
-    $colorClasses = match($color) {
-        'primary' => 'bg-primary-50 dark:bg-primary-400/10 border-primary-200 dark:border-primary-400/20',
-        'success' => 'bg-success-50 dark:bg-success-400/10 border-success-200 dark:border-success-400/20',
-        'warning' => 'bg-warning-50 dark:bg-warning-400/10 border-warning-200 dark:border-warning-400/20',
-        'danger' => 'bg-danger-50 dark:bg-danger-400/10 border-danger-200 dark:border-danger-400/20',
-        'info' => 'bg-info-50 dark:bg-info-400/10 border-info-200 dark:border-info-400/20',
-        default => 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10',
-    };
-
-    $badgeColorClasses = $isOverWip
-        ? 'bg-danger-100 text-danger-700 dark:bg-danger-400/20 dark:text-danger-400'
-        : match($color) {
-            'primary' => 'bg-primary-100 text-primary-700 dark:bg-primary-400/20 dark:text-primary-400',
-            'success' => 'bg-success-100 text-success-700 dark:bg-success-400/20 dark:text-success-400',
-            'warning' => 'bg-warning-100 text-warning-700 dark:bg-warning-400/20 dark:text-warning-400',
-            'danger' => 'bg-danger-100 text-danger-700 dark:bg-danger-400/20 dark:text-danger-400',
-            'info' => 'bg-info-100 text-info-700 dark:bg-info-400/20 dark:text-info-400',
-            default => 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-400',
-        };
+    $colorKey = in_array($color, ['primary', 'success', 'warning', 'danger', 'info'], true) ? $color : 'gray';
+    $colorClasses = 'crm-kanban-column-'.$colorKey;
+    $badgeColorClasses = 'crm-kanban-count-'.($isOverWip ? 'danger' : $colorKey);
 @endphp
 
 <div
@@ -134,25 +120,25 @@
         $progress = method_exists($this, 'kanbanColumnProgress') ? $this->kanbanColumnProgress($column) : [];
         $progressTotal = array_sum($progress);
         $activeProgress = $progressTotal ? ($this->kanbanActivityFilter[$column->value] ?? null) : null;
-        $progressColors = [
-            'planned' => 'bg-success-500',
-            'today'   => 'bg-warning-400',
-            'overdue' => 'bg-danger-500',
-            'none'    => 'bg-gray-300 dark:bg-gray-600',
-        ];
+        $progressStates = collect(KanbanActivityState::cases())->mapWithKeys(fn (KanbanActivityState $state): array => [$state->value => [match ($state) {
+            KanbanActivityState::PLANNED => 'bg-success-500',
+            KanbanActivityState::TODAY   => 'bg-warning-400',
+            KanbanActivityState::OVERDUE => 'bg-danger-500',
+            KanbanActivityState::NONE    => 'bg-gray-300 dark:bg-gray-600',
+        }, $state->getLabel()]])->all();
     @endphp
 
     @if($summary || $progressTotal)
         <div class="flex items-center gap-3 px-3 pb-2">
             @if($progressTotal)
                 <div class="flex h-2.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10" role="group" aria-label="{{ __('crm::filament/kanban.progress.label') }}">
-                    @foreach($progressColors as $state => $progressColor)
+                    @foreach($progressStates as $state => [$progressColor, $progressLabel])
                         @if(($progress[$state] ?? 0) > 0)
                             <button
                                 type="button"
                                 wire:click="toggleKanbanActivityFilter('{{ $column->value }}', '{{ $state }}')"
-                                title="{{ __('crm::filament/kanban.progress.'.$state) }}: {{ $progress[$state] }}"
-                                aria-label="{{ __('crm::filament/kanban.progress.'.$state) }}: {{ $progress[$state] }}"
+                                title="{{ $progressLabel }}: {{ $progress[$state] }}"
+                                aria-label="{{ $progressLabel }}: {{ $progress[$state] }}"
                                 aria-pressed="{{ $activeProgress === $state ? 'true' : 'false' }}"
                                 style="width: {{ round($progress[$state] / $progressTotal * 100, 2) }}%;"
                                 @class([
@@ -187,24 +173,18 @@
                 'column' => $column,
             ])
         @empty
-            @if($hasEmptyState)
-                <div class="flex flex-col items-center justify-center py-6 text-center">
-                    @if($board->getEmptyStateIcon())
-                        <x-filament::icon
-                            :icon="$board->getEmptyStateIcon()"
-                            class="h-8 w-8 text-gray-300 dark:text-gray-600 mb-2"
-                        />
-                    @endif
-                    <p class="text-xs font-medium text-gray-400 dark:text-gray-500">
-                        {{ $board->getEmptyStateHeading() }}
-                    </p>
-                    @if($board->getEmptyStateDescription())
-                        <p class="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
-                            {{ $board->getEmptyStateDescription() }}
-                        </p>
-                    @endif
-                </div>
-            @endif
+            <div class="crm-kanban-empty">
+                <x-filament::icon
+                    :icon="$hasEmptyState && $board->getEmptyStateIcon() ? $board->getEmptyStateIcon() : 'heroicon-o-inbox'"
+                    class="h-8 w-8 text-gray-300 dark:text-gray-600"
+                />
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    {{ $hasEmptyState ? $board->getEmptyStateHeading() : __('crm::filament/kanban.empty.heading') }}
+                </p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">
+                    {{ $hasEmptyState && $board->getEmptyStateDescription() ? $board->getEmptyStateDescription() : __('crm::filament/kanban.empty.description') }}
+                </p>
+            </div>
         @endforelse
     </div>
 </div>

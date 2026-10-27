@@ -2,20 +2,20 @@
 
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\PartnerLevelResource\Pages\ManagePartnerLevels;
-use Webkul\Crm\Models\CrmPartner;
+use Webkul\Crm\Models\CRMPartner;
 use Webkul\Crm\Models\PartnerLevel;
 use Webkul\Partner\Models\Partner;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('has the default Gold, Silver and Bronze levels', function () {
     expect(PartnerLevel::query()->orderBy('sort')->pluck('name')->take(3)->all())->toBe(['Gold', 'Silver', 'Bronze']);
 });
 
 it('lists, creates and edits levels with the level permission', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['partner::level']));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['partner::level']));
 
     $gold = PartnerLevel::query()->where('name', 'Gold')->firstOrFail();
 
@@ -32,7 +32,7 @@ it('lists, creates and edits levels with the level permission', function () {
 });
 
 it('rejects a negative level weight', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['partner::level']));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['partner::level']));
 
     Livewire::test(ManagePartnerLevels::class)
         ->callAction('create', data: ['name' => 'Broken', 'partner_weight' => -1])
@@ -40,18 +40,18 @@ it('rejects a negative level weight', function () {
 });
 
 it('is forbidden without the level permission', function () {
-    CrmTestHelper::actingAs([]);
+    CRMHelper::actingAs([]);
 
     Livewire::test(ManagePartnerLevels::class)->assertForbidden();
 });
 
 it('uses the contact weight when set, otherwise the level weight', function () {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     $silver = PartnerLevel::query()->where('name', 'Silver')->firstOrFail();
-    $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-    $crmPartner = CrmPartner::query()->create(['partner_id' => $partner->id, 'level_id' => $silver->id]);
+    $crmPartner = CRMPartner::query()->create(['partner_id' => $partner->id, 'level_id' => $silver->id]);
 
     expect($crmPartner->effectiveWeight())->toBe($silver->partner_weight)
         ->and($partner->crmPartner->level->name)->toBe('Silver');

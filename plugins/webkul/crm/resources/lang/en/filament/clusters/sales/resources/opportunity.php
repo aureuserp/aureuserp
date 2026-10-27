@@ -4,6 +4,12 @@ return [
     'model-label'        => 'Opportunity',
     'plural-model-label' => 'Opportunities',
 
+    'views' => [
+        'kanban' => 'Kanban',
+        'list'   => 'List',
+        'graph'  => 'Graph',
+    ],
+
     'navigation' => [
         'title' => 'My Pipeline',
     ],
@@ -145,8 +151,6 @@ return [
 
         'bulk-actions' => [
             'restore' => [
-                'label' => 'Restore',
-
                 'notification' => [
                     'title' => 'Opportunities restored',
                     'body'  => 'The opportunities have been restored to the pipeline.',
@@ -169,10 +173,6 @@ return [
             'modal-description' => 'This opportunity has no customer yet. Choose the customer of the quotation.',
             'submit'            => 'Continue',
             'subheading'        => 'From opportunity: :name',
-        ],
-
-        'open-opportunity' => [
-            'label' => 'Opportunity',
         ],
 
         'won' => [

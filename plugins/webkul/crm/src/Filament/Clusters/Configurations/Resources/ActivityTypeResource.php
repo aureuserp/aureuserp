@@ -2,12 +2,16 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
+use Filament\Resources\Pages\Page;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Crm\Filament\Actions\RecordBulkActions;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\CreateActivityType;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\EditActivityType;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\ListActivityTypes;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\ViewActivityType;
+use Webkul\Crm\Filament\Exports\ActivityTypeExporter;
 use Webkul\Crm\Models\ActivityType;
 use Webkul\Support\Filament\Resources\ActivityTypeResource as BaseActivityTypeResource;
 
@@ -45,9 +49,25 @@ class ActivityTypeResource extends BaseActivityTypeResource
         return __('crm::filament/clusters/configurations/resources/activity-type.navigation.group');
     }
 
+    public static function table(Table $table): Table
+    {
+        return parent::table($table)
+            ->toolbarActions([
+                RecordBulkActions::make(exporter: ActivityTypeExporter::class, archivable: true, copyRelations: ['suggestedActivityTypes']),
+            ]);
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('plugin', 'crm');
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewActivityType::class,
+            EditActivityType::class,
+        ]);
     }
 
     public static function getPages(): array

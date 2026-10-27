@@ -5,6 +5,7 @@ namespace Webkul\Crm\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Enums\QuotationPartnerAction;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Quotation;
 use Webkul\Security\Models\User;
@@ -12,14 +13,6 @@ use Webkul\Support\Models\Company;
 
 class QuotationPartner extends Model
 {
-    public const ACTION_CREATE = 'create';
-
-    public const ACTION_LINK = 'link';
-
-    public const ACTION_NONE = 'none';
-
-    public const ACTION_EXISTING = 'existing';
-
     protected $table = 'crm_quotation_partners';
 
     protected $fillable = [
@@ -29,6 +22,10 @@ class QuotationPartner extends Model
         'quotation_id',
         'company_id',
         'creator_id',
+    ];
+
+    protected $casts = [
+        'action' => QuotationPartnerAction::class,
     ];
 
     public function opportunity(): BelongsTo

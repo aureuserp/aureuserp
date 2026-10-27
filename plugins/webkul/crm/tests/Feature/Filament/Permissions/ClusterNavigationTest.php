@@ -6,13 +6,11 @@ use Illuminate\Support\Facades\Lang;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource;
-use Webkul\Crm\Filament\Clusters\Configurations\Resources\CompanyResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\CreateTeam;
-use Webkul\Crm\Filament\Clusters\Configurations\Resources\UserResource;
 use Webkul\Crm\Filament\Clusters\Leads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\CreateLead;
@@ -28,9 +26,9 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Support\Enums\NavigationGroup;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 dataset('crm clusters', [
     'sales'         => [Sales::class, 1, 'crm::filament/clusters/sales.navigation.title', 'المبيعات'],
@@ -45,7 +43,7 @@ it('places each cluster in the crm navigation group in order', function (string 
 })->with('crm clusters');
 
 it('registers every crm cluster in the admin panel', function (string $cluster) {
-    CrmTestHelper::actingAs();
+    CRMHelper::actingAs();
 
     expect(Filament::getPanel('admin')->getClusters())->toContain($cluster);
 })->with('crm clusters');
@@ -62,20 +60,20 @@ it('translates the cluster label and breadcrumb', function (string $cluster, int
         ->and($cluster::getClusterBreadcrumb())->toBe($arabic);
 })->with('crm clusters');
 
-it('shows no left menu in the leads section, which has a single item', function () {
-    CrmTestHelper::actingAsCrmUser(['lead']);
+it('shows the left menu in the leads section even with a single item', function () {
+    CRMHelper::actingAsCRMUser(['lead']);
 
     expect(Leads::getClusteredComponents())->toContain(LeadResource::class);
 
     $page = app(CreateLead::class);
 
-    expect($page->getSubNavigation())->toBe([])
+    expect($page->getSubNavigation())->toHaveCount(1)
         ->and(CreateLead::getSubNavigationPosition())->toBe(SubNavigationPosition::Start);
 });
 
 it('shows the left menu in the configuration section when it has more than one item', function () {
-    CrmTestHelper::actingAs([
-        ...CrmTestHelper::permissionsFor(['team']),
+    CRMHelper::actingAs([
+        ...CRMHelper::permissionsFor(['team']),
         'view_any_crm_stage',
         'view_any_crm_tag',
     ]);
@@ -86,10 +84,10 @@ it('shows the left menu in the configuration section when it has more than one i
         ->and(CreateTeam::getSubNavigationPosition())->toBe(SubNavigationPosition::Start);
 });
 
-it('hides the left menu when the user can reach only one item of the section', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['team']));
+it('keeps the left menu when the user can reach only one item of the section', function () {
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['team']));
 
-    expect(app(CreateTeam::class)->getSubNavigation())->toBe([]);
+    expect(app(CreateTeam::class)->getSubNavigation())->toHaveCount(1);
 });
 
 it('takes resource labels from the crm translations with a real plural', function (string $resource, string $key, string $arabicPlural) {
@@ -114,8 +112,6 @@ it('takes resource labels from the crm translations with a real plural', functio
     'lost reasons'    => [LostReasonResource::class, 'crm::filament/clusters/configurations/resources/lost-reason', 'أسباب الخسارة'],
     'activity types'  => [ActivityTypeResource::class, 'crm::filament/clusters/configurations/resources/activity-type', 'أنواع الأنشطة'],
     'activity plans'  => [ActivityPlanResource::class, 'crm::filament/clusters/configurations/resources/activity-plan', 'خطط الأنشطة'],
-    'users'           => [UserResource::class, 'crm::filament/clusters/configurations/resources/user', 'المستخدمون'],
-    'companies'       => [CompanyResource::class, 'crm::filament/clusters/configurations/resources/company', 'الشركات'],
     'leads'           => [LeadResource::class, 'crm::filament/clusters/leads/resources/lead', 'العملاء المحتملون'],
     'pipeline'        => [OpportunityResource::class, 'crm::filament/clusters/sales/resources/opportunity', 'الفرص'],
     'activities'      => [ActivityResource::class, 'crm::filament/clusters/sales/resources/activity', 'الأنشطة'],

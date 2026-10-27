@@ -80,7 +80,8 @@ return [
         ],
 
         'done' => [
-            'label' => 'Marcar como concluída',
+            'label'             => 'Marcar como concluída',
+            'bulk-notification' => ':count atividade(s) marcada(s) como concluída(s).',
 
             'modal' => [
                 'heading' => 'Marcar atividade como concluída',
@@ -95,6 +96,11 @@ return [
                 'title' => 'Atividade concluída',
                 'body'  => 'A atividade foi marcada como concluída e registrada na oportunidade.',
             ],
+        ],
+
+        'snooze' => [
+            'label'        => 'Adiar :days d',
+            'notification' => 'Atividade adiada até :date.',
         ],
 
         'reschedule' => [

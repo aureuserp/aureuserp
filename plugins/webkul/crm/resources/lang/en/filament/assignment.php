@@ -3,16 +3,34 @@
 return [
     'rules' => [
         'title'         => 'Assignment rules',
-        'match'         => 'Match',
-        'match-all'     => 'All of the following rules',
-        'match-any'     => 'Any of the following rules',
         'conditions'    => 'Conditions',
         'field'         => 'Field',
         'operator'      => 'Operator',
         'value'         => 'Value',
-        'add-condition' => 'Add condition',
-        'matching'      => '{1} :count open record matches these rules|[0,*] :count open records match these rules',
-        'no-conditions' => 'No conditions: every lead is accepted.',
+        'add-condition' => 'New Rule',
+
+        'heading-all' => 'Match all of the following rules:',
+        'heading-any' => 'Match any of the following rules:',
+        'records'     => '{0} No matching records|{1} :count record|[2,*] :count records',
+        'breakdown'   => ':leads leads · :opportunities opportunities',
+
+        'records-modal' => [
+            'heading'     => 'Matching records',
+            'description' => 'Open leads and opportunities that are not assigned yet and match these rules. Records already in a team (or, for a member, already with a salesperson) are left out.',
+            'empty'       => 'No open lead or opportunity matches these rules.',
+            'showing'     => 'Showing the :shown most recent of :total records.',
+            'close'       => 'Close',
+
+            'columns' => [
+                'name'             => 'Name',
+                'type'             => 'Type',
+                'contact'          => 'Contact',
+                'email'            => 'Email',
+                'salesperson'      => 'Salesperson',
+                'expected-revenue' => 'Expected Revenue',
+                'stage'            => 'Stage',
+            ],
+        ],
 
         'fields' => [
             'type'                  => 'Type',
@@ -40,29 +58,6 @@ return [
             'utm_source_id'         => 'Source',
             'referred_by'           => 'Referred by',
         ],
-
-        'operators' => [
-            'contains'     => 'contains',
-            'not_contains' => 'does not contain',
-            '='            => 'is equal to',
-            '!='           => 'is not equal to',
-            'starts_with'  => 'starts with',
-            'set'          => 'is set',
-            'not_set'      => 'is not set',
-            '>'            => 'greater than',
-            '>='           => 'greater or equal to',
-            '<'            => 'lower than',
-            '<='           => 'lower or equal to',
-            'in'           => 'is in',
-            'not_in'       => 'is not in',
-
-            'date' => [
-                '>='      => 'is on or after',
-                '<='      => 'is on or before',
-                'set'     => 'is set',
-                'not_set' => 'is not set',
-            ],
-        ],
     ],
 
     'team' => [
@@ -70,16 +65,24 @@ return [
         'company-not-active'     => 'This company is not active. Switch to it in the top bar first.',
         'section'                => 'Assignment Rules',
         'section-description'    => 'Which leads rule-based assignment gives this team.',
-        'capacity'               => ':assigned leads assigned in the last 30 days on a maximum of :max.',
+        'capacity'               => ':assigned leads assigned this month on a maximum of :max',
         'use-leads'              => 'Leads',
         'use-opportunities'      => 'Opportunities',
         'skip-assignment'        => 'Skip auto assignment',
         'skip-assignment-helper' => 'Leads are not assigned to this team automatically.',
 
         'assign-leads' => [
-            'label'        => 'Assign Leads',
-            'description'  => 'Assign this team\'s unassigned leads to its members now, using the assignment rules.',
-            'notification' => 'Assigned :count lead(s) to salespeople.',
+            'label'          => 'Assign Leads',
+            'heading'        => 'Assign leads',
+            'description'    => 'Pick the leads to share out. Each one goes to the team member with the most free space.',
+            'submit'         => 'Assign',
+            'records'        => 'Leads to assign',
+            'empty'          => 'Select at least one lead.',
+            'skipped'        => ':count could not be given out (no free space, or a member\'s rules do not match).',
+            'capacity'       => 'Free space: :members',
+            'no-members'     => 'No team member can take leads right now.',
+            'nothing'        => 'No leads to assign right now.',
+            'notification'   => 'Assigned :count lead(s) to salespeople.',
         ],
     ],
 
@@ -96,7 +99,6 @@ return [
             'salesperson'       => 'Salesperson',
             'capacity'          => 'Max leads (30 days)',
             'capacity-helper'   => 'Maximum number of leads assigned to this salesperson in 30 days.',
-            'capacity-assigned' => ':count assigned in the last 30 days.',
             'paused'            => 'Pause assignment',
             'paused-helper'     => 'This salesperson receives no new leads automatically.',
             'active'            => 'Active',
@@ -118,7 +120,7 @@ return [
 
         'notifications' => [
             'added'        => 'Member added',
-            'removed-from' => 'Removed from: :teams (Multi Teams is off).',
+            'removed-from' => 'Removed from: :teams (Salespeople in Multiple Teams is off).',
 
             'single-team' => [
                 'title' => 'Salespeople can only be in one team',

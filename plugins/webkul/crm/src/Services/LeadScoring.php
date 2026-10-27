@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Crm\Models\Tag;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
@@ -26,12 +26,12 @@ class LeadScoring
 
     public function enabledVariables(): array
     {
-        return array_values(array_intersect(self::VARIABLES, (array) app(CrmSettings::class)->scoring_variables));
+        return array_values(array_intersect(self::VARIABLES, (array) app(CRMSettings::class)->scoring_variables));
     }
 
     public function rebuild(): void
     {
-        $startDate = app(CrmSettings::class)->scoring_start_date;
+        $startDate = app(CRMSettings::class)->scoring_start_date;
         $variables = $this->enabledVariables();
         $stages = Stage::query()->orderBy('sort')->get(['id', 'sort']);
         $counts = [];
@@ -246,16 +246,14 @@ class LeadScoring
 
     protected function factorLabel(array $factor): string
     {
-        $label = fn (string $key, array $replace = []): string => __('crm::filament/lead-scoring.factors.'.$key, $replace);
-
         return match ($factor['variable']) {
-            'stage'         => $label('stage', ['value' => Stage::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'phone'         => $label('phone-'.$factor['value']),
-            'email'         => $label('email-'.$factor['value']),
-            'country_id'    => $label('country', ['value' => Country::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'state_id'      => $label('state', ['value' => State::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'utm_source_id' => $label('source', ['value' => UTMSource::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'tags'          => $label('tag', ['value' => Tag::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            'stage'         => __('crm::filament/lead-scoring.factors.stage', ['value' => Stage::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            'phone'         => $factor['value'] === 'valid' ? __('crm::filament/lead-scoring.factors.phone-valid') : __('crm::filament/lead-scoring.factors.phone-invalid'),
+            'email'         => $factor['value'] === 'valid' ? __('crm::filament/lead-scoring.factors.email-valid') : __('crm::filament/lead-scoring.factors.email-invalid'),
+            'country_id'    => __('crm::filament/lead-scoring.factors.country', ['value' => Country::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            'state_id'      => __('crm::filament/lead-scoring.factors.state', ['value' => State::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            'utm_source_id' => __('crm::filament/lead-scoring.factors.source', ['value' => UTMSource::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            'tags'          => __('crm::filament/lead-scoring.factors.tag', ['value' => Tag::query()->whereKey($factor['value'])->value('name') ?? '?']),
             default         => $factor['variable'],
         };
     }

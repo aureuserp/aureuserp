@@ -2,24 +2,21 @@
 
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
+use Webkul\Crm\Filament\Actions\LeadRecordActions;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
-use Webkul\Crm\Filament\Concerns\HasCrmClusterNavigation;
-use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewLead extends ViewRecord
 {
-    use HasCrmClusterNavigation, HasRecordNavigationTabs {
-        HasCrmClusterNavigation::getSubNavigation insteadof HasRecordNavigationTabs;
-        HasCrmClusterNavigation::getSubNavigationPosition insteadof HasRecordNavigationTabs;
+    use HasCRMClusterNavigation, HasRecordNavigationTabs {
+        HasCRMClusterNavigation::getSubNavigation insteadof HasRecordNavigationTabs;
+        HasCRMClusterNavigation::getSubNavigationPosition insteadof HasRecordNavigationTabs;
     }
 
     protected static string $resource = LeadResource::class;
@@ -33,17 +30,13 @@ class ViewLead extends ViewRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
-            RestoreAction::make()
-                ->after(fn () => $this->refreshRecord()),
-            EditAction::make()
-                ->hidden(fn (Lead $record): bool => $record->trashed()),
-            ForceDeleteAction::make()
-                ->successNotification(
-                    Notification::make()
-                        ->success()
-                        ->title(__('crm::filament/clusters/leads/resources/lead.actions.force-delete.notification.title'))
-                        ->body(__('crm::filament/clusters/leads/resources/lead.actions.force-delete.notification.body')),
-                ),
+            LeadRecordActions::make(
+                fn () => $this->refreshRecord(),
+                Notification::make()
+                    ->success()
+                    ->title(__('crm::filament/clusters/leads/resources/lead.actions.force-delete.notification.title'))
+                    ->body(__('crm::filament/clusters/leads/resources/lead.actions.force-delete.notification.body')),
+            ),
         ];
     }
 

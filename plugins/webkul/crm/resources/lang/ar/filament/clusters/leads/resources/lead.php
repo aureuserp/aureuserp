@@ -8,21 +8,19 @@ return [
         'title' => 'العملاء المحتملون',
     ],
 
-    'views' => [
-        'kanban' => 'كانبان',
-        'list'   => 'قائمة',
-        'grid'   => 'شبكة',
-    ],
-
     'global-search' => [
         'contact' => 'جهة اتصال',
         'company' => 'الشركة',
     ],
 
     'form' => [
+        'sections' => [
+            'general' => 'العميل المحتمل',
+            'sales'   => 'المبيعات',
+        ],
+
         'tabs' => [
             'notes'      => 'الملاحظات',
-            'extra-info' => 'معلومات إضافية',
         ],
 
         'fieldsets' => [
@@ -116,21 +114,10 @@ return [
                 'action'     => 'إجراء التحويل',
                 'duplicates' => 'العملاء المحتملون والفرص المشابهة للدمج',
 
-                'action-options' => [
-                    'convert' => 'تحويل إلى فرصة',
-                    'merge'   => 'الدمج مع الفرص الحالية',
-                ],
-
                 'customer'          => 'العميل',
                 'existing-customer' => 'عميل حالي',
                 'salesperson'       => 'مندوب المبيعات',
                 'team'              => 'فريق المبيعات',
-
-                'customer-options' => [
-                    'create' => 'إنشاء عميل جديد',
-                    'link'   => 'الربط بعميل حالي',
-                    'none'   => 'عدم الربط بعميل',
-                ],
             ],
 
             'notification' => [

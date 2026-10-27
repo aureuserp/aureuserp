@@ -8,16 +8,6 @@ return [
     ],
 
     'kanban' => [
-        'filters' => [
-            'salesperson' => 'Vendedor',
-            'team'        => 'Equipe de vendas',
-            'period'      => 'Fechamento previsto',
-            'upcoming'    => 'Próximos fechamentos',
-            'all-dates'   => 'Qualquer data',
-            'presets'     => 'Filtros',
-            'all'         => 'Todos',
-        ],
-
         'empty-state' => [
             'heading'     => 'Nenhuma oportunidade para prever',
             'description' => 'Defina uma data de fechamento prevista nas suas oportunidades para vê-las aqui.',

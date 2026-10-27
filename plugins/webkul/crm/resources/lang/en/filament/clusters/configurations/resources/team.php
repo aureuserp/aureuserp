@@ -7,4 +7,25 @@ return [
     'navigation' => [
         'title' => 'Sales Teams',
     ],
+
+    'pages' => [
+        'assignment' => [
+            'navigation' => 'Assignment Rules',
+            'title'      => ':team — Assignment Rules',
+        ],
+
+        'alias' => [
+            'navigation' => 'Email Alias',
+            'title'      => ':team — Email Alias',
+        ],
+
+        'members' => [
+            'title'         => ':team — Members',
+            'inactive'      => 'Inactive',
+            'skipped'       => 'Skips auto assignment',
+            'rules'         => '{1} :count rule|[0,*] :count rules',
+            'leads-30-days' => 'Leads (30 days)',
+            'gauge'         => ':assigned of :max leads assigned in the last 30 days',
+        ],
+    ],
 ];

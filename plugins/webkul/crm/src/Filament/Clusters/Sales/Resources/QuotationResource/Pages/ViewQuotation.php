@@ -2,9 +2,11 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages;
 
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\ConfirmAction;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\OpenOpportunityAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\QuotationRecordActions;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions\ConfirmAction as BaseConfirmAction;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation as BaseViewQuotation;
 
@@ -15,11 +17,11 @@ class ViewQuotation extends BaseViewQuotation
     protected function getHeaderActions(): array
     {
         return [
-            OpenOpportunityAction::make(),
             ...array_map(
-                fn ($action) => $action instanceof BaseConfirmAction ? ConfirmAction::make() : $action,
-                parent::getHeaderActions(),
+                fn (Action $action): Action => $action instanceof BaseConfirmAction ? ConfirmAction::make() : $action,
+                array_filter(parent::getHeaderActions(), fn (Action $action): bool => ! $action instanceof DeleteAction),
             ),
+            QuotationRecordActions::make(),
         ];
     }
 }

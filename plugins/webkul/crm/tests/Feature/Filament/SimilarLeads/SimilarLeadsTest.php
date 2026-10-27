@@ -1,7 +1,8 @@
 <?php
 
 use Livewire\Livewire;
-use Webkul\Crm\Filament\Actions\MergeLeadsAction;
+use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads as SimilarLeadsPage;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
@@ -17,15 +18,15 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 describe('finding similar records', function () {
     it('stores a normalized email and a digits-only phone', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $lead = CrmTestHelper::lead(['email' => '  Robin@Example.COM ', 'phone' => '+1 (555) 010-1999']);
+        $lead = CRMHelper::lead(['email' => '  Robin@Example.COM ', 'phone' => '+1 (555) 010-1999']);
 
         expect($lead->email_normalized)->toBe('robin@example.com')
             ->and($lead->phone_sanitized)->toBe('15550101999');
@@ -38,16 +39,16 @@ describe('finding similar records', function () {
     });
 
     it('matches leads and opportunities by email, phone or customer', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+        $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-        $record = CrmTestHelper::lead(['email' => 'robin@acme.test', 'phone' => '+1 555 777 0001', 'partner_id' => $partner->id]);
+        $record = CRMHelper::lead(['email' => 'robin@acme.test', 'phone' => '+1 555 777 0001', 'partner_id' => $partner->id]);
 
-        $sameEmail = CrmTestHelper::opportunity(['email' => 'ROBIN@acme.test']);
-        $samePhone = CrmTestHelper::lead(['email' => null, 'phone' => '15557770001']);
-        $sameCustomer = CrmTestHelper::opportunity(['email' => null, 'phone' => null, 'partner_id' => $partner->id]);
-        $sameDomainOtherPerson = CrmTestHelper::lead(['email' => 'sam@acme.test', 'phone' => null]);
+        $sameEmail = CRMHelper::opportunity(['email' => 'ROBIN@acme.test']);
+        $samePhone = CRMHelper::lead(['email' => null, 'phone' => '15557770001']);
+        $sameCustomer = CRMHelper::opportunity(['email' => null, 'phone' => null, 'partner_id' => $partner->id]);
+        $sameDomainOtherPerson = CRMHelper::lead(['email' => 'sam@acme.test', 'phone' => null]);
 
         $ids = $record->similarRecordsQuery()->pluck('id');
 
@@ -56,15 +57,15 @@ describe('finding similar records', function () {
     });
 
     it('includes lost records and leaves out other companies', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $record = CrmTestHelper::lead(['email' => 'lost-match@acme.test']);
+        $record = CRMHelper::lead(['email' => 'lost-match@acme.test']);
 
-        $lost = CrmTestHelper::opportunity(['email' => 'lost-match@acme.test']);
+        $lost = CRMHelper::opportunity(['email' => 'lost-match@acme.test']);
         $lost->markAsLost(null);
 
         $otherCompany = Lead::withoutGlobalScopes()->forceCreate([
-            'type'       => Lead::TYPE_LEAD,
+            'type'       => LeadType::LEAD,
             'name'       => 'Other company duplicate',
             'email'      => 'lost-match@acme.test',
             'company_id' => Company::factory()->create()->id,
@@ -78,10 +79,10 @@ describe('finding similar records', function () {
 
 describe('similar leads tab and board', function () {
     it('shows the similar leads tab with the number of matches', function () {
-        CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+        CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-        $record = CrmTestHelper::lead(['email' => 'tab@acme.test']);
-        CrmTestHelper::opportunity(['email' => 'tab@acme.test']);
+        $record = CRMHelper::lead(['email' => 'tab@acme.test']);
+        CRMHelper::opportunity(['email' => 'tab@acme.test']);
 
         $page = Livewire::test(LeadResource\Pages\ViewLead::class, ['record' => $record->id])->instance();
 
@@ -93,9 +94,9 @@ describe('similar leads tab and board', function () {
     });
 
     it('has no similar leads tab when nothing matches', function () {
-        CrmTestHelper::actingAsCrmUser(['lead']);
+        CRMHelper::actingAsCRMUser(['lead']);
 
-        $record = CrmTestHelper::lead(['email' => 'unique-'.uniqid().'@acme.test', 'phone' => null]);
+        $record = CRMHelper::lead(['email' => 'unique-'.uniqid().'@acme.test', 'phone' => null]);
 
         $page = Livewire::test(LeadResource\Pages\ViewLead::class, ['record' => $record->id])->instance();
 
@@ -103,16 +104,15 @@ describe('similar leads tab and board', function () {
     });
 
     it('shows the record and its matches on the similar board, lost ones included', function () {
-        CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+        CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-        $record = CrmTestHelper::opportunity(['email' => 'board@acme.test']);
-        $lead = CrmTestHelper::lead(['email' => 'board@acme.test']);
-        $lost = CrmTestHelper::opportunity(['email' => 'board@acme.test']);
+        $record = CRMHelper::opportunity(['email' => 'board@acme.test']);
+        $lead = CRMHelper::lead(['email' => 'board@acme.test']);
+        $lost = CRMHelper::opportunity(['email' => 'board@acme.test']);
         $lost->markAsLost(null);
 
         $ids = Livewire::test(SimilarOpportunities::class, ['record' => $record->id])
             ->assertSuccessful()
-            ->assertActionVisible('mergeLeads')
             ->instance()
             ->getSimilarGroup()
             ->modelKeys();
@@ -121,10 +121,10 @@ describe('similar leads tab and board', function () {
     });
 
     it('does not move cards on the similar board', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $record = CrmTestHelper::opportunity(['email' => 'nomove@acme.test']);
-        CrmTestHelper::opportunity(['email' => 'nomove@acme.test']);
+        $record = CRMHelper::opportunity(['email' => 'nomove@acme.test']);
+        CRMHelper::opportunity(['email' => 'nomove@acme.test']);
 
         $stageBefore = $record->stage_id;
         $otherStage = Stage::query()->whereKeyNot($stageBefore)->value('id');
@@ -136,13 +136,13 @@ describe('similar leads tab and board', function () {
     });
 
     it('only counts and shows similar records the user may view', function () {
-        CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+        CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-        $record = CrmTestHelper::opportunity(['email' => 'visible@acme.test']);
-        $lead = CrmTestHelper::lead(['email' => 'visible@acme.test']);
-        $opportunity = CrmTestHelper::opportunity(['email' => 'visible@acme.test']);
+        $record = CRMHelper::opportunity(['email' => 'visible@acme.test']);
+        $lead = CRMHelper::lead(['email' => 'visible@acme.test']);
+        $opportunity = CRMHelper::opportunity(['email' => 'visible@acme.test']);
 
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
         $visible = SimilarLeads::visibleRecords($record)->modelKeys();
 
@@ -154,12 +154,43 @@ describe('similar leads tab and board', function () {
         expect($board)->not->toContain($lead->id);
     });
 
+    it('shows the similar records under the record tabs with kanban, list and graph tabs', function () {
+        CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
+
+        $record = CRMHelper::lead(['email' => 'views@acme.test']);
+        $match = CRMHelper::opportunity(['email' => 'views@acme.test']);
+
+        $kanban = Livewire::test(SimilarLeadsPage::class, ['record' => $record->id])
+            ->assertSuccessful()
+            ->assertActionDoesNotExist('mergeLeads');
+
+        expect(collect($kanban->instance()->getRecordNavigationTabs())->map->getLabel()->all())
+            ->toContain(__('crm::filament/similar-leads.navigation.label'))
+            ->and(collect($kanban->instance()->getSimilarViewTabs())->map(fn ($tab): bool => $tab->isActive())->all())
+            ->toBe([true, false, false]);
+
+        Livewire::withQueryParams(['view' => 'list'])
+            ->test(SimilarLeadsPage::class, ['record' => $record->id])
+            ->assertCanSeeTableRecords([$record, $match])
+            ->assertTableBulkActionExists('mergeLeads');
+
+        Livewire::withQueryParams(['view' => 'list'])
+            ->test(SimilarLeadsPage::class, ['record' => $record->id])
+            ->searchTable('views-no-match')
+            ->assertCanNotSeeTableRecords([$record, $match]);
+
+        Livewire::withQueryParams(['view' => 'graph'])
+            ->test(SimilarLeadsPage::class, ['record' => $record->id])
+            ->assertSuccessful()
+            ->assertSet('similarView', 'graph');
+    });
+
     it('forbids the similar board without permission to view the record', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $record = CrmTestHelper::opportunity(['email' => 'forbidden@acme.test']);
+        $record = CRMHelper::opportunity(['email' => 'forbidden@acme.test']);
 
-        CrmTestHelper::actingAs(['view_any_crm_opportunity']);
+        CRMHelper::actingAs(['view_any_crm_opportunity']);
 
         Livewire::test(SimilarOpportunities::class, ['record' => $record->id])->assertForbidden();
     });
@@ -167,33 +198,33 @@ describe('similar leads tab and board', function () {
 
 describe('merging', function () {
     it('keeps the most advanced opportunity by default', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $lead = CrmTestHelper::lead(['email' => 'head@acme.test']);
-        $opportunity = CrmTestHelper::opportunity(['email' => 'head@acme.test']);
+        $lead = CRMHelper::lead(['email' => 'head@acme.test']);
+        $opportunity = CRMHelper::opportunity(['email' => 'head@acme.test']);
 
         expect(app(LeadMerger::class)->pickHead(collect([$lead, $opportunity]))->id)->toBe($opportunity->id);
     });
 
     it('merges fields, notes, tags, chatter and history into the kept record and deletes the others', function () {
-        $user = CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+        $user = CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
         $tagA = Tag::factory()->create();
         $tagB = Tag::factory()->create();
 
-        $kept = CrmTestHelper::opportunity(['email' => 'merge@acme.test', 'city' => null, 'contact_name' => null, 'description' => '<p>Budget approved</p>']);
+        $kept = CRMHelper::opportunity(['email' => 'merge@acme.test', 'city' => null, 'contact_name' => null, 'description' => '<p>Budget approved</p>']);
         $kept->tags()->sync([$tagA->id]);
 
-        $other = CrmTestHelper::lead(['email' => 'merge@acme.test', 'city' => 'Austin', 'contact_name' => 'Robin', 'description' => '<p>Wants desks</p>']);
+        $other = CRMHelper::lead(['email' => 'merge@acme.test', 'city' => 'Austin', 'contact_name' => 'Robin', 'description' => '<p>Wants desks</p>']);
         $other->tags()->sync([$tagB->id]);
 
         $message = $other->addMessage(['type' => 'comment', 'body' => 'Note on the duplicate']);
-        $log = ActivityLog::query()->create(['lead_id' => $other->id, 'lead_type' => Lead::TYPE_LEAD, 'done_at' => now(), 'company_id' => CrmTestHelper::companyId()]);
+        $log = ActivityLog::query()->create(['lead_id' => $other->id, 'lead_type' => LeadType::LEAD, 'done_at' => now(), 'company_id' => CRMHelper::companyId()]);
 
         $merged = app(LeadMerger::class)->merge(collect([$kept, $other]), $kept);
 
         expect($merged->id)->toBe($kept->id)
-            ->and($merged->type)->toBe(Lead::TYPE_OPPORTUNITY)
+            ->and($merged->type)->toBe(LeadType::OPPORTUNITY)
             ->and($merged->city)->toBe('Austin')
             ->and($merged->contact_name)->toBe('Robin')
             ->and($merged->description)->toContain('Budget approved')->toContain('Wants desks')
@@ -210,12 +241,12 @@ describe('merging', function () {
     });
 
     it('makes the result active when the kept record was lost', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $lost = CrmTestHelper::opportunity(['email' => 'revive@acme.test']);
+        $lost = CRMHelper::opportunity(['email' => 'revive@acme.test']);
         $lost->markAsLost(null, 'Too expensive');
 
-        $active = CrmTestHelper::lead(['email' => 'revive@acme.test']);
+        $active = CRMHelper::lead(['email' => 'revive@acme.test']);
 
         $merged = app(LeadMerger::class)->merge(collect([Lead::withTrashed()->find($lost->id), $active]), Lead::withTrashed()->find($lost->id));
 
@@ -224,24 +255,24 @@ describe('merging', function () {
     });
 
     it('turns the result into an opportunity when one of the records is an opportunity', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $lead = CrmTestHelper::lead(['email' => 'type@acme.test']);
-        $opportunity = CrmTestHelper::opportunity(['email' => 'type@acme.test']);
+        $lead = CRMHelper::lead(['email' => 'type@acme.test']);
+        $opportunity = CRMHelper::opportunity(['email' => 'type@acme.test']);
 
         $merged = app(LeadMerger::class)->merge(collect([$lead, $opportunity]), $lead);
 
-        expect($merged->type)->toBe(Lead::TYPE_OPPORTUNITY)
+        expect($merged->type)->toBe(LeadType::OPPORTUNITY)
             ->and($merged->converted_at)->not->toBeNull();
     });
 
     it('refuses to merge a single record or records of different companies', function () {
-        CrmTestHelper::actingAs();
+        CRMHelper::actingAs();
 
-        $lead = CrmTestHelper::lead();
+        $lead = CRMHelper::lead();
 
         $foreign = Lead::withoutGlobalScopes()->forceCreate([
-            'type'       => Lead::TYPE_LEAD,
+            'type'       => LeadType::LEAD,
             'name'       => 'Foreign',
             'company_id' => Company::factory()->create()->id,
         ]);
@@ -251,113 +282,118 @@ describe('merging', function () {
     });
 
     it('requires edit permission on the kept record and force delete permission on the others', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $kept = CrmTestHelper::opportunity(['email' => 'perm@acme.test']);
-        $other = CrmTestHelper::opportunity(['email' => 'perm@acme.test']);
+        $kept = CRMHelper::opportunity(['email' => 'perm@acme.test']);
+        $other = CRMHelper::opportunity(['email' => 'perm@acme.test']);
 
-        expect(MergeLeadsAction::canMerge($kept, collect([$other])))->toBeTrue();
+        expect(MergeLeadsBulkAction::canMerge($kept, collect([$other])))->toBeTrue();
 
-        CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update', 'delete', 'delete_any']));
+        CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update', 'delete', 'delete_any']));
 
-        expect(MergeLeadsAction::canMerge($kept, collect([$other])))->toBeFalse();
+        expect(MergeLeadsBulkAction::canMerge($kept, collect([$other])))->toBeFalse();
     });
 
     it('requires restore permission when the kept record is lost', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $kept = CrmTestHelper::opportunity(['email' => 'perm-lost@acme.test']);
+        $kept = CRMHelper::opportunity(['email' => 'perm-lost@acme.test']);
         $kept->markAsLost(null);
         $kept = Lead::withTrashed()->find($kept->id);
 
-        $other = CrmTestHelper::opportunity(['email' => 'perm-lost@acme.test']);
+        $other = CRMHelper::opportunity(['email' => 'perm-lost@acme.test']);
 
-        expect(MergeLeadsAction::canMerge($kept, collect([$other])))->toBeTrue();
+        expect(MergeLeadsBulkAction::canMerge($kept, collect([$other])))->toBeTrue();
 
-        CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update', 'force_delete', 'force_delete_any']));
+        CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view', 'update', 'force_delete', 'force_delete_any']));
 
-        expect(MergeLeadsAction::canMerge($kept, collect([$other])))->toBeFalse();
+        expect(MergeLeadsBulkAction::canMerge($kept, collect([$other])))->toBeFalse();
     });
 
-    it('merges from the similar board', function () {
-        CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    it('merges from the similar records list', function () {
+        CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-        $record = CrmTestHelper::opportunity(['email' => 'board-merge@acme.test']);
-        $duplicate = CrmTestHelper::lead(['email' => 'board-merge@acme.test']);
+        $record = CRMHelper::opportunity(['email' => 'board-merge@acme.test']);
+        $duplicate = CRMHelper::lead(['email' => 'board-merge@acme.test']);
 
-        Livewire::test(SimilarOpportunities::class, ['record' => $record->id])
-            ->callAction('mergeLeads', ['records' => [$record->id, $duplicate->id], 'head' => $record->id])
-            ->assertHasNoActionErrors();
+        Livewire::withQueryParams(['view' => 'list'])
+            ->test(SimilarOpportunities::class, ['record' => $record->id])
+            ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id])
+            ->assertHasNoTableBulkActionErrors();
 
         expect(Lead::withTrashed()->find($duplicate->id))->toBeNull()
             ->and(Lead::query()->find($record->id))->not->toBeNull();
     });
 
-    it('ignores records outside the similar group when merging from the board', function () {
-        CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    it('ignores records outside the similar group when merging from the list', function () {
+        CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-        $record = CrmTestHelper::opportunity(['email' => 'scope@acme.test']);
-        $duplicate = CrmTestHelper::lead(['email' => 'scope@acme.test']);
-        $unrelated = CrmTestHelper::lead(['email' => 'unrelated@acme.test']);
+        $record = CRMHelper::opportunity(['email' => 'scope@acme.test']);
+        $duplicate = CRMHelper::lead(['email' => 'scope@acme.test']);
+        $unrelated = CRMHelper::lead(['email' => 'unrelated@acme.test']);
 
-        Livewire::test(SimilarOpportunities::class, ['record' => $record->id])
-            ->callAction('mergeLeads', ['records' => [$record->id, $duplicate->id, $unrelated->id], 'head' => $record->id]);
+        Livewire::withQueryParams(['view' => 'list'])
+            ->test(SimilarOpportunities::class, ['record' => $record->id])
+            ->assertCanNotSeeTableRecords([$unrelated])
+            ->callTableBulkAction('mergeLeads', [$record, $duplicate, $unrelated], ['head' => $record->id]);
 
         expect(Lead::query()->find($unrelated->id))->not->toBeNull();
     });
 
     it('offers a salesperson and team choice only when the records differ', function () {
-        $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+        $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $otherUser = User::withoutEvents(fn () => User::factory()->create(['default_company_id' => CrmTestHelper::companyId(), 'is_active' => true]));
+        $otherUser = User::withoutEvents(fn () => User::factory()->create(['default_company_id' => CRMHelper::companyId(), 'is_active' => true]));
 
-        $a = CrmTestHelper::opportunity(['email' => 'conflict@acme.test', 'user_id' => $user->id]);
-        $b = CrmTestHelper::opportunity(['email' => 'conflict@acme.test', 'user_id' => $otherUser->id]);
-        $c = CrmTestHelper::opportunity(['email' => 'conflict@acme.test', 'user_id' => $user->id]);
+        $a = CRMHelper::opportunity(['email' => 'conflict@acme.test', 'user_id' => $user->id]);
+        $b = CRMHelper::opportunity(['email' => 'conflict@acme.test', 'user_id' => $otherUser->id]);
+        $c = CRMHelper::opportunity(['email' => 'conflict@acme.test', 'user_id' => $user->id]);
 
-        expect(MergeLeadsAction::conflictOptions(collect([$a, $b]), 'user_id', 'user'))->toHaveCount(2)
-            ->and(MergeLeadsAction::conflictOptions(collect([$a, $c]), 'user_id', 'user'))->toHaveCount(1);
+        expect(MergeLeadsBulkAction::conflictOptions(collect([$a, $b]), 'user_id', 'user'))->toHaveCount(2)
+            ->and(MergeLeadsBulkAction::conflictOptions(collect([$a, $c]), 'user_id', 'user'))->toHaveCount(1);
     });
 
     it('requires choosing the salesperson when the merged records have different ones', function () {
-        $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+        $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $otherUser = User::withoutEvents(fn () => User::factory()->create(['default_company_id' => CrmTestHelper::companyId(), 'is_active' => true]));
+        $otherUser = User::withoutEvents(fn () => User::factory()->create(['default_company_id' => CRMHelper::companyId(), 'is_active' => true]));
 
-        $record = CrmTestHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $user->id]);
-        $duplicate = CrmTestHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $otherUser->id]);
+        $record = CRMHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $user->id]);
+        $duplicate = CRMHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $otherUser->id]);
 
-        Livewire::test(SimilarOpportunities::class, ['record' => $record->id])
-            ->callAction('mergeLeads', ['records' => [$record->id, $duplicate->id], 'head' => $record->id, 'user_id' => null])
-            ->assertHasActionErrors(['user_id' => 'required']);
+        Livewire::withQueryParams(['view' => 'list'])
+            ->test(SimilarOpportunities::class, ['record' => $record->id])
+            ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id, 'user_id' => null])
+            ->assertHasTableBulkActionErrors(['user_id' => 'required']);
 
         expect(Lead::query()->find($duplicate->id))->not->toBeNull();
 
-        Livewire::test(SimilarOpportunities::class, ['record' => $record->id])
-            ->callAction('mergeLeads', ['records' => [$record->id, $duplicate->id], 'head' => $record->id, 'user_id' => $otherUser->id])
-            ->assertHasNoActionErrors();
+        Livewire::withQueryParams(['view' => 'list'])
+            ->test(SimilarOpportunities::class, ['record' => $record->id])
+            ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id, 'user_id' => $otherUser->id])
+            ->assertHasNoTableBulkActionErrors();
 
         expect($record->fresh()->user_id)->toBe($otherUser->id)
             ->and(Lead::withTrashed()->find($duplicate->id))->toBeNull();
     });
 
     it('refuses a salesperson that none of the merged records has', function () {
-        $user = CrmTestHelper::actingAsCrmUser(['opportunity']);
+        $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $otherUser = User::withoutEvents(fn () => User::factory()->create(['default_company_id' => CrmTestHelper::companyId(), 'is_active' => true]));
+        $otherUser = User::withoutEvents(fn () => User::factory()->create(['default_company_id' => CRMHelper::companyId(), 'is_active' => true]));
 
-        $a = CrmTestHelper::opportunity(['email' => 'outsider@acme.test', 'user_id' => $user->id]);
-        $b = CrmTestHelper::opportunity(['email' => 'outsider@acme.test', 'user_id' => $otherUser->id]);
+        $a = CRMHelper::opportunity(['email' => 'outsider@acme.test', 'user_id' => $user->id]);
+        $b = CRMHelper::opportunity(['email' => 'outsider@acme.test', 'user_id' => $otherUser->id]);
 
         expect(fn () => app(LeadMerger::class)->merge(collect([$a, $b]), $a, ['user_id' => 99999999]))
             ->toThrow(InvalidArgumentException::class);
     });
 
     it('merges selected records from the pipeline list', function () {
-        CrmTestHelper::actingAsCrmUser(['opportunity']);
+        CRMHelper::actingAsCRMUser(['opportunity']);
 
-        $first = CrmTestHelper::opportunity(['email' => 'bulk@acme.test', 'expected_revenue' => 100]);
-        $second = CrmTestHelper::opportunity(['email' => 'bulk@acme.test', 'expected_revenue' => 900]);
+        $first = CRMHelper::opportunity(['email' => 'bulk@acme.test', 'expected_revenue' => 100]);
+        $second = CRMHelper::opportunity(['email' => 'bulk@acme.test', 'expected_revenue' => 900]);
 
         Livewire::test(ListOpportunities::class)
             ->callTableBulkAction('mergeLeads', [$first, $second], ['head' => $second->id]);

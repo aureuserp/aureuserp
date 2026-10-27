@@ -3,16 +3,34 @@
 return [
     'rules' => [
         'title'         => 'Reglas de asignación',
-        'match'         => 'Coincidir',
-        'match-all'     => 'Todas las reglas siguientes',
-        'match-any'     => 'Cualquiera de las reglas siguientes',
         'conditions'    => 'Condiciones',
         'field'         => 'Campo',
         'operator'      => 'Operador',
         'value'         => 'Valor',
-        'add-condition' => 'Añadir condición',
-        'matching'      => '{1} :count registro abierto cumple estas reglas|[0,*] :count registros abiertos cumplen estas reglas',
-        'no-conditions' => 'Sin condiciones: se acepta cualquier lead.',
+        'add-condition' => 'Nueva regla',
+
+        'heading-all' => 'Cumplir todas las reglas siguientes:',
+        'heading-any' => 'Cumplir cualquiera de las reglas siguientes:',
+        'records'     => '{0} Ningún registro coincide|{1} :count registro|[2,*] :count registros',
+        'breakdown'   => ':leads leads · :opportunities oportunidades',
+
+        'records-modal' => [
+            'heading'     => 'Registros coincidentes',
+            'description' => 'Leads y oportunidades abiertos que aún no están asignados y cumplen estas reglas. Se excluyen los que ya están en un equipo (o, para un miembro, los que ya tienen comercial).',
+            'empty'       => 'Ningún lead u oportunidad abierto cumple estas reglas.',
+            'showing'     => 'Mostrando los :shown más recientes de :total registros.',
+            'close'       => 'Cerrar',
+
+            'columns' => [
+                'name'             => 'Nombre',
+                'type'             => 'Tipo',
+                'contact'          => 'Contacto',
+                'email'            => 'Correo',
+                'salesperson'      => 'Comercial',
+                'expected-revenue' => 'Ingreso esperado',
+                'stage'            => 'Etapa',
+            ],
+        ],
 
         'fields' => [
             'type'                  => 'Tipo',
@@ -40,29 +58,6 @@ return [
             'utm_source_id'         => 'Origen',
             'referred_by'           => 'Referido por',
         ],
-
-        'operators' => [
-            'contains'     => 'contiene',
-            'not_contains' => 'no contiene',
-            '='            => 'es igual a',
-            '!='           => 'no es igual a',
-            'starts_with'  => 'empieza por',
-            'set'          => 'está definido',
-            'not_set'      => 'no está definido',
-            '>'            => 'mayor que',
-            '>='           => 'mayor o igual que',
-            '<'            => 'menor que',
-            '<='           => 'menor o igual que',
-            'in'           => 'está en',
-            'not_in'       => 'no está en',
-
-            'date' => [
-                '>='      => 'es el o después del',
-                '<='      => 'es el o antes del',
-                'set'     => 'está definido',
-                'not_set' => 'no está definido',
-            ],
-        ],
     ],
 
     'team' => [
@@ -70,16 +65,24 @@ return [
         'company-not-active'     => 'Esta empresa no está activa. Cámbiese a ella en la barra superior primero.',
         'section'                => 'Reglas de asignación',
         'section-description'    => 'Qué leads recibe este equipo con la asignación basada en reglas.',
-        'capacity'               => ':assigned leads asignados en los últimos 30 días de un máximo de :max.',
+        'capacity'               => ':assigned leads asignados este mes de un máximo de :max',
         'use-leads'              => 'Leads',
         'use-opportunities'      => 'Oportunidades',
         'skip-assignment'        => 'Omitir asignación automática',
         'skip-assignment-helper' => 'Los leads no se asignan automáticamente a este equipo.',
 
         'assign-leads' => [
-            'label'        => 'Asignar leads',
-            'description'  => 'Asigna ahora los leads sin comercial de este equipo a sus miembros, según las reglas de asignación.',
-            'notification' => 'Se asignaron :count lead(s) a comerciales.',
+            'label'          => 'Asignar leads',
+            'heading'        => 'Asignar leads',
+            'description'    => 'Elige los leads a repartir. Cada uno va al miembro del equipo con más espacio libre.',
+            'submit'         => 'Asignar',
+            'records'        => 'Leads a asignar',
+            'empty'          => 'Selecciona al menos un lead.',
+            'skipped'        => 'No se pudieron repartir :count (sin espacio libre o las reglas del miembro no coinciden).',
+            'capacity'       => 'Espacio libre: :members',
+            'no-members'     => 'Ningún miembro del equipo puede recibir leads ahora.',
+            'nothing'        => 'No hay leads para asignar ahora.',
+            'notification'   => 'Se asignaron :count lead(s) a comerciales.',
         ],
     ],
 
@@ -96,7 +99,6 @@ return [
             'salesperson'       => 'Comercial',
             'capacity'          => 'Máx. leads (30 días)',
             'capacity-helper'   => 'Número máximo de leads asignados a este comercial en 30 días.',
-            'capacity-assigned' => ':count asignados en los últimos 30 días.',
             'paused'            => 'Pausar asignación',
             'paused-helper'     => 'Este comercial no recibe nuevos leads automáticamente.',
             'active'            => 'Activo',
@@ -118,7 +120,7 @@ return [
 
         'notifications' => [
             'added'        => 'Miembro añadido',
-            'removed-from' => 'Quitado de: :teams (Varios equipos está desactivado).',
+            'removed-from' => 'Quitado de: :teams (Vendedores en varios equipos está desactivado).',
 
             'single-team' => [
                 'title' => 'Un comercial solo puede estar en un equipo',

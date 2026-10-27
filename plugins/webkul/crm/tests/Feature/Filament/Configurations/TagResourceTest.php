@@ -5,12 +5,12 @@ use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Pages\ManageTags;
 use Webkul\Crm\Models\Tag;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('lists the tags', function () {
-    CrmTestHelper::actingAsCrmUser(['tag']);
+    CRMHelper::actingAsCRMUser(['tag']);
 
     $tags = Tag::factory()->count(2)->create();
 
@@ -19,7 +19,7 @@ it('lists the tags', function () {
 });
 
 it('searches tags by name', function () {
-    CrmTestHelper::actingAsCrmUser(['tag']);
+    CRMHelper::actingAsCRMUser(['tag']);
 
     $hot = Tag::factory()->create(['name' => 'Hot lead (test)']);
     $cold = Tag::factory()->create(['name' => 'Cold lead (test)']);
@@ -31,7 +31,7 @@ it('searches tags by name', function () {
 });
 
 it('creates a tag with a color', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['tag']);
+    $user = CRMHelper::actingAsCRMUser(['tag']);
 
     Livewire::test(ManageTags::class)
         ->callAction('create', data: [
@@ -48,7 +48,7 @@ it('creates a tag with a color', function () {
 });
 
 it('rejects a duplicate tag name', function () {
-    CrmTestHelper::actingAsCrmUser(['tag']);
+    CRMHelper::actingAsCRMUser(['tag']);
 
     Tag::factory()->create(['name' => 'Duplicate (test)']);
 
@@ -60,7 +60,7 @@ it('rejects a duplicate tag name', function () {
 });
 
 it('edits a tag and keeps its own name valid', function () {
-    CrmTestHelper::actingAsCrmUser(['tag']);
+    CRMHelper::actingAsCRMUser(['tag']);
 
     $tag = Tag::factory()->create(['name' => 'Renew (test)', 'color' => '#000000']);
 
@@ -75,7 +75,7 @@ it('edits a tag and keeps its own name valid', function () {
 });
 
 it('rejects renaming a tag to an existing name', function () {
-    CrmTestHelper::actingAsCrmUser(['tag']);
+    CRMHelper::actingAsCRMUser(['tag']);
 
     Tag::factory()->create(['name' => 'Taken (test)']);
     $tag = Tag::factory()->create(['name' => 'Free (test)']);
@@ -88,7 +88,7 @@ it('rejects renaming a tag to an existing name', function () {
 });
 
 it('deletes a tag', function () {
-    CrmTestHelper::actingAsCrmUser(['tag']);
+    CRMHelper::actingAsCRMUser(['tag']);
 
     $tag = Tag::factory()->create();
 
@@ -99,14 +99,14 @@ it('deletes a tag', function () {
 });
 
 it('hides the create action without the create permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_tag', 'view_crm_tag']);
+    CRMHelper::actingAs(['view_any_crm_tag', 'view_crm_tag']);
 
     Livewire::test(ManageTags::class)
         ->assertActionHidden('create');
 });
 
 it('forbids the tags page without crm tag permissions', function () {
-    CrmTestHelper::actingAs(['view_any_sale_tag', 'view_any_crm_stage']);
+    CRMHelper::actingAs(['view_any_sale_tag', 'view_any_crm_stage']);
 
     Livewire::test(ManageTags::class)->assertForbidden();
 });

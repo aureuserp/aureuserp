@@ -17,54 +17,48 @@ class LeadTableFilters
 {
     public static function leads(): QueryBuilder
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/leads/resources/lead.'.$key);
-        $opportunityLabel = fn (string $key): string => __('crm::filament/clusters/sales/resources/opportunity.table.columns.'.$key);
-
         return static::make([
-            TextConstraint::make('name')->label($label('table.columns.name'))->icon('heroicon-o-document-text'),
-            TextConstraint::make('contact_name')->label($label('table.columns.contact-name'))->icon('heroicon-o-user'),
-            TextConstraint::make('company_name')->label($label('table.columns.company-name'))->icon('heroicon-o-building-office'),
-            TextConstraint::make('email')->label($label('table.columns.email'))->icon('heroicon-o-envelope'),
-            TextConstraint::make('phone')->label($label('table.columns.phone'))->icon('heroicon-o-phone'),
-            TextConstraint::make('city')->label($label('table.columns.city'))->icon('heroicon-o-map-pin'),
-            static::relationship('country', $label('table.columns.country'), 'heroicon-o-globe-alt'),
-            static::relationship('stage', $opportunityLabel('stage'), 'heroicon-o-funnel'),
-            static::relationship('user', $label('table.columns.salesperson'), 'heroicon-o-user-circle'),
-            static::relationship('team', $label('table.columns.team'), 'heroicon-o-user-group', static::companyTeams()),
-            static::relationship('tags', $label('table.columns.tags'), 'heroicon-o-tag'),
-            static::priority($label('table.columns.priority')),
-            static::relationship('source', $label('table.columns.source'), 'heroicon-o-speaker-wave'),
-            static::relationship('medium', $label('form.fields.medium'), 'heroicon-o-megaphone'),
-            static::relationship('campaign', $label('form.fields.campaign'), 'heroicon-o-flag'),
-            NumberConstraint::make('probability')->label($opportunityLabel('probability'))->icon('heroicon-o-chart-pie'),
-            DateConstraint::make('created_at')->label($label('table.columns.created-at')),
+            TextConstraint::make('name')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))->icon('heroicon-o-document-text'),
+            TextConstraint::make('contact_name')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.contact-name'))->icon('heroicon-o-user'),
+            TextConstraint::make('company_name')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.company-name'))->icon('heroicon-o-building-office'),
+            TextConstraint::make('email')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.email'))->icon('heroicon-o-envelope'),
+            TextConstraint::make('phone')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.phone'))->icon('heroicon-o-phone'),
+            TextConstraint::make('city')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.city'))->icon('heroicon-o-map-pin'),
+            static::relationship('country', __('crm::filament/clusters/leads/resources/lead.table.columns.country'), 'heroicon-o-globe-alt'),
+            static::relationship('stage', __('crm::filament/clusters/sales/resources/opportunity.table.columns.stage'), 'heroicon-o-funnel'),
+            static::relationship('user', __('crm::filament/clusters/leads/resources/lead.table.columns.salesperson'), 'heroicon-o-user-circle'),
+            static::relationship('team', __('crm::filament/clusters/leads/resources/lead.table.columns.team'), 'heroicon-o-user-group', static::companyTeams()),
+            static::relationship('tags', __('crm::filament/clusters/leads/resources/lead.table.columns.tags'), 'heroicon-o-tag'),
+            static::priority(__('crm::filament/clusters/leads/resources/lead.table.columns.priority')),
+            static::relationship('source', __('crm::filament/clusters/leads/resources/lead.table.columns.source'), 'heroicon-o-speaker-wave'),
+            static::relationship('medium', __('crm::filament/clusters/leads/resources/lead.form.fields.medium'), 'heroicon-o-megaphone'),
+            static::relationship('campaign', __('crm::filament/clusters/leads/resources/lead.form.fields.campaign'), 'heroicon-o-flag'),
+            NumberConstraint::make('probability')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.probability'))->icon('heroicon-o-chart-pie'),
+            DateConstraint::make('created_at')->label(__('crm::filament/clusters/leads/resources/lead.table.columns.created-at')),
         ]);
     }
 
     public static function opportunities(bool $withinTeam = false): QueryBuilder
     {
-        $label = fn (string $key): string => __('crm::filament/clusters/sales/resources/opportunity.table.columns.'.$key);
-        $leadLabel = fn (string $key): string => __('crm::filament/clusters/leads/resources/lead.'.$key);
-
         return static::make([
-            TextConstraint::make('name')->label($label('name'))->icon('heroicon-o-document-text'),
-            static::relationship('partner', $label('customer'), 'heroicon-o-building-office'),
-            TextConstraint::make('email')->label($label('email'))->icon('heroicon-o-envelope'),
-            TextConstraint::make('phone')->label($label('phone'))->icon('heroicon-o-phone'),
-            static::relationship('stage', $label('stage'), 'heroicon-o-funnel'),
-            static::relationship('user', $label('salesperson'), 'heroicon-o-user-circle'),
-            $withinTeam ? null : static::relationship('team', $label('team'), 'heroicon-o-user-group', static::companyTeams()),
-            static::relationship('tags', $label('tags'), 'heroicon-o-tag'),
-            static::priority($label('priority')),
-            static::relationship('source', $leadLabel('table.columns.source'), 'heroicon-o-speaker-wave'),
-            static::relationship('medium', $leadLabel('form.fields.medium'), 'heroicon-o-megaphone'),
-            static::relationship('campaign', $leadLabel('form.fields.campaign'), 'heroicon-o-flag'),
-            static::relationship('country', $leadLabel('table.columns.country'), 'heroicon-o-globe-alt'),
-            static::relationship('lostReason', $label('lost-reason'), 'heroicon-o-hand-thumb-down'),
-            NumberConstraint::make('expected_revenue')->label($label('expected-revenue'))->icon('heroicon-o-banknotes'),
-            NumberConstraint::make('probability')->label($label('probability'))->icon('heroicon-o-chart-pie'),
-            DateConstraint::make('expected_closing_date')->label($label('expected-closing')),
-            DateConstraint::make('created_at')->label($label('created-at')),
+            TextConstraint::make('name')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.name'))->icon('heroicon-o-document-text'),
+            static::relationship('partner', __('crm::filament/clusters/sales/resources/opportunity.table.columns.customer'), 'heroicon-o-building-office'),
+            TextConstraint::make('email')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.email'))->icon('heroicon-o-envelope'),
+            TextConstraint::make('phone')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.phone'))->icon('heroicon-o-phone'),
+            static::relationship('stage', __('crm::filament/clusters/sales/resources/opportunity.table.columns.stage'), 'heroicon-o-funnel'),
+            static::relationship('user', __('crm::filament/clusters/sales/resources/opportunity.table.columns.salesperson'), 'heroicon-o-user-circle'),
+            $withinTeam ? null : static::relationship('team', __('crm::filament/clusters/sales/resources/opportunity.table.columns.team'), 'heroicon-o-user-group', static::companyTeams()),
+            static::relationship('tags', __('crm::filament/clusters/sales/resources/opportunity.table.columns.tags'), 'heroicon-o-tag'),
+            static::priority(__('crm::filament/clusters/sales/resources/opportunity.table.columns.priority')),
+            static::relationship('source', __('crm::filament/clusters/leads/resources/lead.table.columns.source'), 'heroicon-o-speaker-wave'),
+            static::relationship('medium', __('crm::filament/clusters/leads/resources/lead.form.fields.medium'), 'heroicon-o-megaphone'),
+            static::relationship('campaign', __('crm::filament/clusters/leads/resources/lead.form.fields.campaign'), 'heroicon-o-flag'),
+            static::relationship('country', __('crm::filament/clusters/leads/resources/lead.table.columns.country'), 'heroicon-o-globe-alt'),
+            static::relationship('lostReason', __('crm::filament/clusters/sales/resources/opportunity.table.columns.lost-reason'), 'heroicon-o-hand-thumb-down'),
+            NumberConstraint::make('expected_revenue')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-revenue'))->icon('heroicon-o-banknotes'),
+            NumberConstraint::make('probability')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.probability'))->icon('heroicon-o-chart-pie'),
+            DateConstraint::make('expected_closing_date')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-closing')),
+            DateConstraint::make('created_at')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.created-at')),
         ]);
     }
 

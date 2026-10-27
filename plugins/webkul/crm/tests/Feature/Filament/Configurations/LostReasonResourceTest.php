@@ -5,12 +5,12 @@ use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource\Pages\ManageLostReasons;
 use Webkul\Crm\Models\LostReason;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 it('shows only active lost reasons on the active tab', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $active = LostReason::factory()->create(['name' => 'Too expensive (test)']);
     $archived = LostReason::factory()->archived()->create(['name' => 'Old reason (test)']);
@@ -22,7 +22,7 @@ it('shows only active lost reasons on the active tab', function () {
 });
 
 it('shows only archived lost reasons on the archived tab', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $active = LostReason::factory()->create(['name' => 'Too expensive (test)']);
     $archived = LostReason::factory()->archived()->create(['name' => 'Old reason (test)']);
@@ -34,7 +34,7 @@ it('shows only archived lost reasons on the archived tab', function () {
 });
 
 it('counts active and archived lost reasons in the tab badges', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     LostReason::factory()->archived()->create();
 
@@ -46,7 +46,7 @@ it('counts active and archived lost reasons in the tab badges', function () {
 });
 
 it('creates a lost reason', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    $user = CRMHelper::actingAsCRMUser(['lost::reason']);
 
     Livewire::test(ManageLostReasons::class)
         ->callAction('create', data: ['name' => 'Chose a competitor (test)'])
@@ -60,7 +60,7 @@ it('creates a lost reason', function () {
 });
 
 it('requires a name to create a lost reason', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     Livewire::test(ManageLostReasons::class)
         ->callAction('create', data: ['name' => ''])
@@ -68,7 +68,7 @@ it('requires a name to create a lost reason', function () {
 });
 
 it('edits an active lost reason', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $lostReason = LostReason::factory()->create(['name' => 'No budget (test)']);
 
@@ -80,7 +80,7 @@ it('edits an active lost reason', function () {
 });
 
 it('archives a lost reason instead of deleting it', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $lostReason = LostReason::factory()->create();
 
@@ -94,7 +94,7 @@ it('archives a lost reason instead of deleting it', function () {
 });
 
 it('hides edit, archive and shows restore on an archived lost reason', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $archived = LostReason::factory()->archived()->create();
 
@@ -107,7 +107,7 @@ it('hides edit, archive and shows restore on an archived lost reason', function 
 });
 
 it('restores an archived lost reason', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $archived = LostReason::factory()->archived()->create();
 
@@ -119,7 +119,7 @@ it('restores an archived lost reason', function () {
 });
 
 it('force deletes an archived lost reason', function () {
-    CrmTestHelper::actingAsCrmUser(['lost::reason']);
+    CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $archived = LostReason::factory()->archived()->create();
 
@@ -131,7 +131,7 @@ it('force deletes an archived lost reason', function () {
 });
 
 it('hides restore and force delete without those permissions', function () {
-    CrmTestHelper::actingAs(CrmTestHelper::permissionsFor(['lost::reason'], ['view_any', 'view', 'create', 'update', 'delete']));
+    CRMHelper::actingAs(CRMHelper::permissionsFor(['lost::reason'], ['view_any', 'view', 'create', 'update', 'delete']));
 
     $archived = LostReason::factory()->archived()->create();
 
@@ -142,7 +142,7 @@ it('hides restore and force delete without those permissions', function () {
 });
 
 it('forbids the lost reasons page without crm lost reason permissions', function () {
-    CrmTestHelper::actingAs(['view_any_crm_tag', 'view_any_crm_stage']);
+    CRMHelper::actingAs(['view_any_crm_tag', 'view_any_crm_stage']);
 
     Livewire::test(ManageLostReasons::class)->assertForbidden();
 });

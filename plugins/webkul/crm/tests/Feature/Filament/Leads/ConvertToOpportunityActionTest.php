@@ -2,6 +2,8 @@
 
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadConversionCustomer;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\EditLead;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
@@ -14,9 +16,9 @@ use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
-require_once __DIR__.'/../../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
-beforeEach(fn () => CrmTestHelper::bootstrap());
+beforeEach(fn () => CRMHelper::bootstrap());
 
 /**
  * An active user whose only company is the given one (the current company by default).
@@ -24,7 +26,7 @@ beforeEach(fn () => CrmTestHelper::bootstrap());
 function convertLeadUser(?int $companyId = null): User
 {
     return User::withoutEvents(fn (): User => User::factory()->create([
-        'default_company_id' => $companyId ?? CrmTestHelper::companyId(),
+        'default_company_id' => $companyId ?? CRMHelper::companyId(),
         'is_active'          => true,
     ]));
 }
@@ -35,11 +37,11 @@ function convertLeadOtherCompany(): Company
 }
 
 it('converts a lead and creates a company customer from the company name', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    $user = CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
 
-    $lead = CrmTestHelper::lead([
+    $lead = CRMHelper::lead([
         'company_name' => 'Initech Conversion Ltd',
         'contact_name' => 'Bill Lumbergh',
         'email'        => 'bill@initech.example.com',
@@ -60,7 +62,7 @@ it('converts a lead and creates a company customer from the company name', funct
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->converted_at)->not->toBeNull()
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->team_id)->toBe($team->id)
@@ -75,13 +77,13 @@ it('converts a lead and creates a company customer from the company name', funct
         ->and($partner->website)->toBe('https://initech.example.com')
         ->and($partner->street1)->toBe('4120 Freidrich Lane')
         ->and($partner->city)->toBe('Austin')
-        ->and($partner->company_id)->toBe(CrmTestHelper::companyId());
+        ->and($partner->company_id)->toBe(CRMHelper::companyId());
 });
 
 it('creates an individual customer from the contact name when there is no company name', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead([
+    $lead = CRMHelper::lead([
         'company_name' => null,
         'contact_name' => 'Milton Waddams',
         'job_title'    => 'Collator',
@@ -98,29 +100,29 @@ it('creates an individual customer from the contact name when there is no compan
         ->and($partner->job_title)->toBe('Collator');
 });
 
-it('pre-selects the customer option from the lead', function (array $attributes, string $expected) {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+it('pre-selects the customer option from the lead', function (array $attributes, LeadConversionCustomer $expected) {
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
     if (($attributes['partner_id'] ?? null) === 'partner') {
-        $attributes['partner_id'] = Partner::factory()->create(['company_id' => CrmTestHelper::companyId()])->id;
+        $attributes['partner_id'] = Partner::factory()->create(['company_id' => CRMHelper::companyId()])->id;
     }
 
-    $lead = CrmTestHelper::lead($attributes);
+    $lead = CRMHelper::lead($attributes);
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->mountAction('convertToOpportunity')
         ->assertSchemaStateSet(['customer' => $expected]);
 })->with([
-    'linked partner'        => [['partner_id' => 'partner'], 'link'],
-    'company or contact'    => [['company_name' => 'Has Company'], 'create'],
-    'nothing to create'     => [['company_name' => null, 'contact_name' => null], 'none'],
+    'linked partner'        => [['partner_id' => 'partner'], LeadConversionCustomer::LINK],
+    'company or contact'    => [['company_name' => 'Has Company'], LeadConversionCustomer::CREATE],
+    'nothing to create'     => [['company_name' => null, 'contact_name' => null], LeadConversionCustomer::NONE],
 ]);
 
 it('converts a lead and links an existing customer', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $partner = Partner::factory()->create(['company_id' => CrmTestHelper::companyId(), 'name' => 'Existing Linked Customer']);
-    $lead = CrmTestHelper::lead();
+    $partner = Partner::factory()->create(['company_id' => CRMHelper::companyId(), 'name' => 'Existing Linked Customer']);
+    $lead = CRMHelper::lead();
     $partnerCount = Partner::query()->count();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
@@ -132,28 +134,28 @@ it('converts a lead and links an existing customer', function () {
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->partner_id)->toBe($partner->id)
         ->and(Partner::query()->count())->toBe($partnerCount);
 });
 
 it('requires a customer when linking an existing one', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'link', 'partner_id' => null])
         ->assertHasFormErrors(['partner_id' => 'required']);
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_LEAD);
+    expect($lead->fresh()->type)->toBe(LeadType::LEAD);
 });
 
 it('refuses to link a customer of another company', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
     $foreignPartner = Partner::factory()->create(['company_id' => convertLeadOtherCompany()->id]);
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', [
@@ -163,15 +165,15 @@ it('refuses to link a customer of another company', function () {
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and($lead->partner_id)->toBeNull()
         ->and($lead->converted_at)->toBeNull();
 });
 
 it('converts a lead without a customer', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead(['company_name' => 'No Customer Created Co']);
+    $lead = CRMHelper::lead(['company_name' => 'No Customer Created Co']);
     $partnerCount = Partner::query()->count();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
@@ -181,17 +183,17 @@ it('converts a lead without a customer', function () {
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->partner_id)->toBeNull()
         ->and($lead->converted_at)->not->toBeNull()
         ->and(Partner::query()->count())->toBe($partnerCount);
 });
 
 it('clears the salesperson and team when they are emptied in the convert form', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $lead = CrmTestHelper::lead(['team_id' => $team->id]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $lead = CRMHelper::lead(['team_id' => $team->id]);
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'none', 'user_id' => null, 'team_id' => null])
@@ -199,17 +201,17 @@ it('clears the salesperson and team when they are emptied in the convert form', 
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->user_id)->toBeNull()
         ->and($lead->team_id)->toBeNull()
         ->and($lead->assigned_at)->toBeNull();
 });
 
 it('keeps the lead salesperson and team when the convert form keeps them', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    $user = CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $lead = CrmTestHelper::lead(['team_id' => $team->id]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $lead = CRMHelper::lead(['team_id' => $team->id]);
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'none'])
@@ -217,58 +219,58 @@ it('keeps the lead salesperson and team when the convert form keeps them', funct
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->user_id)->toBe($user->id)
         ->and($lead->team_id)->toBe($team->id);
 });
 
 it('keeps the salesperson and team when convertToOpportunity is called without them', function () {
-    $user = CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    $user = CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $team = Team::factory()->create(['company_id' => CrmTestHelper::companyId()]);
-    $lead = CrmTestHelper::lead(['team_id' => $team->id]);
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
+    $lead = CRMHelper::lead(['team_id' => $team->id]);
 
-    $lead->convertToOpportunity(['customer' => 'none']);
+    $lead->convertToOpportunity(['customer' => LeadConversionCustomer::NONE]);
 
     expect($lead->fresh()->user_id)->toBe($user->id)
         ->and($lead->fresh()->team_id)->toBe($team->id);
 });
 
 it('refuses a salesperson who is not allowed in the lead company', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
     $foreignUser = convertLeadUser(convertLeadOtherCompany()->id);
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'none', 'user_id' => $foreignUser->id]);
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and($lead->user_id)->not->toBe($foreignUser->id);
 });
 
 it('refuses a sales team of another company', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
     $foreignTeam = Team::factory()->create(['company_id' => convertLeadOtherCompany()->id]);
-    $lead = CrmTestHelper::lead(['team_id' => null]);
+    $lead = CRMHelper::lead(['team_id' => null]);
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'none', 'team_id' => $foreignTeam->id]);
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and($lead->team_id)->toBeNull();
 });
 
 it('accepts a salesperson of the lead company', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
     $salesperson = convertLeadUser();
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'none', 'user_id' => $salesperson->id])
@@ -276,63 +278,63 @@ it('accepts a salesperson of the lead company', function () {
 
     $lead->refresh();
 
-    expect($lead->type)->toBe(Lead::TYPE_OPPORTUNITY)
+    expect($lead->type)->toBe(LeadType::OPPORTUNITY)
         ->and($lead->user_id)->toBe($salesperson->id);
 });
 
 it('converts a lead from the edit page', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(EditLead::class, ['record' => $lead->id])
         ->callAction('convertToOpportunity', ['customer' => 'none'])
         ->assertHasNoFormErrors()
         ->assertRedirect(OpportunityResource::getUrl('view', ['record' => $lead]));
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_OPPORTUNITY);
+    expect($lead->fresh()->type)->toBe(LeadType::OPPORTUNITY);
 });
 
 it('converts a lead from the list row menu', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ListLeads::class)
         ->callAction(TestAction::make('convertToOpportunity')->table($lead), ['customer' => 'none'])
         ->assertHasNoFormErrors();
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_OPPORTUNITY);
+    expect($lead->fresh()->type)->toBe(LeadType::OPPORTUNITY);
 });
 
 it('hides the action without the lead update permission', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead', 'view_crm_lead', 'update_crm_opportunity']);
+    CRMHelper::actingAs(['view_any_crm_lead', 'view_crm_lead', 'update_crm_opportunity']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->assertActionHidden('convertToOpportunity');
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_LEAD);
+    expect($lead->fresh()->type)->toBe(LeadType::LEAD);
 });
 
 it('does not convert a lead without the lead update permission, even when the action is called directly', function () {
-    CrmTestHelper::actingAs(['view_any_crm_lead', 'view_crm_lead']);
+    CRMHelper::actingAs(['view_any_crm_lead', 'view_crm_lead']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
         ->call('mountAction', 'convertToOpportunity')
         ->call('callMountedAction');
 
-    expect($lead->fresh()->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->fresh()->type)->toBe(LeadType::LEAD)
         ->and($lead->fresh()->converted_at)->toBeNull();
 });
 
 it('cannot convert a lost lead', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead();
+    $lead = CRMHelper::lead();
     $lead->markAsLost(null);
 
     Livewire::test(ViewLead::class, ['record' => $lead->id])
@@ -342,15 +344,15 @@ it('cannot convert a lost lead', function () {
 
     $lead = Lead::withTrashed()->findOrFail($lead->id);
 
-    expect($lead->type)->toBe(Lead::TYPE_LEAD)
+    expect($lead->type)->toBe(LeadType::LEAD)
         ->and($lead->converted_at)->toBeNull();
 });
 
 it('is not offered for an existing opportunity', function () {
-    CrmTestHelper::actingAsCrmUser(['lead', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
-    $lead = CrmTestHelper::lead();
-    $opportunity = CrmTestHelper::opportunity();
+    $lead = CRMHelper::lead();
+    $opportunity = CRMHelper::opportunity();
 
     expect(ConvertToOpportunityAction::make()->record($lead)->isVisible())->toBeTrue()
         ->and(ConvertToOpportunityAction::make()->record($opportunity)->isVisible())->toBeFalse();

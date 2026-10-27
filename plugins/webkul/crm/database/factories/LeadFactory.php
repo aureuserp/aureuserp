@@ -3,19 +3,23 @@
 namespace Webkul\Crm\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Security\Models\User;
+use Webkul\Support\Database\Factories\Concerns\HasCompanyDefault;
 
 class LeadFactory extends Factory
 {
+    use HasCompanyDefault;
+
     protected $model = Lead::class;
 
     public function definition(): array
     {
         return [
-            'type'                  => Lead::TYPE_OPPORTUNITY,
+            'type'                  => LeadType::OPPORTUNITY,
             'name'                  => fake()->catchPhrase(),
             'email'                 => fake()->safeEmail(),
             'phone'                 => fake()->phoneNumber(),
@@ -32,7 +36,7 @@ class LeadFactory extends Factory
     public function lead(): static
     {
         return $this->state(fn (): array => [
-            'type'         => Lead::TYPE_LEAD,
+            'type'         => LeadType::LEAD,
             'company_name' => fake()->company(),
             'contact_name' => fake()->name(),
             'job_title'    => fake()->jobTitle(),

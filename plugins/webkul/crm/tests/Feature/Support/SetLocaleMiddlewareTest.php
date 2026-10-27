@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Webkul\Security\Models\User;
 
-require_once __DIR__.'/../../Helpers/CrmTestHelper.php';
+require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
 /*
  * Note: App::setLocale() also writes config('app.locale'), which is the middleware's fallback,
  * so tests that change the current locale set the configured locale back explicitly.
  */
 beforeEach(function () {
-    CrmTestHelper::bootstrap();
+    CRMHelper::bootstrap();
 
     config(['app.locale' => 'en']);
 
@@ -28,7 +28,7 @@ beforeEach(function () {
  *
  * @param  array<string, string>  $query
  */
-function runCrmSetLocale(?User $user, array $query = []): string
+function runCRMSetLocale(?User $user, array $query = []): string
 {
     $request = Request::create('/admin', 'GET', $query);
 
@@ -42,43 +42,43 @@ function runCrmSetLocale(?User $user, array $query = []): string
 }
 
 it('uses the signed-in user\'s saved language over a stale session language', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'ar'])->saveQuietly();
 
     Session::put('locale', 'es');
 
-    expect(runCrmSetLocale($user))->toBe('ar');
+    expect(runCRMSetLocale($user))->toBe('ar');
 });
 
 it('switches the language with the lang query parameter and remembers it', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'ar'])->saveQuietly();
 
     Session::put('locale', 'ar');
 
-    expect(runCrmSetLocale($user, ['lang' => 'fr']))->toBe('fr')
+    expect(runCRMSetLocale($user, ['lang' => 'fr']))->toBe('fr')
         ->and(Session::get('locale'))->toBe('fr')
         ->and($user->fresh()->language)->toBe('fr');
 });
 
 it('keeps the switched language on the next request', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'en'])->saveQuietly();
 
-    runCrmSetLocale($user, ['lang' => 'pt_BR']);
+    runCRMSetLocale($user, ['lang' => 'pt_BR']);
 
     App::setLocale('en');
 
-    expect(runCrmSetLocale($user->fresh()))->toBe('pt_BR');
+    expect(runCRMSetLocale($user->fresh()))->toBe('pt_BR');
 });
 
 it('ignores an unsupported lang query parameter', function (string $unsupported) {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'es'])->saveQuietly();
 
     Session::put('locale', 'es');
 
-    expect(runCrmSetLocale($user, ['lang' => $unsupported]))->toBe('es')
+    expect(runCRMSetLocale($user, ['lang' => $unsupported]))->toBe('es')
         ->and(Session::get('locale'))->toBe('es')
         ->and($user->fresh()->language)->toBe('es');
 })->with([
@@ -88,18 +88,18 @@ it('ignores an unsupported lang query parameter', function (string $unsupported)
 ]);
 
 it('falls back to the session language when the user\'s saved language is unsupported', function () {
-    $user = CrmTestHelper::actingAs();
+    $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'xx'])->saveQuietly();
 
     Session::put('locale', 'fr');
 
-    expect(runCrmSetLocale($user))->toBe('fr');
+    expect(runCRMSetLocale($user))->toBe('fr');
 });
 
 it('uses the session language for guests', function () {
     Session::put('locale', 'pt_BR');
 
-    expect(runCrmSetLocale(null))->toBe('pt_BR');
+    expect(runCRMSetLocale(null))->toBe('pt_BR');
 });
 
 it('falls back to the application locale for guests without a session language', function () {
@@ -107,7 +107,7 @@ it('falls back to the application locale for guests without a session language',
 
     config(['app.locale' => 'en']);
 
-    expect(runCrmSetLocale(null))->toBe('en');
+    expect(runCRMSetLocale(null))->toBe('en');
 });
 
 it('falls back to the application locale for guests with an unsupported session language', function () {
@@ -117,10 +117,10 @@ it('falls back to the application locale for guests with an unsupported session 
 
     config(['app.locale' => 'en']);
 
-    expect(runCrmSetLocale(null))->toBe('en');
+    expect(runCRMSetLocale(null))->toBe('en');
 });
 
 it('switches a guest\'s language with the lang query parameter and stores it in the session', function () {
-    expect(runCrmSetLocale(null, ['lang' => 'es']))->toBe('es')
+    expect(runCRMSetLocale(null, ['lang' => 'es']))->toBe('es')
         ->and(Session::get('locale'))->toBe('es');
 });

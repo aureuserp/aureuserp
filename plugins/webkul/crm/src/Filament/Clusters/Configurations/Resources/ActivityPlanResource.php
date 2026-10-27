@@ -2,11 +2,13 @@
 
 namespace Webkul\Crm\Filament\Clusters\Configurations\Resources;
 
+use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ManageActivities;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Tables\ActivityPlansTable;
 use Webkul\Crm\Models\ActivityPlan;
@@ -50,12 +52,27 @@ class ActivityPlanResource extends BaseActivityPlanResource
         return parent::getEloquentQuery()->where('plugin', 'crm');
     }
 
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewActivityPlan::class,
+            EditActivityPlan::class,
+            ManageActivities::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ListActivityPlans::route('/'),
-            'view'  => ViewActivityPlan::route('/{record}'),
-            'edit'  => EditActivityPlan::route('/{record}/edit'),
+            'index'      => ListActivityPlans::route('/'),
+            'view'       => ViewActivityPlan::route('/{record}'),
+            'edit'       => EditActivityPlan::route('/{record}/edit'),
+            'activities' => ManageActivities::route('/{record}/activities'),
         ];
     }
 }

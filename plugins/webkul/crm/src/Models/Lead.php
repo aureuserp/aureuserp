@@ -14,6 +14,8 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Crm\Database\Factories\LeadFactory;
 use Webkul\Crm\Enums\ActivityDueStatus;
+use Webkul\Crm\Enums\LeadConversionCustomer;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
@@ -21,6 +23,8 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Models\Quotation;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
+use Webkul\Security\Support\OwnerSource;
+use Webkul\Security\Traits\HasOwnershipScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
@@ -32,27 +36,9 @@ use Webkul\Support\Traits\BelongsToCompany;
 class Lead extends Model
 {
     use BelongsToCompany;
-    use HasChatter, HasFactory, HasLogActivity, SoftDeletes;
+    use HasChatter, HasFactory, HasLogActivity, HasOwnershipScope, SoftDeletes;
 
     public const ACTIVITY_PLAN_PLUGIN = 'crm';
-
-    public const TYPE_LEAD = 'lead';
-
-    public const TYPE_OPPORTUNITY = 'opportunity';
-
-    public const COLORS = [
-        1  => '#F06050',
-        2  => '#F4A460',
-        3  => '#F7CD1F',
-        4  => '#6CC1ED',
-        5  => '#814968',
-        6  => '#EB7E7F',
-        7  => '#2C8397',
-        8  => '#475577',
-        9  => '#D6145F',
-        10 => '#30C381',
-        11 => '#9365B8',
-    ];
 
     protected $table = 'crm_leads';
 
@@ -106,6 +92,7 @@ class Lead extends Model
         'probability'              => 'decimal:2',
         'automated_probability'    => 'decimal:2',
         'is_automated_probability' => 'boolean',
+        'type'                     => LeadType::class,
         'priority'                 => OpportunityPriority::class,
         'color'                    => 'integer',
         'expected_closing_date'    => 'date',
@@ -137,17 +124,17 @@ class Lead extends Model
 
     public function scopeLeads(Builder $query): Builder
     {
-        return $query->where('type', self::TYPE_LEAD);
+        return $query->where('type', LeadType::LEAD);
     }
 
     public function isLead(): bool
     {
-        return $this->type === self::TYPE_LEAD;
+        return $this->type === LeadType::LEAD;
     }
 
     public function scopeOpportunities(Builder $query): Builder
     {
-        return $query->where('type', self::TYPE_OPPORTUNITY);
+        return $query->where('type', LeadType::OPPORTUNITY);
     }
 
     public function scopeWon(Builder $query): Builder
@@ -197,14 +184,14 @@ class Lead extends Model
 
     public function convertToOpportunity(array $options = []): self
     {
-        $partnerId = match ($options['customer'] ?? 'none') {
-            'create' => $this->createCustomer()->getKey(),
-            'link'   => $options['partner_id'] ?? null,
-            default  => $this->partner_id,
+        $partnerId = match ($options['customer'] ?? LeadConversionCustomer::NONE) {
+            LeadConversionCustomer::CREATE => $this->createCustomer()->getKey(),
+            LeadConversionCustomer::LINK   => $options['partner_id'] ?? null,
+            default                        => $this->partner_id,
         };
 
         $this->forceFill([
-            'type'         => self::TYPE_OPPORTUNITY,
+            'type'         => LeadType::OPPORTUNITY,
             'partner_id'   => $partnerId,
             'user_id'      => array_key_exists('user_id', $options) ? $options['user_id'] : $this->user_id,
             'team_id'      => array_key_exists('team_id', $options) ? $options['team_id'] : $this->team_id,
@@ -281,7 +268,7 @@ class Lead extends Model
     {
         $statuses = $this->crmActivities->map(fn (Activity $activity): ActivityDueStatus => $activity->getDueStatus());
 
-        return collect([ActivityDueStatus::Overdue, ActivityDueStatus::Today, ActivityDueStatus::Planned])
+        return collect([ActivityDueStatus::OVERDUE, ActivityDueStatus::TODAY, ActivityDueStatus::PLANNED])
             ->first(fn (ActivityDueStatus $status): bool => $statuses->contains($status));
     }
 
@@ -290,9 +277,9 @@ class Lead extends Model
         $has = fn (string $status): \Closure => fn (Builder $query): Builder => $query->whereHas('crmActivities', fn (Builder $query): Builder => $query->dueStatus($status));
 
         return match ($state) {
-            ActivityDueStatus::Overdue->value => $query->where($has(ActivityDueStatus::Overdue->value)),
-            ActivityDueStatus::Today->value   => $query->where($has(ActivityDueStatus::Today->value))->whereNot($has(ActivityDueStatus::Overdue->value)),
-            ActivityDueStatus::Planned->value => $query->where($has(ActivityDueStatus::Planned->value))->whereNot($has(ActivityDueStatus::Overdue->value))->whereNot($has(ActivityDueStatus::Today->value)),
+            ActivityDueStatus::OVERDUE->value => $query->where($has(ActivityDueStatus::OVERDUE->value)),
+            ActivityDueStatus::TODAY->value   => $query->where($has(ActivityDueStatus::TODAY->value))->whereNot($has(ActivityDueStatus::OVERDUE->value)),
+            ActivityDueStatus::PLANNED->value => $query->where($has(ActivityDueStatus::PLANNED->value))->whereNot($has(ActivityDueStatus::OVERDUE->value))->whereNot($has(ActivityDueStatus::TODAY->value)),
             default                           => $query->whereDoesntHave('crmActivities'),
         };
     }
@@ -300,6 +287,15 @@ class Lead extends Model
     public function crmActivities(): HasMany
     {
         return $this->hasMany(Activity::class, 'messageable_id');
+    }
+
+    public function ownershipSources(): array
+    {
+        return [
+            OwnerSource::column('creator_id'),
+            OwnerSource::column('user_id'),
+            OwnerSource::followers(),
+        ];
     }
 
     public function country(): BelongsTo
@@ -402,7 +398,7 @@ class Lead extends Model
 
             $lead->probability ??= 0;
 
-            $lead->priority ??= OpportunityPriority::Low;
+            $lead->priority ??= OpportunityPriority::LOW;
 
             $lead->email_normalized = static::normalizeEmail($lead->email);
 
@@ -410,7 +406,7 @@ class Lead extends Model
         });
 
         static::creating(function (self $lead): void {
-            $lead->type ??= self::TYPE_OPPORTUNITY;
+            $lead->type ??= LeadType::OPPORTUNITY;
 
             $lead->stage_id ??= Stage::query()->orderBy('sort')->value('id');
 

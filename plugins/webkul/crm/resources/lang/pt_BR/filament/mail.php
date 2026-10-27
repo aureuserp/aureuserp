@@ -14,28 +14,6 @@ return [
         'contact'             => 'Aceitar e-mails de',
     ],
 
-    'alias-contacts' => [
-        'everyone'  => 'Todos',
-        'partners'  => 'Parceiros autenticados',
-        'followers' => 'Somente seguidores',
-        'employees' => 'Funcionários autenticados',
-    ],
-
-    'alias-contacts-help' => [
-        'everyone'  => 'Qualquer endereço de e-mail pode criar um lead.',
-        'partners'  => 'Somente endereços de contatos ou usuários existentes.',
-        'followers' => 'Somente o líder e os membros da equipe.',
-        'employees' => 'Somente endereços de usuários ou funcionários.',
-    ],
-
-    'statuses' => [
-        'lead_created' => 'Lead criado',
-        'reply_added'  => 'Adicionado ao lead',
-        'rejected'     => 'Rejeitado',
-        'ignored'      => 'Ignorado',
-        'failed'       => 'Falhou',
-    ],
-
     'reasons' => [
         'no-sender'   => 'O e-mail não tem um endereço de remetente válido.',
         'auto-reply'  => 'Resposta automática (ausência, devolução ou lista de e-mail).',

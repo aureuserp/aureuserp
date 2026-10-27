@@ -5,6 +5,7 @@ namespace Webkul\Crm\Filament\Concerns;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 trait ManagesKanbanColumns
@@ -15,7 +16,7 @@ trait ManagesKanbanColumns
 
     abstract protected function kanbanColumnExists(string $name, ?Model $except = null): bool;
 
-    abstract protected function createKanbanColumn(string $name): Model;
+    abstract protected function createKanbanColumn(string $name, array $attributes = []): Model;
 
     abstract protected function findKanbanColumnRecord(string $value): ?Model;
 
@@ -29,6 +30,11 @@ trait ManagesKanbanColumns
 
     public function addKanbanColumn(mixed $name): ?string
     {
+        return $this->storeKanbanColumn($name);
+    }
+
+    protected function storeKanbanColumn(mixed $name, array $attributes = []): ?string
+    {
         abort_unless($this->canAddKanbanColumn(), 403);
 
         $name = trim((string) $name);
@@ -37,7 +43,7 @@ trait ManagesKanbanColumns
             return null;
         }
 
-        $column = $this->createKanbanColumn($name);
+        $column = $this->createKanbanColumn($name, Arr::except($attributes, ['name']));
 
         Notification::make()
             ->success()
@@ -45,6 +51,27 @@ trait ManagesKanbanColumns
             ->send();
 
         return (string) $column->getKey();
+    }
+
+    public function addKanbanColumnAction(): Action
+    {
+        return Action::make('addKanbanColumn')
+            ->label(fn (): string => $this->getAddKanbanColumnLabel())
+            ->icon('heroicon-o-plus')
+            ->modalHeading(fn (): string => $this->getAddKanbanColumnLabel())
+            ->modalSubmitActionLabel(__('crm::filament/kanban.add-column.add'))
+            ->modalWidth('md')
+            ->authorize(fn (): bool => $this->canAddKanbanColumn())
+            ->schema(fn (): array => $this->getKanbanColumnFormComponents())
+            ->action(function (array $data, Action $action): void {
+                $column = $this->storeKanbanColumn($data['name'] ?? '', $data);
+
+                if (! $column) {
+                    $action->halt();
+                }
+
+                $this->js('window.crmHighlightKanbanColumn?.('.json_encode($column).')');
+            });
     }
 
     public function canEditKanbanColumn(string $value): bool

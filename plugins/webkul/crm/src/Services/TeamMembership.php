@@ -3,21 +3,21 @@
 namespace Webkul\Crm\Services;
 
 use Illuminate\Support\Facades\DB;
-use Webkul\Crm\Models\CrmTeam;
+use Webkul\Crm\Models\CRMTeam;
 use Webkul\Crm\Models\TeamMember;
-use Webkul\Crm\Settings\CrmSettings;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
 
 class TeamMembership
 {
     public function isMultiTeams(): bool
     {
-        return (bool) app(CrmSettings::class)->multi_teams;
+        return (bool) app(CRMSettings::class)->multi_teams;
     }
 
     public function sync(Team $team): void
     {
-        CrmTeam::query()->firstOrCreate(['team_id' => $team->getKey()]);
+        CRMTeam::query()->firstOrCreate(['team_id' => $team->getKey()]);
 
         $userIds = DB::table('sales_team_members')->where('team_id', $team->getKey())->pluck('user_id')->map(fn ($id): int => (int) $id);
 

@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'model-label'        => 'Règle de visites en pistes',
-    'plural-model-label' => 'Règles de visites en pistes',
+    'model-label'        => 'Règle de visiteurs en pistes',
+    'plural-model-label' => 'Règles de visiteurs en pistes',
 
     'navigation' => [
-        'title' => 'Règles de visites en pistes',
+        'title' => 'Règles de visiteurs en pistes',
         'group' => 'Génération de pistes',
     ],
 
@@ -31,8 +31,6 @@ return [
         'company'                  => 'Société',
         'company-helper'           => 'Vide = la société du client ou la première société active.',
         'lead-for'                 => 'Suivi des données',
-        'lead-for-companies'       => 'Sociétés',
-        'lead-for-people'          => 'Sociétés et leurs contacts',
         'industries'               => 'Secteurs',
         'industries-helper'        => 'Saisissez un nom pour ajouter un secteur.',
         'filter-on-size'           => 'Filtrer sur la taille',
@@ -41,8 +39,6 @@ return [
         'employees'                => 'employés',
         'gdpr'                     => 'Vérifiez si vous devez respecter le RGPD pour conserver des données personnelles.',
         'contact-filter'           => 'Filtrer les contacts sur',
-        'contact-filter-role'      => 'Rôle',
-        'contact-filter-seniority' => 'Ancienneté',
         'extra-contacts'           => 'Nombre de contacts',
         'extra-contacts-helper'    => '1 à 5 contacts par société.',
         'preferred-role'           => 'Rôle préféré',
@@ -52,9 +48,11 @@ return [
         'sections' => [
             'traffic'          => 'Conditions de trafic du site',
             'generation'       => 'Conditions de génération d\'opportunités',
+            'lead-generation'  => 'Conditions de génération de pistes',
             'contact-filter'   => 'Filtre des contacts',
             'lead-data'        => 'Données de la piste',
             'opportunity-data' => 'Données de l\'opportunité',
+            'settings'         => 'Paramètres',
         ],
     ],
 
@@ -70,5 +68,19 @@ return [
         'leads'         => 'Pistes',
         'opportunities' => 'Opportunités',
         'active'        => 'Active',
+    ],
+
+    'pages' => [
+        'leads' => [
+            'navigation' => 'Pistes générées',
+            'title'      => 'Pistes générées : :rule',
+
+            'columns' => [
+                'name'       => 'Nom',
+                'country'    => 'Pays',
+                'stage'      => 'Étape',
+                'created-at' => 'Créé le',
+            ],
+        ],
     ],
 ];

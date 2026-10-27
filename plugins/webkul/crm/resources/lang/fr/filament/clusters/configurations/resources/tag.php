@@ -39,15 +39,6 @@ return [
                 ],
             ],
         ],
-
-        'bulk-actions' => [
-            'delete' => [
-                'notification' => [
-                    'title' => 'Étiquettes supprimées',
-                    'body'  => 'Les étiquettes ont été supprimées avec succès.',
-                ],
-            ],
-        ],
     ],
 
     'infolist' => [
