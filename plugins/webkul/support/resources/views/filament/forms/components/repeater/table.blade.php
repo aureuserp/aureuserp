@@ -51,14 +51,15 @@
     :field="$field"
 >
     <div
-        {{ 
+        {{
             $attributes
                 ->merge($getExtraAttributes(), escape: false)
                 ->class([
                     'fi-fo-table-repeater',
                     'fi-compact' => $isCompact,
-                ]) 
+                ])
         }}
+        style="overflow-x: auto;"
     >
         @if (count($items))
             <table

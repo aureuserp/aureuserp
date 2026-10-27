@@ -41,7 +41,7 @@
         @endif
     </div>
 @else
-    <div {{ $attributes }}>
+    <div {{ $attributes }} style="overflow-x: auto;">
         <table
             class="fi-absolute-positioning-context overflow-hidden"
             @if ($hasResizableColumns)
