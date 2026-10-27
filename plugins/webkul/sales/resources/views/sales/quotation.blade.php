@@ -42,7 +42,7 @@
 
         .header {
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .company-info {
@@ -51,9 +51,9 @@
         }
 
         .company-name {
-            font-size: 28px;
+            font-size: 22px;
             color: #1a4587;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         :is(.dark .company-name) {
@@ -68,6 +68,11 @@
             padding-left: 20px;
         }
 
+        .customer-name {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
         :is(.dark .vendor-info) {
             border-left-color: #3f3f46;
         }
@@ -77,10 +82,10 @@
         }
 
         .agreement-title {
-            font-size: 24px;
+            font-size: 22px;
             color: #1a4587;
-            margin: 25px 0;
-            padding: 15px 0;
+            margin: 15px 0;
+            padding: 8px 0;
             border-bottom: 2px solid #1a4587;
         }
 
@@ -91,30 +96,30 @@
 
         .details-table {
             width: 100%;
-            margin: 20px 0;
+            margin: 10px 0;
             border-collapse: collapse;
         }
 
         .details-table td {
-            padding: 10px;
+            padding: 6px 8px;
             vertical-align: top;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
+            margin: 15px 0;
         }
 
         .items-table th {
             background: #1a4587;
             color: #ffffff;
-            padding: 12px;
+            padding: 8px 10px;
             text-align: left;
         }
 
         .items-table td {
-            padding: 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e9ecef;
         }
 
@@ -151,10 +156,10 @@
 
         .options-title {
             clear: both;
-            font-size: 18px;
+            font-size: 16px;
             color: #1a4587;
-            margin-top: 30px;
-            padding-bottom: 8px;
+            margin-top: 20px;
+            padding-bottom: 6px;
             border-bottom: 1px solid #1a4587;
         }
 
@@ -194,18 +199,18 @@
 
         .terms {
             clear: both;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .terms-body {
-            margin-top: 10px;
+            margin-top: 6px;
         }
 
         .payment-info {
             clear: both;
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 8px;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
             color: #1a4587;
         }
 
@@ -239,50 +244,46 @@
                 <div class="company-info">
                     <div class="company-name">{{ $record->company->name }}</div>
 
-                    @if ($record->company->address)
+                    @if ($record->company->street1)
                         <div>
-                            {{ $record->company->address->street1 }}
+                            {{ $record->company->street1 }}
 
-                            @if ($record->company->address->street2)
-                                ,{{ $record->company->address->street2 }}
+                            @if ($record->company->street2)
+                                ,{{ $record->company->street2 }}
                             @endif
                         </div>
+                    @endif
 
+                    @if ($record->company->city)
                         <div>
-                            {{ $record->company->address->city }},
+                            {{ $record->company->city }}
 
-                            @if ($record->company->address->state)
-                                {{ $record->company->address->state->name }},
+                            @if ($record->company->state)
+                                , {{ $record->company->state->name }}
                             @endif
 
-                            {{ $record->company->address->zip }}
+                            @if ($record->company->zip)
+                                , {{ $record->company->zip }}
+                            @endif
                         </div>
+                    @endif
 
-                        @if ($record->company->address->country)
-                            <div>
-                                {{ $record->company->address->country->name }}
-                            </div>
-                        @endif
+                    @if ($record->company->country)
+                        <div>{{ $record->company->country->name }}</div>
+                    @endif
 
-                        @if ($record->company->email)
-                            <div>
-                                Email:
-                                {{ $record->company->email }}
-                            </div>
-                        @endif
+                    @if ($record->company->email)
+                        <div>Email: {{ $record->company->email }}</div>
+                    @endif
 
-                        @if ($record->company->phone)
-                            <div>
-                                Phone:
-                                {{ $record->company->phone }}
-                            </div>
-                        @endif
+                    @if ($record->company->phone)
+                        <div>Phone: {{ $record->company->phone }}</div>
                     @endif
                 </div>
 
                 <!-- Customer Address -->
                 <div class="vendor-info">
-                    <div>{{ $record->partner->name }}</div>
+                    <div class="customer-name">{{ $record->partner->name }}</div>
 
                     @if ($record->partner->addresses->count())
                         <div>
