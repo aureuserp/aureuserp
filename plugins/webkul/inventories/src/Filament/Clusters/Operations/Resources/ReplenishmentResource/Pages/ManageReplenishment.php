@@ -16,6 +16,11 @@ class ManageReplenishment extends ManageRecords
 
     protected static string $resource = ReplenishmentResource::class;
 
+    public function mount(): void
+    {
+        abort(404);
+    }
+
     public function getTitle(): string|Htmlable
     {
         return __('inventories::filament/clusters/operations/resources/replenishment/pages/manage-replenishment.title');
