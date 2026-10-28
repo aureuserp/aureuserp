@@ -63,7 +63,7 @@
     >
         @if (count($items))
             <table
-                class="fi-absolute-positioning-context"
+                class="fi-fixed-positioning-context"
                 @if ($hasResizableColumns)
                     x-data="{
                         columns: @js($resizableColumnConfig),
