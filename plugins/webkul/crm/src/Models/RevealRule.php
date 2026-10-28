@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Enums\RevealRuleContactCount;
 use Webkul\Crm\Enums\RevealRuleContactFilter;
 use Webkul\Crm\Enums\RevealRuleLeadFor;
 use Webkul\Sale\Models\Team;
@@ -20,8 +21,6 @@ use Webkul\Support\Models\State;
 
 class RevealRule extends Model
 {
-    public const MAX_EXTRA_CONTACTS = 5;
-
     protected $table = 'crm_reveal_rules';
 
     protected $fillable = [
@@ -56,7 +55,7 @@ class RevealRule extends Model
         'filter_on_size'      => 'boolean',
         'company_size_min'    => 'integer',
         'company_size_max'    => 'integer',
-        'extra_contacts'      => 'integer',
+        'extra_contacts'      => RevealRuleContactCount::class,
     ];
 
     public function team(): BelongsTo
@@ -143,7 +142,8 @@ class RevealRule extends Model
         $path = rtrim((string) parse_url((string) $url, PHP_URL_PATH), '/');
         $base = rtrim((string) parse_url(url('/'), PHP_URL_PATH), '/');
 
-        if ($base !== '' && str_starts_with($path, $base)) {
+        if ($base !== ''
+            && str_starts_with($path, $base)) {
             $path = substr($path, strlen($base));
         }
 

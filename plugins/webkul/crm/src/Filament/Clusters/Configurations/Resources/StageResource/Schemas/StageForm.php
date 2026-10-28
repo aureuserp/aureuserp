@@ -7,7 +7,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Webkul\Sale\Models\Team;
+use Illuminate\Database\Eloquent\Builder;
 
 class StageForm
 {
@@ -18,19 +18,21 @@ class StageForm
             ->columns(1);
     }
 
-    public static function components(): array
+    public static function components(?int $defaultTeamId = null): array
     {
         return [
             TextInput::make('name')
                 ->label(__('crm::filament/clusters/configurations/resources/stage.form.fields.name'))
                 ->required()
                 ->maxLength(255),
-            Select::make('team_ids')
+            Select::make('teams')
                 ->label(__('crm::filament/clusters/configurations/resources/stage.form.fields.teams'))
                 ->helperText(__('crm::filament/clusters/configurations/resources/stage.form.fields.teams-helper-text'))
-                ->options(fn (): array => Team::query()->where(owned_by_company(current_company_id()))->orderBy('name')->pluck('name', 'id')->all())
+                ->relationship('teams', 'name', fn (Builder $query): Builder => $query->where(owned_by_company(current_company_id()))->orderBy('name'))
+                ->default(array_filter([$defaultTeamId]))
                 ->multiple()
                 ->searchable()
+                ->preload()
                 ->placeholder(__('crm::filament/clusters/configurations/resources/stage.form.fields.all-teams')),
             Toggle::make('is_won')
                 ->label(__('crm::filament/clusters/configurations/resources/stage.form.fields.is-won'))

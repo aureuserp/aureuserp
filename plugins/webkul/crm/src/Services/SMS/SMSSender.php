@@ -5,6 +5,7 @@ namespace Webkul\Crm\Services\SMS;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
+use Webkul\Crm\Enums\SMSEncoding;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Settings\SMSSettings;
 
@@ -39,7 +40,7 @@ class SMSSender
                 'message' => $message,
                 'sender'  => $this->usesCustomGateway() ? $this->settings->sender_id : config('services.msg91.sender_id'),
                 'route'   => $this->usesCustomGateway() ? $this->settings->route : config('services.msg91.route'),
-                'unicode' => static::segments($message)['encoding'] === 'UCS2' ? 1 : 0,
+                'unicode' => SMSEncoding::from(static::segments($message)['encoding'])->isUnicode() ? 1 : 0,
             ]);
         } catch (ConnectionException) {
             throw new RuntimeException(__('crm::filament/sms.errors.unreachable'));
@@ -102,16 +103,16 @@ class SMSSender
             $characters = mb_strlen($message);
         }
 
-        [$single, $multi] = $isGsm7 ? [160, 153] : [70, 67];
+        $encoding = $isGsm7 ? SMSEncoding::GSM7 : SMSEncoding::UCS2;
 
         return [
             'characters' => $characters,
             'parts'      => match (true) {
-                $characters === 0      => 0,
-                $characters <= $single => 1,
-                default                => (int) ceil($characters / $multi),
+                $characters === 0                               => 0,
+                $characters <= $encoding->getSinglePartLength() => 1,
+                default                                         => (int) ceil($characters / $encoding->getMultiPartLength()),
             },
-            'encoding' => $isGsm7 ? 'GSM7' : 'UCS2',
+            'encoding' => $encoding->value,
         ];
     }
 }

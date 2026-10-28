@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('crm_lead_tags') && ! Schema::hasTable('crm_tag_rel')) {
+        if (Schema::hasTable('crm_lead_tags')
+            && ! Schema::hasTable('crm_tag_rel')) {
             Schema::rename('crm_lead_tags', 'crm_tag_rel');
         }
     }
 
     public function down(): void
     {
-        if (Schema::hasTable('crm_tag_rel') && ! Schema::hasTable('crm_lead_tags')) {
+        if (Schema::hasTable('crm_tag_rel')
+            && ! Schema::hasTable('crm_lead_tags')) {
             Schema::rename('crm_tag_rel', 'crm_lead_tags');
         }
     }

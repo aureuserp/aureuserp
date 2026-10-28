@@ -17,6 +17,7 @@ use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Support\Support\VersionedCss;
 use Webkul\Website\Console\Commands\DeleteInactiveVisitors;
 use Webkul\Website\Console\Commands\ImportIpCountries;
+use Webkul\Website\Enums\VisitorCookie;
 use Webkul\Website\Http\Responses\LogoutResponse;
 use Webkul\Website\Listeners\TrackWebsiteVisit;
 use Webkul\Website\Services\VisitorTracker;
@@ -78,10 +79,10 @@ class WebsiteServiceProvider extends PackageServiceProvider
 
             $event->user->forceFill(['last_login_at' => now()])->saveQuietly();
 
-            app(VisitorTracker::class)->linkPartner($event->user, request()->cookie(VisitorTracker::COOKIE));
+            app(VisitorTracker::class)->linkPartner($event->user, request()->cookie(VisitorCookie::VISITOR->value));
         });
 
-        EncryptCookies::except([VisitorTracker::COOKIE, VisitorTracker::TIMEZONE_COOKIE]);
+        EncryptCookies::except(VisitorCookie::names());
 
         Event::listen(RequestHandled::class, TrackWebsiteVisit::class);
 

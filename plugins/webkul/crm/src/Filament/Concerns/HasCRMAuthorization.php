@@ -29,7 +29,8 @@ trait HasCRMAuthorization
 
         $policy = app(static::getCRMPolicy());
 
-        if (! $user || ! method_exists($policy, $ability)) {
+        if (! $user
+            || ! method_exists($policy, $ability)) {
             return Response::deny();
         }
 

@@ -26,13 +26,4 @@ return [
         'source'        => 'قادم من :value',
         'tag'           => 'موسوم :value',
     ],
-
-    'variables' => [
-        'country_id'    => 'الدولة',
-        'state_id'      => 'الولاية',
-        'phone'         => 'جودة الهاتف',
-        'email'         => 'جودة البريد الإلكتروني',
-        'utm_source_id' => 'المصدر',
-        'tags'          => 'الوسوم',
-    ],
 ];

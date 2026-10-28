@@ -80,7 +80,8 @@ class LeadConverter
 
                 $lead = Lead::query()->whereKey($lead->getKey())->first();
 
-                if (! $lead || ! $lead->isLead()) {
+                if (! $lead
+                    || ! $lead->isLead()) {
                     $massConversion->leads()->create($row + ['lead_id' => null, 'opportunity_id' => null]);
 
                     continue;
@@ -88,7 +89,8 @@ class LeadConverter
 
                 $userId = $lead->user_id;
 
-                if ($salespeople && ($forceAssignment || blank($lead->user_id))) {
+                if ($salespeople
+                    && ($forceAssignment || blank($lead->user_id))) {
                     $userId = $salespeople[$turn % count($salespeople)];
                     $turn++;
                 }
@@ -134,7 +136,8 @@ class LeadConverter
 
     protected function massCustomerFor(Lead $lead, LeadConversionCustomer $customer): ?int
     {
-        if ($customer === LeadConversionCustomer::NONE || filled($lead->partner_id)) {
+        if ($customer === LeadConversionCustomer::NONE
+            || filled($lead->partner_id)) {
             return $lead->partner_id;
         }
 
@@ -142,7 +145,8 @@ class LeadConverter
             ? ConvertToOpportunityAction::customersFor($lead)->whereRaw('LOWER(email) = ?', [mb_strtolower(trim($lead->email))])->orderBy('id')->value('id')
             : null;
 
-        if ($existing || $customer === LeadConversionCustomer::LINK) {
+        if ($existing
+            || $customer === LeadConversionCustomer::LINK) {
             return $existing;
         }
 

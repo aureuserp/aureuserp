@@ -2,6 +2,7 @@
 
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadScoringVariable;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
 use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageLeadScoring;
@@ -177,4 +178,10 @@ it('refuses to convert a lead at 100 percent', function () {
         ->callAction('convertToOpportunity', data: ['customer' => 'none']);
 
     expect($lead->fresh()->type)->toBe(LeadType::LEAD);
+});
+
+it('offers every scoring variable except the always-used stage in the settings', function () {
+    expect(LeadScoringVariable::selectableValues())->toBe(['country_id', 'state_id', 'phone', 'email', 'utm_source_id', 'tags'])
+        ->and(LeadScoringVariable::options())->toHaveKeys(['country_id', 'state_id', 'phone', 'email', 'utm_source_id', 'tags'])
+        ->and(LeadScoringVariable::options())->not->toHaveKey('stage');
 });

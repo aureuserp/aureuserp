@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
 use Webkul\Support\Models\Country;
+use Webkul\Website\Enums\VisitorCookie;
 use Webkul\Website\Events\VisitorTracked;
 use Webkul\Website\Models\Page;
 use Webkul\Website\Models\Track;
@@ -16,10 +17,6 @@ use Webkul\Website\Models\Visitor;
 
 class VisitorTracker
 {
-    public const COOKIE = 'website_visitor';
-
-    public const TIMEZONE_COOKIE = 'website_tz';
-
     public const NEW_VISIT_HOURS = 8;
 
     public const TRACK_AGAIN_MINUTES = 30;
@@ -106,9 +103,11 @@ class VisitorTracker
     {
         $visitor = $partner
             ? Visitor::query()->where('access_token', $this->partnerToken($partner))->lockForUpdate()->first()
-            : $this->anonymousVisitor($request->cookie(self::COOKIE), lock: true);
+            : $this->anonymousVisitor($request->cookie(VisitorCookie::VISITOR->value), lock: true);
 
-        if ($partner && ! $visitor && ($anonymous = $this->anonymousVisitor($request->cookie(self::COOKIE)))) {
+        if ($partner 
+            && ! $visitor 
+            && ($anonymous = $this->anonymousVisitor($request->cookie(VisitorCookie::VISITOR->value)))) {
             $visitor = $this->linkPartner($partner, $anonymous->access_token);
         }
 
@@ -215,7 +214,7 @@ class VisitorTracker
 
     protected function timezone(Request $request): ?string
     {
-        $timezone = $request->cookie(self::TIMEZONE_COOKIE);
+        $timezone = $request->cookie(VisitorCookie::TIMEZONE->value);
 
         if (! is_string($timezone) || ! preg_match('#^[A-Za-z_]+(/[A-Za-z0-9_+\-]+)*$#', $timezone)) {
             return null;

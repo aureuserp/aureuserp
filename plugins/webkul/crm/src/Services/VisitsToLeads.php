@@ -57,7 +57,9 @@ class VisitsToLeads
 
     public function queue(Model $visitor, ?string $ip, ?string $url): Collection
     {
-        if (! static::enabled() || $this->activeRules()->isEmpty() || $this->hasLead($visitor)) {
+        if (! static::enabled()
+            || $this->activeRules()->isEmpty()
+            || $this->hasLead($visitor)) {
             return new Collection;
         }
 
@@ -127,7 +129,8 @@ class VisitsToLeads
 
     public function generateForExistingVisitors(): int
     {
-        if (! static::enabled() || $this->activeRules()->isEmpty()) {
+        if (! static::enabled()
+            || $this->activeRules()->isEmpty()) {
             return 0;
         }
 
@@ -231,7 +234,8 @@ class VisitsToLeads
 
     protected function countryFromIp(?string $ip): ?Country
     {
-        if (blank($ip) || ! class_exists(self::GEOLOCATION_SERVICE)) {
+        if (blank($ip)
+            || ! class_exists(self::GEOLOCATION_SERVICE)) {
             return null;
         }
 

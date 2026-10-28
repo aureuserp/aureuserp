@@ -207,7 +207,9 @@ class AssignmentRuleFields
     {
         $type = AssignmentRules::fieldType($field);
 
-        if (! $type || ! $operator || AssignmentRuleOperator::tryFrom($operator)?->isValueless() !== false) {
+        if (! $type
+            || ! $operator
+            || AssignmentRuleOperator::tryFrom($operator)?->isValueless() !== false) {
             return null;
         }
 

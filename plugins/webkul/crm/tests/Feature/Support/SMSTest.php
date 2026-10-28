@@ -3,6 +3,7 @@
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\SMSEncoding;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
 use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageSMS;
 use Webkul\Crm\Services\SMS\SMSSender;
@@ -96,4 +97,25 @@ it('rejects a number without a country code when the lead has no country', funct
         ->assertHasActionErrors(['recipient']);
 
     Http::assertNothingSent();
+});
+
+it('tells the gateway when a message needs unicode encoding', function (string $message, int $unicode) {
+    Http::fake(['api.msg91.com/*' => Http::response('ok')]);
+
+    CRMHelper::configureSMSGateway();
+
+    app(SMSSender::class)->send('919876543210', $message);
+
+    Http::assertSent(fn (Request $request): bool => $request['message'] === $message
+        && (int) $request['unicode'] === $unicode);
+})->with([
+    'gsm7'    => ['Your quote is ready', 0],
+    'unicode' => ['आपका कोटेशन तैयार है', 1],
+]);
+
+it('uses the segment lengths of each SMS encoding', function () {
+    expect([SMSEncoding::GSM7->getSinglePartLength(), SMSEncoding::GSM7->getMultiPartLength()])->toBe([160, 153])
+        ->and([SMSEncoding::UCS2->getSinglePartLength(), SMSEncoding::UCS2->getMultiPartLength()])->toBe([70, 67])
+        ->and(SMSEncoding::UCS2->isUnicode())->toBeTrue()
+        ->and(SMSEncoding::GSM7->isUnicode())->toBeFalse();
 });

@@ -150,7 +150,8 @@ class ManageCRM extends SettingsPage
         $intervalChanged = (int) ($data['auto_assignment_interval_number'] ?? 1) !== $current->auto_assignment_interval_number
             || ($data['auto_assignment_interval_type'] ?? 'days') !== $current->auto_assignment_interval_type;
 
-        if (blank($current->auto_assignment_run_at) || $intervalChanged) {
+        if (blank($current->auto_assignment_run_at)
+            || $intervalChanged) {
             $settings = clone $current;
             $settings->auto_assignment_interval_number = (int) ($data['auto_assignment_interval_number'] ?? 1);
             $settings->auto_assignment_interval_type = (string) ($data['auto_assignment_interval_type'] ?? 'days');

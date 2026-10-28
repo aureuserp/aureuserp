@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use Webkul\Website\Enums\VisitorCookie;
 use Webkul\Website\Filament\Customer\Pages\Homepage;
 use Webkul\Website\Filament\Customer\Resources\PageResource;
 use Webkul\Website\Models\Page;
@@ -27,8 +28,10 @@ class TrackWebsiteVisit
 
             $visitor = app(VisitorTracker::class)->track($event->request, $partner, $this->page($event->request));
 
-            if ($visitor && ! $partner && $event->request->cookie(VisitorTracker::COOKIE) !== $visitor->access_token) {
-                $event->response->headers->setCookie(Cookie::create(VisitorTracker::COOKIE, $visitor->access_token, now()->addYear(), '/', null, $event->request->isSecure(), true, false, Cookie::SAMESITE_LAX));
+            if ($visitor 
+                && ! $partner 
+                && $event->request->cookie(VisitorCookie::VISITOR->value) !== $visitor->access_token) {
+                $event->response->headers->setCookie(Cookie::create(VisitorCookie::VISITOR->value, $visitor->access_token, now()->addYear(), '/', null, $event->request->isSecure(), true, false, Cookie::SAMESITE_LAX));
             }
         } catch (Throwable $exception) {
             report($exception);

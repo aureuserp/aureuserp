@@ -62,7 +62,8 @@ class LeadAssignment
 
     public function assignSelected(Team $team, array $leadIds): int
     {
-        if (! app(CRMSettings::class)->use_auto_assignment || $leadIds === []) {
+        if (! app(CRMSettings::class)->use_auto_assignment
+            || $leadIds === []) {
             return 0;
         }
 
@@ -88,7 +89,9 @@ class LeadAssignment
 
     public function assignLead(Lead $lead): void
     {
-        if (! app(CRMSettings::class)->use_auto_assignment || ! $lead->exists || $lead->trashed()) {
+        if (! app(CRMSettings::class)->use_auto_assignment
+            || ! $lead->exists
+            || $lead->trashed()) {
             return;
         }
 
@@ -111,7 +114,8 @@ class LeadAssignment
             $lead->save();
         }
 
-        if (blank($lead->user_id) && ($team = $teams->firstWhere('id', $lead->team_id))) {
+        if (blank($lead->user_id)
+            && ($team = $teams->firstWhere('id', $lead->team_id))) {
             $this->assignSalespeople($team, $lead);
         }
     }
@@ -211,7 +215,8 @@ class LeadAssignment
             $lead->user_id = $member->user_id;
             $lead->save();
 
-            if ($lead->isLead() && ($team->crmTeam?->use_opportunities ?? true)) {
+            if ($lead->isLead()
+                && ($team->crmTeam?->use_opportunities ?? true)) {
                 app(LeadConverter::class)->convert($lead, [
                     'action'   => LeadConversionAction::CONVERT,
                     'customer' => LeadConversionCustomer::NONE,

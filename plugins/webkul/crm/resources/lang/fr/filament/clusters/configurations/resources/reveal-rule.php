@@ -40,7 +40,6 @@ return [
         'gdpr'                     => 'Vérifiez si vous devez respecter le RGPD pour conserver des données personnelles.',
         'contact-filter'           => 'Filtrer les contacts sur',
         'extra-contacts'           => 'Nombre de contacts',
-        'extra-contacts-helper'    => '1 à 5 contacts par société.',
         'preferred-role'           => 'Rôle préféré',
         'other-roles'              => 'Autres rôles',
         'seniority'                => 'Ancienneté',

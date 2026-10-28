@@ -8,6 +8,7 @@ use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Website\Enums\ContactFormAction;
 use Webkul\Website\Filament\Customer\Pages\ContactUs;
 use Webkul\Website\Mail\ContactFormMail;
 use Webkul\Website\Services\ContactFormHandler;
@@ -22,14 +23,14 @@ beforeEach(function () {
 
     RateLimiter::clear('website-contact-us:127.0.0.1');
 
-    contactSettings(enabled: true, action: ContactFormHandler::ACTION_EMAIL);
+    contactSettings(enabled: true, action: ContactFormAction::EMAIL);
 });
 
-function contactSettings(bool $enabled, string $action): void
+function contactSettings(bool $enabled, ContactFormAction|string $action): void
 {
     $settings = app(ContactSettings::class);
     $settings->contact_form_enabled = $enabled;
-    $settings->contact_form_action = $action;
+    $settings->contact_form_action = $action instanceof ContactFormAction ? $action->value : $action;
     $settings->save();
 }
 
@@ -100,7 +101,7 @@ it('limits submissions per IP address', function () {
 });
 
 it('is not reachable when the contact form is disabled', function () {
-    contactSettings(enabled: false, action: ContactFormHandler::ACTION_EMAIL);
+    contactSettings(enabled: false, action: ContactFormAction::EMAIL);
 
     expect(ContactUs::canAccess())->toBeFalse();
 
@@ -110,18 +111,18 @@ it('is not reachable when the contact form is disabled', function () {
 it('falls back to email when the saved action is not available', function () {
     contactSettings(enabled: true, action: 'unknown');
 
-    expect(ContactFormHandler::action())->toBe(ContactFormHandler::ACTION_EMAIL);
+    expect(ContactFormHandler::action())->toBe(ContactFormAction::EMAIL);
 });
 
 it('offers lead and opportunity actions only when the CRM plugin is installed', function () {
     $options = array_keys(ContactFormHandler::actionOptions());
 
     expect($options)->toBe(ContactFormHandler::crmAvailable()
-        ? [ContactFormHandler::ACTION_EMAIL, ContactFormHandler::ACTION_LEAD, ContactFormHandler::ACTION_OPPORTUNITY]
-        : [ContactFormHandler::ACTION_EMAIL]);
+        ? [ContactFormAction::EMAIL->value, ContactFormAction::LEAD->value, ContactFormAction::OPPORTUNITY->value]
+        : [ContactFormAction::EMAIL->value]);
 });
 
-it('creates a CRM record of the configured type', function (string $action) {
+it('creates a CRM record of the configured type', function (ContactFormAction $action) {
     TestBootstrapHelper::ensurePluginInstalled('crm');
 
     contactSettings(enabled: true, action: $action);
@@ -133,19 +134,19 @@ it('creates a CRM record of the configured type', function (string $action) {
 
     $lead = Lead::query()->withoutGlobalScopes()->latest('id')->first();
 
-    expect($lead->type)->toBe($action)
+    expect($lead->type?->value ?? $lead->type)->toBe($action->value)
         ->and($lead->name)->toBe('Need a quote')
         ->and($lead->contact_name)->toBe('Jane Visitor')
         ->and($lead->email)->toBe('jane@example.com')
         ->and($lead->phone)->toBe('+91 98765 43210')
         ->and($lead->company_name)->toBe('Acme Ltd')
         ->and($lead->description)->toContain('Line one<br />');
-})->with([ContactFormHandler::ACTION_LEAD, ContactFormHandler::ACTION_OPPORTUNITY]);
+})->with([ContactFormAction::LEAD, ContactFormAction::OPPORTUNITY]);
 
 it('does not assign a website lead to the logged-in admin user', function () {
     TestBootstrapHelper::ensurePluginInstalled('crm');
 
-    contactSettings(enabled: true, action: ContactFormHandler::ACTION_LEAD);
+    contactSettings(enabled: true, action: ContactFormAction::LEAD);
 
     $this->actingAs(User::factory()->create());
 
@@ -157,7 +158,7 @@ it('does not assign a website lead to the logged-in admin user', function () {
     $lead = Lead::query()->withoutGlobalScopes()->latest('id')->first();
 
     expect($lead->creator_id)->toBeNull()
-        ->and($lead->type)->toBe(ContactFormHandler::ACTION_LEAD);
+        ->and($lead->type?->value ?? $lead->type)->toBe(ContactFormAction::LEAD->value);
 });
 
 it('rejects HTML, scripts and invalid phone numbers', function () {
@@ -211,7 +212,7 @@ it('refuses a submission that is empty after sanitizing', function () {
 it('stores SQL injection attempts as plain text', function () {
     TestBootstrapHelper::ensurePluginInstalled('crm');
 
-    contactSettings(enabled: true, action: ContactFormHandler::ACTION_LEAD);
+    contactSettings(enabled: true, action: ContactFormAction::LEAD);
 
     $leadCount = Lead::query()->withoutGlobalScopes()->withTrashed()->count();
 
@@ -235,18 +236,18 @@ it('stores SQL injection attempts as plain text', function () {
 it('hides the lead action and creates opportunities when CRM leads are turned off', function () {
     TestBootstrapHelper::ensurePluginInstalled('crm');
 
-    contactSettings(enabled: true, action: ContactFormHandler::ACTION_LEAD);
+    contactSettings(enabled: true, action: ContactFormAction::LEAD);
 
     $crmSettings = app(CRMSettings::class);
     $crmSettings->use_leads = false;
     $crmSettings->save();
 
-    expect(array_keys(ContactFormHandler::actionOptions()))->toBe([ContactFormHandler::ACTION_EMAIL, ContactFormHandler::ACTION_OPPORTUNITY])
-        ->and(ContactFormHandler::action())->toBe(ContactFormHandler::ACTION_OPPORTUNITY);
+    expect(array_keys(ContactFormHandler::actionOptions()))->toBe([ContactFormAction::EMAIL->value, ContactFormAction::OPPORTUNITY->value])
+        ->and(ContactFormHandler::action())->toBe(ContactFormAction::OPPORTUNITY);
 
     $crmSettings->use_leads = true;
     $crmSettings->save();
 
-    expect(array_keys(ContactFormHandler::actionOptions()))->toContain(ContactFormHandler::ACTION_LEAD)
-        ->and(ContactFormHandler::action())->toBe(ContactFormHandler::ACTION_LEAD);
+    expect(array_keys(ContactFormHandler::actionOptions()))->toContain(ContactFormAction::LEAD->value)
+        ->and(ContactFormHandler::action())->toBe(ContactFormAction::LEAD);
 });

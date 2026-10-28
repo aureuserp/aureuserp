@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Crm\Database\Factories\StageFactory;
@@ -28,10 +27,7 @@ class Stage extends Model implements Sortable
         'is_won',
         'requirements',
         'creator_id',
-        'team_ids',
     ];
-
-    protected ?array $pendingTeamIds = null;
 
     protected $casts = [
         'is_won' => 'boolean',
@@ -76,25 +72,6 @@ class Stage extends Model implements Sortable
             ->all();
     }
 
-    public function getTeamIdsAttribute(): array
-    {
-        if ($this->pendingTeamIds !== null) {
-            return $this->pendingTeamIds;
-        }
-
-        return $this->exists ? $this->teams()->pluck('sales_teams.id')->map(fn ($id): int => (int) $id)->all() : [];
-    }
-
-    public function setTeamIdsAttribute(mixed $value): void
-    {
-        $this->pendingTeamIds = array_values(array_unique(array_map('intval', array_filter((array) $value, fn (mixed $id): bool => filled($id)))));
-    }
-
-    public function attributesToArray(): array
-    {
-        return [...parent::attributesToArray(), 'team_ids' => $this->team_ids];
-    }
-
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class, 'stage_id');
@@ -104,24 +81,6 @@ class Stage extends Model implements Sortable
     {
         static::creating(function (self $stage): void {
             $stage->creator_id ??= Auth::id();
-        });
-
-        static::saved(function (self $stage): void {
-            if ($stage->pendingTeamIds === null) {
-                return;
-            }
-
-            $visibleTeamIds = Team::query()->pluck('id')->map(fn ($id): int => (int) $id)->all();
-
-            $hiddenTeamIds = DB::table('crm_stage_team_rel')
-                ->where('stage_id', $stage->getKey())
-                ->whereNotIn('team_id', $visibleTeamIds)
-                ->pluck('team_id')
-                ->all();
-
-            $stage->teams()->sync([...array_intersect($stage->pendingTeamIds, $visibleTeamIds), ...$hiddenTeamIds]);
-
-            $stage->pendingTeamIds = null;
         });
     }
 

@@ -392,7 +392,8 @@ class Lead extends Model
 
             $lead->recurring_revenue ??= 0;
 
-            if (! $lead->exists && ! array_key_exists('is_automated_probability', $lead->getAttributes())) {
+            if (! $lead->exists
+                && ! array_key_exists('is_automated_probability', $lead->getAttributes())) {
                 $lead->is_automated_probability = ($lead->getAttributes()['probability'] ?? null) === null;
             }
 
@@ -428,7 +429,8 @@ class Lead extends Model
                 || ($lead->isDirty('stage_id') && (float) $lead->probability === 100.0)
                 || $lead->isDirty('deleted_at');
 
-            if ($lead->isDirty('probability') && ! $isSystemChange) {
+            if ($lead->isDirty('probability')
+                && ! $isSystemChange) {
                 $lead->is_automated_probability = $lead->automated_probability !== null
                     && abs((float) $lead->probability - (float) $lead->automated_probability) < 0.01;
             }
@@ -443,7 +445,8 @@ class Lead extends Model
                 $lead->probability = 100;
 
                 $lead->closed_at ??= now();
-            } elseif ($lead->getOriginal('stage_id') && Stage::query()->whereKey($lead->getOriginal('stage_id'))->where('is_won', true)->exists()) {
+            } elseif ($lead->getOriginal('stage_id')
+                && Stage::query()->whereKey($lead->getOriginal('stage_id'))->where('is_won', true)->exists()) {
                 $lead->closed_at = null;
 
                 $lead->is_automated_probability = true;
@@ -453,11 +456,14 @@ class Lead extends Model
         static::saved(function (self $lead): void {
             $scoringFields = ['stage_id', 'team_id', 'country_id', 'state_id', 'utm_source_id', 'email', 'phone', 'probability', 'is_automated_probability', 'type'];
 
-            if ($lead->wasRecentlyCreated || $lead->wasChanged($scoringFields)) {
+            if ($lead->wasRecentlyCreated
+                || $lead->wasChanged($scoringFields)) {
                 app(LeadScoring::class)->refresh($lead);
             }
 
-            if (! $lead->wasRecentlyCreated && $lead->wasChanged('stage_id') && Stage::query()->whereKey([$lead->stage_id, $lead->getOriginal('stage_id')])->where('is_won', true)->exists()) {
+            if (! $lead->wasRecentlyCreated
+                && $lead->wasChanged('stage_id')
+                && Stage::query()->whereKey([$lead->stage_id, $lead->getOriginal('stage_id')])->where('is_won', true)->exists()) {
                 LeadScoring::scheduleRefresh();
             }
         });

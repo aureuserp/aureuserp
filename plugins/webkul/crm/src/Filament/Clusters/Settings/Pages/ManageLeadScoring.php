@@ -14,6 +14,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use UnitEnum;
+use Webkul\Crm\Enums\LeadScoringVariable;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Crm\Settings\CRMSettings;
@@ -71,14 +72,7 @@ class ManageLeadScoring extends SettingsPage
                 CheckboxList::make('scoring_variables')
                     ->label(__('crm::filament/clusters/settings/pages/manage-lead-scoring.form.variables'))
                     ->helperText(__('crm::filament/clusters/settings/pages/manage-lead-scoring.form.variables-helper'))
-                    ->options([
-                        'country_id'    => __('crm::filament/lead-scoring.variables.country_id'),
-                        'state_id'      => __('crm::filament/lead-scoring.variables.state_id'),
-                        'phone'         => __('crm::filament/lead-scoring.variables.phone'),
-                        'email'         => __('crm::filament/lead-scoring.variables.email'),
-                        'utm_source_id' => __('crm::filament/lead-scoring.variables.utm_source_id'),
-                        'tags'          => __('crm::filament/lead-scoring.variables.tags'),
-                    ])
+                    ->options(LeadScoringVariable::options())
                     ->columns(2),
                 DatePicker::make('scoring_start_date')
                     ->label(__('crm::filament/clusters/settings/pages/manage-lead-scoring.form.start-date'))
@@ -92,7 +86,7 @@ class ManageLeadScoring extends SettingsPage
                         ->modalDescription(__('crm::filament/clusters/settings/pages/manage-lead-scoring.form.update-description'))
                         ->action(function (Get $get): void {
                             $settings = app(CRMSettings::class);
-                            $settings->scoring_variables = array_values(array_intersect(LeadScoring::VARIABLES, (array) $get('scoring_variables')));
+                            $settings->scoring_variables = array_values(array_intersect(LeadScoringVariable::selectableValues(), (array) $get('scoring_variables')));
                             $settings->scoring_start_date = filled($get('scoring_start_date')) ? (string) $get('scoring_start_date') : null;
                             $settings->save();
 
@@ -111,7 +105,7 @@ class ManageLeadScoring extends SettingsPage
     {
         $current = app(CRMSettings::class);
 
-        $data['scoring_variables'] = array_values(array_intersect(LeadScoring::VARIABLES, (array) ($data['scoring_variables'] ?? [])));
+        $data['scoring_variables'] = array_values(array_intersect(LeadScoringVariable::selectableValues(), (array) ($data['scoring_variables'] ?? [])));
         $data['scoring_start_date'] = filled($data['scoring_start_date'] ?? null) ? (string) $data['scoring_start_date'] : null;
 
         $this->scoringChanged = $data['scoring_variables'] !== array_values((array) $current->scoring_variables)

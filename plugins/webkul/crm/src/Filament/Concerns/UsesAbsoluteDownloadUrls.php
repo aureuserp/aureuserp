@@ -17,7 +17,9 @@ trait UsesAbsoluteDownloadUrls
 
             $url = $action->getUrl();
 
-            if (is_string($url) && str_starts_with($url, '/') && ! str_starts_with($url, '//')) {
+            if (is_string($url)
+                && str_starts_with($url, '/')
+                && ! str_starts_with($url, '//')) {
                 $action->url(url($url), $action->shouldOpenUrlInNewTab());
             }
         }

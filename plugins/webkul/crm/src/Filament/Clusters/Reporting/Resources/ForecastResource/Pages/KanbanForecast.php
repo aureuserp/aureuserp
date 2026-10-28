@@ -149,7 +149,8 @@ class KanbanForecast extends ListRecords
     {
         $record = ForecastResource::getEloquentQuery()->withoutTrashed()->find($recordId);
 
-        if (! $record || ! OpportunityResource::canEdit($record)) {
+        if (! $record
+            || ! OpportunityResource::canEdit($record)) {
             Notification::make()
                 ->danger()
                 ->title(__('crm::filament/clusters/reporting/resources/forecast.kanban.notifications.unauthorized'))
@@ -158,7 +159,8 @@ class KanbanForecast extends ListRecords
             return;
         }
 
-        if ($newColumnValue !== self::NONE_COLUMN && ! preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $newColumnValue)) {
+        if ($newColumnValue !== self::NONE_COLUMN
+            && ! preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $newColumnValue)) {
             return;
         }
 

@@ -35,11 +35,13 @@
                     <x-filament::badge size="sm" color="gray">{{ __('crm::filament/clusters/configurations/resources/team.pages.members.inactive') }}</x-filament::badge>
                 @endif
 
-                @if ($member->assignment_optout && $ruleBased)
+                @if ($member->assignment_optout
+                    && $ruleBased)
                     <x-filament::badge size="sm" color="warning">{{ __('crm::filament/clusters/configurations/resources/team.pages.members.skipped') }}</x-filament::badge>
                 @endif
 
-                @if (filled($member->assignment_domain) && $ruleBased)
+                @if (filled($member->assignment_domain)
+                    && $ruleBased)
                     <x-filament::badge size="sm" color="info">{{ trans_choice('crm::filament/clusters/configurations/resources/team.pages.members.rules', count($member->assignment_domain['conditions'] ?? []), ['count' => count($member->assignment_domain['conditions'] ?? [])]) }}</x-filament::badge>
                 @endif
             </div>

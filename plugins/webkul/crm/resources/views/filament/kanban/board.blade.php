@@ -20,7 +20,8 @@
     x-init="window.crmScheduleKanbanFit ? window.crmScheduleKanbanFit() : $nextTick(() => window.crmFitKanbanBoard?.($el))"
     class="fi-kanban-board crm-kanban-board relative"
 >
-    @if($hasFilters || $hasSearch)
+    @if($hasFilters
+        || $hasSearch)
         <div class="crm-kanban-toolbar">
             @if($hasSearch)
                 <div class="crm-kanban-search">
@@ -116,7 +117,8 @@
             </div>
         @endforelse
 
-        @if(method_exists($this, 'canAddKanbanColumn') && $this->canAddKanbanColumn())
+        @if(method_exists($this, 'canAddKanbanColumn')
+            && $this->canAddKanbanColumn())
             <button
                 type="button"
                 x-data="{ opening: false }"

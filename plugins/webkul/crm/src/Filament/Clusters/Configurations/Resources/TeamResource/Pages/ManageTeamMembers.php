@@ -145,7 +145,9 @@ class ManageTeamMembers extends ManageRelatedRecords
                         'member_email' => $record->user?->email,
                     ])
                     ->using(function (TeamMember $record, array $data): TeamMember {
-                        if (filled($data['member_name'] ?? null) && $record->user && UserResource::canEdit($record->user)) {
+                        if (filled($data['member_name'] ?? null)
+                            && $record->user
+                            && UserResource::canEdit($record->user)) {
                             $record->user->update(['name' => $data['member_name']]);
                         }
 

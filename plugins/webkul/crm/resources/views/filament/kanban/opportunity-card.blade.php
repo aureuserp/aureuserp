@@ -72,7 +72,8 @@
             {{ $record->name }}
         </h4>
 
-        @if ($canEdit || $canDelete)
+        @if ($canEdit
+            || $canDelete)
             <div data-card-control class="relative z-10 -me-1 -mt-1 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
                 <template x-if="! menusReady">
                     <button type="button" class="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.menu') }}" aria-label="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.menu') }}">
@@ -144,7 +145,8 @@
         @endif
     </div>
 
-    @if ($shows('expected_revenue') && (float) $record->expected_revenue > 0)
+    @if ($shows('expected_revenue')
+        && (float) $record->expected_revenue > 0)
         <p class="mt-1 text-sm text-gray-700 dark:text-gray-300" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.expected-revenue') }}">
             {{ Number::currency((float) $record->expected_revenue, $currency) }}
             @if ((float) $record->recurring_revenue > 0)
@@ -153,14 +155,16 @@
         </p>
     @endif
 
-    @if ($shows('partner.name') && ($customer = $record->partner?->name ?? $record->contact_name ?? $record->company_name))
+    @if ($shows('partner.name')
+        && ($customer = $record->partner?->name ?? $record->contact_name ?? $record->company_name))
         <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.customer') }}">
             <x-filament::icon icon="heroicon-m-building-office-2" class="h-3.5 w-3.5 shrink-0 text-gray-400" />
             <span class="truncate">{{ $customer }}</span>
         </p>
     @endif
 
-    @if ($shows('tags.name') && $record->tags->isNotEmpty())
+    @if ($shows('tags.name')
+        && $record->tags->isNotEmpty())
         <div class="mt-2 flex flex-wrap gap-1" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.tags') }}">
             @foreach ($record->tags as $tag)
                 <span

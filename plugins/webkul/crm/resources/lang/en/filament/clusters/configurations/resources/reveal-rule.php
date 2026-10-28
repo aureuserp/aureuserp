@@ -40,7 +40,6 @@ return [
         'gdpr'                     => 'Make sure you know if you have to be GDPR compliant for storing personal data.',
         'contact-filter'           => 'Filter Contacts On',
         'extra-contacts'           => 'Number of Contacts',
-        'extra-contacts-helper'    => '1 to 5 contacts per company.',
         'preferred-role'           => 'Preferred Role',
         'other-roles'              => 'Other Roles',
         'seniority'                => 'Seniority',

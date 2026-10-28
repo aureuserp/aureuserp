@@ -29,7 +29,8 @@ trait ManagesOpportunityKanbanCards
     {
         $lead = $this->findEditableKanbanCard($recordId);
 
-        if (! $lead || ! OpportunityPriority::tryFrom($priority)) {
+        if (! $lead
+            || ! OpportunityPriority::tryFrom($priority)) {
             return;
         }
 
@@ -40,7 +41,8 @@ trait ManagesOpportunityKanbanCards
     {
         $lead = $this->findEditableKanbanCard($recordId);
 
-        if (! $lead || ($color !== 0 && ! LeadColor::tryFrom($color))) {
+        if (! $lead
+            || ($color !== 0 && ! LeadColor::tryFrom($color))) {
             return;
         }
 

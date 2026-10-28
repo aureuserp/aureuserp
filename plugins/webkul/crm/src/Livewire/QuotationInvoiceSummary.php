@@ -11,7 +11,8 @@ class QuotationInvoiceSummary extends InvoiceSummary
 {
     public function getResourceUrl($record): ?string
     {
-        if ($record['move_type'] === MoveType::ENTRY && in_array(Payment::query()->find($record['account_payment_id'])?->partner_type, ['customer', 'company'], true)) {
+        if ($record['move_type'] === MoveType::ENTRY
+            && in_array(Payment::query()->find($record['account_payment_id'])?->partner_type, ['customer', 'company'], true)) {
             return PaymentResource::getUrl('view', ['record' => $record['account_payment_id']]);
         }
 

@@ -162,7 +162,10 @@ class ListContacts extends BaseListPartners
 
         $allowed = collect($this->getKanbanColumns())->pluck('value')->all();
 
-        if (! $record || $record->trashed() || ! ContactResource::canEdit($record) || ! in_array($newColumnValue, $allowed, true)) {
+        if (! $record
+            || $record->trashed()
+            || ! ContactResource::canEdit($record)
+            || ! in_array($newColumnValue, $allowed, true)) {
             Notification::make()
                 ->danger()
                 ->title(__('crm::filament/clusters/sales/resources/contact.board.unauthorized'))

@@ -52,7 +52,9 @@ class QuotationResource extends BaseQuotationResource
         $record = method_exists($page, 'getRecord') ? $page->getRecord() : null;
         $opportunity = $record instanceof Order ? $record->opportunity : null;
 
-        if ($opportunity && ! $opportunity->trashed() && OpportunityResource::canView($opportunity)) {
+        if ($opportunity
+            && ! $opportunity->trashed()
+            && OpportunityResource::canView($opportunity)) {
             $items[] = NavigationItem::make('opportunity')
                 ->label(__('crm::filament/clusters/sales/resources/quotation.tabs.opportunity'))
                 ->icon('heroicon-o-funnel')

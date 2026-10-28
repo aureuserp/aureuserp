@@ -225,7 +225,8 @@ class ManageTeamOpportunities extends ManageRelatedRecords
     {
         $record = $this->getTeamOpportunitiesQuery()->withoutTrashed()->find($recordId);
 
-        if (! $record || ! OpportunityResource::canEdit($record)) {
+        if (! $record
+            || ! OpportunityResource::canEdit($record)) {
             Notification::make()
                 ->warning()
                 ->title($record

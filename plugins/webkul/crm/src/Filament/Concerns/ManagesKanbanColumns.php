@@ -4,6 +4,7 @@ namespace Webkul\Crm\Filament\Concerns;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -63,12 +64,14 @@ trait ManagesKanbanColumns
             ->modalWidth('md')
             ->authorize(fn (): bool => $this->canAddKanbanColumn())
             ->schema(fn (): array => $this->getKanbanColumnFormComponents())
-            ->action(function (array $data, Action $action): void {
+            ->action(function (array $data, Action $action, Schema $schema): void {
                 $column = $this->storeKanbanColumn($data['name'] ?? '', $data);
 
                 if (! $column) {
                     $action->halt();
                 }
+
+                $schema->model($this->findKanbanColumnRecord($column))->saveRelationships();
 
                 $this->js('window.crmHighlightKanbanColumn?.('.json_encode($column).')');
             });
@@ -97,8 +100,9 @@ trait ManagesKanbanColumns
                 'name' => $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''))?->getAttribute('name'),
             ]))
             ->modalWidth('md')
+            ->record(fn (array $arguments): ?Model => $this->findKanbanColumnRecord((string) ($arguments['column'] ?? '')))
             ->schema(fn (): array => $this->getKanbanColumnFormComponents())
-            ->fillForm(fn (array $arguments): array => $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''))?->attributesToArray() ?? [])
+            ->fillForm(fn (?Model $record): array => $record?->attributesToArray() ?? [])
             ->action(function (array $data, array $arguments, Action $action): void {
                 $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
 

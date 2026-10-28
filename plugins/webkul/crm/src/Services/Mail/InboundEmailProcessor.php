@@ -115,7 +115,8 @@ class InboundEmailProcessor
     {
         $address = mb_strtolower(trim($address));
 
-        if (! str_contains($address, '@') || blank($alias->alias_name)) {
+        if (! str_contains($address, '@')
+            || blank($alias->alias_name)) {
             return false;
         }
 
@@ -137,7 +138,8 @@ class InboundEmailProcessor
                 ->latest('id')
                 ->value('lead_id');
 
-            if ($leadId && ($lead = $this->leadQuery()->find($leadId))) {
+            if ($leadId
+                && ($lead = $this->leadQuery()->find($leadId))) {
                 return $lead;
             }
         }
@@ -145,7 +147,8 @@ class InboundEmailProcessor
         if (preg_match('/\[(?:lead|opportunity)?\s*#(\d+)\]/i', $email->subject, $matches)) {
             $lead = $this->leadQuery()->find((int) $matches[1]);
 
-            if ($lead && $lead->email_normalized === Lead::normalizeEmail($email->fromEmail)) {
+            if ($lead
+                && $lead->email_normalized === Lead::normalizeEmail($email->fromEmail)) {
                 return $lead;
             }
         }
@@ -274,7 +277,8 @@ class InboundEmailProcessor
 
     protected function isEmployeeEmail(string $email): bool
     {
-        if (! Schema::hasTable('employees_employees') || ! Schema::hasColumn('employees_employees', 'work_email')) {
+        if (! Schema::hasTable('employees_employees')
+            || ! Schema::hasColumn('employees_employees', 'work_email')) {
             return false;
         }
 

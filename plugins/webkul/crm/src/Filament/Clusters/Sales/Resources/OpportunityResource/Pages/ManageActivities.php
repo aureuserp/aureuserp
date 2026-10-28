@@ -43,7 +43,8 @@ class ManageActivities extends ManageRelatedRecords
     {
         $record = method_exists($page, 'getRecord') ? $page->getRecord() : null;
 
-        if (! $record instanceof Lead || ! static::canAccess(['record' => $record])) {
+        if (! $record instanceof Lead
+            || ! static::canAccess(['record' => $record])) {
             return [];
         }
 

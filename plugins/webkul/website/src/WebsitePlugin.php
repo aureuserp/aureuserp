@@ -10,6 +10,7 @@ use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
+use Webkul\Website\Enums\VisitorCookie;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
@@ -17,7 +18,6 @@ use Webkul\Website\Filament\Customer\Auth\Register;
 use Webkul\Website\Filament\Customer\Clusters\Account;
 use Webkul\Website\Filament\Customer\Resources\PageResource;
 use Webkul\Website\Models\Page;
-use Webkul\Website\Services\VisitorTracker;
 use Webkul\Website\Settings\ContactSettings;
 
 class WebsitePlugin implements Plugin
@@ -68,7 +68,7 @@ class WebsitePlugin implements Plugin
                     ])
                     ->renderHook(
                         PanelsRenderHook::BODY_END,
-                        fn (): string => '<script>try{document.cookie="'.VisitorTracker::TIMEZONE_COOKIE.'="+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+";path=/;max-age=31536000;samesite=lax"}catch(e){}</script>',
+                        fn (): string => '<script>try{document.cookie="'.VisitorCookie::TIMEZONE->value.'="+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+";path=/;max-age=31536000;samesite=lax"}catch(e){}</script>',
                     )
                     ->navigationItems($this->getNavigationItems()->toArray())
                     ->renderHook(

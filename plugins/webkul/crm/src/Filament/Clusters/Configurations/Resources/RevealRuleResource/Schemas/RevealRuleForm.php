@@ -15,6 +15,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Enums\RevealRuleContactCount;
 use Webkul\Crm\Enums\RevealRuleContactFilter;
 use Webkul\Crm\Enums\RevealRuleLeadFor;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
@@ -66,7 +67,8 @@ class RevealRuleForm
                                 ->helperText(__('crm::filament/clusters/configurations/resources/reveal-rule.form.url-helper'))
                                 ->maxLength(255)
                                 ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
-                                    if (filled($value) && ! RevealRule::isValidPattern((string) $value)) {
+                                    if (filled($value)
+                                        && ! RevealRule::isValidPattern((string) $value)) {
                                         $fail(__('crm::filament/clusters/configurations/resources/reveal-rule.form.url-invalid'));
                                     }
                                 }),
@@ -76,14 +78,11 @@ class RevealRuleForm
                         ->columns(2)
                         ->visible($isPeople)
                         ->schema([
-                            TextInput::make('extra_contacts')
+                            Select::make('extra_contacts')
                                 ->label(__('crm::filament/clusters/configurations/resources/reveal-rule.form.extra-contacts'))
-                                ->helperText(__('crm::filament/clusters/configurations/resources/reveal-rule.form.extra-contacts-helper'))
-                                ->numeric()
-                                ->integer()
-                                ->minValue(1)
-                                ->maxValue(RevealRule::MAX_EXTRA_CONTACTS)
-                                ->default(1)
+                                ->options(RevealRuleContactCount::class)
+                                ->default(RevealRuleContactCount::ONE)
+                                ->selectablePlaceholder(false)
                                 ->required(),
                             Radio::make('contact_filter_type')
                                 ->label(__('crm::filament/clusters/configurations/resources/reveal-rule.form.contact-filter'))
@@ -150,7 +149,8 @@ class RevealRuleForm
                                 ->helperText(__('crm::filament/clusters/configurations/resources/reveal-rule.form.company-helper'))
                                 ->relationship('company', 'name', fn (Builder $query): Builder => $query->whereKey(app(CompanyContext::class)->activeIds()))
                                 ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
-                                    if (filled($value) && ! in_array((int) $value, array_map('intval', app(CompanyContext::class)->activeIds()), true)) {
+                                    if (filled($value)
+                                        && ! in_array((int) $value, array_map('intval', app(CompanyContext::class)->activeIds()), true)) {
                                         $fail(__('crm::filament/assignment.team.company-not-active'));
                                     }
                                 })
@@ -162,7 +162,8 @@ class RevealRuleForm
                                 ->label(__('crm::filament/clusters/configurations/resources/reveal-rule.form.salesperson'))
                                 ->relationship('user', 'name', fn (Builder $query, Get $get): Builder => OpportunityForm::scopeSalespeople($query, $get('company_id') ?? current_company_id()))
                                 ->rule(fn (Get $get): Closure => function (string $attribute, mixed $value, Closure $fail) use ($get): void {
-                                    if (filled($value) && ! OpportunityForm::scopeSalespeople(User::query(), $get('company_id') ?? current_company_id())->whereKey($value)->exists()) {
+                                    if (filled($value)
+                                        && ! OpportunityForm::scopeSalespeople(User::query(), $get('company_id') ?? current_company_id())->whereKey($value)->exists()) {
                                         $fail(__('validation.exists', ['attribute' => $attribute]));
                                     }
                                 })

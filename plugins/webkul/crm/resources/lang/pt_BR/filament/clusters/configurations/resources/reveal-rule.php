@@ -40,7 +40,6 @@ return [
         'gdpr'                     => 'Verifique se você precisa cumprir a LGPD/GDPR para armazenar dados pessoais.',
         'contact-filter'           => 'Filtrar contatos por',
         'extra-contacts'           => 'Número de contatos',
-        'extra-contacts-helper'    => 'De 1 a 5 contatos por empresa.',
         'preferred-role'           => 'Função preferida',
         'other-roles'              => 'Outras funções',
         'seniority'                => 'Senioridade',

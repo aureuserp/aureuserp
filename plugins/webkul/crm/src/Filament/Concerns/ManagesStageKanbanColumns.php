@@ -38,10 +38,11 @@ trait ManagesStageKanbanColumns
     {
         $stage = Stage::query()->create([
             ...Arr::only($attributes, ['requirements']),
-            'name'     => $name,
-            'is_won'   => (bool) ($attributes['is_won'] ?? false),
-            'team_ids' => filled($attributes['team_ids'] ?? null) ? $attributes['team_ids'] : array_filter([$this->currentKanbanTeamId()]),
+            'name'   => $name,
+            'is_won' => (bool) ($attributes['is_won'] ?? false),
         ]);
+
+        $stage->teams()->sync(array_filter([$this->currentKanbanTeamId()]));
 
         $stages = Stage::query()->whereKeyNot($stage->getKey())->orderBy('sort')->get();
 
@@ -84,7 +85,7 @@ trait ManagesStageKanbanColumns
 
     protected function getKanbanColumnFormComponents(): array
     {
-        return StageForm::components();
+        return StageForm::components(defaultTeamId: $this->currentKanbanTeamId());
     }
 
     protected function countKanbanColumnRecords(Model $record): int

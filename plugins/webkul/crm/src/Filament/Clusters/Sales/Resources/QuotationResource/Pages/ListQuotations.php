@@ -281,7 +281,10 @@ class ListQuotations extends BaseListQuotations
 
         $allowed = collect($this->getKanbanColumns())->pluck('value')->all();
 
-        if (! $record || $record->trashed() || ! QuotationResource::canEdit($record) || ! in_array($newColumnValue, $allowed, true)) {
+        if (! $record
+            || $record->trashed()
+            || ! QuotationResource::canEdit($record)
+            || ! in_array($newColumnValue, $allowed, true)) {
             Notification::make()
                 ->danger()
                 ->title(__('crm::filament/clusters/sales/resources/quotation.board.unauthorized'))

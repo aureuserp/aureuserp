@@ -40,7 +40,6 @@ return [
         'gdpr'                     => 'Asegúrese de saber si debe cumplir el RGPD para almacenar datos personales.',
         'contact-filter'           => 'Filtrar contactos por',
         'extra-contacts'           => 'Número de contactos',
-        'extra-contacts-helper'    => 'De 1 a 5 contactos por empresa.',
         'preferred-role'           => 'Rol preferido',
         'other-roles'              => 'Otros roles',
         'seniority'                => 'Antigüedad',

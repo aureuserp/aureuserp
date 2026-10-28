@@ -7,17 +7,12 @@ use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Company;
+use Webkul\Website\Enums\ContactFormAction;
 use Webkul\Website\Mail\ContactFormMail;
 use Webkul\Website\Settings\ContactSettings;
 
 class ContactFormHandler
 {
-    public const ACTION_EMAIL = 'email';
-
-    public const ACTION_LEAD = 'lead';
-
-    public const ACTION_OPPORTUNITY = 'opportunity';
-
     public const FIELDS = ['name', 'phone', 'email', 'company', 'subject', 'question'];
 
     public const MULTILINE_FIELDS = ['question'];
@@ -32,26 +27,33 @@ class ContactFormHandler
         return static::crmAvailable() && (bool) app('Webkul\\Crm\\Settings\\CRMSettings')->use_leads;
     }
 
-    public static function actionOptions(): array
+    public static function availableActions(): array
     {
-        $label = fn (string $key): string => __('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.actions.'.$key);
-
-        return [
-            self::ACTION_EMAIL => $label('email'),
-            ...(static::crmUsesLeads() ? [self::ACTION_LEAD => $label('lead')] : []),
-            ...(static::crmAvailable() ? [self::ACTION_OPPORTUNITY => $label('opportunity')] : []),
-        ];
+        return array_values(array_filter([
+            ContactFormAction::EMAIL,
+            static::crmUsesLeads() ? ContactFormAction::LEAD : null,
+            static::crmAvailable() ? ContactFormAction::OPPORTUNITY : null,
+        ]));
     }
 
-    public static function action(): string
+    public static function actionOptions(): array
     {
-        $action = app(ContactSettings::class)->contact_form_action;
+        return collect(static::availableActions())
+            ->mapWithKeys(fn (ContactFormAction $action): array => [$action->value => $action->getLabel()])
+            ->all();
+    }
 
-        if ($action === self::ACTION_LEAD && static::crmAvailable() && ! static::crmUsesLeads()) {
-            return self::ACTION_OPPORTUNITY;
+    public static function action(): ContactFormAction
+    {
+        $action = ContactFormAction::tryFrom((string) app(ContactSettings::class)->contact_form_action);
+
+        if ($action === ContactFormAction::LEAD
+            && static::crmAvailable()
+            && ! static::crmUsesLeads()) {
+            return ContactFormAction::OPPORTUNITY;
         }
 
-        return array_key_exists($action, static::actionOptions()) ? $action : self::ACTION_EMAIL;
+        return in_array($action, static::availableActions(), true) ? $action : ContactFormAction::EMAIL;
     }
 
     public static function recipient(): ?string
@@ -89,10 +91,11 @@ class ContactFormHandler
     {
         $data = static::sanitize($data);
 
-        return match (static::action()) {
-            self::ACTION_LEAD        => $this->createLead($data, 'lead'),
-            self::ACTION_OPPORTUNITY => $this->createLead($data, 'opportunity'),
-            default                  => $this->sendEmail($data),
+        $action = static::action();
+
+        return match ($action) {
+            ContactFormAction::LEAD, ContactFormAction::OPPORTUNITY => $this->createLead($data, $action),
+            ContactFormAction::EMAIL                                => $this->sendEmail($data),
         };
     }
 
@@ -109,12 +112,12 @@ class ContactFormHandler
         return null;
     }
 
-    protected function createLead(array $data, string $type): Model
+    protected function createLead(array $data, ContactFormAction $action): Model
     {
         $leadClass = 'Webkul\\Crm\\Models\\Lead';
 
         $lead = $leadClass::query()->create([
-            'type'         => $type,
+            'type'         => $action->value,
             'name'         => $data['subject'],
             'contact_name' => $data['name'],
             'email'        => $data['email'],

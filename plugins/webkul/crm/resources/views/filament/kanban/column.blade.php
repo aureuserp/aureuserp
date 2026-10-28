@@ -67,7 +67,8 @@
                 {{ $column->count }}@if($wipLimit) / {{ $wipLimit }}@endif
             </span>
 
-            @if($canEditColumn || $canDeleteColumn)
+            @if($canEditColumn
+                || $canDeleteColumn)
                 <x-filament::dropdown placement="bottom-end" teleport>
                     <x-slot name="trigger">
                         <button
@@ -128,7 +129,8 @@
         }, $state->getLabel()]])->all();
     @endphp
 
-    @if($summary || $progressTotal)
+    @if($summary
+        || $progressTotal)
         <div class="flex items-center gap-3 px-3 pb-2">
             @if($progressTotal)
                 <div class="flex h-2.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10" role="group" aria-label="{{ __('crm::filament/kanban.progress.label') }}">

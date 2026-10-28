@@ -42,7 +42,8 @@ class ImapMailbox
                 $raw = imap_fetchbody($connection, $uid, '', FT_UID | FT_PEEK);
 
                 try {
-                    if (is_string($raw) && $raw !== '') {
+                    if (is_string($raw)
+                        && $raw !== '') {
                         $handle($raw);
 
                         $count++;
@@ -60,15 +61,7 @@ class ImapMailbox
 
     public function mailboxReference(): string
     {
-        $flags = match ($this->server->encryption) {
-            MailServerEncryption::SSL  => '/imap/ssl',
-            MailServerEncryption::TLS  => '/imap/tls',
-            default                    => '/imap/notls',
-        };
-
-        if (! $this->server->validate_certificate && $this->server->encryption !== MailServerEncryption::NONE) {
-            $flags .= '/novalidate-cert';
-        }
+        $flags = ($this->server->encryption ?? MailServerEncryption::NONE)->getImapFlags((bool) $this->server->validate_certificate);
 
         $folder = filled($this->server->folder) ? $this->server->folder : 'INBOX';
 

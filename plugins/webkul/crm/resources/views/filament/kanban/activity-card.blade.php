@@ -45,14 +45,16 @@
         </h4>
     </div>
 
-    @if ($lead && $shows('lead.name'))
+    @if ($lead
+        && $shows('lead.name'))
         <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300" title="{{ __('crm::filament/clusters/sales/resources/activity.table.columns.opportunity') }}">
             <x-filament::icon icon="heroicon-m-funnel" class="h-3.5 w-3.5 shrink-0 text-gray-400" />
             <span class="truncate">{{ $lead->name }}</span>
         </p>
     @endif
 
-    @if ($shows('lead.partner.name') && ($customer = $lead?->partner?->name ?? $lead?->contact_name ?? $lead?->company_name))
+    @if ($shows('lead.partner.name')
+        && ($customer = $lead?->partner?->name ?? $lead?->contact_name ?? $lead?->company_name))
         <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400" title="{{ __('crm::filament/clusters/sales/resources/activity.table.columns.customer') }}">
             <x-filament::icon icon="heroicon-m-building-office-2" class="h-3.5 w-3.5 shrink-0 text-gray-400" />
             <span class="truncate">{{ $customer }}</span>

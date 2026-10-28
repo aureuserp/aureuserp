@@ -1,9 +1,12 @@
 <?php
 
+use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Pages\ManageStages;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
+use Webkul\Support\Models\Company;
 
 require_once __DIR__.'/../../Helpers/CRMHelper.php';
 
@@ -19,20 +22,47 @@ it('links stages to sales teams through crm_stage_team_rel', function () {
 
     $team = stageTeam();
 
-    $stage = Stage::query()->create(['name' => 'Team stage '.uniqid(), 'team_ids' => [$team->id]]);
+    $stage = Stage::query()->create(['name' => 'Team stage '.uniqid()]);
+    $stage->teams()->sync([$team->id]);
 
     $this->assertDatabaseHas('crm_stage_team_rel', ['stage_id' => $stage->id, 'team_id' => $team->id]);
 
-    expect($stage->fresh()->team_ids)->toBe([$team->id])
-        ->and($stage->fresh()->attributesToArray()['team_ids'])->toBe([$team->id]);
-
     $stage->fresh()->update(['name' => 'Renamed '.uniqid()]);
 
-    expect($stage->fresh()->team_ids)->toBe([$team->id]);
+    expect($stage->fresh()->teams->modelKeys())->toBe([$team->id]);
+});
 
-    $stage->fresh()->update(['team_ids' => []]);
+it('creates a stage with its sales teams from the stages page', function () {
+    CRMHelper::actingAsCRMUser(['stage']);
 
-    expect($stage->fresh()->team_ids)->toBe([]);
+    $team = stageTeam();
+    $name = 'Created with team '.uniqid();
+
+    Livewire::test(ManageStages::class)
+        ->callAction('create', data: ['name' => $name, 'teams' => [$team->id]])
+        ->assertHasNoActionErrors();
+
+    expect(Stage::query()->where('name', $name)->first()?->teams->modelKeys())->toBe([$team->id]);
+});
+
+it('saves the sales teams of a stage from the stage form without touching other companies\' teams', function () {
+    CRMHelper::actingAsCRMUser(['stage']);
+
+    $team = stageTeam();
+    $otherCompanyTeam = Team::factory()->create(['company_id' => Company::factory()->create()->id, 'is_active' => true]);
+
+    $stage = Stage::query()->create(['name' => 'Form stage '.uniqid()]);
+    $stage->teams()->sync([$otherCompanyTeam->id]);
+
+    Livewire::test(ManageStages::class)
+        ->mountAction(TestAction::make('edit')->table($stage))
+        ->assertSchemaStateSet(['teams' => []])
+        ->setActionData(['name' => $stage->name, 'teams' => [$team->id]])
+        ->callMountedAction()
+        ->assertHasNoActionErrors();
+
+    expect($stage->fresh()->teams()->withoutGlobalScopes()->pluck('sales_teams.id')->sort()->values()->all())
+        ->toBe(collect([$team->id, $otherCompanyTeam->id])->sort()->values()->all());
 });
 
 it('shows a team its own and the shared stages only', function () {
@@ -42,8 +72,10 @@ it('shows a team its own and the shared stages only', function () {
     $otherTeam = stageTeam();
 
     $shared = Stage::query()->create(['name' => 'Shared '.uniqid()]);
-    $own = Stage::query()->create(['name' => 'Own '.uniqid(), 'team_ids' => [$team->id]]);
-    $others = Stage::query()->create(['name' => 'Others '.uniqid(), 'team_ids' => [$otherTeam->id]]);
+    $own = Stage::query()->create(['name' => 'Own '.uniqid()]);
+    $own->teams()->sync([$team->id]);
+    $others = Stage::query()->create(['name' => 'Others '.uniqid()]);
+    $others->teams()->sync([$otherTeam->id]);
 
     $visible = Stage::query()->forTeam($team->id)->pluck('id');
 
@@ -56,7 +88,8 @@ it('hides other teams\' stages on a team\'s pipeline board', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
     $team = stageTeam();
-    $others = Stage::query()->create(['name' => 'Others '.uniqid(), 'team_ids' => [stageTeam()->id]]);
+    $others = Stage::query()->create(['name' => 'Others '.uniqid()]);
+    $others->teams()->sync([stageTeam()->id]);
 
     $columns = collect(Livewire::withQueryParams(['team' => $team->id])->test(KanbanOpportunities::class)->instance()->getKanbanColumns())
         ->pluck('value')
@@ -75,5 +108,36 @@ it('links a stage added from a team\'s board to that team', function () {
         ->test(KanbanOpportunities::class)
         ->call('addKanbanColumn', $name);
 
-    expect(Stage::query()->where('name', $name)->first()?->team_ids)->toBe([$team->id]);
+    expect(Stage::query()->where('name', $name)->first()?->teams->modelKeys())->toBe([$team->id]);
+});
+
+it('pre-selects the board\'s team in the add stage modal and saves the chosen teams', function () {
+    CRMHelper::actingAsCRMUser(['opportunity', 'stage']);
+
+    $team = stageTeam();
+    $otherTeam = stageTeam();
+    $name = 'Modal team stage '.uniqid();
+
+    Livewire::withQueryParams(['team' => $team->id])
+        ->test(KanbanOpportunities::class)
+        ->mountAction('addKanbanColumn')
+        ->assertSchemaStateSet(['teams' => [$team->id]])
+        ->setActionData(['name' => $name, 'teams' => [$otherTeam->id]])
+        ->callMountedAction()
+        ->assertHasNoActionErrors();
+
+    expect(Stage::query()->where('name', $name)->first()?->teams->modelKeys())->toBe([$otherTeam->id]);
+});
+
+it('edits the teams of a stage from the board column settings', function () {
+    CRMHelper::actingAsCRMUser(['opportunity', 'stage']);
+
+    $team = stageTeam();
+    $stage = Stage::query()->create(['name' => 'Column team stage '.uniqid()]);
+
+    Livewire::test(KanbanOpportunities::class)
+        ->callAction('editKanbanColumn', data: ['name' => $stage->name, 'teams' => [$team->id]], arguments: ['column' => (string) $stage->id])
+        ->assertHasNoActionErrors();
+
+    expect($stage->fresh()->teams->modelKeys())->toBe([$team->id]);
 });

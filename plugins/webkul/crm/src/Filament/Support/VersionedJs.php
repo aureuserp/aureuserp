@@ -10,7 +10,8 @@ class VersionedJs extends Js
     {
         $path = $this->getPath();
 
-        if ($path && is_file($path)) {
+        if ($path
+            && is_file($path)) {
             return (string) filemtime($path);
         }
 

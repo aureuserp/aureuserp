@@ -34,7 +34,8 @@ class SimilarLeads
     {
         $record = method_exists($page, 'getRecord') ? $page->getRecord() : null;
 
-        if (! $record instanceof Lead || ! ($count = static::count($record))) {
+        if (! $record instanceof Lead
+            || ! ($count = static::count($record))) {
             return [];
         }
 

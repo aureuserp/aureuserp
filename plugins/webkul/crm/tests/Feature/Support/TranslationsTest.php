@@ -133,7 +133,9 @@ it('defines every static crm translation key referenced in code and views', func
         );
 
         foreach ($matches[2] as $key) {
-            if (str_ends_with($key, '/') || str_ends_with($key, '.') || str_contains($key, '$')) {
+            if (str_ends_with($key, '/')
+                || str_ends_with($key, '.')
+                || str_contains($key, '$')) {
                 continue;
             }
 

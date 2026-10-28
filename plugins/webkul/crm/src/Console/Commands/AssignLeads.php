@@ -29,7 +29,8 @@ class AssignLeads extends Command
                 return self::SUCCESS;
             }
 
-            if (filled($settings->auto_assignment_run_at) && Carbon::parse($settings->auto_assignment_run_at)->isFuture()) {
+            if (filled($settings->auto_assignment_run_at)
+                && Carbon::parse($settings->auto_assignment_run_at)->isFuture()) {
                 return self::SUCCESS;
             }
 

@@ -68,7 +68,9 @@ class ListTeams extends ListRecords
     {
         $team = Team::query()->find($teamId);
 
-        if (! $team || ! ConfigurationTeamResource::canEdit($team) || ($color !== 0 && ! LeadColor::tryFrom($color))) {
+        if (! $team
+            || ! ConfigurationTeamResource::canEdit($team)
+            || ($color !== 0 && ! LeadColor::tryFrom($color))) {
             return;
         }
 

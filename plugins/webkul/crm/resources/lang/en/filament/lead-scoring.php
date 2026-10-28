@@ -26,13 +26,4 @@ return [
         'source'        => 'Comes from :value',
         'tag'           => 'Tagged :value',
     ],
-
-    'variables' => [
-        'country_id'    => 'Country',
-        'state_id'      => 'State',
-        'phone'         => 'Phone quality',
-        'email'         => 'Email quality',
-        'utm_source_id' => 'Source',
-        'tags'          => 'Tags',
-    ],
 ];

@@ -26,13 +26,4 @@ return [
         'source'        => 'Vem de :value',
         'tag'           => 'Etiquetado :value',
     ],
-
-    'variables' => [
-        'country_id'    => 'País',
-        'state_id'      => 'Estado',
-        'phone'         => 'Qualidade do telefone',
-        'email'         => 'Qualidade do e-mail',
-        'utm_source_id' => 'Origem',
-        'tags'          => 'Etiquetas',
-    ],
 ];

@@ -26,13 +26,4 @@ return [
         'source'        => 'Provient de :value',
         'tag'           => 'Étiqueté :value',
     ],
-
-    'variables' => [
-        'country_id'    => 'Pays',
-        'state_id'      => 'État',
-        'phone'         => 'Qualité du téléphone',
-        'email'         => 'Qualité de l\'e-mail',
-        'utm_source_id' => 'Source',
-        'tags'          => 'Étiquettes',
-    ],
 ];

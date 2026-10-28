@@ -166,7 +166,8 @@ class MergeLeadsBulkAction extends BulkAction
 
         $head = $records->firstWhere('id', (int) $headId);
 
-        if ($records->count() < 2 || ! $head) {
+        if ($records->count() < 2
+            || ! $head) {
             Notification::make()->danger()->title(__('crm::filament/similar-leads.merge.notifications.invalid'))->send();
 
             $action->halt();

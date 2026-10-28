@@ -36,7 +36,9 @@ class SendContactsSMSBulkAction extends BulkAction
                 foreach ($records as $contact) {
                     $number = SMSSender::normalize($contact->mobile ?: $contact->phone, $contact->country?->phone_code);
 
-                    if (! $number || $contact->trashed() || ! ContactResource::canEdit($contact)) {
+                    if (! $number
+                        || $contact->trashed()
+                        || ! ContactResource::canEdit($contact)) {
                         continue;
                     }
 

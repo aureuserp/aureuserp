@@ -35,7 +35,8 @@ class OutgoingMailer
 
     public function send(string $address, ?string $name, Mailable $mailable): void
     {
-        if ($this->usesCustomServer() && filled($this->settings->from_address)) {
+        if ($this->usesCustomServer()
+            && filled($this->settings->from_address)) {
             $mailable->from($this->settings->from_address, $this->settings->from_name);
         }
 

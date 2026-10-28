@@ -20,4 +20,15 @@ enum MailServerEncryption: string implements HasLabel
             self::NONE => __('crm::enums/mail-server-encryption.none'),
         };
     }
+
+    public function getImapFlags(bool $validateCertificate = true): string
+    {
+        $flags = match ($this) {
+            self::SSL  => '/imap/ssl',
+            self::TLS  => '/imap/tls',
+            self::NONE => '/imap/notls',
+        };
+
+        return $validateCertificate || $this === self::NONE ? $flags : $flags.'/novalidate-cert';
+    }
 }

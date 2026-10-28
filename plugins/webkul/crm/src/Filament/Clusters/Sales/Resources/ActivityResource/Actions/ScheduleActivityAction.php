@@ -96,7 +96,8 @@ class ScheduleActivityAction extends Action
             ->action(function (array $data): void {
                 $lead = $this->lockedLead ?? static::selectableOpportunities()->find($data['lead_id'] ?? null);
 
-                if (! $lead || ! LeadResourceResolver::resourceFor($lead)::canEdit($lead)) {
+                if (! $lead
+                    || ! LeadResourceResolver::resourceFor($lead)::canEdit($lead)) {
                     Notification::make()
                         ->danger()
                         ->title(__('crm::filament/clusters/sales/resources/activity.actions.schedule.notification.forbidden.title'))

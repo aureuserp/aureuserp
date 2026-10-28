@@ -13,6 +13,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use UnitEnum;
 use Webkul\Support\Filament\Clusters\Settings;
+use Webkul\Website\Enums\ContactFormAction;
 use Webkul\Website\Services\ContactFormHandler;
 use Webkul\Website\Settings\ContactSettings;
 
@@ -56,7 +57,7 @@ class ManageContacts extends SettingsPage
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['contact_form_action'] = ContactFormHandler::action();
+        $data['contact_form_action'] = ContactFormHandler::action()->value;
 
         return $data;
     }
@@ -75,7 +76,7 @@ class ManageContacts extends SettingsPage
                         Select::make('contact_form_action')
                             ->label(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.action'))
                             ->options(fn (): array => ContactFormHandler::actionOptions())
-                            ->helperText(fn (Get $get): ?string => $get('contact_form_action') === ContactFormHandler::ACTION_EMAIL
+                            ->helperText(fn (Get $get): ?string => $get('contact_form_action') === ContactFormAction::EMAIL->value
                                 ? __('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.email-helper', ['email' => ContactFormHandler::recipient() ?: '—'])
                                 : __('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.crm-helper'))
                             ->selectablePlaceholder(false)

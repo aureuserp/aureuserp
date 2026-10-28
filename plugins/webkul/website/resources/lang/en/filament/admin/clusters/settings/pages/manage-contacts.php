@@ -16,12 +16,6 @@ return [
                     'email-helper'   => 'The message is emailed to :email.',
                     'crm-helper'     => 'The message creates a record in CRM with the visitor\'s details.',
                 ],
-
-                'actions' => [
-                    'email'       => 'Send an email',
-                    'lead'        => 'Create a lead',
-                    'opportunity' => 'Create an opportunity',
-                ],
             ],
 
             'contacts' => [

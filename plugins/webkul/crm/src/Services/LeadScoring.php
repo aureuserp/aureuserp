@@ -3,6 +3,7 @@
 namespace Webkul\Crm\Services;
 
 use Illuminate\Support\Facades\DB;
+use Webkul\Crm\Enums\LeadScoringVariable;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Crm\Models\Tag;
@@ -14,8 +15,6 @@ use Webkul\Support\Models\UTMSource;
 
 class LeadScoring
 {
-    public const VARIABLES = ['country_id', 'state_id', 'phone', 'email', 'utm_source_id', 'tags'];
-
     public const TOTAL = '__total';
 
     protected const SMOOTHING = 0.1;
@@ -26,7 +25,7 @@ class LeadScoring
 
     public function enabledVariables(): array
     {
-        return array_values(array_intersect(self::VARIABLES, (array) app(CRMSettings::class)->scoring_variables));
+        return array_values(array_intersect(LeadScoringVariable::selectableValues(), (array) app(CRMSettings::class)->scoring_variables));
     }
 
     public function rebuild(): void
@@ -58,8 +57,9 @@ class LeadScoring
                     $add($teamId, self::TOTAL, '', $won);
 
                     foreach ($stages as $stage) {
-                        if ($won || ($lead->stage && $stage->sort <= $lead->stage->sort)) {
-                            $add($teamId, 'stage', (string) $stage->id, $won);
+                        if ($won
+                            || ($lead->stage && $stage->sort <= $lead->stage->sort)) {
+                            $add($teamId, LeadScoringVariable::STAGE->value, (string) $stage->id, $won);
                         }
                     }
 
@@ -100,7 +100,7 @@ class LeadScoring
         $lost = 1 - $won;
         $factors = [];
 
-        $values = [['stage', (string) $lead->stage_id], ...$this->leadValues($lead, $this->enabledVariables())];
+        $values = [[LeadScoringVariable::STAGE->value, (string) $lead->stage_id], ...$this->leadValues($lead, $this->enabledVariables())];
 
         foreach ($values as [$variable, $value]) {
             if ($value === '') {
@@ -141,7 +141,8 @@ class LeadScoring
 
     public function refresh(Lead $lead): void
     {
-        if ($lead->trashed() || $lead->stage?->is_won) {
+        if ($lead->trashed()
+            || $lead->stage?->is_won) {
             return;
         }
 
@@ -149,7 +150,8 @@ class LeadScoring
 
         $updates = ['automated_probability' => $automated];
 
-        if ($lead->is_automated_probability && $automated !== null) {
+        if ($lead->is_automated_probability
+            && $automated !== null) {
             $updates['probability'] = $automated;
         }
 
@@ -205,11 +207,11 @@ class LeadScoring
         $values = [];
 
         foreach ($variables as $variable) {
-            match ($variable) {
-                'phone' => $values[] = ['phone', strlen((string) Lead::sanitizePhone($lead->phone)) >= 7 ? 'valid' : 'invalid'],
-                'email' => $values[] = ['email', filter_var((string) $lead->email, FILTER_VALIDATE_EMAIL) ? 'valid' : 'invalid'],
-                'tags'  => array_push($values, ...$lead->tags->map(fn (Tag $tag): array => ['tags', (string) $tag->getKey()])->all()),
-                default => filled($lead->{$variable}) ? $values[] = [$variable, (string) $lead->{$variable}] : null,
+            match (LeadScoringVariable::tryFrom($variable)) {
+                LeadScoringVariable::PHONE => $values[] = [$variable, strlen((string) Lead::sanitizePhone($lead->phone)) >= 7 ? 'valid' : 'invalid'],
+                LeadScoringVariable::EMAIL => $values[] = [$variable, filter_var((string) $lead->email, FILTER_VALIDATE_EMAIL) ? 'valid' : 'invalid'],
+                LeadScoringVariable::TAGS  => array_push($values, ...$lead->tags->map(fn (Tag $tag): array => [$variable, (string) $tag->getKey()])->all()),
+                default                    => filled($lead->{$variable}) ? $values[] = [$variable, (string) $lead->{$variable}] : null,
             };
         }
 
@@ -246,15 +248,15 @@ class LeadScoring
 
     protected function factorLabel(array $factor): string
     {
-        return match ($factor['variable']) {
-            'stage'         => __('crm::filament/lead-scoring.factors.stage', ['value' => Stage::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'phone'         => $factor['value'] === 'valid' ? __('crm::filament/lead-scoring.factors.phone-valid') : __('crm::filament/lead-scoring.factors.phone-invalid'),
-            'email'         => $factor['value'] === 'valid' ? __('crm::filament/lead-scoring.factors.email-valid') : __('crm::filament/lead-scoring.factors.email-invalid'),
-            'country_id'    => __('crm::filament/lead-scoring.factors.country', ['value' => Country::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'state_id'      => __('crm::filament/lead-scoring.factors.state', ['value' => State::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'utm_source_id' => __('crm::filament/lead-scoring.factors.source', ['value' => UTMSource::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            'tags'          => __('crm::filament/lead-scoring.factors.tag', ['value' => Tag::query()->whereKey($factor['value'])->value('name') ?? '?']),
-            default         => $factor['variable'],
+        return match (LeadScoringVariable::tryFrom($factor['variable'])) {
+            LeadScoringVariable::STAGE   => __('crm::filament/lead-scoring.factors.stage', ['value' => Stage::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            LeadScoringVariable::PHONE   => $factor['value'] === 'valid' ? __('crm::filament/lead-scoring.factors.phone-valid') : __('crm::filament/lead-scoring.factors.phone-invalid'),
+            LeadScoringVariable::EMAIL   => $factor['value'] === 'valid' ? __('crm::filament/lead-scoring.factors.email-valid') : __('crm::filament/lead-scoring.factors.email-invalid'),
+            LeadScoringVariable::COUNTRY => __('crm::filament/lead-scoring.factors.country', ['value' => Country::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            LeadScoringVariable::STATE   => __('crm::filament/lead-scoring.factors.state', ['value' => State::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            LeadScoringVariable::SOURCE  => __('crm::filament/lead-scoring.factors.source', ['value' => UTMSource::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            LeadScoringVariable::TAGS    => __('crm::filament/lead-scoring.factors.tag', ['value' => Tag::query()->whereKey($factor['value'])->value('name') ?? '?']),
+            default                      => $factor['variable'],
         };
     }
 }

@@ -16,12 +16,6 @@ return [
                     'email-helper'   => 'A mensagem é enviada por e-mail para :email.',
                     'crm-helper'     => 'A mensagem cria um registro no CRM com os dados do visitante.',
                 ],
-
-                'actions' => [
-                    'email'       => 'Enviar um e-mail',
-                    'lead'        => 'Criar um lead',
-                    'opportunity' => 'Criar uma oportunidade',
-                ],
             ],
 
             'contacts' => [

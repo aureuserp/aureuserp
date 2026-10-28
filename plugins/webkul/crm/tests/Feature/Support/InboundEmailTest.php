@@ -5,6 +5,7 @@ use Livewire\Livewire;
 use Webkul\Crm\Enums\InboundEmailStatus;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\MailAliasContact;
+use Webkul\Crm\Enums\MailServerEncryption;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\InboundEmailResource\Pages\ManageInboundEmails;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\MailServerResource\Pages\ManageMailServers;
 use Webkul\Crm\Models\InboundEmail;
@@ -325,4 +326,25 @@ describe('screens', function () {
 
         Livewire::test(ManageMailServers::class)->assertForbidden();
     });
+});
+
+describe('imap mailbox', function () {
+    it('builds the mailbox reference from the encryption and certificate settings', function (MailServerEncryption $encryption, bool $validate, string $flags) {
+        $server = new MailServer([
+            'host'                 => 'imap.test',
+            'port'                 => 993,
+            'encryption'           => $encryption,
+            'validate_certificate' => $validate,
+            'folder'               => 'INBOX',
+        ]);
+
+        expect((new ImapMailbox($server))->mailboxReference())->toBe('{imap.test:993'.$flags.'}INBOX');
+    })->with([
+        'ssl'                    => [MailServerEncryption::SSL, true, '/imap/ssl'],
+        'ssl without check'      => [MailServerEncryption::SSL, false, '/imap/ssl/novalidate-cert'],
+        'tls'                    => [MailServerEncryption::TLS, true, '/imap/tls'],
+        'tls without check'      => [MailServerEncryption::TLS, false, '/imap/tls/novalidate-cert'],
+        'none'                   => [MailServerEncryption::NONE, true, '/imap/notls'],
+        'none ignores the check' => [MailServerEncryption::NONE, false, '/imap/notls'],
+    ]);
 });

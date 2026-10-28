@@ -126,7 +126,8 @@ class ConvertToOpportunityAction extends Action
                     ? static::mergeableDuplicates($record)->whereIn('id', array_map('intval', (array) ($data['duplicate_ids'] ?? [])))->values()
                     : collect();
 
-                if ($duplicates->isNotEmpty() && ! MergeLeadsBulkAction::canMerge(app(LeadMerger::class)->pickHead(collect([$record, ...$duplicates])), collect([$record, ...$duplicates]))) {
+                if ($duplicates->isNotEmpty()
+                    && ! MergeLeadsBulkAction::canMerge(app(LeadMerger::class)->pickHead(collect([$record, ...$duplicates])), collect([$record, ...$duplicates]))) {
                     Notification::make()
                         ->danger()
                         ->title(__('crm::filament/clusters/leads/resources/lead.actions.convert.notification.invalid.title'))

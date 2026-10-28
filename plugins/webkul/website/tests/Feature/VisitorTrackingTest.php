@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Webkul\Website\Enums\VisitorCookie;
 use Webkul\Website\Models\Page;
 use Webkul\Website\Models\Partner;
 use Webkul\Website\Models\Track;
@@ -23,7 +24,7 @@ function visitorRequest(string $path = 'pages/about-us', ?string $cookie = null,
         $server['HTTP_'.strtoupper(str_replace('-', '_', $name))] = $value;
     }
 
-    return Request::create('http://site.test/'.$path, 'GET', [], $cookie ? [VisitorTracker::COOKIE => $cookie] : [], [], $server);
+    return Request::create('http://site.test/'.$path, 'GET', [], $cookie ? [VisitorCookie::VISITOR->value => $cookie] : [], [], $server);
 }
 
 function visitorPage(bool $tracked = true): Page
@@ -86,7 +87,7 @@ it('ignores bots and does not add views of untracked pages', function () {
 
 it('stores the browser timezone and maps old names', function () {
     $request = visitorRequest();
-    $request->cookies->set(VisitorTracker::TIMEZONE_COOKIE, 'Asia/Calcutta');
+    $request->cookies->set(VisitorCookie::TIMEZONE->value, 'Asia/Calcutta');
 
     $visitor = app(VisitorTracker::class)->track($request, null, visitorPage());
 
@@ -148,7 +149,7 @@ it('finds the country from the IP address and uses its timezone', function () {
 });
 
 it('takes the country from the browser timezone when the IP address has none', function () {
-    $request = Request::create('http://site.test/', 'GET', [], [VisitorTracker::TIMEZONE_COOKIE => 'Asia/Calcutta'], [], [
+    $request = Request::create('http://site.test/', 'GET', [], [VisitorCookie::TIMEZONE->value => 'Asia/Calcutta'], [], [
         'HTTP_USER_AGENT' => 'Mozilla/5.0 Chrome/120',
         'REMOTE_ADDR'     => '192.168.1.20',
     ]);

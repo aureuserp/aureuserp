@@ -54,7 +54,8 @@ class CreateQuotation extends BaseCreateQuotation
             ], fn (mixed $value): bool => filled($value)),
         ]);
 
-        if ($opportunity->partner_id && Partner::query()->whereKey($opportunity->partner_id)->exists()) {
+        if ($opportunity->partner_id
+            && Partner::query()->whereKey($opportunity->partner_id)->exists()) {
             $this->data['partner_id'] = $opportunity->partner_id;
 
             $this->form->getComponentByStatePath('partner_id')?->callAfterStateUpdated();

@@ -110,7 +110,8 @@ class AssignmentRules
         $operator = AssignmentRuleOperator::tryFrom((string) ($condition['operator'] ?? ''));
         $type = static::fieldType($field);
 
-        if (! $type || ! in_array($operator, AssignmentRuleOperator::forFieldType($type), true)) {
+        if (! $type
+            || ! in_array($operator, AssignmentRuleOperator::forFieldType($type), true)) {
             return null;
         }
 
@@ -136,7 +137,8 @@ class AssignmentRules
 
     protected static function normalizeDate(mixed $value): ?string
     {
-        if (blank($value) || ! is_string($value)) {
+        if (blank($value)
+            || ! is_string($value)) {
             return null;
         }
 

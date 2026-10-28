@@ -46,7 +46,9 @@ class ManageQuotations extends ManageRelatedRecords
     {
         $record = method_exists($page, 'getRecord') ? $page->getRecord() : null;
 
-        if (! $record instanceof Lead || $record->isLead() || ! static::canAccess(['record' => $record])) {
+        if (! $record instanceof Lead
+            || $record->isLead()
+            || ! static::canAccess(['record' => $record])) {
             return [];
         }
 

@@ -174,7 +174,8 @@ abstract class LeadRecordImporter extends Importer
 
         $user = $this->getImportUser();
 
-        if (! $user || ! app(static::getPolicy())->update($user, $record)) {
+        if (! $user
+            || ! app(static::getPolicy())->update($user, $record)) {
             throw new RowImportFailedException(__('crm::filament/transfers.errors.cannot-update', ['id' => $id]));
         }
 
@@ -185,7 +186,8 @@ abstract class LeadRecordImporter extends Importer
     {
         $user = $this->getImportUser();
 
-        if (! $user || ! app(static::getPolicy())->create($user)) {
+        if (! $user
+            || ! app(static::getPolicy())->create($user)) {
             throw new RowImportFailedException(__('crm::filament/transfers.errors.cannot-create'));
         }
 

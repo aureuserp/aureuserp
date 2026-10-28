@@ -253,7 +253,9 @@ class ListLeads extends ListRecords
 
         $allowed = collect($this->getKanbanColumns())->pluck('value')->all();
 
-        if (! $record || ! LeadResource::canEdit($record) || ! in_array($newColumnValue, $allowed, true)) {
+        if (! $record
+            || ! LeadResource::canEdit($record)
+            || ! in_array($newColumnValue, $allowed, true)) {
             Notification::make()
                 ->danger()
                 ->title(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.board.notifications.unauthorized'))

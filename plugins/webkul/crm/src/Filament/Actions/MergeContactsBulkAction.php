@@ -40,7 +40,10 @@ class MergeContactsBulkAction extends BulkAction
                 $contacts = $records->filter(fn (Partner $contact): bool => ! $contact->trashed() && ContactResource::canEdit($contact));
                 $destination = $contacts->firstWhere('id', (int) $data['destination']);
 
-                if (! $destination || $contacts->count() < 2 || $contacts->contains(fn (Partner $contact): bool => ! $contact->is($destination) && ! ContactResource::canDelete($contact))) {
+                if (! $destination
+                    || $contacts->count() < 2
+                    || $contacts->contains(fn (Partner $contact): bool => ! $contact->is($destination)
+                    && ! ContactResource::canDelete($contact))) {
                     Notification::make()
                         ->danger()
                         ->title(__('crm::filament/clusters/sales/resources/contact.actions.merge.invalid'))

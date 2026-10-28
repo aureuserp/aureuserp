@@ -37,7 +37,8 @@ class SendLeadsEmailBulkAction extends BulkAction
                 $sent = 0;
 
                 foreach ($records as $lead) {
-                    if (blank($lead->email) || ! LeadResourceResolver::canEdit($lead)) {
+                    if (blank($lead->email)
+                        || ! LeadResourceResolver::canEdit($lead)) {
                         continue;
                     }
 

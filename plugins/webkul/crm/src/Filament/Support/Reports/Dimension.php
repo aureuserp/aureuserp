@@ -153,7 +153,8 @@ class Dimension
             return $group->getTitleFromRecordUsing(fn (Model $record): string => $options[(string) enum_value(data_get($record, $this->groupColumn))] ?? static::getNoneLabel());
         }
 
-        if ($this->kind === DimensionKind::RELATION || $this->kind === DimensionKind::ATTRIBUTE) {
+        if ($this->kind === DimensionKind::RELATION
+            || $this->kind === DimensionKind::ATTRIBUTE) {
             return $group->getTitleFromRecordUsing(fn (Model $record): string => filled($title = data_get($record, $this->groupColumn)) ? (string) $title : static::getNoneLabel());
         }
 

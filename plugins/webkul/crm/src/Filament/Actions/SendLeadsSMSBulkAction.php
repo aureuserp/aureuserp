@@ -41,7 +41,8 @@ class SendLeadsSMSBulkAction extends BulkAction
                 foreach ($records as $lead) {
                     $number = SMSSender::normalize(SMSSender::recipientFor($lead), SMSSender::phoneCodeFor($lead));
 
-                    if (! $number || ! LeadResourceResolver::canEdit($lead)) {
+                    if (! $number
+                        || ! LeadResourceResolver::canEdit($lead)) {
                         continue;
                     }
 

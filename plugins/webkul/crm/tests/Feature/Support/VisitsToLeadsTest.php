@@ -4,6 +4,7 @@ use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Enums\RevealRuleContactCount;
 use Webkul\Crm\Enums\RevealRuleContactFilter;
 use Webkul\Crm\Enums\RevealRuleLeadFor;
 use Webkul\Crm\Enums\RevealViewState;
@@ -208,7 +209,7 @@ it('creates a rule with company and contact details from the form', function () 
             'company_size_min'    => 10,
             'company_size_max'    => 500,
             'contact_filter_type' => RevealRuleContactFilter::ROLE,
-            'extra_contacts'      => 3,
+            'extra_contacts'      => RevealRuleContactCount::THREE,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -216,7 +217,7 @@ it('creates a rule with company and contact details from the form', function () 
     expect(RevealRule::query()->where('name', 'Form rule')->first())
         ->lead_for->toBe(RevealRuleLeadFor::PEOPLE)
         ->company_size_max->toBe(500)
-        ->extra_contacts->toBe(3);
+        ->extra_contacts->toBe(RevealRuleContactCount::THREE);
 });
 
 it('rejects an invalid URL expression and a company size range that ends before it starts', function () {

@@ -34,7 +34,8 @@ class ActivityLogRecorder
 
     protected function rememberPostedMessage(Message $message): void
     {
-        if ($message->type !== 'comment' || ! $this->isOnLead($message)) {
+        if ($message->type !== 'comment'
+            || ! $this->isOnLead($message)) {
             return;
         }
 
@@ -46,7 +47,8 @@ class ActivityLogRecorder
 
     protected function recordIfDone(Message $activity): void
     {
-        if ($activity->type !== 'activity' || ! $this->isOnLead($activity)) {
+        if ($activity->type !== 'activity'
+            || ! $this->isOnLead($activity)) {
             return;
         }
 
@@ -95,7 +97,8 @@ class ActivityLogRecorder
         $threshold = microtime(true) - self::MATCH_WINDOW_SECONDS;
 
         foreach (array_reverse($this->postedMessages[$leadId] ?? [], preserve_keys: true) as $index => $posted) {
-            if ($posted['at'] < $threshold || ! Str::startsWith($posted['body'], $prefix)) {
+            if ($posted['at'] < $threshold
+                || ! Str::startsWith($posted['body'], $prefix)) {
                 continue;
             }
 

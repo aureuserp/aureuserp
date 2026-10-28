@@ -112,7 +112,9 @@ class ParsedEmail
         [$type, $params] = static::parseHeaderParams($headers['content-type'][0] ?? 'text/plain');
         [$disposition, $dispositionParams] = static::parseHeaderParams($headers['content-disposition'][0] ?? '');
 
-        if (str_starts_with($type, 'multipart/') && filled($params['boundary'] ?? null) && $depth < 10) {
+        if (str_starts_with($type, 'multipart/')
+            && filled($params['boundary'] ?? null)
+            && $depth < 10) {
             foreach (static::splitMultipart($body, $params['boundary']) as $part) {
                 [$partHeaderBlock, $partBody] = static::splitHeadersAndBody($part);
 
@@ -160,7 +162,8 @@ class ParsedEmail
     {
         $sections = preg_split('/^--'.preg_quote($boundary, '/').'(?:--)?[ \t]*$/m', $body);
 
-        if (! is_array($sections) || count($sections) < 3) {
+        if (! is_array($sections)
+            || count($sections) < 3) {
             return [];
         }
 
@@ -194,7 +197,8 @@ class ParsedEmail
             $isEncoded = str_ends_with($name, '*');
             $name = (string) preg_replace('/\*\d*\*?$/', '', $name);
 
-            if ($isEncoded && preg_match("/^([^']*)'[^']*'(.*)$/s", $paramValue, $encoded)) {
+            if ($isEncoded
+                && preg_match("/^([^']*)'[^']*'(.*)$/s", $paramValue, $encoded)) {
                 $paramValue = static::toUtf8(rawurldecode($encoded[2]), $encoded[1] ?: null);
             } elseif ($isEncoded) {
                 $paramValue = rawurldecode($paramValue);
@@ -219,7 +223,9 @@ class ParsedEmail
     {
         $charset = mb_strtoupper(trim((string) $charset, " \t\"'"));
 
-        if ($charset === '' || $charset === 'UTF-8' || $charset === 'US-ASCII') {
+        if ($charset === ''
+            || $charset === 'UTF-8'
+            || $charset === 'US-ASCII') {
             return mb_check_encoding($content, 'UTF-8') ? $content : mb_convert_encoding($content, 'UTF-8', 'ISO-8859-1');
         }
 
@@ -277,7 +283,9 @@ class ParsedEmail
 
         $ids = $matches[1];
 
-        if (! $ids && filled(trim($value)) && ! str_contains(trim($value), ' ')) {
+        if (! $ids
+            && filled(trim($value))
+            && ! str_contains(trim($value), ' ')) {
             $ids = [trim($value)];
         }
 
