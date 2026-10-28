@@ -3,25 +3,15 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class SalesPersonPerformanceChart extends ChartWidget
+class SalesPersonPerformanceChart extends DashboardChartWidget
 {
     use HasSaleDashboardFilters, HasWidgetShield;
 
-    protected const BAR_COLOR = '#2a78d6';
-
-    protected const INK_MUTED = '#898781';
-
-    protected const GRID = 'rgba(137, 135, 129, 0.25)';
-
     protected static ?int $sort = 4;
-
-    protected static bool $isLazy = false;
-
-    protected ?string $maxHeight = '300px';
 
     public function getHeading(): string|Htmlable|null
     {
@@ -30,25 +20,34 @@ class SalesPersonPerformanceChart extends ChartWidget
 
     protected function getData(): array
     {
+        $revenue = 'SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END)';
+
         $rows = $this->saleOrders()
-            ->leftJoin('users', 'users.id', '=', 'sales_orders.user_id')
+            ->whereNotNull('sales_orders.user_id')
+            ->join('users', 'users.id', '=', 'sales_orders.user_id')
             ->groupBy('users.id', 'users.name')
             ->addSelect('users.name as name')
-            ->selectRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END) as revenue')
-            ->havingRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_orders.amount_total / sales_orders.currency_rate ELSE sales_orders.amount_total END) > 0')
+            ->selectRaw("{$revenue} as revenue")
+            ->havingRaw("{$revenue} > 0")
             ->orderByDesc('revenue')
             ->limit(6)
             ->get();
+
+        $values = $rows->map(fn ($row): float => round((float) $row->revenue, 2))->all();
+
+        $ramp = $this->chartRamp();
+
+        $colors = array_map(fn (int $index): string => $ramp[$index % count($ramp)], array_keys($values));
 
         return [
             'datasets' => [
                 [
                     'label'           => __('sales::filament/widgets/sales-dashboard.sales-persons.revenue'),
-                    'data'            => $rows->map(fn ($row): float => round((float) $row->revenue, 2))->all(),
-                    'backgroundColor' => self::BAR_COLOR,
-                    'borderRadius'    => 4,
+                    'data'            => $values,
+                    'backgroundColor' => $colors,
+                    'borderRadius'    => 8,
                     'borderSkipped'   => 'bottom',
-                    'maxBarThickness' => 40,
+                    'maxBarThickness' => 34,
                 ],
             ],
             'labels' => $rows
@@ -59,23 +58,7 @@ class SalesPersonPerformanceChart extends ChartWidget
 
     protected function getOptions(): array
     {
-        return [
-            'maintainAspectRatio' => false,
-            'plugins'             => ['legend' => ['display' => false]],
-            'scales'              => [
-                'x' => [
-                    'border' => ['display' => false],
-                    'grid'   => ['display' => false],
-                    'ticks'  => ['color' => self::INK_MUTED],
-                ],
-                'y' => [
-                    'beginAtZero' => true,
-                    'border'      => ['display' => false],
-                    'grid'        => ['color' => self::GRID],
-                    'ticks'       => ['color' => self::INK_MUTED],
-                ],
-            ],
-        ];
+        return $this->barChartOptions(6);
     }
 
     protected function getType(): string

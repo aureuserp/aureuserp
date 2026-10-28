@@ -3,23 +3,20 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
-class SaleStatsOverview extends BaseWidget
+class SaleStatsOverview extends DashboardStatsWidget
 {
     use HasSaleDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 1;
-
-    protected static bool $isLazy = false;
-
-    protected int|string|array $columnSpan = 'full';
 
     public function getHeading(): ?string
     {
@@ -48,67 +45,62 @@ class SaleStatsOverview extends BaseWidget
         $average = $orders > 0 ? $revenue / $orders : 0;
         $previousAverage = $previousOrders > 0 ? $previousRevenue / $previousOrders : 0;
 
+        $revenueColumn = 'CASE WHEN currency_rate > 0 THEN amount_total / currency_rate ELSE amount_total END';
+
+        $orderCountSeries = $this->trendData($this->saleOrders(), 'COUNT', '*', $start, $end);
+
+        $revenueSeries = $this->trendData($this->saleOrders(), 'SUM', $revenueColumn, $start, $end);
+
+        $averageSeries = array_map(
+            fn (float $revenue, float $count): float => $count > 0 ? round($revenue / $count, 2) : 0.0,
+            $revenueSeries,
+            $orderCountSeries,
+        );
+
+        $quotationsUrl = QuotationResource::getUrl('index', ['activeTableView' => 'quotations']);
+
+        $ordersUrl = OrderResource::getUrl('index');
+
         return [
-            $this->makeStat(
+            $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.total-quotations'),
-                $quotations,
+                'heroicon-o-document-text',
+                'info',
+                number_format($quotations),
                 $quotations,
                 $previousQuotations,
                 $this->trendData($this->quotations(), 'COUNT', '*', $start, $end),
-            ),
-            $this->makeStat(
+            )->url($quotationsUrl),
+            $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.total-sales-orders'),
-                $orders,
+                'heroicon-o-shopping-cart',
+                'primary',
+                number_format($orders),
                 $orders,
                 $previousOrders,
-                $this->trendData($this->saleOrders(), 'COUNT', '*', $start, $end),
-            ),
-            $this->makeStat(
+                $orderCountSeries,
+            )->url($ordersUrl),
+            $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.total-revenue'),
-                money($revenue, $currency),
+                'heroicon-o-banknotes',
+                'success',
+                compact_money($revenue, $currency),
                 $revenue,
                 $previousRevenue,
-                $this->trendData($this->saleOrders(), 'SUM', 'CASE WHEN currency_rate > 0 THEN amount_total / currency_rate ELSE amount_total END', $start, $end),
-            ),
-            $this->makeStat(
+                $revenueSeries,
+                money($revenue, $currency),
+            )->url($ordersUrl),
+            $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.average-revenue'),
-                money($average, $currency),
+                'heroicon-o-chart-bar',
+                'warning',
+                compact_money($average, $currency),
                 $average,
                 $previousAverage,
-                [],
-            ),
+                $averageSeries,
+                money($average, $currency),
+            )->url($ordersUrl),
         ];
-    }
-
-    /**
-     * @param  array<int, float>  $chart
-     */
-    protected function makeStat(string $label, mixed $display, float $current, float $previous, array $chart): Stat
-    {
-        [$percentage, $trend] = $this->change($current, $previous);
-
-        $stat = Stat::make($label, $display)
-            ->description($percentage.'% '.($trend === 'success'
-                ? __('sales::filament/widgets/sales-dashboard.stats.increase')
-                : __('sales::filament/widgets/sales-dashboard.stats.decrease')))
-            ->descriptionIcon($trend === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-            ->color($trend);
-
-        return $chart === [] ? $stat : $stat->chart($chart);
-    }
-
-    /**
-     * @return array{0: float, 1: string}
-     */
-    protected function change(float $current, float $previous): array
-    {
-        if ($previous == 0.0) {
-            return [$current > 0 ? 100.0 : 0.0, $current < 0 ? 'danger' : 'success'];
-        }
-
-        $change = (($current - $previous) / abs($previous)) * 100;
-
-        return [abs(round($change, 1)), $change >= 0 ? 'success' : 'danger'];
     }
 
     /**

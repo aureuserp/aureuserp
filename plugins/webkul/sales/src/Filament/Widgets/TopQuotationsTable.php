@@ -4,6 +4,7 @@ namespace Webkul\Sale\Filament\Widgets;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -24,6 +25,7 @@ class TopQuotationsTable extends TableWidget
     {
         return $table
             ->defaultKeySort(false)
+            ->recordClasses('dashboard-table-row')
             ->recordUrl(fn ($record): ?string => QuotationResource::canAccess()
                 ? QuotationResource::getUrl('view', ['record' => $record->id])
                 : null);
@@ -45,18 +47,17 @@ class TopQuotationsTable extends TableWidget
             ->with(['partner', 'currency'])
             ->where('amount_total', '>', 0)
             ->orderByDesc('amount_total')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
     {
         return [
             Tables\Columns\TextColumn::make('name')
-                ->label(__('sales::filament/widgets/sales-dashboard.top-quotations.columns.reference')),
-            Tables\Columns\TextColumn::make('partner.name')
-                ->label(__('sales::filament/widgets/sales-dashboard.top-quotations.columns.customer'))
-                ->placeholder('-')
-                ->wrap(),
+                ->label(__('sales::filament/widgets/sales-dashboard.top-quotations.columns.reference'))
+                ->weight(FontWeight::Bold)
+                ->color('primary')
+                ->description(fn ($record): string => $record->partner?->name ?: '—'),
             Tables\Columns\TextColumn::make('state')
                 ->label(__('sales::filament/widgets/sales-dashboard.status'))
                 ->badge()
@@ -79,6 +80,7 @@ class TopQuotationsTable extends TableWidget
             Tables\Columns\TextColumn::make('amount_total')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-quotations.columns.amount'))
                 ->money(fn ($record) => $record->currency?->name)
+                ->weight(FontWeight::Bold)
                 ->alignEnd(),
         ];
     }

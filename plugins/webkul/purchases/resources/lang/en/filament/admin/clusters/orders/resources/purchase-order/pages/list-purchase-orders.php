@@ -6,10 +6,13 @@ return [
     ],
 
     'tabs' => [
-        'my-orders'      => 'My Orders',
-        'starred'        => 'Starred',
-        'waiting-bills'  => 'Waiting Bills',
-        'received-bills' => 'Bills Received',
+        'my-orders'        => 'My Orders',
+        'starred'          => 'Starred',
+        'waiting-bills'    => 'Waiting Bills',
+        'received-bills'   => 'Bills Received',
+        'draft-rfqs'       => 'Draft RFQs',
+        'sent-rfqs'        => 'Sent RFQs',
+        'confirmed-orders' => 'Confirmed Orders',
     ],
 
     'header-actions' => [

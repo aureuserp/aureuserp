@@ -4,14 +4,14 @@ namespace Webkul\Project\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
+use Webkul\Project\Filament\Resources\TaskResource;
 use Webkul\Project\Models\Task;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
-class StatsOverviewWidget extends BaseWidget
+class StatsOverviewWidget extends DashboardStatsWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
 
@@ -119,23 +119,6 @@ class StatsOverviewWidget extends BaseWidget
         return $trend->map(fn (TrendValue $value) => round((float) $value->aggregate, 2))->toArray();
     }
 
-    protected function calculatePercentageChange($current, $previous): array
-    {
-        if ($previous == 0) {
-            return [
-                'percentage' => 100,
-                'trend'      => 'success',
-            ];
-        }
-
-        $change = (($current - $previous) / $previous) * 100;
-
-        return [
-            'percentage' => abs(round($change, 1)),
-            'trend'      => $change >= 0 ? 'success' : 'danger',
-        ];
-    }
-
     protected function getStats(): array
     {
         $data = $this->getData();
@@ -143,46 +126,41 @@ class StatsOverviewWidget extends BaseWidget
         $current = $data['current'];
         $previous = $data['previous'];
 
-        $tasksChange = $this->calculatePercentageChange(
-            $current['total_tasks'],
-            $previous['total_tasks']
-        );
-
-        $hoursSpentChange = $this->calculatePercentageChange(
-            $current['total_hours_spent'],
-            $previous['total_hours_spent']
-        );
-
-        $remainingHoursChange = $this->calculatePercentageChange(
-            $current['total_remaining_hours'],
-            $previous['total_remaining_hours']
-        );
-
         $formatHours = function ($state): string {
             $hours = floor($state);
-            $minutes = ($state - $hours) * 60;
+            $minutes = round(($state - $hours) * 60);
 
-            return $hours.':'.$minutes;
+            return $hours.':'.str_pad((string) $minutes, 2, '0', STR_PAD_LEFT);
         };
 
         return [
-            Stat::make(__('projects::filament/widgets/stats-overview.total-tasks'), $current['total_tasks'])
-                ->description($tasksChange['percentage'].'% '.($tasksChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
-                ->descriptionIcon($tasksChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($tasksChange['trend'])
-                ->chart($data['charts']['tasks']),
-
-            Stat::make(__('projects::filament/widgets/stats-overview.total-hours-spent'), $formatHours($current['total_hours_spent']))
-                ->description($hoursSpentChange['percentage'].'% '.($hoursSpentChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
-                ->descriptionIcon($hoursSpentChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($hoursSpentChange['trend'])
-                ->chart($data['charts']['hoursSpent']),
-
-            Stat::make(__('projects::filament/widgets/stats-overview.total-time-remaining'), $formatHours($current['total_remaining_hours']))
-                ->description($remainingHoursChange['percentage'].'% '.($remainingHoursChange['trend'] === 'success' ? __('projects::filament/widgets/stats-overview.increase') : __('projects::filament/widgets/stats-overview.decrease')))
-                ->descriptionIcon($remainingHoursChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($remainingHoursChange['trend'])
-                ->chart($data['charts']['remainingHours']),
+            $this->themedStat(
+                __('projects::filament/widgets/stats-overview.total-tasks'),
+                'heroicon-o-clipboard-document-list',
+                'primary',
+                number_format($current['total_tasks']),
+                (float) $current['total_tasks'],
+                (float) $previous['total_tasks'],
+                $data['charts']['tasks'],
+            )->url(TaskResource::getUrl('index')),
+            $this->themedStat(
+                __('projects::filament/widgets/stats-overview.total-hours-spent'),
+                'heroicon-o-clock',
+                'info',
+                $formatHours($current['total_hours_spent']),
+                (float) $current['total_hours_spent'],
+                (float) $previous['total_hours_spent'],
+                $data['charts']['hoursSpent'],
+            )->url(TaskResource::getUrl('index')),
+            $this->themedStat(
+                __('projects::filament/widgets/stats-overview.total-time-remaining'),
+                'heroicon-o-clock',
+                'warning',
+                $formatHours($current['total_remaining_hours']),
+                (float) $current['total_remaining_hours'],
+                (float) $previous['total_remaining_hours'],
+                $data['charts']['remainingHours'],
+            )->url(TaskResource::getUrl('index', ['activeTableView' => 'open_tasks'])),
         ];
     }
 }

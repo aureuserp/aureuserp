@@ -4,15 +4,16 @@ namespace Webkul\Recruitment\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
 use Webkul\Employee\Models\EmployeeJobPosition;
+use Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource;
+use Webkul\Recruitment\Filament\Clusters\Applications\Resources\JobByPositionResource;
 use Webkul\Recruitment\Models\Applicant;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
-class JobPositionStatsWidget extends BaseWidget
+class JobPositionStatsWidget extends DashboardStatsWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
 
@@ -138,23 +139,6 @@ class JobPositionStatsWidget extends BaseWidget
         return $trend->map(fn (TrendValue $value) => (int) $value->aggregate)->toArray();
     }
 
-    protected function calculatePercentageChange($current, $previous): array
-    {
-        if ($previous == 0) {
-            return [
-                'percentage' => 100,
-                'trend'      => 'success',
-            ];
-        }
-
-        $change = (($current - $previous) / $previous) * 100;
-
-        return [
-            'percentage' => abs(round($change, 1)),
-            'trend'      => $change >= 0 ? 'success' : 'danger',
-        ];
-    }
-
     protected function getStats(): array
     {
         $data = $this->getData();
@@ -162,39 +146,34 @@ class JobPositionStatsWidget extends BaseWidget
         $current = $data['current'];
         $previous = $data['previous'];
 
-        $jobsChange = $this->calculatePercentageChange(
-            $current['active_jobs'],
-            $previous['active_jobs']
-        );
-
-        $applicationsChange = $this->calculatePercentageChange(
-            $current['total_applications'],
-            $previous['total_applications']
-        );
-
-        $hiredChange = $this->calculatePercentageChange(
-            $current['hired_count'],
-            $previous['hired_count']
-        );
-
         return [
-            Stat::make(__('recruitments::filament/widgets/job-position.active-job-applications'), $current['active_jobs'])
-                ->description($jobsChange['percentage'].'% '.($jobsChange['trend'] === 'success' ? 'increase' : 'decrease'))
-                ->descriptionIcon($jobsChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($jobsChange['trend'])
-                ->chart($data['charts']['jobs']),
-
-            Stat::make(__('recruitments::filament/widgets/job-position.total-applications'), $current['total_applications'])
-                ->description($applicationsChange['percentage'].'% '.($applicationsChange['trend'] === 'success' ? 'increase' : 'decrease'))
-                ->descriptionIcon($applicationsChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($applicationsChange['trend'])
-                ->chart($data['charts']['applications']),
-
-            Stat::make(__('recruitments::filament/widgets/job-position.hired-candidate'), $current['hired_count'])
-                ->description($hiredChange['percentage'].'% '.($hiredChange['trend'] === 'success' ? 'increase' : 'decrease'))
-                ->descriptionIcon($hiredChange['trend'] === 'success' ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($hiredChange['trend'])
-                ->chart($data['charts']['hired']),
+            $this->themedStat(
+                __('recruitments::filament/widgets/job-position.active-job-applications'),
+                'heroicon-o-briefcase',
+                'primary',
+                number_format($current['active_jobs']),
+                (float) $current['active_jobs'],
+                (float) $previous['active_jobs'],
+                $data['charts']['jobs'],
+            )->url(JobByPositionResource::getUrl('index')),
+            $this->themedStat(
+                __('recruitments::filament/widgets/job-position.total-applications'),
+                'heroicon-o-user-group',
+                'info',
+                number_format($current['total_applications']),
+                (float) $current['total_applications'],
+                (float) $previous['total_applications'],
+                $data['charts']['applications'],
+            )->url(ApplicantResource::getUrl('index')),
+            $this->themedStat(
+                __('recruitments::filament/widgets/job-position.hired-candidate'),
+                'heroicon-o-check-badge',
+                'success',
+                number_format($current['hired_count']),
+                (float) $current['hired_count'],
+                (float) $previous['hired_count'],
+                $data['charts']['hired'],
+            )->url(ApplicantResource::getUrl('index', ['activeTableView' => 'hired'])),
         ];
     }
 }

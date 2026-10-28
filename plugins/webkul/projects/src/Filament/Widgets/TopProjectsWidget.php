@@ -76,12 +76,13 @@ class TopProjectsWidget extends BaseWidget
             ->whereBetween('analytic_records.created_at', [$startDate, $endDate])
             ->groupBy('analytic_records.project_id', 'projects_projects.name')
             ->orderByRaw('SUM(analytic_records.unit_amount) DESC')
-            ->limit(10);
+            ->limit(5);
 
         return $table
             ->query($query)
             ->defaultKeySort(false)
-            ->defaultPaginationPageOption(5)
+            ->recordClasses('dashboard-table-row')
+            ->paginated(false)
             ->columns([
                 TextColumn::make('project_name')
                     ->label(__('projects::filament/widgets/top-projects.table-columns.project-name'))

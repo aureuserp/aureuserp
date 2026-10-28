@@ -6,10 +6,13 @@ return [
     ],
 
     'tabs' => [
-        'my-orders'      => 'طلباتي',
-        'starred'        => 'المميزة',
-        'waiting-bills'  => 'فواتير قيد الانتظار',
-        'received-bills' => 'فواتير مستلمة',
+        'my-orders'        => 'طلباتي',
+        'starred'          => 'المميزة',
+        'waiting-bills'    => 'فواتير قيد الانتظار',
+        'received-bills'   => 'فواتير مستلمة',
+        'draft-rfqs'       => 'Draft RFQs',
+        'sent-rfqs'        => 'Sent RFQs',
+        'confirmed-orders' => 'Confirmed Orders',
     ],
 
     'header-actions' => [

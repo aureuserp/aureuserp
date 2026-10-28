@@ -6,18 +6,13 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
+use Webkul\Support\Filament\Concerns\HasChartTheme;
 
 class SalespersonPerformanceChart extends ChartWidget
 {
-    use HasInvoiceDashboardFilters, HasWidgetShield;
+    use HasChartTheme, HasInvoiceDashboardFilters, HasWidgetShield;
 
-    protected const BAR_COLOR = '#2a78d6';
-
-    protected const INK_MUTED = '#898781';
-
-    protected const GRID = 'rgba(137, 135, 129, 0.25)';
-
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 6;
 
     protected static bool $isLazy = true;
 
@@ -31,7 +26,8 @@ class SalespersonPerformanceChart extends ChartWidget
     protected function getData(): array
     {
         $rows = $this->customerInvoices()
-            ->leftJoin('users', 'users.id', '=', 'accounts_account_moves.invoice_user_id')
+            ->whereNotNull('accounts_account_moves.invoice_user_id')
+            ->join('users', 'users.id', '=', 'accounts_account_moves.invoice_user_id')
             ->groupBy('users.id', 'users.name')
             ->addSelect('users.name as name')
             ->selectRaw('SUM(accounts_account_moves.amount_total_signed) as total_billed')
@@ -40,15 +36,21 @@ class SalespersonPerformanceChart extends ChartWidget
             ->limit(6)
             ->get();
 
+        $values = $rows->map(fn ($row): float => round((float) $row->total_billed, 2))->all();
+
+        $ramp = $this->chartRamp();
+
+        $colors = array_map(fn (int $index): string => $ramp[$index % count($ramp)], array_keys($values));
+
         return [
             'datasets' => [
                 [
-                    'label'           => __('invoices::filament/widgets/invoice-dashboard.salespersons.total-billed'),
-                    'data'            => $rows->map(fn ($row): float => round((float) $row->total_billed, 2))->all(),
-                    'backgroundColor' => self::BAR_COLOR,
-                    'borderRadius'    => 4,
+                    'label'           => '',
+                    'data'            => $values,
+                    'backgroundColor' => $colors,
+                    'borderRadius'    => 8,
                     'borderSkipped'   => 'bottom',
-                    'maxBarThickness' => 40,
+                    'maxBarThickness' => 34,
                 ],
             ],
             'labels' => $rows
@@ -61,20 +63,14 @@ class SalespersonPerformanceChart extends ChartWidget
     {
         return [
             'maintainAspectRatio' => false,
-            'plugins'             => ['legend' => ['display' => false]],
-            'scales'              => [
-                'x' => [
-                    'border' => ['display' => false],
-                    'grid'   => ['display' => false],
-                    'ticks'  => ['color' => self::INK_MUTED],
-                ],
-                'y' => [
-                    'beginAtZero' => true,
-                    'border'      => ['display' => false],
-                    'grid'        => ['color' => self::GRID],
-                    'ticks'       => ['color' => self::INK_MUTED],
-                ],
+            'interaction'         => $this->chartInteraction('index'),
+            'plugins'             => [
+                'entrance' => ['type' => 'rising-bars', 'duration' => 700, 'stagger' => 90],
+
+                'legend'  => ['display' => false],
+                'tooltip' => $this->chartTooltip(),
             ],
+            'scales'              => $this->cartesianScales(6, false),
         ];
     }
 

@@ -4,6 +4,7 @@ namespace Webkul\Sale\Filament\Widgets;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -24,6 +25,7 @@ class TopSalesOrdersTable extends TableWidget
     {
         return $table
             ->defaultKeySort(false)
+            ->recordClasses('dashboard-table-row')
             ->recordUrl(fn ($record): ?string => OrderResource::canAccess()
                 ? OrderResource::getUrl('view', ['record' => $record->id])
                 : null);
@@ -45,18 +47,17 @@ class TopSalesOrdersTable extends TableWidget
             ->with(['partner', 'currency'])
             ->where('amount_total', '>', 0)
             ->orderByDesc('amount_total')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
     {
         return [
             Tables\Columns\TextColumn::make('name')
-                ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.reference')),
-            Tables\Columns\TextColumn::make('partner.name')
-                ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.customer'))
-                ->placeholder('-')
-                ->wrap(),
+                ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.reference'))
+                ->weight(FontWeight::Bold)
+                ->color('primary')
+                ->description(fn ($record): string => $record->partner?->name ?: '—'),
             Tables\Columns\TextColumn::make('delivery_status')
                 ->label(__('sales::filament/widgets/sales-dashboard.delivery-status'))
                 ->badge()
@@ -73,6 +74,7 @@ class TopSalesOrdersTable extends TableWidget
             Tables\Columns\TextColumn::make('amount_total')
                 ->label(__('sales::filament/widgets/sales-dashboard.top-sales-orders.columns.amount'))
                 ->money(fn ($record) => $record->currency?->name)
+                ->weight(FontWeight::Bold)
                 ->alignEnd(),
         ];
     }

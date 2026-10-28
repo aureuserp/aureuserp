@@ -3,22 +3,22 @@
 namespace Webkul\Website\Filament\Admin\Widgets;
 
 use Carbon\Carbon;
-use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Webkul\Blog\Models\Post;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class BlogChart extends ChartWidget
+class BlogChart extends DashboardChartWidget
 {
     use InteractsWithPageFilters;
+
+    protected ?string $maxHeight = '250px';
+
+    protected static ?int $sort = 1;
 
     public function getHeading(): ?string
     {
         return __('website::filament/admin/widgets/blog-chart.published-blogs-by-month');
     }
-
-    protected ?string $maxHeight = '250px';
-
-    protected static ?int $sort = 1;
 
     protected function getData(): array
     {
@@ -41,9 +41,6 @@ class BlogChart extends ChartWidget
             $query->where('author_id', $filters['author_id']);
         }
 
-        // Month/published bucketing and counting happens in SQL via the GROUP BY
-        // below, so only one row per (month, is_published) pair is fetched rather
-        // than every individual post.
         $posts = $query
             ->groupBy('month_key', 'is_published')
             ->orderBy('month_key')
@@ -65,26 +62,12 @@ class BlogChart extends ChartWidget
             $draftData[] = (int) $monthPosts->where('is_published', false)->sum('count');
         }
 
-        // Return empty data message if no data available
         if (empty($labels)) {
-            return [
-                'datasets' => [
-                    [
-                        'label'           => __('website::filament/admin/widgets/blog-chart.published'),
-                        'data'            => [0],
-                        'backgroundColor' => 'rgba(76, 175, 80, 0.6)',
-                        'borderColor'     => '#4CAF50',
-                    ],
-                    [
-                        'label'           => __('website::filament/admin/widgets/blog-chart.draft'),
-                        'data'            => [0],
-                        'backgroundColor' => 'rgba(244, 67, 54, 0.6)',
-                        'borderColor'     => '#F44336',
-                    ],
-                ],
+            $publishedData = [0];
 
-                'labels' => [__('website::filament/admin/widgets/blog-chart.no-data-available')],
-            ];
+            $draftData = [0];
+
+            $labels = [__('website::filament/admin/widgets/blog-chart.no-data-available')];
         }
 
         return [
@@ -92,19 +75,44 @@ class BlogChart extends ChartWidget
                 [
                     'label'           => __('website::filament/admin/widgets/blog-chart.published'),
                     'data'            => $publishedData,
-                    'backgroundColor' => 'rgba(76, 175, 80, 0.6)',
-                    'borderColor'     => '#4CAF50',
+                    'backgroundColor' => $this->brandColor('success', 500, 0.55),
+                    'borderColor'     => $this->brandColor('success'),
+                    'borderRadius'    => 8,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 34,
                 ],
                 [
                     'label'           => __('website::filament/admin/widgets/blog-chart.draft'),
                     'data'            => $draftData,
-                    'backgroundColor' => 'rgba(244, 67, 54, 0.6)',
-                    'borderColor'     => '#F44336',
+                    'backgroundColor' => $this->brandColor('danger', 500, 0.55),
+                    'borderColor'     => $this->brandColor('danger'),
+                    'borderRadius'    => 8,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 34,
                 ],
             ],
 
             'labels' => $labels,
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        $options = $this->barChartOptions(12);
+
+        $options['plugins']['legend'] = [
+            'display'  => true,
+            'position' => 'bottom',
+            'labels'   => [
+                'color'         => $this->brandColor('gray', 500),
+                'boxWidth'      => 10,
+                'boxHeight'     => 10,
+                'usePointStyle' => true,
+                'padding'       => 14,
+            ],
+        ];
+
+        return $options;
     }
 
     protected function getType(): string

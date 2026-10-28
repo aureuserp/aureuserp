@@ -5,6 +5,7 @@ namespace Webkul\TimeOff\Filament\Pages;
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Component;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Widgets\LeaveTypeWidget;
 
@@ -33,6 +34,16 @@ class ByType extends BaseDashboard
     public static function getNavigationLabel(): string
     {
         return __('time-off::filament/pages/by-type.navigation.title');
+    }
+
+    public function getWidgetsContentComponent(): Component
+    {
+        return parent::getWidgetsContentComponent()
+            ->extraAttributes([
+                'data-dashboard-widgets' => 'true',
+                'wire:loading.class'     => 'dashboard-widgets--loading',
+                'wire:target'            => 'filters',
+            ]);
     }
 
     public function getWidgets(): array

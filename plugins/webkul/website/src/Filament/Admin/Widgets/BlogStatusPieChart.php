@@ -2,27 +2,27 @@
 
 namespace Webkul\Website\Filament\Admin\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Webkul\Blog\Models\Post;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class BlogStatusPieChart extends ChartWidget
+class BlogStatusPieChart extends DashboardChartWidget
 {
     use InteractsWithPageFilters;
+
+    protected static ?int $sort = 4;
+
+    protected ?string $maxHeight = '250px';
 
     public function getHeading(): ?string
     {
         return __('website::filament/admin/widgets/blog-chart.blogs-published-vs-draft');
     }
 
-    protected static ?int $sort = 4;
-
     protected function getType(): string
     {
         return 'pie';
     }
-
-    protected ?string $maxHeight = '250px';
 
     protected function getData(): array
     {
@@ -50,11 +50,10 @@ class BlogStatusPieChart extends ChartWidget
             return [
                 'datasets' => [
                     [
-                        'label'           => 'Blogs',
+                        'label'           => __('website::filament/admin/widgets/blog-chart.status'),
                         'data'            => [0],
-                        'backgroundColor' => [
-                            '#4CAF50',
-                        ],
+                        'backgroundColor' => [$this->brandColor('gray')],
+                        'borderWidth'     => 0,
                     ],
                 ],
 
@@ -65,12 +64,13 @@ class BlogStatusPieChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => 'Blogs',
+                    'label'           => __('website::filament/admin/widgets/blog-chart.status'),
                     'data'            => [$publishedCount, $draftCount],
                     'backgroundColor' => [
-                        '#4CAF50',
-                        '#F44336',
+                        $this->brandColor('success'),
+                        $this->brandColor('danger'),
                     ],
+                    'borderWidth'     => 0,
                 ],
             ],
 
@@ -79,5 +79,10 @@ class BlogStatusPieChart extends ChartWidget
                 __('website::filament/admin/widgets/blog-chart.draft'),
             ],
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return $this->doughnutChartOptions();
     }
 }

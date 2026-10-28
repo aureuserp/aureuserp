@@ -43,6 +43,18 @@ class ListPurchaseOrders extends ListOrders
                         ->whereIn('state', [OrderState::PURCHASE, OrderState::DONE])
                         ->where('invoice_status', 'invoiced');
                 }),
+
+            'draft-rfqs' => PresetView::make(__('purchases::filament/admin/clusters/orders/resources/purchase-order/pages/list-purchase-orders.tabs.draft-rfqs'))
+                ->icon('heroicon-o-document-text')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OrderState::DRAFT)),
+
+            'sent-rfqs' => PresetView::make(__('purchases::filament/admin/clusters/orders/resources/purchase-order/pages/list-purchase-orders.tabs.sent-rfqs'))
+                ->icon('heroicon-o-paper-airplane')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OrderState::SENT)),
+
+            'confirmed-orders' => PresetView::make(__('purchases::filament/admin/clusters/orders/resources/purchase-order/pages/list-purchase-orders.tabs.confirmed-orders'))
+                ->icon('heroicon-o-check-circle')
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('state', [OrderState::PURCHASE, OrderState::DONE])),
         ];
     }
 }

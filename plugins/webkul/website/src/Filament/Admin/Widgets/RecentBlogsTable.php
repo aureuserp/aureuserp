@@ -2,7 +2,9 @@
 
 namespace Webkul\Website\Filament\Admin\Widgets;
 
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,12 +14,23 @@ class RecentBlogsTable extends TableWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?int $sort = 6;
+
     public function getHeading(): ?string
     {
         return __('website::filament/admin/widgets/blog-chart.recent-10-blogs');
     }
 
-    protected static ?int $sort = 6;
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordClasses('dashboard-table-row');
+    }
+
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
 
     protected function getTableQuery(): Builder
     {
@@ -38,7 +51,7 @@ class RecentBlogsTable extends TableWidget
                 fn ($q) => $q->where('author_id', $filters['author_id'])
             )
             ->latest()
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -46,27 +59,22 @@ class RecentBlogsTable extends TableWidget
         return [
             Tables\Columns\TextColumn::make('title')
                 ->label(__('website::filament/admin/widgets/blog-chart.title'))
-                ->searchable()
+                ->weight(FontWeight::Bold)
+                ->color('primary')
+                ->description(fn ($record): string => $record->author?->name ?: '—')
                 ->wrap(),
-
-            Tables\Columns\TextColumn::make('author.name')
-                ->label(__('website::filament/admin/widgets/blog-chart.author'))
-                ->default('Unknown')
-                ->sortable(),
 
             Tables\Columns\TextColumn::make('is_published')
                 ->label(__('website::filament/admin/widgets/blog-chart.status'))
                 ->badge()
                 ->formatStateUsing(fn ($state) => $state ? __('website::filament/admin/widgets/blog-chart.published') : __('website::filament/admin/widgets/blog-chart.draft'))
-                ->colors([
-                    'success' => fn ($state) => $state === true,
-                    'danger'  => fn ($state) => $state === false,
-                ]),
+                ->color(fn ($state): string => $state ? 'success' : 'danger'),
 
             Tables\Columns\TextColumn::make('created_at')
                 ->label(__('website::filament/admin/widgets/blog-chart.created-at'))
                 ->dateTime('M d, Y H:i')
-                ->sortable(),
+                ->sortable()
+                ->alignEnd(),
         ];
     }
 }

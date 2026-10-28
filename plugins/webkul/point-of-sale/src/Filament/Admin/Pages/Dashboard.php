@@ -6,11 +6,14 @@ use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use UnitEnum;
 use Webkul\Partner\Models\Partner;
+use Webkul\PointOfSale\Filament\Admin\Widgets\OrdersByStateChart;
+use Webkul\PointOfSale\Filament\Admin\Widgets\RevenueOverTimeWidget;
 use Webkul\PointOfSale\Filament\Admin\Widgets\SessionStatsWidget;
 use Webkul\PointOfSale\Filament\Admin\Widgets\TopProductsWidget;
 use Webkul\PointOfSale\Models\Category;
@@ -147,10 +150,22 @@ class Dashboard extends BaseDashboard
             ]);
     }
 
+    public function getWidgetsContentComponent(): Component
+    {
+        return parent::getWidgetsContentComponent()
+            ->extraAttributes([
+                'data-dashboard-widgets' => 'true',
+                'wire:loading.class'     => 'dashboard-widgets--loading',
+                'wire:target'            => 'filters',
+            ]);
+    }
+
     public function getWidgets(): array
     {
         return [
             SessionStatsWidget::class,
+            RevenueOverTimeWidget::class,
+            OrdersByStateChart::class,
             TopProductsWidget::class,
         ];
     }

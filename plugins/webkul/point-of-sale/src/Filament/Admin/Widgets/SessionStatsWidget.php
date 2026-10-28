@@ -3,16 +3,21 @@
 namespace Webkul\PointOfSale\Filament\Admin\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Webkul\PointOfSale\Enums\OrderState;
 use Webkul\PointOfSale\Enums\SessionState;
+use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\SessionResource;
+use Webkul\PointOfSale\Filament\Admin\Clusters\Reporting\Pages\SalesDetails;
 use Webkul\PointOfSale\Filament\Admin\Widgets\Concerns\FiltersDashboardOrders;
 use Webkul\PointOfSale\Models\Order;
 use Webkul\PointOfSale\Models\Session;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
-class SessionStatsWidget extends BaseWidget
+class SessionStatsWidget extends DashboardStatsWidget
 {
     use FiltersDashboardOrders, HasWidgetShield;
 
@@ -20,53 +25,148 @@ class SessionStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $settledOrders = $this->getOrdersQuery()
-            ->whereIn('state', [OrderState::PAID, OrderState::DONE, OrderState::INVOICED]);
+        [$start, $end] = $this->currentOrderRange();
+
+        [$previousStart, $previousEnd] = $this->previousOrderRange();
+
+        $settled = [OrderState::PAID->value, OrderState::DONE->value, OrderState::INVOICED->value];
+
+        $currentSettled = $this->ordersInWindow($start, $end)->whereIn('state', $settled);
+
+        $previousSettled = $this->ordersInWindow($previousStart, $previousEnd)->whereIn('state', $settled);
+
+        $openSessions = (float) Session::query()
+            ->whereIn('state', [
+                SessionState::OPENING_CONTROL,
+                SessionState::OPENED,
+                SessionState::CLOSING_CONTROL,
+            ])
+            ->when($this->getFilterIds('selectedTerminals'), fn (Builder $query, array $ids) => $query->whereIn('config_id', $ids))
+            ->count();
+
+        $orders = (float) $currentSettled->clone()->count();
+
+        $previousOrders = (float) $previousSettled->clone()->count();
+
+        $revenue = (float) $currentSettled->clone()->sum('amount_total');
+
+        $previousRevenue = (float) $previousSettled->clone()->sum('amount_total');
+
+        $failed = (float) $this->ordersInWindow($start, $end)->where('has_failed_operation', true)->count();
+
+        $previousFailed = (float) $this->ordersInWindow($previousStart, $previousEnd)->where('has_failed_operation', true)->count();
 
         return [
-            Stat::make(
+            $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.open-sessions.label'),
-                Session::query()
-                    ->whereIn('state', [
-                        SessionState::OPENING_CONTROL,
-                        SessionState::OPENED,
-                        SessionState::CLOSING_CONTROL,
-                    ])
-                    ->when($this->getFilterIds('selectedTerminals'), fn (Builder $query, array $ids) => $query->whereIn('config_id', $ids))
-                    ->count(),
-            )
-                ->description(__('point-of-sale::filament/admin/widgets/session-stats.stats.open-sessions.description'))
-                ->icon('heroicon-o-play-circle')
-                ->color('success'),
-
-            Stat::make(
+                'heroicon-o-play-circle',
+                'success',
+                number_format($openSessions),
+                $openSessions,
+                $openSessions,
+                $this->sessionSeries($start, $end),
+            )->url(SessionResource::getUrl('index', ['activeTableView' => 'open'])),
+            $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.orders.label'),
-                $settledOrders->clone()->count(),
-            )
-                ->description(__('point-of-sale::filament/admin/widgets/session-stats.stats.orders.description'))
-                ->icon('heroicon-o-receipt-percent')
-                ->color('primary'),
-
-            Stat::make(
+                'heroicon-o-receipt-percent',
+                'primary',
+                number_format($orders),
+                $orders,
+                $previousOrders,
+                $this->orderSeries($start, $end, $settled, 'count'),
+            )->url(OrderResource::getUrl('index', ['activeTableView' => 'settled'])),
+            $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.revenue.label'),
-                number_format((float) $settledOrders->clone()->sum('amount_total'), 2),
-            )
-                ->description(__('point-of-sale::filament/admin/widgets/session-stats.stats.revenue.description'))
-                ->icon('heroicon-o-banknotes')
-                ->color('info'),
-
-            Stat::make(
+                'heroicon-o-banknotes',
+                'info',
+                compact_money($revenue, $this->dashboardCurrency()),
+                $revenue,
+                $previousRevenue,
+                $this->orderSeries($start, $end, $settled, 'sum', 'amount_total'),
+            )->url($this->salesDetailsUrl($start, $end)),
+            $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.failed-operations.label'),
-                $this->getOrdersQuery()->where('has_failed_operation', true)->count(),
-            )
-                ->description(__('point-of-sale::filament/admin/widgets/session-stats.stats.failed-operations.description'))
-                ->icon('heroicon-o-exclamation-triangle')
-                ->color('danger'),
+                'heroicon-o-exclamation-triangle',
+                'danger',
+                number_format($failed),
+                $failed,
+                $previousFailed,
+                $this->failedSeries($start, $end),
+            )->url(OrderResource::getUrl('index', ['activeTableView' => 'failed-operations'])),
         ];
     }
 
-    protected function getOrdersQuery(): Builder
+    protected function salesDetailsUrl(Carbon $start, Carbon $end): string
     {
-        return $this->applyOrderFilters(Order::query());
+        $parameters = [
+            'startDate' => $start->toDateString(),
+            'endDate'   => $end->toDateString(),
+        ];
+
+        $terminals = $this->getFilterIds('selectedTerminals');
+
+        if (count($terminals) === 1) {
+            $parameters['configId'] = $terminals[0];
+        }
+
+        return SalesDetails::getUrl($parameters);
+    }
+
+    protected function ordersInWindow(Carbon $start, Carbon $end): Builder
+    {
+        return $this->applyNonDateOrderFilters(Order::query())
+            ->where('pos_orders.ordered_at', '>=', $start)
+            ->where('pos_orders.ordered_at', '<=', $end);
+    }
+
+    /**
+     * @param  list<string>  $states
+     * @return list<float>
+     */
+    protected function orderSeries(Carbon $start, Carbon $end, array $states, string $aggregate, ?string $column = null): array
+    {
+        $query = $this->applyNonDateOrderFilters(Order::query())->whereIn('pos_orders.state', $states);
+
+        $trend = Trend::query($query)
+            ->dateColumn('ordered_at')
+            ->between(start: $start, end: $end)
+            ->perDay();
+
+        $result = $aggregate === 'sum' ? $trend->sum($column) : $trend->count();
+
+        return $result->map(fn (TrendValue $value): float => round((float) $value->aggregate, 2))->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    protected function failedSeries(Carbon $start, Carbon $end): array
+    {
+        $query = $this->applyNonDateOrderFilters(Order::query())->where('pos_orders.has_failed_operation', true);
+
+        return Trend::query($query)
+            ->dateColumn('ordered_at')
+            ->between(start: $start, end: $end)
+            ->perDay()
+            ->count()
+            ->map(fn (TrendValue $value): int => (int) $value->aggregate)
+            ->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    protected function sessionSeries(Carbon $start, Carbon $end): array
+    {
+        $query = Session::query()
+            ->when($this->getFilterIds('selectedTerminals'), fn (Builder $query, array $ids) => $query->whereIn('config_id', $ids));
+
+        return Trend::query($query)
+            ->dateColumn('started_at')
+            ->between(start: $start, end: $end)
+            ->perDay()
+            ->count()
+            ->map(fn (TrendValue $value): int => (int) $value->aggregate)
+            ->all();
     }
 }

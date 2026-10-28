@@ -15,9 +15,9 @@ class TopPurchasedProductsWidget extends BaseWidget
 {
     use HasPurchaseDashboardFilters, HasWidgetShield;
 
-    protected const BAR_COLOR = '#2a78d6';
+    protected const BAR_COLOR = 'var(--primary-500)';
 
-    protected const TRACK_COLOR = 'rgba(137, 135, 129, 0.22)';
+    protected const TRACK_COLOR = 'color-mix(in srgb, var(--gray-500) 22%, transparent)';
 
     protected static ?int $sort = 5;
 
@@ -29,6 +29,7 @@ class TopPurchasedProductsWidget extends BaseWidget
     {
         return $table
             ->defaultKeySort(false)
+            ->recordClasses('dashboard-table-row')
             ->recordUrl(fn ($record): ?string => $record->id && ProductResource::canAccess()
                 ? ProductResource::getUrl('view', ['record' => $record->id])
                 : null);
@@ -56,7 +57,7 @@ class TopPurchasedProductsWidget extends BaseWidget
             ->selectRaw('SUM(CASE WHEN purchases_orders.currency_rate > 0 THEN purchases_order_lines.price_total / purchases_orders.currency_rate ELSE purchases_order_lines.price_total END) as total_value')
             ->havingRaw('SUM(CASE WHEN purchases_orders.currency_rate > 0 THEN purchases_order_lines.price_total / purchases_orders.currency_rate ELSE purchases_order_lines.price_total END) > 0')
             ->orderByDesc('total_value')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array

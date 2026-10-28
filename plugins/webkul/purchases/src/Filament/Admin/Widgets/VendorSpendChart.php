@@ -3,25 +3,19 @@
 namespace Webkul\Purchase\Filament\Admin\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Purchase\Filament\Admin\Widgets\Concerns\HasPurchaseDashboardFilters;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class VendorSpendChart extends ChartWidget
+class VendorSpendChart extends DashboardChartWidget
 {
     use HasPurchaseDashboardFilters, HasWidgetShield;
 
-    protected const RAMP = ['#184f95', '#2a78d6', '#5598e7', '#86b6ef'];
-
     protected const TOP_SLICES = 3;
-
-    protected const INK_MUTED = '#898781';
 
     protected static ?int $sort = 3;
 
-    protected static bool $isLazy = false;
-
-    protected ?string $maxHeight = '300px';
+    protected ?array $resolvedData = null;
 
     public function getHeading(): string|Htmlable|null
     {
@@ -29,6 +23,11 @@ class VendorSpendChart extends ChartWidget
     }
 
     protected function getData(): array
+    {
+        return $this->resolvedData ??= $this->resolveData();
+    }
+
+    protected function resolveData(): array
     {
         $query = $this->purchaseOrders();
 
@@ -56,12 +55,14 @@ class VendorSpendChart extends ChartWidget
             $data[] = $other;
         }
 
+        $ramp = $this->chartRamp();
+
         return [
             'datasets' => [
                 [
                     'label'           => __('purchases::filament/admin/widgets/purchase-dashboard.vendor-spend.total-purchased'),
                     'data'            => $data,
-                    'backgroundColor' => array_slice(self::RAMP, 0, max(count($data), 1)),
+                    'backgroundColor' => array_map(fn (int $index): string => $ramp[$index % count($ramp)], array_keys($data)),
                     'borderWidth'     => 0,
                 ],
             ],
@@ -71,22 +72,10 @@ class VendorSpendChart extends ChartWidget
 
     protected function getOptions(): array
     {
-        return [
-            'maintainAspectRatio' => false,
-            'cutout'              => '58%',
-            'plugins'             => [
-                'legend' => [
-                    'position' => 'right',
-                    'labels'   => [
-                        'color'         => self::INK_MUTED,
-                        'boxWidth'      => 10,
-                        'boxHeight'     => 10,
-                        'usePointStyle' => true,
-                        'padding'       => 14,
-                    ],
-                ],
-            ],
-        ];
+        return $this->doughnutChartOptions(
+            compact_money((float) array_sum($this->getData()['datasets'][0]['data']), $this->dashboardCurrency()),
+            __('purchases::filament/admin/widgets/purchase-dashboard.vendor-spend.total-purchased'),
+        );
     }
 
     protected function getType(): string
