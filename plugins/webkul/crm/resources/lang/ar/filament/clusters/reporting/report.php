@@ -18,7 +18,6 @@ return [
         'measure'        => 'المقياس',
         'split-by'       => 'تقسيم حسب',
         'no-split'       => 'بدون تقسيم',
-        'chart-type'     => 'المخطط',
         'salespeople'    => 'مندوبو المبيعات',
         'teams'          => 'فرق المبيعات',
     ],

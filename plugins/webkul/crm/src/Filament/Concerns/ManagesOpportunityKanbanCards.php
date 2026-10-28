@@ -3,13 +3,18 @@
 namespace Webkul\Crm\Filament\Concerns;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Enums\KanbanActivityState;
-use Webkul\Crm\Enums\LeadColor;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
+use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\Lead;
 use Wezlo\FilamentKanban\KanbanColumn;
 
@@ -37,16 +42,21 @@ trait ManagesOpportunityKanbanCards
         $lead->update(['priority' => $lead->priority?->value === $priority ? OpportunityPriority::LOW : $priority]);
     }
 
-    public function setKanbanCardColor(string $recordId, int $color): void
+    public function kanbanCardColorAction(): Action
     {
-        $lead = $this->findEditableKanbanCard($recordId);
-
-        if (! $lead
-            || ($color !== 0 && ! LeadColor::tryFrom($color))) {
-            return;
-        }
-
-        $lead->update(['color' => $color]);
+        return Action::make('kanbanCardColor')
+            ->record(fn (array $arguments): ?Lead => Lead::query()->find($arguments['record'] ?? null))
+            ->modalHeading(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color'))
+            ->modalWidth('sm')
+            ->modalFooterActionsAlignment(Alignment::End)
+            ->authorize(fn (?Lead $record): bool => $record && LeadResourceResolver::resourceFor($record)::canEdit($record))
+            ->fillForm(fn (Lead $record): array => ['color' => $record->color])
+            ->schema([
+                ColorPicker::make('color')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color'))
+                    ->hexColor(),
+            ])
+            ->action(fn (array $data, Lead $record): bool => $record->update(['color' => filled($data['color'] ?? null) ? $data['color'] : null]));
     }
 
     protected function findEditableKanbanCard(string $recordId): ?Lead
@@ -73,6 +83,53 @@ trait ManagesOpportunityKanbanCards
                     ->title(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.deleted'))
                     ->send();
             });
+    }
+
+    public function kanbanCardActivitiesAction(): Action
+    {
+        return Action::make('kanbanCardActivities')
+            ->record(fn (array $arguments): ?Lead => Lead::query()->with(['crmActivities.activityType', 'crmActivities.assignedTo'])->find($arguments['record'] ?? null))
+            ->authorize(fn (?Lead $record): bool => $record && LeadResourceResolver::resourceFor($record)::canView($record))
+            ->modalHeading(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities'))
+            ->modalDescription(fn (Lead $record): string => $record->name)
+            ->modalWidth('2xl')
+            ->modalSubmitAction(false)
+            ->schema([
+                RepeatableEntry::make('crmActivities')
+                    ->hiddenLabel()
+                    ->state(fn (Lead $record): array => $record->crmActivities->sortBy(fn (Activity $activity): int => $activity->date_deadline?->timestamp ?? PHP_INT_MAX)->values()->all())
+                    ->schema([
+                        TextEntry::make('activityType.name')
+                            ->hiddenLabel()
+                            ->weight('bold')
+                            ->icon(fn (Activity $record): string => str_starts_with((string) $record->activityType?->icon, 'heroicon-') ? $record->activityType->icon : 'heroicon-o-clock')
+                            ->placeholder('—'),
+                        TextEntry::make('due_status')
+                            ->hiddenLabel()
+                            ->state(fn (Activity $record): ActivityDueStatus => $record->getDueStatus())
+                            ->badge()
+                            ->alignEnd(),
+                        TextEntry::make('summary')
+                            ->hiddenLabel()
+                            ->placeholder('—')
+                            ->columnSpanFull(),
+                        TextEntry::make('date_deadline')
+                            ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activity-deadline'))
+                            ->date()
+                            ->placeholder('—'),
+                        TextEntry::make('assignedTo.name')
+                            ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activity-assigned-to'))
+                            ->placeholder('—'),
+                    ])
+                    ->columns(2),
+            ])
+            ->extraModalFooterActions(fn (Lead $record): array => [
+                Action::make('scheduleAnotherKanbanActivity')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.schedule-activity'))
+                    ->icon('heroicon-o-plus')
+                    ->visible(fn (): bool => LeadResourceResolver::resourceFor($record)::canEdit($record))
+                    ->action(fn () => $this->replaceMountedAction('scheduleKanbanActivity', ['record' => $record->getKey()])),
+            ]);
     }
 
     public function scheduleKanbanActivityAction(): Action

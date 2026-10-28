@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'counter' => ':characters حرفًا، تتسع في :parts رسالة (:encoding)',
-
     'form' => [
         'international-helper' => 'أدخل رمز الدولة (مثل +91 98765 43210) أو حدد دولة في السجل.',
     ],

@@ -78,9 +78,7 @@ class SendLeadsSMSBulkAction extends BulkAction
         return Textarea::make('message')
             ->label(__('crm::filament/lead-actions.send-sms.form.message'))
             ->required()
-            ->rows(4)
-            ->live(debounce: 300)
-            ->helperText(fn (?string $state): string => __('crm::filament/sms.counter', SMSSender::segments((string) $state)));
+            ->rows(4);
     }
 
     public static function sendTo(Lead $lead, string $number, string $message): bool

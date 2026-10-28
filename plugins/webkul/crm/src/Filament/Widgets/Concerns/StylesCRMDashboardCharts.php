@@ -4,20 +4,20 @@ namespace Webkul\Crm\Filament\Widgets\Concerns;
 
 trait StylesCRMDashboardCharts
 {
-    protected const BAR_COLOR = '#2a78d6';
+    protected const BAR_COLOR = '#ef4444';
 
     protected const INK_MUTED = '#898781';
 
     protected const GRID = 'rgba(137, 135, 129, 0.25)';
 
-    protected const PALETTE = ['#2a78d6', '#16a34a', '#f59e0b', '#dc2626', '#7c3aed', '#0891b2', '#db2777', '#65a30d'];
+    protected const PALETTE = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#65a30d'];
 
-    protected function barDataset(string $label, array $data): array
+    protected function barDataset(string $label, array $data, string|array $color = self::BAR_COLOR): array
     {
         return [
             'label'           => $label,
             'data'            => $data,
-            'backgroundColor' => self::BAR_COLOR,
+            'backgroundColor' => $color,
             'borderRadius'    => 4,
             'borderSkipped'   => 'bottom',
             'maxBarThickness' => 28,

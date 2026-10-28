@@ -46,7 +46,7 @@ class ActivitiesByUserChart extends ChartWidget
                 [
                     'label'           => __('crm::filament/clusters/sales/resources/activity.plural-model-label'),
                     'data'            => $counts->values()->all(),
-                    'backgroundColor' => '#3b82f6',
+                    'backgroundColor' => '#ef4444',
                     'maxBarThickness' => 32,
                 ],
             ],

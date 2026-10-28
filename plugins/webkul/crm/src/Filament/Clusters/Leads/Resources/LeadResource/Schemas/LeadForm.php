@@ -44,7 +44,7 @@ class LeadForm
                                     ->maxValue(99.99)
                                     ->suffix('%')
                                     ->placeholder(__('crm::filament/lead-scoring.automatic'))
-                                    ->afterLabel([ProbabilityHint::component(), ProbabilityHint::formResetAction()])
+                                    ->afterLabel([ProbabilityHint::formResetAction(), ProbabilityHint::detailsAction()])
                                     ->extraFieldWrapperAttributes(['style' => 'max-width: 12rem;']),
                                 Grid::make(['default' => 1, 'lg' => 2])
                                     ->schema([

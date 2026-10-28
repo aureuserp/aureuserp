@@ -29,6 +29,7 @@ use Webkul\Crm\Filament\Concerns\ShowsLeadsGraph;
 use Webkul\Crm\Filament\Exports\LeadExporter;
 use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\Crm\Filament\Support\Reports\Sql;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
 use Webkul\Sale\Models\Team;
 use Webkul\TableViews\Filament\Components\PresetView;
@@ -138,7 +139,7 @@ class ListLeads extends ListRecords
         return LeadsTable::configure($table, grid: $this->isGridLayout())
             ->paginated(fn (): bool => ! $this->getBoardGroup() && ! $this->isGraphLayout())
             ->emptyState(fn () => match (true) {
-                $this->isGraphLayout()        => view('crm::filament.leads.graph', ['chart' => $this->getRecordsGraph()]),
+                $this->isGraphLayout()        => RecordsChart::embedGraph($this->getRecordsGraph()),
                 (bool) $this->getBoardGroup() => view($this->getKanbanBoard()->getBoardView()),
                 default                       => null,
             });

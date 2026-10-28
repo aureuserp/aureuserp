@@ -1,6 +1,5 @@
 @php
     use Webkul\Crm\Enums\ActivityDueStatus;
-    use Webkul\Crm\Enums\LeadColor;
     use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 
     $recordId = $record->getKey();
@@ -13,7 +12,7 @@
         default                    => 'text-success-600 dark:text-success-400',
     };
     $typeIcon = str_starts_with((string) $record->activityType?->icon, 'heroicon-') ? $record->activityType->icon : 'heroicon-o-clock';
-    $colorHex = LeadColor::tryFrom((int) $lead?->color)?->getHex();
+    $colorHex = filled($lead?->color) ? $lead->color : null;
     $canEdit = ActivityResource::canEdit($record);
 
     $shows = fn (string $column): bool => ! method_exists($this, 'isKanbanCardFieldVisible') || $this->isKanbanCardFieldVisible($column);
@@ -36,7 +35,6 @@
         'fi-kanban-card group relative rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-950/5 transition-shadow hover:shadow-md dark:bg-gray-900 dark:ring-white/10',
         'cursor-pointer' => $url,
     ])
-    @if ($colorHex) style="border-inline-start: 4px solid {{ $colorHex }};" @endif
 >
     <div class="flex items-start gap-2">
         <x-filament::icon :icon="$typeIcon" @class(['mt-0.5 h-4 w-4 shrink-0', $statusColor]) title="{{ __('crm::filament/clusters/sales/resources/activity.table.columns.activity-type') }}: {{ $record->activityType?->name }}" />
@@ -83,6 +81,10 @@
                 >
                     <x-filament::icon icon="heroicon-o-check-circle" class="h-4 w-4" />
                 </button>
+            @endif
+
+            @if ($colorHex)
+                <span class="crm-kanban-color-dot" style="background-color: {{ $colorHex }};" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color') }}"></span>
             @endif
 
             @if ($assignee)

@@ -43,7 +43,7 @@ class LeadInfolist
                                     ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.probability'))
                                     ->numeric(decimalPlaces: 2)
                                     ->suffix('%')
-                                    ->afterLabel([ProbabilityHint::component(), ProbabilityHint::viewResetAction()]),
+                                    ->afterLabel([ProbabilityHint::viewResetAction(), ProbabilityHint::detailsAction()]),
                                 Grid::make(['default' => 1, 'lg' => 2])
                                     ->schema([
                                         Group::make()

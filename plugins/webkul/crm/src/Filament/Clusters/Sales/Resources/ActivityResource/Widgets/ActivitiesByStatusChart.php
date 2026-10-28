@@ -19,7 +19,15 @@ class ActivitiesByStatusChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'doughnut';
+        return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => ['legend' => ['display' => false]],
+            'scales'  => ['y' => ['beginAtZero' => true, 'ticks' => ['precision' => 0]]],
+        ];
     }
 
     protected function getData(): array
@@ -29,8 +37,10 @@ class ActivitiesByStatusChart extends ChartWidget
         return [
             'datasets' => [
                 [
+                    'label'           => __('crm::filament/clusters/sales/resources/activity.plural-model-label'),
                     'data'            => $counts->all(),
                     'backgroundColor' => ['#ef4444', '#f59e0b', '#22c55e'],
+                    'maxBarThickness' => 48,
                 ],
             ],
             'labels' => collect(ActivityDueStatus::cases())->map->getLabel()->all(),

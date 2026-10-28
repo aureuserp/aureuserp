@@ -34,6 +34,7 @@ use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Concerns\ShowsLeadsGraph;
 use Webkul\Crm\Filament\Support\Reports\Sql;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\TableViews\Filament\Components\PresetView;
@@ -143,7 +144,7 @@ class ManageTeamOpportunities extends ManageRelatedRecords
                 ->emptyState(fn () => view($this->getKanbanBoard()->getBoardView())),
             PipelineView::GRAPH => $table
                 ->paginated(false)
-                ->emptyState(fn () => view('crm::filament.leads.graph', ['chart' => $this->getRecordsGraph()])),
+                ->emptyState(fn () => RecordsChart::embedGraph($this->getRecordsGraph())),
             PipelineView::LIST => $table,
         };
     }

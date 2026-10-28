@@ -1,7 +1,6 @@
 <?php
 
 use Livewire\Livewire;
-use Webkul\Crm\Enums\LeadColor;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\PipelineView;
 use Webkul\Crm\Enums\TeamOrderScope;
@@ -274,21 +273,24 @@ it('links the team card menu to the team\'s records and reports', function () {
         ->assertSeeHtml(e(ForecastResource::getUrl('graph', $reportFilters)));
 });
 
-it('sets and clears the team color from the card menu', function () {
+it('sets and clears the team color with the colour picker', function () {
     actingAsSalesTeamViewer();
 
     $team = salesTeamInCompany('Colored team');
 
-    Livewire::test(ListTeams::class)->call('setTeamColor', $team->id, LeadColor::TEAL->value);
+    Livewire::test(ListTeams::class)
+        ->callAction('teamColor', data: ['color' => '#2c8397'], arguments: ['team' => $team->id])
+        ->assertHasNoActionErrors();
 
-    expect($team->fresh()->color)->toBe(LeadColor::TEAL->getHex());
+    expect($team->fresh()->color)->toBe('#2c8397');
 
-    Livewire::test(ListTeams::class)->call('setTeamColor', $team->id, 0);
+    Livewire::test(ListTeams::class)
+        ->callAction('teamColor', data: ['color' => null], arguments: ['team' => $team->id]);
 
     expect($team->fresh()->color)->toBeNull();
 });
 
-it('ignores team color changes without the team update permission', function () {
+it('hides the team colour picker without the team update permission', function () {
     CRMHelper::actingAs([
         ...CRMHelper::permissionsFor(['team'], ['view_any', 'view']),
         ...CRMHelper::permissionsFor(['opportunity']),
@@ -296,9 +298,7 @@ it('ignores team color changes without the team update permission', function () 
 
     $team = salesTeamInCompany('Locked color team');
 
-    Livewire::test(ListTeams::class)->call('setTeamColor', $team->id, LeadColor::TEAL->value);
-
-    expect($team->fresh()->color)->toBeNull();
+    Livewire::test(ListTeams::class)->assertActionHidden('teamColor', ['team' => $team->id]);
 });
 
 it('limits the team quotations to confirmed sales orders with the sales orders scope', function () {

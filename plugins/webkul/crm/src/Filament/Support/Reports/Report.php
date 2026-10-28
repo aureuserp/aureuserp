@@ -9,7 +9,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -32,11 +31,6 @@ abstract class Report
         return null;
     }
 
-    public static function getDefaultChartType(): ReportChartType
-    {
-        return ReportChartType::BAR;
-    }
-
     public static function getSalespersonColumn(): string
     {
         return 'user_id';
@@ -55,13 +49,12 @@ abstract class Report
     public static function getDefaultFilters(): array
     {
         return [
-            'measure'    => static::getDefaultMeasure(),
-            'group_by'   => static::getDefaultGroupBy(),
-            'split_by'   => static::getDefaultSplitBy(),
-            'chart_type' => static::getDefaultChartType()->value,
-            'presets'    => static::getDefaultPresets(),
-            'user_ids'   => [],
-            'team_ids'   => [],
+            'measure'  => static::getDefaultMeasure(),
+            'group_by' => static::getDefaultGroupBy(),
+            'split_by' => static::getDefaultSplitBy(),
+            'presets'  => static::getDefaultPresets(),
+            'user_ids' => [],
+            'team_ids' => [],
         ];
     }
 

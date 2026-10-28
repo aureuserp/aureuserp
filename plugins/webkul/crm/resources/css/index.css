@@ -193,6 +193,15 @@
     --tw-ring-color: color-mix(in oklab, var(--primary-400) 30%, transparent);
 }
 
+.crm-kanban-color-dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+
 .crm-kanban-avatar {
     background-color: var(--primary-100);
     color: var(--primary-700);
@@ -402,7 +411,35 @@ body:has(.crm-kanban-board) {
 .fi-ta-record:has(.crm-team-card) {
     position: relative;
     padding: 0;
-    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+}
+
+.crm-team-card {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.crm-team-card > .fi-section {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+}
+
+.crm-team-card > .fi-section > .fi-section-content-ctn {
+    flex: 1 1 auto;
+}
+
+.crm-team-card > .fi-section:not(.fi-section-not-contained):not(.fi-aside) > .fi-section-header {
+    padding-inline-start: 3rem;
+}
+
+.crm-team-card-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .fi-ta-record:has(.crm-team-card) > .fi-ta-record-checkbox {
@@ -428,23 +465,6 @@ body:has(.crm-kanban-board) {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-}
-
-.crm-team-card {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-    padding-top: 0.875rem;
-}
-
-.crm-team-card > :last-child:not(.crm-team-card-footer) {
-    padding-bottom: 1rem;
-}
-
-.crm-team-card-colored {
-    border-inline-start: 4px solid var(--crm-team-color);
 }
 
 .crm-team-menu-sections {
@@ -519,135 +539,16 @@ body:has(.crm-kanban-board) {
     border-inline-start-color: color-mix(in oklab, var(--color-white) 10%, transparent);
 }
 
-.crm-team-menu-colors {
-    display: grid;
-    grid-template-columns: repeat(6, 1.5rem);
-    gap: 0.375rem;
+:is(.crm-team-card-chart, .crm-leads-graph) .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-aside) {
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    --tw-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
 }
 
-.crm-team-menu-color {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-}
-
-.crm-team-card > :not(.crm-team-card-footer) {
-    padding-inline: 1rem;
-}
-
-.crm-team-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding-inline-start: 2.5rem !important;
-}
-
-.crm-team-card-body {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.25rem;
-}
-
-.crm-team-card-figures {
-    display: grid;
-    flex: 1 1 auto;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 1rem;
-    row-gap: 0.25rem;
-    min-width: 0;
-    font-size: 0.875rem;
-}
-
-.crm-team-card-chart {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-}
-
-.crm-team-card-bars {
-    display: flex;
-    flex: 1 1 auto;
-    min-height: 7.5rem;
-    align-items: flex-end;
-    border-bottom: 1px solid var(--color-gray-200);
-}
-
-.crm-team-card-bar-slot {
-    display: flex;
-    flex: 1 1 0;
-    height: 100%;
-    align-items: flex-end;
-    padding: 0 0.375rem;
-    border-inline-start: 1px solid var(--color-gray-200);
-}
-
-.crm-team-card-bar-slot:first-child {
-    border-inline-start: 0;
-}
-
-.crm-team-card-bar {
-    width: 100%;
-    background-color: #a6d9d6;
-}
-
-.crm-team-card-labels {
-    display: flex;
-    margin-top: 0.375rem;
-    font-size: 0.75rem;
-    color: var(--color-gray-700);
-}
-
-.crm-team-card-labels span {
-    flex: 1 1 0;
-    overflow: hidden;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.crm-team-card-footer {
-    margin-top: auto;
-    padding: 0.625rem 1rem;
-    border-top: 1px solid var(--color-gray-200);
-    background-color: var(--color-gray-100);
-    font-size: 0.875rem;
-}
-
-.crm-team-card-progress {
-    height: 0.375rem;
-    margin-top: 0.375rem;
-    overflow: hidden;
-    border-radius: 9999px;
-    background-color: var(--color-gray-200);
-}
-
-.crm-team-card-progress > div {
-    height: 100%;
-    border-radius: 9999px;
-    background-color: var(--color-primary-500);
-}
-
-.dark .crm-team-card-bars,
-.dark .crm-team-card-bar-slot,
-.dark .crm-team-card-footer {
-    border-color: rgb(255 255 255 / 0.1);
-}
-
-.dark .crm-team-card-footer {
-    background-color: rgb(255 255 255 / 0.05);
-}
-
-.dark .crm-team-card-labels {
-    color: var(--color-gray-400);
-}
-
-.dark .crm-team-card-bar {
-    background-color: rgb(94 186 181 / 0.6);
+:is(.crm-team-card-chart, .crm-leads-graph) .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-divided) > .fi-section-content-ctn > .fi-section-content {
+    padding: 0;
 }
 
 .crm-contact-avatar {
@@ -925,61 +826,6 @@ body:has(.crm-kanban-board) {
     padding-inline-start: 1rem !important;
 }
 
-.crm-report-chart-tabs {
-    display: inline-flex;
-    width: max-content;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    box-shadow: 0 0 0 1px rgb(3 7 18 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.05);
-}
-
-.crm-report-chart-tabs > .fi-btn {
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem !important;
-    border: 0 !important;
-    border-radius: 0.375rem !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    color: var(--color-gray-600) !important;
-    font-size: 0.84375rem;
-    font-weight: 500;
-}
-
-.crm-report-chart-tabs > .fi-btn:hover {
-    background-color: var(--color-gray-50) !important;
-    color: var(--color-gray-700) !important;
-}
-
-.crm-report-chart-tabs > .fi-btn[aria-pressed='true'] {
-    background-color: var(--color-primary-50) !important;
-    color: var(--color-primary-600) !important;
-}
-
-.dark .crm-report-chart-tabs {
-    background-color: var(--color-gray-900);
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1);
-}
-
-.dark .crm-report-chart-tabs > .fi-btn {
-    color: var(--color-gray-400) !important;
-}
-
-.dark .crm-report-chart-tabs > .fi-btn:hover {
-    background-color: rgb(255 255 255 / 0.05) !important;
-    color: var(--color-gray-200) !important;
-}
-
-.dark .crm-report-chart-tabs > .fi-btn[aria-pressed='true'] {
-    background-color: rgb(255 255 255 / 0.05) !important;
-    color: var(--color-primary-400) !important;
-}
-
-.crm-report-chart-tabs > .fi-btn .fi-icon {
-    color: currentColor !important;
-}
-
 .crm-report-graph-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -998,57 +844,6 @@ body:has(.crm-kanban-board) {
     color: var(--color-gray-950);
 }
 
-.crm-report-graph-heading {
-    margin-bottom: 0.75rem;
-    color: var(--color-gray-950);
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.dark .crm-report-graph-control,
-.dark .crm-report-graph-heading {
+.dark .crm-report-graph-control {
     color: #fff;
-}
-
-.crm-report-graph-toolbar .crm-report-chart-tabs {
-    box-sizing: border-box;
-    height: 2rem;
-    align-items: center;
-    gap: 0.125rem;
-    padding: 0.125rem;
-}
-
-.crm-report-graph-toolbar .crm-report-chart-tabs > .fi-btn {
-    height: 1.75rem;
-    padding: 0 0.625rem !important;
-}
-
-.crm-report-chart-tabs > .fi-btn {
-    margin: 0 !important;
-    outline: none !important;
-}
-
-.crm-report-chart-tabs > .fi-btn:focus-visible {
-    box-shadow: 0 0 0 2px var(--color-primary-500) !important;
-}
-
-.crm-report-graph-toolbar .crm-report-chart-tabs {
-    gap: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-.crm-report-graph-toolbar .crm-report-chart-tabs > .fi-btn {
-    height: 100%;
-    border-radius: 0 !important;
-}
-
-.crm-report-graph-toolbar .crm-report-chart-tabs > .fi-btn:first-child {
-    border-start-start-radius: 0.5rem !important;
-    border-end-start-radius: 0.5rem !important;
-}
-
-.crm-report-graph-toolbar .crm-report-chart-tabs > .fi-btn:last-child {
-    border-start-end-radius: 0.5rem !important;
-    border-end-end-radius: 0.5rem !important;
 }

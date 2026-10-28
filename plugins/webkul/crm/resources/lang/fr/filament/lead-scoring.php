@@ -6,8 +6,9 @@ return [
     'convert-100' => 'Une piste à 100 % de probabilité ne peut pas être convertie. Baissez d\'abord sa probabilité.',
 
     'popover' => [
-        'badge'      => 'Probabilité calculée par IA',
-        'chances'    => 'Chances de gagner calculées par IA pour',
+        'heading'    => 'Détails de la probabilité',
+        'computed'   => 'Probabilité calculée',
+        'team'       => 'Équipe commerciale',
         'no-team'    => 'Pas d\'équipe commerciale',
         'no-history' => 'Pas encore assez d\'historique de gains et de pertes pour calculer une probabilité.',
         'manual'     => 'La probabilité a été saisie à la main ; voici celle calculée.',

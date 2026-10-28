@@ -16,6 +16,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\Activi
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 
 require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
@@ -130,5 +131,6 @@ it('excludes the activity and report widgets from shield', function () {
         ActivitiesByTypeChart::class,
         ActivitiesByUserChart::class,
         ReportChart::class,
+        RecordsChart::class,
     ]);
 });

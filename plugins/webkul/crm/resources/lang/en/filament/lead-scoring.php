@@ -6,8 +6,9 @@ return [
     'convert-100' => 'A lead at 100% probability cannot be converted. Lower its probability first.',
 
     'popover' => [
-        'badge'      => 'AI-computed probability',
-        'chances'    => 'AI-computed chances of winning for',
+        'heading'    => 'Probability details',
+        'computed'   => 'Computed probability',
+        'team'       => 'Sales team',
         'no-team'    => 'No sales team',
         'no-history' => 'Not enough won and lost history yet to compute a probability.',
         'manual'     => 'The probability was set by hand; this is the computed one.',

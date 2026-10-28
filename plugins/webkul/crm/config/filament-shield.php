@@ -25,6 +25,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 
 $basic = ['view_any', 'view', 'create', 'update'];
 $delete = ['delete', 'delete_any'];
@@ -72,6 +73,7 @@ return [
             ActivitiesByTypeChart::class,
             ActivitiesByUserChart::class,
             ReportChart::class,
+            RecordsChart::class,
         ],
     ],
 ];

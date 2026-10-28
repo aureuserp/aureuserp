@@ -10,7 +10,6 @@ use Webkul\Crm\Filament\Clusters\Reporting;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\GraphForecast;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\KanbanForecast;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\ListForecast;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\SummaryForecast;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Concerns\IsCRMReportResource;
 use Webkul\Crm\Filament\Exports\ForecastExporter;
@@ -75,7 +74,6 @@ class ForecastResource extends Resource
         return [
             'index'   => ['heroicon-o-view-columns', 'kanban', __('crm::filament/clusters/reporting/report.views.kanban')],
             'graph'   => ['heroicon-o-chart-bar', 'graph', __('crm::filament/clusters/reporting/report.views.graph')],
-            'summary' => ['heroicon-o-table-cells', 'summary', __('crm::filament/clusters/reporting/report.views.summary')],
             'list'    => ['heroicon-o-list-bullet', 'list', __('crm::filament/clusters/reporting/report.views.list')],
         ];
     }
@@ -107,7 +105,6 @@ class ForecastResource extends Resource
         return [
             'index'   => KanbanForecast::route('/'),
             'graph'   => GraphForecast::route('/graph'),
-            'summary' => SummaryForecast::route('/summary'),
             'list'    => ListForecast::route('/list'),
         ];
     }

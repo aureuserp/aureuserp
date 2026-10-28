@@ -6,7 +6,6 @@ use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Locked;
-use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
@@ -45,7 +44,7 @@ class ReportChart extends ChartWidget
     protected ?string $pollingInterval = null;
 
     protected const COLORS = [
-        '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#0ea5e9', '#8b5cf6',
+        '#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#0ea5e9', '#8b5cf6',
         '#f97316', '#14b8a6', '#ec4899', '#84cc16', '#64748b', '#a855f7',
     ];
 
@@ -66,7 +65,7 @@ class ReportChart extends ChartWidget
 
     protected function getType(): string
     {
-        return static::chartType($this->getReportFilters())->value;
+        return 'bar';
     }
 
     protected function getOptions(): array
@@ -89,7 +88,7 @@ class ReportChart extends ChartWidget
     {
         return [
             'heading' => static::heading($report, $filters),
-            'type'    => static::chartType($filters)->value,
+            'type'    => 'bar',
             'data'    => static::data($report, $query, $filters),
             'options' => static::options($filters),
         ];
@@ -103,23 +102,9 @@ class ReportChart extends ChartWidget
         ]);
     }
 
-    public static function chartType(array $filters): ReportChartType
-    {
-        return ReportChartType::tryFrom((string) ($filters['chart_type'] ?? '')) ?? ReportChartType::BAR;
-    }
-
     public static function options(array $filters): array
     {
-        if (static::chartType($filters) === ReportChartType::PIE) {
-            return [
-                'scales' => [
-                    'x' => ['display' => false],
-                    'y' => ['display' => false],
-                ],
-            ];
-        }
-
-        $isStacked = static::chartType($filters) === ReportChartType::BAR && filled($filters['split_by'] ?? null);
+        $isStacked = filled($filters['split_by'] ?? null);
 
         return [
             'scales' => [
@@ -131,32 +116,18 @@ class ReportChart extends ChartWidget
 
     public static function data(string $report, Builder $query, array $filters): array
     {
-        $isPie = static::chartType($filters) === ReportChartType::PIE;
-
         $data = $report::aggregate(
             $query,
             (string) ($filters['group_by'] ?? $report::getDefaultGroupBy()),
-            $isPie ? null : ($filters['split_by'] ?? null),
+            $filters['split_by'] ?? null,
             (string) ($filters['measure'] ?? $report::getDefaultMeasure()),
         );
-
-        if ($isPie) {
-            return [
-                'datasets' => [[
-                    'label'           => $data['series'][0]['label'] ?? '',
-                    'data'            => $data['series'][0]['data'] ?? [],
-                    'backgroundColor' => array_map(fn (int $index): string => static::COLORS[$index % count(static::COLORS)], array_keys($data['labels'])),
-                ]],
-                'labels' => $data['labels'],
-            ];
-        }
 
         return [
             'datasets' => collect($data['series'])->values()->map(fn (array $series, int $index): array => [
                 'label'           => $series['label'],
                 'data'            => $series['data'],
                 'backgroundColor' => static::COLORS[$index % count(static::COLORS)],
-                'borderColor'     => static::COLORS[$index % count(static::COLORS)],
                 'maxBarThickness' => 56,
             ])->all(),
             'labels' => $data['labels'],

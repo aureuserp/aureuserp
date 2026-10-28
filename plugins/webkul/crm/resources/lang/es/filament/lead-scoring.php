@@ -6,8 +6,9 @@ return [
     'convert-100' => 'Un lead con 100 % de probabilidad no se puede convertir. Baje primero su probabilidad.',
 
     'popover' => [
-        'badge'      => 'Probabilidad calculada por IA',
-        'chances'    => 'Probabilidad de ganar calculada por IA para',
+        'heading'    => 'Detalles de la probabilidad',
+        'computed'   => 'Probabilidad calculada',
+        'team'       => 'Equipo de ventas',
         'no-team'    => 'Sin equipo de ventas',
         'no-history' => 'Aún no hay suficiente historial de ganados y perdidos para calcular una probabilidad.',
         'manual'     => 'La probabilidad se fijó a mano; esta es la calculada.',

@@ -64,7 +64,7 @@ class OpportunityForm
                                             ->maxValue(100)
                                             ->suffix('%')
                                             ->placeholder(__('crm::filament/lead-scoring.automatic'))
-                                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::formResetAction()]),
+                                            ->afterLabel([ProbabilityHint::formResetAction(), ProbabilityHint::detailsAction()]),
                                         TextInput::make('recurring_revenue')
                                             ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
                                             ->numeric()

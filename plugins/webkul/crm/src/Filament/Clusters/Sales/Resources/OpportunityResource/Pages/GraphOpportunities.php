@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Concerns\ShowsLeadsGraph;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 
 class GraphOpportunities extends ListOpportunities
 {
@@ -35,7 +36,7 @@ class GraphOpportunities extends ListOpportunities
     {
         return parent::table($table)
             ->paginated(false)
-            ->emptyState(fn () => view('crm::filament.leads.graph', ['chart' => $this->getRecordsGraph()]));
+            ->emptyState(fn () => RecordsChart::embedGraph($this->getRecordsGraph()));
     }
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator

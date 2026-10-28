@@ -3,7 +3,6 @@
 use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
@@ -124,7 +123,7 @@ it('draws a bar chart with one dataset per split, stacked', function () {
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => ReportChartType::BAR->value],
+        'pageFilters' => [...$filters, 'split_by' => 'type'],
     ]);
 
     $data = $component->invade()->getData();
@@ -148,74 +147,24 @@ it('draws a bar chart with one dataset per split, stacked', function () {
         ->and($byLabel[__('crm::models/lead.title')])->toBe([0.0, 1.0]);
 });
 
-it('does not stack a bar chart without a split', function () {
+it('draws a single unstacked bar series without a split', function () {
     CRMHelper::actingAs(['view_any_crm_lead::analysis']);
 
     [, , $filters] = reportChartFixture();
 
     $component = Livewire::test(ReportChart::class, [
         'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => '', 'chart_type' => ReportChartType::BAR->value],
+        'pageFilters' => [...$filters, 'split_by' => ''],
     ]);
 
     $data = $component->invade()->getData();
     $options = $component->invade()->getOptions();
 
-    expect($data['datasets'])->toHaveCount(1)
-        ->and($data['datasets'][0]['label'])->toBe('Count')
-        ->and($data['datasets'][0]['data'])->toBe([2.0, 2.0])
+    expect($component->invade()->getType())->toBe('bar')
         ->and($options['scales']['x']['stacked'])->toBeFalse()
-        ->and($options['scales']['y']['stacked'])->toBeFalse();
-});
-
-it('does not stack a line chart even when split', function () {
-    CRMHelper::actingAs(['view_any_crm_lead::analysis']);
-
-    [, , $filters] = reportChartFixture();
-
-    $component = Livewire::test(ReportChart::class, [
-        'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => ReportChartType::LINE->value],
-    ]);
-
-    $options = $component->invade()->getOptions();
-
-    expect($component->invade()->getType())->toBe('line')
-        ->and($component->invade()->getData()['datasets'])->toHaveCount(2)
-        ->and($options['scales']['x']['stacked'])->toBeFalse();
-});
-
-it('draws a pie chart as a single dataset with a color per slice, ignoring the split', function () {
-    CRMHelper::actingAs(['view_any_crm_lead::analysis']);
-
-    [, , $filters] = reportChartFixture();
-
-    $component = Livewire::test(ReportChart::class, [
-        'resource'    => LeadAnalysisResource::class,
-        'pageFilters' => [...$filters, 'split_by' => 'type', 'chart_type' => ReportChartType::PIE->value],
-    ]);
-
-    $data = $component->invade()->getData();
-    $options = $component->invade()->getOptions();
-
-    expect($component->invade()->getType())->toBe('pie')
-        ->and($data['labels'])->toBe(['Chart Stage Alpha', 'Chart Stage Beta'])
         ->and($data['datasets'])->toHaveCount(1)
-        ->and($data['datasets'][0]['data'])->toBe([2.0, 2.0])
-        ->and($data['datasets'][0]['backgroundColor'])->toBeArray()->toHaveCount(2)
-        ->and($options['scales']['x']['display'])->toBeFalse()
-        ->and($options['scales']['y']['display'])->toBeFalse();
-});
-
-it('falls back to a bar chart for an unknown chart type', function () {
-    CRMHelper::actingAs(['view_any_crm_forecast']);
-
-    $component = Livewire::test(ReportChart::class, [
-        'resource'    => ForecastResource::class,
-        'pageFilters' => ['chart_type' => 'radar'],
-    ]);
-
-    expect($component->invade()->getType())->toBe('bar');
+        ->and($data['datasets'][0]['label'])->toBe('Count')
+        ->and($data['datasets'][0]['data'])->toBe([2.0, 2.0]);
 });
 
 it('uses the report defaults for filters the page does not set', function () {

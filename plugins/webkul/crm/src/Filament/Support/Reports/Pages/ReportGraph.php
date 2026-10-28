@@ -8,7 +8,6 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Session;
-use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
@@ -23,9 +22,6 @@ abstract class ReportGraph extends ListRecords
     #[Session]
     public ?string $graphSplitBy = null;
 
-    #[Session]
-    public ?string $graphChartType = null;
-
     public function mount(): void
     {
         parent::mount();
@@ -34,7 +30,6 @@ abstract class ReportGraph extends ListRecords
 
         $this->graphMeasure ??= $defaults['measure'];
         $this->graphSplitBy ??= $defaults['split_by'] ?? '';
-        $this->graphChartType ??= $defaults['chart_type'];
     }
 
     protected function getReport(): string
@@ -93,7 +88,6 @@ abstract class ReportGraph extends ListRecords
             'measure'    => array_key_exists((string) $this->graphMeasure, $report::measures()) ? $this->graphMeasure : $defaults['measure'],
             'group_by'   => $this->getTableGrouping()?->getId() ?? $defaults['group_by'],
             'split_by'   => filled($splitBy) && $report::getDimension($splitBy) ? $splitBy : null,
-            'chart_type' => (ReportChartType::tryFrom((string) $this->graphChartType) ?? ReportChartType::from($defaults['chart_type']))->value,
         ];
     }
 

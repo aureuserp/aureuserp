@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'counter' => ':characters caractères, tient en :parts SMS (:encoding)',
-
     'form' => [
         'international-helper' => 'Indiquez l\'indicatif du pays (par exemple +91 98765 43210) ou définissez un pays sur l\'enregistrement.',
     ],

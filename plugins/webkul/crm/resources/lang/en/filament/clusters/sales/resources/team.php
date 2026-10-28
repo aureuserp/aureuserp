@@ -30,14 +30,16 @@ return [
     ],
 
     'grid' => [
-        'new-opportunities'  => '{1} :count new opportunity|[0,*] :count new opportunities',
         'quotations'         => '{1} :count Quotation|[0,*] :count Quotations',
         'configuration'      => 'Configuration',
         'menu'               => 'Team menu',
         'open-opportunities' => '{1} :count Open Opportunity|[0,*] :count Open Opportunities',
         'orders-to-invoice'  => '{1} :count Order to Invoice|[0,*] :count Orders to Invoice',
         'chart'              => 'New opportunities per week',
-        'target-progress'    => 'Invoiced this month: :invoiced of :target',
+        'sample-data'        => 'Sample data',
+        'new'                => 'New',
+        'invoiced-month'     => 'Invoiced This Month',
+        'of-target'          => ':invoiced of :target',
     ],
 
     'grid-menu' => [
@@ -49,6 +51,6 @@ return [
         'sales-orders'  => 'Sales Orders',
         'forecast'      => 'Forecast',
         'activities'    => 'Activities',
-        'no-color'      => 'No color',
+        'color'         => 'Color',
     ],
 ];

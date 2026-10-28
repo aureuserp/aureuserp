@@ -1,7 +1,6 @@
 @php
     use Illuminate\Support\Number;
     use Webkul\Crm\Enums\ActivityDueStatus;
-    use Webkul\Crm\Enums\LeadColor;
     use Webkul\Crm\Enums\OpportunityPriority;
     use Webkul\Crm\Filament\Support\LeadResourceResolver;
 
@@ -10,8 +9,8 @@
     $resource = LeadResourceResolver::resourceFor($record);
     $canEdit = $resource::canEdit($record);
     $canDelete = $resource::canForceDelete($record);
-    $leadColor = LeadColor::tryFrom((int) $record->color);
-    $colorHex = $leadColor?->getHex();
+    $colorHex = filled($record->color) ? $record->color : null;
+    $status = $record->trashed() ? 'lost' : ($record->isWon() ? 'won' : null);
     $currency = $record->company?->currency?->code ?? 'USD';
     $priority = $record->priority?->value ?? 0;
     $maxPriority = OpportunityPriority::VERY_HIGH->value;
@@ -53,22 +52,9 @@
     x-on:focusin.once="menusReady = true"
     x-on:click="if (! (typeof dragStarted !== 'undefined' && dragStarted) && ! $event.target.closest('[data-card-control]')) window.location.href = @js($url)"
     class="fi-kanban-card group relative cursor-pointer rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-950/5 transition-shadow hover:shadow-md dark:bg-gray-900 dark:ring-white/10"
-    @if ($colorHex) style="border-inline-start: 4px solid {{ $colorHex }};" @endif
 >
-    @if ($ribbon = $record->trashed() ? 'lost' : ($record->isWon() ? 'won' : null))
-        <div class="pointer-events-none absolute end-0 top-0 h-16 w-16 overflow-hidden rounded-se-lg" aria-hidden="true">
-            <div @class([
-                'absolute -end-7 top-3 w-24 rotate-45 py-0.5 text-center text-[10px] font-bold uppercase tracking-wide text-white shadow-sm',
-                'bg-success-600' => $ribbon === 'won',
-                'bg-danger-600' => $ribbon === 'lost',
-            ])>
-                {{ $ribbon === 'won' ? __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.won') : __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.lost') }}
-            </div>
-        </div>
-    @endif
-
     <div class="flex items-start justify-between gap-2">
-        <h4 @class(['text-sm font-semibold text-gray-950 dark:text-white', 'pe-8' => $record->trashed() || $record->isWon()]) title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.title') }}: {{ $record->name }}">
+        <h4 class="text-sm font-semibold text-gray-950 dark:text-white" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.title') }}: {{ $record->name }}">
             {{ $record->name }}
         </h4>
 
@@ -97,47 +83,18 @@
                             </x-filament::dropdown.list.item>
                         @endif
 
+                        @if ($canEdit)
+                            <x-filament::dropdown.list.item icon="heroicon-m-swatch" wire:click="mountAction('kanbanCardColor', { record: '{{ $recordId }}' })">
+                                {{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color') }}
+                            </x-filament::dropdown.list.item>
+                        @endif
+
                         @if ($canDelete)
                             <x-filament::dropdown.list.item icon="heroicon-m-trash" color="danger" wire:click="mountAction('deleteKanbanCard', { record: '{{ $recordId }}' })">
                                 {{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.delete') }}
                             </x-filament::dropdown.list.item>
                         @endif
                     </x-filament::dropdown.list>
-
-                    @if ($canEdit)
-                        <x-filament::dropdown.list>
-                            <div class="px-2 py-1">
-                                <p class="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color') }}</p>
-                                <div class="grid grid-cols-6 gap-1.5">
-                                    <button
-                                        type="button"
-                                        wire:click="setKanbanCardColor('{{ $recordId }}', 0)"
-                                        x-on:click="close()"
-                                        title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.no-color') }}"
-                                        class="flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white dark:border-white/20 dark:bg-gray-800"
-                                    >
-                                        @if (! $colorHex)
-                                            <x-filament::icon icon="heroicon-m-check" class="h-3.5 w-3.5 text-gray-600" />
-                                        @endif
-                                    </button>
-                                    @foreach (LeadColor::cases() as $cardColor)
-                                        <button
-                                            type="button"
-                                            wire:click="setKanbanCardColor('{{ $recordId }}', {{ $cardColor->value }})"
-                                            x-on:click="close()"
-                                            title="{{ $cardColor->getLabel() }}"
-                                            class="flex h-6 w-6 items-center justify-center rounded-full"
-                                            style="background-color: {{ $cardColor->getHex() }};"
-                                        >
-                                            @if ($leadColor === $cardColor)
-                                                <x-filament::icon icon="heroicon-m-check" class="h-3.5 w-3.5 text-white" />
-                                            @endif
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </x-filament::dropdown.list>
-                    @endif
                 </x-filament::dropdown>
                     </div>
                 </template>
@@ -195,89 +152,43 @@
                 </div>
             @endif
 
-            <div data-card-control>
-                <template x-if="! menusReady">
-                    <button
-                            type="button"
-                            class="flex items-center rounded-md p-0.5 hover:bg-gray-100 dark:hover:bg-white/10 {{ $activityColor }}"
-                            title="{{ $activityTitle }}"
-                            aria-label="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities') }}"
-                        >
-                            <x-filament::icon :icon="$activityIcon($activities->first())" class="h-4 w-4" />
-                        </button>
-                </template>
-
-                <template x-if="menusReady">
-                    <div>
-                <x-filament::dropdown placement="bottom-start" teleport width="sm">
-                    <x-slot name="trigger">
-                        <button
-                            type="button"
-                            class="flex items-center rounded-md p-0.5 hover:bg-gray-100 dark:hover:bg-white/10 {{ $activityColor }}"
-                            title="{{ $activityTitle }}"
-                            aria-label="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities') }}"
-                        >
-                            <x-filament::icon :icon="$activityIcon($activities->first())" class="h-4 w-4" />
-                        </button>
-                    </x-slot>
-
-                    <div class="p-2">
-                        <p class="mb-1 px-1 text-xs font-semibold text-gray-500 dark:text-gray-400">{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities') }}</p>
-
-                        @forelse ($activities as $activity)
-                            @php
-                                $status = $activity->getDueStatus();
-                            @endphp
-                            <div class="flex items-start gap-2 rounded-md px-1 py-1.5">
-                                <x-filament::icon
-                                    :icon="$activityIcon($activity)"
-                                    @class([
-                                        'mt-0.5 h-4 w-4 shrink-0',
-                                        'text-danger-600 dark:text-danger-400' => $status === ActivityDueStatus::OVERDUE,
-                                        'text-warning-600 dark:text-warning-400' => $status === ActivityDueStatus::TODAY,
-                                        'text-success-600 dark:text-success-400' => $status === ActivityDueStatus::PLANNED,
-                                    ])
-                                />
-                                <div class="min-w-0 text-sm">
-                                    <p class="font-medium text-gray-950 dark:text-white">{{ $activity->activityType?->name }}@if ($activity->summary): {{ $activity->summary }}@endif</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ $status->getLabel() }}@if ($activity->date_deadline) · {{ $activity->date_deadline->isToday() ? __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.today') : $activity->date_deadline->diffForHumans(['parts' => 1]) }}@endif
-                                    </p>
-                                </div>
-                            </div>
-                        @empty
-                            <p class="px-1 py-2 text-xs italic text-gray-500 dark:text-gray-400">{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.no-activities') }}</p>
-                        @endforelse
-
-                        @if ($canEdit)
-                            <button
-                                type="button"
-                                wire:click="mountAction('scheduleKanbanActivity', { record: '{{ $recordId }}' })"
-                                x-on:click="close()"
-                                class="mt-1 flex w-full items-center justify-center gap-1 rounded-md bg-gray-100 px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
-                            >
-                                <x-filament::icon icon="heroicon-m-plus" class="h-4 w-4" />
-                                {{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.schedule-activity') }}
-                            </button>
-                        @endif
-                    </div>
-                </x-filament::dropdown>
-                    </div>
-                </template>
-            </div>
+            <button
+                type="button"
+                data-card-control
+                wire:click="mountAction('{{ $activities->isEmpty() && $canEdit ? 'scheduleKanbanActivity' : 'kanbanCardActivities' }}', { record: '{{ $recordId }}' })"
+                class="flex items-center rounded-md p-0.5 hover:bg-gray-100 dark:hover:bg-white/10 {{ $activityColor }}"
+                title="{{ $activityTitle }}"
+                aria-label="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities') }}"
+            >
+                <x-filament::icon :icon="$activityIcon($activities->first())" class="h-4 w-4" />
+            </button>
         </div>
 
-        @if ($salesperson)
-            <span
-                class="crm-kanban-avatar flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full text-[10px] font-semibold"
-                title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.salesperson') }}: {{ $salesperson->name }}"
-            >
-                @if ($avatar = $salesperson->avatar_url)
-                    <img src="{{ $avatar }}" alt="{{ $salesperson->name }}" class="h-full w-full object-cover" />
-                @else
-                    {{ $initials }}
+        @if ($colorHex || $status || $salesperson)
+            <div class="flex items-center gap-1.5">
+                @if ($colorHex)
+                    <span class="crm-kanban-color-dot" style="background-color: {{ $colorHex }};" title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color') }}"></span>
                 @endif
-            </span>
+
+                @if ($status)
+                    <x-filament::badge size="sm" :color="$status === 'won' ? 'success' : 'danger'">
+                        {{ $status === 'won' ? __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.won') : __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.lost') }}
+                    </x-filament::badge>
+                @endif
+
+                @if ($salesperson)
+                    <span
+                        class="crm-kanban-avatar flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full text-[10px] font-semibold"
+                        title="{{ __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.salesperson') }}: {{ $salesperson->name }}"
+                    >
+                        @if ($avatar = $salesperson->avatar_url)
+                            <img src="{{ $avatar }}" alt="{{ $salesperson->name }}" class="h-full w-full object-cover" />
+                        @else
+                            {{ $initials }}
+                        @endif
+                    </span>
+                @endif
+            </div>
         @endif
     </div>
 </div>

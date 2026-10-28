@@ -94,7 +94,6 @@ class Lead extends Model
         'is_automated_probability' => 'boolean',
         'type'                     => LeadType::class,
         'priority'                 => OpportunityPriority::class,
-        'color'                    => 'integer',
         'expected_closing_date'    => 'date',
         'assigned_at'              => 'datetime',
         'closed_at'                => 'datetime',

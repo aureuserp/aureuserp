@@ -98,6 +98,7 @@ class CRMServiceProvider extends PackageServiceProvider
                 '2026_10_26_000040_create_crm_reveal_rule_roles_table',
                 '2026_10_26_000041_add_contact_columns_to_crm_reveal_rules_table',
                 '2026_10_26_000042_add_color_to_crm_leads_table',
+                '2026_10_28_000043_change_color_to_hex_on_crm_leads_table',
             ])
             ->runsMigrations()
             ->hasSettings([

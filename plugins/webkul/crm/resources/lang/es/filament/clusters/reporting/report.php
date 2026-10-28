@@ -18,7 +18,6 @@ return [
         'measure'        => 'Medida',
         'split-by'       => 'Dividir por',
         'no-split'       => 'Sin división',
-        'chart-type'     => 'Gráfico',
         'salespeople'    => 'Comerciales',
         'teams'          => 'Equipos de ventas',
     ],

@@ -11,6 +11,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Filament\Widgets\Concerns\StylesCRMDashboardCharts;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Sale\Models\Order;
 
 class GraphQuotations extends ListQuotations
@@ -36,7 +37,7 @@ class GraphQuotations extends ListQuotations
     {
         return parent::table($table)
             ->paginated(false)
-            ->emptyState(fn () => view('crm::filament.leads.graph', ['chart' => $this->getRecordsGraph()]));
+            ->emptyState(fn () => RecordsChart::embedGraph($this->getRecordsGraph()));
     }
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator

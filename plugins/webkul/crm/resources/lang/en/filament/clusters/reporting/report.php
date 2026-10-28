@@ -18,7 +18,6 @@ return [
         'measure'        => 'Measure',
         'split-by'       => 'Split by',
         'no-split'       => 'No split',
-        'chart-type'     => 'Chart',
         'salespeople'    => 'Salespeople',
         'teams'          => 'Sales Teams',
     ],

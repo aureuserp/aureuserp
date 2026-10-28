@@ -59,7 +59,7 @@ class OpportunityInfolist
                                             ->label(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.general.entries.probability'))
                                             ->numeric(decimalPlaces: 2)
                                             ->suffix('%')
-                                            ->afterLabel([ProbabilityHint::component(), ProbabilityHint::viewResetAction()]),
+                                            ->afterLabel([ProbabilityHint::viewResetAction(), ProbabilityHint::detailsAction()]),
                                         TextEntry::make('recurring_revenue')
                                             ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
                                             ->money(fn (Lead $record): ?string => $record->company?->currency?->code)

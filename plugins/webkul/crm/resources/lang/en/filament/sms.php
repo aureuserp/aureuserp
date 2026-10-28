@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'counter' => ':characters characters, fits in :parts SMS (:encoding)',
-
     'form' => [
         'international-helper' => 'Include the country code (for example +91 98765 43210), or set a country on the record.',
     ],

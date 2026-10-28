@@ -31,9 +31,10 @@ class TeamDashboard
         $ordersToInvoice = Order::query()
             ->whereIn('team_id', $teamIds)
             ->where('invoice_status', InvoiceStatus::TO_INVOICE)
-            ->selectRaw('team_id, count(*) as aggregate')
+            ->selectRaw('team_id, count(*) as order_count, sum(amount_untaxed) as order_amount')
             ->groupBy('team_id')
-            ->pluck('aggregate', 'team_id');
+            ->get()
+            ->keyBy('team_id');
 
         $quotations = Order::query()
             ->whereIn('team_id', $teamIds)
@@ -72,11 +73,12 @@ class TeamDashboard
                 $created = ($opportunities->get($teamId) ?? collect())->pluck('created_at');
 
                 return [$teamId => [
-                    'quotations'        => (int) ($quotations->get($teamId)?->quotation_count ?? 0),
-                    'quotations_amount' => (float) ($quotations->get($teamId)?->quotation_amount ?? 0),
-                    'orders_to_invoice' => (int) ($ordersToInvoice[$teamId] ?? 0),
-                    'invoiced_month'    => (float) ($invoices->get($teamId)?->sum('dashboard_amount') ?? 0),
-                    'weeks'             => $weeks->map(fn (array $week): array => [
+                    'quotations'               => (int) ($quotations->get($teamId)?->quotation_count ?? 0),
+                    'quotations_amount'        => (float) ($quotations->get($teamId)?->quotation_amount ?? 0),
+                    'orders_to_invoice'        => (int) ($ordersToInvoice->get($teamId)?->order_count ?? 0),
+                    'orders_to_invoice_amount' => (float) ($ordersToInvoice->get($teamId)?->order_amount ?? 0),
+                    'invoiced_month'           => (float) ($invoices->get($teamId)?->sum('dashboard_amount') ?? 0),
+                    'weeks'                    => $weeks->map(fn (array $week): array => [
                         'label' => $week['label'],
                         'count' => $created->filter(fn ($date): bool => $date->between($week['start'], $week['end']->endOfDay()))->count(),
                     ])->all(),

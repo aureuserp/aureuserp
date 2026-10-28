@@ -3,12 +3,13 @@
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Table;
 use Livewire\Attributes\Url;
 use Webkul\Crm\Enums\GridLayout;
-use Webkul\Crm\Enums\LeadColor;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource as ConfigurationTeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Tables\TeamsTable;
@@ -64,17 +65,21 @@ class ListTeams extends ListRecords
             ?? app(TeamDashboard::class)->forTeams([$team->getKey()])[$team->getKey()];
     }
 
-    public function setTeamColor(int $teamId, int $color): void
+    public function teamColorAction(): Action
     {
-        $team = Team::query()->find($teamId);
-
-        if (! $team
-            || ! ConfigurationTeamResource::canEdit($team)
-            || ($color !== 0 && ! LeadColor::tryFrom($color))) {
-            return;
-        }
-
-        $team->update(['color' => LeadColor::tryFrom($color)?->getHex()]);
+        return Action::make('teamColor')
+            ->record(fn (array $arguments): ?Team => Team::query()->find($arguments['team'] ?? null))
+            ->modalHeading(__('crm::filament/clusters/sales/resources/team.grid-menu.color'))
+            ->modalWidth('sm')
+            ->modalFooterActionsAlignment(Alignment::End)
+            ->authorize(fn (?Team $record): bool => $record && ConfigurationTeamResource::canEdit($record))
+            ->fillForm(fn (Team $record): array => ['color' => $record->color])
+            ->schema([
+                ColorPicker::make('color')
+                    ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.color'))
+                    ->hexColor(),
+            ])
+            ->action(fn (array $data, Team $record): bool => $record->update(['color' => filled($data['color'] ?? null) ? $data['color'] : null]));
     }
 
     public function getBreadcrumb(): string

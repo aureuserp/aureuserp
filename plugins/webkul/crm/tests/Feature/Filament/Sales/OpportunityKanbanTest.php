@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Actions\Testing\TestAction;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
@@ -488,19 +489,30 @@ describe('pipeline cards', function () {
         expect($opportunity->fresh()->priority)->toBe(OpportunityPriority::LOW);
     });
 
-    it('sets a card colour from the palette and ignores unknown colours', function () {
+    it('sets and clears a card colour with the colour picker', function () {
         CRMHelper::actingAsCRMUser(['opportunity']);
 
         $opportunity = CRMHelper::opportunity();
-        $component = Livewire::test(KanbanOpportunities::class);
 
-        $component->call('setKanbanCardColor', (string) $opportunity->id, 10);
+        Livewire::test(KanbanOpportunities::class)
+            ->callAction('kanbanCardColor', data: ['color' => '#30c381'], arguments: ['record' => $opportunity->id])
+            ->assertHasNoActionErrors();
 
-        expect($opportunity->fresh()->color)->toBe(10);
+        expect($opportunity->fresh()->color)->toBe('#30c381');
 
-        $component->call('setKanbanCardColor', (string) $opportunity->id, 99);
+        Livewire::test(KanbanOpportunities::class)
+            ->callAction('kanbanCardColor', data: ['color' => null], arguments: ['record' => $opportunity->id]);
 
-        expect($opportunity->fresh()->color)->toBe(10);
+        expect($opportunity->fresh()->color)->toBeNull();
+    });
+
+    it('hides the card colour picker without the edit permission', function () {
+        CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view']));
+
+        $opportunity = CRMHelper::opportunity();
+
+        Livewire::test(KanbanOpportunities::class)
+            ->assertActionHidden('kanbanCardColor', ['record' => $opportunity->id]);
     });
 
     it('counts each stage by activity state and filters a column from the progress bar', function () {
@@ -550,4 +562,21 @@ describe('pipeline cards', function () {
         Livewire::test(KanbanOpportunities::class)
             ->assertActionHidden('deleteKanbanCard', arguments: ['record' => (string) $kept->id]);
     });
+});
+
+it('lists a card\'s activities in a modal and opens the schedule form from it', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $opportunity = CRMHelper::opportunity();
+    pipelineActivity($opportunity, today()->addDay()->toDateString());
+
+    Livewire::test(KanbanOpportunities::class)
+        ->mountAction('kanbanCardActivities', ['record' => $opportunity->id])
+        ->assertActionMounted('kanbanCardActivities')
+        ->assertSee('Pipeline card activity')
+        ->callAction([
+            TestAction::make('kanbanCardActivities')->arguments(['record' => $opportunity->id]),
+            TestAction::make('scheduleAnotherKanbanActivity'),
+        ])
+        ->assertActionMounted('scheduleKanbanActivity');
 });

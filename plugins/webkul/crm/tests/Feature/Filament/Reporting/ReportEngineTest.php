@@ -6,7 +6,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 use Webkul\Crm\Enums\MeasureFormat;
-use Webkul\Crm\Enums\ReportChartType;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\ForecastReport;
@@ -63,7 +62,6 @@ describe('default filters', function () {
         expect($filters['measure'])->toBe('prorated_revenue')
             ->and($filters['group_by'])->toBe('expected_closing')
             ->and($filters['split_by'])->toBeNull()
-            ->and($filters['chart_type'])->toBe(ReportChartType::BAR->value)
             ->and($filters['presets'])->toEqualCanonicalizing(['my_pipeline', 'upcoming_closings', 'active'])
             ->and($filters['user_ids'])->toBe([])
             ->and($filters['team_ids'])->toBe([]);
@@ -75,7 +73,6 @@ describe('default filters', function () {
         expect($filters['measure'])->toBe('expected_revenue')
             ->and($filters['group_by'])->toBe('stage')
             ->and($filters['split_by'])->toBe('expected_closing')
-            ->and($filters['chart_type'])->toBe(ReportChartType::BAR->value)
             ->and($filters['presets'])->toBe(['active']);
     });
 
@@ -99,7 +96,7 @@ describe('default filters', function () {
 
     it('offers the expected filter keys for every report', function (string $report) {
         expect(array_keys($report::getDefaultFilters()))
-            ->toBe(['measure', 'group_by', 'split_by', 'chart_type', 'presets', 'user_ids', 'team_ids']);
+            ->toBe(['measure', 'group_by', 'split_by', 'presets', 'user_ids', 'team_ids']);
     })->with([ForecastReport::class, PipelineReport::class, LeadsAnalysisReport::class, ActivityReport::class]);
 
     it('only offers the record type dimension on the leads analysis', function () {
