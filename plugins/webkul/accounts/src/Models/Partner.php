@@ -4,8 +4,6 @@ namespace Webkul\Account\Models;
 
 use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Database\Factories\PartnerFactory;
-use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\MoveType;
 use Webkul\Partner\Database\Factories\PartnerFactory as BasePartnerFactory;
 use Webkul\Partner\Models\Partner as BasePartner;
 
@@ -82,20 +80,6 @@ class Partner extends BasePartner
     public function propertyInboundPaymentMethodLine()
     {
         return $this->belongsTo(PaymentMethodLine::class, 'property_inbound_payment_method_line_id');
-    }
-
-    public function invoices()
-    {
-        return $this->hasMany(Move::class, 'partner_id')
-            ->where('move_type', MoveType::OUT_INVOICE)
-            ->where('state', '!=', MoveState::DRAFT);
-    }
-
-    public function bills()
-    {
-        return $this->hasMany(Move::class, 'partner_id')
-            ->where('move_type', MoveType::IN_INVOICE)
-            ->where('state', '!=', MoveState::DRAFT);
     }
 
     protected static function newFactory(): BasePartnerFactory

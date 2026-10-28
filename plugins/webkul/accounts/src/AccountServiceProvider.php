@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\PartnerResource\Schemas\AccountPartnerSchema;
@@ -275,6 +277,14 @@ class AccountServiceProvider extends PackageServiceProvider
         Partner::resolveRelationUsing('propertySupplierPaymentTerm', fn (Partner $partner) => $partner->belongsTo(PaymentTerm::class, 'property_supplier_payment_term_id'));
         Partner::resolveRelationUsing('propertyOutboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_outbound_payment_method_line_id'));
         Partner::resolveRelationUsing('propertyInboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_inbound_payment_method_line_id'));
+
+        Partner::resolveRelationUsing('invoices', fn (Partner $partner) => $partner->hasMany(Move::class, 'partner_id')
+            ->where('move_type', MoveType::OUT_INVOICE)
+            ->where('state', '!=', MoveState::DRAFT));
+
+        Partner::resolveRelationUsing('bills', fn (Partner $partner) => $partner->hasMany(Move::class, 'partner_id')
+            ->where('move_type', MoveType::IN_INVOICE)
+            ->where('state', '!=', MoveState::DRAFT));
     }
 
     protected function contributeProductSchema(): void
