@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Factures',
+        'title' => 'Factures fournisseur',
     ],
 ];
