@@ -9,6 +9,8 @@ enum NavigationGroup: string implements HasIcon, HasLabel
 {
     case Dashboard = 'dashboard';
 
+    case Assets = 'assets';
+
     case Contact = 'contact';
 
     case Crm = 'crm';
@@ -56,6 +58,7 @@ enum NavigationGroup: string implements HasIcon, HasLabel
     {
         return match ($this) {
             self::Dashboard     => 'icon-dashboard',
+            self::Assets        => 'icon-assets',
             self::Contact       => 'icon-contacts',
             self::Crm           => 'icon-crm',
             self::Sale          => 'icon-sales',
