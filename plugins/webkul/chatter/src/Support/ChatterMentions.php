@@ -7,6 +7,7 @@ use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Throwable;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
+use Webkul\Support\Filament\Customization\PanelCustomizer;
 
 class ChatterMentions
 {
@@ -65,7 +66,7 @@ class ChatterMentions
     protected static function userUrl(string $id): ?string
     {
         try {
-            return UserResource::getUrl('view', ['record' => $id]);
+            return PanelCustomizer::resource(UserResource::class)::getUrl('view', ['record' => $id]);
         } catch (Throwable) {
             return null;
         }

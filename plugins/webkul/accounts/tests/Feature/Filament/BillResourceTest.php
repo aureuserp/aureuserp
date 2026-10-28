@@ -1,6 +1,8 @@
 <?php
 
+use Filament\Actions\Action;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Account\Enums\MoveState;
@@ -9,6 +11,7 @@ use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Resources\BillResource\Pages\CreateBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ListBills;
+use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\CancelAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ConfirmAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\PayAction;
@@ -18,6 +21,8 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Actions\SetAsCheckedAction
 use Webkul\Account\Models\Move;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Filament\Customization\PanelCustomizer;
+use Webkul\Support\Livewire\PageHeaderActions;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
@@ -174,4 +179,43 @@ it('registers a full payment and marks the bill paid through the action', functi
         ->callAction(PayAction::class);
 
     expect($bill->refresh()->payment_state)->toBe(PaymentState::PAID);
+});
+
+it('serves the host page on the route of a swapped record page', function () {
+    $route = Route::get('/page-swap-check/{record}', ViewBill::class);
+
+    PanelCustomizer::replacePage(ViewBill::class, EditBill::class);
+
+    try {
+        PanelCustomizer::swapPageRoutes();
+
+        expect($route->getAction('controller'))->toBe(EditBill::class)
+            ->and($route->getAction('uses'))->toBe(EditBill::class.'@__invoke');
+    } finally {
+        PanelCustomizer::flush();
+    }
+});
+
+it('shows host header actions on a page without changing the page', function () {
+    FilamentHelper::actingAs(['view_any_account_bill', 'update_account_bill']);
+
+    PanelCustomizer::headerActions(EditBill::class, fn (?Move $record) => [
+        Action::make('authorizeBillPayment')->action(fn (Move $record) => $record->update(['reference' => 'authorized'])),
+    ]);
+
+    try {
+        $bill = AccountHelper::invoice(MoveType::IN_INVOICE, null, null, ['invoice_date' => now()]);
+
+        Livewire::test(EditBill::class, ['record' => $bill->id])
+            ->assertOk()
+            ->assertSeeLivewire(PageHeaderActions::class);
+
+        Livewire::test(PageHeaderActions::class, ['page' => EditBill::class, 'model' => $bill::class, 'recordKey' => $bill->id])
+            ->assertActionExists('authorizeBillPayment')
+            ->callAction('authorizeBillPayment');
+
+        expect($bill->refresh()->reference)->toBe('authorized');
+    } finally {
+        PanelCustomizer::flush();
+    }
 });
