@@ -188,6 +188,7 @@ return [
                     'partner-address'      => 'Adresse du partenaire',
                     'lead-time'            => 'Délai',
                     'action-information'   => 'Informations sur l\'action',
+                    'lead-time-days'       => ':count jour|:count jours',
                 ],
             ],
 

@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    <title>{{ __('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title'), 'from' => \Carbon\Carbon::parse($data['date_from'])->format('M d, Y'), 'to' => \Carbon\Carbon::parse($data['date_to'])->format('M d, Y')]) }}</title>
+    <title>{{ __('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title'), 'from' => format_date($data['date_from']), 'to' => format_date($data['date_to'])]) }}</title>
     <style>
         html,
         body,
@@ -116,14 +116,15 @@
         }
         
         .page-number:after {
-            content: "Page " counter(page);
+            content: "{{ __('accounting::filament/clusters/reporting/pages/general-ledger.pdf.page') }} " counter(page);
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>{{ __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title') }}</h1>
-        <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('F j, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('F j, Y') }}</p>
+        <p>{{ __('accounting::filament/clusters/reporting/pages/general-ledger.pdf.period', ['from' => format_date($data['date_from'], 'LL'), 'to' => format_date($data['date_to'], 'LL')]) }}</p>
+        <p>{{ __('accounting::filament/clusters/reporting/pages/general-ledger.pdf.currency', ['currency' => $currency]) }}</p>
     </div>
 
     <table>
@@ -159,21 +160,21 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td class="text-right">{{ number_format($account->period_debit, 2) }}</td>
-                    <td class="text-right">{{ number_format($account->period_credit, 2) }}</td>
-                    <td class="text-right">{{ number_format($account->ending_balance, 2) }}</td>
+                    <td class="text-right">{{ format_number($account->period_debit) }}</td>
+                    <td class="text-right">{{ format_number($account->period_credit) }}</td>
+                    <td class="text-right">{{ format_number($account->ending_balance) }}</td>
                 </tr>
 
                 {{-- Opening Balance --}}
                 @if($account->opening_balance != 0 && $isExpanded)
                     <tr class="opening-balance">
                         <td class="move-row">{{ __('accounting::filament/clusters/reporting.common.opening-balance') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('m/d/Y') }}</td>
+                        <td>{{ format_date($data['date_from']) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td class="text-right">{{ number_format($account->opening_balance, 2) }}</td>
+                        <td class="text-right">{{ format_number($account->opening_balance) }}</td>
                     </tr>
                 @endif
 
@@ -185,12 +186,12 @@
                     @endphp
                     <tr>
                         <td class="move-row">{{ $move['move_name'] }}</td>
-                        <td>{{ \Carbon\Carbon::parse($move['date'])->format('m/d/Y') }}</td>
+                        <td>{{ format_date($move['date']) }}</td>
                         <td>{{ $move['name'] ?? '' }}</td>
                         <td>{{ $move['partner_name'] ?? '' }}</td>
-                        <td class="text-right">{{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}</td>
-                        <td class="text-right">{{ $move['credit'] > 0 ? number_format($move['credit'], 2) : '' }}</td>
-                        <td class="text-right">{{ number_format($runningBalance, 2) }}</td>
+                        <td class="text-right">{{ $move['debit'] > 0 ? format_number($move['debit']) : '' }}</td>
+                        <td class="text-right">{{ $move['credit'] > 0 ? format_number($move['credit']) : '' }}</td>
+                        <td class="text-right">{{ format_number($runningBalance) }}</td>
                     </tr>
                 @endforeach
                 @endif
@@ -202,8 +203,8 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td class="text-right">{{ number_format($totalDebit, 2) }}</td>
-                <td class="text-right">{{ number_format($totalCredit, 2) }}</td>
+                <td class="text-right">{{ format_number($totalDebit) }}</td>
+                <td class="text-right">{{ format_number($totalCredit) }}</td>
                 <td></td>
             </tr>
         </tbody>
@@ -211,7 +212,7 @@
 
     <div class="footer">
         <div class="page-number"></div>
-        <div>Generated on {{ now()->format('F j, Y \a\t g:i A') }}</div>
+        <div>{{ __('accounting::filament/clusters/reporting/pages/general-ledger.pdf.generated-on', ['date' => format_date(now(), 'LLL')]) }}</div>
     </div>
 </body>
 </html>

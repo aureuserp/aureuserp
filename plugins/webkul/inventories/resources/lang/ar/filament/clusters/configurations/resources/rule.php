@@ -188,6 +188,7 @@ return [
                     'partner-address'      => 'عنوان الشريك',
                     'lead-time'            => 'المهلة الزمنية',
                     'action-information'   => 'معلومات الإجراء',
+                    'lead-time-days'       => ':count يوم|:count أيام',
                 ],
             ],
 

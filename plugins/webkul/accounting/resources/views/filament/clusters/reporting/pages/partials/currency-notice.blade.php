@@ -10,17 +10,13 @@
     ])>
         @if ($notice['consolidated'])
             <p class="font-medium">
-                Consolidated across {{ $notice['company_count'] }} companies, shown in {{ $notice['currency'] }}.
+                {{ __('accounting::filament/clusters/reporting.common.currency-notice.consolidated', ['count' => $notice['company_count'], 'currency' => $notice['currency']]) }}
             </p>
         @endif
 
         @if ($notice['missing_rates'])
             <p @class(['mt-1' => $notice['consolidated']])>
-                No exchange rate found for
-                {{ implode(', ', $notice['missing_companies']) }}.
-                Amounts from
-                {{ count($notice['missing_companies']) === 1 ? 'this company' : 'these companies' }}
-                are included untranslated and the totals below are not reliable.
+                {{ trans_choice('accounting::filament/clusters/reporting.common.currency-notice.missing-rates', count($notice['missing_companies']), ['companies' => implode(', ', $notice['missing_companies'])]) }}
             </p>
         @endif
     </div>

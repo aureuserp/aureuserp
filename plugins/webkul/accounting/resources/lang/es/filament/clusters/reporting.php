@@ -25,6 +25,10 @@ return [
         'not-due'                  => 'No vencido',
         'no-data'                  => 'No hay datos disponibles',
         'no-accounts-transactions' => 'No hay cuentas con transacciones en este período',
+        'currency-notice'          => [
+            'consolidated'  => 'Consolidado en :count empresas, mostrado en :currency.',
+            'missing-rates' => 'No se encontró tipo de cambio para :companies. Los importes de esta empresa se incluyen sin convertir y los totales siguientes no son fiables.|No se encontró tipo de cambio para :companies. Los importes de estas empresas se incluyen sin convertir y los totales siguientes no son fiables.',
+        ],
     ],
     'pages' => [
         'balance-sheet' => [

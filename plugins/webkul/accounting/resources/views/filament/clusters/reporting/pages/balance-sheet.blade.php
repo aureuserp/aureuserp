@@ -9,10 +9,14 @@
         <x-filament::section>
             @php
                 $data = $this->balanceSheetData;
+                $currency = $this->reportCurrency();
             @endphp
             
             <x-slot name="heading">
-                Balance Sheet - As of {{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') }}
+                {{ __('accounting::filament/clusters/reporting/pages/balance-sheet.heading', [
+                    'report' => __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title'),
+                    'date'   => format_date($data['date']),
+                ]) }}
             </x-slot>
             
             {{-- Balance Sheet Table --}}
@@ -21,10 +25,10 @@
                     <thead class="bg-gray-50/50 dark:bg-white/5">
                         <tr>
                             <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Account
+                                {{ __('accounting::filament/clusters/reporting.common.account') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Balance
+                                {{ __('accounting::filament/clusters/reporting.common.balance') }}
                             </th>
                         </tr>
                     </thead>
@@ -62,7 +66,7 @@
                                                     {{ $account['code'] ? $account['code'] . ' - ' : '' }}{{ $account['name'] }}
                                                 </td>
                                                 <td class="px-3 py-1.5 text-right text-sm text-gray-900 dark:text-gray-100!">
-                                                    {{ number_format($account['balance'], 2) }}
+                                                    {{ money($account['balance'], $currency) }}
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -73,7 +77,7 @@
                                                 {{ $subsection['total_label'] }}
                                             </td>
                                             <td class="px-3 py-1.5 text-right text-gray-900 dark:text-white">
-                                                {{ number_format($subsection['total'], 2) }}
+                                                {{ money($subsection['total'], $currency) }}
                                             </td>
                                         </tr>
                                     @endif
@@ -86,7 +90,7 @@
                                     {{ $section['total_label'] }}
                                 </td>
                                 <td class="px-3 py-2 text-right text-gray-900 dark:text-white">
-                                    {{ number_format($section['total'], 2) }}
+                                    {{ money($section['total'], $currency) }}
                                 </td>
                             </tr>
                         @endforeach
@@ -97,7 +101,7 @@
                                 {{ $data['grand_total_label'] }}
                             </td>
                             <td class="px-3 py-2 text-right text-gray-900 dark:text-white">
-                                {{ number_format($data['grand_total'], 2) }}
+                                {{ money($data['grand_total'], $currency) }}
                             </td>
                         </tr>
                     </tbody>

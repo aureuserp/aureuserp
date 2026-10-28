@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    <title>{{ __('accounting::filament/clusters/reporting.pages.aged-receivable.navigation.title') }} - {{ $asOfDate }}</title>
+    <title>{{ __('accounting::filament/clusters/reporting.pages.aged-receivable.navigation.title') }} - {{ format_date($asOfDate) }}</title>
     <style>
         html,
         body,
@@ -109,7 +109,7 @@
 <body>
     <div class="header">
         <h1>{{ __('accounting::filament/clusters/reporting.pages.aged-receivable.navigation.title') }}</h1>
-        <p>As of {{ \Carbon\Carbon::parse($asOfDate)->format('F j, Y') }}</p>
+        <p>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.as-of', ['date' => format_date($asOfDate, 'LL')]) }}</p>
     </div>
 
     @if(empty($partners))
@@ -130,11 +130,11 @@
                 <tr>
                     <th>{{ __('accounting::filament/clusters/reporting.common.partner') }}</th>
                     <th>{{ __('accounting::filament/clusters/reporting.common.not-due') }}</th>
-                    <th>1-{{ $period }}</th>
-                    <th>{{ $period + 1 }}-{{ $period * 2 }}</th>
-                    <th>{{ ($period * 2) + 1 }}-{{ $period * 3 }}</th>
-                    <th>{{ ($period * 3) + 1 }}-{{ $period * 4 }}</th>
-                    <th>{{ $period * 4 }}+</th>
+                    <th>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.table.columns.period-range', ['from' => 1, 'to' => $period]) }}</th>
+                    <th>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.table.columns.period-range', ['from' => $period + 1, 'to' => $period * 2]) }}</th>
+                    <th>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.table.columns.period-range', ['from' => ($period * 2) + 1, 'to' => $period * 3]) }}</th>
+                    <th>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.table.columns.period-range', ['from' => ($period * 3) + 1, 'to' => $period * 4]) }}</th>
+                    <th>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.table.columns.older-than', ['days' => $period * 4]) }}</th>
                     <th>{{ __('accounting::filament/clusters/reporting.common.total') }}</th>
                 </tr>
             </thead>
@@ -151,25 +151,25 @@
                     @endphp
                     <tr>
                         <td>{{ $partner['partner_name'] }}</td>
-                        <td>{{ number_format($partner['at_date'], 2) }}</td>
-                        <td>{{ number_format($partner['period_1'], 2) }}</td>
-                        <td>{{ number_format($partner['period_2'], 2) }}</td>
-                        <td>{{ number_format($partner['period_3'], 2) }}</td>
-                        <td>{{ number_format($partner['period_4'], 2) }}</td>
-                        <td>{{ number_format($partner['older'], 2) }}</td>
-                        <td>{{ number_format($partner['total'], 2) }}</td>
+                        <td>{{ money($partner['at_date'], $currency) }}</td>
+                        <td>{{ money($partner['period_1'], $currency) }}</td>
+                        <td>{{ money($partner['period_2'], $currency) }}</td>
+                        <td>{{ money($partner['period_3'], $currency) }}</td>
+                        <td>{{ money($partner['period_4'], $currency) }}</td>
+                        <td>{{ money($partner['older'], $currency) }}</td>
+                        <td>{{ money($partner['total'], $currency) }}</td>
                     </tr>
                     
                     @if(in_array($partner['id'], $expandedPartners ?? []) && isset($partnerLines[$partner['id']]))
                         @foreach($partnerLines[$partner['id']] as $line)
                             <tr class="line-row">
                                 <td style="padding-left: 20px; font-weight: 400;">{{ $line['move_name'] }}</td>
-                                <td>{{ $line['at_date'] != 0 ? number_format($line['at_date'], 2) : '' }}</td>
-                                <td>{{ $line['period_1'] != 0 ? number_format($line['period_1'], 2) : '' }}</td>
-                                <td>{{ $line['period_2'] != 0 ? number_format($line['period_2'], 2) : '' }}</td>
-                                <td>{{ $line['period_3'] != 0 ? number_format($line['period_3'], 2) : '' }}</td>
-                                <td>{{ $line['period_4'] != 0 ? number_format($line['period_4'], 2) : '' }}</td>
-                                <td>{{ $line['older'] != 0 ? number_format($line['older'], 2) : '' }}</td>
+                                <td>{{ $line['at_date'] != 0 ? money($line['at_date'], $currency) : '' }}</td>
+                                <td>{{ $line['period_1'] != 0 ? money($line['period_1'], $currency) : '' }}</td>
+                                <td>{{ $line['period_2'] != 0 ? money($line['period_2'], $currency) : '' }}</td>
+                                <td>{{ $line['period_3'] != 0 ? money($line['period_3'], $currency) : '' }}</td>
+                                <td>{{ $line['period_4'] != 0 ? money($line['period_4'], $currency) : '' }}</td>
+                                <td>{{ $line['older'] != 0 ? money($line['older'], $currency) : '' }}</td>
                                 <td></td>
                             </tr>
                         @endforeach
@@ -178,13 +178,13 @@
 
                 <tr class="total-row">
                     <td>{{ __('accounting::filament/clusters/reporting.common.total') }}</td>
-                    <td>{{ number_format($totalAtDate, 2) }}</td>
-                    <td>{{ number_format($totalPeriod1, 2) }}</td>
-                    <td>{{ number_format($totalPeriod2, 2) }}</td>
-                    <td>{{ number_format($totalPeriod3, 2) }}</td>
-                    <td>{{ number_format($totalPeriod4, 2) }}</td>
-                    <td>{{ number_format($totalOlder, 2) }}</td>
-                    <td>{{ number_format($grandTotal, 2) }}</td>
+                    <td>{{ money($totalAtDate, $currency) }}</td>
+                    <td>{{ money($totalPeriod1, $currency) }}</td>
+                    <td>{{ money($totalPeriod2, $currency) }}</td>
+                    <td>{{ money($totalPeriod3, $currency) }}</td>
+                    <td>{{ money($totalPeriod4, $currency) }}</td>
+                    <td>{{ money($totalOlder, $currency) }}</td>
+                    <td>{{ money($grandTotal, $currency) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -192,7 +192,7 @@
 
     <div class="footer">
         <div class="page-number"></div>
-        <div>Generated on {{ now()->format('F j, Y \\a\\t g:i A') }}</div>
+        <div>{{ __('accounting::filament/clusters/reporting/pages/aged-receivable.footer.generated-on', ['date' => format_date(now(), 'LLL')]) }}</div>
     </div>
 </body>
 </html>

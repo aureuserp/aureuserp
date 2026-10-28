@@ -1,6 +1,7 @@
 <?php
 
 use ArPHP\I18N\Arabic;
+use Carbon\Carbon;
 use Filament\Forms\Components\Field;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
@@ -73,21 +74,13 @@ if (! function_exists('money')) {
 
         $currency = $currency instanceof Closure ? $currency() : ($currency ?? default_currency_code());
 
-        $locale = $locale instanceof Closure ? $locale() : ($locale ?? config('app.locale'));
+        $locale = $locale instanceof Closure ? $locale() : $locale;
 
         if ($divideBy > 0) {
             $amount /= $divideBy;
         }
 
-        if (SupportServiceProvider::isRtl()) {
-            return Number::currency($amount, $currency, 'en');
-        }
-
-        if (! str_contains($locale, '-u-nu-')) {
-            $locale .= '-u-nu-latn';
-        }
-
-        return Number::currency($amount, $currency, $locale);
+        return Number::currency($amount, $currency, number_locale($locale));
     }
 
     if (! function_exists('random_color')) {
@@ -128,6 +121,37 @@ if (! function_exists('money')) {
                 ),
             };
         }
+    }
+}
+
+if (! function_exists('number_locale')) {
+    function number_locale(?string $locale = null): string
+    {
+        if (SupportServiceProvider::isRtl()) {
+            return 'en';
+        }
+
+        $locale ??= app()->getLocale();
+
+        return str_contains($locale, '-u-nu-') ? $locale : $locale.'-u-nu-latn';
+    }
+}
+
+if (! function_exists('format_number')) {
+    function format_number(float|int|string|null $value, int $decimals = 2, ?string $locale = null): string
+    {
+        return (string) Number::format((float) $value, precision: $decimals, locale: number_locale($locale));
+    }
+}
+
+if (! function_exists('format_date')) {
+    function format_date(DateTimeInterface|string|null $date, string $format = 'll', ?string $locale = null): string
+    {
+        if (blank($date)) {
+            return '';
+        }
+
+        return Carbon::parse($date)->locale($locale ?? app()->getLocale())->isoFormat($format);
     }
 }
 

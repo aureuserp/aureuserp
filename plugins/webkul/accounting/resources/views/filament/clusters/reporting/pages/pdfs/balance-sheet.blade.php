@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    <title>{{ __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title') }} - {{ \Carbon\Carbon::parse($data['date'])->format('M d, Y') }}</title>
+    <title>{{ __('accounting::filament/clusters/reporting/pages/balance-sheet.heading', ['report' => __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title'), 'date' => format_date($data['date'])]) }}</title>
     <style>
         html,
         body,
@@ -134,14 +134,14 @@
         }
         
         .page-number:after {
-            content: "Page " counter(page);
+            content: "{{ addslashes(__('accounting::filament/clusters/reporting/pages/balance-sheet.footer.page')) }} " counter(page);
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>{{ __('accounting::filament/clusters/reporting.pages.balance-sheet.navigation.title') }}</h1>
-        <p>As of {{ \Carbon\Carbon::parse($data['date'])->format('F j, Y') }}</p>
+        <p>{{ __('accounting::filament/clusters/reporting/pages/balance-sheet.as-of', ['date' => format_date($data['date'], 'LL')]) }}</p>
     </div>
 
     <table>
@@ -179,14 +179,14 @@
                                     <td class="account-row">
                                         {{ $account['code'] ? $account['code'] . ' - ' : '' }}{{ $account['name'] }}
                                     </td>
-                                    <td class="text-right">{{ number_format($account['balance'], 2) }}</td>
+                                    <td class="text-right">{{ money($account['balance'], $currency) }}</td>
                                 </tr>
                             @endforeach
 
                             {{-- Subsection Total --}}
                             <tr class="subsection-total">
                                 <td>{{ $subsection['total_label'] }}</td>
-                                <td class="text-right">{{ number_format($subsection['total'], 2) }}</td>
+                                <td class="text-right">{{ money($subsection['total'], $currency) }}</td>
                             </tr>
                         @endif
                     @endif
@@ -195,21 +195,21 @@
                 {{-- Section Total --}}
                 <tr class="section-total">
                     <td>{{ $section['total_label'] }}</td>
-                    <td class="text-right">{{ number_format($section['total'], 2) }}</td>
+                    <td class="text-right">{{ money($section['total'], $currency) }}</td>
                 </tr>
             @endforeach
 
             {{-- Grand Total --}}
             <tr class="grand-total">
                 <td>{{ $data['grand_total_label'] }}</td>
-                <td class="text-right">{{ number_format($data['grand_total'], 2) }}</td>
+                <td class="text-right">{{ money($data['grand_total'], $currency) }}</td>
             </tr>
         </tbody>
     </table>
 
     <div class="footer">
         <div class="page-number"></div>
-        <div>Generated on {{ now()->format('F j, Y \a\t g:i A') }}</div>
+        <div>{{ __('accounting::filament/clusters/reporting/pages/balance-sheet.footer.generated-on', ['date' => format_date(now(), 'LLL')]) }}</div>
     </div>
 </body>
 </html>

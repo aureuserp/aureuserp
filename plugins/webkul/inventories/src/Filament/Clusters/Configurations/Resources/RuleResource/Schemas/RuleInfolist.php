@@ -100,7 +100,7 @@ class RuleInfolist
                                                 TextEntry::make('delay')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.lead-time'))
                                                     ->icon('heroicon-o-clock')
-                                                    ->suffix(' days')
+                                                    ->formatStateUsing(fn ($state): string => trans_choice('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.lead-time-days', (int) $state, ['count' => $state]))
                                                     ->placeholder('0'),
                                             ]),
                                     ])

@@ -19,6 +19,7 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\FormatsReportValues;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\AgedReceivableExport;
 use Webkul\Accounting\Support\CompanyRateMap;
@@ -26,7 +27,7 @@ use Webkul\Partner\Models\Partner;
 
 class AgedReceivable extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms;
+    use FormatsReportValues, HasPageShield, InteractsWithForms;
     use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.aged-receivable';
@@ -125,6 +126,7 @@ class AgedReceivable extends Page implements HasForms
                         'period'           => $period,
                         'expandedPartners' => $this->expandedPartners,
                         'partnerLines'     => $partnerLines,
+                        'currency'         => $this->reportCurrency(),
                     ])->setPaper('a4', 'landscape');
 
                     return response()->streamDownload(function () use ($pdf) {
