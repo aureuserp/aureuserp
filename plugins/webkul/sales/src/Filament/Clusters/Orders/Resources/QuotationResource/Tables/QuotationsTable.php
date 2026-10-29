@@ -243,6 +243,7 @@ class QuotationsTable
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.updated-at')),
                     ], $customConstraints)),
             ])
+            ->defaultSort('id', 'desc')
             ->groups([
                 Tables\Grouping\Group::make('medium.name')
                     ->label(__('Medium'))
