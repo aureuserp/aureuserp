@@ -3,24 +3,26 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
-        html,
-        body,
-        table,
-        th,
-        td,
-        div,
-        span,
-        p,
-        b,
-        strong {
+        .agreement,
+        .agreement table,
+        .agreement th,
+        .agreement td,
+        .agreement div,
+        .agreement span,
+        .agreement p,
+        .agreement b,
+        .agreement strong {
             font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif !important;
         }
 
         body {
+            margin: 0;
+        }
+
+        .agreement {
             font-size: 14px;
             color: #333333;
             line-height: 1.6;
-            margin: 0;
         }
 
         .agreement {
