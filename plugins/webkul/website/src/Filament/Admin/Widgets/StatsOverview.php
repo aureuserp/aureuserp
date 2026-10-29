@@ -8,11 +8,9 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Webkul\Blog\Filament\Admin\Resources\PostResource;
 use Webkul\Blog\Models\Post;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
-use Webkul\Website\Filament\Admin\Resources\PageResource;
 use Webkul\Website\Models\Page;
 
 class StatsOverview extends DashboardStatsWidget
@@ -98,8 +96,6 @@ class StatsOverview extends DashboardStatsWidget
 
         $authorId = $this->filters['author_id'] ?? null;
 
-        $pageUrl = PageResource::getUrl('index');
-
         $stats = [
             $this->trendStat(
                 __('website::filament/admin/widgets/stats-overview.total-pages.title'),
@@ -111,7 +107,6 @@ class StatsOverview extends DashboardStatsWidget
                 $end,
                 $previousStart,
                 $previousEnd,
-                $pageUrl,
             ),
             $this->trendStat(
                 __('website::filament/admin/widgets/stats-overview.total-pages-publish.title'),
@@ -123,7 +118,6 @@ class StatsOverview extends DashboardStatsWidget
                 $end,
                 $previousStart,
                 $previousEnd,
-                $pageUrl,
             ),
             $this->trendStat(
                 __('website::filament/admin/widgets/stats-overview.total-pages-draft.title'),
@@ -135,13 +129,10 @@ class StatsOverview extends DashboardStatsWidget
                 $end,
                 $previousStart,
                 $previousEnd,
-                $pageUrl,
             ),
         ];
 
         if (Package::isPluginInstalled('blogs')) {
-            $postUrl = PostResource::getUrl('index');
-
             $stats[] = $this->trendStat(
                 __('website::filament/admin/widgets/stats-overview.total-blogs.title'),
                 'heroicon-o-newspaper',
@@ -152,7 +143,6 @@ class StatsOverview extends DashboardStatsWidget
                 $end,
                 $previousStart,
                 $previousEnd,
-                $postUrl,
             );
 
             $stats[] = $this->trendStat(
@@ -165,7 +155,6 @@ class StatsOverview extends DashboardStatsWidget
                 $end,
                 $previousStart,
                 $previousEnd,
-                $postUrl,
             );
 
             $stats[] = $this->trendStat(
@@ -178,14 +167,13 @@ class StatsOverview extends DashboardStatsWidget
                 $end,
                 $previousStart,
                 $previousEnd,
-                $postUrl,
             );
         }
 
         return $stats;
     }
 
-    protected function trendStat(string $label, string $icon, string $color, int $value, Builder $base, Carbon $start, Carbon $end, Carbon $previousStart, Carbon $previousEnd, ?string $url = null): Stat
+    protected function trendStat(string $label, string $icon, string $color, int $value, Builder $base, Carbon $start, Carbon $end, Carbon $previousStart, Carbon $previousEnd): Stat
     {
         $series = $this->monthlySeries(clone $base, $start, $end);
 
@@ -193,9 +181,7 @@ class StatsOverview extends DashboardStatsWidget
 
         $previous = (float) (clone $base)->whereBetween('created_at', [$previousStart, $previousEnd])->count();
 
-        $stat = $this->themedStat($label, $icon, $color, number_format($value), $current, $previous, $series);
-
-        return $url !== null ? $stat->url($url) : $stat;
+        return $this->themedStat($label, $icon, $color, number_format($value), $current, $previous, $series);
     }
 
     /**

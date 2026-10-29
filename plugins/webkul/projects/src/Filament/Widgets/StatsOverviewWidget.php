@@ -7,7 +7,6 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
-use Webkul\Project\Filament\Resources\TaskResource;
 use Webkul\Project\Models\Task;
 use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
@@ -142,7 +141,7 @@ class StatsOverviewWidget extends DashboardStatsWidget
                 (float) $current['total_tasks'],
                 (float) $previous['total_tasks'],
                 $data['charts']['tasks'],
-            )->url(TaskResource::getUrl('index')),
+            ),
             $this->themedStat(
                 __('projects::filament/widgets/stats-overview.total-hours-spent'),
                 'heroicon-o-clock',
@@ -151,7 +150,7 @@ class StatsOverviewWidget extends DashboardStatsWidget
                 (float) $current['total_hours_spent'],
                 (float) $previous['total_hours_spent'],
                 $data['charts']['hoursSpent'],
-            )->url(TaskResource::getUrl('index')),
+            ),
             $this->themedStat(
                 __('projects::filament/widgets/stats-overview.total-time-remaining'),
                 'heroicon-o-clock',
@@ -160,7 +159,7 @@ class StatsOverviewWidget extends DashboardStatsWidget
                 (float) $current['total_remaining_hours'],
                 (float) $previous['total_remaining_hours'],
                 $data['charts']['remainingHours'],
-            )->url(TaskResource::getUrl('index', ['activeTableView' => 'open_tasks'])),
+            ),
         ];
     }
 }

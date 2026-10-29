@@ -8,8 +8,6 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
 use Webkul\Employee\Models\EmployeeJobPosition;
-use Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource;
-use Webkul\Recruitment\Filament\Clusters\Applications\Resources\JobByPositionResource;
 use Webkul\Recruitment\Models\Applicant;
 use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
@@ -155,7 +153,7 @@ class JobPositionStatsWidget extends DashboardStatsWidget
                 (float) $current['active_jobs'],
                 (float) $previous['active_jobs'],
                 $data['charts']['jobs'],
-            )->url(JobByPositionResource::getUrl('index')),
+            ),
             $this->themedStat(
                 __('recruitments::filament/widgets/job-position.total-applications'),
                 'heroicon-o-user-group',
@@ -164,7 +162,7 @@ class JobPositionStatsWidget extends DashboardStatsWidget
                 (float) $current['total_applications'],
                 (float) $previous['total_applications'],
                 $data['charts']['applications'],
-            )->url(ApplicantResource::getUrl('index')),
+            ),
             $this->themedStat(
                 __('recruitments::filament/widgets/job-position.hired-candidate'),
                 'heroicon-o-check-badge',
@@ -173,7 +171,7 @@ class JobPositionStatsWidget extends DashboardStatsWidget
                 (float) $current['hired_count'],
                 (float) $previous['hired_count'],
                 $data['charts']['hired'],
-            )->url(ApplicantResource::getUrl('index', ['activeTableView' => 'hired'])),
+            ),
         ];
     }
 }

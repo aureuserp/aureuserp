@@ -6,7 +6,6 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
 
 class BillStatsWidget extends BaseWidget
@@ -26,10 +25,6 @@ class BillStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $postedUrl = BillResource::getUrl('index', ['activeTableView' => 'posted']);
-
-        $unpaidUrl = BillResource::getUrl('index', ['activeTableView' => 'unpaid']);
-
         return [
             $this->buildStat(
                 __('invoices::filament/widgets/invoice-dashboard.bill-stats.total'),
@@ -38,25 +33,25 @@ class BillStatsWidget extends BaseWidget
                 fn (?Carbon $start, ?Carbon $end): Builder => $this->scope($start, $end),
                 money: true,
                 abs: true,
-            )->url($postedUrl),
+            ),
             $this->buildStat(
                 __('invoices::filament/widgets/invoice-dashboard.bill-stats.count'),
                 'heroicon-o-document-text',
                 'primary',
                 fn (?Carbon $start, ?Carbon $end): Builder => $this->scope($start, $end),
-            )->url($postedUrl),
+            ),
             $this->buildStat(
                 __('invoices::filament/widgets/invoice-dashboard.bill-stats.paid'),
                 'heroicon-o-check-circle',
                 'success',
                 fn (?Carbon $start, ?Carbon $end): Builder => $this->stateScope('paid', $start, $end),
-            )->url($postedUrl),
+            ),
             $this->buildStat(
                 __('invoices::filament/widgets/invoice-dashboard.bill-stats.unpaid'),
                 'heroicon-o-exclamation-circle',
                 'danger',
                 fn (?Carbon $start, ?Carbon $end): Builder => $this->stateScope('not_paid', $start, $end),
-            )->url($unpaidUrl),
+            ),
         ];
     }
 

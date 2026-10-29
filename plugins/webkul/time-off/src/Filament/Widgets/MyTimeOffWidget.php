@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 use Webkul\TimeOff\Enums\RequiresAllocation;
 use Webkul\TimeOff\Enums\State;
-use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
 use Webkul\TimeOff\Models\Leave;
 use Webkul\TimeOff\Models\LeaveAllocation;
 use Webkul\TimeOff\Models\LeaveType;
@@ -60,7 +59,6 @@ class MyTimeOffWidget extends DashboardStatsWidget
                 ->icon('heroicon-o-calendar-days')
                 ->chart($this->leaveTakenSeries($employeeId, $leaveType->id, $startOfYear, $endOfYear))
                 ->chartColor($accent)
-                ->url(MyTimeOffResource::getUrl('index'))
                 ->extraAttributes(['class' => 'dashboard-stat dashboard-stat--'.$accent]);
         }
 
@@ -71,7 +69,6 @@ class MyTimeOffWidget extends DashboardStatsWidget
             ->icon('heroicon-o-clock')
             ->chart($this->pendingRequestsSeries($employeeId, $startOfYear, $endOfYear))
             ->chartColor('danger')
-            ->url(MyTimeOffResource::getUrl('index'))
             ->extraAttributes(['class' => 'dashboard-stat dashboard-stat--danger']);
 
         return $stats;

@@ -33,19 +33,22 @@ class OrdersByStateChart extends DashboardChartWidget
             ->pluck('total', 'state');
 
         $states = collect(OrderState::cases())
-            ->filter(fn (OrderState $state): bool => (int) ($counts[$state->value] ?? 0) > 0);
+            ->filter(fn (OrderState $state): bool => (int) ($counts[$state->value] ?? 0) > 0)
+            ->values();
+
+        $ramp = $this->chartRamp();
 
         return [
             'datasets' => [
                 [
                     'label'           => __('point-of-sale::filament/admin/widgets/orders-by-state.dataset'),
-                    'data'            => $states->map(fn (OrderState $state): int => (int) $counts[$state->value])->values()->all(),
-                    'backgroundColor' => $states->map(fn (OrderState $state): string => $this->brandColor($state->getColor()))->values()->all(),
+                    'data'            => $states->map(fn (OrderState $state): int => (int) $counts[$state->value])->all(),
+                    'backgroundColor' => $states->map(fn (OrderState $state, int $index): string => $ramp[$index % count($ramp)])->all(),
                     'borderWidth'     => 0,
                     'hoverOffset'     => 0,
                 ],
             ],
-            'labels' => $states->map(fn (OrderState $state): string => $state->getLabel())->values()->all(),
+            'labels' => $states->map(fn (OrderState $state): string => $state->getLabel())->all(),
         ];
     }
 

@@ -4,9 +4,10 @@ namespace Webkul\Purchase\Filament\Admin\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Filament\Admin\Widgets\Concerns\HasPurchaseDashboardFilters;
 use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
@@ -23,58 +24,75 @@ class PurchaseStatsWidget extends DashboardStatsWidget
 
     protected function getStats(): array
     {
-        [$previousStart, $previousEnd] = $this->previousPeriodRange();
-
         $confirmed = ['purchase', 'done'];
 
         return [
             $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.draft-rfqs'),
                 'heroicon-o-document-text',
-                'gray',
-                $this->countByState(['draft']),
-                $this->countByState(['draft'], $previousStart, $previousEnd),
-                view: 'draft-rfqs',
+                'warning',
+                ['draft'],
             ),
             $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.sent-rfqs'),
                 'heroicon-o-paper-airplane',
                 'info',
-                $this->countByState(['sent']),
-                $this->countByState(['sent'], $previousStart, $previousEnd),
-                view: 'sent-rfqs',
+                ['sent'],
             ),
             $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.confirmed-orders'),
                 'heroicon-o-check-circle',
                 'success',
-                $this->countByState($confirmed),
-                $this->countByState($confirmed, $previousStart, $previousEnd),
-                view: 'confirmed-orders',
+                $confirmed,
             ),
             $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.total-purchase-value'),
                 'heroicon-o-currency-dollar',
                 'primary',
-                $this->sumByState($confirmed),
-                $this->sumByState($confirmed, $previousStart, $previousEnd),
+                $confirmed,
                 money: true,
-                view: 'confirmed-orders',
             ),
         ];
     }
 
-    protected function buildStat(string $label, string $icon, string $color, float $current, float $previous, bool $money = false, ?string $view = null): Stat
+    /**
+     * @param  list<string>  $states
+     */
+    protected function buildStat(string $label, string $icon, string $color, array $states, bool $money = false): Stat
     {
+        [$previousStart, $previousEnd] = $this->previousPeriodRange();
+
+        $current = $money ? $this->sumByState($states) : $this->countByState($states);
+
+        $previous = $money
+            ? $this->sumByState($states, $previousStart, $previousEnd)
+            : $this->countByState($states, $previousStart, $previousEnd);
+
         $value = $money ? compact_money($current, $this->dashboardCurrency()) : number_format($current);
 
-        $stat = $this->themedStat($label, $icon, $color, $value, $current, $previous, [$previous, $current]);
+        $series = $this->trendSeries($states, $money ? 'sum' : 'count', $money ? 'total_cc_amount' : null);
 
-        if ($view !== null) {
-            $stat->url(PurchaseOrderResource::getUrl('index', ['activeTableView' => $view]));
-        }
+        return $this->themedStat($label, $icon, $color, $value, $current, $previous, $series);
+    }
 
-        return $stat;
+    /**
+     * @param  list<string>  $states
+     * @return list<float>
+     */
+    protected function trendSeries(array $states, string $aggregate, ?string $column = null): array
+    {
+        [$start, $end] = $this->periodRange();
+
+        $query = $this->scopedToStates($states, $start, $end);
+
+        $trend = Trend::query($query)
+            ->dateColumn('ordered_at')
+            ->between(start: $start, end: $end)
+            ->perDay();
+
+        $result = $aggregate === 'sum' ? $trend->sum($column) : $trend->count();
+
+        return $result->map(fn (TrendValue $value): float => round((float) $value->aggregate, 2))->all();
     }
 
     protected function countByState(array $states, ?Carbon $start = null, ?Carbon $end = null): float

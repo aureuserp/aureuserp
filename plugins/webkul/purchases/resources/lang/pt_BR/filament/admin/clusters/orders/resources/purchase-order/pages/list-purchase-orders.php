@@ -10,9 +10,6 @@ return [
         'starred'          => 'Favoritos',
         'waiting-bills'    => 'Faturas de fornecedor pendentes',
         'received-bills'   => 'Faturas de fornecedor recebidas',
-        'draft-rfqs'       => 'Draft RFQs',
-        'sent-rfqs'        => 'Sent RFQs',
-        'confirmed-orders' => 'Confirmed Orders',
     ],
 
     'header-actions' => [

@@ -14,7 +14,7 @@ class ApplicantChartWidget extends DashboardChartWidget
 
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     protected ?string $maxHeight = '400px';
 

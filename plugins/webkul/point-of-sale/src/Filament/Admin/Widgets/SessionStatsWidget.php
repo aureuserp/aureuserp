@@ -9,9 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Webkul\PointOfSale\Enums\OrderState;
 use Webkul\PointOfSale\Enums\SessionState;
-use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\OrderResource;
-use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\SessionResource;
-use Webkul\PointOfSale\Filament\Admin\Clusters\Reporting\Pages\SalesDetails;
 use Webkul\PointOfSale\Filament\Admin\Widgets\Concerns\FiltersDashboardOrders;
 use Webkul\PointOfSale\Models\Order;
 use Webkul\PointOfSale\Models\Session;
@@ -65,7 +62,7 @@ class SessionStatsWidget extends DashboardStatsWidget
                 $openSessions,
                 $openSessions,
                 $this->sessionSeries($start, $end),
-            )->url(SessionResource::getUrl('index', ['activeTableView' => 'open'])),
+            ),
             $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.orders.label'),
                 'heroicon-o-receipt-percent',
@@ -74,7 +71,7 @@ class SessionStatsWidget extends DashboardStatsWidget
                 $orders,
                 $previousOrders,
                 $this->orderSeries($start, $end, $settled, 'count'),
-            )->url(OrderResource::getUrl('index', ['activeTableView' => 'settled'])),
+            ),
             $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.revenue.label'),
                 'heroicon-o-banknotes',
@@ -83,7 +80,7 @@ class SessionStatsWidget extends DashboardStatsWidget
                 $revenue,
                 $previousRevenue,
                 $this->orderSeries($start, $end, $settled, 'sum', 'amount_total'),
-            )->url($this->salesDetailsUrl($start, $end)),
+            ),
             $this->themedStat(
                 __('point-of-sale::filament/admin/widgets/session-stats.stats.failed-operations.label'),
                 'heroicon-o-exclamation-triangle',
@@ -92,24 +89,8 @@ class SessionStatsWidget extends DashboardStatsWidget
                 $failed,
                 $previousFailed,
                 $this->failedSeries($start, $end),
-            )->url(OrderResource::getUrl('index', ['activeTableView' => 'failed-operations'])),
+            ),
         ];
-    }
-
-    protected function salesDetailsUrl(Carbon $start, Carbon $end): string
-    {
-        $parameters = [
-            'startDate' => $start->toDateString(),
-            'endDate'   => $end->toDateString(),
-        ];
-
-        $terminals = $this->getFilterIds('selectedTerminals');
-
-        if (count($terminals) === 1) {
-            $parameters['configId'] = $terminals[0];
-        }
-
-        return SalesDetails::getUrl($parameters);
     }
 
     protected function ordersInWindow(Carbon $start, Carbon $end): Builder

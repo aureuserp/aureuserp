@@ -14,6 +14,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\EmployeeJobPosition;
 use Webkul\Recruitment\Filament\Widgets\ApplicantChartWidget;
+use Webkul\Recruitment\Filament\Widgets\ApplicantsByStageChart;
 use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\Recruitment\Models\Stage;
 use Webkul\Support\Enums\NavigationGroup;
@@ -124,6 +125,7 @@ class Recruitments extends BaseDashboard
         return [
             JobPositionStatsWidget::class,
             ApplicantChartWidget::class,
+            ApplicantsByStageChart::class,
         ];
     }
 }

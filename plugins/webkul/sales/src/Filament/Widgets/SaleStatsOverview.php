@@ -7,8 +7,6 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
 use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
@@ -57,10 +55,6 @@ class SaleStatsOverview extends DashboardStatsWidget
             $orderCountSeries,
         );
 
-        $quotationsUrl = QuotationResource::getUrl('index', ['activeTableView' => 'quotations']);
-
-        $ordersUrl = OrderResource::getUrl('index');
-
         return [
             $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.total-quotations'),
@@ -70,7 +64,7 @@ class SaleStatsOverview extends DashboardStatsWidget
                 $quotations,
                 $previousQuotations,
                 $this->trendData($this->quotations(), 'COUNT', '*', $start, $end),
-            )->url($quotationsUrl),
+            ),
             $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.total-sales-orders'),
                 'heroicon-o-shopping-cart',
@@ -79,7 +73,7 @@ class SaleStatsOverview extends DashboardStatsWidget
                 $orders,
                 $previousOrders,
                 $orderCountSeries,
-            )->url($ordersUrl),
+            ),
             $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.total-revenue'),
                 'heroicon-o-banknotes',
@@ -89,7 +83,7 @@ class SaleStatsOverview extends DashboardStatsWidget
                 $previousRevenue,
                 $revenueSeries,
                 money($revenue, $currency),
-            )->url($ordersUrl),
+            ),
             $this->themedStat(
                 __('sales::filament/widgets/sales-dashboard.stats.average-revenue'),
                 'heroicon-o-chart-bar',
@@ -99,7 +93,7 @@ class SaleStatsOverview extends DashboardStatsWidget
                 $previousAverage,
                 $averageSeries,
                 money($average, $currency),
-            )->url($ordersUrl),
+            ),
         ];
     }
 
