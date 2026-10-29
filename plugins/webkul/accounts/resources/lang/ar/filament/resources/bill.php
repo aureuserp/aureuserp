@@ -100,7 +100,7 @@ return [
         'columns' => [
             'number'           => 'الرقم',
             'state'            => 'الحالة',
-            'customer'         => 'العميل',
+            'vendor'           => 'المورد',
             'bill-date'        => 'تاريخ الفاتورة',
             'checked'          => 'تم التحقق',
             'accounting-date'  => 'تاريخ المحاسبة',

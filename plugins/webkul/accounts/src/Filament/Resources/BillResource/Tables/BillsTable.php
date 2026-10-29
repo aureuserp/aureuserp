@@ -48,7 +48,7 @@ class BillsTable
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')
-                    ->label(__('accounts::filament/resources/bill.table.columns.customer'))
+                    ->label(__('accounts::filament/resources/bill.table.columns.vendor'))
                     ->placeholder('-')
                     ->searchable()
                     ->sortable(),

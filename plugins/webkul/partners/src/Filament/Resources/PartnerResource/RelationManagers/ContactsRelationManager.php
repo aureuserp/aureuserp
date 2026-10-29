@@ -14,6 +14,11 @@ class ContactsRelationManager extends RelationManager
 {
     protected static string $relationship = 'contacts';
 
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
+
     public function form(Schema $schema): Schema
     {
         return PartnerResource::form($schema);
