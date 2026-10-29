@@ -7,6 +7,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Sale\Filament\Clusters\Orders;
@@ -99,5 +100,11 @@ class QuotationResource extends Resource
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
             'operations' => ManageDeliveries::route('/{record}/deliveries'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }
