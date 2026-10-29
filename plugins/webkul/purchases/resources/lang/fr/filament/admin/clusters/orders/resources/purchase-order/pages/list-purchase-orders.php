@@ -6,10 +6,10 @@ return [
     ],
 
     'tabs' => [
-        'my-orders'      => 'Mes commandes',
-        'starred'        => 'Favoris',
-        'waiting-bills'  => 'Factures en attente',
-        'received-bills' => 'Factures reçues',
+        'my-orders'        => 'Mes commandes',
+        'starred'          => 'Favoris',
+        'waiting-bills'    => 'Factures en attente',
+        'received-bills'   => 'Factures reçues',
     ],
 
     'header-actions' => [

@@ -12,9 +12,12 @@ use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResourc
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\PaymentResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
+use Webkul\Support\Filament\Concerns\HasChartTheme;
 
 class JournalChartWidget extends Component
 {
+    use HasChartTheme;
+
     public ?object $journal = null;
 
     public function mount($journal)
@@ -222,7 +225,7 @@ class JournalChartWidget extends Component
                 [
                     'label'       => 'Balance',
                     'data'        => $balances,
-                    'borderColor' => '#3b82f6',
+                    'borderColor' => $this->brandColor('info'),
                     'tension'     => 0.3,
                     'fill'        => false,
                 ],
@@ -292,11 +295,11 @@ class JournalChartWidget extends Component
                 [
                     'label'           => 'Overdue',
                     'data'            => $late,
-                    'backgroundColor' => '#ef4444',
+                    'backgroundColor' => $this->brandColor('danger'),
                 ], [
                     'label'           => 'On Time',
                     'data'            => $onTime,
-                    'backgroundColor' => '#22c55e',
+                    'backgroundColor' => $this->brandColor('success'),
                 ],
             ],
         ];

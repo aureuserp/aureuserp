@@ -4,24 +4,25 @@ namespace Webkul\TimeOff\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Contracts\Support\Htmlable;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 use Webkul\TimeOff\Models\Leave;
 
-class LeaveTypeWidget extends ChartWidget
+class LeaveTypeWidget extends DashboardChartWidget
 {
-    use HasWidgetShield;
-
-    public function getHeading(): string|Htmlable|null
-    {
-        return __('time-off::filament/widgets/leave-type-widget.heading.title');
-    }
+    use HasWidgetShield, InteractsWithPageFilters;
 
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '400px';
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('time-off::filament/widgets/leave-type-widget.heading.title');
+    }
 
     protected static function getPagePermission(): ?string
     {
@@ -57,37 +58,40 @@ class LeaveTypeWidget extends ChartWidget
             SUM(CASE WHEN state = 'cancel' THEN 1 ELSE 0 END) as cancelled
         ")->first();
 
-        $data = match ($this->pageFilters['status'] ?? 'all') {
-            'draft'     => ['Draft' => $stats->draft ?? 0],
-            'confirmed' => ['Confirmed' => $stats->confirmed ?? 0],
-            'validated' => ['Validated' => $stats->validated ?? 0],
-            'refused'   => ['Refused' => $stats->refused ?? 0],
-            'cancelled' => ['Cancelled' => $stats->cancelled ?? 0],
-            default     => [
-                __('time-off::filament/widgets/leave-type-widget.types.draft')     => $stats->draft ?? 0,
-                __('time-off::filament/widgets/leave-type-widget.types.confirmed') => $stats->confirmed ?? 0,
-                __('time-off::filament/widgets/leave-type-widget.types.validated') => $stats->validated ?? 0,
-                __('time-off::filament/widgets/leave-type-widget.types.refused')   => $stats->refused ?? 0,
-                __('time-off::filament/widgets/leave-type-widget.types.cancelled') => $stats->cancelled ?? 0,
-            ],
-        };
+        $states = [
+            'draft'     => ['label' => __('time-off::filament/widgets/leave-type-widget.types.draft'), 'color' => 'gray', 'count' => (int) ($stats->draft ?? 0)],
+            'confirmed' => ['label' => __('time-off::filament/widgets/leave-type-widget.types.confirmed'), 'color' => 'info', 'count' => (int) ($stats->confirmed ?? 0)],
+            'validated' => ['label' => __('time-off::filament/widgets/leave-type-widget.types.validated'), 'color' => 'success', 'count' => (int) ($stats->validated ?? 0)],
+            'refused'   => ['label' => __('time-off::filament/widgets/leave-type-widget.types.refused'), 'color' => 'danger', 'count' => (int) ($stats->refused ?? 0)],
+            'cancelled' => ['label' => __('time-off::filament/widgets/leave-type-widget.types.cancelled'), 'color' => 'warning', 'count' => (int) ($stats->cancelled ?? 0)],
+        ];
+
+        $status = $this->pageFilters['status'] ?? 'all';
+
+        $selected = $status === 'all' ? $states : array_intersect_key($states, [$status => true]);
+
+        if ($selected === []) {
+            $selected = $states;
+        }
 
         return [
             'datasets' => [
                 [
                     'label'           => __('time-off::filament/widgets/leave-type-widget.label'),
-                    'data'            => array_values($data),
-                    'backgroundColor' => array_map(fn ($key) => match ($key) {
-                        __('time-off::filament/widgets/leave-type-widget.types.draft')     => '#94a3b8',
-                        __('time-off::filament/widgets/leave-type-widget.types.confirmed') => '#3b82f6',
-                        __('time-off::filament/widgets/leave-type-widget.types.validated') => '#22c55e',
-                        __('time-off::filament/widgets/leave-type-widget.types.refused')   => '#ef4444',
-                        __('time-off::filament/widgets/leave-type-widget.types.cancelled') => '#f97316',
-                    }, array_keys($data)),
+                    'data'            => array_values(array_map(fn (array $state): int => $state['count'], $selected)),
+                    'backgroundColor' => array_values(array_map(fn (array $state): string => $this->brandColor($state['color']), $selected)),
+                    'borderRadius'    => 8,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 48,
                 ],
             ],
-            'labels' => array_keys($data),
+            'labels' => array_values(array_map(fn (array $state): string => $state['label'], $selected)),
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return $this->barChartOptions(8);
     }
 
     protected function getType(): string

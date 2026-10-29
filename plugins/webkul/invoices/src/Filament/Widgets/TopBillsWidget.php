@@ -4,7 +4,8 @@ namespace Webkul\Invoice\Filament\Widgets;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Tables;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Support\Htmlable;
@@ -16,7 +17,7 @@ class TopBillsWidget extends BaseWidget
 {
     use HasInvoiceDashboardFilters, HasWidgetShield;
 
-    protected static ?int $sort = 7;
+    protected static ?int $sort = 8;
 
     protected static bool $isLazy = true;
 
@@ -24,6 +25,7 @@ class TopBillsWidget extends BaseWidget
     {
         return $table
             ->defaultKeySort(false)
+            ->recordClasses('dashboard-table-row')
             ->recordUrl(fn ($record): ?string => $record && BillResource::canAccess()
                 ? BillResource::getUrl('view', ['record' => $record])
                 : null);
@@ -45,24 +47,24 @@ class TopBillsWidget extends BaseWidget
             ->with(['partner', 'invoiceUser', 'currency'])
             ->where('amount_total', '>', 0)
             ->orderByRaw('ABS(amount_total_signed) DESC')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
     {
         return [
-            Tables\Columns\TextColumn::make('name')
+            TextColumn::make('name')
                 ->label(__('invoices::filament/widgets/invoice-dashboard.top-bills.columns.reference'))
-                ->url(fn ($record): ?string => $record ? BillResource::getUrl('view', ['record' => $record]) : null)
-                ->color('primary'),
-            Tables\Columns\TextColumn::make('partner.name')
-                ->label(__('invoices::filament/widgets/invoice-dashboard.vendor'))
-                ->placeholder('-')
-                ->wrap(),
-            Tables\Columns\TextColumn::make('invoice_date')
+                ->weight(FontWeight::Bold)
+                ->color('primary')
+                ->description(fn ($record): string => $record->partner?->name ?: '—'),
+
+            TextColumn::make('invoice_date')
                 ->label(__('invoices::filament/widgets/invoice-dashboard.top-bills.columns.date'))
-                ->date(),
-            Tables\Columns\TextColumn::make('payment_state')
+                ->date()
+                ->color('gray'),
+
+            TextColumn::make('payment_state')
                 ->label(__('invoices::filament/widgets/invoice-dashboard.payment-state'))
                 ->badge()
                 ->formatStateUsing(fn ($state) => $state instanceof BackedEnum ? $state->getLabel() : $state)
@@ -73,9 +75,11 @@ class TopBillsWidget extends BaseWidget
                     'reversed'       => 'info',
                     default          => 'gray',
                 }),
-            Tables\Columns\TextColumn::make('amount_total')
+
+            TextColumn::make('amount_total')
                 ->label(__('invoices::filament/widgets/invoice-dashboard.top-bills.columns.amount'))
                 ->money(fn ($record) => $record->currency?->name ?? $this->dashboardCurrency())
+                ->weight(FontWeight::Bold)
                 ->alignEnd(),
         ];
     }

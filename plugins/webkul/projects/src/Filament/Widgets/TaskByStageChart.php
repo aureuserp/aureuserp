@@ -3,20 +3,16 @@
 namespace Webkul\Project\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 use Webkul\Project\Models\Task;
 use Webkul\Project\Models\TaskStage;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class TaskByStageChart extends ChartWidget
+class TaskByStageChart extends DashboardChartWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
-
-    protected ?string $heading = 'Tasks By Stage';
-
-    protected ?string $maxHeight = '250px';
 
     protected static ?int $sort = 1;
 
@@ -32,16 +28,14 @@ class TaskByStageChart extends ChartWidget
 
     protected function getData(): array
     {
-        $datasets = [
-            'datasets' => [],
-            'labels'   => [],
-        ];
+        $labels = [];
+        $data = [];
 
         foreach (TaskStage::all() as $stage) {
-            if (in_array($stage->name, $datasets['labels'])) {
-                $datasets['labels'][] = $stage->name.' '.$stage->id;
+            if (in_array($stage->name, $labels)) {
+                $labels[] = $stage->name.' '.$stage->id;
             } else {
-                $datasets['labels'][] = $stage->name;
+                $labels[] = $stage->name;
             }
 
             $query = Task::query();
@@ -74,21 +68,34 @@ class TaskByStageChart extends ChartWidget
                 Carbon::parse($this->pageFilters['endDate']) :
                 now();
 
-            $datasets['datasets'][] = $query
+            $data[] = $query
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->where('stage_id', $stage->id)
                 ->count();
         }
 
+        $ramp = $this->chartRamp();
+
+        $colors = array_map(fn (int $index): string => $ramp[$index % count($ramp)], array_keys($data));
+
         return [
             'datasets' => [
                 [
-                    'label' => __('projects::filament/widgets/task-by-stage.datasets.label'),
-                    'data'  => $datasets['datasets'],
+                    'label'           => __('projects::filament/widgets/task-by-stage.datasets.label'),
+                    'data'            => $data,
+                    'backgroundColor' => $colors,
+                    'borderRadius'    => 8,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 34,
                 ],
             ],
-            'labels' => $datasets['labels'],
+            'labels' => $labels,
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return $this->barChartOptions(8);
     }
 
     protected function getType(): string

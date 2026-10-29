@@ -1,31 +1,7 @@
 <x-filament-panels::page>
     @php($report = $this->getReport())
 
-    <x-filament::section>
-        <x-slot name="heading">
-            {{ __('point-of-sale::filament/admin/clusters/reporting/pages/sales-details.filters.heading') }}
-        </x-slot>
-
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <x-filament::input.wrapper>
-                <x-filament::input type="date" wire:model.live="startDate" />
-            </x-filament::input.wrapper>
-
-            <x-filament::input.wrapper>
-                <x-filament::input type="date" wire:model.live="endDate" />
-            </x-filament::input.wrapper>
-
-            <x-filament::input.wrapper>
-                <x-filament::input.select wire:model.live="configId">
-                    <option value="">{{ __('point-of-sale::filament/admin/clusters/reporting/pages/sales-details.filters.all-terminals') }}</option>
-
-                    @foreach ($this->getTerminals() as $terminal)
-                        <option value="{{ $terminal->id }}">{{ $terminal->name }}</option>
-                    @endforeach
-                </x-filament::input.select>
-            </x-filament::input.wrapper>
-        </div>
-    </x-filament::section>
+    {{ $this->filtersForm }}
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <x-filament::section>

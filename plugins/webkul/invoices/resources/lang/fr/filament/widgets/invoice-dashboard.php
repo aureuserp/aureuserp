@@ -31,9 +31,15 @@ return [
         'revenue'     => 'Revenu',
     ],
 
+    'invoice-status'    => [
+        'heading'     => 'Factures par Statut',
+        'description' => 'Montant facturé par statut de paiement',
+    ],
+
     'customer-revenue'  => [
         'heading'      => 'Part du Revenu par Client',
         'total-billed' => 'Total Facturé',
+        'center-label' => 'Total',
     ],
 
     'salespersons'      => [
