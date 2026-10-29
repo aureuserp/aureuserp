@@ -183,6 +183,7 @@ class BillsTable
                     ->label(__('accounts::filament/resources/bill.table.groups.bill-partner-display-name'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('invoice_date')
+                    ->date()
                     ->label(__('accounts::filament/resources/bill.table.groups.bill-date'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('checked')

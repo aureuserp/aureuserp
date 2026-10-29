@@ -116,7 +116,7 @@
             display: inline-block;
         }
         .summary table {
-            float: {{ $isRtl ? 'right' : 'left' }};
+            float: {{ $isRtl ? 'left' : 'right' }};
             width: 250px;
             padding-top: 5px;
             padding-bottom: 5px;
@@ -143,6 +143,30 @@
         .payment-info-title {
             font-weight: {{ $isRtl ? 'bold' : '600' }};
             margin-bottom: 6px;
+        }
+
+        :is(.dark .fi-modal-window:has(.agreement)) {
+            background-color: #ffffff;
+            --tw-ring-color: rgb(3 7 18 / 0.1);
+        }
+
+        :is(.dark .fi-modal-window:has(.agreement) .fi-modal-heading) {
+            color: #030712;
+        }
+
+        :is(.dark .fi-modal-window:has(.agreement) .fi-modal-header),
+        :is(.dark .fi-modal-window:has(.agreement) .fi-modal-footer) {
+            border-color: rgb(3 7 18 / 0.1);
+        }
+
+        :is(.dark .fi-modal-window:has(.agreement) .fi-modal-close-btn) {
+            color: #9ca3af;
+        }
+
+        :is(.dark .fi-modal-window:has(.agreement) .fi-modal-footer .fi-btn:not(.fi-color)) {
+            background-color: #ffffff;
+            color: #030712;
+            --tw-ring-color: rgb(3 7 18 / 0.1);
         }
     </style>
 </head>
