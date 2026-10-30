@@ -1,31 +1,6 @@
 <?php
 
 return [
-    'group' => [
-        'label' => 'Acciones',
-    ],
-
-    'archive' => [
-        'label'            => 'Archivar',
-        'description'      => 'Este registro se archivará. Puedes encontrarlo de nuevo con el filtro de archivados y desarchivarlo.',
-        'bulk-description' => 'Los registros seleccionados se archivarán. Puedes encontrarlos de nuevo con el filtro de archivados y desarchivarlos.',
-        'notification'     => ':count registro(s) archivado(s).',
-    ],
-
-    'unarchive' => [
-        'label' => 'Desarchivar',
-    ],
-
-    'delete' => [
-        'label' => 'Eliminar',
-    ],
-
-    'duplicate' => [
-        'label'        => 'Duplicar',
-        'copy'         => ':name (copia)',
-        'notification' => ':count registro(s) duplicado(s).',
-    ],
-
     'mark-lost' => [
         'label'        => 'Marcar como perdido',
         'notification' => ':count registro(s) marcado(s) como perdido(s).',

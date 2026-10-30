@@ -3,16 +3,11 @@
 use Livewire\Livewire;
 use Webkul\Chatter\Models\Message;
 use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ManageActivities as ManageLeadActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\GraphActivities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\KanbanActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\ListActivities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByStatusChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByTypeChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByUserChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ManageActivities as ManageOpportunityActivities;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\ActivityLog;
@@ -69,40 +64,32 @@ function leadHasAnyActivity(Lead $lead): bool
         ->exists();
 }
 
-it('opens on the kanban board and keeps the list and graph on their own urls', function () {
+it('opens the activities as a table and keeps the old kanban and graph urls on the same page', function () {
     $pages = ActivityResource::getPages();
 
     expect($pages['index']->getPage())->toBe(ListActivities::class)
-        ->and($pages['kanban']->getPage())->toBe(KanbanActivities::class)
-        ->and($pages['graph']->getPage())->toBe(GraphActivities::class)
+        ->and($pages['kanban']->getPage())->toBe(ListActivities::class)
+        ->and($pages['graph']->getPage())->toBe(ListActivities::class)
         ->and(array_keys($pages))->toBe(['index', 'kanban', 'graph']);
 
-    expect(ActivityResource::getUrl('index'))->toEndWith('/crm/sales/activities')
-        ->and(ActivityResource::getUrl('kanban'))->toEndWith('/crm/sales/activities/kanban')
-        ->and(ActivityResource::getUrl('graph'))->toEndWith('/crm/sales/activities/graph');
+    expect(ActivityResource::getUrl('index'))->toEndWith('/crm/sales/activities');
 });
 
-it('shows kanban, list and graph tabs on every activity view', function (string $page, array $active) {
+it('switches activities between list, kanban and graph without leaving the page', function (string $layout) {
     actingAsActivityPlanner();
 
-    $component = Livewire::test($page)->assertOk();
+    $component = Livewire::test(ListActivities::class)
+        ->assertOk()
+        ->assertSeeHtml('crm-layout-switcher')
+        ->call('switchViewLayout', $layout)
+        ->assertSet('viewLayout', $layout);
 
-    $tabs = collect($component->instance()->getRecordNavigationTabs());
-
-    expect($tabs->map(fn ($tab): string => $tab->getLabel())->all())->toBe([
-        __('crm::filament/clusters/sales/resources/activity.views.list'),
-        __('crm::filament/clusters/sales/resources/activity.views.kanban'),
-        __('crm::filament/clusters/sales/resources/activity.views.graph'),
-    ])
-        ->and($tabs->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH])
+        ->and(method_exists($component->instance(), 'getRecordNavigationTabs'))->toBeFalse();
 
     $component->assertActionVisible('scheduleActivity')
         ->assertActionDoesNotExist('listView');
-})->with([
-    'list'   => [ListActivities::class, [true, false, false]],
-    'kanban' => [KanbanActivities::class, [false, true, false]],
-    'graph'  => [GraphActivities::class, [false, false, true]],
-]);
+})->with(['list', 'kanban', 'graph']);
 
 it('snoozes an activity by seven days from its due date or from today when overdue', function () {
     actingAsActivityPlanner();
@@ -129,15 +116,11 @@ it('offers email, SMS and snooze on each activity row', function () {
         ->assertTableActionVisible('snoozeActivity', $activity);
 });
 
-it('forbids every view without the view any activity permission', function (string $page) {
+it('forbids every view without the view any activity permission', function (string $layout) {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
-    Livewire::test($page)->assertForbidden();
-})->with([
-    'kanban' => [KanbanActivities::class],
-    'list'   => [ListActivities::class],
-    'graph'  => [GraphActivities::class],
-]);
+    Livewire::withQueryParams(['layout' => $layout])->test(ListActivities::class)->assertForbidden();
+})->with(['kanban', 'list', 'graph']);
 
 it('lists activities on leads and opportunities but not on other records', function () {
     actingAsActivityPlanner();
@@ -312,7 +295,7 @@ it('pre-fills the form for the column\'s type from a kanban column', function ()
 
     $call = crmActivityType('Call');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->mountAction('kanbanColumn', ['column' => (string) $call->id])
         ->assertActionDataSet([
             'activity_type_id' => $call->id,
@@ -443,7 +426,7 @@ it('uses the crm activity types as kanban columns', function () {
         'is_active'  => true,
     ]);
 
-    $component = Livewire::test(KanbanActivities::class)->assertOk();
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)->assertOk();
 
     $columnValues = collect($component->instance()->getKanbanColumns())->pluck('value')->all();
 
@@ -461,7 +444,7 @@ it('opens the board without a default filter, showing everyone\'s activities', f
     $mine = scheduledCRMActivity($opportunity);
     $someoneElses = scheduledCRMActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
-    $component = Livewire::test(KanbanActivities::class)
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->assertSet('activeTableView', 'default');
 
     $ids = collect($component->instance()->getKanbanColumns())
@@ -479,46 +462,29 @@ it('changes the activity type when a card is moved to another column', function 
 
     $meeting = crmActivityType('Meeting');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->call('moveRecord', (string) $activity->id, (string) $meeting->id, []);
 
     expect($activity->refresh()->activity_type_id)->toBe($meeting->id);
 });
 
-it('renders the graph page without a user scope toggle', function () {
-    actingAsActivityPlanner();
+it('counts activities per type in the graph and follows the chosen group', function () {
+    $user = actingAsActivityPlanner();
 
-    Livewire::test(GraphActivities::class)
+    $activity = scheduledCRMActivity(CRMHelper::opportunity(), ['activity_type_id' => crmActivityType('Call')->id]);
+
+    $component = Livewire::withQueryParams(['layout' => 'graph'])->test(ListActivities::class)
         ->assertOk()
         ->assertActionDoesNotExist('toggleScope');
-});
 
-it('renders the graph widgets', function (string $widget, string $scope) {
-    actingAsActivityPlanner();
+    $chart = $component->instance()->getRecordsGraph()['data'];
 
-    scheduledCRMActivity(CRMHelper::opportunity());
+    expect(array_combine($chart['labels'], $chart['datasets'][0]['data'])[crmActivityType('Call')->name] ?? 0)->toBeGreaterThanOrEqual(1)
+        ->and($component->instance()->getTableRecords())->toBeEmpty();
 
-    Livewire::test($widget, ['scope' => $scope])->assertOk();
-})->with([
-    ActivityStatsOverview::class,
-    ActivitiesByStatusChart::class,
-    ActivitiesByTypeChart::class,
-    ActivitiesByUserChart::class,
-])->with(['mine', 'all']);
+    $chart = $component->set('tableGrouping', 'assignedTo.name')->instance()->getRecordsGraph()['data'];
 
-it('counts the user\'s activities in the mine scope and everyone\'s in the all scope', function () {
-    actingAsActivityPlanner();
-
-    $opportunity = CRMHelper::opportunity();
-
-    $mine = scheduledCRMActivity($opportunity);
-    $someoneElses = scheduledCRMActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
-
-    $mineIds = ActivityResource::getScopedQuery('mine')->pluck('id')->all();
-    $allIds = ActivityResource::getScopedQuery('all')->pluck('id')->all();
-
-    expect($mineIds)->toContain($mine->id)->not->toContain($someoneElses->id)
-        ->and($allIds)->toContain($mine->id, $someoneElses->id);
+    expect($chart['labels'])->toContain($activity->assignedTo?->name ?? $user->name);
 });
 
 it('filters the board by due status and activity type like the list', function () {
@@ -529,7 +495,7 @@ it('filters the board by due status and activity type like the list', function (
     $overdue = scheduledCRMActivity($opportunity, ['date_deadline' => now()->subDays(2)->toDateString()]);
     $planned = scheduledCRMActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString(), 'activity_type_id' => crmActivityType('Call')->id]);
 
-    $ids = fn (array $filters): array => collect(Livewire::test(KanbanActivities::class)
+    $ids = fn (array $filters): array => collect(Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->set('tableFilters', $filters)
         ->instance()
         ->getKanbanColumns())
@@ -548,7 +514,7 @@ it('renders activity cards like the pipeline cards and marks an activity done fr
     $opportunity = CRMHelper::opportunity(['name' => 'Activity card opportunity']);
     $activity = scheduledCRMActivity($opportunity, ['summary' => 'Card summary call', 'activity_type_id' => crmActivityType('Call')->id]);
 
-    $component = Livewire::test(KanbanActivities::class)
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->assertSee('Card summary call')
         ->assertSee('Activity card opportunity')
         ->assertSeeHtml('window.location.href')
@@ -568,7 +534,7 @@ it('shows the due-status progress of each activity type and filters a column fro
     $overdue = scheduledCRMActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->subDays(2)->toDateString()]);
     $planned = scheduledCRMActivity($opportunity, ['activity_type_id' => $call->id, 'date_deadline' => now()->addDays(5)->toDateString()]);
 
-    $component = Livewire::test(KanbanActivities::class);
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class);
     $column = collect($component->instance()->getKanbanColumns())->firstWhere('value', (string) $call->id);
     $progress = $component->instance()->kanbanColumnProgress($column);
 

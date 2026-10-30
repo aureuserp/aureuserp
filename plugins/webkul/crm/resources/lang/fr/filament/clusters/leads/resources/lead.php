@@ -84,6 +84,7 @@ return [
             'priority'     => 'Priorité',
             'tags'         => 'Étiquettes',
             'source'       => 'Source',
+            'medium'       => 'Support',
             'lost-reason'  => 'Motif de perte',
             'created-at'   => 'Créé le',
         ],

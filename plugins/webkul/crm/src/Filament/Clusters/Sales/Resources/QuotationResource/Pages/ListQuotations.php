@@ -21,15 +21,20 @@ use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Url;
 use Webkul\Crm\Enums\QuotationBoardGroup;
 use Webkul\Crm\Enums\TeamOrderScope;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\CRMExportAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\ConfirmQuotationsBulkAction;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\DuplicateQuotationsBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\MarkQuotationsAsSentBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\SendQuotationsEmailBulkAction;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
+use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
+use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Filament\Exports\QuotationExporter;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
+use Webkul\Crm\Filament\Support\Reports\Sql;
+use Webkul\Crm\Filament\Widgets\Concerns\StylesCRMDashboardCharts;
+use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQuotations as BaseListQuotations;
 use Webkul\Sale\Models\Order;
@@ -40,7 +45,7 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListQuotations extends BaseListQuotations
 {
-    use HasCRMTableViews, HasKanbanBoard;
+    use HasCRMTableViews, HasGroupBoardLayout, HasKanbanBoard, HasViewLayouts, StylesCRMDashboardCharts;
 
     protected static string $resource = QuotationResource::class;
 
@@ -108,17 +113,17 @@ class ListQuotations extends BaseListQuotations
 
     public function getBreadcrumb(): string
     {
-        return __('crm::filament/clusters/sales/resources/quotation.pages.list.title');
+        return $this->getViewLayout()->getLabel();
     }
 
-    public function getRecordNavigationTabs(): array
+    public function getViewLayouts(): array
     {
-        return QuotationResource::getViewTabs('index');
+        return [ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH];
     }
 
     public function getBoardGroup(): ?QuotationBoardGroup
     {
-        return QuotationBoardGroup::fromGrouping($this->tableGrouping);
+        return $this->isViewLayout(ViewLayout::KANBAN) ? QuotationBoardGroup::fromGrouping($this->tableGrouping) ?? QuotationBoardGroup::STATUS : null;
     }
 
     public function table(Table $table): Table
@@ -131,7 +136,7 @@ class ListQuotations extends BaseListQuotations
             }
         }
 
-        return $table
+        return $this->configureGroupBoardTable($table)
             ->groups([
                 ...$table->getGroups(),
                 Group::make(QuotationBoardGroup::STATUS->value)
@@ -139,8 +144,11 @@ class ListQuotations extends BaseListQuotations
                     ->getTitleFromRecordUsing(fn (Order $record): string => $record->state?->getLabel() ?? Dimension::getNoneLabel())
                     ->collapsible(),
             ])
-            ->paginated(fn (): bool => ! $this->getBoardGroup())
-            ->emptyState(fn () => $this->getBoardGroup() ? view($this->getKanbanBoard()->getBoardView()) : null)
+            ->emptyState(fn () => match (true) {
+                $this->isViewLayout(ViewLayout::GRAPH) => RecordsChart::embedGraph($this->getRecordsGraph()),
+                (bool) $this->getBoardGroup()          => view($this->getKanbanBoard()->getBoardView()),
+                default                                => null,
+            })
             ->checkIfRecordIsSelectableUsing(fn (): bool => true)
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -149,7 +157,13 @@ class ListQuotations extends BaseListQuotations
                             ->label(__('crm::filament/transfers.actions.export.label'))
                             ->icon('heroicon-o-arrow-up-tray')
                             ->exporter(QuotationExporter::class),
-                        DuplicateQuotationsBulkAction::make(),
+                        RestoreBulkAction::make()
+                            ->successNotification(
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.restore.notification.title'))
+                                    ->body(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.restore.notification.body')),
+                            ),
                         DeleteBulkAction::make()
                             ->authorizeIndividualRecords(fn (Order $record): bool => $record->state !== OrderState::SALE && QuotationResource::canDelete($record))
                             ->successNotification(
@@ -157,13 +171,6 @@ class ListQuotations extends BaseListQuotations
                                     ->success()
                                     ->title(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.delete.notification.title'))
                                     ->body(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.delete.notification.body')),
-                            ),
-                        RestoreBulkAction::make()
-                            ->successNotification(
-                                Notification::make()
-                                    ->success()
-                                    ->title(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.restore.notification.title'))
-                                    ->body(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.restore.notification.body')),
                             ),
                         ForceDeleteBulkAction::make()
                             ->successNotification(
@@ -184,7 +191,42 @@ class ListQuotations extends BaseListQuotations
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator
     {
-        return $this->getBoardGroup() ? new Collection : parent::getTableRecords();
+        return $this->isViewLayout(ViewLayout::LIST) ? parent::getTableRecords() : new Collection;
+    }
+
+    public function getRecordsGraph(): array
+    {
+        $query = $this->filterTableQuery($this->modifyQueryWithActiveTab(QuotationResource::getEloquentQuery()))->reorder();
+        $grouping = (string) str((string) $this->tableGrouping)->before(':');
+
+        if ($group = QuotationBoardGroup::fromGrouping($grouping)) {
+            $groups = $query
+                ->with($group->relation() ? [$group->relation()] : [])
+                ->get()
+                ->groupBy(fn (Order $record): string => $this->boardValue($record, $group));
+
+            $labels = $this->boardLabels($groups, $group);
+            $counts = $labels->keys()->map(fn (string|int $value): int => $groups->get((string) $value, new Collection)->count());
+        } else {
+            $dateColumn = in_array($grouping, ['date_order', 'commitment_date'], true) ? $grouping : 'date_order';
+
+            $months = $query
+                ->selectRaw(Sql::month('sales_orders.'.$dateColumn).' as graph_month, count(*) as aggregate')
+                ->groupBy('graph_month')
+                ->orderBy('graph_month')
+                ->pluck('aggregate', 'graph_month');
+
+            $labels = $months->keys()->map(fn (?string $month): string => filled($month) ? Dimension::monthLabel($month) : Dimension::getNoneLabel());
+            $counts = $months->values()->map(fn (mixed $count): int => (int) $count);
+        }
+
+        return [
+            'data' => [
+                'datasets' => [$this->barDataset(QuotationResource::getPluralModelLabel(), $counts->values()->all())],
+                'labels'   => $labels->values()->all(),
+            ],
+            'options' => $this->barOptions(),
+        ];
     }
 
     protected function getHeaderActions(): array

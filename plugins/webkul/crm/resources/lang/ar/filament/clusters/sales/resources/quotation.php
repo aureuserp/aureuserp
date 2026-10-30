@@ -11,12 +11,6 @@ return [
         ],
     ],
 
-    'views' => [
-        'list'   => 'قائمة',
-        'kanban' => 'كانبان',
-        'graph'  => 'رسم بياني',
-    ],
-
     'tabs' => [
         'opportunity' => 'الفرصة',
     ],
@@ -34,15 +28,6 @@ return [
     ],
 
     'actions' => [
-        'group' => [
-            'label' => 'إجراءات',
-        ],
-
-        'duplicate' => [
-            'label'        => 'تكرار',
-            'notification' => 'تم تكرار :count عرض سعر.',
-        ],
-
         'mark-as-sent' => [
             'label'        => 'تحديد عرض السعر كمرسل',
             'notification' => 'تم تحديد :count عرض سعر كمرسل.',

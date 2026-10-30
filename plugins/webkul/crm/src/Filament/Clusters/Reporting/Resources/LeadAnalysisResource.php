@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Actions\LeadReportBulkActions;
 use Webkul\Crm\Filament\Clusters\Reporting;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\GraphLeadAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\ListLeadAnalysis;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\SummaryLeadAnalysis;
 use Webkul\Crm\Filament\Concerns\IsCRMReportResource;
 use Webkul\Crm\Filament\Exports\LeadExporter;
 use Webkul\Crm\Filament\Support\LeadTableFilters;
@@ -116,8 +114,8 @@ class LeadAnalysisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => GraphLeadAnalysis::route('/'),
-            'summary' => SummaryLeadAnalysis::route('/summary'),
+            'index'   => ListLeadAnalysis::route('/'),
+            'summary' => ListLeadAnalysis::route('/summary'),
             'list'    => ListLeadAnalysis::route('/list'),
         ];
     }

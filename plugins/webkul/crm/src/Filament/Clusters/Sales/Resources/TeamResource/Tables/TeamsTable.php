@@ -50,7 +50,7 @@ class TeamsTable
             ])
             ->defaultSort('sort')
             ->toolbarActions([
-                RecordBulkActions::make(exporter: TeamExporter::class, archivable: true, copyRelations: ['members']),
+                RecordBulkActions::make(exporter: TeamExporter::class, softDeletes: true),
             ]);
     }
 

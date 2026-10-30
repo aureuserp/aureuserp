@@ -2,7 +2,7 @@
 
 namespace Webkul\Crm\Filament\Concerns;
 
-use Filament\Navigation\NavigationItem;
+use Webkul\Crm\Enums\ViewLayout;
 
 trait IsCRMReportResource
 {
@@ -22,25 +22,9 @@ trait IsCRMReportResource
         return static::getReportTitle();
     }
 
-    public static function getReportViews(): array
+    public static function getReportLayouts(): array
     {
-        return [
-            'index'   => ['heroicon-o-chart-bar', 'graph', __('crm::filament/clusters/reporting/report.views.graph')],
-            'summary' => ['heroicon-o-table-cells', 'summary', __('crm::filament/clusters/reporting/report.views.summary')],
-            'list'    => ['heroicon-o-list-bullet', 'list', __('crm::filament/clusters/reporting/report.views.list')],
-        ];
-    }
-
-    public static function getViewTabs(string $current): array
-    {
-        return collect(static::getReportViews())
-            ->map(fn (array $view, string $page): NavigationItem => NavigationItem::make($view[1])
-                ->label($view[2])
-                ->icon($view[0])
-                ->url(static::getUrl($page))
-                ->isActiveWhen(fn (): bool => $page === $current))
-            ->values()
-            ->all();
+        return [ViewLayout::GRAPH, ViewLayout::SUMMARY, ViewLayout::LIST];
     }
 
     public static function getReportTableFilters(): array

@@ -2,14 +2,15 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages;
 
-use Filament\Notifications\Notification;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Crm\Filament\Actions\LeadRecordActions;
+use Webkul\Crm\Filament\Actions\SendLeadEmailAction;
+use Webkul\Crm\Filament\Actions\SendLeadSMSAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewOpportunity extends ViewRecord
@@ -21,21 +22,18 @@ class ViewOpportunity extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            NewQuotationAction::make(),
+            ChatterAction::make()
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             MarkAsWonAction::make()
                 ->after(fn () => $this->refreshRecord()),
             MarkAsLostAction::make()
                 ->after(fn () => $this->refreshRecord()),
-            ChatterAction::make()
-                ->resource(static::$resource)
-                ->activityPlans($this->getRecord()->activityPlans()),
-            LeadRecordActions::make(
-                fn () => $this->refreshRecord(),
-                Notification::make()
-                    ->success()
-                    ->title(__('crm::filament/clusters/sales/resources/opportunity/pages/view-opportunity.header-actions.force-delete.notification.title'))
-                    ->body(__('crm::filament/clusters/sales/resources/opportunity/pages/view-opportunity.header-actions.force-delete.notification.body')),
-            ),
+            SendLeadEmailAction::make(),
+            SendLeadSMSAction::make(),
+            DeleteAction::make(),
+            RestoreAction::make()
+                ->after(fn () => $this->refreshRecord()),
         ];
     }
 

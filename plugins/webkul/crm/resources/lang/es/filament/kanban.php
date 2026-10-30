@@ -33,6 +33,11 @@ return [
         'board-description' => 'Nada coincide con esta vista o con los filtros actuales.',
     ],
 
+    'choose-group' => [
+        'heading'     => 'Elige un Agrupar por',
+        'description' => 'La vista Kanban muestra una columna por grupo. Elige un campo en Agrupar por para ver el tablero.',
+    ],
+
     'progress' => [
         'label' => 'Actividades de esta etapa',
         'total' => 'Ingreso esperado',

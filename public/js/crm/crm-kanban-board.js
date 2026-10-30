@@ -50,10 +50,62 @@
         setTimeout(() => column.classList.remove('crm-kanban-column-new'), 2800);
     }, 50);
 
-    const cardOnlyCalls = ['moveRecord', 'setKanbanCardPriority', 'setKanbanCardColor', 'mountAction', 'unmountAction', 'callMountedAction'];
+    const cardOnlyCalls = ['moveRecord', 'setKanbanCardPriority', 'mountAction', 'unmountAction', 'callMountedAction'];
 
-    const reloadsBoard = (commit) => Object.keys(commit.updates ?? {}).length > 0
-        || (commit.calls ?? []).some((call) => ! cardOnlyCalls.includes(call.method));
+    const layoutNeutralCalls = ['moveRecord', 'setKanbanCardPriority', 'mountAction', 'unmountAction'];
+
+    const reloadsBoard = (commit) => ! (commit.calls ?? []).some((call) => call.method === 'switchViewLayout')
+        && (Object.keys(commit.updates ?? {}).length > 0
+            || (commit.calls ?? []).some((call) => ! cardOnlyCalls.includes(call.method)));
+
+    let dragSourceColumn = null;
+
+    const columnSelector = (value) => `[data-kanban-column][data-column-value="${CSS.escape(String(value))}"]`;
+
+    const shiftColumnCount = (board, value, delta) => {
+        const badge = board.querySelector(columnSelector(value))?.closest('.fi-kanban-column')?.querySelector('[data-kanban-count]');
+
+        if (! badge) {
+            return;
+        }
+
+        const count = Math.max(0, parseInt(badge.dataset.kanbanCount, 10) + delta);
+
+        badge.dataset.kanbanCount = count;
+        badge.textContent = badge.dataset.kanbanWipLimit ? `${count} / ${badge.dataset.kanbanWipLimit}` : String(count);
+    };
+
+    const showMove = (boards, commit, succeed, fail) => {
+        const move = (commit.calls ?? []).find((call) => call.method === 'moveRecord');
+
+        if (! move) {
+            return;
+        }
+
+        const [recordId, targetColumn] = move.params;
+        const cardSelector = `[data-kanban-card][data-record-id="${CSS.escape(String(recordId))}"]`;
+        const board = boards.find((board) => board.querySelector(cardSelector));
+        const card = board?.querySelector(cardSelector);
+
+        if (! card) {
+            return;
+        }
+
+        if (dragSourceColumn !== null
+            && dragSourceColumn !== String(targetColumn)) {
+            shiftColumnCount(board, dragSourceColumn, -1);
+            shiftColumnCount(board, targetColumn, 1);
+        }
+
+        dragSourceColumn = null;
+
+        card.classList.add('crm-kanban-card-saving');
+
+        const done = () => card.classList.remove('crm-kanban-card-saving');
+
+        succeed(done);
+        fail(done);
+    };
 
     const registerShimmer = () => {
         if (window.crmKanbanShimmerRegistered) {
@@ -62,16 +114,22 @@
 
         window.crmKanbanShimmerRegistered = true;
 
+        document.addEventListener('pointerdown', (event) => {
+            dragSourceColumn = event.target.closest?.('.crm-kanban-board [data-kanban-card]')?.closest('[data-kanban-column]')?.dataset.columnValue ?? null;
+        }, true);
+
         window.Livewire.hook('commit', ({ component, commit, succeed, fail }) => {
             if (! component.el.querySelector('.crm-kanban-board')) {
                 return;
             }
 
-            if (! (commit.calls ?? []).every((call) => ['mountAction', 'unmountAction'].includes(call.method)) || Object.keys(commit.updates ?? {}).length > 0) {
+            if (! (commit.calls ?? []).every((call) => layoutNeutralCalls.includes(call.method)) || Object.keys(commit.updates ?? {}).length > 0) {
                 succeed(fitAll);
             }
 
             const boards = [...component.el.querySelectorAll('.crm-kanban-board')];
+
+            showMove(boards, commit, succeed, fail);
 
             if (! reloadsBoard(commit)) {
                 return;

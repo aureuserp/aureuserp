@@ -3,8 +3,6 @@
 return [
     'title' => 'Meu funil',
 
-    'breadcrumb' => 'Lista',
-
     'header-actions' => [
         'create' => [
             'label' => 'Nova oportunidade',

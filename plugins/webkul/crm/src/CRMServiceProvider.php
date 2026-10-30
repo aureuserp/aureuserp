@@ -5,6 +5,7 @@ namespace Webkul\Crm;
 use Filament\Panel;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\View\View;
@@ -19,14 +20,14 @@ use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Console\Commands\FetchInboundEmails;
 use Webkul\Crm\Console\Commands\ProcessVisitsToLeads;
 use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\KanbanForecast;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\KanbanActivities;
+use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\ListForecast;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\ListActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCustomers;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\SimilarOpportunities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\KanbanQuotations;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ListQuotations;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
@@ -143,21 +144,34 @@ class CRMServiceProvider extends PackageServiceProvider
             scopes: [
                 ListLeads::class,
                 SimilarLeads::class,
-                KanbanOpportunities::class,
+                ListOpportunities::class,
                 SimilarOpportunities::class,
                 ListQuotations::class,
-                KanbanQuotations::class,
-                KanbanActivities::class,
+                ListActivities::class,
                 ListCustomers::class,
                 ManageTeamOpportunities::class,
-                KanbanForecast::class,
+                ListForecast::class,
             ],
         );
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER,
-            fn (): View => view('crm::filament.kanban.board-shimmer'),
-            scopes: [ListLeads::class, ListQuotations::class, KanbanQuotations::class],
+            fn (): string|View => Livewire::current()->isViewLayout(ViewLayout::KANBAN) ? view('crm::filament.kanban.board-shimmer') : '',
+            scopes: [ListLeads::class, ListQuotations::class, ListCustomers::class],
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_COLUMN_MANAGER_TRIGGER_AFTER,
+            fn (): string|View => method_exists($page = Livewire::current(), 'getViewLayouts')
+                ? view('crm::filament.view-layout-switcher', ['layouts' => $page->getViewLayouts(), 'activeLayout' => $page->getViewLayout()])
+                : '',
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::CONTENT_BEFORE,
+            fn (): string|View => method_exists($page = Livewire::current(), 'getViewLayouts')
+                ? view('crm::filament.view-layout-shimmer', ['layouts' => $page->getViewLayouts(), 'activeLayout' => $page->getViewLayout()])
+                : '',
         );
 
         Livewire::component('crm-report-chart', ReportChart::class);

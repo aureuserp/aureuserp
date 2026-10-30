@@ -32,12 +32,12 @@ class EditLead extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ConvertToOpportunityAction::make(),
-            MarkAsLostAction::make()
-                ->after(fn () => $this->redirect(LeadResource::getUrl('view', ['record' => $this->getRecord()]))),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
+            ConvertToOpportunityAction::make(),
+            MarkAsLostAction::make()
+                ->after(fn () => $this->redirect(LeadResource::getUrl('view', ['record' => $this->getRecord()]))),
         ];
     }
 

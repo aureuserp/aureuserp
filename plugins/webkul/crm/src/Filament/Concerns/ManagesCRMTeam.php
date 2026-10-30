@@ -3,15 +3,12 @@
 namespace Webkul\Crm\Filament\Concerns;
 
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Text;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Crm\Filament\Actions\DuplicateRecordsBulkAction;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Services\LeadAssignment;
@@ -140,42 +137,6 @@ trait ManagesCRMTeam
         ]);
     }
 
-    protected function getTeamRecordActions(): ActionGroup
-    {
-        $resource = static::getResource();
-
-        return ActionGroup::make([
-            $this->getAssignLeadsAction(),
-            Action::make('duplicateTeam')
-                ->label(__('crm::filament/lead-actions.duplicate.label'))
-                ->icon('heroicon-o-document-duplicate')
-                ->visible(fn (): bool => $resource::canCreate())
-                ->action(function (Action $action) use ($resource): void {
-                    $copy = DuplicateRecordsBulkAction::make()->duplicate($this->getRecord());
-
-                    $action->redirect($resource::getUrl('edit', ['record' => $copy]));
-                }),
-            DeleteAction::make('archiveTeam')
-                ->label(__('crm::filament/lead-actions.archive.label'))
-                ->icon('heroicon-o-archive-box')
-                ->modalHeading(__('crm::filament/lead-actions.archive.label'))
-                ->modalDescription(__('crm::filament/lead-actions.archive.description'))
-                ->modalSubmitActionLabel(__('crm::filament/lead-actions.archive.label'))
-                ->successNotificationTitle(__('crm::filament/lead-actions.archive.notification', ['count' => 1]))
-                ->successRedirectUrl($resource::getUrl('index')),
-            RestoreAction::make()
-                ->label(__('crm::filament/lead-actions.unarchive.label')),
-            ForceDeleteAction::make()
-                ->label(__('crm::filament/lead-actions.delete.label'))
-                ->visible(fn (Model $record): bool => $resource::canForceDelete($record))
-                ->successRedirectUrl($resource::getUrl('index')),
-        ])
-            ->label(__('crm::filament/lead-actions.group.label'))
-            ->icon('heroicon-m-cog-6-tooth')
-            ->color('gray')
-            ->button();
-    }
-
     protected function getHeaderActions(): array
     {
         $actions = array_filter(parent::getHeaderActions(), fn ($action): bool => ! $action instanceof DeleteAction);
@@ -184,6 +145,11 @@ trait ManagesCRMTeam
             return array_values($actions);
         }
 
-        return [...$actions, $this->getTeamRecordActions()];
+        return [
+            ...$actions,
+            $this->getAssignLeadsAction(),
+            DeleteAction::make(),
+            RestoreAction::make(),
+        ];
     }
 }

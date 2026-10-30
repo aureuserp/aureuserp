@@ -8,12 +8,6 @@ return [
         'title' => 'أنشطتي',
     ],
 
-    'views' => [
-        'list'   => 'قائمة',
-        'kanban' => 'كانبان',
-        'graph'  => 'رسم بياني',
-    ],
-
     'table' => [
         'columns' => [
             'due-date'      => 'تاريخ الاستحقاق',

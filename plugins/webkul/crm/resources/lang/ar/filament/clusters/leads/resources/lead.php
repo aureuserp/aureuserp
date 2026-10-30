@@ -84,6 +84,7 @@ return [
             'priority'     => 'الأولوية',
             'tags'         => 'الوسوم',
             'source'       => 'المصدر',
+            'medium'       => 'الوسيط',
             'lost-reason'  => 'سبب الخسارة',
             'created-at'   => 'تاريخ الإنشاء',
         ],

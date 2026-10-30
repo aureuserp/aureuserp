@@ -142,7 +142,7 @@ class ActivityPlansTable
                     ),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: ActivityPlanExporter::class, archivable: true, copyRelations: ['activityPlanTemplates']),
+                RecordBulkActions::make(exporter: ActivityPlanExporter::class, softDeletes: true),
             ])
             ->emptyStateActions([
                 CreateAction::make()

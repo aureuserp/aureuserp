@@ -33,6 +33,11 @@ return [
         'board-description' => 'Nothing matches this view or the current filters.',
     ],
 
+    'choose-group' => [
+        'heading'     => 'Choose a Group by',
+        'description' => 'The Kanban view shows one column per group. Pick a field in Group by to see the board.',
+    ],
+
     'progress' => [
         'label' => 'Activities in this stage',
         'total' => 'Expected revenue',

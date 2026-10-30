@@ -16,22 +16,15 @@ use Webkul\Crm\Filament\Actions\SendCustomersEmailBulkAction;
 use Webkul\Crm\Filament\Actions\SendCustomersSMSBulkAction;
 use Webkul\Crm\Filament\Exports\CustomerExporter;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
-use Webkul\Partner\Filament\Resources\PartnerResource\Tables\PartnersTable;
 use Webkul\Partner\Models\Partner;
 
 class CustomersTable
 {
-    public static function configure(Table $table, bool $grid = false): Table
+    public static function configure(Table $table): Table
     {
-        $table = $grid
-            ? $table
-                ->columns(static::gridColumns($table))
-                ->contentGrid(['sm' => 1, 'md' => 2, 'xl' => 3, '2xl' => 3])
-            : $table
-                ->columns(static::listColumns())
-                ->contentGrid(null);
-
         return $table
+            ->columns(static::listColumns())
+            ->contentGrid(null)
             ->modifyQueryUsing(fn (Builder $query): Builder => $query
                 ->with(['parent', 'country', 'user'])
                 ->withCount(['crmOpportunities', 'crmSaleOrders']))
@@ -45,8 +38,7 @@ class CustomersTable
             ->toolbarActions([
                 RecordBulkActions::make(
                     exporter: CustomerExporter::class,
-                    archivable: true,
-                    copyRelations: ['tags'],
+                    softDeletes: true,
                     actions: [
                         MergeCustomersBulkAction::make(),
                         SendCustomersEmailBulkAction::make(),
@@ -112,10 +104,5 @@ class CustomersTable
                 ->placeholder('—')
                 ->toggleable(isToggledHiddenByDefault: true),
         ];
-    }
-
-    public static function gridColumns(Table $table): array
-    {
-        return PartnersTable::configure(Table::make($table->getLivewire()))->getColumnsLayout();
     }
 }

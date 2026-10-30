@@ -1,22 +1,32 @@
 <?php
 
 use Livewire\Livewire;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\GraphOpportunities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Models\Stage;
 
-it('shows kanban, list and graph tabs on every pipeline view', function (string $page, array $active) {
+it('switches the pipeline between kanban, list and graph without leaving the page', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $tabs = collect(Livewire::test($page)->instance()->getRecordNavigationTabs());
+    $opportunity = CRMHelper::opportunity();
 
-    expect($tabs->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
-})->with([
-    'kanban' => [KanbanOpportunities::class, [true, false, false]],
-    'list'   => [ListOpportunities::class, [false, true, false]],
-    'graph'  => [GraphOpportunities::class, [false, false, true]],
-]);
+    $component = Livewire::test(ListOpportunities::class)
+        ->assertSet('viewLayout', null)
+        ->assertSeeHtml('crm-layout-switcher');
+
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
+        ->and($component->instance()->getViewLayout())->toBe(ViewLayout::KANBAN)
+        ->and(method_exists($component->instance(), 'getRecordNavigationTabs'))->toBeFalse();
+
+    $component->call('switchViewLayout', 'list')
+        ->assertSet('viewLayout', 'list')
+        ->assertCanSeeTableRecords([$opportunity]);
+
+    $component->call('switchViewLayout', 'graph')
+        ->assertSet('viewLayout', 'graph');
+
+    expect($component->instance()->getTableRecords())->toBeEmpty();
+});
 
 it('counts the opportunities per stage in the graph, in stage order', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
@@ -25,7 +35,7 @@ it('counts the opportunities per stage in the graph, in stage order', function (
 
     CRMHelper::opportunity(['stage_id' => $stage->id]);
 
-    $chart = Livewire::test(GraphOpportunities::class)->instance()->getRecordsGraph()['data'];
+    $chart = Livewire::withQueryParams(['layout' => 'graph'])->test(ListOpportunities::class)->instance()->getRecordsGraph()['data'];
 
     $expected = Stage::query()->orderBy('sort')->pluck('name')->intersect($chart['labels'])->values()->all();
 
@@ -38,7 +48,7 @@ it('follows the chosen group in the graph', function () {
 
     CRMHelper::opportunity(['user_id' => $user->id]);
 
-    $chart = Livewire::test(GraphOpportunities::class)
+    $chart = Livewire::withQueryParams(['layout' => 'graph'])->test(ListOpportunities::class)
         ->set('tableGrouping', 'user.name')
         ->instance()
         ->getRecordsGraph()['data'];

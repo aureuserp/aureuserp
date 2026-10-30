@@ -3,7 +3,6 @@
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Filament\Navigation\NavigationItem;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Schema;
@@ -16,16 +15,18 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Url;
-use Webkul\Crm\Enums\LeadLayout;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\CRMExportAction;
 use Webkul\Crm\Filament\Actions\CRMImportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Tables\LeadsTable;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
+use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
+use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
-use Webkul\Crm\Filament\Concerns\ShowsLeadsGraph;
+use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Exports\LeadExporter;
 use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\Crm\Filament\Support\Reports\Sql;
@@ -39,7 +40,7 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListLeads extends ListRecords
 {
-    use HasCRMClusterNavigation, HasCRMTableViews, HasKanbanBoard, ManagesOpportunityKanbanCards, ShowsLeadsGraph;
+    use HasCRMClusterNavigation, HasCRMTableViews, HasGroupBoardLayout, HasKanbanBoard, HasViewLayouts, ManagesOpportunityKanbanCards, ShowsRecordsGraph;
 
     public const BOARD_GROUPS = [
         'user.name'   => ['field' => 'user_id', 'relation' => 'user'],
@@ -50,19 +51,16 @@ class ListLeads extends ListRecords
 
     protected static string $resource = LeadResource::class;
 
-    #[Url(as: 'layout')]
-    public string $viewLayout = LeadLayout::LIST->value;
-
     #[Url(as: 'team')]
     public ?string $teamFilter = null;
 
     public function mount(): void
     {
-        if (! LeadLayout::tryFrom($this->viewLayout)) {
-            $this->viewLayout = LeadLayout::LIST->value;
-        }
-
         parent::mount();
+
+        if (filled($this->teamFilter)) {
+            $this->activeTableView ??= 'all';
+        }
     }
 
     public function content(Schema $schema): Schema
@@ -104,24 +102,14 @@ class ListLeads extends ListRecords
 
         return new HtmlString(
             e(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.label', ['team' => $team->name]))
-            .' — <a href="'.e(LeadResource::getUrl('index', $this->getViewLayout() === LeadLayout::LIST ? [] : ['layout' => $this->viewLayout])).'" class="text-primary-600 hover:underline dark:text-primary-400">'
+            .' — <a href="'.e(LeadResource::getUrl('index', ['layout' => $this->getViewLayout()->value])).'" class="text-primary-600 hover:underline dark:text-primary-400">'
             .e(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.clear')).'</a>'
         );
     }
 
-    public function getViewLayout(): LeadLayout
+    public function getViewLayouts(): array
     {
-        return LeadLayout::tryFrom($this->viewLayout) ?? LeadLayout::LIST;
-    }
-
-    public function isGridLayout(): bool
-    {
-        return $this->getViewLayout() === LeadLayout::GRID;
-    }
-
-    public function isGraphLayout(): bool
-    {
-        return $this->getViewLayout() === LeadLayout::GRAPH;
+        return [ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH];
     }
 
     public function getTableGroup(): ?array
@@ -131,47 +119,49 @@ class ListLeads extends ListRecords
 
     public function getBoardGroup(): ?array
     {
-        return $this->isGraphLayout() ? null : $this->getTableGroup();
+        return $this->isViewLayout(ViewLayout::KANBAN) ? $this->getTableGroup() : null;
     }
 
     public function table(Table $table): Table
     {
-        return LeadsTable::configure($table, grid: $this->isGridLayout())
-            ->paginated(fn (): bool => ! $this->getBoardGroup() && ! $this->isGraphLayout())
+        return $this->configureGroupBoardTable(LeadsTable::configure($table))
             ->emptyState(fn () => match (true) {
-                $this->isGraphLayout()        => RecordsChart::embedGraph($this->getRecordsGraph()),
-                (bool) $this->getBoardGroup() => view($this->getKanbanBoard()->getBoardView()),
-                default                       => null,
+                $this->isViewLayout(ViewLayout::GRAPH) => $this->getRecordsGraphChart(),
+                (bool) $this->getBoardGroup()          => view($this->getKanbanBoard()->getBoardView()),
+                default                                => null,
             });
     }
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator
     {
-        return $this->getBoardGroup() || $this->isGraphLayout() ? new Collection : parent::getTableRecords();
+        return $this->isViewLayout(ViewLayout::LIST) ? parent::getTableRecords() : new Collection;
     }
 
     public function getRecordsGraph(): array
     {
-        return $this->buildLeadsGraph(
+        return $this->buildRecordsGraph(
             $this->filterTableQuery($this->modifyQueryWithActiveTab(LeadResource::getEloquentQuery())),
             $this->getTableGroup() ?? ['month' => 'created_at'],
             LeadResource::getPluralModelLabel(),
         );
     }
 
-    public function getRecordNavigationTabs(): array
+    public function getRecordsGraphHeading(): string
     {
-        return array_map(
-            fn (LeadLayout $layout): NavigationItem => NavigationItem::make($layout->value)
-                ->label($layout->getLabel())
-                ->icon($layout->getIcon())
-                ->url(LeadResource::getUrl('index', array_filter([
-                    'layout' => $layout === LeadLayout::LIST ? null : $layout->value,
-                    'team'   => $this->getFilteredTeam()?->getKey(),
-                ])))
-                ->isActiveWhen(fn (): bool => $this->getViewLayout() === $layout),
-            LeadLayout::cases(),
-        );
+        return match ((string) str((string) $this->tableGrouping)->before(':')) {
+            'user.name'   => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.salesperson'),
+            'team.name'   => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.team'),
+            'source.name' => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.source'),
+            'priority'    => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.priority'),
+            default       => __('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.month'),
+        };
+    }
+
+    protected function getRecordsGraphChart(): Htmlable
+    {
+        $graph = $this->getRecordsGraph();
+
+        return RecordsChart::embed($graph['data'], $graph['options'], $this->getRecordsGraphHeading(), '300px', 'crm-records-graph');
     }
 
     public function getTitle(): string
@@ -280,6 +270,7 @@ class ListLeads extends ListRecords
             'my_leads' => PresetView::make(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.my-leads'))
                 ->icon('heroicon-s-user')
                 ->favorite()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->where('user_id', Auth::id())),
 
             'unassigned' => PresetView::make(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.unassigned'))
@@ -290,7 +281,6 @@ class ListLeads extends ListRecords
             'all' => PresetView::make(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.all'))
                 ->icon('heroicon-s-inbox-stack')
                 ->favorite()
-                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()),
 
             'lost' => PresetView::make(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.tabs.lost'))

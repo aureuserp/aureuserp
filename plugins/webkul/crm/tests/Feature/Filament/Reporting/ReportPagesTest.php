@@ -1,23 +1,17 @@
 <?php
 
 use Filament\Actions\Exports\Models\Export;
+use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\GraphActivityAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\ListActivityAnalysis;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\SummaryActivityAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\GraphForecast;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\KanbanForecast;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\ListForecast;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\GraphLeadAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\ListLeadAnalysis;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\SummaryLeadAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\GraphPipelineAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\ListPipelineAnalysis;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\SummaryPipelineAnalysis;
 use Webkul\Crm\Filament\Exports\ForecastExporter;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Models\ActivityLog;
@@ -32,11 +26,18 @@ beforeEach(fn () => CRMHelper::bootstrap());
 function reportPagesDataset(): array
 {
     return [
-        'forecast'   => [ForecastResource::class, GraphForecast::class, null, ListForecast::class, 'view_any_crm_forecast', 'graph'],
-        'pipeline'   => [PipelineAnalysisResource::class, GraphPipelineAnalysis::class, SummaryPipelineAnalysis::class, ListPipelineAnalysis::class, 'view_any_crm_pipeline::analysis', 'index'],
-        'leads'      => [LeadAnalysisResource::class, GraphLeadAnalysis::class, SummaryLeadAnalysis::class, ListLeadAnalysis::class, 'view_any_crm_lead::analysis', 'index'],
-        'activities' => [ActivityAnalysisResource::class, GraphActivityAnalysis::class, SummaryActivityAnalysis::class, ListActivityAnalysis::class, 'view_any_crm_activity::analysis', 'index'],
+        'forecast'   => [ForecastResource::class, ListForecast::class.'@graph', null, ListForecast::class.'@list', 'view_any_crm_forecast'],
+        'pipeline'   => [PipelineAnalysisResource::class, ListPipelineAnalysis::class.'@graph', ListPipelineAnalysis::class.'@summary', ListPipelineAnalysis::class.'@list', 'view_any_crm_pipeline::analysis'],
+        'leads'      => [LeadAnalysisResource::class, ListLeadAnalysis::class.'@graph', ListLeadAnalysis::class.'@summary', ListLeadAnalysis::class.'@list', 'view_any_crm_lead::analysis'],
+        'activities' => [ActivityAnalysisResource::class, ListActivityAnalysis::class.'@graph', ListActivityAnalysis::class.'@summary', ListActivityAnalysis::class.'@list', 'view_any_crm_activity::analysis'],
     ];
+}
+
+function reportPage(string $page): Testable
+{
+    [$class, $layout] = explode('@', $page) + [1 => null];
+
+    return Livewire::withQueryParams(array_filter(['layout' => $layout]))->test($class);
 }
 
 function reportPagesUser(): User
@@ -70,9 +71,9 @@ dataset('report summary pages', array_filter(reportPagesDataset(), fn (array $re
 it('renders the graph, summary and list pages with the report permission', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
     CRMHelper::actingAs([$permission]);
 
-    Livewire::test($graph)->assertOk()->assertSeeHtml('crm-report-graph');
-    $summary && Livewire::test($summary)->assertOk();
-    Livewire::test($list)->assertOk();
+    reportPage($graph)->assertOk()->assertSeeHtml('crm-report-graph');
+    $summary && reportPage($summary)->assertOk();
+    reportPage($list)->assertOk();
 })->with('report pages');
 
 it('forbids the graph, summary and list pages without the report permission', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
@@ -84,9 +85,9 @@ it('forbids the graph, summary and list pages without the report permission', fu
 
     CRMHelper::actingAs([...$otherReportPermissions, ...CRMHelper::permissionsFor(['lead', 'opportunity'])]);
 
-    Livewire::test($graph)->assertForbidden();
-    $summary && Livewire::test($summary)->assertForbidden();
-    Livewire::test($list)->assertForbidden();
+    reportPage($graph)->assertForbidden();
+    $summary && reportPage($summary)->assertForbidden();
+    reportPage($list)->assertForbidden();
 })->with('report pages');
 
 it('authorizes the report resource with its own permission only', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
@@ -102,37 +103,43 @@ it('authorizes the report resource with its own permission only', function (stri
 it('shows the left menu of the reporting section', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
     CRMHelper::actingAs(['view_any_crm_forecast', 'view_any_crm_pipeline::analysis', 'view_any_crm_lead::analysis', 'view_any_crm_activity::analysis']);
 
-    expect(Livewire::test($graph)->instance()->getSubNavigation())->not->toBeEmpty();
+    expect(reportPage($graph)->instance()->getSubNavigation())->not->toBeEmpty();
 })->with('report pages');
 
 describe('view switcher', function () {
-    it('shows every view as a tab with the current one active', function (string $resource, string $graph, ?string $summary, string $list, string $permission, string $graphPage) {
+    it('shows every view in the toolbar switcher with the current one active', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
-        $pages = array_filter([$graphPage => $graph, 'summary' => $summary, 'list' => $list]);
+        foreach (array_filter([$graph, $summary, $list]) as $page) {
+            $component = reportPage($page)->assertSeeHtml('crm-layout-switcher');
 
-        foreach ($pages as $pageName => $page) {
-            $tabs = collect(Livewire::test($page)->instance()->getRecordNavigationTabs());
-
-            expect($tabs)->toHaveCount(count($resource::getReportViews()))
-                ->and($tabs->filter(fn ($tab): bool => $tab->isActive())->map(fn ($tab): ?string => $tab->getUrl())->values()->all())
-                ->toBe([$resource::getUrl($pageName)]);
+            expect($component->instance()->getViewLayouts())->toBe($resource::getReportLayouts())
+                ->and($component->instance()->getViewLayout()->value)->toBe(str($page)->after('@')->toString())
+                ->and(method_exists($component->instance(), 'getRecordNavigationTabs'))->toBeFalse();
         }
     })->with('report pages');
 
-    it('offers the kanban tab only on the forecast', function () {
-        CRMHelper::actingAs(['view_any_crm_forecast', 'view_any_crm_pipeline::analysis']);
+    it('offers the kanban view only on the forecast', function () {
+        expect(ForecastResource::getReportLayouts())->toContain(ViewLayout::KANBAN)
+            ->and(PipelineAnalysisResource::getReportLayouts())->not->toContain(ViewLayout::KANBAN);
+    });
 
-        expect(collect(Livewire::test(GraphForecast::class)->instance()->getRecordNavigationTabs())->map(fn ($tab): string => $tab->getLabel()))
-            ->toContain(__('crm::filament/clusters/reporting/report.views.kanban'))
-            ->and(collect(Livewire::test(GraphPipelineAnalysis::class)->instance()->getRecordNavigationTabs())->map(fn ($tab): string => $tab->getLabel()))
-            ->not->toContain(__('crm::filament/clusters/reporting/report.views.kanban'));
+    it('switches between graph, summary and list without leaving the page', function () {
+        CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
+
+        reportPage(ListPipelineAnalysis::class.'@list')
+            ->call('switchViewLayout', 'summary')
+            ->assertSet('viewLayout', 'summary')
+            ->assertSeeHtml('crm-report-summary')
+            ->call('switchViewLayout', 'graph')
+            ->assertSet('viewLayout', 'graph')
+            ->assertSeeHtml('crm-report-graph');
     });
 
     it('shows the saved view tabs on the report lists', function (string $list, string $permission, array $views) {
         CRMHelper::actingAs([$permission]);
 
-        expect(array_keys(Livewire::test($list)->instance()->getCachedFavoriteTableViews()))->toContain('default', ...$views);
+        expect(array_keys(reportPage($list)->instance()->getCachedFavoriteTableViews()))->toContain('default', ...$views);
     })->with([
         'forecast'   => [ListForecast::class, 'view_any_crm_forecast', ['my_pipeline', 'open', 'won', 'lost']],
         'pipeline'   => [ListPipelineAnalysis::class, 'view_any_crm_pipeline::analysis', ['my_pipeline', 'open', 'won', 'lost']],
@@ -143,13 +150,16 @@ describe('view switcher', function () {
     it('offers the bulk menu on the report lists', function () {
         CRMHelper::actingAs(['view_any_crm_lead::analysis', 'view_any_crm_activity::analysis']);
 
-        $leads = Livewire::test(ListLeadAnalysis::class);
+        $leads = reportPage(ListLeadAnalysis::class.'@list');
 
-        foreach (['export', 'archiveLeads', 'markLeadsAsLost', 'mergeLeads', 'sendLeadsEmail', 'sendLeadsSMS'] as $name) {
+        foreach (['export', 'delete', 'restore', 'forceDelete', 'markLeadsAsLost', 'mergeLeads', 'sendLeadsEmail', 'sendLeadsSMS'] as $name) {
             $leads->assertTableBulkActionExists($name);
         }
 
-        Livewire::test(ListActivityAnalysis::class)->assertTableBulkActionExists('export');
+        $leads->assertTableBulkActionDoesNotExist('archiveLeads')
+            ->assertTableBulkActionDoesNotExist('duplicateLeads');
+
+        reportPage(ListActivityAnalysis::class.'@list')->assertTableBulkActionExists('export');
     });
 });
 
@@ -161,7 +171,7 @@ describe('graph', function () {
         $report = $resource::getReport();
         $defaults = $report::getDefaultFilters();
 
-        $component = Livewire::test($graph)
+        $component = reportPage($graph)
             ->assertSet('graphMeasure', $defaults['measure']);
 
         $filters = $component->instance()->getGraphFilters();
@@ -174,7 +184,7 @@ describe('graph', function () {
     it('offers the report measures and dimensions in the graph controls', function () {
         CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
-        $graph = Livewire::test(GraphPipelineAnalysis::class)->instance()->getGraph();
+        $graph = Livewire::test(ListPipelineAnalysis::class)->instance()->getGraph();
 
         expect(array_keys($graph['measures']))->toBe(array_keys(PipelineAnalysisResource::getReport()::getMeasureOptions()))
             ->and(array_keys($graph['dimensions']))->toBe(array_keys(PipelineAnalysisResource::getReport()::getDimensionOptions()))
@@ -184,7 +194,7 @@ describe('graph', function () {
     it('switches the measure and split and always draws a bar chart', function () {
         CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
-        $component = Livewire::test(GraphPipelineAnalysis::class)
+        $component = Livewire::test(ListPipelineAnalysis::class)
             ->set('graphMeasure', 'count')
             ->set('graphSplitBy', '');
 
@@ -200,7 +210,7 @@ describe('graph', function () {
 
         CRMHelper::opportunity(['user_id' => auth()->id()]);
 
-        $component = Livewire::test(GraphPipelineAnalysis::class)->set('graphMeasure', 'count')->set('graphSplitBy', '');
+        $component = Livewire::test(ListPipelineAnalysis::class)->set('graphMeasure', 'count')->set('graphSplitBy', '');
 
         $total = array_sum($component->instance()->getGraph()['chart']['data']['datasets'][0]['data']);
 
@@ -215,9 +225,9 @@ describe('graph', function () {
     it('keeps the chosen measure in the session', function () {
         CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
-        Livewire::test(GraphPipelineAnalysis::class)->set('graphMeasure', 'count');
+        Livewire::test(ListPipelineAnalysis::class)->set('graphMeasure', 'count');
 
-        Livewire::test(GraphPipelineAnalysis::class)->assertSet('graphMeasure', 'count');
+        Livewire::test(ListPipelineAnalysis::class)->assertSet('graphMeasure', 'count');
     });
 });
 
@@ -228,7 +238,7 @@ describe('summary', function () {
         /** @var class-string<Report> $report */
         $report = $resource::getReport();
 
-        $table = Livewire::test($summary)->instance()->getTable();
+        $table = reportPage($summary)->instance()->getTable();
 
         $defaultDimension = $report::getDimension($report::getDefaultGroupBy());
 
@@ -244,7 +254,7 @@ describe('summary', function () {
     it('renames the first column after the chosen group', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
-        $component = Livewire::test($summary)->set('tableGrouping', 'salesperson');
+        $component = reportPage($summary)->set('tableGrouping', 'salesperson');
 
         expect(array_key_first($component->instance()->getTable()->getColumns()))->toBe('user.name');
 
@@ -259,7 +269,7 @@ describe('summary', function () {
         $stage = Stage::factory()->create(['name' => 'Summary Row Stage']);
         CRMHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 1234]);
 
-        Livewire::test(SummaryPipelineAnalysis::class)
+        reportPage(ListPipelineAnalysis::class.'@summary')
             ->assertOk()
             ->assertSee('Summary Row Stage');
     });
@@ -272,7 +282,7 @@ describe('list', function () {
         /** @var class-string<Report> $report */
         $report = $resource::getReport();
 
-        $component = Livewire::test($list);
+        $component = reportPage($list);
 
         foreach (array_keys($report::presets()) as $preset) {
             $component->assertTableFilterExists($preset);
@@ -294,7 +304,7 @@ describe('list', function () {
         $theirs = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth(), 'user_id' => reportPagesUser()->id]);
         $lead = CRMHelper::lead(['expected_closing_date' => today()->addMonth()]);
 
-        Livewire::test(ListForecast::class)
+        reportPage(ListForecast::class.'@list')
             ->assertCanSeeTableRecords([$upcoming])
             ->assertCanNotSeeTableRecords([$past, $theirs, $lead]);
     });
@@ -304,7 +314,7 @@ describe('list', function () {
 
         $theirs = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth(), 'user_id' => reportPagesUser()->id]);
 
-        Livewire::test(ListForecast::class)
+        reportPage(ListForecast::class.'@list')
             ->filterTable('my_pipeline', false)
             ->assertCanSeeTableRecords([$theirs]);
     });
@@ -317,7 +327,7 @@ describe('list', function () {
         $lost->markAsLost(null);
         $lead = CRMHelper::lead();
 
-        Livewire::test(ListPipelineAnalysis::class)
+        reportPage(ListPipelineAnalysis::class.'@list')
             ->assertCanSeeTableRecords([$active])
             ->assertCanNotSeeTableRecords([$lost, $lead]);
     });
@@ -331,7 +341,7 @@ describe('list', function () {
         $lost->markAsLost(null);
         $old = CRMHelper::opportunity(['created_at' => now()->subYear()->startOfYear()]);
 
-        Livewire::test(ListLeadAnalysis::class)
+        reportPage(ListLeadAnalysis::class.'@list')
             ->assertCanSeeTableRecords([$lead, $opportunity, $lost])
             ->assertCanNotSeeTableRecords([$old]);
     });
@@ -344,7 +354,7 @@ describe('list', function () {
         $recent = reportPagesActivityLog($opportunity, ['done_at' => now()->subMonth()]);
         $old = reportPagesActivityLog($opportunity, ['done_at' => now()->subMonths(13)]);
 
-        Livewire::test(ListActivityAnalysis::class)
+        reportPage(ListActivityAnalysis::class.'@list')
             ->assertCanSeeTableRecords([$recent])
             ->assertCanNotSeeTableRecords([$old]);
     });
@@ -355,15 +365,15 @@ describe('forecast export', function () {
         CRMHelper::actingAs([$permission]);
 
         foreach (array_filter([$graph, $summary, $list]) as $page) {
-            Livewire::test($page)->assertActionDoesNotExist('export');
+            reportPage($page)->assertActionDoesNotExist('export');
         }
     })->with('report pages');
 
     it('has no export button on the forecast kanban and exports from the list bulk menu', function () {
         CRMHelper::actingAs(['view_any_crm_forecast']);
 
-        Livewire::test(KanbanForecast::class)->assertActionDoesNotExist('export');
-        Livewire::test(ListForecast::class)->assertTableBulkActionExists('export');
+        Livewire::test(ListForecast::class)->assertActionDoesNotExist('export');
+        reportPage(ListForecast::class.'@list')->assertTableBulkActionExists('export');
     });
 
     it('exports the prorated revenue and status of an opportunity', function () {
@@ -399,7 +409,7 @@ it('clears the split and the table filters on the graph', function (string $page
     expect($component->instance()->getGraphFilters()['split_by'])->toBeNull()
         ->and(collect($component->get('tableFilters'))->filter(fn ($state): bool => (bool) ($state['isActive'] ?? false)))->toBeEmpty();
 })->with([
-    'pipeline'   => [GraphPipelineAnalysis::class, ['view_any_crm_pipeline::analysis']],
-    'leads'      => [GraphLeadAnalysis::class, ['view_any_crm_lead::analysis']],
-    'activities' => [GraphActivityAnalysis::class, ['view_any_crm_activity::analysis']],
+    'pipeline'   => [ListPipelineAnalysis::class, ['view_any_crm_pipeline::analysis']],
+    'leads'      => [ListLeadAnalysis::class, ['view_any_crm_lead::analysis']],
+    'activities' => [ListActivityAnalysis::class, ['view_any_crm_activity::analysis']],
 ]);

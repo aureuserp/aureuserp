@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\QuotationBoardGroup;
 use Webkul\Crm\Enums\TeamOrderScope;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\GraphQuotations;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\KanbanQuotations;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ListQuotations;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ManageOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Product\Models\Product;
 use Webkul\Sale\Enums\OrderState;
@@ -43,17 +43,24 @@ function boardQuotation(array $attributes = []): Order
     return $order->refresh();
 }
 
-it('shows list, kanban and graph tabs on every quotation view', function (string $page, array $active) {
+it('switches quotations between list, kanban and graph without leaving the page', function () {
     CRMHelper::actingAsCRMUser(['quotation']);
 
-    $tabs = collect(Livewire::test($page)->assertOk()->instance()->getRecordNavigationTabs());
+    $component = Livewire::test(ListQuotations::class)
+        ->assertOk()
+        ->assertSeeHtml('crm-layout-switcher');
 
-    expect($tabs->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
-})->with([
-    'list'   => [ListQuotations::class, [true, false, false]],
-    'kanban' => [KanbanQuotations::class, [false, true, false]],
-    'graph'  => [GraphQuotations::class, [false, false, true]],
-]);
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH])
+        ->and($component->instance()->getViewLayout())->toBe(ViewLayout::LIST);
+
+    $component->call('switchViewLayout', 'kanban')->assertSet('viewLayout', 'kanban');
+
+    expect($component->instance()->getBoardGroup())->toBe(QuotationBoardGroup::STATUS);
+
+    $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
+
+    expect($component->instance()->getBoardGroup())->toBeNull();
+});
 
 it('shows the board with one column per status on the kanban page', function () {
     CRMHelper::actingAsCRMUser(['quotation']);
@@ -61,7 +68,7 @@ it('shows the board with one column per status on the kanban page', function () 
     boardQuotation();
     boardQuotation(['state' => OrderState::SENT]);
 
-    $component = Livewire::test(KanbanQuotations::class)->set('tableGrouping', null);
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListQuotations::class)->set('tableGrouping', null);
 
     $columns = collect($component->instance()->getKanbanColumns());
 
@@ -70,14 +77,16 @@ it('shows the board with one column per status on the kanban page', function () 
         ->and($component->instance()->getTableRecords())->toHaveCount(0);
 });
 
-it('turns a list grouped by salesperson into a board and moves cards between salespeople', function () {
+it('shows a kanban grouped by salesperson and moves cards between salespeople', function () {
     $user = CRMHelper::actingAsCRMUser(['quotation']);
 
     $other = User::factory()->create();
     $quotation = boardQuotation(['user_id' => $other->id]);
     boardQuotation(['user_id' => $user->id]);
 
-    $component = Livewire::test(ListQuotations::class)
+    expect(Livewire::test(ListQuotations::class)->set('tableGrouping', 'user.name')->instance()->getBoardGroup())->toBeNull();
+
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListQuotations::class)
         ->set('tableGrouping', 'user.name');
 
     expect($component->instance()->getBoardGroup())->toBe(QuotationBoardGroup::SALESPERSON);
@@ -92,7 +101,7 @@ it('does not move cards on a status board', function () {
 
     $quotation = boardQuotation();
 
-    Livewire::test(KanbanQuotations::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListQuotations::class)
         ->call('moveRecord', (string) $quotation->id, OrderState::SALE->value, []);
 
     expect($quotation->refresh()->state)->toBe(OrderState::DRAFT);
@@ -103,7 +112,7 @@ it('counts quotations per status in the graph when grouped by status', function 
 
     boardQuotation();
 
-    $chart = Livewire::test(GraphQuotations::class)
+    $chart = Livewire::withQueryParams(['layout' => 'graph'])->test(ListQuotations::class)
         ->set('tableGrouping', QuotationBoardGroup::STATUS->value)
         ->instance()
         ->getRecordsGraph()['data'];
@@ -116,9 +125,11 @@ it('offers the quotation bulk actions on the list', function () {
 
     $component = Livewire::test(ListQuotations::class);
 
-    foreach (['export', 'duplicateQuotations', 'delete', 'sendQuotationsEmail', 'markQuotationsAsSent', 'confirmQuotations'] as $name) {
+    foreach (['export', 'delete', 'restore', 'forceDelete', 'sendQuotationsEmail', 'markQuotationsAsSent', 'confirmQuotations'] as $name) {
         $component->assertTableBulkActionExists($name);
     }
+
+    $component->assertTableBulkActionDoesNotExist('duplicateQuotations');
 });
 
 it('marks only draft quotations as sent in bulk', function () {
@@ -134,49 +145,18 @@ it('marks only draft quotations as sent in bulk', function () {
         ->and($order->refresh()->state)->toBe(OrderState::SALE);
 });
 
-it('duplicates quotations with their lines as new drafts', function () {
-    CRMHelper::actingAsCRMUser(['quotation']);
-
-    $quotation = boardQuotation(['state' => OrderState::SENT]);
-
-    Livewire::test(ListQuotations::class)
-        ->callTableBulkAction('duplicateQuotations', [$quotation]);
-
-    $copy = Order::query()->whereKeyNot($quotation->id)->latest('id')->firstOrFail();
-
-    expect($copy->state)->toBe(OrderState::DRAFT)
-        ->and($copy->name)->not->toBe($quotation->name)
-        ->and($copy->lines()->count())->toBe($quotation->lines()->count());
-});
-
-it('groups duplicate, mark as sent and delete in the quotation page actions menu', function () {
+it('shows the sales header actions on the quotation page without an actions menu', function () {
     CRMHelper::actingAsCRMUser(['quotation']);
 
     $quotation = boardQuotation();
 
     Livewire::test(ViewQuotation::class, ['record' => $quotation->id])
-        ->assertActionVisible('duplicateQuotation')
-        ->assertActionVisible('markQuotationAsSent')
         ->assertActionVisible('delete')
-        ->callAction('markQuotationAsSent');
-
-    expect($quotation->refresh()->state)->toBe(OrderState::SENT);
+        ->assertActionDoesNotExist('duplicateQuotation')
+        ->assertActionDoesNotExist('markQuotationAsSent');
 });
 
-it('opens the copy after duplicating from the quotation page', function () {
-    CRMHelper::actingAsCRMUser(['quotation']);
-
-    $quotation = boardQuotation();
-
-    $component = Livewire::test(ViewQuotation::class, ['record' => $quotation->id])
-        ->callAction('duplicateQuotation');
-
-    $copy = Order::query()->whereKeyNot($quotation->id)->latest('id')->firstOrFail();
-
-    $component->assertRedirect(QuotationResource::getUrl('edit', ['record' => $copy]));
-});
-
-it('shows the opportunity as a record tab instead of a header button', function () {
+it('shows the opportunity as a record tab that opens on the quotation like the deliveries tab', function () {
     CRMHelper::actingAsCRMUser(['quotation', 'opportunity']);
 
     $opportunity = CRMHelper::opportunity();
@@ -188,7 +168,28 @@ it('shows the opportunity as a record tab instead of a header button', function 
     $tab = collect($component->instance()->getRecordNavigationTabs())
         ->first(fn ($item): bool => $item->getLabel() === __('crm::filament/clusters/sales/resources/quotation.tabs.opportunity'));
 
-    expect($tab?->getUrl())->toBe(OpportunityResource::getUrl('view', ['record' => $opportunity]));
+    expect($tab?->getUrl())->toBe(QuotationResource::getUrl('opportunity', ['record' => $quotation]));
+});
+
+it('lists the quotation\'s opportunity on the opportunity tab and links it to the opportunity page', function () {
+    CRMHelper::actingAsCRMUser(['quotation', 'opportunity']);
+
+    $opportunity = CRMHelper::opportunity(['name' => 'Quotation tab opportunity']);
+    $other = CRMHelper::opportunity();
+    $quotation = boardQuotation(['opportunity_id' => $opportunity->id]);
+
+    Livewire::test(ManageOpportunity::class, ['record' => $quotation->id])
+        ->assertOk()
+        ->assertCanSeeTableRecords([$opportunity])
+        ->assertCanNotSeeTableRecords([$other])
+        ->assertSee('Quotation tab opportunity')
+        ->assertSeeHtml(e(OpportunityResource::getUrl('view', ['record' => $opportunity])));
+});
+
+it('forbids the opportunity tab when the quotation has no opportunity', function () {
+    CRMHelper::actingAsCRMUser(['quotation', 'opportunity']);
+
+    Livewire::test(ManageOpportunity::class, ['record' => boardQuotation()->id])->assertForbidden();
 });
 
 it('hides the opportunity tab when the quotation has no opportunity', function () {

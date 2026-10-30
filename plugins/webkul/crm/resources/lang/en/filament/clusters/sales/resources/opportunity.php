@@ -4,12 +4,6 @@ return [
     'model-label'        => 'Opportunity',
     'plural-model-label' => 'Opportunities',
 
-    'views' => [
-        'kanban' => 'Kanban',
-        'list'   => 'List',
-        'graph'  => 'Graph',
-    ],
-
     'navigation' => [
         'title' => 'My Pipeline',
     ],
@@ -111,6 +105,7 @@ return [
             'tags'             => 'Tags',
             'email'            => 'Email',
             'phone'            => 'Phone',
+            'medium'           => 'Medium',
             'lost-reason'      => 'Lost Reason',
             'created-at'       => 'Created At',
         ],

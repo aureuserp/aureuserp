@@ -4,12 +4,6 @@ return [
     'model-label'        => 'الفرصة',
     'plural-model-label' => 'الفرص',
 
-    'views' => [
-        'kanban' => 'كانبان',
-        'list'   => 'قائمة',
-        'graph'  => 'رسم بياني',
-    ],
-
     'navigation' => [
         'title' => 'مسار مبيعاتي',
     ],
@@ -111,6 +105,7 @@ return [
             'tags'             => 'الوسوم',
             'email'            => 'البريد الإلكتروني',
             'phone'            => 'الهاتف',
+            'medium'           => 'الوسيط',
             'lost-reason'      => 'سبب الخسارة',
             'created-at'       => 'تاريخ الإنشاء',
         ],

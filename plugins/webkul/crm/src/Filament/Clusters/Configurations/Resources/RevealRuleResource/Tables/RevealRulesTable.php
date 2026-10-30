@@ -69,7 +69,7 @@ class RevealRulesTable
                 DeleteAction::make(),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: RevealRuleExporter::class, copyRelations: ['countries', 'states', 'tags', 'industries', 'otherRoles']),
+                RecordBulkActions::make(exporter: RevealRuleExporter::class),
             ]);
     }
 }

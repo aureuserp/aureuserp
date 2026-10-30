@@ -3,13 +3,6 @@
 return [
     'none' => 'لا شيء',
 
-    'views' => [
-        'kanban'  => 'كانبان',
-        'graph'   => 'رسم بياني',
-        'summary' => 'الملخص',
-        'list'    => 'قائمة',
-    ],
-
     'chart' => [
         'heading' => ':measure حسب :group',
     ],

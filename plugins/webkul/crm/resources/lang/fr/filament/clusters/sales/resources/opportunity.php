@@ -4,12 +4,6 @@ return [
     'model-label'        => 'Opportunité',
     'plural-model-label' => 'Opportunités',
 
-    'views' => [
-        'kanban' => 'Kanban',
-        'list'   => 'Liste',
-        'graph'  => 'Graphique',
-    ],
-
     'navigation' => [
         'title' => 'Mon pipeline',
     ],
@@ -111,6 +105,7 @@ return [
             'tags'             => 'Étiquettes',
             'email'            => 'E-mail',
             'phone'            => 'Téléphone',
+            'medium'           => 'Support',
             'lost-reason'      => 'Motif de perte',
             'created-at'       => 'Créé le',
         ],

@@ -5,7 +5,6 @@ use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
@@ -61,20 +60,24 @@ function pipelineTeam(array $attributes = []): Team
     ]);
 }
 
-it('opens without a default filter, showing every salesperson\'s opportunities', function () {
+it('opens on the My Pipeline tab, showing the user\'s opportunities', function (?string $layout) {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
     $mine = CRMHelper::opportunity();
     $someoneElses = CRMHelper::opportunity(['user_id' => pipelineOtherUserId()]);
 
-    $component = Livewire::test(KanbanOpportunities::class)
+    $component = Livewire::withQueryParams(array_filter(['layout' => $layout]))->test(ListOpportunities::class)
         ->assertOk()
-        ->assertSet('activeTableView', 'default');
+        ->assertSet('activeTableView', 'my_pipeline');
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($mine->id)
-        ->toContain($someoneElses->id);
-});
+        ->not->toContain($someoneElses->id);
+
+    $component->call('loadView', 'default');
+
+    expect(pipelineBoardRecordIds($component))->toContain($mine->id, $someoneElses->id);
+})->with(['kanban' => [null], 'list' => ['list'], 'graph' => ['graph']]);
 
 it('opens a team\'s pipeline when ?team= is given', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
@@ -85,9 +88,10 @@ it('opens a team\'s pipeline when ?team= is given', function () {
     $mineWithoutTeam = CRMHelper::opportunity();
 
     $component = Livewire::withQueryParams(['team' => $team->id])
-        ->test(KanbanOpportunities::class)
+        ->test(ListOpportunities::class)
         ->assertOk()
-        ->assertSet('tableFilters.queryBuilder.rules.team.data.settings.values', [(string) $team->id]);
+        ->assertSet('tableFilters.queryBuilder.rules.team.data.settings.values', [(string) $team->id])
+        ->assertSet('activeTableView', 'default');
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($teamDeal->id)
@@ -99,7 +103,7 @@ it('resets the table filters on the board', function () {
 
     $someoneElses = CRMHelper::opportunity(['user_id' => pipelineOtherUserId()]);
 
-    $component = Livewire::test(KanbanOpportunities::class)
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::HIGH->value], 'is'))
         ->call('resetTableFiltersForm');
 
@@ -112,7 +116,7 @@ it('filters the board by priority', function () {
     $high = CRMHelper::opportunity(['priority' => OpportunityPriority::HIGH]);
     $low = CRMHelper::opportunity(['priority' => OpportunityPriority::LOW]);
 
-    $component = Livewire::test(KanbanOpportunities::class)
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::HIGH->value], 'is'));
 
     expect(pipelineBoardRecordIds($component))
@@ -126,7 +130,7 @@ it('searches cards by name', function () {
     $match = CRMHelper::opportunity(['name' => 'Zebra kanban search deal']);
     $other = CRMHelper::opportunity(['name' => 'Unrelated deal']);
 
-    $component = Livewire::test(KanbanOpportunities::class)
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->set('tableSearch', 'Zebra kanban');
 
     expect(pipelineBoardRecordIds($component))
@@ -140,7 +144,7 @@ it('uses the stages, in order, as columns and colours won stages green', functio
     $wonStage = CRMHelper::wonStage();
     $firstStage = CRMHelper::firstStage();
 
-    $component = Livewire::test(KanbanOpportunities::class);
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
     $columns = collect($component->instance()->getKanbanColumns());
 
@@ -162,7 +166,7 @@ it('sums the expected revenue of each column', function () {
     CRMHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 1000]);
     CRMHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 500]);
 
-    $component = Livewire::test(KanbanOpportunities::class);
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
     $board = $component->instance()->getKanbanBoard();
 
@@ -181,7 +185,7 @@ it('hides lost opportunities and leads from the board', function () {
     $lost->markAsLost(null, 'Gone');
     $lead = CRMHelper::lead();
 
-    $component = Livewire::test(KanbanOpportunities::class);
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($open->id)
@@ -197,7 +201,7 @@ it('shows the pipeline list tabs on the board and filters the cards by the chose
     $lost = CRMHelper::opportunity();
     $lost->markAsLost(null);
 
-    $component = Livewire::test(KanbanOpportunities::class)->assertSet('activeTableView', 'default');
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)->assertSet('activeTableView', 'default');
 
     expect(array_keys($component->instance()->getCachedFavoriteTableViews()))->toContain('default', 'my_pipeline', 'won', 'lost');
 
@@ -227,7 +231,7 @@ it('shows views saved on the pipeline list as board tabs and applies their filte
 
     TableViewFavorite::query()->create(['view_type' => 'saved', 'view_key' => $view->id, 'filterable_type' => ListOpportunities::class, 'user_id' => $user->id, 'is_favorite' => true]);
 
-    $component = Livewire::test(KanbanOpportunities::class)->call('loadView', (string) $view->id);
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)->call('loadView', (string) $view->id);
 
     expect(pipelineBoardRecordIds($component))->toContain($high->id)->not->toContain($low->id);
 });
@@ -235,7 +239,7 @@ it('shows views saved on the pipeline list as board tabs and applies their filte
 it('saves a view from the board for the pipeline list', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->set('tableFilters', pipelineRule('priority', [OpportunityPriority::HIGH->value], 'is'))
         ->callAction('createTableView', data: ['name' => 'Board high priority', 'is_favorite' => true, 'is_public' => false])
         ->assertHasNoActionErrors();
@@ -244,7 +248,7 @@ it('saves a view from the board for the pipeline list', function () {
 
     expect($view->filterable_type)->toBe(ListOpportunities::class)
         ->and(data_get($view->filters, 'tableFilters.queryBuilder.rules.priority.type'))->toBe('priority')
-        ->and(array_keys(Livewire::test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews()))->toContain($view->id);
+        ->and(array_keys(Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews()))->toContain($view->id);
 });
 
 it('quick-creates an opportunity in the column\'s stage and the current company', function () {
@@ -252,7 +256,7 @@ it('quick-creates an opportunity in the column\'s stage and the current company'
 
     $stage = Stage::factory()->create(['name' => 'Quick create stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('kanbanColumn', data: [
             'name'             => 'Quick kanban deal',
             'expected_revenue' => 2500,
@@ -275,7 +279,7 @@ it('requires a name to quick-create an opportunity', function () {
 
     $stage = CRMHelper::firstStage();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('kanbanColumn', data: ['name' => ''], arguments: ['column' => (string) $stage->id])
         ->assertHasActionErrors(['name' => 'required']);
 });
@@ -285,7 +289,7 @@ it('quick-creates in the filtered team when it belongs to the current company', 
 
     $team = pipelineTeam();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->set('tableFilters', pipelineRule('team', [$team->id]))
         ->callAction('kanbanColumn', data: ['name' => 'Team quick deal'], arguments: ['column' => (string) CRMHelper::firstStage()->id])
         ->assertHasNoActionErrors();
@@ -300,7 +304,7 @@ it('ignores a tampered team filter from another company when quick-creating', fu
 
     $foreignTeam = Team::factory()->create(['company_id' => $otherCompany->id, 'is_active' => true]);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->set('tableFilters', pipelineRule('team', [$foreignTeam->id]))
         ->callAction('kanbanColumn', data: ['name' => 'Tampered team deal'], arguments: ['column' => (string) CRMHelper::firstStage()->id])
         ->assertHasNoActionErrors();
@@ -314,7 +318,7 @@ it('ignores a tampered team filter from another company when quick-creating', fu
 it('falls back to the first stage when quick-creating into an unknown stage', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('kanbanColumn', data: [
             'name'     => 'Unknown stage deal',
             'stage_id' => 999999999,
@@ -328,7 +332,7 @@ it('falls back to the first stage when quick-creating into an unknown stage', fu
 it('hides quick create without the create permission', function () {
     CRMHelper::actingAs(['view_any_crm_opportunity', 'view_crm_opportunity']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->assertOk()
         ->assertActionHidden('kanbanColumn', ['column' => (string) CRMHelper::firstStage()->id]);
 });
@@ -340,13 +344,31 @@ it('moves a card to another stage', function () {
 
     $target = Stage::factory()->create(['name' => 'Move target stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('moveRecord', (string) $opportunity->id, (string) $target->id, []);
 
     $opportunity->refresh();
 
     expect($opportunity->stage_id)->toBe($target->id)
         ->and($opportunity->closed_at)->toBeNull();
+});
+
+it('keys columns and cards so a moved card is kept instead of redrawn', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $opportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
+
+    $target = Stage::factory()->create(['name' => 'Keyed target stage']);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->call('moveRecord', (string) $opportunity->id, (string) $target->id, [(string) $opportunity->id]);
+
+    $component
+        ->assertSeeHtml('wire:key="kanban-column-'.$target->id.'"')
+        ->assertSeeHtml('wire:key="kanban-card-'.$opportunity->id.'"')
+        ->assertSeeHtml('data-kanban-count="'.pipelineBoardColumn($component, $target)->count.'"');
+
+    expect(pipelineBoardColumn($component, $target)->records->modelKeys())->toContain($opportunity->id);
 });
 
 it('marks a card as won when it is dropped into a won stage', function () {
@@ -356,7 +378,7 @@ it('marks a card as won when it is dropped into a won stage', function () {
 
     $wonStage = CRMHelper::wonStage();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('moveRecord', (string) $opportunity->id, (string) $wonStage->id, []);
 
     $opportunity->refresh();
@@ -374,7 +396,7 @@ it('refuses to move a card without the update permission', function () {
 
     $opportunity = CRMHelper::opportunity(['stage_id' => $firstStage->id]);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('moveRecord', (string) $opportunity->id, (string) CRMHelper::wonStage()->id, [])
         ->assertNotified();
 
@@ -384,7 +406,7 @@ it('refuses to move a card without the update permission', function () {
 it('forbids the board without the view any permission', function () {
     CRMHelper::actingAs(['view_any_crm_lead']);
 
-    Livewire::test(KanbanOpportunities::class)->assertForbidden();
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)->assertForbidden();
 });
 
 describe('list view filters on the board', function () {
@@ -398,7 +420,7 @@ describe('list view filters on the board', function () {
         $unassigned = CRMHelper::opportunity();
         $unassigned->forceFill(['user_id' => null])->saveQuietly();
 
-        $component = Livewire::test(KanbanOpportunities::class);
+        $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
         $ids = fn (string $tab): array => pipelineBoardRecordIds($component->call('loadView', $tab));
 
@@ -414,7 +436,7 @@ describe('list view filters on the board', function () {
         $lost = CRMHelper::opportunity();
         $lost->markAsLost(null);
 
-        expect(pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)))->not->toContain($lost->id);
+        expect(pipelineBoardRecordIds(Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)))->not->toContain($lost->id);
     });
 
     it('filters by stages and tags', function () {
@@ -427,8 +449,8 @@ describe('list view filters on the board', function () {
         $tagged = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
         $tagged->tags()->attach($tag->id);
 
-        $byStage = pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)->set('tableFilters', pipelineRule('stage', [$first->id])));
-        $byTag = pipelineBoardRecordIds(Livewire::test(KanbanOpportunities::class)->set('tableFilters', pipelineRule('tags', [$tag->id])));
+        $byStage = pipelineBoardRecordIds(Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)->set('tableFilters', pipelineRule('stage', [$first->id])));
+        $byTag = pipelineBoardRecordIds(Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)->set('tableFilters', pipelineRule('tags', [$tag->id])));
 
         expect($byStage)->toContain($inStage->id)->not->toContain($tagged->id)
             ->and($byTag)->toBe([$tagged->id]);
@@ -440,7 +462,7 @@ describe('list view filters on the board', function () {
         $lost = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
         $lost->markAsLost(null);
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->call('loadView', 'lost')
             ->call('moveRecord', (string) $lost->id, (string) CRMHelper::wonStage()->id, [(string) $lost->id]);
 
@@ -467,7 +489,7 @@ describe('pipeline cards', function () {
         $opportunity = CRMHelper::opportunity(['name' => 'Card details '.uniqid(), 'expected_revenue' => 1500, 'priority' => OpportunityPriority::HIGH]);
         $opportunity->tags()->attach($tag->id);
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->assertSee($opportunity->name)
             ->assertSee($tag->name)
             ->assertSeeHtml('window.location.href')
@@ -478,7 +500,7 @@ describe('pipeline cards', function () {
         CRMHelper::actingAsCRMUser(['opportunity']);
 
         $opportunity = CRMHelper::opportunity(['priority' => OpportunityPriority::LOW]);
-        $component = Livewire::test(KanbanOpportunities::class);
+        $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
         $component->call('setKanbanCardPriority', (string) $opportunity->id, OpportunityPriority::HIGH->value);
 
@@ -494,13 +516,13 @@ describe('pipeline cards', function () {
 
         $opportunity = CRMHelper::opportunity();
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->callAction('kanbanCardColor', data: ['color' => '#30c381'], arguments: ['record' => $opportunity->id])
             ->assertHasNoActionErrors();
 
         expect($opportunity->fresh()->color)->toBe('#30c381');
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->callAction('kanbanCardColor', data: ['color' => null], arguments: ['record' => $opportunity->id]);
 
         expect($opportunity->fresh()->color)->toBeNull();
@@ -511,7 +533,7 @@ describe('pipeline cards', function () {
 
         $opportunity = CRMHelper::opportunity();
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->assertActionHidden('kanbanCardColor', ['record' => $opportunity->id]);
     });
 
@@ -526,7 +548,7 @@ describe('pipeline cards', function () {
         pipelineActivity($planned, now()->addDays(4)->toDateString());
         $none = CRMHelper::opportunity(['stage_id' => $stage->id]);
 
-        $component = Livewire::test(KanbanOpportunities::class);
+        $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
         $progress = $component->instance()->kanbanColumnProgress(pipelineBoardColumn($component, $stage));
 
         expect($progress['overdue'])->toBeGreaterThanOrEqual(1)
@@ -550,7 +572,7 @@ describe('pipeline cards', function () {
 
         $opportunity = CRMHelper::opportunity();
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->callAction('deleteKanbanCard', arguments: ['record' => (string) $opportunity->id]);
 
         expect(Lead::withTrashed()->find($opportunity->id))->toBeNull();
@@ -559,7 +581,7 @@ describe('pipeline cards', function () {
 
         $kept = CRMHelper::opportunity();
 
-        Livewire::test(KanbanOpportunities::class)
+        Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
             ->assertActionHidden('deleteKanbanCard', arguments: ['record' => (string) $kept->id]);
     });
 });
@@ -570,7 +592,7 @@ it('lists a card\'s activities in a modal and opens the schedule form from it', 
     $opportunity = CRMHelper::opportunity();
     pipelineActivity($opportunity, today()->addDay()->toDateString());
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->mountAction('kanbanCardActivities', ['record' => $opportunity->id])
         ->assertActionMounted('kanbanCardActivities')
         ->assertSee('Pipeline card activity')

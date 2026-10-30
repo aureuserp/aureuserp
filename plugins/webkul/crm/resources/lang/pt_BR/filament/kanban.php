@@ -33,6 +33,11 @@ return [
         'board-description' => 'Nada corresponde a esta visualização ou aos filtros atuais.',
     ],
 
+    'choose-group' => [
+        'heading'     => 'Escolha um Agrupar por',
+        'description' => 'A visualização Kanban mostra uma coluna por grupo. Escolha um campo em Agrupar por para ver o quadro.',
+    ],
+
     'progress' => [
         'label' => 'Atividades nesta etapa',
         'total' => 'Receita esperada',

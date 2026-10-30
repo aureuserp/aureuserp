@@ -8,6 +8,7 @@ use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\UTMMedium;
 use Webkul\Website\Enums\ContactFormAction;
 use Webkul\Website\Filament\Customer\Pages\ContactUs;
 use Webkul\Website\Mail\ContactFormMail;
@@ -140,8 +141,22 @@ it('creates a CRM record of the configured type', function (ContactFormAction $a
         ->and($lead->email)->toBe('jane@example.com')
         ->and($lead->phone)->toBe('+91 98765 43210')
         ->and($lead->company_name)->toBe('Acme Ltd')
-        ->and($lead->description)->toContain('Line one<br />');
+        ->and($lead->description)->toContain('Line one<br />')
+        ->and($lead->medium?->name)->toBe(ContactFormHandler::LEAD_MEDIUM);
 })->with([ContactFormAction::LEAD, ContactFormAction::OPPORTUNITY]);
+
+it('reuses one website medium for every contact form lead', function () {
+    TestBootstrapHelper::ensurePluginInstalled('crm');
+
+    contactSettings(enabled: true, action: ContactFormAction::OPPORTUNITY);
+
+    app(ContactFormHandler::class)->handle(contactFormData());
+    app(ContactFormHandler::class)->handle(contactFormData(['email' => 'john@example.com']));
+
+    expect(UTMMedium::query()->where('name', ContactFormHandler::LEAD_MEDIUM)->count())->toBe(1)
+        ->and(Lead::query()->withoutGlobalScopes()->latest('id')->take(2)->pluck('utm_medium_id')->unique()->all())
+        ->toBe([UTMMedium::query()->where('name', ContactFormHandler::LEAD_MEDIUM)->value('id')]);
+});
 
 it('does not assign a website lead to the logged-in admin user', function () {
     TestBootstrapHelper::ensurePluginInstalled('crm');

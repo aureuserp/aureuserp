@@ -5,10 +5,9 @@ namespace Webkul\Crm\Filament\Clusters\Reporting\Resources;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\LeadReportBulkActions;
 use Webkul\Crm\Filament\Clusters\Reporting;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\GraphForecast;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\KanbanForecast;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\ListForecast;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Concerns\IsCRMReportResource;
@@ -69,13 +68,9 @@ class ForecastResource extends Resource
         return LeadReportTable::configure($table);
     }
 
-    public static function getReportViews(): array
+    public static function getReportLayouts(): array
     {
-        return [
-            'index'   => ['heroicon-o-view-columns', 'kanban', __('crm::filament/clusters/reporting/report.views.kanban')],
-            'graph'   => ['heroicon-o-chart-bar', 'graph', __('crm::filament/clusters/reporting/report.views.graph')],
-            'list'    => ['heroicon-o-list-bullet', 'list', __('crm::filament/clusters/reporting/report.views.list')],
-        ];
+        return [ViewLayout::KANBAN, ViewLayout::GRAPH, ViewLayout::LIST];
     }
 
     public static function getReportCustomFilters(): array
@@ -103,9 +98,9 @@ class ForecastResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => KanbanForecast::route('/'),
-            'graph'   => GraphForecast::route('/graph'),
-            'list'    => ListForecast::route('/list'),
+            'index' => ListForecast::route('/'),
+            'graph' => ListForecast::route('/graph'),
+            'list'  => ListForecast::route('/list'),
         ];
     }
 }

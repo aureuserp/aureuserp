@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Livewire;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\KanbanActivities;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\ListActivities;
 use Webkul\Crm\Models\Lead;
 use Webkul\Support\Models\ActivityType;
 
@@ -43,7 +43,7 @@ function scheduleOnBoardType(ActivityType $type, ?Lead $lead = null): void
 it('adds a crm activity type with the installed defaults', function () {
     actingAsActivityTypeColumnManager();
 
-    $component = Livewire::test(KanbanActivities::class)
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->call('addKanbanColumn', '  Site Visit (board test)  ')
         ->assertNotified(__('crm::filament/kanban.add-column.created', ['name' => 'Site Visit (board test)']));
 
@@ -69,7 +69,7 @@ it('rejects a duplicate crm activity type name', function () {
 
     boardActivityType('Duplicate board type');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->call('addKanbanColumn', 'Duplicate board type')
         ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Duplicate board type']));
 
@@ -81,7 +81,7 @@ it('allows a name that only another plugin uses', function () {
 
     boardActivityType('Shared plugin type name', 'sales');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->call('addKanbanColumn', 'Shared plugin type name');
 
     expect(ActivityType::query()->where('plugin', 'crm')->where('name', 'Shared plugin type name')->exists())->toBeTrue();
@@ -92,7 +92,7 @@ it('rejects a blank or too long activity type name', function (string $name) {
 
     $countBefore = ActivityType::query()->count();
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->call('addKanbanColumn', $name)
         ->assertNotified();
 
@@ -105,7 +105,7 @@ it('rejects a blank or too long activity type name', function (string $name) {
 it('forbids adding an activity type without the create permission', function () {
     actingAsActivityTypeColumnManager(['view_any', 'view', 'update', 'delete']);
 
-    $component = Livewire::test(KanbanActivities::class);
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class);
 
     expect($component->instance()->canAddKanbanColumn())->toBeFalse();
 
@@ -119,7 +119,7 @@ it('renames a crm activity type from the board', function () {
 
     $type = boardActivityType('Type before rename');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->callAction('editKanbanColumn', data: ['name' => 'Type after rename'], arguments: ['column' => (string) $type->id])
         ->assertHasNoActionErrors()
         ->assertNotified(__('crm::filament/kanban.column-actions.saved', ['name' => 'Type after rename']));
@@ -134,7 +134,7 @@ it('rejects renaming an activity type to an existing crm name', function () {
 
     $type = boardActivityType('Type to keep');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->callAction('editKanbanColumn', data: ['name' => 'Taken board type'], arguments: ['column' => (string) $type->id])
         ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Taken board type']));
 
@@ -146,7 +146,7 @@ it('deletes an unused crm activity type from the board', function () {
 
     $type = boardActivityType('Unused board type');
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $type->id])
         ->assertNotified(__('crm::filament/kanban.column-actions.deleted', ['name' => 'Unused board type']));
 
@@ -166,7 +166,7 @@ it('refuses to delete an activity type while activities are scheduled with it', 
         $lead->markAsLost(null);
     }
 
-    Livewire::test(KanbanActivities::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $type->id])
         ->assertNotified(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board type']));
 
@@ -183,7 +183,7 @@ it('cannot manage activity types of other plugins from the board', function () {
 
     scheduleOnBoardType($salesType);
 
-    $component = Livewire::test(KanbanActivities::class);
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class);
 
     expect(collect($component->instance()->getKanbanColumns())->pluck('value')->all())
         ->toContain((string) $salesType->id)
@@ -202,7 +202,7 @@ it('hides the column settings without the update and delete permissions', functi
 
     $type = boardActivityType('Read-only board type');
 
-    $page = Livewire::test(KanbanActivities::class)->instance();
+    $page = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)->instance();
 
     expect($page->canEditKanbanColumn((string) $type->id))->toBeFalse()
         ->and($page->canDeleteKanbanColumn((string) $type->id))->toBeFalse();
@@ -213,7 +213,7 @@ it('lets the crm activity type permissions alone manage a crm column', function 
 
     $type = boardActivityType('Crm permission board type');
 
-    $page = Livewire::test(KanbanActivities::class)->instance();
+    $page = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)->instance();
 
     expect($page->canEditKanbanColumn((string) $type->id))->toBeTrue()
         ->and($page->canDeleteKanbanColumn((string) $type->id))->toBeTrue();
@@ -227,7 +227,7 @@ it('does not let the support activity type permissions manage a crm column', fun
 
     $type = boardActivityType('Support permission board type');
 
-    $page = Livewire::test(KanbanActivities::class)->instance();
+    $page = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)->instance();
 
     expect($page->canAddKanbanColumn())->toBeFalse()
         ->and($page->canEditKanbanColumn((string) $type->id))->toBeFalse()
@@ -237,7 +237,7 @@ it('does not let the support activity type permissions manage a crm column', fun
 it('rejects column values that are not activity type ids', function (string $value) {
     actingAsActivityTypeColumnManager();
 
-    $page = Livewire::test(KanbanActivities::class)->instance();
+    $page = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)->instance();
 
     expect($page->canEditKanbanColumn($value))->toBeFalse()
         ->and($page->canDeleteKanbanColumn($value))->toBeFalse();

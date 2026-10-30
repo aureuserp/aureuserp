@@ -18,4 +18,14 @@ return [
         'label' => 'Equipo de ventas: :team',
         'clear' => 'Mostrar todo',
     ],
+
+    'graph' => [
+        'heading' => [
+            'month'       => 'Leads por mes',
+            'salesperson' => 'Leads por vendedor',
+            'team'        => 'Leads por equipo de ventas',
+            'source'      => 'Leads por origen',
+            'priority'    => 'Leads por prioridad',
+        ],
+    ],
 ];

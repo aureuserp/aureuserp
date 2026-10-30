@@ -2,6 +2,7 @@
 
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads as SimilarLeadsPage;
@@ -154,7 +155,7 @@ describe('similar leads tab and board', function () {
         expect($board)->not->toContain($lead->id);
     });
 
-    it('shows the similar records under the record tabs with kanban, list and graph tabs', function () {
+    it('shows the similar records under the record tabs with the kanban, list and graph switcher', function () {
         CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
 
         $record = CRMHelper::lead(['email' => 'views@acme.test']);
@@ -166,23 +167,27 @@ describe('similar leads tab and board', function () {
 
         expect(collect($kanban->instance()->getRecordNavigationTabs())->map->getLabel()->all())
             ->toContain(__('crm::filament/similar-leads.navigation.label'))
-            ->and(collect($kanban->instance()->getSimilarViewTabs())->map(fn ($tab): bool => $tab->isActive())->all())
-            ->toBe([true, false, false]);
+            ->and($kanban->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
+            ->and($kanban->instance()->getViewLayout())->toBe(ViewLayout::KANBAN);
 
-        Livewire::withQueryParams(['view' => 'list'])
+        $kanban->assertSeeHtml('crm-layout-switcher')
+            ->call('switchViewLayout', 'list')
+            ->assertCanSeeTableRecords([$record, $match]);
+
+        Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarLeadsPage::class, ['record' => $record->id])
             ->assertCanSeeTableRecords([$record, $match])
             ->assertTableBulkActionExists('mergeLeads');
 
-        Livewire::withQueryParams(['view' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarLeadsPage::class, ['record' => $record->id])
             ->searchTable('views-no-match')
             ->assertCanNotSeeTableRecords([$record, $match]);
 
-        Livewire::withQueryParams(['view' => 'graph'])
+        Livewire::withQueryParams(['layout' => 'graph'])
             ->test(SimilarLeadsPage::class, ['record' => $record->id])
             ->assertSuccessful()
-            ->assertSet('similarView', 'graph');
+            ->assertSet('viewLayout', 'graph');
     });
 
     it('forbids the similar board without permission to view the record', function () {
@@ -316,7 +321,7 @@ describe('merging', function () {
         $record = CRMHelper::opportunity(['email' => 'board-merge@acme.test']);
         $duplicate = CRMHelper::lead(['email' => 'board-merge@acme.test']);
 
-        Livewire::withQueryParams(['view' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarOpportunities::class, ['record' => $record->id])
             ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id])
             ->assertHasNoTableBulkActionErrors();
@@ -332,7 +337,7 @@ describe('merging', function () {
         $duplicate = CRMHelper::lead(['email' => 'scope@acme.test']);
         $unrelated = CRMHelper::lead(['email' => 'unrelated@acme.test']);
 
-        Livewire::withQueryParams(['view' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarOpportunities::class, ['record' => $record->id])
             ->assertCanNotSeeTableRecords([$unrelated])
             ->callTableBulkAction('mergeLeads', [$record, $duplicate, $unrelated], ['head' => $record->id]);
@@ -361,14 +366,14 @@ describe('merging', function () {
         $record = CRMHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $user->id]);
         $duplicate = CRMHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $otherUser->id]);
 
-        Livewire::withQueryParams(['view' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarOpportunities::class, ['record' => $record->id])
             ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id, 'user_id' => null])
             ->assertHasTableBulkActionErrors(['user_id' => 'required']);
 
         expect(Lead::query()->find($duplicate->id))->not->toBeNull();
 
-        Livewire::withQueryParams(['view' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarOpportunities::class, ['record' => $record->id])
             ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id, 'user_id' => $otherUser->id])
             ->assertHasNoTableBulkActionErrors();
@@ -395,7 +400,7 @@ describe('merging', function () {
         $first = CRMHelper::opportunity(['email' => 'bulk@acme.test', 'expected_revenue' => 100]);
         $second = CRMHelper::opportunity(['email' => 'bulk@acme.test', 'expected_revenue' => 900]);
 
-        Livewire::test(ListOpportunities::class)
+        Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
             ->callTableBulkAction('mergeLeads', [$first, $second], ['head' => $second->id]);
 
         expect(Lead::withTrashed()->find($first->id))->toBeNull()

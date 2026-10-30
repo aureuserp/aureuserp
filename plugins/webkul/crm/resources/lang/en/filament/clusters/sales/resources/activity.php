@@ -8,12 +8,6 @@ return [
         'title' => 'My Activities',
     ],
 
-    'views' => [
-        'list'   => 'List',
-        'kanban' => 'Kanban',
-        'graph'  => 'Graph',
-    ],
-
     'table' => [
         'columns' => [
             'due-date'      => 'Due Date',

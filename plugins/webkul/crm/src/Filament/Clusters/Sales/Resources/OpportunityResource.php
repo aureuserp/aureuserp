@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources;
 
-use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -13,8 +12,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\CreateOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\EditOpportunity;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\GraphOpportunities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ManageActivities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ManageQuotations;
@@ -105,27 +102,12 @@ class OpportunityResource extends Resource
         ];
     }
 
-    public static function getViewTabs(string $current): array
-    {
-        $tab = fn (string $page, string $label, string $icon): NavigationItem => NavigationItem::make($page)
-            ->label($label)
-            ->icon($icon)
-            ->url(static::getUrl($page))
-            ->isActiveWhen(fn (): bool => $page === $current);
-
-        return [
-            $tab('index', __('crm::filament/clusters/sales/resources/opportunity.views.kanban'), 'heroicon-o-view-columns'),
-            $tab('list', __('crm::filament/clusters/sales/resources/opportunity.views.list'), 'heroicon-o-list-bullet'),
-            $tab('graph', __('crm::filament/clusters/sales/resources/opportunity.views.graph'), 'heroicon-o-chart-bar'),
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index'      => KanbanOpportunities::route('/'),
+            'index'      => ListOpportunities::route('/'),
             'list'       => ListOpportunities::route('/list'),
-            'graph'      => GraphOpportunities::route('/graph'),
+            'graph'      => ListOpportunities::route('/graph'),
             'create'     => CreateOpportunity::route('/create'),
             'view'       => ViewOpportunity::route('/{record}'),
             'edit'       => EditOpportunity::route('/{record}/edit'),

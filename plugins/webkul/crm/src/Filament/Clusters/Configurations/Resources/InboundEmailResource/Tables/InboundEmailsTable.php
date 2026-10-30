@@ -68,7 +68,7 @@ class InboundEmailsTable
                 DeleteAction::make(),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: InboundEmailExporter::class, duplicable: false),
+                RecordBulkActions::make(exporter: InboundEmailExporter::class),
             ])
             ->emptyStateHeading(__('crm::filament/clusters/configurations/resources/inbound-email.table.empty.heading'))
             ->emptyStateDescription(__('crm::filament/clusters/configurations/resources/inbound-email.table.empty.description'));

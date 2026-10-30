@@ -12,12 +12,6 @@ return [
             'heading'     => 'Aucun enregistrement similaire',
             'description' => 'Aucune autre piste ou opportunité n\'a le même e-mail, téléphone ou client.',
         ],
-
-        'views' => [
-            'kanban' => 'Kanban',
-            'list'   => 'Liste',
-            'graph'  => 'Graphique',
-        ],
     ],
 
     'badges' => [

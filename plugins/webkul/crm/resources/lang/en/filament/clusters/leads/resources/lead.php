@@ -84,6 +84,7 @@ return [
             'priority'     => 'Priority',
             'tags'         => 'Tags',
             'source'       => 'Source',
+            'medium'       => 'Medium',
             'lost-reason'  => 'Lost Reason',
             'created-at'   => 'Created On',
         ],

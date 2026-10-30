@@ -84,6 +84,7 @@ return [
             'priority'     => 'Prioridade',
             'tags'         => 'Tags',
             'source'       => 'Origem',
+            'medium'       => 'Meio',
             'lost-reason'  => 'Motivo de perda',
             'created-at'   => 'Criado em',
         ],

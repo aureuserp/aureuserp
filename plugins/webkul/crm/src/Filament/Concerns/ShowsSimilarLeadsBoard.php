@@ -3,13 +3,10 @@
 namespace Webkul\Crm\Filament\Concerns;
 
 use Filament\Actions\BulkActionGroup;
-use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\EmbeddedTable;
-use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\RenderHook;
-use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
@@ -19,7 +16,9 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
-use Livewire\Attributes\Url;
+use Illuminate\Support\HtmlString;
+use Livewire\Livewire;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Widgets\SimilarLeadsChart;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
@@ -35,13 +34,10 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 trait ShowsSimilarLeadsBoard
 {
-    use HasCRMTableViews, HasKanbanBoard, HasRecordNavigationTabs, InteractsWithRecord, ManagesOpportunityKanbanCards {
+    use HasCRMTableViews, HasKanbanBoard, HasRecordNavigationTabs, HasViewLayouts, InteractsWithRecord, ManagesOpportunityKanbanCards {
         HasKanbanBoard::getKanbanColumns as getAllKanbanColumns;
         HasRecordNavigationTabs::getSubNavigation insteadof InteractsWithRecord;
     }
-
-    #[Url(as: 'view')]
-    public string $similarView = 'kanban';
 
     abstract protected function getTableViewsListPage(): ListRecords;
 
@@ -52,10 +48,6 @@ trait ShowsSimilarLeadsBoard
         $this->record = $this->resolveRecord($record);
 
         abort_unless(static::getResource()::canView($this->getRecord()), 403);
-
-        if (! in_array($this->similarView, ['kanban', 'list', 'graph'], true)) {
-            $this->similarView = 'kanban';
-        }
 
         $this->kanbanFilters = [];
     }
@@ -85,29 +77,16 @@ trait ShowsSimilarLeadsBoard
         return Lead::query()->withTrashed()->whereKey($this->getSimilarGroup()->modelKeys());
     }
 
-    public function getSimilarViewTabs(): array
+    public function getViewLayouts(): array
     {
-        $tab = fn (string $view, string $label, string $icon): NavigationItem => NavigationItem::make($view)
-            ->label($label)
-            ->icon($icon)
-            ->url(static::getResource()::getUrl('similar', ['record' => $this->getRecord(), 'view' => $view]))
-            ->isActiveWhen(fn (): bool => $this->similarView === $view);
-
-        return [
-            $tab('kanban', __('crm::filament/similar-leads.page.views.kanban'), 'heroicon-o-view-columns'),
-            $tab('list', __('crm::filament/similar-leads.page.views.list'), 'heroicon-o-list-bullet'),
-            $tab('graph', __('crm::filament/similar-leads.page.views.graph'), 'heroicon-o-chart-bar'),
-        ];
+        return [ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH];
     }
 
     public function content(Schema $schema): Schema
     {
         return $schema->components([
-            View::make('crm::filament.similar-leads.view-tabs')
-                ->viewData(['navigationItems' => $this->getSimilarViewTabs()]),
-            ...($this->similarView === 'graph'
-                ? [Livewire::make(SimilarLeadsChart::class, ['leadId' => $this->getRecord()->getKey()])]
-                : [RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE), EmbeddedTable::make()]),
+            RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE),
+            EmbeddedTable::make(),
         ]);
     }
 
@@ -117,13 +96,19 @@ trait ShowsSimilarLeadsBoard
             ->query(fn (): Builder => $this->modifyQueryWithActiveTab($this->getSimilarQuery()))
             ->recordUrl(fn (Lead $record): ?string => LeadResourceResolver::viewUrl($record))
             ->recordActions([])
-            ->toolbarActions($this->similarView === 'list' ? [
+            ->toolbarActions($this->isViewLayout(ViewLayout::LIST) ? [
                 BulkActionGroup::make([
                     MergeLeadsBulkAction::make(),
                 ]),
             ] : []);
 
-        if ($this->similarView !== 'kanban') {
+        if ($this->isViewLayout(ViewLayout::GRAPH)) {
+            return $table
+                ->paginated(false)
+                ->emptyState(fn (): HtmlString => new HtmlString('<div class="crm-leads-graph">'.Livewire::mount(SimilarLeadsChart::class, ['leadId' => $this->getRecord()->getKey()], 'crm-similar-leads-chart-'.$this->getRecord()->getKey()).'</div>'));
+        }
+
+        if (! $this->isViewLayout(ViewLayout::KANBAN)) {
             return $table;
         }
 
@@ -141,7 +126,7 @@ trait ShowsSimilarLeadsBoard
 
     public function getTableRecords(): EloquentCollection|Paginator|CursorPaginator
     {
-        return $this->similarView === 'kanban' ? new EloquentCollection : parent::getTableRecords();
+        return $this->isViewLayout(ViewLayout::LIST) ? parent::getTableRecords() : new EloquentCollection;
     }
 
     public function isKanbanCardFieldVisible(string $column): bool

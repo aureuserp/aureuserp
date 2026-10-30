@@ -3,13 +3,6 @@
 return [
     'none' => 'Ninguno',
 
-    'views' => [
-        'kanban'  => 'Kanban',
-        'graph'   => 'Gráfico',
-        'summary' => 'Resumen',
-        'list'    => 'Lista',
-    ],
-
     'chart' => [
         'heading' => ':measure por :group',
     ],

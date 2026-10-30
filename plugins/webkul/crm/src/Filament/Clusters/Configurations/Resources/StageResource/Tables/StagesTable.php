@@ -77,7 +77,7 @@ class StagesTable
                     ),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: StageExporter::class, copyRelations: ['teams']),
+                RecordBulkActions::make(exporter: StageExporter::class),
             ]);
     }
 }

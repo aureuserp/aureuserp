@@ -7,9 +7,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Filament\Actions\LeadReportBulkActions;
 use Webkul\Crm\Filament\Clusters\Reporting;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\GraphPipelineAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\ListPipelineAnalysis;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\SummaryPipelineAnalysis;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Concerns\IsCRMReportResource;
 use Webkul\Crm\Filament\Exports\OpportunityExporter;
@@ -94,8 +92,8 @@ class PipelineAnalysisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => GraphPipelineAnalysis::route('/'),
-            'summary' => SummaryPipelineAnalysis::route('/summary'),
+            'index'   => ListPipelineAnalysis::route('/'),
+            'summary' => ListPipelineAnalysis::route('/summary'),
             'list'    => ListPipelineAnalysis::route('/list'),
         ];
     }

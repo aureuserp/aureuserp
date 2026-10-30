@@ -260,6 +260,17 @@ html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
     display: none;
 }
 
+.crm-kanban-board [data-kanban-card].crm-kanban-card-saving {
+    pointer-events: none;
+    animation: crm-kanban-card-saving 1s ease-in-out infinite;
+}
+
+@keyframes crm-kanban-card-saving {
+    50% {
+        opacity: 0.55;
+    }
+}
+
 .crm-kanban-board .crm-kanban-empty-board {
     flex: 1 1 auto;
     min-height: 16rem;
@@ -279,10 +290,6 @@ html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
         box-shadow: inset 0 0 0 3px var(--primary-500);
         background-color: var(--primary-50);
     }
-}
-
-.crm-similar-view-tabs {
-    margin-bottom: 1rem;
 }
 
 .fi-main:has(.crm-board-shimmer[style*='block']) .fi-ta-content-ctn,
@@ -368,12 +375,112 @@ html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
     }
 }
 
-.fi-ta-main:has(> .crm-leads-graph) > .fi-ta-content-ctn {
+.crm-view-shimmer[style*='block'] ~ *,
+.fi-ta-ctn:has(.crm-view-shimmer[style*='block']) .fi-pagination {
+    display: none !important;
+}
+
+.crm-view-shimmer {
+    padding: 1rem;
+}
+
+.crm-list-shimmer {
+    display: flex;
+    flex-direction: column;
+}
+
+.crm-list-shimmer-row {
+    display: grid;
+    grid-template-columns: 1rem 3fr 2fr 2fr 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.875rem 0.5rem;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.crm-list-shimmer-row:last-child {
+    border-bottom: 0;
+}
+
+.crm-grid-shimmer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+}
+
+.crm-grid-shimmer .crm-board-shimmer-card {
+    border: 1px solid var(--gray-200);
+}
+
+.crm-grid-shimmer-block {
+    height: 4rem;
+    border-radius: 0.5rem;
+}
+
+.crm-graph-shimmer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem;
+}
+
+.crm-graph-shimmer-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 1rem;
+    height: 300px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.crm-graph-shimmer-bar {
+    flex: 1;
+    max-width: 28px;
+    border-radius: 4px 4px 0 0;
+}
+
+.dark .crm-list-shimmer-row,
+.dark .crm-graph-shimmer-bars,
+.dark .crm-grid-shimmer .crm-board-shimmer-card {
+    border-color: var(--gray-700);
+}
+
+.fi-ta-main:has(> :is(.crm-leads-graph, .crm-records-graph)) > .fi-ta-content-ctn {
     display: none;
 }
 
 .crm-leads-graph {
     padding: 1rem;
+}
+
+.crm-layout-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.125rem;
+    border-radius: 0.5rem;
+    background-color: var(--gray-100);
+}
+
+.dark .crm-layout-switcher {
+    background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+}
+
+.crm-layout-switcher .fi-icon-btn {
+    margin: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+}
+
+.crm-layout-switcher .fi-icon-btn[aria-selected="true"] {
+    background-color: var(--color-white);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+}
+
+.dark .crm-layout-switcher .fi-icon-btn[aria-selected="true"] {
+    background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    box-shadow: none;
 }
 
 .crm-kanban-board .crm-kanban-shimmer,
@@ -539,7 +646,7 @@ body:has(.crm-kanban-board) {
     border-inline-start-color: color-mix(in oklab, var(--color-white) 10%, transparent);
 }
 
-:is(.crm-team-card-chart, .crm-leads-graph) .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-aside) {
+:is(.crm-team-card-chart, .crm-leads-graph, .crm-records-graph) .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-aside) {
     border-radius: 0;
     background: transparent;
     box-shadow: none;

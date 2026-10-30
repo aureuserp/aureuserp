@@ -6,7 +6,6 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Navigation\NavigationItem;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
@@ -18,21 +17,20 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Livewire\Attributes\Url;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
-use Webkul\Crm\Enums\PipelineView;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\GraphOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables\OpportunitiesTable;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
+use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
-use Webkul\Crm\Filament\Concerns\ShowsLeadsGraph;
+use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
@@ -43,7 +41,7 @@ use Wezlo\FilamentKanban\KanbanBoard;
 
 class ManageTeamOpportunities extends ManageRelatedRecords
 {
-    use HasCRMClusterNavigation, HasCRMTableViews, HasKanbanBoard, ManagesOpportunityKanbanCards, ShowsLeadsGraph {
+    use HasCRMClusterNavigation, HasCRMTableViews, HasKanbanBoard, HasViewLayouts, ManagesOpportunityKanbanCards, ShowsRecordsGraph {
         HasKanbanBoard::moveRecord as moveBaseRecord;
     }
 
@@ -52,9 +50,6 @@ class ManageTeamOpportunities extends ManageRelatedRecords
     protected static string $relationship = 'opportunities';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-funnel';
-
-    #[Url(as: 'view')]
-    public string $pipelineView = PipelineView::KANBAN->value;
 
     public static function canAccess(array $parameters = []): bool
     {
@@ -69,16 +64,9 @@ class ManageTeamOpportunities extends ManageRelatedRecords
         return __('crm::filament/clusters/sales/resources/team/pages/manage-team-opportunities.navigation.title');
     }
 
-    public function mount(int|string $record): void
+    public function getViewLayouts(): array
     {
-        $this->pipelineView = $this->getPipelineView()->value;
-
-        parent::mount($record);
-    }
-
-    public function getPipelineView(): PipelineView
-    {
-        return PipelineView::tryFrom($this->pipelineView) ?? PipelineView::KANBAN;
+        return [ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH];
     }
 
     public function content(Schema $schema): Schema
@@ -93,22 +81,7 @@ class ManageTeamOpportunities extends ManageRelatedRecords
 
     public function getBreadcrumb(): string
     {
-        return $this->getPipelineView()->getLabel();
-    }
-
-    public function getRecordNavigationTabs(): array
-    {
-        return array_map(
-            fn (PipelineView $view): NavigationItem => NavigationItem::make($view->value)
-                ->label($view->getLabel())
-                ->icon($view->getIcon())
-                ->url(TeamResource::getUrl('opportunities', [
-                    'record' => $this->getRecord(),
-                    ...($view === PipelineView::KANBAN ? [] : ['view' => $view->value]),
-                ]))
-                ->isActiveWhen(fn (): bool => $this->getPipelineView() === $view),
-            PipelineView::cases(),
-        );
+        return $this->getViewLayout()->getLabel();
     }
 
     public function form(Schema $schema): Schema
@@ -137,15 +110,15 @@ class ManageTeamOpportunities extends ManageRelatedRecords
                 ]),
             ]);
 
-        return match ($this->getPipelineView()) {
-            PipelineView::KANBAN => $table
+        return match ($this->getViewLayout()) {
+            ViewLayout::KANBAN => $table
                 ->paginated(false)
                 ->groups([])
                 ->emptyState(fn () => view($this->getKanbanBoard()->getBoardView())),
-            PipelineView::GRAPH => $table
+            ViewLayout::GRAPH => $table
                 ->paginated(false)
                 ->emptyState(fn () => RecordsChart::embedGraph($this->getRecordsGraph())),
-            PipelineView::LIST => $table,
+            default => $table,
         };
     }
 
@@ -171,7 +144,7 @@ class ManageTeamOpportunities extends ManageRelatedRecords
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator
     {
-        return $this->getPipelineView() === PipelineView::LIST ? parent::getTableRecords() : new Collection;
+        return $this->isViewLayout(ViewLayout::LIST) ? parent::getTableRecords() : new Collection;
     }
 
     protected function getTeamOpportunitiesQuery(): Builder
@@ -183,9 +156,9 @@ class ManageTeamOpportunities extends ManageRelatedRecords
 
     public function getRecordsGraph(): array
     {
-        $group = GraphOpportunities::GRAPH_GROUPS[(string) str((string) $this->tableGrouping)->before(':')] ?? GraphOpportunities::GRAPH_GROUPS['stage.name'];
+        $group = ListOpportunities::GRAPH_GROUPS[(string) str((string) $this->tableGrouping)->before(':')] ?? ListOpportunities::GRAPH_GROUPS['stage.name'];
 
-        return $this->buildLeadsGraph(
+        return $this->buildRecordsGraph(
             $this->filterTableQuery($this->modifyQueryWithActiveTab($this->getTeamOpportunitiesQuery())),
             $group,
             OpportunityResource::getPluralModelLabel(),

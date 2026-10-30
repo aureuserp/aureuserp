@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Actions\RecordBulkActions;
 use Webkul\Crm\Filament\Clusters\Reporting;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\GraphActivityAnalysis;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\ListActivityAnalysis;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\SummaryActivityAnalysis;
 use Webkul\Crm\Filament\Concerns\IsCRMReportResource;
 use Webkul\Crm\Filament\Exports\ActivityLogExporter;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
@@ -107,8 +105,8 @@ class ActivityAnalysisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => GraphActivityAnalysis::route('/'),
-            'summary' => SummaryActivityAnalysis::route('/summary'),
+            'index'   => ListActivityAnalysis::route('/'),
+            'summary' => ListActivityAnalysis::route('/summary'),
             'list'    => ListActivityAnalysis::route('/list'),
         ];
     }

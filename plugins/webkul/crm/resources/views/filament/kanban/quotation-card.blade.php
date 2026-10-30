@@ -6,6 +6,7 @@
 @endphp
 
 <div
+    wire:key="kanban-card-{{ $recordId }}"
     data-kanban-card
     data-record-id="{{ $recordId }}"
     role="listitem"

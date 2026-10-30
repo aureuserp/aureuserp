@@ -4,57 +4,34 @@ namespace Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Table;
-use Livewire\Attributes\Url;
-use Webkul\Crm\Enums\GridLayout;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource as ConfigurationTeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Tables\TeamsTable;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
+use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Services\TeamDashboard;
 use Webkul\Sale\Models\Team;
 
 class ListTeams extends ListRecords
 {
-    use HasCRMTableViews;
+    use HasCRMTableViews, HasViewLayouts;
 
     protected static string $resource = TeamResource::class;
 
-    #[Url(as: 'layout')]
-    public string $teamLayout = GridLayout::GRID->value;
-
     protected ?array $teamDashboards = null;
 
-    public function mount(): void
+    public function getViewLayouts(): array
     {
-        $this->teamLayout = $this->getGridLayout()->value;
-
-        parent::mount();
-    }
-
-    public function getGridLayout(): GridLayout
-    {
-        return GridLayout::tryFrom($this->teamLayout) ?? GridLayout::GRID;
+        return [ViewLayout::GRID, ViewLayout::LIST];
     }
 
     public function table(Table $table): Table
     {
-        return TeamsTable::configure($table, grid: $this->getGridLayout() === GridLayout::GRID);
-    }
-
-    public function getRecordNavigationTabs(): array
-    {
-        return array_map(
-            fn (GridLayout $layout): NavigationItem => NavigationItem::make($layout->value)
-                ->label($layout->getLabel())
-                ->icon($layout->getIcon())
-                ->url(TeamResource::getUrl('index', $layout === GridLayout::GRID ? [] : ['layout' => $layout->value]))
-                ->isActiveWhen(fn (): bool => $this->getGridLayout() === $layout),
-            GridLayout::cases(),
-        );
+        return TeamsTable::configure($table, grid: $this->isViewLayout(ViewLayout::GRID));
     }
 
     public function getTeamDashboard(Team $team): array
@@ -84,7 +61,7 @@ class ListTeams extends ListRecords
 
     public function getBreadcrumb(): string
     {
-        return $this->getGridLayout()->getLabel();
+        return $this->getViewLayout()->getLabel();
     }
 
     protected function getHeaderActions(): array

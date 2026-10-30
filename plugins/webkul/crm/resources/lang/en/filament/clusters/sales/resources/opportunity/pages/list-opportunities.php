@@ -3,8 +3,6 @@
 return [
     'title' => 'My Pipeline',
 
-    'breadcrumb' => 'List',
-
     'header-actions' => [
         'create' => [
             'label' => 'New Opportunity',

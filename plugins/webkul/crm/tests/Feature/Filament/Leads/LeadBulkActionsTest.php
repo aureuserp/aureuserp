@@ -8,16 +8,24 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Mail\LeadMessageMail;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\LostReason;
-use Webkul\Crm\Models\Tag;
 
-it('archives the selected leads', function () {
+it('soft-deletes and restores the selected leads with the core bulk actions', function () {
     CRMHelper::actingAsCRMUser(['lead']);
 
     $leads = collect([CRMHelper::lead(), CRMHelper::lead()]);
 
-    Livewire::test(ListLeads::class)->callTableBulkAction('archiveLeads', $leads);
+    Livewire::test(ListLeads::class)
+        ->assertTableBulkActionDoesNotExist('archiveLeads')
+        ->assertTableBulkActionDoesNotExist('duplicateLeads')
+        ->callTableBulkAction('delete', $leads);
 
     expect(Lead::onlyTrashed()->whereKey($leads->modelKeys())->count())->toBe(2);
+
+    Livewire::test(ListLeads::class)
+        ->call('loadView', 'lost')
+        ->callTableBulkAction('restore', Lead::onlyTrashed()->whereKey($leads->modelKeys())->get());
+
+    expect(Lead::query()->whereKey($leads->modelKeys())->count())->toBe(2);
 });
 
 it('marks the selected leads as lost with a reason', function () {
@@ -33,22 +41,6 @@ it('marks the selected leads as lost with a reason', function () {
 
     expect($lost->trashed())->toBeTrue()
         ->and($lost->lost_reason_id)->toBe($reason->id);
-});
-
-it('duplicates the selected leads with their tags', function () {
-    CRMHelper::actingAsCRMUser(['lead']);
-
-    $lead = CRMHelper::lead(['name' => 'Copy me']);
-    $tag = Tag::factory()->create();
-    $lead->tags()->sync([$tag->id]);
-
-    Livewire::test(ListLeads::class)->callTableBulkAction('duplicateLeads', [$lead]);
-
-    $copy = Lead::query()->where('name', __('crm::filament/lead-actions.duplicate.copy', ['name' => 'Copy me']))->first();
-
-    expect($copy)->not->toBeNull()
-        ->and($copy->getKey())->not->toBe($lead->getKey())
-        ->and($copy->tags()->pluck('crm_tags.id')->all())->toBe([$tag->id]);
 });
 
 it('emails the selected leads that have an email address and logs it on each lead', function () {

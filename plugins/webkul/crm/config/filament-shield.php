@@ -16,10 +16,6 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByStatusChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByTypeChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByUserChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
@@ -68,10 +64,6 @@ return [
 
     'widgets' => [
         'exclude' => [
-            ActivityStatsOverview::class,
-            ActivitiesByStatusChart::class,
-            ActivitiesByTypeChart::class,
-            ActivitiesByUserChart::class,
             ReportChart::class,
             RecordsChart::class,
         ],

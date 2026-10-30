@@ -11,12 +11,6 @@ return [
         ],
     ],
 
-    'views' => [
-        'list'   => 'Lista',
-        'kanban' => 'Kanban',
-        'graph'  => 'Gráfico',
-    ],
-
     'tabs' => [
         'opportunity' => 'Oportunidad',
     ],
@@ -34,15 +28,6 @@ return [
     ],
 
     'actions' => [
-        'group' => [
-            'label' => 'Acciones',
-        ],
-
-        'duplicate' => [
-            'label'        => 'Duplicar',
-            'notification' => ':count presupuesto(s) duplicado(s).',
-        ],
-
         'mark-as-sent' => [
             'label'        => 'Marcar presupuesto como enviado',
             'notification' => ':count presupuesto(s) marcado(s) como enviado(s).',

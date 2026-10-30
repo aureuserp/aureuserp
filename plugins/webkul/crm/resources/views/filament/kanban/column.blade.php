@@ -17,6 +17,7 @@
 @endphp
 
 <div
+    wire:key="kanban-column-{{ $column->value }}"
     @class([
         'fi-kanban-column flex-shrink-0 rounded-xl border',
         $colorClasses,
@@ -61,6 +62,8 @@
 
         <div class="flex items-center gap-1.5 shrink-0">
             <span
+                data-kanban-count="{{ $column->count }}"
+                @if($wipLimit) data-kanban-wip-limit="{{ $wipLimit }}" @endif
                 class="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium {{ $badgeColorClasses }}"
                 @if($isOverWip) title="Over WIP limit ({{ $wipLimit }})" @endif
             >

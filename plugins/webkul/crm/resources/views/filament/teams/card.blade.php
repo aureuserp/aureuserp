@@ -31,14 +31,14 @@
     $menu = array_filter([
         'view' => array_filter([
             'leads'         => LeadResource::canViewAny() ? LeadResource::getUrl('index', ['team' => $record->getKey()]) : null,
-            'opportunities' => TeamResource::getUrl('opportunities', ['record' => $record, 'view' => 'list']),
+            'opportunities' => TeamResource::getUrl('opportunities', ['record' => $record, 'layout' => 'list']),
             'quotations'    => QuotationResource::canViewAny() ? QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $record->getKey(), 'scope' => TeamOrderScope::QUOTATIONS->value]) : null,
             'sales-orders'  => QuotationResource::canViewAny() ? QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $record->getKey(), 'scope' => TeamOrderScope::SALES_ORDERS->value]) : null,
         ]),
         'reporting' => array_filter([
             'leads'         => LeadAnalysisResource::canViewAny() ? LeadAnalysisResource::getUrl('index', $reportFilters) : null,
             'opportunities' => PipelineAnalysisResource::canViewAny() ? PipelineAnalysisResource::getUrl('index', $reportFilters) : null,
-            'forecast'      => ForecastResource::canViewAny() ? ForecastResource::getUrl('graph', $reportFilters) : null,
+            'forecast'      => ForecastResource::canViewAny() ? ForecastResource::getUrl('index', [...$reportFilters, 'layout' => 'graph']) : null,
             'activities'    => ActivityAnalysisResource::canViewAny() ? ActivityAnalysisResource::getUrl('index', $reportFilters) : null,
         ]),
     ]);
@@ -46,7 +46,7 @@
     $stats = array_filter([
         [
             'label'  => trans_choice('crm::filament/clusters/sales/resources/team.grid.open-opportunities', $openCount, ['count' => $openCount]),
-            'url'    => TeamResource::getUrl('opportunities', ['record' => $record, 'view' => 'list', 'activeTableView' => 'open']),
+            'url'    => TeamResource::getUrl('opportunities', ['record' => $record, 'layout' => 'list', 'activeTableView' => 'open']),
             'amount' => money((float) $record->open_expected_revenue, $currency),
         ],
         $dashboard['quotations'] > 0 ? [

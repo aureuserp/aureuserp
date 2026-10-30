@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'breadcrumb' => 'كانبان',
-
     'search' => 'بحث...',
 
     'filters' => [

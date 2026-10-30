@@ -1,31 +1,6 @@
 <?php
 
 return [
-    'group' => [
-        'label' => 'Actions',
-    ],
-
-    'archive' => [
-        'label'            => 'Archiver',
-        'description'      => 'Cet enregistrement sera archivé. Vous pourrez le retrouver avec le filtre des archivés et le désarchiver.',
-        'bulk-description' => 'Les enregistrements sélectionnés seront archivés. Vous pourrez les retrouver avec le filtre des archivés et les désarchiver.',
-        'notification'     => ':count enregistrement(s) archivé(s).',
-    ],
-
-    'unarchive' => [
-        'label' => 'Désarchiver',
-    ],
-
-    'delete' => [
-        'label' => 'Supprimer',
-    ],
-
-    'duplicate' => [
-        'label'        => 'Dupliquer',
-        'copy'         => ':name (copie)',
-        'notification' => ':count enregistrement(s) dupliqué(s).',
-    ],
-
     'mark-lost' => [
         'label'        => 'Marquer comme perdu',
         'notification' => ':count enregistrement(s) marqué(s) comme perdu(s).',

@@ -4,6 +4,7 @@
 @endphp
 
 <div
+    wire:key="kanban-card-{{ $record->getKey() }}"
     data-kanban-card
     data-record-id="{{ $record->getKey() }}"
     role="listitem"

@@ -10,10 +10,6 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Sales;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByStatusChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByTypeChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByUserChart;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
@@ -124,12 +120,8 @@ it('excludes the cluster pages from shield', function () {
     ]);
 });
 
-it('excludes the activity and report widgets from shield', function () {
+it('excludes the report and graph widgets from shield', function () {
     expect($this->shield['widgets']['exclude'])->toEqualCanonicalizing([
-        ActivityStatsOverview::class,
-        ActivitiesByStatusChart::class,
-        ActivitiesByTypeChart::class,
-        ActivitiesByUserChart::class,
         ReportChart::class,
         RecordsChart::class,
     ]);

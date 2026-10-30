@@ -17,6 +17,7 @@ use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\UTMMedium;
 
 require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
@@ -69,11 +70,23 @@ it('lists the current user\'s open opportunities by default', function () {
     $lost = CRMHelper::opportunity();
     $lost->markAsLost(null);
 
-    Livewire::test(ListOpportunities::class)
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
         ->assertOk()
         ->assertSet('activeTableView', 'my_pipeline')
         ->assertCanSeeTableRecords([$mine])
         ->assertCanNotSeeTableRecords([$someoneElses, $lost]);
+});
+
+it('offers the medium in the opportunity column manager, hidden until toggled on', function () {
+    actingAsOpportunityManager();
+
+    $opportunity = CRMHelper::opportunity(['utm_medium_id' => UTMMedium::query()->firstOrCreate(['name' => 'Website'])->getKey()]);
+
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
+        ->assertTableColumnHidden('medium.name')
+        ->toggleAllTableColumns()
+        ->assertTableColumnVisible('medium.name')
+        ->assertTableColumnStateSet('medium.name', 'Website', $opportunity);
 });
 
 it('does not list leads among the opportunities', function () {
@@ -81,7 +94,7 @@ it('does not list leads among the opportunities', function () {
 
     $lead = CRMHelper::lead(['name' => 'Not an opportunity lead']);
 
-    Livewire::test(ListOpportunities::class)
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
         ->call('loadView', 'open')
         ->searchTable('Not an opportunity lead')
         ->assertCanNotSeeTableRecords([$lead]);
@@ -101,7 +114,7 @@ it('filters the list through its table views', function (string $view, string $v
 
     $records['lost']->markAsLost(null);
 
-    Livewire::test(ListOpportunities::class)
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
         ->call('loadView', $view)
         ->searchTable('Views test')
         ->assertCanSeeTableRecords([$records[$visible]])
@@ -116,7 +129,7 @@ it('filters the list through its table views', function (string $view, string $v
 it('forbids the list without the view any permission', function () {
     CRMHelper::actingAs(['view_any_crm_lead']);
 
-    Livewire::test(ListOpportunities::class)->assertForbidden();
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->assertForbidden();
 });
 
 it('creates an opportunity', function () {
@@ -369,20 +382,19 @@ it('restores a lost opportunity and clears the lost reason', function () {
         ->and($restored->closed_at)->toBeNull();
 });
 
-it('force deletes a lost opportunity', function () {
+it('offers restore but no permanent delete on a lost opportunity page', function () {
     actingAsOpportunityManager();
 
     $opportunity = CRMHelper::opportunity();
     $opportunity->markAsLost(null);
 
     Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])
-        ->callAction('forceDelete')
-        ->assertRedirect();
-
-    expect(Lead::withTrashed()->find($opportunity->id))->toBeNull();
+        ->assertActionVisible('restore')
+        ->assertActionHidden('delete')
+        ->assertActionDoesNotExist('forceDelete');
 });
 
-it('hides restore and force delete without their permissions', function () {
+it('hides restore without its permission', function () {
     CRMHelper::actingAs(['view_any_crm_opportunity', 'view_crm_opportunity']);
 
     $opportunity = CRMHelper::opportunity();
@@ -390,7 +402,7 @@ it('hides restore and force delete without their permissions', function () {
 
     Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])
         ->assertActionHidden('restore')
-        ->assertActionHidden('forceDelete');
+        ->assertActionDoesNotExist('forceDelete');
 });
 
 it('shows Won and Lost as header actions on the view and edit pages', function (string $page) {

@@ -11,12 +11,6 @@ return [
         ],
     ],
 
-    'views' => [
-        'list'   => 'List',
-        'kanban' => 'Kanban',
-        'graph'  => 'Graph',
-    ],
-
     'tabs' => [
         'opportunity' => 'Opportunity',
     ],
@@ -34,15 +28,6 @@ return [
     ],
 
     'actions' => [
-        'group' => [
-            'label' => 'Actions',
-        ],
-
-        'duplicate' => [
-            'label'        => 'Duplicate',
-            'notification' => ':count quotation(s) duplicated.',
-        ],
-
         'mark-as-sent' => [
             'label'        => 'Mark Quotation as Sent',
             'notification' => ':count quotation(s) marked as sent.',

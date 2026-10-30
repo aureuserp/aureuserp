@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Livewire;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Models\Stage;
 
 require_once __DIR__.'/../../../Helpers/CRMHelper.php';
@@ -26,7 +26,7 @@ it('adds a stage from the board just before the won stage(s)', function () {
 
     CRMHelper::wonStage();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('addKanbanColumn', '  Negotiation (board test)  ')
         ->assertNotified(__('crm::filament/kanban.add-column.created', ['name' => 'Negotiation (board test)']));
 
@@ -45,7 +45,7 @@ it('adds a stage from the add stage modal', function () {
 
     CRMHelper::wonStage();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('addKanbanColumn', data: ['name' => 'Modal stage'])
         ->assertHasNoActionErrors()
         ->assertNotified(__('crm::filament/kanban.add-column.created', ['name' => 'Modal stage']));
@@ -61,7 +61,7 @@ it('adds a won stage from the modal at the end of the board', function () {
 
     CRMHelper::wonStage();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('addKanbanColumn', data: ['name' => 'Modal won stage', 'is_won' => true])
         ->assertHasNoActionErrors();
 
@@ -76,7 +76,7 @@ it('keeps the add stage modal open on a duplicate name', function () {
 
     Stage::factory()->create(['name' => 'Modal duplicate stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('addKanbanColumn', data: ['name' => 'Modal duplicate stage'])
         ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Modal duplicate stage']))
         ->assertActionMounted('addKanbanColumn');
@@ -87,14 +87,14 @@ it('keeps the add stage modal open on a duplicate name', function () {
 it('hides the add stage modal without the create stage permission', function () {
     actingAsStageColumnManager(['view_any', 'view']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->assertActionHidden('addKanbanColumn');
 });
 
 it('shows the new stage as a board column right away', function () {
     actingAsStageColumnManager();
 
-    $component = Livewire::test(KanbanOpportunities::class)
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('addKanbanColumn', 'Fresh column stage');
 
     $stage = Stage::query()->where('name', 'Fresh column stage')->firstOrFail();
@@ -108,7 +108,7 @@ it('rejects an invalid stage name from the board', function (string $name) {
 
     $countBefore = Stage::query()->count();
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('addKanbanColumn', $name)
         ->assertNotified();
 
@@ -124,7 +124,7 @@ it('rejects a duplicate stage name from the board', function () {
 
     Stage::factory()->create(['name' => 'Duplicate board stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->call('addKanbanColumn', 'Duplicate board stage')
         ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Duplicate board stage']));
 
@@ -134,7 +134,7 @@ it('rejects a duplicate stage name from the board', function () {
 it('forbids adding a stage without the create stage permission', function () {
     actingAsStageColumnManager(['view_any', 'view', 'update', 'delete']);
 
-    $component = Livewire::test(KanbanOpportunities::class);
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
     expect($component->instance()->canAddKanbanColumn())->toBeFalse();
 
@@ -148,7 +148,7 @@ it('edits a stage from the board', function () {
 
     $stage = Stage::factory()->create(['name' => 'Editable board stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('editKanbanColumn', data: [
             'name'         => '  Renamed board stage  ',
             'is_won'       => true,
@@ -169,7 +169,7 @@ it('pre-fills the edit form with the stage', function () {
 
     $stage = Stage::factory()->create(['name' => 'Prefilled board stage', 'requirements' => 'Budget known']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->mountAction('editKanbanColumn', ['column' => (string) $stage->id])
         ->assertActionDataSet([
             'name'         => 'Prefilled board stage',
@@ -184,7 +184,7 @@ it('rejects renaming a stage to a name that already exists', function () {
 
     $stage = Stage::factory()->create(['name' => 'Stage to rename']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('editKanbanColumn', data: ['name' => 'Existing board stage'], arguments: ['column' => (string) $stage->id])
         ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Existing board stage']));
 
@@ -197,7 +197,7 @@ it('keeps the name when saving a stage under its own name', function () {
 
     $stage = Stage::factory()->create(['name' => 'Unchanged board stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('editKanbanColumn', data: ['name' => 'Unchanged board stage', 'requirements' => 'New note'], arguments: ['column' => (string) $stage->id])
         ->assertHasNoActionErrors();
 
@@ -209,7 +209,7 @@ it('forbids editing a stage from the board without the update permission', funct
 
     $stage = Stage::factory()->create(['name' => 'Locked board stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('editKanbanColumn', data: ['name' => 'Hacked name'], arguments: ['column' => (string) $stage->id])
         ->assertForbidden();
 
@@ -221,7 +221,7 @@ it('deletes an empty stage from the board', function () {
 
     $stage = Stage::factory()->create(['name' => 'Empty board stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
         ->assertNotified(__('crm::filament/kanban.column-actions.deleted', ['name' => 'Empty board stage']));
 
@@ -240,7 +240,7 @@ it('refuses to delete a stage that still holds records', function (string $holde
         'lost lead'        => CRMHelper::lead(['stage_id' => $stage->id])->markAsLost(null),
     };
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
         ->assertNotified(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board stage']));
 
@@ -252,7 +252,7 @@ it('forbids deleting a stage from the board without the delete permission', func
 
     $stage = Stage::factory()->create(['name' => 'Undeletable board stage']);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
         ->assertForbidden();
 
@@ -264,7 +264,7 @@ it('shows the column settings according to the stage permissions', function (arr
 
     $stage = Stage::factory()->create(['name' => 'Permission board stage']);
 
-    $page = Livewire::test(KanbanOpportunities::class)->instance();
+    $page = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)->instance();
 
     expect($page->canEditKanbanColumn((string) $stage->id))->toBe($canEdit)
         ->and($page->canDeleteKanbanColumn((string) $stage->id))->toBe($canDelete);
@@ -278,7 +278,7 @@ it('shows the column settings according to the stage permissions', function (arr
 it('rejects column values that are not stage ids', function (string $value) {
     actingAsStageColumnManager();
 
-    $component = Livewire::test(KanbanOpportunities::class);
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
     expect($component->instance()->canEditKanbanColumn($value))->toBeFalse()
         ->and($component->instance()->canDeleteKanbanColumn($value))->toBeFalse();

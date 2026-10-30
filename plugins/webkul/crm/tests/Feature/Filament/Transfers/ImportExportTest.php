@@ -9,7 +9,6 @@ use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Actions\CRMExportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ListQuotations;
 use Webkul\Crm\Filament\Exports\LeadExporter;
@@ -97,7 +96,7 @@ it('shows import and export on the leads list and the pipeline board', function 
         ->assertActionVisible('create');
 })->with([
     'leads list'     => ListLeads::class,
-    'pipeline board' => KanbanOpportunities::class,
+    'pipeline board' => ListOpportunities::class,
 ]);
 
 it('limits a kanban export to the board filters', function () {
@@ -108,7 +107,7 @@ it('limits a kanban export to the board filters', function () {
 
     $someoneElse = CRMHelper::opportunity(['name' => 'Board export other', 'user_id' => $otherUser->id]);
 
-    $page = Livewire::test(KanbanOpportunities::class)->call('loadView', 'my_pipeline')->instance();
+    $page = Livewire::test(ListOpportunities::class)->call('loadView', 'my_pipeline')->instance();
 
     $boardIds = (fn () => $this->getKanbanQuery($this->getKanbanBoard()))->call($page)->pluck('crm_leads.id');
 
@@ -119,7 +118,7 @@ it('limits a kanban export to the board filters', function () {
 it('hides import without the create permission', function () {
     CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity'], ['view_any', 'view']));
 
-    Livewire::test(ListOpportunities::class)
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
         ->assertActionHidden('import')
         ->assertActionVisible('export');
 });

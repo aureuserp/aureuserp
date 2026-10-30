@@ -3,6 +3,7 @@
 namespace Webkul\Crm\Filament\Actions;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
@@ -15,16 +16,14 @@ class LeadReportBulkActions
         return BulkActionGroup::make([
             BulkActionGroup::make([
                 RecordBulkActions::export($exporter),
-                ArchiveLeadsBulkAction::make(),
                 RestoreBulkAction::make()
-                    ->label(__('crm::filament/lead-actions.unarchive.label'))
                     ->authorize(fn (): bool => true)
                     ->authorizeIndividualRecords(fn (Lead $record): bool => LeadResourceResolver::resourceFor($record)::canRestore($record))
                     ->hidden(false),
-                DuplicateLeadsBulkAction::make(),
+                DeleteBulkAction::make()
+                    ->authorize(fn (): bool => true)
+                    ->authorizeIndividualRecords(fn (Lead $record): bool => LeadResourceResolver::resourceFor($record)::canDelete($record)),
                 ForceDeleteBulkAction::make()
-                    ->label(__('crm::filament/lead-actions.delete.label'))
-                    ->icon('heroicon-o-trash')
                     ->authorize(fn (): bool => true)
                     ->authorizeIndividualRecords(fn (Lead $record): bool => LeadResourceResolver::resourceFor($record)::canForceDelete($record))
                     ->hidden(false),

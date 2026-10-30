@@ -62,7 +62,7 @@ it('creates a sales team from the crm configuration and redirects inside crm', f
     expect(Team::query()->where('name', 'CRM Team')->where('user_id', $user->id)->exists())->toBeTrue();
 });
 
-it('opens the create page for a user with every team permission without the record actions menu', function () {
+it('opens the create page for a user with every team permission without the record buttons', function () {
     FilamentHelper::actingAs([
         'view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team',
         'delete_crm_team', 'delete_any_crm_team', 'restore_crm_team', 'restore_any_crm_team',
@@ -71,8 +71,8 @@ it('opens the create page for a user with every team permission without the reco
 
     Livewire::test(CreateTeam::class)
         ->assertOk()
-        ->assertActionDoesNotExist('archiveTeam')
-        ->assertActionDoesNotExist('duplicateTeam');
+        ->assertActionDoesNotExist('assignLeads')
+        ->assertActionDoesNotExist('delete');
 });
 
 it('forbids creating a crm sales team without the crm create permission', function () {
@@ -150,7 +150,7 @@ it('saves the team email alias from its own tab', function () {
     expect($team->refresh()->crmAlias?->alias_name)->toBe('tabbed-sales');
 });
 
-it('shows the team record tabs and the actions menu', function () {
+it('shows the team record tabs and assign leads and delete as buttons without an actions menu', function () {
     FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team', 'delete_crm_team']);
 
     $team = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
@@ -165,8 +165,11 @@ it('shows the team record tabs and the actions menu', function () {
         ->and($labels)->toContain(__('crm::filament/assignment.members.title'))
         ->toContain(__('crm::filament/clusters/configurations/resources/team.pages.alias.navigation'));
 
-    $component->assertActionExists('duplicateTeam')
-        ->assertActionExists('archiveTeam');
+    $component->assertActionExists('assignLeads')
+        ->assertActionVisible('delete')
+        ->assertActionDoesNotExist('duplicateTeam')
+        ->assertActionDoesNotExist('archiveTeam')
+        ->assertActionDoesNotExist('forceDelete');
 });
 
 it('creates a new salesperson for a member row', function () {

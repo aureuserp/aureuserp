@@ -53,7 +53,7 @@ class ActivityTypeResource extends BaseActivityTypeResource
     {
         return parent::table($table)
             ->toolbarActions([
-                RecordBulkActions::make(exporter: ActivityTypeExporter::class, archivable: true, copyRelations: ['suggestedActivityTypes']),
+                RecordBulkActions::make(exporter: ActivityTypeExporter::class, softDeletes: true),
             ]);
     }
 

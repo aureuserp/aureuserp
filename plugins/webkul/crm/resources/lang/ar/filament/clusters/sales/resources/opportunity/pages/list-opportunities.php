@@ -3,8 +3,6 @@
 return [
     'title' => 'مسار مبيعاتي',
 
-    'breadcrumb' => 'قائمة',
-
     'header-actions' => [
         'create' => [
             'label' => 'فرصة جديدة',

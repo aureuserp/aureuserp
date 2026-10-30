@@ -8,7 +8,6 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -29,14 +28,13 @@ class EditOpportunity extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            NewQuotationAction::make(),
+            ChatterAction::make()
+                ->resource(static::$resource)
+                ->activityPlans($this->getRecord()->activityPlans()),
             MarkAsWonAction::make()
                 ->after(fn () => $this->refreshRecord()),
             MarkAsLostAction::make()
                 ->after(fn () => $this->redirect(OpportunityResource::getUrl('view', ['record' => $this->getRecord()]))),
-            ChatterAction::make()
-                ->resource(static::$resource)
-                ->activityPlans($this->getRecord()->activityPlans()),
         ];
     }
 

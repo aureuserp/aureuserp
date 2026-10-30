@@ -421,7 +421,7 @@ describe('authorization', function () {
     it('does not open My Pipeline with only the lead permissions', function () {
         CRMHelper::actingAsCRMUser(['lead']);
 
-        Livewire::test(ListOpportunities::class)->assertForbidden();
+        Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->assertForbidden();
     });
 });
 
@@ -479,7 +479,7 @@ it('lists only the current company\'s teams in the leads team filter', function 
 it('shows the number of records on each view tab of the opportunity list', function () {
     $user = CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $views = Livewire::test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
+    $views = Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
 
     $expected = fn (string $key): int => $views[$key]->modifyQuery(OpportunityResource::getEloquentQuery())->count();
 
@@ -490,7 +490,7 @@ it('shows the number of records on each view tab of the opportunity list', funct
 
     CRMHelper::opportunity(['user_id' => $user->id]);
 
-    $views = Livewire::test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
+    $views = Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
 
     expect($views['my_pipeline']->getBadge())->toBe(Lead::query()->withoutTrashed()->where('type', LeadType::OPPORTUNITY)->where('user_id', $user->id)->count());
 });
@@ -565,14 +565,14 @@ it('filters the leads list by the sales team in the url', function () {
         ->assertSee(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.label', ['team' => $team->name]));
 });
 
-it('permanently deletes a lead from its page and returns to the leads list', function () {
+it('deletes a lead from its page as a soft delete and returns to the leads list', function () {
     CRMHelper::actingAsCRMUser(['lead']);
 
     $lead = CRMHelper::lead();
 
     Livewire::test(ViewLead::class, ['record' => $lead->getKey()])
-        ->callAction('forceDelete')
+        ->callAction('delete')
         ->assertRedirect(LeadResource::getUrl('index'));
 
-    expect(Lead::withTrashed()->find($lead->id))->toBeNull();
+    expect(Lead::withTrashed()->find($lead->id)?->trashed())->toBeTrue();
 });

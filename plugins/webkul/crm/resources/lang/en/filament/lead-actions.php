@@ -1,31 +1,6 @@
 <?php
 
 return [
-    'group' => [
-        'label' => 'Actions',
-    ],
-
-    'archive' => [
-        'label'            => 'Archive',
-        'description'      => 'This record will be archived. You can find it again with the archived filter and unarchive it.',
-        'bulk-description' => 'The selected records will be archived. You can find them again with the archived filter and unarchive them.',
-        'notification'     => ':count record(s) archived.',
-    ],
-
-    'unarchive' => [
-        'label' => 'Unarchive',
-    ],
-
-    'delete' => [
-        'label' => 'Delete',
-    ],
-
-    'duplicate' => [
-        'label'        => 'Duplicate',
-        'copy'         => ':name (copy)',
-        'notification' => ':count record(s) duplicated.',
-    ],
-
     'mark-lost' => [
         'label'        => 'Mark Lost',
         'notification' => ':count record(s) marked as lost.',

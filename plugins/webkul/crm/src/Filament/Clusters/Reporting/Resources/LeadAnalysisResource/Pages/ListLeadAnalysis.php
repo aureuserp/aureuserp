@@ -3,9 +3,9 @@
 namespace Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages;
 
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
-use Webkul\Crm\Filament\Support\Reports\Pages\ReportList;
+use Webkul\Crm\Filament\Support\Reports\Pages\ReportPage;
 
-class ListLeadAnalysis extends ReportList
+class ListLeadAnalysis extends ReportPage
 {
     protected static string $resource = LeadAnalysisResource::class;
 }

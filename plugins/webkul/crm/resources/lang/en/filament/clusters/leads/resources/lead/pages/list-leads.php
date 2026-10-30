@@ -18,4 +18,14 @@ return [
         'label' => 'Sales team: :team',
         'clear' => 'Show all',
     ],
+
+    'graph' => [
+        'heading' => [
+            'month'       => 'Leads by Month',
+            'salesperson' => 'Leads by Salesperson',
+            'team'        => 'Leads by Sales Team',
+            'source'      => 'Leads by Source',
+            'priority'    => 'Leads by Priority',
+        ],
+    ],
 ];

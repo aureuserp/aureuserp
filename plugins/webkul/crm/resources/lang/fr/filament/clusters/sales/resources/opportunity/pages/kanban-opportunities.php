@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'breadcrumb' => 'Kanban',
-
     'search' => 'Rechercher...',
 
     'filters' => [

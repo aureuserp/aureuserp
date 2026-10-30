@@ -13,11 +13,8 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCust
 use Webkul\Crm\Mail\LeadMessageMail;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\LostReason;
-use Webkul\Crm\Models\Stage;
-use Webkul\Crm\Models\Tag;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner as BasePartner;
-use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\ActivityType;
 
 require_once __DIR__.'/../../Helpers/CRMHelper.php';
@@ -36,7 +33,7 @@ function bulkContact(array $attributes = []): Partner
     return Partner::query()->findOrFail($partner->id);
 }
 
-it('groups export, archive, unarchive, duplicate and delete on the configuration lists', function (string $page, string $resource, array $actions, array $missing) {
+it('groups export with the core delete, restore and force delete on the configuration lists', function (string $page, string $resource, array $actions, array $missing) {
     CRMHelper::actingAsCRMUser([$resource]);
 
     $component = Livewire::test($page);
@@ -49,46 +46,18 @@ it('groups export, archive, unarchive, duplicate and delete on the configuration
         $component->assertTableBulkActionDoesNotExist($name);
     }
 })->with([
-    'tags'         => [ManageTags::class, 'tag', ['export', 'duplicateRecords', 'delete'], ['archiveRecords', 'restore']],
-    'stages'       => [ManageStages::class, 'stage', ['export', 'duplicateRecords', 'delete'], ['archiveRecords', 'restore']],
-    'lost reasons' => [ManageLostReasons::class, 'lost::reason', ['export', 'archiveRecords', 'restore', 'duplicateRecords', 'forceDelete'], []],
+    'tags'         => [ManageTags::class, 'tag', ['export', 'delete'], ['archiveRecords', 'duplicateRecords', 'restore', 'forceDelete']],
+    'stages'       => [ManageStages::class, 'stage', ['export', 'delete'], ['archiveRecords', 'duplicateRecords', 'restore', 'forceDelete']],
+    'lost reasons' => [ManageLostReasons::class, 'lost::reason', ['export', 'delete', 'restore', 'forceDelete'], ['archiveRecords', 'duplicateRecords']],
 ]);
 
-it('duplicates tags with a unique copy name', function () {
-    CRMHelper::actingAsCRMUser(['tag']);
-
-    $tag = Tag::factory()->create(['name' => 'VIP bulk']);
-
-    Livewire::test(ManageTags::class)->callTableBulkAction('duplicateRecords', [$tag]);
-    Livewire::test(ManageTags::class)->callTableBulkAction('duplicateRecords', [$tag]);
-
-    $copy = __('crm::filament/lead-actions.duplicate.copy', ['name' => 'VIP bulk']);
-
-    expect(Tag::query()->where('name', $copy)->exists())->toBeTrue()
-        ->and(Tag::query()->where('name', $copy.' 2')->exists())->toBeTrue();
-});
-
-it('duplicates stages with their sales teams', function () {
-    CRMHelper::actingAsCRMUser(['stage']);
-
-    $stage = Stage::factory()->create(['name' => 'Bulk stage']);
-    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
-    $stage->teams()->sync([$team->id]);
-
-    Livewire::test(ManageStages::class)->callTableBulkAction('duplicateRecords', [$stage]);
-
-    $copy = Stage::query()->where('name', __('crm::filament/lead-actions.duplicate.copy', ['name' => 'Bulk stage']))->firstOrFail();
-
-    expect($copy->teams()->pluck('sales_teams.id')->all())->toBe([$team->id]);
-});
-
-it('archives, unarchives and permanently deletes lost reasons', function () {
+it('soft-deletes, restores and permanently deletes lost reasons', function () {
     CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $archived = LostReason::factory()->create();
     $deleted = LostReason::factory()->create();
 
-    Livewire::test(ManageLostReasons::class)->callTableBulkAction('archiveRecords', [$archived]);
+    Livewire::test(ManageLostReasons::class)->callTableBulkAction('delete', [$archived]);
 
     expect(LostReason::withTrashed()->find($archived->id)->trashed())->toBeTrue();
 
@@ -111,8 +80,8 @@ it('emails and texts the selected contacts and logs it on each contact', functio
 
     Livewire::test(ListCustomers::class)
         ->assertTableBulkActionExists('export')
-        ->assertTableBulkActionExists('archiveRecords')
-        ->assertTableBulkActionExists('duplicateRecords')
+        ->assertTableBulkActionExists('delete')
+        ->assertTableBulkActionDoesNotExist('duplicateRecords')
         ->callTableBulkAction('sendCustomersEmail', [$contact, $withoutDetails], ['subject' => 'Hello', 'body' => '<p>News</p>'])
         ->callTableBulkAction('sendCustomersSMS', [$contact, $withoutDetails], ['message' => 'Hi there']);
 

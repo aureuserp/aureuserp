@@ -8,12 +8,6 @@ return [
         'title' => 'Mis actividades',
     ],
 
-    'views' => [
-        'list'   => 'Lista',
-        'kanban' => 'Kanban',
-        'graph'  => 'Gráfico',
-    ],
-
     'table' => [
         'columns' => [
             'due-date'      => 'Fecha de vencimiento',

@@ -12,12 +12,6 @@ return [
             'heading'     => 'No similar records',
             'description' => 'No other lead or opportunity has the same email, phone or customer.',
         ],
-
-        'views' => [
-            'kanban' => 'Kanban',
-            'list'   => 'List',
-            'graph'  => 'Graph',
-        ],
     ],
 
     'badges' => [

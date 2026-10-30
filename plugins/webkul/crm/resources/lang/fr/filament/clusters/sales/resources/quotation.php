@@ -11,12 +11,6 @@ return [
         ],
     ],
 
-    'views' => [
-        'list'   => 'Liste',
-        'kanban' => 'Kanban',
-        'graph'  => 'Graphique',
-    ],
-
     'tabs' => [
         'opportunity' => 'Opportunité',
     ],
@@ -34,15 +28,6 @@ return [
     ],
 
     'actions' => [
-        'group' => [
-            'label' => 'Actions',
-        ],
-
-        'duplicate' => [
-            'label'        => 'Dupliquer',
-            'notification' => ':count devis dupliqué(s).',
-        ],
-
         'mark-as-sent' => [
             'label'        => 'Marquer le devis comme envoyé',
             'notification' => ':count devis marqué(s) comme envoyé(s).',

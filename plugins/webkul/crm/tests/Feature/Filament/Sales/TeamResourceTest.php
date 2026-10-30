@@ -2,8 +2,8 @@
 
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
-use Webkul\Crm\Enums\PipelineView;
 use Webkul\Crm\Enums\TeamOrderScope;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource as ConfigurationTeamResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
@@ -91,7 +91,7 @@ it('lists only the team\'s opportunities on its pipeline page', function () {
     $withoutTeam = CRMHelper::opportunity();
     $leadInTeam = CRMHelper::lead(['team_id' => $team->id]);
 
-    Livewire::withQueryParams(['view' => 'list'])
+    Livewire::withQueryParams(['layout' => 'list'])
         ->test(ManageTeamOpportunities::class, ['record' => $team->id])
         ->assertOk()
         ->assertCanSeeTableRecords([$inTeam])
@@ -130,24 +130,23 @@ it('labels the team pipeline records as opportunities', function () {
         ->and($table->getPluralModelLabel())->toBe(OpportunityResource::getPluralModelLabel());
 });
 
-it('shows kanban, list and graph tabs on the team pipeline with kanban by default', function (array $query, array $active) {
+it('switches the team pipeline between kanban, list and graph with kanban by default', function (array $query, ViewLayout $active) {
     actingAsSalesTeamViewer();
 
     $team = salesTeamInCompany('Tabbed team');
 
-    $tabs = collect(Livewire::withQueryParams($query)->test(ManageTeamOpportunities::class, ['record' => $team->id])->instance()->getRecordNavigationTabs());
+    $component = Livewire::withQueryParams($query)->test(ManageTeamOpportunities::class, ['record' => $team->id])
+        ->assertSeeHtml('crm-layout-switcher');
 
-    expect($tabs->map(fn ($tab): string => $tab->getLabel())->all())->toBe([
-        PipelineView::KANBAN->getLabel(),
-        PipelineView::LIST->getLabel(),
-        PipelineView::GRAPH->getLabel(),
-    ])
-        ->and($tabs->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
+        ->and($component->instance()->getViewLayout())->toBe($active);
+
+    $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
 })->with([
-    'kanban' => [[], [true, false, false]],
-    'list'   => [['view' => 'list'], [false, true, false]],
-    'graph'  => [['view' => 'graph'], [false, false, true]],
-    'bad'    => [['view' => 'nope'], [true, false, false]],
+    'kanban' => [[], ViewLayout::KANBAN],
+    'list'   => [['layout' => 'list'], ViewLayout::LIST],
+    'graph'  => [['layout' => 'graph'], ViewLayout::GRAPH],
+    'bad'    => [['layout' => 'nope'], ViewLayout::KANBAN],
 ]);
 
 it('shows only the team\'s opportunities on the team kanban board', function () {
@@ -176,7 +175,7 @@ it('counts the team\'s opportunities per stage on the team graph', function () {
     CRMHelper::opportunity(['team_id' => $team->id]);
     CRMHelper::opportunity(['team_id' => salesTeamInCompany('Not in graph')->id]);
 
-    $chart = Livewire::withQueryParams(['view' => 'graph'])
+    $chart = Livewire::withQueryParams(['layout' => 'graph'])
         ->test(ManageTeamOpportunities::class, ['record' => $team->id])
         ->instance()
         ->getRecordsGraph()['data'];
@@ -184,19 +183,20 @@ it('counts the team\'s opportunities per stage on the team graph', function () {
     expect(array_sum($chart['datasets'][0]['data']))->toBe(1);
 });
 
-it('shows the teams as cards by default with list as the second tab', function (array $query, array $active) {
+it('shows the teams as cards by default with list as the second view', function (array $query, ViewLayout $active) {
     actingAsSalesTeamViewer();
 
     $team = salesTeamInCompany('Card team');
 
     $component = Livewire::withQueryParams($query)->test(ListTeams::class)->assertOk();
 
-    expect(collect($component->instance()->getRecordNavigationTabs())->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::GRID, ViewLayout::LIST])
+        ->and($component->instance()->getViewLayout())->toBe($active);
 
     $component->assertCanSeeTableRecords([$team]);
 })->with([
-    'grid' => [[], [true, false]],
-    'list' => [['layout' => 'list'], [false, true]],
+    'grid' => [[], ViewLayout::GRID],
+    'list' => [['layout' => 'list'], ViewLayout::LIST],
 ]);
 
 it('builds the team card figures and counts new opportunities per week', function () {
@@ -264,13 +264,13 @@ it('links the team card menu to the team\'s records and reports', function () {
 
     Livewire::test(ListTeams::class)
         ->assertSeeHtml(e(LeadResource::getUrl('index', ['team' => $team->id])))
-        ->assertSeeHtml(e(TeamResource::getUrl('opportunities', ['record' => $team, 'view' => 'list'])))
+        ->assertSeeHtml(e(TeamResource::getUrl('opportunities', ['record' => $team, 'layout' => 'list'])))
         ->assertSeeHtml(e(QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $team->id, 'scope' => TeamOrderScope::SALES_ORDERS->value])))
         ->assertDontSeeHtml(e(LeadResource::getUrl('create', ['team' => $team->id])))
         ->assertSeeHtml(e(ConfigurationTeamResource::getUrl('edit', ['record' => $team])))
         ->assertDontSee(__('crm::filament/clusters/sales/resources/team.table.actions.pipeline.label'))
         ->assertSeeHtml(e(PipelineAnalysisResource::getUrl('index', $reportFilters)))
-        ->assertSeeHtml(e(ForecastResource::getUrl('graph', $reportFilters)));
+        ->assertSeeHtml(e(ForecastResource::getUrl('index', [...$reportFilters, 'layout' => 'graph'])));
 });
 
 it('sets and clears the team color with the colour picker', function () {

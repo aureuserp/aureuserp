@@ -3,10 +3,12 @@
 namespace Webkul\Website\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\UTMMedium;
 use Webkul\Website\Enums\ContactFormAction;
 use Webkul\Website\Mail\ContactFormMail;
 use Webkul\Website\Settings\ContactSettings;
@@ -16,6 +18,8 @@ class ContactFormHandler
     public const FIELDS = ['name', 'phone', 'email', 'company', 'subject', 'question'];
 
     public const MULTILINE_FIELDS = ['question'];
+
+    public const LEAD_MEDIUM = 'Website';
 
     public static function crmAvailable(): bool
     {
@@ -116,25 +120,28 @@ class ContactFormHandler
     {
         $leadClass = 'Webkul\\Crm\\Models\\Lead';
 
-        $lead = $leadClass::query()->create([
-            'type'         => $action->value,
-            'name'         => $data['subject'],
-            'contact_name' => $data['name'],
-            'email'        => $data['email'],
-            'phone'        => $data['phone'],
-            'company_name' => $data['company'] ?? null,
-            'description'  => '<p>'.nl2br(e($data['question'])).'</p>',
-            'company_id'   => Company::query()->where('is_active', true)->orderBy('id')->value('id'),
-            'user_id'      => null,
-            'creator_id'   => null,
-        ]);
+        return DB::transaction(function () use ($leadClass, $data, $action): Model {
+            $lead = $leadClass::query()->create([
+                'type'          => $action->value,
+                'name'          => $data['subject'],
+                'contact_name'  => $data['name'],
+                'email'         => $data['email'],
+                'phone'         => $data['phone'],
+                'company_name'  => $data['company'] ?? null,
+                'description'   => '<p>'.nl2br(e($data['question'])).'</p>',
+                'utm_medium_id' => UTMMedium::query()->firstOrCreate(['name' => self::LEAD_MEDIUM])->getKey(),
+                'company_id'    => Company::query()->where('is_active', true)->orderBy('id')->value('id'),
+                'user_id'       => null,
+                'creator_id'    => null,
+            ]);
 
-        $lead->addMessage([
-            'type'       => 'note',
-            'body'       => '<p>'.e(__('website::filament/customer/contact-us.lead-note')).'</p>',
-            'company_id' => $lead->company_id,
-        ]);
+            $lead->addMessage([
+                'type'       => 'note',
+                'body'       => '<p>'.e(__('website::filament/customer/contact-us.lead-note')).'</p>',
+                'company_id' => $lead->company_id,
+            ]);
 
-        return $lead;
+            return $lead;
+        });
     }
 }

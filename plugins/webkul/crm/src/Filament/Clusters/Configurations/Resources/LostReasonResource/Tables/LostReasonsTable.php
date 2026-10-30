@@ -75,7 +75,7 @@ class LostReasonsTable
                     ),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: LostReasonExporter::class, archivable: true),
+                RecordBulkActions::make(exporter: LostReasonExporter::class, softDeletes: true),
             ]);
     }
 }

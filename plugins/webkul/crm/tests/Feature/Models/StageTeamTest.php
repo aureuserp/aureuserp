@@ -3,7 +3,7 @@
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Pages\ManageStages;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\Company;
@@ -91,7 +91,7 @@ it('hides other teams\' stages on a team\'s pipeline board', function () {
     $others = Stage::query()->create(['name' => 'Others '.uniqid()]);
     $others->teams()->sync([stageTeam()->id]);
 
-    $columns = collect(Livewire::withQueryParams(['team' => $team->id])->test(KanbanOpportunities::class)->instance()->getKanbanColumns())
+    $columns = collect(Livewire::withQueryParams(['team' => $team->id])->test(ListOpportunities::class)->instance()->getKanbanColumns())
         ->pluck('value')
         ->all();
 
@@ -105,7 +105,7 @@ it('links a stage added from a team\'s board to that team', function () {
     $name = 'Board stage '.uniqid();
 
     Livewire::withQueryParams(['team' => $team->id])
-        ->test(KanbanOpportunities::class)
+        ->test(ListOpportunities::class)
         ->call('addKanbanColumn', $name);
 
     expect(Stage::query()->where('name', $name)->first()?->teams->modelKeys())->toBe([$team->id]);
@@ -119,7 +119,7 @@ it('pre-selects the board\'s team in the add stage modal and saves the chosen te
     $name = 'Modal team stage '.uniqid();
 
     Livewire::withQueryParams(['team' => $team->id])
-        ->test(KanbanOpportunities::class)
+        ->test(ListOpportunities::class)
         ->mountAction('addKanbanColumn')
         ->assertSchemaStateSet(['teams' => [$team->id]])
         ->setActionData(['name' => $name, 'teams' => [$otherTeam->id]])
@@ -135,7 +135,7 @@ it('edits the teams of a stage from the board column settings', function () {
     $team = stageTeam();
     $stage = Stage::query()->create(['name' => 'Column team stage '.uniqid()]);
 
-    Livewire::test(KanbanOpportunities::class)
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction('editKanbanColumn', data: ['name' => $stage->name, 'teams' => [$team->id]], arguments: ['column' => (string) $stage->id])
         ->assertHasNoActionErrors();
 

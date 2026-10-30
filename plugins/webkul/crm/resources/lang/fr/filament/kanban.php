@@ -33,6 +33,11 @@ return [
         'board-description' => 'Rien ne correspond à cette vue ou aux filtres actuels.',
     ],
 
+    'choose-group' => [
+        'heading'     => 'Choisissez un Grouper par',
+        'description' => 'La vue Kanban affiche une colonne par groupe. Choisissez un champ dans Grouper par pour voir le tableau.',
+    ],
+
     'progress' => [
         'label' => 'Activités de cette étape',
         'total' => 'Revenu attendu',

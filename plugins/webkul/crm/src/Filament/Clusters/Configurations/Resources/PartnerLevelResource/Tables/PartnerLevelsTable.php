@@ -52,7 +52,7 @@ class PartnerLevelsTable
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/partner-level.notifications.deleted'))),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: PartnerLevelExporter::class, archivable: true),
+                RecordBulkActions::make(exporter: PartnerLevelExporter::class, softDeletes: true),
             ]);
     }
 }

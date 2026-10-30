@@ -52,7 +52,7 @@ class RecurringPlansTable
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/recurring-plan.notifications.deleted'))),
             ])
             ->toolbarActions([
-                RecordBulkActions::make(exporter: RecurringPlanExporter::class, archivable: true),
+                RecordBulkActions::make(exporter: RecurringPlanExporter::class, softDeletes: true),
             ]);
     }
 }

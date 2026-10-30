@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Number;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
-use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\KanbanForecast;
+use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\ListForecast;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Models\Lead;
@@ -56,23 +57,23 @@ function forecastUser(): User
 }
 
 it('is the index page of the forecast', function () {
-    expect(ForecastResource::getPages()['index']->getPage())->toBe(KanbanForecast::class);
+    expect(ForecastResource::getPages()['index']->getPage())->toBe(ListForecast::class);
 });
 
 it('renders with the forecast permission and is forbidden without', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
-    Livewire::test(KanbanForecast::class)->assertOk();
+    Livewire::test(ListForecast::class)->assertOk();
 
     CRMHelper::actingAs(CRMHelper::permissionsFor(['opportunity']));
 
-    Livewire::test(KanbanForecast::class)->assertForbidden();
+    Livewire::test(ListForecast::class)->assertForbidden();
 });
 
 it('starts without a default filter', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
-    Livewire::test(KanbanForecast::class)->assertSet('activeTableView', 'default');
+    Livewire::test(ListForecast::class)->assertSet('activeTableView', 'default');
 });
 
 it('shows the months with opportunities plus the current and next three months', function () {
@@ -81,7 +82,7 @@ it('shows the months with opportunities plus the current and next three months',
     CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()->addMonths(6)->addDays(9)]);
     CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()->addMonths(1)]);
 
-    $values = collect(forecastColumns(Livewire::test(KanbanForecast::class)))->pluck('value')->all();
+    $values = collect(forecastColumns(Livewire::test(ListForecast::class)))->pluck('value')->all();
 
     expect($values)->toBe([...forecastMonths(0, 3), forecastMonth(6)]);
 });
@@ -89,7 +90,7 @@ it('shows the months with opportunities plus the current and next three months',
 it('labels the columns by month and highlights the current month', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
-    $columns = forecastColumns(Livewire::test(KanbanForecast::class));
+    $columns = forecastColumns(Livewire::test(ListForecast::class));
 
     expect($columns[0]->value)->toBe(forecastMonth(0))
         ->and($columns[0]->label)->toBe(Dimension::monthLabel(forecastMonth(0)))
@@ -106,7 +107,7 @@ it('shows the pipeline tabs and filters the months by the chosen tab', function 
     $lost = CRMHelper::opportunity(['expected_closing_date' => $date]);
     $lost->markAsLost(null);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
 
     expect(array_keys($component->instance()->getCachedFavoriteTableViews()))->toContain('default', 'open', 'won', 'lost');
 
@@ -122,7 +123,7 @@ it('shows "None" first, then the current month, and leaves out past months', fun
     $undated = CRMHelper::opportunity(['expected_closing_date' => null]);
     $past = CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()->subMonths(2)]);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
 
     $columns = forecastColumns($component);
     $keys = collect($columns)->flatMap(fn ($column) => $column->records->modelKeys())->all();
@@ -136,7 +137,7 @@ it('shows "None" first, then the current month, and leaves out past months', fun
 it('shows an empty "None" column when every date is shown', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
 
     expect(forecastColumn($component, 'none'))->not->toBeNull()
         ->and(forecastColumn($component, 'none')->count)->toBe(0);
@@ -148,7 +149,7 @@ it('puts each opportunity in the column of its expected closing month', function
     $thisMonth = CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()]);
     $nextMonth = CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()->addMonth()->endOfMonth()]);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
 
     expect(forecastColumn($component, forecastMonth(0))->records->modelKeys())->toBe([$thisMonth->id])
         ->and(forecastColumn($component, forecastMonth(1))->records->modelKeys())->toBe([$nextMonth->id])
@@ -166,7 +167,7 @@ it('leaves out leads, lost opportunities and other salespeople', function () {
     $lost->markAsLost(null);
     $theirs = CRMHelper::opportunity(['expected_closing_date' => $date, 'user_id' => forecastUser()->id]);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
 
     expect(forecastColumn($component, forecastMonth(1))->records->modelKeys())
         ->toContain($mine->id, $theirs->id)
@@ -184,7 +185,7 @@ it('filters the months with the core salesperson rule', function () {
     $mine = CRMHelper::opportunity(['expected_closing_date' => $date]);
     $theirs = CRMHelper::opportunity(['expected_closing_date' => $date, 'user_id' => $salesperson->id]);
 
-    $component = Livewire::test(KanbanForecast::class)->set('tableFilters', ['queryBuilder' => ['rules' => ['user' => [
+    $component = Livewire::test(ListForecast::class)->set('tableFilters', ['queryBuilder' => ['rules' => ['user' => [
         'type' => 'user',
         'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $salesperson->id]]],
     ]]]]);
@@ -201,7 +202,7 @@ it('searches opportunities by name', function () {
     $match = CRMHelper::opportunity(['name' => 'Forecast Searchable Deal', 'expected_closing_date' => $date]);
     $other = CRMHelper::opportunity(['name' => 'Another Deal', 'expected_closing_date' => $date]);
 
-    $component = Livewire::test(KanbanForecast::class)->set('tableSearch', 'Forecast Searchable');
+    $component = Livewire::test(ListForecast::class)->set('tableSearch', 'Forecast Searchable');
 
     expect(forecastColumn($component, forecastMonth(1))->records->modelKeys())->toBe([$match->id])
         ->not->toContain($other->id);
@@ -215,7 +216,7 @@ it('sums the prorated revenue of each column', function () {
     CRMHelper::opportunity(['expected_closing_date' => $date, 'expected_revenue' => 1000, 'probability' => 50]);
     CRMHelper::opportunity(['expected_closing_date' => $date, 'expected_revenue' => 2000, 'probability' => 25]);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
     $board = $component->instance()->getKanbanBoard();
 
     expect($board->resolveColumnSummary(forecastColumn($component, forecastMonth(1))))
@@ -229,7 +230,7 @@ it('moves the expected closing date to the end of the target month', function (s
 
     $opportunity = CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()]);
 
-    Livewire::test(KanbanForecast::class)->call('moveRecord', (string) $opportunity->id, $month, []);
+    Livewire::test(ListForecast::class)->call('moveRecord', (string) $opportunity->id, $month, []);
 
     expect($opportunity->fresh()->expected_closing_date->toDateString())->toBe($expectedDate);
 })->with([
@@ -244,7 +245,7 @@ it('clears the expected closing date when moved to "None"', function () {
 
     $opportunity = CRMHelper::opportunity(['expected_closing_date' => today()->startOfMonth()]);
 
-    Livewire::test(KanbanForecast::class)->call('moveRecord', (string) $opportunity->id, 'none', []);
+    Livewire::test(ListForecast::class)->call('moveRecord', (string) $opportunity->id, 'none', []);
 
     expect($opportunity->fresh()->expected_closing_date)->toBeNull();
 });
@@ -255,7 +256,7 @@ it('ignores invalid target columns', function (string $value) {
     $date = today()->startOfMonth()->addDays(4)->toDateString();
     $opportunity = CRMHelper::opportunity(['expected_closing_date' => $date]);
 
-    Livewire::test(KanbanForecast::class)->call('moveRecord', (string) $opportunity->id, $value, []);
+    Livewire::test(ListForecast::class)->call('moveRecord', (string) $opportunity->id, $value, []);
 
     expect($opportunity->fresh()->expected_closing_date->toDateString())->toBe($date);
 })->with([
@@ -273,7 +274,7 @@ it('refuses to move an opportunity without the opportunity update permission', f
     $date = today()->startOfMonth()->toDateString();
     $opportunity = CRMHelper::opportunity(['expected_closing_date' => $date]);
 
-    Livewire::test(KanbanForecast::class)->call('moveRecord', (string) $opportunity->id, '2027-02', []);
+    Livewire::test(ListForecast::class)->call('moveRecord', (string) $opportunity->id, '2027-02', []);
 
     expect($opportunity->fresh()->expected_closing_date->toDateString())->toBe($date);
 });
@@ -285,7 +286,7 @@ it('refuses to move a lost opportunity', function () {
     $opportunity = CRMHelper::opportunity(['expected_closing_date' => $date]);
     $opportunity->markAsLost(null);
 
-    Livewire::test(KanbanForecast::class)->call('moveRecord', (string) $opportunity->id, '2027-02', []);
+    Livewire::test(ListForecast::class)->call('moveRecord', (string) $opportunity->id, '2027-02', []);
 
     expect(Lead::withTrashed()->findOrFail($opportunity->id)->expected_closing_date->toDateString())->toBe($date);
 });
@@ -296,7 +297,7 @@ it('refuses to move a lead', function () {
     $date = today()->startOfMonth()->toDateString();
     $lead = CRMHelper::lead(['expected_closing_date' => $date]);
 
-    Livewire::test(KanbanForecast::class)->call('moveRecord', (string) $lead->id, '2027-02', []);
+    Livewire::test(ListForecast::class)->call('moveRecord', (string) $lead->id, '2027-02', []);
 
     expect($lead->fresh()->expected_closing_date->toDateString())->toBe($date);
 });
@@ -304,23 +305,27 @@ it('refuses to move a lead', function () {
 it('has no "Add" column', function () {
     CRMHelper::actingAs(['view_any_crm_forecast', ...CRMHelper::permissionsFor(['stage'])]);
 
-    $component = Livewire::test(KanbanForecast::class)->assertDontSee('Add Stage');
+    $component = Livewire::test(ListForecast::class)->assertDontSee('Add Stage');
 
     expect(method_exists($component->instance(), 'canAddKanbanColumn'))->toBeFalse();
 });
 
-it('shows the report views as tabs with kanban active', function () {
+it('switches the forecast between kanban, graph and list without leaving the page', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
-    $tabs = collect(Livewire::test(KanbanForecast::class)->assertActionDoesNotExist('view_graph')->instance()->getRecordNavigationTabs());
+    $component = Livewire::test(ListForecast::class)
+        ->assertActionDoesNotExist('view_graph')
+        ->assertSeeHtml('crm-layout-switcher');
 
-    expect($tabs->map(fn ($tab): string => $tab->getLabel())->all())->toBe([
-        __('crm::filament/clusters/reporting/report.views.kanban'),
-        __('crm::filament/clusters/reporting/report.views.graph'),
-        __('crm::filament/clusters/reporting/report.views.summary'),
-        __('crm::filament/clusters/reporting/report.views.list'),
-    ])
-        ->and($tabs->map(fn ($tab): bool => $tab->isActive())->all())->toBe([true, false, false, false]);
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::GRAPH, ViewLayout::LIST])
+        ->and($component->instance()->getViewLayout())->toBe(ViewLayout::KANBAN)
+        ->and(method_exists($component->instance(), 'getRecordNavigationTabs'))->toBeFalse();
+
+    $component->call('switchViewLayout', 'list')->assertSet('viewLayout', 'list');
+
+    expect($component->instance()->getTableFilterState('upcoming_closings')['isActive'] ?? null)->toBeTrue();
+
+    $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
 });
 
 it('applies the list toggle filters (won, lost) on the board', function () {
@@ -330,7 +335,7 @@ it('applies the list toggle filters (won, lost) on the board', function () {
     $lost = CRMHelper::opportunity(['expected_closing_date' => now()->addMonth()->toDateString()]);
     $lost->markAsLost(null);
 
-    $ids = fn (array $presets): array => collect(forecastColumns(Livewire::test(KanbanForecast::class)
+    $ids = fn (array $presets): array => collect(forecastColumns(Livewire::test(ListForecast::class)
         ->set('kanbanFilters.user_id', null)
         ->set('kanbanFilters.period', 'all')
         ->set('kanbanFilters.presets', $presets)))
@@ -357,7 +362,7 @@ it('shows the activity progress of each month and filters a month from it', func
     ]);
     $quiet = CRMHelper::opportunity(['expected_closing_date' => $closing]);
 
-    $component = Livewire::test(KanbanForecast::class);
+    $component = Livewire::test(ListForecast::class);
     $progress = $component->instance()->kanbanColumnProgress(forecastColumn($component, $month));
 
     expect($progress['overdue'])->toBeGreaterThanOrEqual(1)
@@ -378,7 +383,7 @@ it('marks won and lost opportunities with a ribbon', function () {
         'stage_id'              => Stage::query()->where('is_won', true)->value('id'),
     ]);
 
-    Livewire::test(KanbanForecast::class)
+    Livewire::test(ListForecast::class)
         ->assertSee($won->name)
         ->assertSeeHtml('bg-success-600');
 });

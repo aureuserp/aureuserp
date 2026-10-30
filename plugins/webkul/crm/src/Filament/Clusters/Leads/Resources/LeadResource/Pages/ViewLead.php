@@ -2,10 +2,12 @@
 
 namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
 
-use Filament\Notifications\Notification;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Crm\Filament\Actions\LeadRecordActions;
+use Webkul\Crm\Filament\Actions\SendLeadEmailAction;
+use Webkul\Crm\Filament\Actions\SendLeadSMSAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Actions\ConvertToOpportunityAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
@@ -24,19 +26,17 @@ class ViewLead extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            ConvertToOpportunityAction::make(),
-            MarkAsLostAction::make()
-                ->after(fn () => $this->refreshRecord()),
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
-            LeadRecordActions::make(
-                fn () => $this->refreshRecord(),
-                Notification::make()
-                    ->success()
-                    ->title(__('crm::filament/clusters/leads/resources/lead.actions.force-delete.notification.title'))
-                    ->body(__('crm::filament/clusters/leads/resources/lead.actions.force-delete.notification.body')),
-            ),
+            ConvertToOpportunityAction::make(),
+            MarkAsLostAction::make()
+                ->after(fn () => $this->refreshRecord()),
+            SendLeadEmailAction::make(),
+            SendLeadSMSAction::make(),
+            DeleteAction::make(),
+            RestoreAction::make()
+                ->after(fn () => $this->refreshRecord()),
         ];
     }
 

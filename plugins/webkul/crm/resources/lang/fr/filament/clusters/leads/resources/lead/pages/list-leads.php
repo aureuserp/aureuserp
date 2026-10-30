@@ -18,4 +18,14 @@ return [
         'label' => 'Équipe commerciale : :team',
         'clear' => 'Tout afficher',
     ],
+
+    'graph' => [
+        'heading' => [
+            'month'       => 'Pistes par mois',
+            'salesperson' => 'Pistes par commercial',
+            'team'        => 'Pistes par équipe commerciale',
+            'source'      => 'Pistes par source',
+            'priority'    => 'Pistes par priorité',
+        ],
+    ],
 ];

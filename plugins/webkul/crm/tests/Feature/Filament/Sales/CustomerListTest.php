@@ -2,6 +2,7 @@
 
 use Livewire\Livewire;
 use Webkul\Contact\Models\Partner;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\DownloadCustomersVCardBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCustomers;
 use Webkul\Crm\Models\Lead;
@@ -34,34 +35,50 @@ function listedContact(array $attributes = []): Partner
     return Partner::query()->findOrFail($partner->id);
 }
 
-it('shows grid and list tabs with the grid by default', function (array $query, array $active) {
+it('switches customers between list and kanban with the list by default', function (array $query, ViewLayout $active) {
     CRMHelper::actingAsCRMUser(['customer']);
 
     $contact = listedContact(['name' => 'Tabbed Contact']);
 
-    $component = Livewire::withQueryParams($query)->test(ListCustomers::class)->assertOk();
+    $component = Livewire::withQueryParams($query)->test(ListCustomers::class)
+        ->assertOk()
+        ->assertSeeHtml('crm-layout-switcher');
 
-    expect(collect($component->instance()->getRecordNavigationTabs())->map(fn ($tab): bool => $tab->isActive())->all())->toBe($active);
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::KANBAN])
+        ->and($component->instance()->getViewLayout())->toBe($active);
 
-    $component->searchTable('Tabbed Contact')->assertCanSeeTableRecords([$contact]);
+    $component->call('switchViewLayout', 'list')
+        ->searchTable('Tabbed Contact')
+        ->assertCanSeeTableRecords([$contact]);
 })->with([
-    'grid' => [[], [true, false]],
-    'list' => [['layout' => 'list'], [false, true]],
-    'bad'  => [['layout' => 'nope'], [true, false]],
+    'list'     => [[], ViewLayout::LIST],
+    'kanban'   => [['layout' => 'kanban'], ViewLayout::KANBAN],
+    'old grid' => [['layout' => 'grid'], ViewLayout::LIST],
+    'bad'      => [['layout' => 'nope'], ViewLayout::LIST],
 ]);
 
-it('shows the grid with the same customer card as the core partners grid', function () {
+it('shows the customers in the list with their avatar, email and phone', function () {
     CRMHelper::actingAsCRMUser(['customer']);
 
-    $contact = listedContact(['name' => 'Card Contact', 'email' => 'card.contact@example.com', 'job_title' => 'Buyer']);
+    $contact = listedContact(['name' => 'Card Contact', 'email' => 'card.contact@example.com']);
 
     Livewire::test(ListCustomers::class)
         ->assertTableColumnExists('avatar')
-        ->assertTableColumnExists('job_title')
         ->assertTableColumnExists('email')
         ->assertTableColumnExists('phone')
         ->assertCanSeeTableRecords([$contact])
         ->assertSee('card.contact@example.com');
+});
+
+it('asks for a group by on the kanban until one is chosen', function () {
+    CRMHelper::actingAsCRMUser(['customer']);
+
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListCustomers::class)
+        ->set('tableGrouping', null)
+        ->assertSee(__('crm::filament/kanban.choose-group.heading'));
+
+    expect($component->instance()->needsBoardGroup())->toBeTrue()
+        ->and($component->instance()->getKanbanColumns())->toBe([]);
 });
 
 it('offers the full bulk menu', function () {
@@ -69,18 +86,23 @@ it('offers the full bulk menu', function () {
 
     $component = Livewire::test(ListCustomers::class);
 
-    foreach (['export', 'archiveRecords', 'restore', 'duplicateRecords', 'forceDelete', 'mergeCustomers', 'sendCustomersEmail', 'sendCustomersSMS', 'downloadCustomersVCard'] as $name) {
+    foreach (['export', 'delete', 'restore', 'forceDelete', 'mergeCustomers', 'sendCustomersEmail', 'sendCustomersSMS', 'downloadCustomersVCard'] as $name) {
         $component->assertTableBulkActionExists($name);
     }
+
+    $component->assertTableBulkActionDoesNotExist('archiveRecords')
+        ->assertTableBulkActionDoesNotExist('duplicateRecords');
 });
 
-it('shows a kanban board with one column per salesperson when grouped', function () {
+it('shows a kanban board with one column per salesperson when grouped on the kanban view', function () {
     CRMHelper::actingAsCRMUser(['customer']);
 
     $salesperson = listedSalesperson(['name' => 'Board Salesperson']);
     $contact = listedContact(['name' => 'Board Contact', 'user_id' => $salesperson->id]);
 
-    $component = Livewire::test(ListCustomers::class)->set('tableGrouping', 'user.name');
+    expect(Livewire::test(ListCustomers::class)->set('tableGrouping', 'user.name')->instance()->getBoardGroup())->toBeNull();
+
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListCustomers::class)->set('tableGrouping', 'user.name');
 
     $columns = collect($component->instance()->getKanbanColumns());
     $column = $columns->firstWhere('value', (string) $salesperson->id);
@@ -98,13 +120,13 @@ it('moves a contact to another salesperson on the board but not between company 
     listedContact(['user_id' => $to->id]);
     $contact = listedContact(['user_id' => $from->id]);
 
-    Livewire::test(ListCustomers::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListCustomers::class)
         ->set('tableGrouping', 'user.name')
         ->call('moveRecord', (string) $contact->id, (string) $to->id, []);
 
     expect($contact->refresh()->user_id)->toBe($to->id);
 
-    Livewire::test(ListCustomers::class)
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListCustomers::class)
         ->set('tableGrouping', 'account_type')
         ->call('moveRecord', (string) $contact->id, AccountType::COMPANY->value, []);
 

@@ -4,6 +4,7 @@ namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ForceDeleteAction;
@@ -12,18 +13,11 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Support\Enums\FontWeight;
-use Filament\Support\Enums\TextSize;
-use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
-use Webkul\Crm\Enums\OpportunityPriority;
-use Webkul\Crm\Filament\Actions\ArchiveLeadsBulkAction;
-use Webkul\Crm\Filament\Actions\DuplicateLeadsBulkAction;
 use Webkul\Crm\Filament\Actions\MarkLeadsAsLostBulkAction;
 use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
 use Webkul\Crm\Filament\Actions\SendLeadEmailAction;
@@ -40,13 +34,10 @@ use Webkul\Crm\Models\Lead;
 
 class LeadsTable
 {
-    public static function configure(Table $table, bool $grid = false): Table
+    public static function configure(Table $table): Table
     {
-        $table = $grid
-            ? $table->columns(static::gridColumns())->contentGrid(['md' => 2, 'xl' => 3, '2xl' => 4])
-            : $table->columns(static::listColumns());
-
         return $table
+            ->columns(static::listColumns())
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['user', 'team', 'country', 'tags']))
             ->defaultSort('created_at', 'desc')
             ->groups([
@@ -94,10 +85,8 @@ class LeadsTable
                             ->label(__('crm::filament/transfers.actions.export.label'))
                             ->icon('heroicon-o-arrow-up-tray')
                             ->exporter(LeadExporter::class),
-                        ArchiveLeadsBulkAction::make(),
-                        RestoreBulkAction::make()
-                            ->label(__('crm::filament/lead-actions.unarchive.label')),
-                        DuplicateLeadsBulkAction::make(),
+                        RestoreBulkAction::make(),
+                        DeleteBulkAction::make(),
                         ForceDeleteBulkAction::make(),
                     ])->dropdown(false),
                     BulkActionGroup::make([
@@ -168,6 +157,10 @@ class LeadsTable
                 ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.source'))
                 ->placeholder('—')
                 ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('medium.name')
+                ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.medium'))
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('lostReason.name')
                 ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.lost-reason'))
                 ->placeholder('—')
@@ -177,52 +170,6 @@ class LeadsTable
                 ->dateTime()
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
-        ];
-    }
-
-    public static function gridColumns(): array
-    {
-        return [
-            Stack::make([
-                TextColumn::make('name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.name'))
-                    ->weight(FontWeight::SemiBold)
-                    ->searchable(['name', 'contact_name', 'company_name', 'email'])
-                    ->sortable(),
-                TextColumn::make('contact_name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.contact-name'))
-                    ->state(fn (Lead $record): ?string => $record->contact_name ?: $record->company_name)
-                    ->color('gray'),
-                TextColumn::make('email')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.email'))
-                    ->icon('heroicon-o-envelope')
-                    ->color('gray')
-                    ->limit(40),
-                TextColumn::make('city')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.city'))
-                    ->state(fn (Lead $record): ?string => collect([$record->city, $record->country?->name])->filter()->implode(', ') ?: null)
-                    ->icon('heroicon-o-map-pin')
-                    ->color('gray'),
-                TextColumn::make('tags.name')
-                    ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.tags'))
-                    ->badge()
-                    ->color('info'),
-                Split::make([
-                    TextColumn::make('priority')
-                        ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.priority'))
-                        ->formatStateUsing(fn (?OpportunityPriority $state): string => str_repeat('★', $state?->value ?? 0).str_repeat('☆', 3 - ($state?->value ?? 0)))
-                        ->tooltip(fn (Lead $record): ?string => $record->priority?->getLabel())
-                        ->color('warning')
-                        ->size(TextSize::Large)
-                        ->sortable(),
-                    TextColumn::make('user.name')
-                        ->label(__('crm::filament/clusters/leads/resources/lead.table.columns.salesperson'))
-                        ->icon('heroicon-o-user-circle')
-                        ->color('gray')
-                        ->alignEnd()
-                        ->sortable(),
-                ]),
-            ])->space(2),
         ];
     }
 }

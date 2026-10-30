@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages;
 
-use Filament\Navigation\NavigationItem;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -10,13 +9,14 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Livewire\Attributes\Url;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ListPartners as BaseListPartners;
 use Webkul\Crm\Enums\CustomerBoardGroup;
-use Webkul\Crm\Enums\GridLayout;
+use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Tables\CustomersTable;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
+use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
+use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
@@ -26,62 +26,39 @@ use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListCustomers extends BaseListPartners
 {
-    use HasCRMTableViews, HasKanbanBoard;
+    use HasCRMTableViews, HasGroupBoardLayout, HasKanbanBoard, HasViewLayouts;
 
     protected static string $resource = CustomerResource::class;
-
-    #[Url(as: 'layout')]
-    public string $contactLayout = GridLayout::GRID->value;
-
-    public function mount(): void
-    {
-        $this->contactLayout = $this->getContactLayout()->value;
-
-        parent::mount();
-    }
 
     public function content(Schema $schema): Schema
     {
         return parent::content($schema);
     }
 
-    public function getContactLayout(): GridLayout
+    public function getViewLayouts(): array
     {
-        return GridLayout::tryFrom($this->contactLayout) ?? GridLayout::GRID;
+        return [ViewLayout::LIST, ViewLayout::KANBAN];
     }
 
     public function getBreadcrumb(): string
     {
-        return $this->getContactLayout()->getLabel();
-    }
-
-    public function getRecordNavigationTabs(): array
-    {
-        return array_map(
-            fn (GridLayout $layout): NavigationItem => NavigationItem::make($layout->value)
-                ->label($layout->getLabel())
-                ->icon($layout->getIcon())
-                ->url(CustomerResource::getUrl('index', $layout === GridLayout::GRID ? [] : ['layout' => $layout->value]))
-                ->isActiveWhen(fn (): bool => $this->getContactLayout() === $layout),
-            GridLayout::cases(),
-        );
+        return $this->getViewLayout()->getLabel();
     }
 
     public function getBoardGroup(): ?CustomerBoardGroup
     {
-        return CustomerBoardGroup::fromGrouping($this->tableGrouping);
+        return $this->isViewLayout(ViewLayout::KANBAN) ? CustomerBoardGroup::fromGrouping($this->tableGrouping) : null;
     }
 
     public function table(Table $table): Table
     {
-        return CustomersTable::configure(CustomerResource::table($table), grid: $this->getContactLayout() === GridLayout::GRID)
-            ->paginated(fn (): bool => ! $this->getBoardGroup())
+        return $this->configureGroupBoardTable(CustomerResource::table($table))
             ->emptyState(fn () => $this->getBoardGroup() ? view($this->getKanbanBoard()->getBoardView()) : null);
     }
 
     public function getTableRecords(): Collection|Paginator|CursorPaginator
     {
-        return $this->getBoardGroup() ? new Collection : parent::getTableRecords();
+        return $this->isViewLayout(ViewLayout::LIST) ? parent::getTableRecords() : new Collection;
     }
 
     public function getPresetTableViews(): array
