@@ -356,7 +356,7 @@ it('shows the activity progress of each month and filters a month from it', func
     $overdue = CRMHelper::opportunity(['expected_closing_date' => $closing]);
     $overdue->addMessage([
         'type'             => 'activity',
-        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->value('id'),
+        'activity_type_id' => ActivityType::query()->whereIn('plugin', ['support', 'crm'])->value('id'),
         'date_deadline'    => now()->subDay()->toDateString(),
         'assigned_to'      => $user->id,
     ]);

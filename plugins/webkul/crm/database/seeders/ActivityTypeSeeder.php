@@ -4,6 +4,7 @@ namespace Webkul\Crm\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Webkul\Security\Models\User;
 use Webkul\Support\Enums\ActivityChainingType;
 use Webkul\Support\Enums\ActivityDecorationType;
@@ -15,63 +16,60 @@ class ActivityTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        $creator = User::find(1);
+        $this->mergeCopiesOfSharedTypes();
 
-        $activityTypes = [
-            [
-                'sort'        => 1,
-                'name'        => 'Email',
-                'icon'        => 'heroicon-o-envelope',
-                'category'    => ActivityTypeAction::DEFAULT,
-                'delay_count' => 0,
-            ],
-            [
-                'sort'        => 2,
-                'name'        => 'Call',
-                'icon'        => 'heroicon-o-phone',
-                'category'    => ActivityTypeAction::PHONE_CALL,
-                'delay_count' => 2,
-            ],
-            [
-                'sort'        => 3,
-                'name'        => 'Meeting',
-                'icon'        => 'heroicon-o-users',
-                'category'    => ActivityTypeAction::MEETING,
-                'delay_count' => 0,
-            ],
-            [
-                'sort'        => 4,
-                'name'        => 'To-Do',
-                'icon'        => 'heroicon-o-check-circle',
-                'category'    => ActivityTypeAction::DEFAULT,
-                'delay_count' => 5,
-            ],
-        ];
+        if (DB::table('activity_types')->where('plugin', 'support')->where('name', 'Email')->exists()) {
+            return;
+        }
 
-        foreach ($activityTypes as $activityType) {
-            DB::table('activity_types')->updateOrInsert(
-                [
-                    'plugin' => 'crm',
-                    'name'   => $activityType['name'],
-                ],
-                [
-                    'sort'                   => $activityType['sort'],
-                    'delay_count'            => $activityType['delay_count'],
-                    'triggered_next_type_id' => null,
-                    'default_user_id'        => null,
-                    'creator_id'             => $creator?->id,
-                    'delay_unit'             => ActivityDelayUnit::DAYS->value,
-                    'delay_from'             => ActivityDelayFrom::CURRENT_DATE->value,
-                    'icon'                   => $activityType['icon'],
-                    'decoration_type'        => ActivityDecorationType::ALERT->value,
-                    'chaining_type'          => ActivityChainingType::SUGGEST->value,
-                    'category'               => $activityType['category']->value,
-                    'summary'                => $activityType['name'],
-                    'is_active'              => true,
-                    'created_at'             => now(),
-                    'updated_at'             => now(),
-                ],
-            );
+        DB::table('activity_types')->updateOrInsert(
+            [
+                'plugin' => 'crm',
+                'name'   => 'Email',
+            ],
+            [
+                'sort'                   => 1,
+                'delay_count'            => 0,
+                'triggered_next_type_id' => null,
+                'default_user_id'        => null,
+                'creator_id'             => User::find(1)?->id,
+                'delay_unit'             => ActivityDelayUnit::DAYS->value,
+                'delay_from'             => ActivityDelayFrom::CURRENT_DATE->value,
+                'icon'                   => 'heroicon-o-envelope',
+                'decoration_type'        => ActivityDecorationType::ALERT->value,
+                'chaining_type'          => ActivityChainingType::SUGGEST->value,
+                'category'               => ActivityTypeAction::DEFAULT->value,
+                'summary'                => 'Email',
+                'is_active'              => true,
+                'created_at'             => now(),
+                'updated_at'             => now(),
+            ],
+        );
+    }
+
+    protected function mergeCopiesOfSharedTypes(): void
+    {
+        $shared = DB::table('activity_types')->where('plugin', 'support')->whereNull('deleted_at')->pluck('id', 'name');
+
+        $copies = DB::table('activity_types')->where('plugin', 'crm')->whereIn('name', $shared->keys())->pluck('name', 'id');
+
+        foreach ($copies as $copyId => $name) {
+            $sharedId = $shared[$name];
+
+            DB::table('chatter_messages')->where('activity_type_id', $copyId)->update(['activity_type_id' => $sharedId]);
+            DB::table('activity_plan_templates')->where('activity_type_id', $copyId)->update(['activity_type_id' => $sharedId]);
+            DB::table('activity_types')->where('triggered_next_type_id', $copyId)->update(['triggered_next_type_id' => $sharedId]);
+
+            if (Schema::hasTable('crm_activity_logs')) {
+                DB::table('crm_activity_logs')->where('activity_type_id', $copyId)->update(['activity_type_id' => $sharedId]);
+            }
+
+            DB::table('activity_type_suggestions')
+                ->where('activity_type_id', $copyId)
+                ->orWhere('suggested_activity_type_id', $copyId)
+                ->delete();
+
+            DB::table('activity_types')->where('id', $copyId)->delete();
         }
     }
 }

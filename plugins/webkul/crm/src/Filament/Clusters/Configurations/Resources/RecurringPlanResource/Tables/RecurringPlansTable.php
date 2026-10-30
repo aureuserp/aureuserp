@@ -41,13 +41,7 @@ class RecurringPlansTable
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/recurring-plan.notifications.updated'))),
                 RestoreAction::make()
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/recurring-plan.notifications.restored'))),
-                DeleteAction::make()
-                    ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.actions.archive'))
-                    ->icon('heroicon-o-archive-box')
-                    ->modalHeading(__('crm::filament/clusters/configurations/resources/recurring-plan.actions.archive-heading'))
-                    ->modalDescription(__('crm::filament/clusters/configurations/resources/recurring-plan.actions.archive-description'))
-                    ->modalSubmitActionLabel(__('crm::filament/clusters/configurations/resources/recurring-plan.actions.archive'))
-                    ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/recurring-plan.notifications.archived'))),
+                DeleteAction::make(),
                 ForceDeleteAction::make()
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/recurring-plan.notifications.deleted'))),
             ])

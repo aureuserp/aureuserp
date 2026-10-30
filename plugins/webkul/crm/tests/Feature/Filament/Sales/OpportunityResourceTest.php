@@ -52,7 +52,7 @@ function opportunityActivity(Lead $lead, array $attributes = []): Activity
 {
     $message = $lead->addMessage([
         'type'             => 'activity',
-        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->orderBy('sort')->value('id'),
+        'activity_type_id' => ActivityType::query()->whereIn('plugin', ['support', 'crm'])->orderBy('sort')->value('id'),
         'date_deadline'    => now()->addDays(3)->toDateString(),
         'summary'          => 'Opportunity page activity',
         'assigned_to'      => auth()->id(),

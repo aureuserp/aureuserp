@@ -79,7 +79,7 @@ it('edits an active lost reason', function () {
     expect($lostReason->refresh()->name)->toBe('No budget this year (test)');
 });
 
-it('archives a lost reason instead of deleting it', function () {
+it('soft-deletes a lost reason with the core delete action', function () {
     CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $lostReason = LostReason::factory()->create();
@@ -93,7 +93,7 @@ it('archives a lost reason instead of deleting it', function () {
         ->and($lostReason->trashed())->toBeTrue();
 });
 
-it('hides edit, archive and shows restore on an archived lost reason', function () {
+it('hides edit and delete and shows restore on a deleted lost reason', function () {
     CRMHelper::actingAsCRMUser(['lost::reason']);
 
     $archived = LostReason::factory()->archived()->create();

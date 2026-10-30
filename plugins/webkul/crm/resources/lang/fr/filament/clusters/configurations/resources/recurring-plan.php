@@ -27,12 +27,6 @@ return [
         ],
     ],
 
-    'actions' => [
-        'archive'             => 'Archiver',
-        'archive-heading'     => 'Archiver le plan récurrent',
-        'archive-description' => 'Le plan passe dans Archivés. Les opportunités le conservent ; restaurez-le depuis l\'onglet Archivés.',
-    ],
-
     'tabs' => [
         'active'   => 'Actifs',
         'archived' => 'Archivés',
@@ -41,7 +35,6 @@ return [
     'notifications' => [
         'created'  => 'Plan récurrent créé',
         'updated'  => 'Plan récurrent mis à jour',
-        'archived' => 'Plan récurrent archivé',
         'restored' => 'Plan récurrent restauré',
         'deleted'  => 'Plan récurrent supprimé',
     ],

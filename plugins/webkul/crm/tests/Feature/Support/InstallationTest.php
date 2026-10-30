@@ -3,7 +3,9 @@
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
+use Webkul\Chatter\Models\Message;
 use Webkul\Crm\CRMServiceProvider;
+use Webkul\Crm\Database\Seeders\ActivityTypeSeeder;
 use Webkul\Crm\Database\Seeders\DatabaseSeeder;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Models\ActivityType;
@@ -45,12 +47,28 @@ it('seeds the default lost reasons', function () {
         ->toContain('Too expensive', 'Not enough stock', 'No resources or skills available');
 });
 
-it('seeds the four crm activity types', function () {
-    $names = ActivityType::query()->where('plugin', 'crm')->pluck('name');
+it('adds only Email and reuses the shared Call, Meeting and To-Do activity types', function () {
+    $crmNames = ActivityType::query()->where('plugin', 'crm')->pluck('name');
+    $names = ActivityType::query()->whereIn('plugin', ['support', 'crm'])->pluck('name');
 
-    expect($names->all())->toContain('Email', 'Call', 'Meeting', 'To-Do')
+    expect($crmNames->all())->toContain('Email')
+        ->and($crmNames->intersect(['Call', 'Meeting', 'To-Do'])->all())->toBeEmpty()
         ->and($names->intersect(['Email', 'Call', 'Meeting', 'To-Do'])->count())->toBe(4)
         ->and($names->duplicates())->toBeEmpty();
+});
+
+it('merges an old crm copy of a shared activity type into the shared one when seeding again', function () {
+    $shared = ActivityType::query()->where('plugin', 'support')->where('name', 'Call')->firstOrFail();
+    $copy = ActivityType::query()->create([...$shared->only(['name', 'delay_count', 'delay_unit', 'delay_from', 'category', 'decoration_type', 'chaining_type']), 'plugin' => 'crm', 'is_active' => true]);
+    $lead = CRMHelper::lead();
+    $activity = Message::query()->create(['type' => 'activity', 'messageable_type' => $lead->getMorphClass(), 'messageable_id' => $lead->id, 'activity_type_id' => $copy->id, 'date_deadline' => today()]);
+
+    (new ActivityTypeSeeder)->run();
+
+    expect(ActivityType::withTrashed()->find($copy->id))->toBeNull()
+        ->and($activity->fresh()->activity_type_id)->toBe($shared->id)
+        ->and(ActivityType::query()->whereIn('plugin', ['support', 'crm'])->where('name', 'Call')->count())->toBe(1)
+        ->and(ActivityType::query()->where('plugin', 'crm')->where('name', 'Email')->count())->toBe(1);
 });
 
 it('seeds the default tags, recurring plans and partner levels', function () {

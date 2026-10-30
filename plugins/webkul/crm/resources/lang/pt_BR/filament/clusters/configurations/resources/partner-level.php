@@ -27,12 +27,6 @@ return [
         ],
     ],
 
-    'actions' => [
-        'archive'             => 'Arquivar',
-        'archive-heading'     => 'Arquivar nível',
-        'archive-description' => 'O nível vai para Arquivados. Os contatos o mantêm; restaure-o na aba Arquivados.',
-    ],
-
     'tabs' => [
         'active'   => 'Ativos',
         'archived' => 'Arquivados',
@@ -41,7 +35,6 @@ return [
     'notifications' => [
         'created'  => 'Nível criado',
         'updated'  => 'Nível atualizado',
-        'archived' => 'Nível arquivado',
         'restored' => 'Nível restaurado',
         'deleted'  => 'Nível excluído',
     ],

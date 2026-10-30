@@ -20,7 +20,7 @@ beforeEach(function () {
 
 function crmCallActivityTypeId(): int
 {
-    return (int) ActivityType::query()->where('plugin', 'crm')->where('name', 'Call')->value('id');
+    return (int) ActivityType::query()->whereIn('plugin', ['support', 'crm'])->where('name', 'Call')->value('id');
 }
 
 /**

@@ -54,18 +54,7 @@ class LostReasonsTable
                             ->title(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.restore.notification.title'))
                             ->body(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.restore.notification.body')),
                     ),
-                DeleteAction::make()
-                    ->label(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.delete.label'))
-                    ->icon('heroicon-o-archive-box')
-                    ->modalHeading(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.delete.modal.heading'))
-                    ->modalDescription(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.delete.modal.description'))
-                    ->modalSubmitActionLabel(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.delete.label'))
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.delete.notification.title'))
-                            ->body(__('crm::filament/clusters/configurations/resources/lost-reason.table.actions.delete.notification.body')),
-                    ),
+                DeleteAction::make(),
                 ForceDeleteAction::make()
                     ->successNotification(
                         Notification::make()

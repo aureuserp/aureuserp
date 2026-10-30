@@ -38,20 +38,6 @@ return [
                 ],
             ],
 
-            'delete' => [
-                'label' => 'Archiver',
-
-                'modal' => [
-                    'heading'     => 'Archiver le motif de perte',
-                    'description' => 'Le motif de perte sera déplacé dans l\'onglet Archivés. Vous pouvez le restaurer à tout moment.',
-                ],
-
-                'notification' => [
-                    'title' => 'Motif de perte archivé',
-                    'body'  => 'Le motif de perte a été archivé avec succès.',
-                ],
-            ],
-
             'force-delete' => [
                 'notification' => [
                     'title' => 'Motif de perte supprimé',

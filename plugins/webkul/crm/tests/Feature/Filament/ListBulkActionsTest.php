@@ -1,11 +1,14 @@
 <?php
 
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 use Webkul\Contact\Models\Partner;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource\Pages\ManageLostReasons;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\PartnerLevelResource\Pages\ManagePartnerLevels;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource\Pages\ManageRecurringPlans;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Pages\ManageStages;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Pages\ManageTags;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\ListActivities;
@@ -13,6 +16,8 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCust
 use Webkul\Crm\Mail\LeadMessageMail;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\LostReason;
+use Webkul\Crm\Models\PartnerLevel;
+use Webkul\Crm\Models\RecurringPlan;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner as BasePartner;
 use Webkul\Support\Models\ActivityType;
@@ -49,6 +54,29 @@ it('groups export with the core delete, restore and force delete on the configur
     'tags'         => [ManageTags::class, 'tag', ['export', 'delete'], ['archiveRecords', 'duplicateRecords', 'restore', 'forceDelete']],
     'stages'       => [ManageStages::class, 'stage', ['export', 'delete'], ['archiveRecords', 'duplicateRecords', 'restore', 'forceDelete']],
     'lost reasons' => [ManageLostReasons::class, 'lost::reason', ['export', 'delete', 'restore', 'forceDelete'], ['archiveRecords', 'duplicateRecords']],
+]);
+
+it('soft-deletes a configuration row with the core delete action and then offers restore instead', function (string $page, string $resource, Closure $makeRecord) {
+    CRMHelper::actingAs(CRMHelper::permissionsFor([$resource]));
+
+    $record = $makeRecord();
+
+    Livewire::test($page)
+        ->assertActionHasLabel(TestAction::make('delete')->table($record), __('filament-actions::delete.single.label'))
+        ->callAction(TestAction::make('delete')->table($record));
+
+    $record = $record::withTrashed()->find($record->getKey());
+
+    expect($record?->trashed())->toBeTrue();
+
+    Livewire::test($page)
+        ->set('activeTab', 'archived')
+        ->assertActionHidden(TestAction::make('delete')->table($record))
+        ->assertActionVisible(TestAction::make('restore')->table($record));
+})->with([
+    'recurring plans' => [ManageRecurringPlans::class, 'recurring::plan', fn (): RecurringPlan => RecurringPlan::query()->create(['name' => 'Row delete plan', 'number_of_months' => 2])],
+    'partner levels'  => [ManagePartnerLevels::class, 'partner::level', fn (): PartnerLevel => PartnerLevel::query()->create(['name' => 'Row delete level', 'partner_weight' => 1])],
+    'lost reasons'    => [ManageLostReasons::class, 'lost::reason', fn (): LostReason => LostReason::factory()->create()],
 ]);
 
 it('soft-deletes, restores and permanently deletes lost reasons', function () {
@@ -97,7 +125,7 @@ it('marks the selected activities as done', function () {
     CRMHelper::actingAsCRMUser(['activity', 'opportunity', 'lead']);
 
     $lead = CRMHelper::opportunity();
-    $type = ActivityType::query()->where('plugin', 'crm')->firstOrFail();
+    $type = ActivityType::query()->whereIn('plugin', ['support', 'crm'])->firstOrFail();
 
     $activities = collect([1, 2])->map(fn (): Activity => Activity::query()->findOrFail($lead->addMessage([
         'type'             => 'activity',

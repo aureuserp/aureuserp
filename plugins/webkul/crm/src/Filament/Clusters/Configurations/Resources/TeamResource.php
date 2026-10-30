@@ -64,7 +64,12 @@ class TeamResource extends BaseTeamResource
 
     public static function table(Table $table): Table
     {
-        return parent::table($table)
+        $table = parent::table($table);
+
+        $columns = $table->getColumns();
+
+        return $table
+            ->columns([$columns['name'], ...array_values(array_diff_key($columns, ['name' => true]))])
             ->toolbarActions([
                 RecordBulkActions::make(exporter: TeamExporter::class, softDeletes: true),
             ]);

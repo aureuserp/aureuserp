@@ -38,20 +38,6 @@ return [
                 ],
             ],
 
-            'delete' => [
-                'label' => 'Archive',
-
-                'modal' => [
-                    'heading'     => 'Archive lost reason',
-                    'description' => 'The lost reason will move to the Archived tab. You can restore it at any time.',
-                ],
-
-                'notification' => [
-                    'title' => 'Lost reason archived',
-                    'body'  => 'The lost reason has been archived successfully.',
-                ],
-            ],
-
             'force-delete' => [
                 'notification' => [
                     'title' => 'Lost reason deleted',

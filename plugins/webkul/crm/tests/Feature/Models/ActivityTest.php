@@ -25,7 +25,7 @@ beforeEach(function () {
 function scheduleCRMActivity(Lead $lead, array $attributes = []): Activity
 {
     $message = $lead->addActivity([
-        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->where('name', 'Call')->value('id'),
+        'activity_type_id' => ActivityType::query()->whereIn('plugin', ['support', 'crm'])->where('name', 'Call')->value('id'),
         'summary'          => 'Discuss the proposal',
         'date_deadline'    => now()->addDays(3),
         ...$attributes,
@@ -175,7 +175,7 @@ it('names the done note after the activity type only when there is no summary or
     $opportunity = CRMHelper::opportunity();
 
     $activity = scheduleCRMActivity($opportunity, [
-        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->where('name', 'Meeting')->value('id'),
+        'activity_type_id' => ActivityType::query()->whereIn('plugin', ['support', 'crm'])->where('name', 'Meeting')->value('id'),
         'summary'          => null,
     ]);
 

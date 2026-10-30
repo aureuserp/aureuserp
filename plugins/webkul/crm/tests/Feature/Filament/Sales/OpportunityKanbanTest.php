@@ -474,7 +474,7 @@ function pipelineActivity(Lead $lead, ?string $deadline): void
 {
     $lead->addMessage([
         'type'             => 'activity',
-        'activity_type_id' => ActivityType::query()->where('plugin', 'crm')->value('id'),
+        'activity_type_id' => ActivityType::query()->whereIn('plugin', ['support', 'crm'])->value('id'),
         'date_deadline'    => $deadline,
         'summary'          => 'Pipeline card activity',
         'assigned_to'      => auth()->id(),

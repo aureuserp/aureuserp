@@ -27,12 +27,6 @@ return [
         ],
     ],
 
-    'actions' => [
-        'archive'             => 'Archiver',
-        'archive-heading'     => 'Archiver le niveau',
-        'archive-description' => 'Le niveau passe dans Archivés. Les contacts le conservent ; restaurez-le depuis l\'onglet Archivés.',
-    ],
-
     'tabs' => [
         'active'   => 'Actifs',
         'archived' => 'Archivés',
@@ -41,7 +35,6 @@ return [
     'notifications' => [
         'created'  => 'Niveau créé',
         'updated'  => 'Niveau mis à jour',
-        'archived' => 'Niveau archivé',
         'restored' => 'Niveau restauré',
         'deleted'  => 'Niveau supprimé',
     ],

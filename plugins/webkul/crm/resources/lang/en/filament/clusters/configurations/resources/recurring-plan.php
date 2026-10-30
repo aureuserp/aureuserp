@@ -27,12 +27,6 @@ return [
         ],
     ],
 
-    'actions' => [
-        'archive'             => 'Archive',
-        'archive-heading'     => 'Archive recurring plan',
-        'archive-description' => 'The plan is moved to Archived. Opportunities keep it; restore it from the Archived tab.',
-    ],
-
     'tabs' => [
         'active'   => 'Active',
         'archived' => 'Archived',
@@ -41,7 +35,6 @@ return [
     'notifications' => [
         'created'  => 'Recurring plan created',
         'updated'  => 'Recurring plan updated',
-        'archived' => 'Recurring plan archived',
         'restored' => 'Recurring plan restored',
         'deleted'  => 'Recurring plan deleted',
     ],

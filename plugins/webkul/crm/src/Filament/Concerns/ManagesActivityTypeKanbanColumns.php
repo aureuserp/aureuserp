@@ -31,7 +31,7 @@ trait ManagesActivityTypeKanbanColumns
     protected function kanbanColumnExists(string $name, ?Model $except = null): bool
     {
         return ActivityType::query()
-            ->where('plugin', 'crm')
+            ->availableInCRM()
             ->where('name', $name)
             ->when($except, fn ($query) => $query->whereKeyNot($except->getKey()))
             ->exists();

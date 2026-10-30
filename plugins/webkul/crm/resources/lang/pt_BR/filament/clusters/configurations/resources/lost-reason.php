@@ -38,20 +38,6 @@ return [
                 ],
             ],
 
-            'delete' => [
-                'label' => 'Arquivar',
-
-                'modal' => [
-                    'heading'     => 'Arquivar motivo de perda',
-                    'description' => 'O motivo de perda será movido para a aba Arquivados. Você pode restaurá-lo a qualquer momento.',
-                ],
-
-                'notification' => [
-                    'title' => 'Motivo de perda arquivado',
-                    'body'  => 'O motivo de perda foi arquivado com sucesso.',
-                ],
-            ],
-
             'force-delete' => [
                 'notification' => [
                     'title' => 'Motivo de perda excluído',

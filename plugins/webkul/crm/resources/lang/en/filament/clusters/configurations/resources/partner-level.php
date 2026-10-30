@@ -27,12 +27,6 @@ return [
         ],
     ],
 
-    'actions' => [
-        'archive'             => 'Archive',
-        'archive-heading'     => 'Archive level',
-        'archive-description' => 'The level is moved to Archived. Contacts keep it; restore it from the Archived tab.',
-    ],
-
     'tabs' => [
         'active'   => 'Active',
         'archived' => 'Archived',
@@ -41,7 +35,6 @@ return [
     'notifications' => [
         'created'  => 'Level created',
         'updated'  => 'Level updated',
-        'archived' => 'Level archived',
         'restored' => 'Level restored',
         'deleted'  => 'Level deleted',
     ],

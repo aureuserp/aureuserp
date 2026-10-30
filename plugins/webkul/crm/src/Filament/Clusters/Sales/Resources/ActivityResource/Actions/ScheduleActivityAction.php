@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
+use Webkul\Crm\Models\ActivityType;
 use Webkul\Crm\Models\Lead;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\ActivityType;
 
 class ScheduleActivityAction extends Action
 {
@@ -68,7 +68,7 @@ class ScheduleActivityAction extends Action
                     ->schema([
                         Select::make('activity_type_id')
                             ->label(__('crm::filament/clusters/sales/resources/activity.actions.schedule.form.activity-type'))
-                            ->options(fn (): array => ActivityType::query()->where('plugin', 'crm')->orderBy('sort')->pluck('name', 'id')->all())
+                            ->options(fn (): array => ActivityType::query()->availableInCRM()->orderBy('sort')->orderBy('name')->pluck('name', 'id')->all())
                             ->searchable()
                             ->required()
                             ->live()

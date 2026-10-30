@@ -29,7 +29,7 @@ function actingAsActivityPlanner(): User
 
 function crmActivityType(string $name = 'Email'): ActivityType
 {
-    return ActivityType::query()->where('plugin', 'crm')->where('name', $name)->firstOrFail();
+    return ActivityType::query()->whereIn('plugin', ['support', 'crm'])->where('name', $name)->firstOrFail();
 }
 
 function myActivitiesOtherUserId(): int
@@ -430,7 +430,7 @@ it('uses the crm activity types as kanban columns', function () {
 
     $columnValues = collect($component->instance()->getKanbanColumns())->pluck('value')->all();
 
-    $crmTypeIds = ActivityType::query()->where('plugin', 'crm')->pluck('id')->map(fn ($id): string => (string) $id)->all();
+    $crmTypeIds = ActivityType::query()->whereIn('plugin', ['support', 'crm'])->pluck('id')->map(fn ($id): string => (string) $id)->all();
 
     expect($columnValues)->toContain(...$crmTypeIds)
         ->not->toContain((string) $otherPluginType->id);

@@ -41,13 +41,7 @@ class PartnerLevelsTable
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/partner-level.notifications.updated'))),
                 RestoreAction::make()
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/partner-level.notifications.restored'))),
-                DeleteAction::make()
-                    ->label(__('crm::filament/clusters/configurations/resources/partner-level.actions.archive'))
-                    ->icon('heroicon-o-archive-box')
-                    ->modalHeading(__('crm::filament/clusters/configurations/resources/partner-level.actions.archive-heading'))
-                    ->modalDescription(__('crm::filament/clusters/configurations/resources/partner-level.actions.archive-description'))
-                    ->modalSubmitActionLabel(__('crm::filament/clusters/configurations/resources/partner-level.actions.archive'))
-                    ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/partner-level.notifications.archived'))),
+                DeleteAction::make(),
                 ForceDeleteAction::make()
                     ->successNotification(Notification::make()->success()->title(__('crm::filament/clusters/configurations/resources/partner-level.notifications.deleted'))),
             ])

@@ -38,20 +38,6 @@ return [
                 ],
             ],
 
-            'delete' => [
-                'label' => 'Archivar',
-
-                'modal' => [
-                    'heading'     => 'Archivar motivo de pérdida',
-                    'description' => 'El motivo de pérdida se moverá a la pestaña Archivados. Puede restaurarlo en cualquier momento.',
-                ],
-
-                'notification' => [
-                    'title' => 'Motivo de pérdida archivado',
-                    'body'  => 'El motivo de pérdida se ha archivado correctamente.',
-                ],
-            ],
-
             'force-delete' => [
                 'notification' => [
                     'title' => 'Motivo de pérdida eliminado',

@@ -21,7 +21,7 @@ use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Activity;
-use Webkul\Support\Models\ActivityType;
+use Webkul\Crm\Models\ActivityType;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
@@ -211,7 +211,7 @@ class ListActivities extends ListRecords
     public function kanban(KanbanBoard $kanban): KanbanBoard
     {
         $visibleTypeIds = ActivityType::query()
-            ->where('plugin', 'crm')
+            ->availableInCRM()
             ->pluck('id')
             ->merge(Activity::query()->whereNotNull('activity_type_id')->distinct()->pluck('activity_type_id'))
             ->map(fn ($id): string => (string) $id)

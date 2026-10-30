@@ -57,14 +57,14 @@ class TeamsTable
     public static function listColumns(): array
     {
         return [
-            ColorColumn::make('color')
-                ->label(''),
             TextColumn::make('name')
                 ->label(__('crm::filament/clusters/sales/resources/team.table.columns.name'))
                 ->description(fn (Team $record): ?string => $record->user?->name)
                 ->searchable()
                 ->sortable()
                 ->weight('medium'),
+            ColorColumn::make('color')
+                ->label(''),
             TextColumn::make('open_opportunities_count')
                 ->label(__('crm::filament/clusters/sales/resources/team.table.columns.open-opportunities'))
                 ->badge()

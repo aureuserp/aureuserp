@@ -76,6 +76,16 @@ it('rejects a duplicate crm activity type name', function () {
     expect(ActivityType::query()->where('plugin', 'crm')->where('name', 'Duplicate board type')->count())->toBe(1);
 });
 
+it('rejects the name of a shared activity type', function () {
+    actingAsActivityTypeColumnManager();
+
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
+        ->call('addKanbanColumn', 'Call')
+        ->assertNotified(__('crm::filament/kanban.add-column.exists', ['name' => 'Call']));
+
+    expect(ActivityType::query()->whereIn('plugin', ['support', 'crm'])->where('name', 'Call')->count())->toBe(1);
+});
+
 it('allows a name that only another plugin uses', function () {
     actingAsActivityTypeColumnManager();
 
