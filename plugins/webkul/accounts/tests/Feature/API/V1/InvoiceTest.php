@@ -417,3 +417,26 @@ it('reverses a posted invoice into a linked draft credit note', function () {
         ->assertJsonPath('data.state', MoveState::DRAFT->value)
         ->assertJsonPath('data.reversed_entry_id', $invoiceId);
 });
+
+it('dates and references the credit note with the values chosen for the reversal', function () {
+    actingAsInvoiceApiUser(['create_account_invoice', 'update_account_invoice']);
+
+    $invoiceId = $this->postJson(invoiceRoute('store'), invoicePayload())
+        ->assertCreated()
+        ->json('data.id');
+
+    $this->postJson(invoiceRoute('confirm', $invoiceId))->assertOk();
+
+    $reversalId = $this->postJson(invoiceRoute('reverse', $invoiceId), [
+        'reason'     => 'Damaged goods',
+        'journal_id' => Move::find($invoiceId)->journal_id,
+        'date'       => '2026-01-15',
+    ])->assertCreated()
+        ->json('data.id');
+
+    $reversal = Move::find($reversalId);
+
+    expect($reversal->date->toDateString())->toBe('2026-01-15')
+        ->and($reversal->invoice_date->toDateString())->toBe('2026-01-15')
+        ->and($reversal->reference)->toContain('Damaged goods');
+});

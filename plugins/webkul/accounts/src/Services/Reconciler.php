@@ -4,6 +4,7 @@ namespace Webkul\Account\Services;
 
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Account;
@@ -86,19 +87,21 @@ class Reconciler
 
     public function reconcileGroups(array $plans): array
     {
-        $partials = [];
+        return DB::transaction(function () use ($plans): array {
+            $partials = [];
 
-        $fulls = [];
+            $fulls = [];
 
-        foreach ($plans as $lines) {
-            $results = $this->reconcileNode($this->buildPlan($lines));
+            foreach ($plans as $lines) {
+                $results = $this->reconcileNode($this->buildPlan($lines));
 
-            $partials = array_merge($partials, $results['partial_reconciles']);
+                $partials = array_merge($partials, $results['partial_reconciles']);
 
-            $fulls = array_merge($fulls, $results['full_reconciles']);
-        }
+                $fulls = array_merge($fulls, $results['full_reconciles']);
+            }
 
-        return ['partial_reconciles' => $partials, 'full_reconciles' => $fulls];
+            return ['partial_reconciles' => $partials, 'full_reconciles' => $fulls];
+        });
     }
 
     protected function buildPlan(Collection $lines): array

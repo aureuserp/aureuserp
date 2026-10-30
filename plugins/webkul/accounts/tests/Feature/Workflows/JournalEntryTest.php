@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Models\MoveLine;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -66,4 +68,41 @@ it('refuses to post an unbalanced manual journal entry', function () {
         ->toThrow(Exception::class, __('accounts::account-manager.post-action-validate.unbalanced'));
 
     expect($entry->refresh()->state)->toBe(MoveState::DRAFT);
+});
+
+it('keeps the account given on each line when the journal has a default account', function () {
+    $journal = AccountHelper::generalJournal();
+    $entry = AccountHelper::journalEntry($journal);
+
+    $debit = MoveLine::create(['move_id' => $entry->id, 'account_id' => $this->debitAccount->id, 'debit' => 100, 'credit' => 0]);
+    $credit = MoveLine::create(['move_id' => $entry->id, 'account_id' => $this->creditAccount->id, 'debit' => 0, 'credit' => 100]);
+
+    expect($debit->refresh()->account_id)->toBe($this->debitAccount->id)
+        ->and($credit->refresh()->account_id)->toBe($this->creditAccount->id)
+        ->and($journal->default_account_id)->not->toBe($this->debitAccount->id);
+});
+
+it('keeps the account given on each cost of goods sold line', function () {
+    $entry = AccountHelper::journalEntry();
+    $stockAccount = AccountHelper::account('expense');
+
+    foreach ([
+        [$this->debitAccount, 60, 0],
+        [$stockAccount, 0, 60],
+        [$this->debitAccount, 40, 0],
+        [$stockAccount, 0, 40],
+    ] as [$account, $debit, $credit]) {
+        MoveLine::create([
+            'move_id'      => $entry->id,
+            'display_type' => DisplayType::COGS,
+            'account_id'   => $account->id,
+            'currency_id'  => $entry->currency_id,
+            'debit'        => $debit,
+            'credit'       => $credit,
+        ]);
+    }
+
+    $accounts = $entry->refresh()->lines->sortBy('id')->pluck('account_id')->all();
+
+    expect($accounts)->toBe([$this->debitAccount->id, $stockAccount->id, $this->debitAccount->id, $stockAccount->id]);
 });

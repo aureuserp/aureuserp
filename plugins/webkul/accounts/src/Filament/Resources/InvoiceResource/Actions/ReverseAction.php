@@ -100,7 +100,7 @@ class ReverseAction extends Action
 
                 $reversedMoves = AccountFacade::reverseMoves(
                     collect([$record]),
-                    $defaultValues,
+                    [$defaultValues],
                     $isCancelNeeded
                 )->each(function (Move $move) use ($moveReversal) {
                     $moveReversal->newMoves()->attach($move->id);

@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Services;
 
+use Carbon\CarbonImmutable;
 use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
@@ -12,16 +13,20 @@ use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PostingError;
+use Webkul\Account\Enums\PostingOperation;
 use Webkul\Account\Events\MoveCancelled;
 use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MoveReversed;
+use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Support\Posting\PostingContext;
 use Webkul\Support\Services\EmailService;
 
 class MoveWorkflow
@@ -45,7 +50,14 @@ class MoveWorkflow
 
     public function post(AccountMove $move): AccountMove
     {
+        return DB::transaction(fn (): AccountMove => $this->postWithinTransaction($move));
+    }
+
+    protected function postWithinTransaction(AccountMove $move): AccountMove
+    {
         $this->assertPostable($move);
+
+        $this->validatePosting(PostingOperation::POST, $move, $move->date);
 
         $move->state = MoveState::POSTED;
 
@@ -60,6 +72,8 @@ class MoveWorkflow
         $this->stampLineStates($move, MoveState::POSTED);
 
         $move->refresh();
+
+        $this->assertBalanced($move);
 
         if ($move->reversedEntry?->state == MoveState::POSTED) {
             $this->reconcileAgainstReversedEntry($move);
@@ -118,6 +132,15 @@ class MoveWorkflow
 
     public function reverse(Collection $moves, array $defaultValuesPerMove = [], bool $cancel = false): Collection
     {
+        return DB::transaction(fn (): Collection => $this->reverseWithinTransaction($moves, $defaultValuesPerMove, $cancel));
+    }
+
+    protected function reverseWithinTransaction(Collection $moves, array $defaultValuesPerMove, bool $cancel): Collection
+    {
+        foreach ($moves->values() as $index => $move) {
+            $this->validatePosting(PostingOperation::REVERSE, $move, $defaultValuesPerMove[$index]['date'] ?? $move->date);
+        }
+
         if ($cancel) {
             $moves->flatMap(fn (AccountMove $move) => $move->lines)->each(function (MoveLine $line) {
                 $line->matchedDebits->each(fn ($partial) => $partial->delete());
@@ -158,6 +181,10 @@ class MoveWorkflow
     protected function buildReversal(AccountMove $move, array $defaultValues): AccountMove
     {
         $reversal = $move->replicate();
+
+        $reversal->source_document_type = null;
+
+        $reversal->source_document_key = null;
 
         $reversal->fill(array_merge($defaultValues, [
             'move_type'         => $move->typeReverseMapping[$move->move_type->value],
@@ -294,6 +321,34 @@ class MoveWorkflow
             if (! float_is_zero($balance, precisionRounding: $move->currency->rounding)) {
                 throw new Exception(__('accounts::account-manager.post-action-validate.unbalanced'));
             }
+        }
+    }
+
+    protected function validatePosting(PostingOperation $operation, AccountMove $move, $date): void
+    {
+        app(PostingValidatorRegistry::class)->validate(new PostingContext(
+            operation: $operation,
+            move: $move,
+            date: CarbonImmutable::parse($date ?? now())->startOfDay(),
+            userId: Auth::id(),
+        ));
+    }
+
+    protected function assertBalanced(AccountMove $move): void
+    {
+        $totals = MoveLine::withoutGlobalScopes()
+            ->where('move_id', $move->id)
+            ->selectRaw('COALESCE(SUM(debit), 0) as total_debit, COALESCE(SUM(credit), 0) as total_credit')
+            ->first();
+
+        $currency = $move->company->currency;
+
+        if (round((float) $totals->total_debit - (float) $totals->total_credit, 4) != 0.0) {
+            throw new PostingException(PostingError::UNBALANCED, [
+                'move'   => $move->name,
+                'debit'  => $currency->round((float) $totals->total_debit),
+                'credit' => $currency->round((float) $totals->total_credit),
+            ]);
         }
     }
 

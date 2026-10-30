@@ -6,6 +6,15 @@ return [
         'no-journal-found'       => 'Nenhum diário foi encontrado na empresa :company para nenhum destes tipos: :types. Configure primeiro um plano de contas para esta empresa.',
     ],
 
+    'posting' => [
+        'invalid-entry'         => 'O lançamento contábil é inválido: :field.',
+        'unbalanced'            => 'O lançamento contábil :move não está balanceado: débito :debit, crédito :credit.',
+        'rejected-by-validator' => 'O lançamento foi rejeitado: :reason',
+        'move-not-postable'     => 'O lançamento contábil não pode ser lançado: :reason',
+        'move-not-reversible'   => 'O lançamento contábil :move não pode ser estornado.',
+        'duplicate-source'      => 'A chave de origem já foi usada pelo lançamento contábil :move com linhas diferentes.',
+    ],
+
     'tax-formula' => [
         'empty'                => 'A fórmula não pode estar vazia.',
         'invalid-character'    => 'A fórmula contém um caractere inválido: :character',

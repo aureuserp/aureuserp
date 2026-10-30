@@ -3,6 +3,7 @@
 namespace Webkul\Account\Services;
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
@@ -111,17 +112,15 @@ class ExchangeDifferenceRecorder
                 continue;
             }
 
-            $move = AccountMove::create($moveValues);
+            $move = DB::transaction(function () use ($moveValues) {
+                $move = AccountMove::create($moveValues);
 
-            $move->state = 'posted';
+                foreach ($moveValues['lines'] as $lineValues) {
+                    MoveLine::create($lineValues + ['move_id' => $move->id]);
+                }
 
-            $move->save();
-
-            foreach ($moveValues['lines'] as $lineValues) {
-                MoveLine::create($lineValues + ['move_id' => $move->id]);
-            }
-
-            $move = app(MoveCalculator::class)->recompute($move);
+                return app(MoveWorkflow::class)->post($move->refresh());
+            });
 
             foreach ($difference['to_reconcile'] as $pairing) {
                 $exchangeLine = $move->lines[$pairing['sequence']];

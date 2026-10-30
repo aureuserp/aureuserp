@@ -2,10 +2,15 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Webkul\Account\Contracts\PostingValidator;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Exceptions\PostingRejectedException;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Models\PartialReconcile;
+use Webkul\Account\Support\Posting\PostingContext;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Models\Currency;
@@ -134,6 +139,40 @@ it('creates an exchange-difference entry when reconciling foreign documents at d
 
     expect((float) abs($invoice->refresh()->amount_residual))->toBe(0.0)
         ->and(Move::where('move_type', MoveType::ENTRY)->count())->toBeGreaterThan(0);
+});
+
+it('leaves the documents unreconciled when the exchange-difference entry is rejected', function () {
+    AccountHelper::setCurrencyRate($this->foreign, 4.0, now()->toDateString());
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->subYear()->toDateString(),
+        'date'         => now()->subYear()->toDateString(),
+    ]);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->toDateString(),
+        'date'         => now()->toDateString(),
+    ]);
+    AccountHelper::productLine($creditNote, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($creditNote);
+
+    $residual = (float) $invoice->refresh()->amount_residual;
+
+    AccountFacade::posting()->registerValidator(new class implements PostingValidator
+    {
+        public function validate(PostingContext $context): void
+        {
+            throw new PostingRejectedException('closed period');
+        }
+    });
+
+    expect(fn () => AccountHelper::reconcile($invoice, $creditNote))->toThrow(PostingRejectedException::class)
+        ->and((float) $invoice->refresh()->amount_residual)->toBe($residual)
+        ->and(PartialReconcile::count())->toBe(0);
 });
 
 it('marks a foreign-currency invoice paid when settled in its own currency', function () {

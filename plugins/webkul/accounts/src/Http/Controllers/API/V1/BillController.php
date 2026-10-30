@@ -428,7 +428,7 @@ class BillController extends Controller
 
             $reversedMoves = AccountFacade::reverseMoves(
                 collect([$invoice]),
-                $defaultValues,
+                [$defaultValues],
                 $isCancelNeeded
             )->each(function ($move) use ($moveReversal) {
                 $moveReversal->newMoves()->attach($move->id);
