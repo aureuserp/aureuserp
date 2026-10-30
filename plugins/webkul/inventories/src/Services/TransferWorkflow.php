@@ -12,7 +12,6 @@ use Webkul\Inventory\Events\OperationCanceled;
 use Webkul\Inventory\Events\OperationConfirmed;
 use Webkul\Inventory\Events\OperationDone;
 use Webkul\Inventory\Events\OperationReturned;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -269,18 +268,23 @@ class TransferWorkflow
 
     protected function crossLink(Operation $operation, Operation $return): void
     {
-        $sourceUrl = OperationResource::getUrl('view', ['record' => $operation]);
-
         $return->addMessage([
-            'body' => "This transfer has been created from <a href=\"{$sourceUrl}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$operation->name}</a>.",
+            'body' => "This transfer has been created from {$this->operationLink($operation)}.",
             'type' => 'comment',
         ]);
-
-        $returnUrl = OperationResource::getUrl('view', ['record' => $return]);
 
         $operation->addMessage([
-            'body' => "The return <a href=\"{$returnUrl}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$return->name}</a> has been created.",
+            'body' => "The return {$this->operationLink($return)} has been created.",
             'type' => 'comment',
         ]);
+    }
+
+    protected function operationLink(Operation $operation): string
+    {
+        $url = $operation->getChatterResourceUrl();
+
+        return $url
+            ? "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$operation->name}</a>"
+            : e($operation->name);
     }
 }

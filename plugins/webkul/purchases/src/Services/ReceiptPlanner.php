@@ -12,7 +12,6 @@ use Webkul\Inventory\Models\Receipt;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Purchase\Enums as PurchaseEnums;
-use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\OrderLine;
 
@@ -145,10 +144,14 @@ class ReceiptPlanner
 
     protected function linkBackToOrder($operation, Order $record): void
     {
-        $url = PurchaseOrderResource::getUrl('view', ['record' => $record]);
+        $url = $record->getChatterResourceUrl();
+
+        $source = $url
+            ? "<a href=\"{$url}\" target=\"_blank\" class=\"fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-300 fi-link fi-size-sm\">{$record->name}</a>"
+            : e($record->name);
 
         $operation->addMessage([
-            'body' => "This transfer has been created from <a href=\"{$url}\" target=\"_blank\" class=\"fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-300 fi-link fi-size-sm\">{$record->name}</a>.",
+            'body' => "This transfer has been created from {$source}.",
             'type' => 'comment',
         ]);
     }

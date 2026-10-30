@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Events\OperationBackOrdered;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
 use Webkul\PluginManager\Package;
@@ -114,18 +113,23 @@ class BackorderCreator
 
     protected function crossLink(Operation $operation, Operation $backorder): void
     {
-        $sourceUrl = OperationResource::getUrl('view', ['record' => $operation]);
-
         $backorder->addMessage([
-            'body' => "This transfer has been created from <a href=\"{$sourceUrl}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$operation->name}</a>.",
+            'body' => "This transfer has been created from {$this->operationLink($operation)}.",
             'type' => 'comment',
         ]);
-
-        $backorderUrl = OperationResource::getUrl('view', ['record' => $backorder]);
 
         $operation->addMessage([
-            'body' => "The back order <a href=\"{$backorderUrl}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$backorder->name}</a> has been created.",
+            'body' => "The back order {$this->operationLink($backorder)} has been created.",
             'type' => 'comment',
         ]);
+    }
+
+    protected function operationLink(Operation $operation): string
+    {
+        $url = $operation->getChatterResourceUrl();
+
+        return $url
+            ? "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$operation->name}</a>"
+            : e($operation->name);
     }
 }
