@@ -15,7 +15,6 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages\
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages\ManageOperations;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages\ManageProducts;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages\ViewPackage;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\RelationManagers\ProductsRelationManager;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Schemas\PackageForm;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Schemas\PackageInfolist;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Tables\PackagesTable;
@@ -84,13 +83,6 @@ class PackageResource extends Resource
             ManageProducts::class,
             ManageOperations::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            ProductsRelationManager::class,
-        ];
     }
 
     public static function getPages(): array

@@ -17,6 +17,11 @@ class CustomerResource extends PartnerResource
 {
     protected static ?string $model = Customer::class;
 
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
     public static function table(Table $table): Table
     {
         $table = PartnerResource::table($table);
