@@ -8,6 +8,7 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\NewQuotationAction;
 use Webkul\Crm\Services\LeadScoring;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -31,6 +32,7 @@ class EditOpportunity extends EditRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
+            NewQuotationAction::make(),
             MarkAsWonAction::make()
                 ->after(fn () => $this->refreshRecord()),
             MarkAsLostAction::make()
