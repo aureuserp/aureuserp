@@ -45,6 +45,11 @@ return [
                     'title' => 'Stage deleted',
                     'body'  => 'The stage has been deleted successfully.',
                 ],
+
+                'in-use' => [
+                    'title' => '":name" can\'t be deleted',
+                    'body'  => 'It still has :count record. Move it to another stage first.|It still has :count records. Move them to another stage first.',
+                ],
             ],
         ],
     ],

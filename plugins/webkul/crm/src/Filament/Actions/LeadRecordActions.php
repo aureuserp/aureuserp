@@ -7,6 +7,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\Page;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Models\Lead;
 
@@ -25,9 +26,9 @@ class LeadRecordActions
                 ->after($refresh),
             ForceDeleteAction::make()
                 ->label(__('crm::filament/lead-actions.delete.label'))
-                ->visible(fn (Lead $record): bool => LeadResourceResolver::resourceFor($record)::canForceDelete($record))
+                ->visible(fn (?Lead $record): bool => $record && LeadResourceResolver::resourceFor($record)::canForceDelete($record))
                 ->successNotification($deleted)
-                ->successRedirectUrl(fn (Lead $record): string => LeadResourceResolver::resourceFor($record)::getUrl('index')),
+                ->successRedirectUrl(fn (Page $livewire): string => $livewire::getResource()::getUrl('index')),
         ])
             ->label(__('crm::filament/lead-actions.group.label'))
             ->icon('heroicon-m-cog-6-tooth')

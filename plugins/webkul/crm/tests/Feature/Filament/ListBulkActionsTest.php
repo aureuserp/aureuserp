@@ -9,7 +9,7 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource\Pag
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Pages\ManageStages;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Pages\ManageTags;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\ListActivities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ListContacts;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCustomers;
 use Webkul\Crm\Mail\LeadMessageMail;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\LostReason;
@@ -104,17 +104,17 @@ it('emails and texts the selected contacts and logs it on each contact', functio
     Http::fake(['api.msg91.com/*' => Http::response('ok')]);
 
     CRMHelper::configureSMSGateway();
-    CRMHelper::actingAsCRMUser(['contact']);
+    CRMHelper::actingAsCRMUser(['customer']);
 
     $contact = bulkContact(['email' => 'bulk-contact@acme.test', 'mobile' => '+91 98765 43210']);
     $withoutDetails = bulkContact(['email' => null, 'mobile' => null, 'phone' => null]);
 
-    Livewire::test(ListContacts::class)
+    Livewire::test(ListCustomers::class)
         ->assertTableBulkActionExists('export')
         ->assertTableBulkActionExists('archiveRecords')
         ->assertTableBulkActionExists('duplicateRecords')
-        ->callTableBulkAction('sendContactsEmail', [$contact, $withoutDetails], ['subject' => 'Hello', 'body' => '<p>News</p>'])
-        ->callTableBulkAction('sendContactsSMS', [$contact, $withoutDetails], ['message' => 'Hi there']);
+        ->callTableBulkAction('sendCustomersEmail', [$contact, $withoutDetails], ['subject' => 'Hello', 'body' => '<p>News</p>'])
+        ->callTableBulkAction('sendCustomersSMS', [$contact, $withoutDetails], ['message' => 'Hi there']);
 
     Mail::assertSent(LeadMessageMail::class, fn (LeadMessageMail $mail): bool => $mail->hasTo('bulk-contact@acme.test'));
     Mail::assertSentCount(1);

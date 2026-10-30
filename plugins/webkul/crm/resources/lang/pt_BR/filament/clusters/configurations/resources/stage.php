@@ -45,6 +45,11 @@ return [
                     'title' => 'Etapa excluída',
                     'body'  => 'A etapa foi excluída com sucesso.',
                 ],
+
+                'in-use' => [
+                    'title' => 'Não é possível excluir ":name"',
+                    'body'  => 'Ainda tem :count registro. Mova-o para outra etapa primeiro.|Ainda tem :count registros. Mova-os para outra etapa primeiro.',
+                ],
             ],
         ],
     ],

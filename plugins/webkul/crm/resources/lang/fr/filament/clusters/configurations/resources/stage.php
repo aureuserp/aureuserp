@@ -45,6 +45,11 @@ return [
                     'title' => 'Étape supprimée',
                     'body'  => 'L\'étape a été supprimée avec succès.',
                 ],
+
+                'in-use' => [
+                    'title' => 'Impossible de supprimer « :name »',
+                    'body'  => 'Elle contient encore :count enregistrement. Déplacez-le vers une autre étape d\'abord.|Elle contient encore :count enregistrements. Déplacez-les vers une autre étape d\'abord.',
+                ],
             ],
         ],
     ],

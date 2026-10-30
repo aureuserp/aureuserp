@@ -178,9 +178,12 @@ trait ManagesCRMTeam
 
     protected function getHeaderActions(): array
     {
-        return [
-            ...array_filter(parent::getHeaderActions(), fn ($action): bool => ! $action instanceof DeleteAction),
-            $this->getTeamRecordActions(),
-        ];
+        $actions = array_filter(parent::getHeaderActions(), fn ($action): bool => ! $action instanceof DeleteAction);
+
+        if (! ($this->record ?? null) instanceof Model) {
+            return array_values($actions);
+        }
+
+        return [...$actions, $this->getTeamRecordActions()];
     }
 }

@@ -564,3 +564,15 @@ it('filters the leads list by the sales team in the url', function () {
         ->assertCanNotSeeTableRecords([$outside])
         ->assertSee(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.label', ['team' => $team->name]));
 });
+
+it('permanently deletes a lead from its page and returns to the leads list', function () {
+    CRMHelper::actingAsCRMUser(['lead']);
+
+    $lead = CRMHelper::lead();
+
+    Livewire::test(ViewLead::class, ['record' => $lead->getKey()])
+        ->callAction('forceDelete')
+        ->assertRedirect(LeadResource::getUrl('index'));
+
+    expect(Lead::withTrashed()->find($lead->id))->toBeNull();
+});

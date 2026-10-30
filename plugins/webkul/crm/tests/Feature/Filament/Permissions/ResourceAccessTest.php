@@ -12,7 +12,7 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
@@ -33,7 +33,7 @@ dataset('crm resources', [
     'sales activities'            => [ActivityResource::class, 'activity'],
     'sales quotations'            => [QuotationResource::class, 'quotation'],
     'sales teams'                 => [SalesTeamResource::class, 'team'],
-    'sales contacts'              => [ContactResource::class, 'contact'],
+    'sales customers'             => [CustomerResource::class, 'customer'],
     'leads'                       => [LeadResource::class, 'lead'],
     'reporting forecast'          => [ForecastResource::class, 'forecast'],
     'reporting pipeline'          => [PipelineAnalysisResource::class, 'pipeline::analysis'],
@@ -69,7 +69,7 @@ it('does not grant a reused resource with the source plugin permissions alone', 
     expect($resource::canViewAny())->toBeFalse()
         ->and($resource::canCreate())->toBeFalse();
 })->with([
-    'contacts' => [ContactResource::class, [
+    'contacts' => [CustomerResource::class, [
         'view_any_contact_partner', 'view_contact_partner', 'create_contact_partner', 'update_contact_partner',
     ]],
     'quotations' => [QuotationResource::class, [
@@ -105,7 +105,7 @@ it('grants create on a reused resource with the crm create permission', function
 
     expect($resource::canCreate())->toBeTrue();
 })->with([
-    'contacts'   => [ContactResource::class, 'contact'],
+    'customers'  => [CustomerResource::class, 'customer'],
     'quotations' => [QuotationResource::class, 'quotation'],
     'teams'      => [TeamResource::class, 'team'],
 ]);

@@ -77,11 +77,18 @@ class Stage extends Model implements Sortable
         return $this->hasMany(Lead::class, 'stage_id');
     }
 
+    public function recordsCount(): int
+    {
+        return Lead::withTrashed()->withoutGlobalScopes()->where('stage_id', $this->getKey())->count();
+    }
+
     protected static function booted(): void
     {
         static::creating(function (self $stage): void {
             $stage->creator_id ??= Auth::id();
         });
+
+        static::deleting(fn (self $stage): bool => $stage->recordsCount() === 0);
     }
 
     protected static function newFactory(): StageFactory

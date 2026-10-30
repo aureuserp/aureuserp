@@ -29,6 +29,8 @@ trait ManagesKanbanColumns
 
     abstract protected function countKanbanColumnRecords(Model $record): int;
 
+    abstract protected function kanbanColumnModel(): string;
+
     public function addKanbanColumn(mixed $name): ?string
     {
         return $this->storeKanbanColumn($name);
@@ -63,6 +65,7 @@ trait ManagesKanbanColumns
             ->modalSubmitActionLabel(__('crm::filament/kanban.add-column.add'))
             ->modalWidth('md')
             ->authorize(fn (): bool => $this->canAddKanbanColumn())
+            ->model(fn (): string => $this->kanbanColumnModel())
             ->schema(fn (): array => $this->getKanbanColumnFormComponents())
             ->action(function (array $data, Action $action, Schema $schema): void {
                 $column = $this->storeKanbanColumn($data['name'] ?? '', $data);
@@ -130,10 +133,27 @@ trait ManagesKanbanColumns
             ->color('danger')
             ->icon('heroicon-o-trash')
             ->requiresConfirmation()
-            ->modalHeading(fn (array $arguments): string => __('crm::filament/kanban.column-actions.delete-heading', [
-                'name' => $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''))?->getAttribute('name'),
-            ]))
-            ->modalDescription(__('crm::filament/kanban.column-actions.delete-description'))
+            ->modalHeading(function (array $arguments): string {
+                $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
+                $name = $record?->getAttribute('name');
+
+                return $record && $this->countKanbanColumnRecords($record) > 0
+                    ? __('crm::filament/kanban.column-actions.in-use.title', ['name' => $name])
+                    : __('crm::filament/kanban.column-actions.delete-heading', ['name' => $name]);
+            })
+            ->modalDescription(function (array $arguments): string {
+                $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
+                $count = $record ? $this->countKanbanColumnRecords($record) : 0;
+
+                return $count > 0
+                    ? trans_choice('crm::filament/kanban.column-actions.in-use.body', $count, ['count' => $count])
+                    : __('crm::filament/kanban.column-actions.delete-description');
+            })
+            ->modalSubmitAction(function (array $arguments): ?bool {
+                $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
+
+                return $record && $this->countKanbanColumnRecords($record) > 0 ? false : null;
+            })
             ->action(function (array $arguments): void {
                 $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
 

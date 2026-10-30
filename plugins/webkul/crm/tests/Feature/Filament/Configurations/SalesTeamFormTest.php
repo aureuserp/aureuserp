@@ -11,6 +11,7 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\Edi
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamAlias;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamMembers;
 use Webkul\Crm\Models\TeamMember;
+use Webkul\Crm\Settings\CRMSettings;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Models\Team;
@@ -36,6 +37,13 @@ beforeEach(function () {
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 });
 
+function useRuleBasedTeamAssignment(): void
+{
+    $settings = app(CRMSettings::class);
+    $settings->use_auto_assignment = true;
+    $settings->save();
+}
+
 it('creates a sales team from the crm configuration and redirects inside crm', function () {
     $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
 
@@ -54,6 +62,19 @@ it('creates a sales team from the crm configuration and redirects inside crm', f
     expect(Team::query()->where('name', 'CRM Team')->where('user_id', $user->id)->exists())->toBeTrue();
 });
 
+it('opens the create page for a user with every team permission without the record actions menu', function () {
+    FilamentHelper::actingAs([
+        'view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team',
+        'delete_crm_team', 'delete_any_crm_team', 'restore_crm_team', 'restore_any_crm_team',
+        'force_delete_crm_team', 'force_delete_any_crm_team',
+    ]);
+
+    Livewire::test(CreateTeam::class)
+        ->assertOk()
+        ->assertActionDoesNotExist('archiveTeam')
+        ->assertActionDoesNotExist('duplicateTeam');
+});
+
 it('forbids creating a crm sales team without the crm create permission', function () {
     FilamentHelper::actingAs(['view_any_crm_team', 'create_sale_team']);
 
@@ -62,6 +83,8 @@ it('forbids creating a crm sales team without the crm create permission', functi
 
 it('adds members with their capacity while creating a team', function () {
     $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    useRuleBasedTeamAssignment();
 
     Livewire::test(CreateTeam::class)
         ->fillForm([
@@ -83,6 +106,8 @@ it('adds members with their capacity while creating a team', function () {
 
 it('adds, edits and removes team members from the members tab', function () {
     $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    useRuleBasedTeamAssignment();
 
     $team = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
 
@@ -136,7 +161,7 @@ it('shows the team record tabs and the actions menu', function () {
 
     $members = collect($component->instance()->getRecordNavigationTabs())->first(fn ($tab): bool => $tab->getLabel() === __('crm::filament/assignment.members.title'));
 
-    expect($members?->getBadge())->toBe(0)
+    expect($members?->getBadge())->toBe('0')
         ->and($labels)->toContain(__('crm::filament/assignment.members.title'))
         ->toContain(__('crm::filament/clusters/configurations/resources/team.pages.alias.navigation'));
 
@@ -175,9 +200,10 @@ it('does not create a salesperson without permission to create users', function 
 })->throws(HttpException::class);
 
 it('does not create a salesperson in a company the user cannot use', function () {
-    FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'update_crm_team', 'create_security_user']);
+    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'update_crm_team', 'create_security_user']);
 
     $otherCompany = Company::factory()->create();
+    $user->allowedCompanies()->detach($otherCompany->id);
 
     TeamResource::createSalesperson([
         'name' => 'Other', 'email' => 'other.company@example.test', 'password' => 'secret123', 'roles' => [],

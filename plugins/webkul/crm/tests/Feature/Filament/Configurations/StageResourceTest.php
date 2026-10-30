@@ -124,3 +124,28 @@ it('forbids the stages page without crm stage permissions', function () {
 
     Livewire::test(ManageStages::class)->assertForbidden();
 });
+
+it('refuses to delete a stage that still has records from the stages page', function () {
+    CRMHelper::actingAsCRMUser(['stage', 'opportunity']);
+
+    $stage = Stage::factory()->create(['name' => 'Used stage (test)']);
+    CRMHelper::opportunity(['stage_id' => $stage->id]);
+
+    Livewire::test(ManageStages::class)
+        ->callAction(TestAction::make('delete')->table($stage))
+        ->assertNotified(__('crm::filament/clusters/configurations/resources/stage.table.actions.delete.in-use.title', ['name' => 'Used stage (test)']));
+
+    expect(Stage::query()->whereKey($stage->id)->exists())->toBeTrue();
+});
+
+it('keeps a stage that still has records, even a lost one, when it is deleted', function () {
+    CRMHelper::actingAs();
+
+    $stage = Stage::factory()->create();
+    $lost = CRMHelper::opportunity(['stage_id' => $stage->id]);
+    $lost->delete();
+
+    expect($stage->recordsCount())->toBe(1)
+        ->and($stage->delete())->toBeFalse()
+        ->and(Stage::query()->whereKey($stage->id)->exists())->toBeTrue();
+});

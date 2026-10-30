@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource\Schemas\StageForm;
-use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
 
@@ -68,6 +67,11 @@ trait ManagesStageKanbanColumns
         return Team::query()->where(owned_by_company(current_company_id()))->whereKey($teamId)->value('id');
     }
 
+    protected function kanbanColumnModel(): string
+    {
+        return Stage::class;
+    }
+
     protected function findKanbanColumnRecord(string $value): ?Model
     {
         return ctype_digit($value) ? Stage::query()->find((int) $value) : null;
@@ -90,6 +94,6 @@ trait ManagesStageKanbanColumns
 
     protected function countKanbanColumnRecords(Model $record): int
     {
-        return Lead::withTrashed()->withoutGlobalScopes()->where('stage_id', $record->getKey())->count();
+        return $record instanceof Stage ? $record->recordsCount() : 0;
     }
 }

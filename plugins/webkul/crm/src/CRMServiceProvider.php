@@ -23,7 +23,7 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\SimilarLeads;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\KanbanForecast;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Pages\KanbanActivities;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource\Pages\ListContacts;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCustomers;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\KanbanOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\SimilarOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\KanbanQuotations;
@@ -148,7 +148,7 @@ class CRMServiceProvider extends PackageServiceProvider
                 ListQuotations::class,
                 KanbanQuotations::class,
                 KanbanActivities::class,
-                ListContacts::class,
+                ListCustomers::class,
                 ManageTeamOpportunities::class,
                 KanbanForecast::class,
             ],

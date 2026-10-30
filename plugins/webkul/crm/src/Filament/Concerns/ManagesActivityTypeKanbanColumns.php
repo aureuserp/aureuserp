@@ -54,6 +54,11 @@ trait ManagesActivityTypeKanbanColumns
         ]);
     }
 
+    protected function kanbanColumnModel(): string
+    {
+        return ActivityType::class;
+    }
+
     protected function findKanbanColumnRecord(string $value): ?Model
     {
         return ctype_digit($value)

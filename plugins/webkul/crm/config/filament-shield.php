@@ -20,7 +20,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\Activi
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByTypeChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivitiesByUserChart;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Widgets\ActivityStatsOverview;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
@@ -36,21 +36,21 @@ $reorder = ['reorder'];
 return [
     'resources' => [
         'manage' => [
-            QuotationResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            LeadResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            ActivityResource::class         => ['view_any', 'view', 'update', 'delete', 'delete_any'],
-            OpportunityResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            StageResource::class            => [...$basic, ...$delete, ...$reorder],
-            ContactResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TagResource::class              => [...$basic, ...$delete],
-            LostReasonResource::class       => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            ActivityTypeResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            ActivityPlanResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete],
-            TeamResource::class             => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
-            ForecastResource::class         => ['view_any'],
-            PipelineAnalysisResource::class => ['view_any'],
-            LeadAnalysisResource::class     => ['view_any'],
-            ActivityAnalysisResource::class => ['view_any'],
+            QuotationResource::class         => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            LeadResource::class              => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityResource::class          => ['view_any', 'view', 'update', 'delete', 'delete_any'],
+            OpportunityResource::class       => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            StageResource::class             => [...$basic, ...$delete, ...$reorder],
+            CustomerResource::class          => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TagResource::class               => [...$basic, ...$delete],
+            LostReasonResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            ActivityTypeResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ActivityPlanResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            TeamResource::class              => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            ForecastResource::class          => ['view_any'],
+            PipelineAnalysisResource::class  => ['view_any'],
+            LeadAnalysisResource::class      => ['view_any'],
+            ActivityAnalysisResource::class  => ['view_any'],
         ],
         'exclude' => [
             SalesTeamResource::class,

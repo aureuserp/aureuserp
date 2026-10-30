@@ -21,7 +21,7 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\ContactResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Support\Enums\NavigationGroup;
@@ -115,7 +115,7 @@ it('takes resource labels from the crm translations with a real plural', functio
     'leads'           => [LeadResource::class, 'crm::filament/clusters/leads/resources/lead', 'العملاء المحتملون'],
     'pipeline'        => [OpportunityResource::class, 'crm::filament/clusters/sales/resources/opportunity', 'الفرص'],
     'activities'      => [ActivityResource::class, 'crm::filament/clusters/sales/resources/activity', 'الأنشطة'],
-    'contacts'        => [ContactResource::class, 'crm::filament/clusters/sales/resources/contact', 'جهات الاتصال'],
+    'contacts'        => [CustomerResource::class, 'crm::filament/clusters/sales/resources/customer', 'جهات الاتصال'],
     'sales overview'  => [SalesTeamResource::class, 'crm::filament/clusters/sales/resources/team', 'فرق المبيعات'],
 ]);
 

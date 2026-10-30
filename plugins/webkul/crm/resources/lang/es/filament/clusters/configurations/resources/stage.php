@@ -45,6 +45,11 @@ return [
                     'title' => 'Etapa eliminada',
                     'body'  => 'La etapa se ha eliminado correctamente.',
                 ],
+
+                'in-use' => [
+                    'title' => 'No se puede eliminar ":name"',
+                    'body'  => 'Todavía tiene :count registro. Muévalo a otra etapa primero.|Todavía tiene :count registros. Muévalos a otra etapa primero.',
+                ],
             ],
         ],
     ],
