@@ -20,6 +20,7 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Tables\InvoicesTable;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Invoice;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends Resource
@@ -83,7 +84,7 @@ class InvoiceResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->when(Str::contains(static::class, 'InvoiceResource'), function (Builder $query) {
+            ->when(Str::contains(static::class, 'InvoiceResource') && ! is_a(static::$parentResource, PartnerResource::class, true), function (Builder $query) {
                 $query->where('move_type', MoveType::OUT_INVOICE);
             });
     }

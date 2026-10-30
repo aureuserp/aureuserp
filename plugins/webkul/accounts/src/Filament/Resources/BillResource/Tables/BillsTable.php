@@ -314,8 +314,14 @@ class BillsTable
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
+                    ViewAction::make()
+                        ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
+                            ? $resource::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true)
+                            : null),
+                    EditAction::make()
+                        ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
+                            ? $resource::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true)
+                            : null),
                     DeleteAction::make()
                         ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)
                         ->successNotification(
