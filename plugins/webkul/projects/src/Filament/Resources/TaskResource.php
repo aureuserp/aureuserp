@@ -4,7 +4,6 @@ namespace Webkul\Project\Filament\Resources;
 
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -16,8 +15,6 @@ use Webkul\Project\Filament\Resources\TaskResource\Pages\ListTasks;
 use Webkul\Project\Filament\Resources\TaskResource\Pages\ManageSubTasks;
 use Webkul\Project\Filament\Resources\TaskResource\Pages\ManageTimesheets;
 use Webkul\Project\Filament\Resources\TaskResource\Pages\ViewTask;
-use Webkul\Project\Filament\Resources\TaskResource\RelationManagers\SubTasksRelationManager;
-use Webkul\Project\Filament\Resources\TaskResource\RelationManagers\TimesheetsRelationManager;
 use Webkul\Project\Filament\Resources\TaskResource\Schemas\TaskForm;
 use Webkul\Project\Filament\Resources\TaskResource\Schemas\TaskInfolist;
 use Webkul\Project\Filament\Resources\TaskResource\Tables\TasksTable;
@@ -108,21 +105,6 @@ class TaskResource extends Resource
             ManageTimesheets::class,
             ManageSubTasks::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Timesheets', [
-                TimesheetsRelationManager::class,
-            ])
-                ->icon('heroicon-o-clock'),
-
-            RelationGroup::make('Sub Tasks', [
-                SubTasksRelationManager::class,
-            ])
-                ->icon('heroicon-o-clipboard-document-list'),
-        ];
     }
 
     public static function getPages(): array
