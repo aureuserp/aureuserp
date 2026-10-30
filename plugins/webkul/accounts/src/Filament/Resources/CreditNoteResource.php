@@ -33,7 +33,6 @@ class CreditNoteResource extends InvoiceResource
         return parent::getEloquentQuery()
             ->when(Str::contains(static::class, 'CreditNoteResource'), function (Builder $query) {
                 $query->where('move_type', MoveType::OUT_REFUND);
-            })
-            ->orderByDesc('id');
+            });
     }
 }

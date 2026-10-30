@@ -34,7 +34,6 @@ class RefundResource extends BillResource
         return parent::getEloquentQuery()
             ->when(Str::contains(static::class, 'RefundResource'), function (Builder $query) {
                 $query->where('move_type', MoveType::IN_REFUND);
-            })
-            ->orderByDesc('id');
+            });
     }
 }

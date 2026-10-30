@@ -4,7 +4,6 @@ namespace Webkul\Employee\Filament\Resources\DepartmentResource\Pages;
 
 use Exception;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -35,7 +34,6 @@ class EditDepartment extends EditRecord
             ChatterAction::make()
                 ->resource(static::$resource)
                 ->activityPlans($this->getRecord()->activityPlans()),
-            ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

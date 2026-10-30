@@ -65,7 +65,7 @@ class QuantitiesTable
                     ->visible(QuantityResource::getOperationSettings()->enable_packages),
                 TextColumn::make('available_quantity')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.available-quantity'))
-                    ->sortable()
+                    ->sortable(query: fn ($query, string $direction) => $query->orderByRaw("(quantity - reserved_quantity) $direction"))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('quantity')
                     ->label(__('inventories::filament/clusters/operations/resources/quantity.table.columns.on-hand'))

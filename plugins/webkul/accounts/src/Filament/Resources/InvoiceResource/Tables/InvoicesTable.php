@@ -180,6 +180,7 @@ class InvoicesTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ], $customColumns))
+            ->defaultSort('id', 'desc')
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/invoice.table.groups.name'))
