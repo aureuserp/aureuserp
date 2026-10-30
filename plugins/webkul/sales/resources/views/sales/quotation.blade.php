@@ -27,10 +27,6 @@
             line-height: 1.6;
         }
 
-        :is(.dark .quotation-document) {
-            color: #d4d4d8;
-        }
-
         .agreement {
             margin-bottom: 50px;
             page-break-after: always;
@@ -42,34 +38,31 @@
 
         .header {
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .company-info {
             width: 50%;
-            float: left;
+            float: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .company-name {
-            font-size: 28px;
+            font-size: 22px;
             color: #1a4587;
-            margin-bottom: 10px;
-        }
-
-        :is(.dark .company-name) {
-            color: #93b4e6;
+            margin-bottom: 6px;
         }
 
         .vendor-info {
             width: 45%;
-            float: right;
-            text-align: right;
-            border-left: 2px solid #f0f0f0;
-            padding-left: 20px;
+            float: {{ $isRtl ? 'left' : 'right' }};
+            text-align: {{ $isRtl ? 'left' : 'right' }};
+            border-{{ $isRtl ? 'right' : 'left' }}: 2px solid #f0f0f0;
+            padding-{{ $isRtl ? 'right' : 'left' }}: 20px;
         }
 
-        :is(.dark .vendor-info) {
-            border-left-color: #3f3f46;
+        .customer-name {
+            font-size: 22px;
+            margin-bottom: 6px;
         }
 
         .clearfix {
@@ -77,44 +70,39 @@
         }
 
         .agreement-title {
-            font-size: 24px;
+            font-size: 22px;
             color: #1a4587;
-            margin: 25px 0;
-            padding: 15px 0;
+            margin: 15px 0;
+            padding: 8px 0;
             border-bottom: 2px solid #1a4587;
-        }
-
-        :is(.dark .agreement-title) {
-            color: #93b4e6;
-            border-bottom-color: #3b5f92;
         }
 
         .details-table {
             width: 100%;
-            margin: 20px 0;
+            margin: 10px 0;
             border-collapse: collapse;
         }
 
         .details-table td {
-            padding: 10px;
+            padding: 6px 8px;
             vertical-align: top;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
+            margin: 15px 0;
         }
 
         .items-table th {
             background: #1a4587;
             color: #ffffff;
-            padding: 12px;
-            text-align: left;
+            padding: 8px 10px;
+            text-align: {{ $isRtl ? 'right' : 'left' }};
         }
 
         .items-table td {
-            padding: 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e9ecef;
         }
 
@@ -131,36 +119,13 @@
             text-align: {{ $isRtl ? 'left' : 'right' }};
         }
 
-        :is(.dark .items-table th) {
-            background: #0d2b57;
-            color: #ffffff;
-        }
-
-        :is(.dark .items-table td) {
-            border-bottom-color: #3f3f46;
-            color: #d4d4d8;
-        }
-
-        :is(.dark .items-table tr:nth-child(even)) {
-            background: #232326;
-        }
-
-        :is(.dark .items-table tr:nth-child(odd)) {
-            background: #1a1a1d;
-        }
-
         .options-title {
             clear: both;
-            font-size: 18px;
+            font-size: 16px;
             color: #1a4587;
-            margin-top: 30px;
-            padding-bottom: 8px;
+            margin-top: 20px;
+            padding-bottom: 6px;
             border-bottom: 1px solid #1a4587;
-        }
-
-        :is(.dark .options-title) {
-            color: #93b4e6;
-            border-bottom-color: #3b5f92;
         }
 
         .summary {
@@ -169,7 +134,7 @@
         }
 
         .summary table {
-            float: right;
+            float: {{ $isRtl ? 'left' : 'right' }};
             width: 280px;
             padding-top: 5px;
             padding-bottom: 5px;
@@ -184,38 +149,50 @@
             border-top: 1px solid #e9ecef;
         }
 
-        :is(.dark .summary) {
-            color: #d4d4d8;
-        }
-
-        :is(.dark .summary .grand-total td) {
-            border-top-color: #3f3f46;
-        }
-
         .terms {
             clear: both;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .terms-body {
-            margin-top: 10px;
+            margin-top: 6px;
         }
 
         .payment-info {
             clear: both;
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 8px;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
             color: #1a4587;
-        }
-
-        :is(.dark .payment-info) {
-            color: #93b4e6;
         }
 
         .payment-info-title {
             font-weight: {{ $isRtl ? 'bold' : '600' }};
             margin-bottom: 10px;
+        }
+
+        :is(.dark .fi-modal-window:has(.quotation-document)) {
+            background-color: #ffffff;
+            --tw-ring-color: rgb(3 7 18 / 0.1);
+        }
+
+        :is(.dark .fi-modal-window:has(.quotation-document) .fi-modal-heading) {
+            color: #030712;
+        }
+
+        :is(.dark .fi-modal-window:has(.quotation-document) .fi-modal-header),
+        :is(.dark .fi-modal-window:has(.quotation-document) .fi-modal-footer) {
+            border-color: rgb(3 7 18 / 0.1);
+        }
+
+        :is(.dark .fi-modal-window:has(.quotation-document) .fi-modal-close-btn) {
+            color: #9ca3af;
+        }
+
+        :is(.dark .fi-modal-window:has(.quotation-document) .fi-modal-footer .fi-btn:not(.fi-color)) {
+            background-color: #ffffff;
+            color: #030712;
+            --tw-ring-color: rgb(3 7 18 / 0.1);
         }
     </style>
 </head>
@@ -239,50 +216,46 @@
                 <div class="company-info">
                     <div class="company-name">{{ $record->company->name }}</div>
 
-                    @if ($record->company->address)
+                    @if ($record->company->street1)
                         <div>
-                            {{ $record->company->address->street1 }}
+                            {{ $record->company->street1 }}
 
-                            @if ($record->company->address->street2)
-                                ,{{ $record->company->address->street2 }}
+                            @if ($record->company->street2)
+                                ,{{ $record->company->street2 }}
                             @endif
                         </div>
+                    @endif
 
+                    @if ($record->company->city)
                         <div>
-                            {{ $record->company->address->city }},
+                            {{ $record->company->city }}
 
-                            @if ($record->company->address->state)
-                                {{ $record->company->address->state->name }},
+                            @if ($record->company->state)
+                                , {{ $record->company->state->name }}
                             @endif
 
-                            {{ $record->company->address->zip }}
+                            @if ($record->company->zip)
+                                , {{ $record->company->zip }}
+                            @endif
                         </div>
+                    @endif
 
-                        @if ($record->company->address->country)
-                            <div>
-                                {{ $record->company->address->country->name }}
-                            </div>
-                        @endif
+                    @if ($record->company->country)
+                        <div>{{ $record->company->country->name }}</div>
+                    @endif
 
-                        @if ($record->company->email)
-                            <div>
-                                Email:
-                                {{ $record->company->email }}
-                            </div>
-                        @endif
+                    @if ($record->company->email)
+                        <div>Email: {{ $record->company->email }}</div>
+                    @endif
 
-                        @if ($record->company->phone)
-                            <div>
-                                Phone:
-                                {{ $record->company->phone }}
-                            </div>
-                        @endif
+                    @if ($record->company->phone)
+                        <div>Phone: {{ $record->company->phone }}</div>
                     @endif
                 </div>
 
                 <!-- Customer Address -->
                 <div class="vendor-info">
-                    <div>{{ $record->partner->name }}</div>
+                    <div class="customer-name">{{ $record->partner->name }}</div>
 
                     @if ($record->partner->addresses->count())
                         <div>

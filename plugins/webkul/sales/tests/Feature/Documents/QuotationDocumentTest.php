@@ -104,14 +104,14 @@ it('does not leak bare element styles into the surrounding panel', function () {
     expect($html)->not->toMatch('/^\s*body\s*\{/m');
 });
 
-it('provides a dark mode override for every light colour block', function () {
+it('keeps the preview modal light in dark mode', function () {
     $order = SaleHelper::order();
 
     SaleHelper::line($order, $this->product, qty: 1, priceUnit: 100);
 
     $html = renderQuotationDocument(SaleHelper::compute($order));
 
-    foreach (['.quotation-document', '.agreement-title', '.summary', '.payment-info'] as $selector) {
-        expect($html)->toContain(':is(.dark '.$selector);
+    foreach (['', ' .fi-modal-heading', ' .fi-modal-header', ' .fi-modal-footer', ' .fi-modal-close-btn'] as $part) {
+        expect($html)->toContain(':is(.dark .fi-modal-window:has(.quotation-document)'.$part.')');
     }
 });

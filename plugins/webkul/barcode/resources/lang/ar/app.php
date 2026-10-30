@@ -10,6 +10,7 @@ return [
         'label'       => 'التنقل',
         'open'        => 'فتح التنقل',
         'coming-soon' => 'قريباً',
+        'back-office' => 'الواجهة الخلفية',
     ],
 
     'auth' => [

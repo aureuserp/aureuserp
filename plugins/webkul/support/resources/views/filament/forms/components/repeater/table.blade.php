@@ -51,18 +51,19 @@
     :field="$field"
 >
     <div
-        {{ 
+        {{
             $attributes
                 ->merge($getExtraAttributes(), escape: false)
                 ->class([
                     'fi-fo-table-repeater',
                     'fi-compact' => $isCompact,
-                ]) 
+                ])
         }}
+        style="overflow-x: auto;"
     >
         @if (count($items))
             <table
-                class="fi-absolute-positioning-context"
+                class="fi-fixed-positioning-context"
                 @if ($hasResizableColumns)
                     x-data="{
                         columns: @js($resizableColumnConfig),
@@ -319,43 +320,39 @@
 
                             @php
                                 $counter = 0;
-                                $visibleColumns = collect($tableColumns)->mapWithKeys(fn ($tableColumn) => [$tableColumn->getName() => $tableColumn]);
+                                $componentsByName = collect($item->getComponents(withHidden: true))->keyBy(fn ($c) => $c->getName());
                             @endphp
 
-                            @foreach ($item->getComponents() as $schemaComponent)
-                                @php
-                                    throw_unless(
-                                        $schemaComponent instanceof \Filament\Schemas\Components\Component,
-                                        new Exception('Table repeaters must only contain schema components, but [' . $schemaComponent::class . '] was used.'),
-                                    );
-                                @endphp
+                            @foreach ($tableColumns as $tableColumn)
+                                @php $schemaComponent = $componentsByName->get($tableColumn->getName()); @endphp
 
-                                @if ($visibleColumns->has($schemaComponent->getName()))
-                                    @if ($schemaComponent instanceof \Filament\Forms\Components\Hidden)
+                                @if ($schemaComponent instanceof \Filament\Forms\Components\Hidden)
+                                    {{ $schemaComponent }}
+                                @elseif ($schemaComponent)
+                                    <td
+                                        @if (! (
+                                            $schemaComponent instanceof Action
+                                            || $schemaComponent instanceof ActionGroup
+                                        ))
+                                            @php
+                                                $schemaComponentStatePath = $schemaComponent->getStatePath();
+                                            @endphp
+
+                                            x-data="filamentSchemaComponent({
+                                                path: @js($schemaComponentStatePath),
+                                                containerPath: @js($itemStatePath),
+                                                isLive: @js($schemaComponent->isLive()),
+                                                $wire,
+                                            })"
+                                        @endif
+                                    >
                                         {{ $schemaComponent }}
-                                    @else
-                                        <td
-                                            @if (! (
-                                                $schemaComponent instanceof Action 
-                                                || $schemaComponent instanceof ActionGroup
-                                            ))
-                                                @php
-                                                    $schemaComponentStatePath = $schemaComponent->getStatePath();
-                                                @endphp
-
-                                                x-data="filamentSchemaComponent({
-                                                    path: @js($schemaComponentStatePath),
-                                                    containerPath: @js($itemStatePath),
-                                                    isLive: @js($schemaComponent->isLive()),
-                                                    $wire,
-                                                })"
-                                            @endif
-                                        >
-                                            {{ $schemaComponent }}
-                                        </td>
-                                    @endif
+                                    </td>
+                                @else
+                                    <td></td>
                                 @endif
                             @endforeach
+
 
                             @if (
                                 count($extraItemActions) 

@@ -77,9 +77,12 @@
 .fi-ta-checkbox:not(.fi-inline),
 .fi-ta-select:not(.fi-inline),
 .fi-ta-toggle:not(.fi-inline),
-.fi-ta-text-input:not(.fi-inline),
 .fi-ta-image:not(.fi-inline) {
     @apply py-2.5;
+}
+
+.fi-ta-text-input:not(.fi-inline) {
+    @apply py-px;
 }
 
 .fi-ta-cell:has(.fi-ta-actions),
@@ -216,6 +219,45 @@
 
 .fi-masonry > .fi-sc > .fi-grid-col {
     @apply mb-4 break-inside-avoid last:mb-0;
+}
+
+.fi-ta-cell.fi-ta-summary-row-heading-cell:first-child,
+.fi-ta-cell.fi-ta-summary-header-cell:first-child {
+    @apply ps-4;
+}
+
+.fi-ta-cell.fi-ta-summary-row-heading-cell {
+    @apply py-2.5;
+}
+
+.fi-ta-content-loading
+    > .fi-ta-table
+    > .fi-ta-records
+    > .fi-ta-summary-row
+    > .fi-ta-summary-row-heading-cell {
+    @apply relative text-transparent;
+
+    &::after {
+        @apply absolute inset-s-4 top-1/2 h-4 w-40 -translate-y-1/2;
+        animation: var(--loading-skeleton-animation);
+        background-color: var(--loading-skeleton-background-color);
+        border-radius: var(--loading-skeleton-border-radius);
+        content: '';
+    }
+}
+
+.fi-ta-text-summary {
+    @apply flex flex-row items-center gap-1 py-2.5;
+}
+
+.plugins-table .fi-ta-content-grid .fi-ta-record-content-ctn {
+    @apply relative;
+}
+
+.plugins-table .fi-ta-content-grid .fi-ta-record-content-ctn .fi-ta-actions {
+    position: absolute;
+    inset-block-end: 10px;
+    inset-inline-end: 0;
 }
 
 .fi-fo-checkbox-list-options {

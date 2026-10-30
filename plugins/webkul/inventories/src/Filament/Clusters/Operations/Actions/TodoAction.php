@@ -53,6 +53,8 @@ class TodoAction extends Action
                         ->body($e->getMessage())
                         ->send();
 
+                    $livewire->unmountAction();
+
                     $this->halt(shouldRollBackDatabaseTransaction: true);
                 }
             })
