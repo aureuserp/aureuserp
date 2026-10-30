@@ -11,4 +11,9 @@ class ViewPriceList extends BaseViewPriceList
     use HasRecordNavigationTabs;
 
     protected static string $resource = PriceListResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [];
+    }
 }

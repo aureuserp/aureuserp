@@ -3,7 +3,6 @@
 namespace Webkul\Partner\Filament\Resources\PartnerResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
@@ -30,7 +29,6 @@ class ViewPartner extends ViewRecord
                 ->activityPlans($this->getRecord()->activityPlans())
                 ->resource(static::$resource),
         ], PartnerSchemaRegistry::renderActions('view.header'), [
-            EditAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()
