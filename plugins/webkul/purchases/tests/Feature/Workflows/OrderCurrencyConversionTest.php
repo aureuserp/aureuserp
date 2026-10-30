@@ -7,6 +7,7 @@ use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\ProductSupplier;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Schemas\OrderForm;
+use Webkul\Purchase\Models\Order;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 use Webkul\Support\Models\UOM;
@@ -213,4 +214,74 @@ it('applies the uom factor on top of the currency conversion', function () {
     ]);
 
     expect($price)->toEqualWithDelta(8800.0 * 12, 1);
+});
+
+function storedAmounts(Order $order): array
+{
+    $order = Order::query()->with('lines')->findOrFail($order->id);
+
+    return [
+        'header' => [
+            (float) $order->untaxed_amount,
+            (float) $order->tax_amount,
+            (float) $order->total_amount,
+            (float) $order->total_cc_amount,
+        ],
+        'lines' => $order->lines->sortBy('id')->map(fn ($line) => [
+            (float) $line->price_unit,
+            (float) $line->price_subtotal,
+            (float) $line->price_tax,
+            (float) $line->price_total,
+            (float) $line->price_total_cc,
+        ])->values()->all(),
+        'sums' => [
+            round($order->lines->sum(fn ($line) => (float) $line->price_subtotal), 2),
+            round($order->lines->sum(fn ($line) => (float) $line->price_tax), 2),
+            round($order->lines->sum(fn ($line) => (float) $line->price_total), 2),
+            round($order->lines->sum(fn ($line) => (float) $line->price_total_cc), 2),
+        ],
+    ];
+}
+
+it('stores header totals equal to the sum of the stored lines and keeps them on recompute', function () {
+    $tax = PurchaseHelper::tax(15);
+
+    $order = PurchaseHelper::order([
+        'currency_id'   => $this->orderCurrency->id,
+        'partner_id'    => $this->partner->id,
+        'currency_rate' => 0,
+    ]);
+
+    PurchaseHelper::line($order, $this->product, qty: 3, priceUnit: 33.335, discount: 7.5, taxes: [$tax]);
+    PurchaseHelper::line($order, $this->product, qty: 7, priceUnit: 12.3456, taxes: [$tax]);
+    PurchaseHelper::line($order, $this->product, qty: 1, priceUnit: 0.3333, discount: 12.5);
+
+    PurchaseHelper::compute($order->refresh());
+
+    $first = storedAmounts($order);
+
+    expect((float) $order->refresh()->currency_rate)->toBe(88.0)
+        ->and($first['header'])->toBe($first['sums']);
+
+    PurchaseHelper::compute($order->refresh());
+
+    expect(storedAmounts($order))->toBe($first);
+});
+
+it('fills a missing currency rate from the rate on the order date', function () {
+    CurrencyRate::factory()->create([
+        'currency_id' => $this->orderCurrency->id,
+        'company_id'  => null,
+        'rate'        => 70,
+        'name'        => now()->subDays(30)->toDateString(),
+    ]);
+
+    $order = PurchaseHelper::order([
+        'currency_id'   => $this->orderCurrency->id,
+        'partner_id'    => $this->partner->id,
+        'ordered_at'    => now()->subDays(30),
+        'currency_rate' => 0,
+    ]);
+
+    expect((float) $order->refresh()->currency_rate)->toBe(70.0);
 });

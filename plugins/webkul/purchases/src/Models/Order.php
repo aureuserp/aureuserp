@@ -250,7 +250,7 @@ class Order extends Model
     public function computeCurrencyRate(): void
     {
         if ((float) $this->currency_rate !== 0.0) {
-            if (! $this->exists || $this->wasRecentlyCreated || ! $this->isDirty('currency_id')) {
+            if (! $this->exists || $this->wasRecentlyCreated || ! $this->isDirty(['currency_id', 'ordered_at'])) {
                 return;
             }
         }
@@ -259,10 +259,15 @@ class Order extends Model
 
         if ($companyCurrencyId && $this->currency_id && (int) $this->currency_id !== (int) $companyCurrencyId) {
             $companyCurrency = Currency::find($companyCurrencyId);
-            $orderCurrency   = Currency::find($this->currency_id);
+            $orderCurrency = Currency::find($this->currency_id);
 
             $this->currency_rate = ($companyCurrency && $orderCurrency)
-                ? (float) $orderCurrency->getConversionRate($companyCurrency, $orderCurrency)
+                ? (float) $orderCurrency->getConversionRate(
+                    $companyCurrency,
+                    $orderCurrency,
+                    Company::withTrashed()->find($this->company_id),
+                    ($this->ordered_at ?? now())->toDateString(),
+                )
                 : 1.0;
         } else {
             $this->currency_rate = 1.0;

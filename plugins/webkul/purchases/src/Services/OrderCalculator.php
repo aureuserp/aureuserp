@@ -27,13 +27,16 @@ class OrderCalculator
 
             $line = $this->recomputeLine($line);
 
-            $record->untaxed_amount += $line->price_subtotal;
-            $record->tax_amount += $line->price_tax;
-            $record->total_amount += $line->price_total;
-            $record->total_cc_amount += (float) $record->currency_rate
-                ? $line->price_total / $record->currency_rate
-                : $line->price_total;
+            $record->untaxed_amount += (float) $line->price_subtotal;
+            $record->tax_amount += (float) $line->price_tax;
+            $record->total_amount += (float) $line->price_total;
+            $record->total_cc_amount += (float) $line->price_total_cc;
         }
+
+        $record->untaxed_amount = $record->currency->round($record->untaxed_amount);
+        $record->tax_amount = $record->currency->round($record->tax_amount);
+        $record->total_amount = $record->currency->round($record->total_amount);
+        $record->total_cc_amount = $record->company->currency->round($record->total_cc_amount);
 
         $record = $this->refreshReceiptStatus($record);
 
@@ -65,32 +68,36 @@ class OrderCalculator
 
     protected function applyLineTotals(OrderLine $line): void
     {
+        $currency = $line->order->currency;
+
+        $line->price_unit = float_round((float) $line->price_unit, precisionDigits: static::AMOUNT_PRECISION);
+
         $priceUnit = $line->discount > 0
             ? $line->price_unit * (1 - ($line->discount / 100))
             : $line->price_unit;
 
         if ($line->taxes->isEmpty()) {
-            $subTotal = round($priceUnit * $line->product_qty, 4);
-
-            $line->price_subtotal = $subTotal;
+            $line->price_subtotal = $currency->round($priceUnit * $line->product_qty);
             $line->price_tax = 0;
-            $line->price_total = $subTotal;
+            $line->price_total = $line->price_subtotal;
+        } else {
+            $taxResult = TaxFacade::computeAll(
+                $line->taxes,
+                $priceUnit,
+                $currency,
+                $line->product_qty,
+                $line->product,
+                $line->order->partner,
+            );
 
-            return;
+            $line->price_subtotal = $currency->round($taxResult['total_excluded']);
+            $line->price_total = $currency->round($taxResult['total_included']);
+            $line->price_tax = $currency->round($line->price_total - $line->price_subtotal);
         }
 
-        $taxResult = TaxFacade::computeAll(
-            $line->taxes,
-            $priceUnit,
-            $line->order->currency,
-            $line->product_qty,
-            $line->product,
-            $line->order->partner,
-        );
+        $rate = (float) $line->order->currency_rate;
 
-        $line->price_subtotal = round($taxResult['total_excluded'], 4);
-        $line->price_tax = round($taxResult['total_included'] - $taxResult['total_excluded'], 4);
-        $line->price_total = round($taxResult['total_included'], 4);
+        $line->price_total_cc = $line->order->company->currency->round($rate ? $line->price_total / $rate : $line->price_total);
     }
 
     public function refreshInvoiceStatus(Order $order): Order
