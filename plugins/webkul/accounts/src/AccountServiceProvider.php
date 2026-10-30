@@ -5,12 +5,12 @@ namespace Webkul\Account;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use Webkul\Account\Casts\CompanyProperty;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -278,13 +278,13 @@ class AccountServiceProvider extends PackageServiceProvider
         Partner::resolveRelationUsing('propertyOutboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_outbound_payment_method_line_id'));
         Partner::resolveRelationUsing('propertyInboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_inbound_payment_method_line_id'));
 
-        Partner::resolveRelationUsing('invoices', fn (Partner $partner) => $partner->hasMany(Move::class, 'partner_id')
-            ->where('move_type', MoveType::OUT_INVOICE)
-            ->where('state', '!=', MoveState::DRAFT));
+        Partner::resolveRelationUsing('invoices', fn (Partner $partner) => Relation::noConstraints(fn () => $partner->hasMany(Move::class, 'partner_id'))
+            ->whereIn('partner_id', Partner::query()->where('id', $partner->id)->orWhere('parent_id', $partner->id)->select('id'))
+            ->whereIn('move_type', [MoveType::OUT_INVOICE, MoveType::OUT_REFUND]));
 
-        Partner::resolveRelationUsing('bills', fn (Partner $partner) => $partner->hasMany(Move::class, 'partner_id')
-            ->where('move_type', MoveType::IN_INVOICE)
-            ->where('state', '!=', MoveState::DRAFT));
+        Partner::resolveRelationUsing('bills', fn (Partner $partner) => Relation::noConstraints(fn () => $partner->hasMany(Move::class, 'partner_id'))
+            ->whereIn('partner_id', Partner::query()->where('id', $partner->id)->orWhere('parent_id', $partner->id)->select('id'))
+            ->whereIn('move_type', [MoveType::IN_INVOICE, MoveType::IN_REFUND]));
     }
 
     protected function contributeProductSchema(): void
