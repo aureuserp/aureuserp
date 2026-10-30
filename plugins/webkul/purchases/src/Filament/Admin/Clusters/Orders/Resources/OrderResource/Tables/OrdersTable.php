@@ -109,6 +109,7 @@ class OrdersTable
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
             ], $customColumns))
+            ->defaultSort('id', 'desc')
             ->groups([
                 Tables\Grouping\Group::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.groups.vendor')),

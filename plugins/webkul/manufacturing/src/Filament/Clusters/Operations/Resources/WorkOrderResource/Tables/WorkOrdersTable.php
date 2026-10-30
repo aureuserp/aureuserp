@@ -31,8 +31,8 @@ class WorkOrdersTable
     {
         return $table
             ->reorderableColumns()
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->with('manufacturingOrder')
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('manufacturingOrder'))
+            ->defaultSort(fn (Builder $query) => $query
                 ->orderBy('sort')
                 ->orderBy('calendar_leave_id')
                 ->orderBy('started_at')
