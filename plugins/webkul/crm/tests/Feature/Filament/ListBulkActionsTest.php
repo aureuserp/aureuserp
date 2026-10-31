@@ -29,9 +29,10 @@ beforeEach(fn () => CRMHelper::bootstrap());
 function bulkContact(array $attributes = []): Partner
 {
     $partner = BasePartner::factory()->create([
-        'account_type' => AccountType::INDIVIDUAL,
-        'sub_type'     => 'partner',
-        'company_id'   => CRMHelper::companyId(),
+        'account_type'  => AccountType::INDIVIDUAL,
+        'sub_type'      => 'partner',
+        'company_id'    => CRMHelper::companyId(),
+        'customer_rank' => 1,
         ...$attributes,
     ]);
 

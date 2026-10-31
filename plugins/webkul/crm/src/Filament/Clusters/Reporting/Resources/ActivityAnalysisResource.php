@@ -74,6 +74,7 @@ class ActivityAnalysisResource extends Resource
             'mine' => PresetView::make(__('crm::filament/clusters/reporting/report.tabs.my-activities'))
                 ->icon('heroicon-s-user')
                 ->favorite()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->where(fn (Builder $query): Builder => $query->where('done_by', Auth::id())->orWhere('assigned_to', Auth::id()))),
 
             'leads' => PresetView::make(__('crm::filament/clusters/reporting/report.tabs.leads'))
@@ -105,9 +106,8 @@ class ActivityAnalysisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => ListActivityAnalysis::route('/'),
-            'summary' => ListActivityAnalysis::route('/summary'),
-            'list'    => ListActivityAnalysis::route('/list'),
+            'index' => ListActivityAnalysis::route('/'),
+            'list'  => ListActivityAnalysis::route('/list'),
         ];
     }
 }

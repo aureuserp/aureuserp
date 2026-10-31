@@ -92,11 +92,6 @@ return [
         ],
     ],
 
-    'empty-state' => [
-        'heading'     => 'لا توجد بيانات بعد',
-        'description' => 'جرّب إزالة بعض عوامل التصفية.',
-    ],
-
     'tabs' => [
         'leads'         => 'العملاء المحتملون',
         'opportunities' => 'الفرص',

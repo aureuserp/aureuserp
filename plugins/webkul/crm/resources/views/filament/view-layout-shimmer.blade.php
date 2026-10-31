@@ -13,7 +13,7 @@
     >
         @switch($layout)
             @case(ViewLayout::KANBAN)
-                @include('crm::filament.kanban.shimmer-columns')
+                @include('crm::filament.kanban.shimmer')
 
                 @break
 

@@ -43,14 +43,10 @@ return [
     ],
 
     'grid-menu' => [
-        'view'          => 'View',
-        'reporting'     => 'Reporting',
         'leads'         => 'Leads',
         'opportunities' => 'Opportunities',
         'quotations'    => 'Quotations',
         'sales-orders'  => 'Sales Orders',
-        'forecast'      => 'Forecast',
-        'activities'    => 'Activities',
         'color'         => 'Color',
     ],
 ];

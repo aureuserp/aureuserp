@@ -4,7 +4,6 @@ use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Number;
 use Webkul\Crm\Enums\MeasureFormat;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
@@ -451,22 +450,6 @@ describe('aggregate', function () {
 });
 
 describe('measures', function () {
-    it('formats values', function (MeasureFormat $format, mixed $value, string $expected) {
-        expect((new Measure('Test', 'count(*)', $format))->format($value, 'USD'))->toBe($expected);
-    })->with([
-        'currency'       => [MeasureFormat::CURRENCY, 1234.5, Number::currency(1234.5, 'USD')],
-        'days'           => [MeasureFormat::DAYS, 12.345, '12.3'],
-        'percent'        => [MeasureFormat::PERCENT, 45.56, '45.6%'],
-        'integer'        => [MeasureFormat::INTEGER, 1234.6, '1,235'],
-        'null as zero'   => [MeasureFormat::INTEGER, null, '0'],
-        'null currency'  => [MeasureFormat::CURRENCY, null, Number::currency(0, 'USD')],
-    ]);
-
-    it('formats currency in the given currency', function () {
-        expect((new Measure('Revenue', 'sum(1)', MeasureFormat::CURRENCY))->format(10, 'EUR'))
-            ->toBe(Number::currency(10, 'EUR'));
-    });
-
     it('rounds integers to whole numbers and other formats to two decimals', function () {
         expect((new Measure('Count', 'count(*)'))->round('2.6'))->toBe(3.0)
             ->and((new Measure('Revenue', 'sum(1)', MeasureFormat::CURRENCY))->round('2.666'))->toBe(2.67)
@@ -551,21 +534,4 @@ describe('table groups', function () {
         expect(collect($groups)->map(fn (Group $group): string => $group->getId())->all())
             ->toBe(array_keys($report::dimensions()));
     })->with([ForecastReport::class, PipelineReport::class, LeadsAnalysisReport::class, ActivityReport::class]);
-
-    it('builds the summary columns: the group column first, then one column per measure', function () {
-        $columns = PipelineReport::getSummaryColumns('team');
-
-        expect(collect($columns)->map->getName()->all())->toBe([
-            'team.name',
-            'measure_count',
-            'measure_expected_revenue',
-            'measure_prorated_revenue',
-            'measure_probability',
-            'measure_days_to_assign',
-            'measure_days_to_close',
-        ]);
-
-        expect(PipelineReport::getSummaryColumns(null)[0]->getName())->toBe('stage.name')
-            ->and(ActivityReport::getSummaryColumns(null)[0]->getName())->toBe('done_at');
-    });
 });

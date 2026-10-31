@@ -9,10 +9,12 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Number;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Enums\KanbanActivityState;
 use Webkul\Crm\Enums\OpportunityPriority;
+use Webkul\Crm\Filament\Support\KanbanCard;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\Lead;
@@ -29,6 +31,93 @@ trait ManagesOpportunityKanbanCards
     protected ?array $kanbanProgress = null;
 
     abstract protected function kanbanColumnKeyExpression(): string;
+
+    public function getKanbanCard(Lead $record): KanbanCard
+    {
+        $key = (string) $record->getKey();
+        $resource = LeadResourceResolver::resourceFor($record);
+        $canEdit = $resource::canEdit($record);
+        $currency = $record->company?->currency?->code ?? 'USD';
+        $shows = fn (string $column): bool => ! method_exists($this, 'isKanbanCardFieldVisible') || $this->isKanbanCardFieldVisible($column);
+
+        $activities = $record->crmActivities->sortBy(fn (Activity $activity): int => $activity->date_deadline?->timestamp ?? PHP_INT_MAX)->values();
+        $nextActivity = $activities->first();
+        $activityState = $record->activityState();
+        $activityCount = $activities->count();
+        $activitySummary = match ($activityState) {
+            ActivityDueStatus::OVERDUE => trans_choice('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities-overdue', $activityCount, ['count' => $activityCount]),
+            ActivityDueStatus::TODAY   => trans_choice('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities-today', $activityCount, ['count' => $activityCount]),
+            ActivityDueStatus::PLANNED => trans_choice('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities-planned', $activityCount, ['count' => $activityCount]),
+            default                    => null,
+        };
+
+        $card = KanbanCard::make($record->name)
+            ->url($this->getKanbanBoard()->getRecordUrl($record), __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.open', ['name' => $record->name]))
+            ->titleTooltip(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.title').': '.$record->name);
+
+        if ($canEdit) {
+            $card
+                ->menuItem(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.edit'), 'heroicon-m-pencil-square', url: $resource::getUrl('edit', ['record' => $record]))
+                ->menuItem(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color'), 'heroicon-m-swatch', click: "mountAction('kanbanCardColor', { record: '{$key}' })");
+        }
+
+        if ($resource::canForceDelete($record)) {
+            $card->menuItem(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.delete'), 'heroicon-m-trash', click: "mountAction('deleteKanbanCard', { record: '{$key}' })", color: 'danger');
+        }
+
+        if ($shows('expected_revenue')
+            && (float) $record->expected_revenue > 0) {
+            $card->line(
+                Number::currency((float) $record->expected_revenue, $currency),
+                tooltip: __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.expected-revenue'),
+                strong: true,
+                suffix: (float) $record->recurring_revenue > 0 ? '+ '.Number::currency((float) $record->recurring_revenue, $currency).($record->recurringPlan ? ' '.$record->recurringPlan->name : '') : null,
+            );
+        }
+
+        if ($shows('partner.name')) {
+            $card->line($record->partner?->name ?? $record->contact_name ?? $record->company_name, 'heroicon-m-building-office-2', __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.customer'));
+        }
+
+        if ($shows('tags.name')) {
+            $card->tags($record->tags, __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.tags'));
+        }
+
+        return $card
+            ->start(
+                $shows('priority') ? KanbanCard::stars(
+                    $key,
+                    $record->priority?->value ?? 0,
+                    collect(OpportunityPriority::cases())->filter(fn (OpportunityPriority $priority): bool => $priority->value > 0)->mapWithKeys(fn (OpportunityPriority $priority): array => [$priority->value => $priority->getLabel()])->all(),
+                    $canEdit,
+                    __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.priority'),
+                    $record->priority?->getLabel(),
+                ) : null,
+                KanbanCard::button(
+                    str_starts_with((string) $nextActivity?->activityType?->icon, 'heroicon-') ? $nextActivity->activityType->icon : 'heroicon-o-clock',
+                    "mountAction('".($activities->isEmpty() && $canEdit ? 'scheduleKanbanActivity' : 'kanbanCardActivities')."', { record: '{$key}' })",
+                    __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.activities'),
+                    $activitySummary
+                        ? $activitySummary.($nextActivity?->activityType ? ' · '.$nextActivity->activityType->name : '')
+                        : __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.no-activities'),
+                    match ($activityState) {
+                        ActivityDueStatus::OVERDUE => 'danger',
+                        ActivityDueStatus::TODAY   => 'warning',
+                        ActivityDueStatus::PLANNED => 'success',
+                        default                    => 'gray',
+                    },
+                ),
+            )
+            ->end(
+                KanbanCard::dot($record->color, __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color')),
+                KanbanCard::status(match (true) {
+                    $record->trashed() => __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.lost'),
+                    $record->isWon()   => __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.won'),
+                    default            => null,
+                }, $record->trashed() ? 'danger' : 'success'),
+                $shows('user.name') ? KanbanCard::user($record->user, __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.salesperson')) : null,
+            );
+    }
 
     public function setKanbanCardPriority(string $recordId, int $priority): void
     {

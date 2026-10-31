@@ -1,3 +1,7 @@
+@isset($target)
+    <div wire:loading.block wire:target="{{ $target }}" class="crm-board-shimmer" aria-busy="true">
+@endisset
+
 <div class="crm-board-shimmer-columns">
     @foreach ([3, 2, 4, 2] as $cards)
         <div class="crm-board-shimmer-column">
@@ -14,3 +18,7 @@
         </div>
     @endforeach
 </div>
+
+@isset($target)
+    </div>
+@endisset

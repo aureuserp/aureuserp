@@ -92,11 +92,6 @@ return [
         ],
     ],
 
-    'empty-state' => [
-        'heading'     => 'Aún no hay datos',
-        'description' => 'Pruebe a quitar algunos filtros.',
-    ],
-
     'tabs' => [
         'leads'         => 'Leads',
         'opportunities' => 'Oportunidades',

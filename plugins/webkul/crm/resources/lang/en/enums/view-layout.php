@@ -1,9 +1,8 @@
 <?php
 
 return [
-    'list'    => 'List',
-    'grid'    => 'Grid',
-    'kanban'  => 'Kanban',
-    'graph'   => 'Graph',
-    'summary' => 'Summary',
+    'list'   => 'List',
+    'grid'   => 'Grid',
+    'kanban' => 'Kanban',
+    'graph'  => 'Graph',
 ];

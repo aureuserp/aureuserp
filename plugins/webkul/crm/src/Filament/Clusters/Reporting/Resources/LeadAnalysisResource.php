@@ -80,6 +80,7 @@ class LeadAnalysisResource extends Resource
             'leads' => PresetView::make(__('crm::filament/clusters/reporting/report.tabs.leads'))
                 ->icon('heroicon-s-user-plus')
                 ->favorite()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->where('type', LeadType::LEAD)),
 
             'opportunities' => PresetView::make(__('crm::filament/clusters/reporting/report.tabs.opportunities'))
@@ -114,9 +115,8 @@ class LeadAnalysisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => ListLeadAnalysis::route('/'),
-            'summary' => ListLeadAnalysis::route('/summary'),
-            'list'    => ListLeadAnalysis::route('/list'),
+            'index' => ListLeadAnalysis::route('/'),
+            'list'  => ListLeadAnalysis::route('/list'),
         ];
     }
 }

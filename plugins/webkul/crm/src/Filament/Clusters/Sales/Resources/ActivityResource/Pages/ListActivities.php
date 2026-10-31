@@ -18,6 +18,7 @@ use Webkul\Crm\Filament\Concerns\HasKanbanLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Filament\Concerns\ManagesActivityTypeKanbanColumns;
 use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
+use Webkul\Crm\Filament\Support\KanbanCard;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Activity;
@@ -49,15 +50,6 @@ class ListActivities extends ListRecords
     protected bool $ignoreKanbanActivityFilter = false;
 
     protected ?array $kanbanProgress = null;
-
-    public function mount(): void
-    {
-        parent::mount();
-
-        if ($this->isViewLayout(ViewLayout::KANBAN)) {
-            $this->activeTableView ??= 'default';
-        }
-    }
 
     public function getViewLayouts(): array
     {
@@ -208,6 +200,52 @@ class ListActivities extends ListRecords
         ];
     }
 
+    public function getKanbanCard(Activity $record): KanbanCard
+    {
+        $lead = $record->lead;
+        $status = $record->getDueStatus();
+        $statusColor = match ($status) {
+            ActivityDueStatus::OVERDUE => 'danger',
+            ActivityDueStatus::TODAY   => 'warning',
+            default                    => 'success',
+        };
+        $title = $record->summary ?: (string) $record->activityType?->name;
+
+        $card = KanbanCard::make($title)
+            ->url($this->getKanbanBoard()->getRecordUrl($record), __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.open', ['name' => $lead?->name ?? $title]))
+            ->titleTooltip(__('crm::filament/clusters/sales/resources/activity.table.columns.summary').': '.$title)
+            ->icon(
+                str_starts_with((string) $record->activityType?->icon, 'heroicon-') ? $record->activityType->icon : 'heroicon-o-clock',
+                $statusColor,
+                __('crm::filament/clusters/sales/resources/activity.table.columns.activity-type').': '.$record->activityType?->name,
+            );
+
+        if ($this->isKanbanCardFieldVisible('lead.name')) {
+            $card->line($lead?->name, 'heroicon-m-funnel', __('crm::filament/clusters/sales/resources/activity.table.columns.opportunity'), strong: true);
+        }
+
+        if ($this->isKanbanCardFieldVisible('lead.partner.name')) {
+            $card->line($lead?->partner?->name ?? $lead?->contact_name ?? $lead?->company_name, 'heroicon-m-building-office-2', __('crm::filament/clusters/sales/resources/activity.table.columns.customer'));
+        }
+
+        return $card
+            ->start($this->isKanbanCardFieldVisible('date_deadline') ? KanbanCard::text(
+                $status->getLabel().($record->date_deadline && ! $record->date_deadline->isToday() ? ' · '.$record->date_deadline->translatedFormat('M j, Y') : ''),
+                'heroicon-m-calendar-days',
+                __('crm::filament/clusters/sales/resources/activity.table.columns.due-date'),
+                $statusColor,
+            ) : null)
+            ->end(
+                ActivityResource::canEdit($record) ? KanbanCard::button(
+                    'heroicon-o-check-circle',
+                    "mountAction('kanbanCardFooter', { record: '{$record->getKey()}', actionName: 'done' })",
+                    __('crm::filament/clusters/sales/resources/activity.actions.done.label'),
+                ) : null,
+                KanbanCard::dot($lead?->color, __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color')),
+                $this->isKanbanCardFieldVisible('assignedTo.name') ? KanbanCard::user($record->assignedTo, __('crm::filament/clusters/sales/resources/activity.table.columns.assigned-to')) : null,
+            );
+    }
+
     public function kanban(KanbanBoard $kanban): KanbanBoard
     {
         $visibleTypeIds = ActivityType::query()
@@ -267,8 +305,6 @@ class ListActivities extends ListRecords
                 'heroicon-o-clock',
             )
             ->columnWidth('300px')
-            ->boardView('crm::filament.kanban.board')
-            ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.activity-card');
+            ->boardView('crm::filament.kanban.board');
     }
 }

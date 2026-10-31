@@ -20,12 +20,12 @@ return [
         ],
 
         'members' => [
-            'title'         => ':team — Membres',
-            'inactive'      => 'Inactif',
-            'skipped'       => 'Ignore l\'attribution automatique',
-            'rules'         => '{1} :count règle|[0,*] :count règles',
-            'leads-30-days' => 'Pistes (30 jours)',
-            'gauge'         => ':assigned sur :max pistes attribuées ces 30 derniers jours',
+            'title'              => ':team — Membres',
+            'inactive'           => 'Inactif',
+            'skipped'            => 'Ignore l\'attribution automatique',
+            'rules'              => '{1} :count règle|[0,*] :count règles',
+            'lead-limit'         => 'Limite de pistes (30 jours) : :assigned / :max',
+            'lead-limit-tooltip' => ':assigned sur :max pistes attribuées ces 30 derniers jours',
         ],
     ],
 ];

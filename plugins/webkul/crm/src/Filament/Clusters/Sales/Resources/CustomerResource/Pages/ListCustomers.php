@@ -17,6 +17,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Tables\Custome
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Support\KanbanCard;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
@@ -63,7 +64,13 @@ class ListCustomers extends BaseListPartners
 
     public function getPresetTableViews(): array
     {
-        return parent::getPresetTableViews();
+        $views = parent::getPresetTableViews();
+
+        if (! isset($views['customers'])) {
+            return $views;
+        }
+
+        return ['customers' => $views['customers']->setAsDefault()] + $views;
     }
 
     public function kanban(KanbanBoard $kanban): KanbanBoard
@@ -72,9 +79,24 @@ class ListCustomers extends BaseListPartners
             ->recordUrl(fn (Partner $record): string => CustomerResource::getUrl('view', ['record' => $record]))
             ->canMove(fn (): bool => (bool) $this->getBoardGroup()?->isMovable())
             ->columnWidth('300px')
-            ->boardView('crm::filament.kanban.board')
-            ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.customer-card');
+            ->boardView('crm::filament.kanban.board');
+    }
+
+    public function getKanbanCard(Partner $record): KanbanCard
+    {
+        $opportunities = (int) $record->crm_opportunities_count;
+        $saleOrders = (int) $record->crm_sale_orders_count;
+
+        return KanbanCard::make($record->name)
+            ->url($this->getKanbanBoard()->getRecordUrl($record))
+            ->avatar($record->avatar_url, $record->account_type === AccountType::COMPANY ? 'heroicon-o-building-office' : 'heroicon-o-user')
+            ->line($record->parent?->name, small: true)
+            ->line($record->email, small: true)
+            ->line(collect([$record->city, $record->country?->name])->filter()->implode(', '), small: true)
+            ->start(
+                KanbanCard::text((string) $opportunities, 'heroicon-s-star', trans_choice('crm::filament/clusters/sales/resources/customer.grid.opportunities', $opportunities, ['count' => $opportunities])),
+                KanbanCard::text((string) $saleOrders, 'heroicon-s-currency-dollar', trans_choice('crm::filament/clusters/sales/resources/customer.grid.sale-orders', $saleOrders, ['count' => $saleOrders])),
+            );
     }
 
     protected function getKanbanQuery(KanbanBoard $board): Builder

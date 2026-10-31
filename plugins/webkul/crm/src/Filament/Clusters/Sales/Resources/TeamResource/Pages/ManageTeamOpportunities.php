@@ -190,9 +190,7 @@ class ManageTeamOpportunities extends ManageRelatedRecords
                 'heroicon-o-funnel',
             )
             ->columnWidth('300px')
-            ->boardView('crm::filament.kanban.board')
-            ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.opportunity-card');
+            ->boardView('crm::filament.kanban.board');
     }
 
     public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void

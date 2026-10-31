@@ -15,27 +15,23 @@ enum ViewLayout: string implements HasIcon, HasLabel
 
     case GRAPH = 'graph';
 
-    case SUMMARY = 'summary';
-
     public function getLabel(): string
     {
         return match ($this) {
-            self::LIST    => __('crm::enums/view-layout.list'),
-            self::GRID    => __('crm::enums/view-layout.grid'),
-            self::KANBAN  => __('crm::enums/view-layout.kanban'),
-            self::GRAPH   => __('crm::enums/view-layout.graph'),
-            self::SUMMARY => __('crm::enums/view-layout.summary'),
+            self::LIST   => __('crm::enums/view-layout.list'),
+            self::GRID   => __('crm::enums/view-layout.grid'),
+            self::KANBAN => __('crm::enums/view-layout.kanban'),
+            self::GRAPH  => __('crm::enums/view-layout.graph'),
         };
     }
 
     public function getIcon(): string
     {
         return match ($this) {
-            self::LIST    => 'heroicon-m-list-bullet',
-            self::GRID    => 'heroicon-m-squares-2x2',
-            self::KANBAN  => 'heroicon-m-rectangle-group',
-            self::GRAPH   => 'heroicon-m-chart-bar',
-            self::SUMMARY => 'heroicon-m-table-cells',
+            self::LIST   => 'heroicon-m-list-bullet',
+            self::GRID   => 'heroicon-m-squares-2x2',
+            self::KANBAN => 'heroicon-m-rectangle-group',
+            self::GRAPH  => 'heroicon-m-chart-bar',
         };
     }
 }

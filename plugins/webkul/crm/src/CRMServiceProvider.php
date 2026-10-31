@@ -156,7 +156,7 @@ class CRMServiceProvider extends PackageServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER,
-            fn (): string|View => Livewire::current()->isViewLayout(ViewLayout::KANBAN) ? view('crm::filament.kanban.board-shimmer') : '',
+            fn (): string|View => Livewire::current()->isViewLayout(ViewLayout::KANBAN) ? view('crm::filament.kanban.shimmer', ['target' => 'tableGrouping']) : '',
             scopes: [ListLeads::class, ListQuotations::class, ListCustomers::class],
         );
 

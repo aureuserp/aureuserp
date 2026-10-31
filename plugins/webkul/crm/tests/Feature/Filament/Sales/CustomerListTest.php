@@ -26,9 +26,10 @@ function listedSalesperson(array $attributes = []): User
 function listedContact(array $attributes = []): Partner
 {
     $partner = BasePartner::factory()->create([
-        'account_type' => AccountType::INDIVIDUAL,
-        'sub_type'     => 'partner',
-        'company_id'   => CRMHelper::companyId(),
+        'account_type'  => AccountType::INDIVIDUAL,
+        'sub_type'      => 'partner',
+        'company_id'    => CRMHelper::companyId(),
+        'customer_rank' => 1,
         ...$attributes,
     ]);
 
@@ -56,6 +57,20 @@ it('switches customers between list and kanban with the list by default', functi
     'old grid' => [['layout' => 'grid'], ViewLayout::LIST],
     'bad'      => [['layout' => 'nope'], ViewLayout::LIST],
 ]);
+
+it('opens on the Customers tab and shows other contacts on the Default tab', function () {
+    CRMHelper::actingAsCRMUser(['customer']);
+
+    $customer = listedContact(['name' => 'Tab Customer Contact']);
+    $prospect = listedContact(['name' => 'Tab Prospect Contact', 'customer_rank' => 0]);
+
+    Livewire::test(ListCustomers::class)
+        ->assertSet('activeTableView', 'customers')
+        ->assertCanSeeTableRecords([$customer])
+        ->assertCanNotSeeTableRecords([$prospect])
+        ->call('loadView', 'default')
+        ->assertCanSeeTableRecords([$customer, $prospect]);
+});
 
 it('shows the customers in the list with their avatar, email and phone', function () {
     CRMHelper::actingAsCRMUser(['customer']);

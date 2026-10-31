@@ -17,7 +17,6 @@ use Webkul\Crm\Filament\Support\Reports\ForecastReport;
 use Webkul\Crm\Filament\Support\Reports\Tables\LeadReportTable;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Policies\ForecastPolicy;
-use Webkul\TableViews\Filament\Components\PresetView;
 
 class ForecastResource extends Resource
 {
@@ -82,10 +81,7 @@ class ForecastResource extends Resource
 
     public static function getReportTableViews(): array
     {
-        return array_map(
-            fn (PresetView $view): PresetView => $view->setAsDefault(false),
-            (new ListOpportunities)->getPresetTableViews(),
-        );
+        return (new ListOpportunities)->getPresetTableViews();
     }
 
     public static function getReportBulkActions(): array

@@ -20,12 +20,12 @@ return [
         ],
 
         'members' => [
-            'title'         => ':team — Membros',
-            'inactive'      => 'Inativo',
-            'skipped'       => 'Ignora a atribuição automática',
-            'rules'         => '{1} :count regra|[0,*] :count regras',
-            'leads-30-days' => 'Leads (30 dias)',
-            'gauge'         => ':assigned de :max leads atribuídos nos últimos 30 dias',
+            'title'              => ':team — Membros',
+            'inactive'           => 'Inativo',
+            'skipped'            => 'Ignora a atribuição automática',
+            'rules'              => '{1} :count regra|[0,*] :count regras',
+            'lead-limit'         => 'Limite de leads (30 dias): :assigned / :max',
+            'lead-limit-tooltip' => ':assigned de :max leads atribuídos nos últimos 30 dias',
         ],
     ],
 ];

@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\TeamOrderScope;
@@ -273,19 +274,48 @@ it('links the team card menu to the team\'s records and reports', function () {
         ->assertSeeHtml(e(ForecastResource::getUrl('index', [...$reportFilters, 'layout' => 'graph'])));
 });
 
+it('builds the team card from filament columns and record actions', function () {
+    actingAsSalesTeamViewer();
+
+    $team = salesTeamInCompany('Card columns team');
+
+    CRMHelper::opportunity(['team_id' => $team->id, 'expected_revenue' => 400]);
+
+    Livewire::test(ListTeams::class)
+        ->searchTable('Card columns team')
+        ->assertTableColumnFormattedStateSet('open_opportunities_count', trans_choice('crm::filament/clusters/sales/resources/team.grid.open-opportunities', 1, ['count' => 1]), $team)
+        ->assertTableColumnExists('weekly_opportunities')
+        ->assertActionVisible(TestAction::make('newOpportunity')->table($team))
+        ->assertActionVisible(TestAction::make('viewOpportunities')->table($team))
+        ->assertActionHidden(TestAction::make('viewLeads')->table($team))
+        ->assertActionVisible(TestAction::make('teamColor')->table($team))
+        ->assertActionHidden(TestAction::make('teamColorDot')->table($team));
+
+    $team->update(['color' => '#2c8397']);
+
+    Livewire::test(ListTeams::class)
+        ->searchTable('Card columns team')
+        ->assertActionVisible(TestAction::make('teamColorDot')->table($team))
+        ->assertActionEnabled(TestAction::make('teamColorDot')->table($team))
+        ->callAction(TestAction::make('teamColorDot')->table($team), data: ['color' => '#814968'])
+        ->assertHasNoActionErrors();
+
+    expect($team->fresh()->color)->toBe('#814968');
+});
+
 it('sets and clears the team color with the colour picker', function () {
     actingAsSalesTeamViewer();
 
     $team = salesTeamInCompany('Colored team');
 
     Livewire::test(ListTeams::class)
-        ->callAction('teamColor', data: ['color' => '#2c8397'], arguments: ['team' => $team->id])
+        ->callAction(TestAction::make('teamColor')->table($team), data: ['color' => '#2c8397'])
         ->assertHasNoActionErrors();
 
     expect($team->fresh()->color)->toBe('#2c8397');
 
     Livewire::test(ListTeams::class)
-        ->callAction('teamColor', data: ['color' => null], arguments: ['team' => $team->id]);
+        ->callAction(TestAction::make('teamColor')->table($team), data: ['color' => null]);
 
     expect($team->fresh()->color)->toBeNull();
 });
@@ -297,8 +327,12 @@ it('hides the team colour picker without the team update permission', function (
     ]);
 
     $team = salesTeamInCompany('Locked color team');
+    $team->update(['color' => '#2c8397']);
 
-    Livewire::test(ListTeams::class)->assertActionHidden('teamColor', ['team' => $team->id]);
+    Livewire::test(ListTeams::class)
+        ->assertActionHidden(TestAction::make('teamColor')->table($team))
+        ->assertActionVisible(TestAction::make('teamColorDot')->table($team))
+        ->assertActionDisabled(TestAction::make('teamColorDot')->table($team));
 });
 
 it('limits the team quotations to confirmed sales orders with the sales orders scope', function () {

@@ -137,6 +137,26 @@ it('adds, edits and removes team members from the members tab', function () {
         ->and($team->members()->exists())->toBeFalse();
 });
 
+it('shows the members as core cards with the lead limit and the status badges', function () {
+    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    useRuleBasedTeamAssignment();
+
+    $team = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
+
+    Livewire::test(ManageTeamMembers::class, ['record' => $team->getRouteKey()])
+        ->callTableAction('addMember', data: ['user_id' => $user->id, 'assignment_max' => 12, 'assignment_optout' => true, 'is_active' => false])
+        ->assertHasNoTableActionErrors();
+
+    $member = TeamMember::query()->where('team_id', $team->id)->where('user_id', $user->id)->firstOrFail();
+
+    Livewire::test(ManageTeamMembers::class, ['record' => $team->getRouteKey()])
+        ->assertTableColumnExists('user.partner.avatar')
+        ->assertTableColumnExists('user.email')
+        ->assertTableColumnFormattedStateSet('lead_limit', __('crm::filament/clusters/configurations/resources/team.pages.members.lead-limit', ['assigned' => 0, 'max' => 12]), $member)
+        ->assertTableColumnStateSet('assignment_badges', ['inactive', 'skipped'], $member);
+});
+
 it('saves the team email alias from its own tab', function () {
     FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'update_crm_team']);
 

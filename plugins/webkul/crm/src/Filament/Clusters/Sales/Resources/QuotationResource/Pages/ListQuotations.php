@@ -31,6 +31,7 @@ use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
 use Webkul\Crm\Filament\Exports\QuotationExporter;
+use Webkul\Crm\Filament\Support\KanbanCard;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Filament\Widgets\Concerns\StylesCRMDashboardCharts;
@@ -249,9 +250,22 @@ class ListQuotations extends BaseListQuotations
             ->recordUrl(fn (Order $record): string => QuotationResource::getUrl('view', ['record' => $record]))
             ->canMove(fn (): bool => (bool) $this->getBoardGroup()?->isMovable())
             ->columnWidth('300px')
-            ->boardView('crm::filament.kanban.board')
-            ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.quotation-card');
+            ->boardView('crm::filament.kanban.board');
+    }
+
+    public function getKanbanCard(Order $record): KanbanCard
+    {
+        return KanbanCard::make($record->name)
+            ->url($this->getKanbanBoard()->getRecordUrl($record), __('crm::filament/clusters/sales/resources/quotation.board.card.open', ['name' => $record->name]))
+            ->badge($record->state?->getLabel(), $record->state?->getColor())
+            ->line($record->partner?->name, 'heroicon-m-building-office-2', __('crm::filament/clusters/sales/resources/quotation.board.card.customer'))
+            ->start(KanbanCard::amount(
+                money((float) $record->amount_total, $record->currency?->name),
+                $record->date_order?->toFormattedDateString(),
+                __('crm::filament/clusters/sales/resources/quotation.board.card.total'),
+                __('crm::filament/clusters/sales/resources/quotation.board.card.date'),
+            ))
+            ->end(KanbanCard::user($record->user, __('crm::filament/clusters/sales/resources/quotation.board.card.salesperson')));
     }
 
     protected function getKanbanQuery(KanbanBoard $board): Builder

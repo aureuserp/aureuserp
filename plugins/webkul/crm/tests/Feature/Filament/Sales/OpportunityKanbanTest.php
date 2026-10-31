@@ -496,6 +496,25 @@ describe('pipeline cards', function () {
             ->assertSeeHtml('setKanbanCardPriority');
     });
 
+    it('builds the card in PHP and pins its menu to the corner so the content does not move on hover', function () {
+        CRMHelper::actingAsCRMUser(['opportunity']);
+
+        $opportunity = CRMHelper::opportunity(['name' => 'Card definition '.uniqid(), 'expected_revenue' => 1500, 'priority' => OpportunityPriority::HIGH]);
+
+        $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
+
+        $card = $component->instance()->getKanbanCard($opportunity->fresh(ListOpportunities::KANBAN_CARD_RELATIONS));
+
+        expect($card->title)->toBe($opportunity->name)
+            ->and($card->lines[0]['strong'])->toBeTrue()
+            ->and(collect($card->menu)->pluck('icon')->all())->toContain('heroicon-m-pencil-square', 'heroicon-m-swatch')
+            ->and($card->start[0])->toMatchArray(['type' => 'stars', 'value' => OpportunityPriority::HIGH->value, 'editable' => true]);
+
+        $component
+            ->assertSeeHtml('wire:key="kanban-card-'.$opportunity->id.'"')
+            ->assertSeeHtml('<div data-card-control class="absolute end-2 top-2');
+    });
+
     it('sets the priority from the stars and clears it when the same star is clicked again', function () {
         CRMHelper::actingAsCRMUser(['opportunity']);
 

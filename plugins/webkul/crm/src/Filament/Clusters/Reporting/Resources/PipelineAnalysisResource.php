@@ -16,7 +16,6 @@ use Webkul\Crm\Filament\Support\Reports\PipelineReport;
 use Webkul\Crm\Filament\Support\Reports\Tables\LeadReportTable;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Policies\PipelineAnalysisPolicy;
-use Webkul\TableViews\Filament\Components\PresetView;
 
 class PipelineAnalysisResource extends Resource
 {
@@ -76,10 +75,7 @@ class PipelineAnalysisResource extends Resource
 
     public static function getReportTableViews(): array
     {
-        return array_map(
-            fn (PresetView $view): PresetView => $view->setAsDefault(false),
-            (new ListOpportunities)->getPresetTableViews(),
-        );
+        return (new ListOpportunities)->getPresetTableViews();
     }
 
     public static function getReportBulkActions(): array
@@ -92,9 +88,8 @@ class PipelineAnalysisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'   => ListPipelineAnalysis::route('/'),
-            'summary' => ListPipelineAnalysis::route('/summary'),
-            'list'    => ListPipelineAnalysis::route('/list'),
+            'index' => ListPipelineAnalysis::route('/'),
+            'list'  => ListPipelineAnalysis::route('/list'),
         ];
     }
 }

@@ -436,7 +436,7 @@ it('uses the crm activity types as kanban columns', function () {
         ->not->toContain((string) $otherPluginType->id);
 });
 
-it('opens the board without a default filter, showing everyone\'s activities', function () {
+it('opens the board on My Activities and shows everyone\'s activities on the Default tab', function () {
     actingAsActivityPlanner();
 
     $opportunity = CRMHelper::opportunity();
@@ -444,15 +444,16 @@ it('opens the board without a default filter, showing everyone\'s activities', f
     $mine = scheduledCRMActivity($opportunity);
     $someoneElses = scheduledCRMActivity($opportunity, ['assigned_to' => myActivitiesOtherUserId()]);
 
-    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
-        ->assertSet('activeTableView', 'default');
-
-    $ids = collect($component->instance()->getKanbanColumns())
+    $boardIds = fn (array $query): array => collect(Livewire::withQueryParams(['layout' => 'kanban', ...$query])->test(ListActivities::class)->instance()->getKanbanColumns())
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
         ->all();
 
-    expect($ids)->toContain($mine->id)
-        ->toContain($someoneElses->id);
+    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
+        ->assertSet('activeTableView', 'my_activities');
+
+    expect($boardIds([]))->toContain($mine->id)
+        ->not->toContain($someoneElses->id)
+        ->and($boardIds(['activeTableView' => 'default']))->toContain($mine->id, $someoneElses->id);
 });
 
 it('changes the activity type when a card is moved to another column', function () {

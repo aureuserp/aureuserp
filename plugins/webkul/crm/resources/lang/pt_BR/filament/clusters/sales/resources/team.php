@@ -43,14 +43,10 @@ return [
     ],
 
     'grid-menu' => [
-        'view'          => 'Visualizar',
-        'reporting'     => 'Relatórios',
         'leads'         => 'Leads',
         'opportunities' => 'Oportunidades',
         'quotations'    => 'Cotações',
         'sales-orders'  => 'Pedidos de venda',
-        'forecast'      => 'Previsão',
-        'activities'    => 'Atividades',
         'color'         => 'Cor',
     ],
 ];

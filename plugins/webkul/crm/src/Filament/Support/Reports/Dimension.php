@@ -84,11 +84,6 @@ class Dimension
         return $this->kind === DimensionKind::MONTH;
     }
 
-    public function getGroupColumn(): string
-    {
-        return (string) $this->groupColumn;
-    }
-
     public function getKeyExpression(): string
     {
         return $this->isMonth() ? Sql::month($this->expression) : $this->expression;

@@ -2,13 +2,10 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
-use Filament\Tables\Columns\Summarizers\Summarizer;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\OpportunityForm;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
@@ -190,28 +187,6 @@ abstract class Report
             ->map(fn (Dimension $dimension, string $key): Group => $dimension->toTableGroup($key))
             ->values()
             ->all();
-    }
-
-    public static function getSummaryColumns(?string $groupBy = null): array
-    {
-        $currency = static::getCurrencyCode();
-
-        $groupDimension = static::getDimension($groupBy) ?? static::getDimension(static::getDefaultGroupBy());
-
-        return [
-            TextColumn::make($groupDimension->getGroupColumn())
-                ->label($groupDimension->label),
-            ...collect(static::measures())
-                ->map(fn (Measure $measure, string $key): TextColumn => TextColumn::make('measure_'.$key)
-                    ->label($measure->label)
-                    ->summarize(
-                        Summarizer::make()
-                            ->using(fn (QueryBuilder $query): mixed => $query->selectRaw($measure->aggregate.' as aggregate')->value('aggregate'))
-                            ->formatStateUsing(fn (mixed $state): string => $measure->format($state, $currency)),
-                    ))
-                ->values()
-                ->all(),
-        ];
     }
 
     public static function getSalespersonOptions(): array

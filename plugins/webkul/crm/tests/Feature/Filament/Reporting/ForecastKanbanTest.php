@@ -70,10 +70,10 @@ it('renders with the forecast permission and is forbidden without', function () 
     Livewire::test(ListForecast::class)->assertForbidden();
 });
 
-it('starts without a default filter', function () {
+it('opens on the My Pipeline tab', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
-    Livewire::test(ListForecast::class)->assertSet('activeTableView', 'default');
+    Livewire::test(ListForecast::class)->assertSet('activeTableView', 'my_pipeline');
 });
 
 it('shows the months with opportunities plus the current and next three months', function () {
@@ -170,6 +170,14 @@ it('leaves out leads, lost opportunities and other salespeople', function () {
     $component = Livewire::test(ListForecast::class);
 
     expect(forecastColumn($component, forecastMonth(1))->records->modelKeys())
+        ->toContain($mine->id)
+        ->not->toContain($theirs->id)
+        ->not->toContain($lead->id)
+        ->not->toContain($lost->id);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListForecast::class);
+
+    expect(forecastColumn($component, forecastMonth(1))->records->modelKeys())
         ->toContain($mine->id, $theirs->id)
         ->not->toContain($lead->id)
         ->not->toContain($lost->id);
@@ -185,7 +193,7 @@ it('filters the months with the core salesperson rule', function () {
     $mine = CRMHelper::opportunity(['expected_closing_date' => $date]);
     $theirs = CRMHelper::opportunity(['expected_closing_date' => $date, 'user_id' => $salesperson->id]);
 
-    $component = Livewire::test(ListForecast::class)->set('tableFilters', ['queryBuilder' => ['rules' => ['user' => [
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListForecast::class)->set('tableFilters', ['queryBuilder' => ['rules' => ['user' => [
         'type' => 'user',
         'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $salesperson->id]]],
     ]]]]);
@@ -335,7 +343,7 @@ it('applies the list toggle filters (won, lost) on the board', function () {
     $lost = CRMHelper::opportunity(['expected_closing_date' => now()->addMonth()->toDateString()]);
     $lost->markAsLost(null);
 
-    $ids = fn (array $presets): array => collect(forecastColumns(Livewire::test(ListForecast::class)
+    $ids = fn (array $presets): array => collect(forecastColumns(Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListForecast::class)
         ->set('kanbanFilters.user_id', null)
         ->set('kanbanFilters.period', 'all')
         ->set('kanbanFilters.presets', $presets)))

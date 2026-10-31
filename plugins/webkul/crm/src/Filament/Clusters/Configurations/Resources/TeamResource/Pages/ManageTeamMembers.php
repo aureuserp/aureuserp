@@ -12,8 +12,10 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
-use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
@@ -96,21 +98,83 @@ class ManageTeamMembers extends ManageRelatedRecords
         ];
     }
 
+    protected static function getMemberBadges(TeamMember $member): array
+    {
+        $ruleBased = TeamResource::usesRuleBasedAssignment();
+
+        return array_keys(array_filter([
+            'inactive' => ! $member->is_active,
+            'skipped'  => $ruleBased && $member->assignment_optout,
+            'rules'    => $ruleBased && filled($member->assignment_domain),
+        ]));
+    }
+
     public function table(Table $table): Table
     {
         $canEdit = fn (): bool => TeamResource::canEdit($this->getRecord());
 
         return $table
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('user'))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('user.partner'))
             ->columns([
                 Stack::make([
-                    ViewColumn::make('user.name')
-                        ->label(__('crm::filament/assignment.members.fields.salesperson'))
-                        ->searchable()
-                        ->view('crm::filament.teams.member-card'),
-                ]),
+                    ImageColumn::make('user.partner.avatar')
+                        ->height(200)
+                        ->width(250)
+                        ->alignCenter(),
+                    Stack::make([
+                        TextColumn::make('user.name')
+                            ->label(__('crm::filament/assignment.members.fields.salesperson'))
+                            ->weight(FontWeight::Bold)
+                            ->searchable(),
+                        Stack::make([
+                            TextColumn::make('user.email')
+                                ->label(__('security::filament/resources/user.form.sections.general-information.fields.email'))
+                                ->icon('heroicon-o-envelope')
+                                ->color('gray')
+                                ->limit(20),
+                        ])
+                            ->visible(fn (TeamMember $record): bool => filled($record->user?->email)),
+                        Stack::make([
+                            TextColumn::make('user.partner.phone')
+                                ->icon('heroicon-o-phone')
+                                ->color('gray')
+                                ->limit(30),
+                        ])
+                            ->visible(fn (TeamMember $record): bool => filled($record->user?->partner?->phone)),
+                        Stack::make([
+                            TextColumn::make('lead_limit')
+                                ->icon('heroicon-o-inbox-arrow-down')
+                                ->color('gray')
+                                ->state(fn (TeamMember $record): int => $record->leadsAssignedLastMonth())
+                                ->formatStateUsing(fn (int $state, TeamMember $record): string => __('crm::filament/clusters/configurations/resources/team.pages.members.lead-limit', ['assigned' => $state, 'max' => (int) $record->assignment_max]))
+                                ->tooltip(fn (int $state, TeamMember $record): string => __('crm::filament/clusters/configurations/resources/team.pages.members.lead-limit-tooltip', ['assigned' => $state, 'max' => (int) $record->assignment_max])),
+                        ])
+                            ->visible(fn (): bool => TeamResource::usesRuleBasedAssignment()),
+                        Stack::make([
+                            TextColumn::make('assignment_badges')
+                                ->badge()
+                                ->state(fn (TeamMember $record): array => static::getMemberBadges($record))
+                                ->formatStateUsing(fn (string $state, TeamMember $record): string => match ($state) {
+                                    'inactive' => __('crm::filament/clusters/configurations/resources/team.pages.members.inactive'),
+                                    'skipped'  => __('crm::filament/clusters/configurations/resources/team.pages.members.skipped'),
+                                    'rules'    => trans_choice('crm::filament/clusters/configurations/resources/team.pages.members.rules', count($record->assignment_domain['conditions'] ?? []), ['count' => count($record->assignment_domain['conditions'] ?? [])]),
+                                })
+                                ->color(fn (string $state): string => match ($state) {
+                                    'inactive' => 'gray',
+                                    'skipped'  => 'warning',
+                                    'rules'    => 'info',
+                                }),
+                        ])
+                            ->visible(fn (TeamMember $record): bool => filled(static::getMemberBadges($record))),
+                    ])->space(1),
+                ])->space(4),
             ])
-            ->contentGrid(['md' => 2, 'xl' => 3])
+            ->contentGrid([
+                'sm'  => 1,
+                'md'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
+            ])
             ->paginated(false)
             ->recordAction('edit')
             ->headerActions([

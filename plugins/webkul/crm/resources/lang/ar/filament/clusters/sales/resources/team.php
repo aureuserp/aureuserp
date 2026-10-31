@@ -43,14 +43,10 @@ return [
     ],
 
     'grid-menu' => [
-        'view'          => 'عرض',
-        'reporting'     => 'التقارير',
         'leads'         => 'العملاء المحتملون',
         'opportunities' => 'الفرص',
         'quotations'    => 'عروض الأسعار',
         'sales-orders'  => 'أوامر البيع',
-        'forecast'      => 'التوقعات',
-        'activities'    => 'الأنشطة',
         'color'         => 'اللون',
     ],
 ];

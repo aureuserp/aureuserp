@@ -1,6 +1,7 @@
 <?php
 
 use Filament\Actions\Exports\Models\Export;
+use Filament\Forms\Components\Select;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\ViewLayout;
@@ -16,7 +17,7 @@ use Webkul\Crm\Filament\Exports\ForecastExporter;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\Lead;
-use Webkul\Crm\Models\Stage;
+use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 
 require_once __DIR__.'/../../../Helpers/CRMHelper.php';
@@ -26,10 +27,10 @@ beforeEach(fn () => CRMHelper::bootstrap());
 function reportPagesDataset(): array
 {
     return [
-        'forecast'   => [ForecastResource::class, ListForecast::class.'@graph', null, ListForecast::class.'@list', 'view_any_crm_forecast'],
-        'pipeline'   => [PipelineAnalysisResource::class, ListPipelineAnalysis::class.'@graph', ListPipelineAnalysis::class.'@summary', ListPipelineAnalysis::class.'@list', 'view_any_crm_pipeline::analysis'],
-        'leads'      => [LeadAnalysisResource::class, ListLeadAnalysis::class.'@graph', ListLeadAnalysis::class.'@summary', ListLeadAnalysis::class.'@list', 'view_any_crm_lead::analysis'],
-        'activities' => [ActivityAnalysisResource::class, ListActivityAnalysis::class.'@graph', ListActivityAnalysis::class.'@summary', ListActivityAnalysis::class.'@list', 'view_any_crm_activity::analysis'],
+        'forecast'   => [ForecastResource::class, ListForecast::class.'@graph', ListForecast::class.'@list', 'view_any_crm_forecast'],
+        'pipeline'   => [PipelineAnalysisResource::class, ListPipelineAnalysis::class.'@graph', ListPipelineAnalysis::class.'@list', 'view_any_crm_pipeline::analysis'],
+        'leads'      => [LeadAnalysisResource::class, ListLeadAnalysis::class.'@graph', ListLeadAnalysis::class.'@list', 'view_any_crm_lead::analysis'],
+        'activities' => [ActivityAnalysisResource::class, ListActivityAnalysis::class.'@graph', ListActivityAnalysis::class.'@list', 'view_any_crm_activity::analysis'],
     ];
 }
 
@@ -66,19 +67,16 @@ function reportPagesActivityLog(Lead $lead, array $attributes = []): ActivityLog
 
 dataset('report pages', reportPagesDataset());
 
-dataset('report summary pages', array_filter(reportPagesDataset(), fn (array $report): bool => $report[2] !== null));
-
-it('renders the graph, summary and list pages with the report permission', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+it('renders the graph and list pages with the report permission', function (string $resource, string $graph, string $list, string $permission) {
     CRMHelper::actingAs([$permission]);
 
     reportPage($graph)->assertOk()->assertSeeHtml('crm-report-graph');
-    $summary && reportPage($summary)->assertOk();
     reportPage($list)->assertOk();
 })->with('report pages');
 
-it('forbids the graph, summary and list pages without the report permission', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+it('forbids the graph and list pages without the report permission', function (string $resource, string $graph, string $list, string $permission) {
     $otherReportPermissions = collect(reportPagesDataset())
-        ->pluck(4)
+        ->pluck(3)
         ->reject(fn (string $other): bool => $other === $permission)
         ->values()
         ->all();
@@ -86,11 +84,10 @@ it('forbids the graph, summary and list pages without the report permission', fu
     CRMHelper::actingAs([...$otherReportPermissions, ...CRMHelper::permissionsFor(['lead', 'opportunity'])]);
 
     reportPage($graph)->assertForbidden();
-    $summary && reportPage($summary)->assertForbidden();
     reportPage($list)->assertForbidden();
 })->with('report pages');
 
-it('authorizes the report resource with its own permission only', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+it('authorizes the report resource with its own permission only', function (string $resource, string $graph, string $list, string $permission) {
     CRMHelper::actingAs([]);
 
     expect($resource::canViewAny())->toBeFalse();
@@ -100,17 +97,17 @@ it('authorizes the report resource with its own permission only', function (stri
     expect($resource::canViewAny())->toBeTrue();
 })->with('report pages');
 
-it('shows the left menu of the reporting section', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+it('shows the left menu of the reporting section', function (string $resource, string $graph, string $list, string $permission) {
     CRMHelper::actingAs(['view_any_crm_forecast', 'view_any_crm_pipeline::analysis', 'view_any_crm_lead::analysis', 'view_any_crm_activity::analysis']);
 
     expect(reportPage($graph)->instance()->getSubNavigation())->not->toBeEmpty();
 })->with('report pages');
 
 describe('view switcher', function () {
-    it('shows every view in the toolbar switcher with the current one active', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+    it('shows every view in the toolbar switcher with the current one active', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
-        foreach (array_filter([$graph, $summary, $list]) as $page) {
+        foreach ([$graph, $list] as $page) {
             $component = reportPage($page)->assertSeeHtml('crm-layout-switcher');
 
             expect($component->instance()->getViewLayouts())->toBe($resource::getReportLayouts())
@@ -124,28 +121,37 @@ describe('view switcher', function () {
             ->and(PipelineAnalysisResource::getReportLayouts())->not->toContain(ViewLayout::KANBAN);
     });
 
-    it('switches between graph, summary and list without leaving the page', function () {
+    it('switches between graph and list without leaving the page', function () {
         CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
         reportPage(ListPipelineAnalysis::class.'@list')
-            ->call('switchViewLayout', 'summary')
-            ->assertSet('viewLayout', 'summary')
-            ->assertSeeHtml('crm-report-summary')
             ->call('switchViewLayout', 'graph')
             ->assertSet('viewLayout', 'graph')
             ->assertSeeHtml('crm-report-graph');
     });
 
-    it('shows the saved view tabs on the report lists', function (string $list, string $permission, array $views) {
+    it('shows the saved view tabs on the report lists and opens on the first one', function (string $list, string $permission, array $views) {
         CRMHelper::actingAs([$permission]);
 
-        expect(array_keys(reportPage($list)->instance()->getCachedFavoriteTableViews()))->toContain('default', ...$views);
+        $component = reportPage($list)->assertSet('activeTableView', $views[0]);
+
+        expect(array_keys($component->instance()->getCachedFavoriteTableViews()))->toContain('default', ...$views);
     })->with([
         'forecast'   => [ListForecast::class, 'view_any_crm_forecast', ['my_pipeline', 'open', 'won', 'lost']],
         'pipeline'   => [ListPipelineAnalysis::class, 'view_any_crm_pipeline::analysis', ['my_pipeline', 'open', 'won', 'lost']],
         'leads'      => [ListLeadAnalysis::class, 'view_any_crm_lead::analysis', ['leads', 'opportunities', 'mine', 'won', 'lost']],
         'activities' => [ListActivityAnalysis::class, 'view_any_crm_activity::analysis', ['mine', 'leads', 'opportunities', 'this_month']],
     ]);
+
+    it('opens the report on the Default tab when it comes filtered to a team', function () {
+        CRMHelper::actingAs(['view_any_crm_activity::analysis']);
+
+        $team = Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
+
+        Livewire::withQueryParams(['filters' => ['team_ids' => ['values' => [(string) $team->id]]]])
+            ->test(ListActivityAnalysis::class)
+            ->assertSet('activeTableView', 'default');
+    });
 
     it('offers the bulk menu on the report lists', function () {
         CRMHelper::actingAs(['view_any_crm_lead::analysis', 'view_any_crm_activity::analysis']);
@@ -164,7 +170,7 @@ describe('view switcher', function () {
 });
 
 describe('graph', function () {
-    it('starts with the report defaults and the core table filters', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+    it('starts with the report defaults and the core table filters', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
         /** @var class-string<Report> $report */
@@ -184,11 +190,13 @@ describe('graph', function () {
     it('offers the report measures and dimensions in the graph controls', function () {
         CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
-        $graph = Livewire::test(ListPipelineAnalysis::class)->instance()->getGraph();
+        $report = PipelineAnalysisResource::getReport();
 
-        expect(array_keys($graph['measures']))->toBe(array_keys(PipelineAnalysisResource::getReport()::getMeasureOptions()))
-            ->and(array_keys($graph['dimensions']))->toBe(array_keys(PipelineAnalysisResource::getReport()::getDimensionOptions()))
-            ->and($graph['chart']['type'])->toBe('bar');
+        $component = Livewire::test(ListPipelineAnalysis::class)
+            ->assertFormFieldExists('graphMeasure', 'graph', fn (Select $field): bool => $field->getOptions() === $report::getMeasureOptions() && ! $field->canSelectPlaceholder())
+            ->assertFormFieldExists('graphSplitBy', 'graph', fn (Select $field): bool => $field->getOptions() === $report::getDimensionOptions() && $field->canSelectPlaceholder());
+
+        expect($component->instance()->getGraph()['chart']['type'])->toBe('bar');
     });
 
     it('switches the measure and split and always draws a bar chart', function () {
@@ -231,52 +239,8 @@ describe('graph', function () {
     });
 });
 
-describe('summary', function () {
-    it('is a groups-only table grouped by the report default, with one column per measure', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
-        CRMHelper::actingAs([$permission]);
-
-        /** @var class-string<Report> $report */
-        $report = $resource::getReport();
-
-        $table = reportPage($summary)->instance()->getTable();
-
-        $defaultDimension = $report::getDimension($report::getDefaultGroupBy());
-
-        expect($table->isGroupsOnly())->toBeTrue()
-            ->and($table->getDefaultGroup()?->getId())->toBe($report::getDefaultGroupBy())
-            ->and(array_keys($table->getGroups()))->toBe(array_keys($report::dimensions()))
-            ->and(array_keys($table->getColumns()))->toBe([
-                $defaultDimension->getGroupColumn(),
-                ...array_map(fn (string $measure): string => 'measure_'.$measure, array_keys($report::measures())),
-            ]);
-    })->with('report summary pages');
-
-    it('renames the first column after the chosen group', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
-        CRMHelper::actingAs([$permission]);
-
-        $component = reportPage($summary)->set('tableGrouping', 'salesperson');
-
-        expect(array_key_first($component->instance()->getTable()->getColumns()))->toBe('user.name');
-
-        $component->set('tableGrouping', 'stage');
-
-        expect(array_key_first($component->instance()->getTable()->getColumns()))->toBe('stage.name');
-    })->with('report summary pages');
-
-    it('shows a row per group', function () {
-        CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
-
-        $stage = Stage::factory()->create(['name' => 'Summary Row Stage']);
-        CRMHelper::opportunity(['stage_id' => $stage->id, 'expected_revenue' => 1234]);
-
-        reportPage(ListPipelineAnalysis::class.'@summary')
-            ->assertOk()
-            ->assertSee('Summary Row Stage');
-    });
-});
-
 describe('list', function () {
-    it('turns on the default quick filters', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+    it('turns on the default quick filters', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
         /** @var class-string<Report> $report */
@@ -314,7 +278,7 @@ describe('list', function () {
 
         $theirs = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth(), 'user_id' => reportPagesUser()->id]);
 
-        reportPage(ListForecast::class.'@list')
+        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])->test(ListForecast::class)
             ->filterTable('my_pipeline', false)
             ->assertCanSeeTableRecords([$theirs]);
     });
@@ -342,6 +306,10 @@ describe('list', function () {
         $old = CRMHelper::opportunity(['created_at' => now()->subYear()->startOfYear()]);
 
         reportPage(ListLeadAnalysis::class.'@list')
+            ->assertCanSeeTableRecords([$lead, $lost])
+            ->assertCanNotSeeTableRecords([$opportunity, $old]);
+
+        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])->test(ListLeadAnalysis::class)
             ->assertCanSeeTableRecords([$lead, $opportunity, $lost])
             ->assertCanNotSeeTableRecords([$old]);
     });
@@ -361,10 +329,10 @@ describe('list', function () {
 });
 
 describe('forecast export', function () {
-    it('has no export button in the header of any report view', function (string $resource, string $graph, ?string $summary, string $list, string $permission) {
+    it('has no export button in the header of any report view', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
-        foreach (array_filter([$graph, $summary, $list]) as $page) {
+        foreach ([$graph, $list] as $page) {
             reportPage($page)->assertActionDoesNotExist('export');
         }
     })->with('report pages');

@@ -193,9 +193,7 @@ class ListLeads extends ListRecords
         return $kanban
             ->recordUrl(fn (Lead $record): string => LeadResource::getUrl('view', ['record' => $record]))
             ->columnWidth('300px')
-            ->boardView('crm::filament.kanban.board')
-            ->columnView('crm::filament.kanban.column')
-            ->cardView('crm::filament.kanban.opportunity-card');
+            ->boardView('crm::filament.kanban.board');
     }
 
     protected function getKanbanQuery(KanbanBoard $board): Builder

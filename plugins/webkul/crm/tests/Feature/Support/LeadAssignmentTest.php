@@ -1,5 +1,7 @@
 <?php
 
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Schemas\Components\Text;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -8,6 +10,7 @@ use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageCRM;
+use Webkul\Crm\Filament\Support\AssignmentRuleFields;
 use Webkul\Crm\Models\CRMTeam;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\TeamMember;
@@ -430,4 +433,19 @@ describe('assign leads modal', function () {
             ->and(Lead::withTrashed()->find($selected->id)->user_id)->toBe($seller->id)
             ->and(Lead::withTrashed()->find($skipped->id)->user_id)->toBeNull();
     });
+});
+
+it('shows the records matching the rules as a filament table with an empty message', function () {
+    $lead = CRMHelper::lead(['name' => 'Matching rules table lead', 'team_id' => null]);
+    $rules = fn (string $name): array => ['match' => 'all', 'conditions' => [['field' => 'name', 'operator' => 'contains', 'value' => $name]]];
+
+    [$entries, $showing] = AssignmentRuleFields::matchingRecordsSchema($rules('Matching rules table lead'), AssignmentRuleFields::unassignedToTeam());
+
+    expect($entries)->toBeInstanceOf(RepeatableEntry::class)
+        ->and($entries->getTableColumns())->toHaveCount(7)
+        ->and($entries->getPlaceholder())->toBe(__('crm::filament/assignment.rules.records-modal.empty'))
+        ->and($showing)->toBeInstanceOf(Text::class)
+        ->and($showing->isHidden())->toBeTrue()
+        ->and(AssignmentRuleFields::matchingRecords($rules('Matching rules table lead'), AssignmentRuleFields::unassignedToTeam())['records']->modelKeys())->toBe([$lead->id])
+        ->and(AssignmentRuleFields::matchingRecords($rules('No lead has this name'), AssignmentRuleFields::unassignedToTeam())['records'])->toBeEmpty();
 });

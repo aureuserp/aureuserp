@@ -11,6 +11,9 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn as EntryTableColumn;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
@@ -106,7 +109,7 @@ class AssignmentRuleFields
                         ->link()
                         ->modalHeading(__('crm::filament/assignment.rules.records-modal.heading'))
                         ->modalDescription(__('crm::filament/assignment.rules.records-modal.description'))
-                        ->modalContent(fn (Get $get) => view('crm::filament.assignment.matching-records', static::matchingRecords(['match' => $get('match'), 'conditions' => $get('conditions')], $scope)))
+                        ->schema(fn (Get $get): array => static::matchingRecordsSchema(['match' => $get('match'), 'conditions' => $get('conditions')], $scope))
                         ->modalSubmitAction(false)
                         ->modalCancelActionLabel(__('crm::filament/assignment.rules.records-modal.close'))
                         ->modalWidth('5xl'),
@@ -146,6 +149,49 @@ class AssignmentRuleFields
         return [
             'total'   => (clone $query)->count(),
             'records' => $query->with(['user', 'stage', 'partner', 'company.currency'])->latest()->limit($limit)->get(),
+        ];
+    }
+
+    public static function matchingRecordsSchema(array $rules, ?Closure $scope = null): array
+    {
+        ['total' => $total, 'records' => $records] = static::matchingRecords($rules, $scope);
+
+        return [
+            RepeatableEntry::make('matchingRecords')
+                ->hiddenLabel()
+                ->state($records->all())
+                ->placeholder(__('crm::filament/assignment.rules.records-modal.empty'))
+                ->table([
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.name')),
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.type')),
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.contact')),
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.email')),
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.salesperson')),
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.expected-revenue'))->alignEnd(),
+                    EntryTableColumn::make(__('crm::filament/assignment.rules.records-modal.columns.stage')),
+                ])
+                ->schema([
+                    TextEntry::make('name')
+                        ->weight('medium')
+                        ->url(fn (Lead $record): ?string => LeadResourceResolver::viewUrl($record), shouldOpenInNewTab: true),
+                    TextEntry::make('type')
+                        ->badge()
+                        ->color(fn (Lead $record): string => $record->isLead() ? 'gray' : 'primary'),
+                    TextEntry::make('contact')
+                        ->state(fn (Lead $record): ?string => $record->contact_name ?: $record->partner?->name)
+                        ->placeholder('—'),
+                    TextEntry::make('email')
+                        ->placeholder('—'),
+                    TextEntry::make('user.name')
+                        ->placeholder('—'),
+                    TextEntry::make('expected_revenue')
+                        ->money(fn (Lead $record): string => $record->company?->currency?->code ?? default_currency_code())
+                        ->alignEnd(),
+                    TextEntry::make('stage.name')
+                        ->placeholder('—'),
+                ]),
+            Text::make(__('crm::filament/assignment.rules.records-modal.showing', ['shown' => $records->count(), 'total' => $total]))
+                ->visible($total > $records->count()),
         ];
     }
 

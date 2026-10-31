@@ -20,12 +20,12 @@ return [
         ],
 
         'members' => [
-            'title'         => ':team — الأعضاء',
-            'inactive'      => 'غير نشط',
-            'skipped'       => 'يتخطى التعيين التلقائي',
-            'rules'         => '{1} :count قاعدة|[0,*] :count قواعد',
-            'leads-30-days' => 'العملاء المحتملون (30 يومًا)',
-            'gauge'         => 'تم تعيين :assigned من :max عميل محتمل في آخر 30 يومًا',
+            'title'              => ':team — الأعضاء',
+            'inactive'           => 'غير نشط',
+            'skipped'            => 'يتخطى التعيين التلقائي',
+            'rules'              => '{1} :count قاعدة|[0,*] :count قواعد',
+            'lead-limit'         => 'حد العملاء المحتملين (30 يومًا): :assigned / :max',
+            'lead-limit-tooltip' => 'تم تعيين :assigned من :max عميل محتمل في آخر 30 يومًا',
         ],
     ],
 ];
