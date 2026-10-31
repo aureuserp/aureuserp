@@ -34,3 +34,4 @@ opencode.json
 
 # Credential files (keystores, private keys, etc.)
 /credentials/
+.playwright-mcp

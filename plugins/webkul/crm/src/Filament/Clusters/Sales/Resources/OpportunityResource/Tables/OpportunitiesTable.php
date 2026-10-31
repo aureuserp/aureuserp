@@ -1,0 +1,199 @@
+<?php
+
+namespace Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables;
+
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ExportBulkAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Table;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Crm\Filament\Actions\MarkLeadsAsLostBulkAction;
+use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
+use Webkul\Crm\Filament\Actions\SendLeadEmailAction;
+use Webkul\Crm\Filament\Actions\SendLeadsEmailBulkAction;
+use Webkul\Crm\Filament\Actions\SendLeadSMSAction;
+use Webkul\Crm\Filament\Actions\SendLeadsSMSBulkAction;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsLostAction;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Actions\MarkAsWonAction;
+use Webkul\Crm\Filament\Exports\OpportunityExporter;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
+use Webkul\Crm\Models\Lead;
+
+class OpportunitiesTable
+{
+    public static function configure(Table $table, bool $withinTeam = false): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.name'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('medium'),
+                TextColumn::make('partner.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.customer'))
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('—'),
+                TextColumn::make('stage.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.stage'))
+                    ->badge()
+                    ->color(fn (Lead $record): string => $record->trashed() ? 'danger' : ($record->isWon() ? 'success' : 'primary'))
+                    ->sortable(),
+                TextColumn::make('expected_revenue')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-revenue'))
+                    ->money(fn (Lead $record): ?string => $record->company?->currency?->code)
+                    ->sortable(),
+                TextColumn::make('recurring_revenue')
+                    ->label(__('crm::filament/clusters/configurations/resources/recurring-plan.opportunity.recurring-revenue'))
+                    ->money(fn (Lead $record): ?string => $record->company?->currency?->code)
+                    ->description(fn (Lead $record): ?string => $record->recurringPlan?->name)
+                    ->sortable()
+                    ->visible(fn (): bool => RecurringPlanResource::isRecurringRevenueEnabled())
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('probability')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.probability'))
+                    ->numeric(decimalPlaces: 0)
+                    ->suffix('%')
+                    ->sortable(),
+                TextColumn::make('priority')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.priority'))
+                    ->badge()
+                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.salesperson'))
+                    ->sortable()
+                    ->placeholder('—'),
+                TextColumn::make('team.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.team'))
+                    ->sortable()
+                    ->placeholder('—')
+                    ->hidden($withinTeam),
+                TextColumn::make('expected_closing_date')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-closing'))
+                    ->date()
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable(),
+                TextColumn::make('tags.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.tags'))
+                    ->badge()
+                    ->toggleable(),
+                TextColumn::make('email')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.email'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('phone')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.phone'))
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('medium.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.medium'))
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('lostReason.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.lost-reason'))
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.created-at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->groups(array_values(array_filter([
+                Group::make('stage.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.stage'))
+                    ->collapsible(),
+                $withinTeam ? null : Group::make('team.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.team'))
+                    ->collapsible(),
+                Group::make('user.name')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.salesperson'))
+                    ->collapsible(),
+                Group::make('priority')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.priority'))
+                    ->collapsible(),
+                Group::make('expected_closing_date')
+                    ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.expected-closing'))
+                    ->date()
+                    ->collapsible(),
+            ])))
+            ->defaultSort('created_at', 'desc')
+            ->filtersFormColumns(2)
+            ->filters([
+                LeadTableFilters::opportunities(withinTeam: $withinTeam),
+            ])
+            ->recordActions([
+                ActivityTableAction::make()
+                    ->tooltip(__('crm::filament/clusters/sales/resources/opportunity.table.actions.schedule-activity.label'))
+                    ->visible(fn (Lead $record): bool => ! $record->trashed() && OpportunityResource::canEdit($record)),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->hidden(fn (Lead $record): bool => $record->trashed()),
+                    SendLeadEmailAction::make(),
+                    SendLeadSMSAction::make(),
+                    MarkAsWonAction::make(),
+                    MarkAsLostAction::make(),
+                    RestoreAction::make()
+                        ->label(__('crm::filament/clusters/sales/resources/opportunity.table.actions.restore.label'))
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('crm::filament/clusters/sales/resources/opportunity.table.actions.restore.notification.title'))
+                                ->body(__('crm::filament/clusters/sales/resources/opportunity.table.actions.restore.notification.body')),
+                        ),
+                    ForceDeleteAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('crm::filament/clusters/sales/resources/opportunity.table.actions.force-delete.notification.title'))
+                                ->body(__('crm::filament/clusters/sales/resources/opportunity.table.actions.force-delete.notification.body')),
+                        ),
+                ]),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkActionGroup::make([
+                        ExportBulkAction::make()
+                            ->label(__('crm::filament/transfers.actions.export.label'))
+                            ->icon('heroicon-o-arrow-up-tray')
+                            ->exporter(OpportunityExporter::class),
+                        RestoreBulkAction::make()
+                            ->successNotification(
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.notification.title'))
+                                    ->body(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.restore.notification.body')),
+                            ),
+                        DeleteBulkAction::make(),
+                        ForceDeleteBulkAction::make()
+                            ->successNotification(
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.force-delete.notification.title'))
+                                    ->body(__('crm::filament/clusters/sales/resources/opportunity.table.bulk-actions.force-delete.notification.body')),
+                            ),
+                    ])->dropdown(false),
+                    BulkActionGroup::make([
+                        MarkLeadsAsLostBulkAction::make(),
+                        MergeLeadsBulkAction::make(),
+                        SendLeadsEmailBulkAction::make(),
+                        SendLeadsSMSBulkAction::make(),
+                    ])->dropdown(false),
+                ]),
+            ]);
+    }
+}

@@ -1,0 +1,45 @@
+<?php
+
+namespace Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages;
+
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
+use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
+use Webkul\Crm\Services\LeadAssignment;
+use Webkul\Crm\Services\LeadScoring;
+
+class CreateLead extends CreateRecord
+{
+    use HasCRMClusterNavigation;
+
+    protected static string $resource = LeadResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['type'] = LeadType::LEAD;
+
+        return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return LeadResource::getUrl('view', ['record' => $this->getRecord()]);
+    }
+
+    protected function getCreatedNotification(): Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title(__('crm::filament/clusters/leads/resources/lead/pages/create-lead.notification.title'))
+            ->body(__('crm::filament/clusters/leads/resources/lead/pages/create-lead.notification.body'));
+    }
+
+    protected function afterCreate(): void
+    {
+        app(LeadAssignment::class)->assignLead($this->getRecord()->load('tags'));
+
+        app(LeadScoring::class)->refresh($this->getRecord()->load('tags'));
+    }
+}

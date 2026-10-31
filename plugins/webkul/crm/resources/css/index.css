@@ -1,0 +1,618 @@
+@import "tailwindcss";
+@import "../../../support/resources/css/colors.css";
+
+@variant dark (&:where(.dark, .dark *));
+
+@source '../../resources/views';
+@source '../../../../../vendor/wezlo/filament-kanban/resources/views';
+
+/*
+ * Kanban CSS
+ */
+.crm-kanban-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.crm-kanban-search {
+    width: 16rem;
+    max-width: 100%;
+    flex: none;
+}
+
+.crm-kanban-filters {
+    position: relative;
+}
+
+.crm-kanban-filters-panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    inset-inline-start: 0;
+    z-index: 30;
+    width: 20rem;
+    max-width: calc(100vw - 2rem);
+}
+
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button,
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button:hover {
+    color: #fff;
+    background-color: var(--primary-500);
+    border-color: var(--primary-500);
+}
+
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button::after,
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button:hover::after {
+    background-color: var(--primary-500);
+    border-right-color: var(--primary-500);
+    border-top-color: var(--primary-500);
+}
+
+.crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button * {
+    color: inherit;
+}
+
+.fi-ta-ctn .crm-kanban-board {
+    padding: 1rem 1rem 0;
+}
+
+.fi-ta-main:has(> .crm-kanban-board) > .fi-ta-content-ctn {
+    display: none;
+}
+
+.crm-kanban-column-primary {
+    background-color: var(--primary-50);
+    border-color: var(--primary-200);
+}
+
+.dark .crm-kanban-column-primary {
+    background-color: color-mix(in oklab, var(--primary-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--primary-400) 60%, transparent);
+}
+
+.crm-kanban-count-primary {
+    background-color: var(--primary-100);
+    color: var(--primary-700);
+}
+
+.dark .crm-kanban-count-primary {
+    background-color: color-mix(in oklab, var(--primary-400) 20%, transparent);
+    color: var(--primary-400);
+}
+
+.crm-kanban-column-success {
+    background-color: var(--success-50);
+    border-color: var(--success-200);
+}
+
+.dark .crm-kanban-column-success {
+    background-color: color-mix(in oklab, var(--success-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--success-400) 60%, transparent);
+}
+
+.crm-kanban-count-success {
+    background-color: var(--success-100);
+    color: var(--success-700);
+}
+
+.dark .crm-kanban-count-success {
+    background-color: color-mix(in oklab, var(--success-400) 20%, transparent);
+    color: var(--success-400);
+}
+
+.crm-kanban-column-warning {
+    background-color: var(--warning-50);
+    border-color: var(--warning-200);
+}
+
+.dark .crm-kanban-column-warning {
+    background-color: color-mix(in oklab, var(--warning-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--warning-400) 60%, transparent);
+}
+
+.crm-kanban-count-warning {
+    background-color: var(--warning-100);
+    color: var(--warning-700);
+}
+
+.dark .crm-kanban-count-warning {
+    background-color: color-mix(in oklab, var(--warning-400) 20%, transparent);
+    color: var(--warning-400);
+}
+
+.crm-kanban-column-danger {
+    background-color: var(--danger-50);
+    border-color: var(--danger-200);
+}
+
+.dark .crm-kanban-column-danger {
+    background-color: color-mix(in oklab, var(--danger-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--danger-400) 60%, transparent);
+}
+
+.crm-kanban-count-danger {
+    background-color: var(--danger-100);
+    color: var(--danger-700);
+}
+
+.dark .crm-kanban-count-danger {
+    background-color: color-mix(in oklab, var(--danger-400) 20%, transparent);
+    color: var(--danger-400);
+}
+
+.crm-kanban-column-info {
+    background-color: var(--info-50);
+    border-color: var(--info-200);
+}
+
+.dark .crm-kanban-column-info {
+    background-color: color-mix(in oklab, var(--info-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--info-400) 60%, transparent);
+}
+
+.crm-kanban-count-info {
+    background-color: var(--info-100);
+    color: var(--info-700);
+}
+
+.dark .crm-kanban-count-info {
+    background-color: color-mix(in oklab, var(--info-400) 20%, transparent);
+    color: var(--info-400);
+}
+
+.crm-kanban-column-gray {
+    background-color: var(--gray-50);
+    border-color: var(--gray-200);
+}
+
+.dark .crm-kanban-column-gray {
+    background-color: rgb(255 255 255 / 0.05);
+    border-color: var(--gray-600);
+}
+
+.crm-kanban-count-gray {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.dark .crm-kanban-count-gray {
+    background-color: rgb(255 255 255 / 0.1);
+    color: var(--gray-400);
+}
+
+.crm-kanban-filter-active {
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+    --tw-ring-color: var(--primary-200);
+}
+
+.dark .crm-kanban-filter-active {
+    background-color: color-mix(in oklab, var(--primary-400) 10%, transparent);
+    color: var(--primary-400);
+    --tw-ring-color: color-mix(in oklab, var(--primary-400) 30%, transparent);
+}
+
+.crm-kanban-color-dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+
+.crm-kanban-avatar {
+    background-color: var(--primary-100);
+    color: var(--primary-700);
+}
+
+.dark .crm-kanban-avatar {
+    background-color: color-mix(in oklab, var(--primary-400) 20%, transparent);
+    color: var(--primary-300);
+}
+
+.crm-kanban-board .fi-kanban-column,
+.crm-kanban-board .crm-kanban-add-column {
+    height: calc(100dvh - var(--crm-board-offset, 19.5rem));
+    max-height: none;
+}
+
+html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
+    visibility: hidden;
+}
+
+.crm-kanban-board .crm-kanban-add-column-opening {
+    cursor: progress;
+    border-color: var(--primary-400);
+    color: var(--primary-600);
+    animation: crm-kanban-add-column-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes crm-kanban-add-column-pulse {
+    0%,
+    100% {
+        background-color: transparent;
+    }
+
+    50% {
+        background-color: color-mix(in oklab, var(--primary-500) 8%, transparent);
+    }
+}
+
+.crm-kanban-board .crm-kanban-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 2rem 1rem;
+    border: 1px dashed var(--gray-200);
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.dark .crm-kanban-board .crm-kanban-empty {
+    border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+}
+
+.crm-kanban-board .fi-kanban-cards > .crm-kanban-empty:not(:only-child) {
+    display: none;
+}
+
+.crm-kanban-board [data-kanban-card].crm-kanban-card-saving {
+    pointer-events: none;
+    animation: crm-kanban-card-saving 1s ease-in-out infinite;
+}
+
+@keyframes crm-kanban-card-saving {
+    50% {
+        opacity: 0.55;
+    }
+}
+
+.crm-kanban-board .crm-kanban-empty-board {
+    flex: 1 1 auto;
+    min-height: 16rem;
+}
+
+.crm-kanban-board .crm-kanban-column-new {
+    animation: crm-kanban-column-new 0.9s ease-in-out 3;
+}
+
+@keyframes crm-kanban-column-new {
+    0%,
+    100% {
+        box-shadow: inset 0 0 0 0 transparent;
+    }
+
+    50% {
+        box-shadow: inset 0 0 0 3px var(--primary-500);
+        background-color: var(--primary-50);
+    }
+}
+
+.fi-main:has(.crm-board-shimmer[style*='block']) .fi-ta-content-ctn,
+.fi-main:has(.crm-board-shimmer[style*='block']) .fi-ta-main > .fi-ta-empty-state,
+.fi-main:has(.crm-board-shimmer[style*='block']) .fi-ta-footer,
+.fi-main:has(.crm-board-shimmer[style*='block']) .fi-pagination {
+    display: none;
+}
+
+.crm-board-shimmer {
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.crm-board-shimmer-columns {
+    display: flex;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.crm-board-shimmer-column {
+    flex: 0 0 300px;
+    height: var(--crm-shimmer-height, calc(100dvh - var(--crm-board-offset, 19.5rem)));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    background-color: var(--gray-50);
+}
+
+.crm-board-shimmer-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: white;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.crm-board-shimmer-line {
+    height: 0.75rem;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+    background-size: 200% 100%;
+    animation: crm-board-shimmer 1.2s ease-in-out infinite;
+}
+
+.crm-board-shimmer-title {
+    width: 40%;
+    height: 1rem;
+}
+
+.crm-board-shimmer-bar {
+    height: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.dark .crm-board-shimmer-column {
+    border-color: var(--gray-700);
+    background-color: rgb(255 255 255 / 0.05);
+}
+
+.dark .crm-board-shimmer-card {
+    background-color: var(--gray-900);
+}
+
+.dark .crm-board-shimmer-line {
+    background: linear-gradient(90deg, var(--gray-700) 25%, var(--gray-600) 50%, var(--gray-700) 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes crm-board-shimmer {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+.crm-view-shimmer[style*='block'] ~ *,
+.fi-ta-ctn:has(.crm-view-shimmer[style*='block']) .fi-pagination {
+    display: none !important;
+}
+
+.crm-view-shimmer {
+    padding: 1rem;
+}
+
+.crm-list-shimmer {
+    display: flex;
+    flex-direction: column;
+}
+
+.crm-list-shimmer-row {
+    display: grid;
+    grid-template-columns: 1rem 3fr 2fr 2fr 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.875rem 0.5rem;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.crm-list-shimmer-row:last-child {
+    border-bottom: 0;
+}
+
+.crm-grid-shimmer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+}
+
+.crm-grid-shimmer .crm-board-shimmer-card {
+    border: 1px solid var(--gray-200);
+}
+
+.crm-grid-shimmer-block {
+    height: 4rem;
+    border-radius: 0.5rem;
+}
+
+.crm-graph-shimmer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem;
+}
+
+.crm-graph-shimmer-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 1rem;
+    height: 300px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.crm-graph-shimmer-bar {
+    flex: 1;
+    max-width: 28px;
+    border-radius: 4px 4px 0 0;
+}
+
+.dark .crm-list-shimmer-row,
+.dark .crm-graph-shimmer-bars,
+.dark .crm-grid-shimmer .crm-board-shimmer-card {
+    border-color: var(--gray-700);
+}
+
+.fi-ta-main:has(> :is(.crm-leads-graph, .crm-records-graph)) > .fi-ta-content-ctn {
+    display: none;
+}
+
+.crm-leads-graph {
+    padding: 1rem;
+}
+
+.crm-layout-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.125rem;
+    border-radius: 0.5rem;
+    background-color: var(--gray-100);
+}
+
+.dark .crm-layout-switcher {
+    background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+}
+
+.crm-layout-switcher .fi-icon-btn {
+    margin: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+}
+
+.crm-layout-switcher .fi-icon-btn[aria-selected="true"] {
+    background-color: var(--color-white);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+}
+
+.dark .crm-layout-switcher .fi-icon-btn[aria-selected="true"] {
+    background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    box-shadow: none;
+}
+
+.crm-kanban-board .crm-kanban-shimmer,
+.crm-kanban-board.crm-kanban-loading .crm-kanban-columns {
+    display: none;
+}
+
+.crm-kanban-board.crm-kanban-loading .crm-kanban-shimmer,
+html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-shimmer {
+    display: block;
+}
+
+html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-shimmer {
+    position: absolute;
+    inset: 1rem 1rem auto;
+    z-index: 1;
+}
+
+.crm-kanban-shimmer {
+    padding-bottom: 1rem;
+}
+
+.fi-main:has(.crm-kanban-board) .crm-board-shimmer {
+    display: none !important;
+}
+
+.fi-body:has(.crm-kanban-board) .fi-main-ctn {
+    min-height: 0;
+}
+
+body:has(.crm-kanban-board) {
+    padding-bottom: 0 !important;
+}
+
+.crm-team-color-dot {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+}
+
+.dark .crm-team-color-dot {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+
+:is(.crm-team-card-chart, .crm-leads-graph, .crm-records-graph) .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-aside) {
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    --tw-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+:is(.crm-team-card-chart, .crm-leads-graph) .fi-wi-chart .fi-section:not(.fi-section-not-contained):not(.fi-divided) > .fi-section-content-ctn > .fi-section-content {
+    padding: 0;
+}
+
+.crm-contact-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0.375rem;
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-400);
+}
+
+.crm-contact-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.crm-contact-avatar-sm {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+}
+
+.crm-contact-avatar-sm .crm-contact-avatar-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.dark .crm-contact-avatar {
+    background-color: rgb(255 255 255 / 0.05);
+    color: var(--color-gray-500);
+}
+
+.crm-rule-rows table,
+.crm-rule-rows thead,
+.crm-rule-rows tbody,
+.crm-rule-rows tr,
+.crm-rule-rows td {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.crm-rule-rows thead {
+    display: none !important;
+}
+
+.crm-rule-rows,
+.crm-rule-rows > table {
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.crm-rule-rows td {
+    padding: 0 0.5rem 0.5rem 0 !important;
+    vertical-align: middle;
+}
+
+.crm-rule-rows td:last-child {
+    padding-inline-end: 0 !important;
+}
+
+.crm-rule-rows .fi-fo-table-repeater-actions {
+    justify-content: flex-start;
+    padding-inline-start: 0.25rem;
+}
+
+.crm-rule-rows > table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.crm-rule-rows td:last-child {
+    width: 2.75rem;
+}

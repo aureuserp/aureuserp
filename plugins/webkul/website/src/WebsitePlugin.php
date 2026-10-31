@@ -10,6 +10,7 @@ use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
+use Webkul\Website\Enums\VisitorCookie;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
@@ -65,6 +66,10 @@ class WebsitePlugin implements Plugin
                             ->sort(2)
                             ->visible(fn (): bool => (bool) count(Account::getClusteredComponents())),
                     ])
+                    ->renderHook(
+                        PanelsRenderHook::BODY_END,
+                        fn (): string => '<script>try{document.cookie="'.VisitorCookie::TIMEZONE->value.'="+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)+";path=/;max-age=31536000;samesite=lax"}catch(e){}</script>',
+                    )
                     ->navigationItems($this->getNavigationItems()->toArray())
                     ->renderHook(
                         PanelsRenderHook::TOPBAR_END,

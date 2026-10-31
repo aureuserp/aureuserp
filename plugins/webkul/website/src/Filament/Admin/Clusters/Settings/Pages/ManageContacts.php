@@ -4,12 +4,17 @@ namespace Webkul\Website\Filament\Admin\Clusters\Settings\Pages;
 
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use UnitEnum;
 use Webkul\Support\Filament\Clusters\Settings;
+use Webkul\Website\Enums\ContactFormAction;
+use Webkul\Website\Services\ContactFormHandler;
 use Webkul\Website\Settings\ContactSettings;
 
 class ManageContacts extends SettingsPage
@@ -50,10 +55,36 @@ class ManageContacts extends SettingsPage
         return __('website::filament/admin/clusters/settings/pages/manage-contacts.title');
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['contact_form_action'] = ContactFormHandler::action()->value;
+
+        return $data;
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
+                Section::make(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.title'))
+                    ->description(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.description'))
+                    ->schema([
+                        Toggle::make('contact_form_enabled')
+                            ->label(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.enabled'))
+                            ->helperText(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.enabled-helper'))
+                            ->live(),
+                        Select::make('contact_form_action')
+                            ->label(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.action'))
+                            ->options(fn (): array => ContactFormHandler::actionOptions())
+                            ->helperText(fn (Get $get): ?string => $get('contact_form_action') === ContactFormAction::EMAIL->value
+                                ? __('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.email-helper', ['email' => ContactFormHandler::recipient() ?: '—'])
+                                : __('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contact-form.fields.crm-helper'))
+                            ->selectablePlaceholder(false)
+                            ->required()
+                            ->live()
+                            ->visible(fn (Get $get): bool => (bool) $get('contact_form_enabled')),
+                    ])
+                    ->columns(2)->columnSpanFull(),
                 Section::make(__('website::filament/admin/clusters/settings/pages/manage-contacts.form.sections.contacts.title'))
                     ->schema([
                         TextInput::make('email')
