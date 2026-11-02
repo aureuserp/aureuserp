@@ -48,7 +48,7 @@ class BillsTable
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')
-                    ->label(__('accounts::filament/resources/bill.table.columns.customer'))
+                    ->label(__('accounts::filament/resources/bill.table.columns.vendor'))
                     ->placeholder('-')
                     ->searchable()
                     ->sortable(),
@@ -184,6 +184,7 @@ class BillsTable
                     ->label(__('accounts::filament/resources/bill.table.groups.bill-partner-display-name'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('invoice_date')
+                    ->date()
                     ->label(__('accounts::filament/resources/bill.table.groups.bill-date'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('checked')

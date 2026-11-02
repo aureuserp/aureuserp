@@ -31,23 +31,27 @@ class ManageBankAccounts extends ManageRelatedRecords
         return BankAccountResource::form($schema);
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()
+                ->label(__('accounts::filament/resources/partner/pages/manage-bank-account.table.header-actions.create.title'))
+                ->icon('heroicon-o-plus-circle')
+                ->mutateDataUsing(function (array $data): array {
+                    return $data;
+                })
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('accounts::filament/resources/partner/pages/manage-bank-account.table.header-actions.create.notification.title'))
+                        ->body(__('accounts::filament/resources/partner/pages/manage-bank-account.table.header-actions.create.notification.body'))
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
-        return BankAccountResource::table($table)
-            ->headerActions([
-                CreateAction::make()
-                    ->label(__('accounts::filament/resources/partner/pages/manage-bank-account.table.header-actions.create.title'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        return $data;
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('accounts::filament/resources/partner/pages/manage-bank-account.table.header-actions.create.notification.title'))
-                            ->body(__('accounts::filament/resources/partner/pages/manage-bank-account.table.header-actions.create.notification.body'))
-                    ),
-            ]);
+        return BankAccountResource::table($table);
     }
 
     public function getBreadcrumbs(): array
