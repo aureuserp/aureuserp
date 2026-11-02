@@ -52,6 +52,9 @@ class PartnerResource extends BasePartnerResource
 
         if (Package::isPluginInstalled('accounts')) {
             $items[] = ManageBankAccounts::class;
+        }
+
+        if (static::hasInvoicingPlugin()) {
             $items[] = ManageInvoices::class;
             $items[] = ManageBills::class;
         }
@@ -87,10 +90,18 @@ class PartnerResource extends BasePartnerResource
 
         if (Package::isPluginInstalled('accounts')) {
             $pages['bank-accounts'] = ManageBankAccounts::route('/{record}/bank-accounts');
+        }
+
+        if (static::hasInvoicingPlugin()) {
             $pages['invoices'] = ManageInvoices::route('/{record}/invoices');
             $pages['bills'] = ManageBills::route('/{record}/bills');
         }
 
         return $pages;
+    }
+
+    protected static function hasInvoicingPlugin(): bool
+    {
+        return Package::isPluginInstalled('invoices') || Package::isPluginInstalled('accounting');
     }
 }

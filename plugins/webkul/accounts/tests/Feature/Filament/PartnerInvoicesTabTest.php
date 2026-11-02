@@ -14,6 +14,7 @@ use Webkul\Account\Models\Partner;
 use Webkul\Contact\Filament\Resources\ContactBillResource;
 use Webkul\Contact\Filament\Resources\ContactInvoiceResource;
 use Webkul\Contact\Filament\Resources\ContactInvoiceResource\Pages\ViewInvoice;
+use Webkul\Contact\Filament\Resources\PartnerResource;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageBills;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageInvoices;
 use Webkul\PluginManager\Models\Plugin;
@@ -115,4 +116,30 @@ it('links credit note and refund rows on the partner tabs to their own resources
     expect($viewUrl(ManageInvoices::class, $creditNote))->toBe(CreditNoteResource::getUrl('view', ['record' => $creditNote]))
         ->and($viewUrl(ManageInvoices::class, $invoice))->not->toBe(CreditNoteResource::getUrl('view', ['record' => $invoice]))
         ->and($viewUrl(ManageBills::class, $refund))->toBe(RefundResource::getUrl('view', ['record' => $refund]));
+});
+
+it('shows the invoices and bills pages only when the invoices or accounting plugin is installed', function () {
+    $setPlugins = function (array $installed) {
+        foreach (['invoices', 'accounting'] as $name) {
+            DB::table('plugins')->updateOrInsert(
+                ['name' => $name],
+                ['is_installed' => in_array($name, $installed), 'is_active' => in_array($name, $installed), 'updated_at' => now()],
+            );
+        }
+
+        Package::$plugins = Plugin::all()->keyBy('name');
+    };
+
+    $setPlugins([]);
+
+    expect(PartnerResource::getPages())->toHaveKey('bank-accounts')
+        ->not->toHaveKeys(['invoices', 'bills']);
+
+    $setPlugins(['invoices']);
+
+    expect(PartnerResource::getPages())->toHaveKeys(['invoices', 'bills']);
+
+    $setPlugins(['accounting']);
+
+    expect(PartnerResource::getPages())->toHaveKeys(['invoices', 'bills']);
 });
