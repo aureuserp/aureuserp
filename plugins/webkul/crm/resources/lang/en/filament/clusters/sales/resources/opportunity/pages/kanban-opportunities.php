@@ -1,14 +1,6 @@
 <?php
 
 return [
-    'search' => 'Search...',
-
-    'filters' => [
-        'heading'     => 'Filters',
-        'toggle'      => 'Toggle filters',
-        'reset'       => 'Reset',
-    ],
-
     'quick-create' => [
         'heading' => 'Quick create opportunity',
     ],

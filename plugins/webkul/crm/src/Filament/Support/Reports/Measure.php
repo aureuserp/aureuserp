@@ -2,6 +2,7 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
+use Illuminate\Support\Number;
 use Webkul\Crm\Enums\MeasureFormat;
 
 class Measure
@@ -15,5 +16,22 @@ class Measure
     public function round(mixed $value): float
     {
         return round((float) ($value ?? 0), $this->format === MeasureFormat::INTEGER ? 0 : 2);
+    }
+
+    public function format(mixed $value, ?string $currency = null): string
+    {
+        $value = (float) ($value ?? 0);
+
+        return match ($this->format) {
+            MeasureFormat::CURRENCY => Number::currency($value, $currency ?? 'USD'),
+            MeasureFormat::DAYS     => Number::format($value, maxPrecision: 1),
+            MeasureFormat::PERCENT  => Number::format($value, maxPrecision: 1).'%',
+            MeasureFormat::INTEGER  => Number::format($value, maxPrecision: 0),
+        };
+    }
+
+    public function rowExpression(): ?string
+    {
+        return preg_match('/^(?:sum|avg|min|max)\((.+)\)$/is', trim($this->aggregate), $matches) ? $matches[1] : null;
     }
 }

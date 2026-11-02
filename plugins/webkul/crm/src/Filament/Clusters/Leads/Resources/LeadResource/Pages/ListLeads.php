@@ -20,9 +20,11 @@ use Webkul\Crm\Filament\Actions\CRMImportAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Tables\LeadsTable;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Exports\LeadExporter;
@@ -31,13 +33,12 @@ use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListLeads extends ListRecords
 {
-    use HasCRMClusterNavigation, HasCRMTableViews, HasGroupBoardLayout, HasKanbanBoard, HasViewLayouts, ManagesOpportunityKanbanCards, ShowsRecordsGraph;
+    use HasCRMClusterNavigation, HasCRMKanbanBoard, HasCRMTableViews, HasGroupBoardLayout, HasViewLayouts, KeepsKanbanMoves, ManagesOpportunityKanbanCards, ShowsRecordsGraph;
 
     public const BOARD_GROUPS = [
         'user.name'   => ['field' => 'user_id', 'relation' => 'user'],
@@ -199,6 +200,8 @@ class ListLeads extends ListRecords
             return;
         }
 
+        $from = $this->groupValue($record, $field);
+
         $record->{$field} = match (true) {
             $field === 'priority'                  => OpportunityPriority::from((int) $newColumnValue),
             $newColumnValue === 'none'             => null,
@@ -206,6 +209,8 @@ class ListLeads extends ListRecords
         };
 
         $record->save();
+
+        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
     }
 
     public function getPresetTableViews(): array

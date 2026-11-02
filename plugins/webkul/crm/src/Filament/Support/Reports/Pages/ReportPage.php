@@ -4,18 +4,23 @@ namespace Webkul\Crm\Filament\Support\Reports\Pages;
 
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Components\Html;
+use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\Summarizers\Summarizer;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Livewire\Attributes\Session;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Support\Reports\Measure;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 
@@ -40,6 +45,13 @@ abstract class ReportPage extends ListRecords
 
         if (filled($this->tableFilters['team_ids']['values'] ?? null)) {
             $this->activeTableView ??= 'default';
+        }
+    }
+
+    public function updatedGraphMeasure(): void
+    {
+        if ($this->isViewLayout(ViewLayout::LIST)) {
+            $this->table = $this->table($this->makeTable());
         }
     }
 
@@ -81,8 +93,9 @@ abstract class ReportPage extends ListRecords
                 ->paginated(false)
                 ->recordActions([])
                 ->toolbarActions([])
-                ->emptyState(fn (): Schema => $this->getSchema('graph')),
+                ->emptyState(fn (): Htmlable => $this->getGraphChart()),
             default => $resource::table($table)
+                ->pushColumns([$this->getMeasureColumn()])
                 ->filters($resource::getReportTableFilters())
                 ->groups($report::getTableGroups())
                 ->recordActions([])
@@ -90,29 +103,76 @@ abstract class ReportPage extends ListRecords
         };
     }
 
-    public function graph(Schema $schema): Schema
+    protected function getTableQuery(): ?Builder
+    {
+        $query = parent::getTableQuery();
+
+        $expression = $this->getSelectedMeasure()->rowExpression();
+
+        if (! $query
+            || ! $expression
+            || ! $this->isViewLayout(ViewLayout::LIST)) {
+            return $query;
+        }
+
+        if (blank($query->getQuery()->columns)) {
+            $query->select($query->getModel()->qualifyColumn('*'));
+        }
+
+        return $query->selectRaw("{$expression} as report_measure");
+    }
+
+    protected function getMeasureColumn(): TextColumn
+    {
+        $measure = $this->getSelectedMeasure();
+        $currency = $this->getReport()::getCurrencyCode();
+        $hasRowValue = filled($measure->rowExpression());
+
+        return TextColumn::make('report_measure')
+            ->label($measure->label)
+            ->state(fn ($record): mixed => $hasRowValue ? $record->getAttribute('report_measure') : null)
+            ->formatStateUsing(fn (mixed $state): string => $measure->format($state, $currency))
+            ->placeholder('')
+            ->alignEnd()
+            ->sortable($hasRowValue, query: fn (Builder $query, string $direction): Builder => $query->orderBy('report_measure', $direction))
+            ->summarize(
+                Summarizer::make()
+                    ->using(fn (QueryBuilder $query): mixed => $query->selectRaw("{$measure->aggregate} as aggregate")->value('aggregate'))
+                    ->formatStateUsing(fn (mixed $state): string => $measure->format($state, $currency)),
+            );
+    }
+
+    public function getSelectedMeasure(): Measure
+    {
+        $measures = $this->getReport()::measures();
+
+        return $measures[$this->graphMeasure] ?? $measures[$this->getReport()::getDefaultFilters()['measure']];
+    }
+
+    public function reportMeasures(Schema $schema): Schema
     {
         $report = $this->getReport();
 
         return $schema
-            ->extraAttributes(['class' => 'crm-leads-graph crm-report-graph'])
-            ->columns(['sm' => 2, 'xl' => 4])
+            ->extraAttributes(['class' => 'crm-report-measures'])
             ->components([
-                Select::make('graphMeasure')
-                    ->label(__('crm::filament/clusters/reporting/report.filters.measure'))
-                    ->options($report::getMeasureOptions())
-                    ->selectablePlaceholder(false)
-                    ->live(),
-                Select::make('graphSplitBy')
-                    ->label(__('crm::filament/clusters/reporting/report.filters.split-by'))
-                    ->options($report::getDimensionOptions())
-                    ->placeholder(__('crm::filament/clusters/reporting/report.filters.no-split'))
-                    ->live(),
-                Html::make(function (): Htmlable {
-                    $chart = $this->getGraph()['chart'];
-
-                    return RecordsChart::embed($chart['data'], $chart['options'], $chart['heading'], '26rem');
-                })->columnSpanFull(),
+                Flex::make([
+                    Select::make('graphMeasure')
+                        ->label(__('crm::filament/clusters/reporting/report.filters.measure'))
+                        ->hiddenLabel()
+                        ->prefix(__('crm::filament/clusters/reporting/report.filters.measure'))
+                        ->options($report::getMeasureOptions())
+                        ->selectablePlaceholder(false)
+                        ->live(),
+                    Select::make('graphSplitBy')
+                        ->label(__('crm::filament/clusters/reporting/report.filters.split-by'))
+                        ->hiddenLabel()
+                        ->prefix(__('crm::filament/clusters/reporting/report.filters.split-by'))
+                        ->options($report::getDimensionOptions())
+                        ->placeholder(__('crm::filament/clusters/reporting/report.filters.no-split'))
+                        ->live()
+                        ->visible(fn (): bool => $this->isViewLayout(ViewLayout::GRAPH)),
+                ]),
             ]);
     }
 
@@ -146,5 +206,12 @@ abstract class ReportPage extends ListRecords
             'filters' => $filters,
             'chart'   => ReportChart::build($report, $this->getFilteredTableQuery(), $filters),
         ];
+    }
+
+    protected function getGraphChart(): Htmlable
+    {
+        $chart = $this->getGraph()['chart'];
+
+        return RecordsChart::embed($chart['data'], $chart['options'], $chart['heading'], '26rem', 'crm-leads-graph crm-report-graph');
     }
 }

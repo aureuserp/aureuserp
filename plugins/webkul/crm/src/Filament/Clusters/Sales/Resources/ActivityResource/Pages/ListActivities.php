@@ -13,9 +13,11 @@ use Webkul\Crm\Enums\ActivityDueStatus;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource\Actions\ScheduleActivityAction;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasKanbanLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Concerns\ManagesActivityTypeKanbanColumns;
 use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Support\KanbanCard;
@@ -24,17 +26,17 @@ use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Activity;
 use Webkul\Crm\Models\ActivityType;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListActivities extends ListRecords
 {
-    use HasCRMTableViews, HasKanbanBoard, HasKanbanLayout, HasViewLayouts, ManagesActivityTypeKanbanColumns, ShowsRecordsGraph {
-        HasKanbanLayout::content insteadof HasKanbanBoard;
-        HasKanbanLayout::getKanbanQuery insteadof HasKanbanBoard;
+    use HasCRMKanbanBoard, HasCRMTableViews, HasKanbanLayout, HasViewLayouts, KeepsKanbanMoves, ManagesActivityTypeKanbanColumns, ShowsRecordsGraph {
+        HasKanbanLayout::content insteadof HasCRMKanbanBoard;
+        HasKanbanLayout::getKanbanQuery insteadof HasCRMKanbanBoard;
         HasKanbanLayout::getTableViewCountQuery insteadof HasCRMTableViews;
         kanbanColumnAction as kanbanColumnActionFromBoard;
+        HasCRMKanbanBoard::moveRecord as moveBaseRecord;
     }
 
     public const GRAPH_GROUPS = [
@@ -244,6 +246,17 @@ class ListActivities extends ListRecords
                 KanbanCard::dot($lead?->color, __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.color')),
                 $this->isKanbanCardFieldVisible('assignedTo.name') ? KanbanCard::user($record->assignedTo, __('crm::filament/clusters/sales/resources/activity.table.columns.assigned-to')) : null,
             );
+    }
+
+    public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void
+    {
+        $from = (string) Activity::query()->whereKey($recordId)->value('activity_type_id');
+
+        $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
+
+        if ((string) Activity::query()->whereKey($recordId)->value('activity_type_id') === $newColumnValue) {
+            $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+        }
     }
 
     public function kanban(KanbanBoard $kanban): KanbanBoard

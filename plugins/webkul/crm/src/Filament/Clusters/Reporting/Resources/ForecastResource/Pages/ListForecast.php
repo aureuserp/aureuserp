@@ -13,22 +13,23 @@ use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables\OpportunitiesTable;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasKanbanLayout;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\Pages\ReportPage;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Models\Lead;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListForecast extends ReportPage
 {
-    use HasKanbanBoard, HasKanbanLayout, ManagesOpportunityKanbanCards {
-        HasKanbanLayout::content insteadof HasKanbanBoard;
-        HasKanbanLayout::getKanbanQuery insteadof HasKanbanBoard;
+    use HasCRMKanbanBoard, HasKanbanLayout, KeepsKanbanMoves, ManagesOpportunityKanbanCards {
+        HasKanbanLayout::content insteadof HasCRMKanbanBoard;
+        HasKanbanLayout::getKanbanQuery insteadof HasCRMKanbanBoard;
     }
 
     protected static string $resource = ForecastResource::class;
@@ -143,6 +144,8 @@ class ListForecast extends ReportPage
             return;
         }
 
+        $from = $record->expected_closing_date?->format('Y-m') ?? self::NONE_COLUMN;
+
         $record->expected_closing_date = $newColumnValue === self::NONE_COLUMN
             ? null
             : Carbon::createFromFormat('!Y-m', $newColumnValue)->endOfMonth()->toDateString();
@@ -153,5 +156,7 @@ class ListForecast extends ReportPage
             ->success()
             ->title(__('crm::filament/clusters/reporting/resources/forecast.kanban.notifications.moved'))
             ->send();
+
+        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
     }
 }

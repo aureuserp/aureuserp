@@ -14,20 +14,21 @@ use Webkul\Crm\Enums\CustomerBoardGroup;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Tables\CustomersTable;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Support\KanbanCard;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListCustomers extends BaseListPartners
 {
-    use HasCRMTableViews, HasGroupBoardLayout, HasKanbanBoard, HasViewLayouts;
+    use HasCRMKanbanBoard, HasCRMTableViews, HasGroupBoardLayout, HasViewLayouts, KeepsKanbanMoves;
 
     protected static string $resource = CustomerResource::class;
 
@@ -173,7 +174,11 @@ class ListCustomers extends BaseListPartners
             return;
         }
 
+        $from = $this->boardValue($record, $group);
+
         $record->{$group->field()} = $newColumnValue === 'none' ? null : (int) $newColumnValue;
         $record->save();
+
+        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
     }
 }

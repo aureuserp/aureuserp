@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Filament\Actions\Testing\TestAction;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -49,6 +50,13 @@ function pipelineOtherUserId(): int
 function pipelineRule(string $type, array $values, string $operator = 'isRelatedTo'): array
 {
     return ['queryBuilder' => ['rules' => [$type => ['type' => $type, 'data' => ['operator' => $operator, 'settings' => ['values' => array_map('strval', $values)]]]]]];
+}
+
+function pipelineUpdatedAt(Lead $opportunity, Carbon $updatedAt): Lead
+{
+    Lead::query()->whereKey($opportunity->getKey())->update(['updated_at' => $updatedAt]);
+
+    return $opportunity;
 }
 
 function pipelineTeam(array $attributes = []): Team
@@ -155,6 +163,39 @@ it('uses the stages, in order, as columns and colours won stages green', functio
 
     expect($board->resolveColumnColor(pipelineBoardColumn($component, $wonStage)))->toBe('success')
         ->and($board->resolveColumnColor(pipelineBoardColumn($component, $firstStage)))->toBe('gray');
+});
+
+it('lists the cards of each column by last update, newest first', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $stage = CRMHelper::firstStage();
+
+    $older = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id]), now()->subDays(2));
+    $newest = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id]), now());
+    $middle = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id]), now()->subDay());
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
+
+    expect(pipelineBoardColumn($component, $stage)->records->modelKeys())
+        ->toBe([$newest->id, $middle->id, $older->id]);
+});
+
+it('shows a moved card at the top of its new column after a reload', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $from = CRMHelper::firstStage();
+    $to = Stage::factory()->create(['name' => 'Reload target stage']);
+
+    $waiting = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $to->id]), now()->subHour());
+    $moved = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $from->id]), now()->subDays(3));
+
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->call('moveRecord', (string) $moved->id, (string) $to->id, [(string) $waiting->id, (string) $moved->id]);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
+
+    expect(pipelineBoardColumn($component, $to)->records->modelKeys())
+        ->toBe([$moved->id, $waiting->id]);
 });
 
 it('sums the expected revenue of each column', function () {
@@ -353,22 +394,39 @@ it('moves a card to another stage', function () {
         ->and($opportunity->closed_at)->toBeNull();
 });
 
-it('keys columns and cards so a moved card is kept instead of redrawn', function () {
+it('re-renders only the two moved columns, with the moved card where it was dropped', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
-    $opportunity = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
-
-    $target = Stage::factory()->create(['name' => 'Keyed target stage']);
+    $source = CRMHelper::firstStage();
+    $target = Stage::factory()->create(['name' => 'Kept move stage']);
+    $already = CRMHelper::opportunity(['name' => 'AAA already in target', 'stage_id' => $target->id]);
+    $moved = CRMHelper::opportunity(['name' => 'ZZZ moved on top', 'stage_id' => $source->id, 'expected_revenue' => 1500]);
 
     $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
-        ->call('moveRecord', (string) $opportunity->id, (string) $target->id, [(string) $opportunity->id]);
+        ->call('moveRecord', (string) $moved->id, (string) $target->id, [(string) $moved->id, (string) $already->id]);
 
-    $component
-        ->assertSeeHtml('wire:key="kanban-column-'.$target->id.'"')
-        ->assertSeeHtml('wire:key="kanban-card-'.$opportunity->id.'"')
-        ->assertSeeHtml('data-kanban-count="'.pipelineBoardColumn($component, $target)->count.'"');
+    $partials = $component->effects['partials'] ?? [];
+    $targetHtml = $partials['kanban-column-'.$target->id] ?? '';
 
-    expect(pipelineBoardColumn($component, $target)->records->modelKeys())->toContain($opportunity->id);
+    expect($moved->refresh()->stage_id)->toBe($target->id)
+        ->and($component->effects)->not->toHaveKey('html')
+        ->and(array_keys($partials))->toEqualCanonicalizing(['kanban-column-'.$source->id, 'kanban-column-'.$target->id])
+        ->and($targetHtml)->toContain('data-kanban-count="2"')
+        ->and(strpos($targetHtml, 'kanban-card-'.$moved->id))->toBeLessThan(strpos($targetHtml, 'kanban-card-'.$already->id));
+});
+
+it('re-renders the board when a move is refused so the card goes back', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $lost = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
+    $lost->markAsLost(null);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'lost'])->test(ListOpportunities::class)
+        ->call('moveRecord', (string) $lost->id, (string) Stage::factory()->create()->id, [(string) $lost->id]);
+
+    expect($component->effects)->toHaveKey('html')
+        ->and($component->effects['partials'] ?? [])->toBe([])
+        ->and($lost->refresh()->stage_id)->toBe(CRMHelper::firstStage()->id);
 });
 
 it('marks a card as won when it is dropped into a won stage', function () {

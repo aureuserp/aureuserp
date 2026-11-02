@@ -27,8 +27,10 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Schemas\Opp
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Tables\OpportunitiesTable;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Support\Reports\Sql;
@@ -36,14 +38,11 @@ use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 
 class ManageTeamOpportunities extends ManageRelatedRecords
 {
-    use HasCRMClusterNavigation, HasCRMTableViews, HasKanbanBoard, HasViewLayouts, ManagesOpportunityKanbanCards, ShowsRecordsGraph {
-        HasKanbanBoard::moveRecord as moveBaseRecord;
-    }
+    use HasCRMClusterNavigation, HasCRMKanbanBoard, HasCRMTableViews, HasViewLayouts, KeepsKanbanMoves, ManagesOpportunityKanbanCards, ShowsRecordsGraph;
 
     protected static string $resource = TeamResource::class;
 
@@ -168,7 +167,8 @@ class ManageTeamOpportunities extends ManageRelatedRecords
     protected function getKanbanQuery(KanbanBoard $board): Builder
     {
         $query = $this->filterTableQuery($this->modifyQueryWithActiveTab($this->getTeamOpportunitiesQuery()))
-            ->with(static::KANBAN_CARD_RELATIONS);
+            ->with(static::KANBAN_CARD_RELATIONS)
+            ->orderByDesc('crm_leads.updated_at')->orderByDesc('crm_leads.id');
 
         return $this->ignoreKanbanActivityFilter ? $query : $this->applyKanbanActivityFilter($query);
     }
@@ -209,7 +209,22 @@ class ManageTeamOpportunities extends ManageRelatedRecords
             return;
         }
 
-        $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
+        if (! in_array($newColumnValue, collect($this->getKanbanColumns())->pluck('value')->map(fn ($value): string => (string) $value)->all(), true)
+            || ! $this->getKanbanBoard()->isMoveAllowed($record, (string) $record->stage_id, $newColumnValue)) {
+            Notification::make()
+                ->danger()
+                ->title(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.board.notifications.unauthorized'))
+                ->send();
+
+            return;
+        }
+
+        $from = (string) $record->stage_id;
+
+        $record->stage_id = (int) $newColumnValue;
+        $record->save();
+
+        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
     }
 
     public function getPresetTableViews(): array

@@ -161,18 +161,22 @@ describe('similar leads tab and board', function () {
         $record = CRMHelper::lead(['email' => 'views@acme.test']);
         $match = CRMHelper::opportunity(['email' => 'views@acme.test']);
 
-        $kanban = Livewire::test(SimilarLeadsPage::class, ['record' => $record->id])
+        $list = Livewire::test(SimilarLeadsPage::class, ['record' => $record->id])
             ->assertSuccessful()
             ->assertActionDoesNotExist('mergeLeads');
 
-        expect(collect($kanban->instance()->getRecordNavigationTabs())->map->getLabel()->all())
+        expect(collect($list->instance()->getRecordNavigationTabs())->map->getLabel()->all())
             ->toContain(__('crm::filament/similar-leads.navigation.label'))
-            ->and($kanban->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
-            ->and($kanban->instance()->getViewLayout())->toBe(ViewLayout::KANBAN);
+            ->and($list->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH])
+            ->and($list->instance()->getViewLayout())->toBe(ViewLayout::LIST)
+            ->and($list->instance()->activeTableView)->toBe('my_leads');
 
-        $kanban->assertSeeHtml('crm-layout-switcher')
-            ->call('switchViewLayout', 'list')
-            ->assertCanSeeTableRecords([$record, $match]);
+        $list->assertSeeHtml('crm-layout-switcher')
+            ->assertCanSeeTableRecords([$record, $match])
+            ->call('switchViewLayout', 'kanban')
+            ->assertSet('viewLayout', 'kanban');
+
+        expect(Livewire::test(SimilarOpportunities::class, ['record' => $match->id])->instance()->activeTableView)->toBe('my_pipeline');
 
         Livewire::withQueryParams(['layout' => 'list'])
             ->test(SimilarLeadsPage::class, ['record' => $record->id])

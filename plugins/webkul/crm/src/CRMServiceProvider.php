@@ -30,6 +30,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListO
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\SimilarOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ListQuotations;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
+use Webkul\Crm\Filament\Support\Reports\Pages\ReportPage;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Filament\Support\VersionedJs;
 use Webkul\Crm\Listeners\CreateLeadFromVisitor;
@@ -171,6 +172,13 @@ class CRMServiceProvider extends PackageServiceProvider
             TablesRenderHook::CONTENT_BEFORE,
             fn (): string|View => method_exists($page = Livewire::current(), 'getViewLayouts')
                 ? view('crm::filament.view-layout-shimmer', ['layouts' => $page->getViewLayouts(), 'activeLayout' => $page->getViewLayout()])
+                : '',
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_GROUPING_SELECTOR_AFTER,
+            fn (): string|View => ($page = Livewire::current()) instanceof ReportPage && ! $page->isViewLayout(ViewLayout::KANBAN)
+                ? $page->getSchema('reportMeasures')->toHtml()
                 : '',
         );
 

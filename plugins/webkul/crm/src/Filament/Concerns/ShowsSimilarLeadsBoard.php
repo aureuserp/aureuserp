@@ -27,15 +27,13 @@ use Webkul\Crm\Filament\Support\SimilarLeads;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
-use Webkul\TableViews\Filament\Components\PresetView;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 trait ShowsSimilarLeadsBoard
 {
-    use HasCRMTableViews, HasKanbanBoard, HasRecordNavigationTabs, HasViewLayouts, InteractsWithRecord, ManagesOpportunityKanbanCards {
-        HasKanbanBoard::getKanbanColumns as getAllKanbanColumns;
+    use HasCRMKanbanBoard, HasCRMTableViews, HasRecordNavigationTabs, HasViewLayouts, InteractsWithRecord, ManagesOpportunityKanbanCards {
+        HasCRMKanbanBoard::getKanbanColumns as getAllKanbanColumns;
         HasRecordNavigationTabs::getSubNavigation insteadof InteractsWithRecord;
     }
 
@@ -79,7 +77,7 @@ trait ShowsSimilarLeadsBoard
 
     public function getViewLayouts(): array
     {
-        return [ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH];
+        return [ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH];
     }
 
     public function content(Schema $schema): Schema
@@ -136,10 +134,7 @@ trait ShowsSimilarLeadsBoard
 
     public function getPresetTableViews(): array
     {
-        return array_map(
-            fn (PresetView $view): PresetView => $view->setAsDefault(false),
-            $this->getTableViewsListPage()->getPresetTableViews(),
-        );
+        return $this->getTableViewsListPage()->getPresetTableViews();
     }
 
     public function getSavedTableViews(): array
@@ -160,7 +155,8 @@ trait ShowsSimilarLeadsBoard
     protected function getKanbanQuery(KanbanBoard $board): Builder
     {
         $query = $this->filterTableQuery($this->modifyQueryWithActiveTab($this->getSimilarQuery()))
-            ->with(static::KANBAN_CARD_RELATIONS);
+            ->with(static::KANBAN_CARD_RELATIONS)
+            ->orderByDesc('crm_leads.updated_at')->orderByDesc('crm_leads.id');
 
         return $this->ignoreKanbanActivityFilter ? $query : $this->applyKanbanActivityFilter($query);
     }

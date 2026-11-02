@@ -7,6 +7,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
+use Webkul\Crm\Filament\Support\LeadResourceResolver;
 use Webkul\Crm\Services\LeadAssignment;
 use Webkul\Crm\Services\LeadScoring;
 
@@ -25,7 +26,7 @@ class CreateLead extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        return LeadResource::getUrl('view', ['record' => $this->getRecord()]);
+        return LeadResourceResolver::viewUrl($this->getRecord()->refresh());
     }
 
     protected function getCreatedNotification(): Notification

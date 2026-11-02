@@ -9,32 +9,6 @@
 /*
  * Kanban CSS
  */
-.crm-kanban-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.crm-kanban-search {
-    width: 16rem;
-    max-width: 100%;
-    flex: none;
-}
-
-.crm-kanban-filters {
-    position: relative;
-}
-
-.crm-kanban-filters-panel {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    inset-inline-start: 0;
-    z-index: 30;
-    width: 20rem;
-    max-width: calc(100vw - 2rem);
-}
-
 .crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button,
 .crm-stepper-previous-active .state:has(~ .state input:checked) .stage-button:hover {
     color: #fff;
@@ -181,18 +155,6 @@
     color: var(--gray-400);
 }
 
-.crm-kanban-filter-active {
-    background-color: var(--primary-50);
-    color: var(--primary-700);
-    --tw-ring-color: var(--primary-200);
-}
-
-.dark .crm-kanban-filter-active {
-    background-color: color-mix(in oklab, var(--primary-400) 10%, transparent);
-    color: var(--primary-400);
-    --tw-ring-color: color-mix(in oklab, var(--primary-400) 30%, transparent);
-}
-
 .crm-kanban-color-dot {
     display: inline-block;
     flex-shrink: 0;
@@ -262,13 +224,6 @@ html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
 
 .crm-kanban-board [data-kanban-card].crm-kanban-card-saving {
     pointer-events: none;
-    animation: crm-kanban-card-saving 1s ease-in-out infinite;
-}
-
-@keyframes crm-kanban-card-saving {
-    50% {
-        opacity: 0.55;
-    }
 }
 
 .crm-kanban-board .crm-kanban-empty-board {
@@ -615,4 +570,56 @@ body:has(.crm-kanban-board) {
 
 .crm-rule-rows td:last-child {
     width: 2.75rem;
+}
+
+.crm-report-measures .fi-sc-flex {
+    align-items: center;
+    column-gap: 0.75rem;
+}
+
+.crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost {
+    position: relative;
+    opacity: 1;
+    border-radius: 0.5rem;
+    background-color: color-mix(in oklab, var(--primary-500) 8%, transparent);
+    box-shadow: none;
+    outline: 2px dashed var(--primary-400);
+    outline-offset: -2px;
+}
+
+.crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost > * {
+    visibility: hidden;
+}
+
+.crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost::after {
+    content: var(--crm-kanban-drop-label);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-600);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.dark .crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost::after {
+    color: var(--primary-400);
+}
+
+.fi-kanban-card.crm-kanban-card-floating {
+    opacity: 1 !important;
+    rotate: -3deg;
+    cursor: grabbing;
+    box-shadow: 0 12px 28px -6px rgb(0 0 0 / 0.25), 0 4px 10px -4px rgb(0 0 0 / 0.15);
+}
+
+.crm-kanban-board .fi-kanban-column.crm-kanban-column-hover {
+    background-color: color-mix(in oklab, var(--primary-500) 6%, transparent);
+    outline: 1px solid var(--primary-300);
+    outline-offset: -1px;
+}
+
+.dark .crm-kanban-board .fi-kanban-column.crm-kanban-column-hover {
+    outline-color: var(--primary-700);
 }

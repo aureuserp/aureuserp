@@ -4,6 +4,7 @@ use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Number;
 use Webkul\Crm\Enums\MeasureFormat;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
@@ -450,6 +451,25 @@ describe('aggregate', function () {
 });
 
 describe('measures', function () {
+    it('formats values', function (MeasureFormat $format, mixed $value, string $expected) {
+        expect((new Measure('Test', 'count(*)', $format))->format($value, 'USD'))->toBe($expected);
+    })->with([
+        'currency'     => [MeasureFormat::CURRENCY, 1234.5, Number::currency(1234.5, 'USD')],
+        'days'         => [MeasureFormat::DAYS, 12.345, '12.3'],
+        'percent'      => [MeasureFormat::PERCENT, 45.56, '45.6%'],
+        'integer'      => [MeasureFormat::INTEGER, 1234.6, '1,235'],
+        'null as zero' => [MeasureFormat::INTEGER, null, '0'],
+    ]);
+
+    it('derives the per-row expression of a measure from its aggregate', function () {
+        $measures = LeadReport::measures();
+
+        expect($measures['count']->rowExpression())->toBeNull()
+            ->and($measures['expected_revenue']->rowExpression())->toBe('crm_leads.expected_revenue')
+            ->and($measures['prorated_revenue']->rowExpression())->toBe('crm_leads.expected_revenue * crm_leads.probability / 100')
+            ->and($measures['probability']->rowExpression())->toBe('crm_leads.probability');
+    });
+
     it('rounds integers to whole numbers and other formats to two decimals', function () {
         expect((new Measure('Count', 'count(*)'))->round('2.6'))->toBe(3.0)
             ->and((new Measure('Revenue', 'sum(1)', MeasureFormat::CURRENCY))->round('2.666'))->toBe(2.67)

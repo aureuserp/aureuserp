@@ -360,8 +360,29 @@ it('hides assignment on the sales team and does not assign when rule-based assig
         ->and($lead->fresh()->user_id)->toBeNull();
 });
 
-it('gives a new lead the team whose rules it matches, keeping its salesperson', function () {
+it('does not assign a new lead when assignment runs manually', function () {
     $user = CRMHelper::actingAs();
+
+    $team = assignmentTeam();
+    $team->members()->attach($user->id);
+    app(TeamMembership::class)->sync($team);
+
+    $lead = CRMHelper::lead(['team_id' => $team->id, 'user_id' => null]);
+
+    expect($lead->fresh()->user_id)->toBeNull()
+        ->and($lead->fresh()->type)->toBe(LeadType::LEAD);
+
+    app(LeadAssignment::class)->run($team);
+
+    expect($lead->fresh()->user_id)->toBe($user->id);
+});
+
+it('gives a new lead the team whose rules it matches, keeping its salesperson, when assignment runs repeatedly', function () {
+    $user = CRMHelper::actingAs();
+
+    $settings = app(CRMSettings::class);
+    $settings->auto_assignment_action = 'auto';
+    $settings->save();
 
     $india = Country::query()->where('code', 'IN')->value('id');
 

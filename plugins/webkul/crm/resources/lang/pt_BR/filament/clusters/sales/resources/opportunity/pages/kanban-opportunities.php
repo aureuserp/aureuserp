@@ -1,14 +1,6 @@
 <?php
 
 return [
-    'search' => 'Pesquisar...',
-
-    'filters' => [
-        'heading'     => 'Filtros',
-        'toggle'      => 'Alternar filtros',
-        'reset'       => 'Redefinir',
-    ],
-
     'quick-create' => [
         'heading' => 'Criação rápida de oportunidade',
     ],

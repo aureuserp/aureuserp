@@ -20,9 +20,11 @@ use Webkul\Crm\Filament\Actions\CRMExportAction;
 use Webkul\Crm\Filament\Actions\CRMImportAction;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasKanbanLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Concerns\ManagesOpportunityKanbanCards;
 use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
 use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
@@ -34,17 +36,16 @@ use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Support\Models\Company;
 use Webkul\TableViews\Filament\Components\PresetView;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListOpportunities extends ListRecords
 {
-    use HasCRMTableViews, HasKanbanBoard, HasKanbanLayout, HasViewLayouts, ManagesOpportunityKanbanCards, ManagesStageKanbanColumns, ShowsRecordsGraph {
-        HasKanbanLayout::content insteadof HasKanbanBoard;
-        HasKanbanLayout::getKanbanQuery insteadof HasKanbanBoard;
+    use HasCRMKanbanBoard, HasCRMTableViews, HasKanbanLayout, HasViewLayouts, KeepsKanbanMoves, ManagesOpportunityKanbanCards, ManagesStageKanbanColumns, ShowsRecordsGraph {
+        HasKanbanLayout::content insteadof HasCRMKanbanBoard;
+        HasKanbanLayout::getKanbanQuery insteadof HasCRMKanbanBoard;
         HasKanbanLayout::getTableViewCountQuery insteadof HasCRMTableViews;
-        HasKanbanBoard::moveRecord as moveBaseRecord;
+        HasCRMKanbanBoard::moveRecord as moveBaseRecord;
     }
 
     public const GRAPH_GROUPS = [
@@ -194,7 +195,7 @@ class ListOpportunities extends ListRecords
         return $kanban
             ->relationshipColumn('stage', 'name', Stage::class, orderAttribute: 'sort')
             ->excludeColumns(Stage::hiddenColumnsForTeam($this->kanbanTeamFilterId()))
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(static::KANBAN_CARD_RELATIONS))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(static::KANBAN_CARD_RELATIONS)->orderByDesc('crm_leads.updated_at')->orderByDesc('crm_leads.id'))
             ->columnColor(fn (KanbanColumn $column): string => in_array($column->value, $wonStageIds, true) ? 'success' : 'gray')
             ->cardTitle(fn (Lead $record): string => $record->name)
             ->cardDescription(fn (Lead $record): string => collect([
@@ -282,7 +283,13 @@ class ListOpportunities extends ListRecords
             return;
         }
 
+        $from = (string) Lead::query()->withTrashed()->whereKey($recordId)->value('stage_id');
+
         $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
+
+        if ((string) Lead::query()->withTrashed()->whereKey($recordId)->value('stage_id') === $newColumnValue) {
+            $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+        }
     }
 
     protected function validatedQuickCreateStageId(mixed $stageId): ?int

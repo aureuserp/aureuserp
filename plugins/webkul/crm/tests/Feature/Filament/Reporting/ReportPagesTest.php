@@ -204,14 +204,19 @@ describe('graph', function () {
             ->and(array_diff($report::getDefaultPresets(), array_keys($component->instance()->getTable()->getFilters())))->toBe([]);
     })->with('report pages');
 
-    it('offers the report measures and dimensions in the graph controls', function () {
+    it('offers measure and split by as prefixed toolbar selects after the group by on the graph', function () {
         CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
 
         $report = PipelineAnalysisResource::getReport();
 
-        $component = Livewire::test(ListPipelineAnalysis::class)
-            ->assertFormFieldExists('graphMeasure', 'graph', fn (Select $field): bool => $field->getOptions() === $report::getMeasureOptions() && ! $field->canSelectPlaceholder())
-            ->assertFormFieldExists('graphSplitBy', 'graph', fn (Select $field): bool => $field->getOptions() === $report::getDimensionOptions() && $field->canSelectPlaceholder());
+        $component = reportPage(ListPipelineAnalysis::class.'@graph')
+            ->assertSeeHtml('crm-report-measures')
+            ->assertFormFieldExists('graphMeasure', 'reportMeasures', fn (Select $field): bool => $field->getOptions() === $report::getMeasureOptions()
+                && $field->getPrefixLabel() === __('crm::filament/clusters/reporting/report.filters.measure')
+                && ! $field->canSelectPlaceholder())
+            ->assertFormFieldExists('graphSplitBy', 'reportMeasures', fn (Select $field): bool => $field->getOptions() === $report::getDimensionOptions()
+                && $field->getPrefixLabel() === __('crm::filament/clusters/reporting/report.filters.split-by'))
+            ->assertFormFieldVisible('graphSplitBy', 'reportMeasures');
 
         expect($component->instance()->getGraph()['chart']['type'])->toBe('bar');
     });
@@ -257,6 +262,28 @@ describe('graph', function () {
 });
 
 describe('list', function () {
+    it('offers the measure, not the split, on the list and adds the measure as a column with totals', function () {
+        CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
+
+        $opportunity = CRMHelper::opportunity(['expected_revenue' => 1000, 'probability' => 40, 'is_automated_probability' => false]);
+
+        $component = reportPage(ListPipelineAnalysis::class.'@list')
+            ->set('graphMeasure', 'probability')
+            ->assertFormFieldVisible('graphMeasure', 'reportMeasures')
+            ->assertFormFieldHidden('graphSplitBy', 'reportMeasures')
+            ->assertTableColumnExists('report_measure')
+            ->assertTableColumnFormattedStateSet('report_measure', '40%', $opportunity);
+
+        $column = $component->instance()->getTable()->getColumn('report_measure');
+
+        expect($column->getLabel())->toBe(PipelineAnalysisResource::getReport()::measures()['probability']->label)
+            ->and($column->getSummarizers())->not->toBeEmpty();
+
+        $component->set('graphMeasure', 'count');
+
+        expect($component->instance()->getTable()->getColumn('report_measure')->getLabel())->toBe(PipelineAnalysisResource::getReport()::measures()['count']->label);
+    });
+
     it('offers every report dimension as a collapsible group by, with no group by default', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 

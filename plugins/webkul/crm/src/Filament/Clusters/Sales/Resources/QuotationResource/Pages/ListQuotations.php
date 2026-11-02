@@ -23,9 +23,11 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\ConfirmQuotationsBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\MarkQuotationsAsSentBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Actions\SendQuotationsEmailBulkAction;
+use Webkul\Crm\Filament\Concerns\HasCRMKanbanBoard;
 use Webkul\Crm\Filament\Concerns\HasCRMTableViews;
 use Webkul\Crm\Filament\Concerns\HasGroupBoardLayout;
 use Webkul\Crm\Filament\Concerns\HasViewLayouts;
+use Webkul\Crm\Filament\Concerns\KeepsKanbanMoves;
 use Webkul\Crm\Filament\Exports\QuotationExporter;
 use Webkul\Crm\Filament\Support\KanbanCard;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
@@ -35,13 +37,12 @@ use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQuotations as BaseListQuotations;
 use Webkul\Sale\Models\Order;
-use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
 
 class ListQuotations extends BaseListQuotations
 {
-    use HasCRMTableViews, HasGroupBoardLayout, HasKanbanBoard, HasViewLayouts, StylesCRMDashboardCharts;
+    use HasCRMKanbanBoard, HasCRMTableViews, HasGroupBoardLayout, HasViewLayouts, KeepsKanbanMoves, StylesCRMDashboardCharts;
 
     protected static string $resource = QuotationResource::class;
 
@@ -292,7 +293,11 @@ class ListQuotations extends BaseListQuotations
             return;
         }
 
+        $from = $this->boardValue($record, $group);
+
         $record->{$group->field()} = $newColumnValue === 'none' ? null : (int) $newColumnValue;
         $record->save();
+
+        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
     }
 }

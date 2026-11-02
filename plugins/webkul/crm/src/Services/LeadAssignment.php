@@ -89,7 +89,10 @@ class LeadAssignment
 
     public function assignLead(Lead $lead): void
     {
-        if (! app(CRMSettings::class)->use_auto_assignment
+        $settings = app(CRMSettings::class);
+
+        if (! $settings->use_auto_assignment
+            || $settings->auto_assignment_action !== 'auto'
             || ! $lead->exists
             || $lead->trashed()) {
             return;
