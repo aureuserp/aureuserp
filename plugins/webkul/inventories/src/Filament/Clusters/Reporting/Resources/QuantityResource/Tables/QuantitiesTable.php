@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Reporting\Resources\QuantityResource\Tables;
 
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -14,8 +13,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Inventory\Filament\Clusters\Reporting\Resources\QuantityResource;
 use Webkul\Inventory\Models\PackageType;
-use Webkul\Inventory\Models\Product;
-use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Product\Models\Category;
 
@@ -160,43 +157,6 @@ class QuantitiesTable
                     ->searchable()
                     ->preload()
                     ->visible(QuantityResource::getTraceabilitySettings()->enable_lots_serial_numbers),
-            ])
-            ->headerActions([
-                CreateAction::make()
-                    ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['location_id'] = $data['location_id'] ?? Warehouse::query()->when(Product::find($data['product_id'])?->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->value('lot_stock_location_id');
-
-                        $data['company_id'] = Product::find($data['product_id'])?->company_id;
-
-                        $data['inventory_diff_quantity'] = $data['quantity'];
-
-                        return $data;
-                    })
-                    ->before(function (CreateAction $action, array $data) {
-                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? Warehouse::query()->when(Product::find($data['product_id'])?->company_id, fn ($query, $scopedCompanyId) => $query->where(owned_by_company($scopedCompanyId)))->value('lot_stock_location_id'))
-                            ->where('product_id', $data['product_id'])
-                            ->where('package_id', $data['package_id'] ?? null)
-                            ->where('lot_id', $data['lot_id'] ?? null)
-                            ->exists();
-
-                        if ($existingQuantity) {
-                            Notification::make()
-                                ->title(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.before.notification.title'))
-                                ->body(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.before.notification.body'))
-                                ->warning()
-                                ->send();
-
-                            $action->halt();
-                        }
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.notification.title'))
-                            ->body(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.notification.body')),
-                    ),
             ])
             ->recordActions([
                 DeleteAction::make()

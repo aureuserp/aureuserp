@@ -16,6 +16,8 @@ class StatsOverviewWidget extends DashboardStatsWidget
 
     protected ?string $pollingInterval = '15s';
 
+    protected ?string $placeholderHeight = '9rem';
+
     protected static function getPagePermission(): ?string
     {
         return 'widget_project_stats_overview_widget';

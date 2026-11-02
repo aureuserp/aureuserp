@@ -7,7 +7,6 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Settings\ProductSettings;
@@ -134,11 +133,5 @@ class PurchaseAgreementResource extends Resource
             'view'   => ViewPurchaseAgreement::route('/{record}/view'),
             'rfqs'   => ManageRfqs::route('/{record}/rfqs'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

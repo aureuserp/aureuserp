@@ -403,7 +403,7 @@
 }
 
 .fi-app-menu-overlay {
-    @apply fixed inset-0 z-50;
+    @apply fixed inset-0 z-50 md:overflow-y-auto;
 }
 
 .fi-app-menu-backdrop {
@@ -411,7 +411,7 @@
 }
 
 .fi-app-menu-panel {
-    @apply absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-xl ring-1 ring-gray-200 md:inset-x-0 md:mx-auto md:w-full md:max-w-5xl md:bg-transparent md:pt-[calc(var(--topbar-height)+6vh)] md:shadow-none md:ring-0 dark:bg-gray-900 dark:ring-white/10 md:dark:bg-transparent;
+    @apply absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-xl ring-1 ring-gray-200 md:relative md:inset-auto md:mx-auto md:min-h-full md:w-full md:max-w-5xl md:overflow-visible md:bg-transparent md:pt-[calc(var(--topbar-height)+6vh)] md:shadow-none md:ring-0 dark:bg-gray-900 dark:ring-white/10 md:dark:bg-transparent;
 }
 
 .fi-app-menu-header {

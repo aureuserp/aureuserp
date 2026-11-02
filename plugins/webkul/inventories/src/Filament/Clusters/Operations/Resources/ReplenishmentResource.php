@@ -20,8 +20,12 @@ class ReplenishmentResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-    // TODO: Remove this when completed
     protected static bool $shouldRegisterNavigation = false;
+
+    public static function canAccess(): bool
+    {
+        return false;
+    }
 
     protected static ?string $cluster = Operations::class;
 

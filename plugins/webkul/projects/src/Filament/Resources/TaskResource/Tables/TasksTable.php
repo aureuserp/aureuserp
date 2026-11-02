@@ -210,7 +210,7 @@ class TasksTable
             ->groups([
                 Tables\Grouping\Group::make('state')
                     ->label(__('projects::filament/resources/task.table.groups.state'))
-                    ->getTitleFromRecordUsing(fn (Task $record): string => TaskState::options()[$record->state]),
+                    ->getTitleFromRecordUsing(fn (Task $record): string => $record->state->getLabel()),
                 Tables\Grouping\Group::make('project.name')
                     ->label(__('projects::filament/resources/task.table.groups.project')),
                 Tables\Grouping\Group::make('deadline')
