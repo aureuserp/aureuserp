@@ -255,7 +255,7 @@ class ListActivities extends ListRecords
         $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
 
         if ((string) Activity::query()->whereKey($recordId)->value('activity_type_id') === $newColumnValue) {
-            $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+            $this->keepKanbanMove($recordId, $from, $newColumnValue, $orderedIds);
         }
     }
 

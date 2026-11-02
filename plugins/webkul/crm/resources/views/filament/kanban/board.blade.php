@@ -30,6 +30,7 @@
         $hasHeaderAction = $board->hasColumnHeaderAction();
         $canEditColumn = method_exists($this, 'canEditKanbanColumn') && $this->canEditKanbanColumn($column->value);
         $canDeleteColumn = method_exists($this, 'canDeleteKanbanColumn') && $this->canDeleteKanbanColumn($column->value);
+        $movedCardId = property_exists($this, 'movedKanbanCardId') ? $this->movedKanbanCardId : null;
 
         $colorKey = in_array($color, ['primary', 'success', 'warning', 'danger', 'info'], true) ? $color : 'gray';
         $colorClasses = 'crm-kanban-column-'.$colorKey;
@@ -68,7 +69,7 @@
                 @if($canEditColumn
                     || $canDeleteColumn)
                     x-data="{ menuReady: false }"
-                    x-on:pointerenter.once="menuReady = true"
+                    x-on:pointerenter="menuReady ||= ! $event.buttons"
                     x-on:focusin.once="menuReady = true"
                 @endif
             >
@@ -214,7 +215,7 @@
                     @if ($card->tooltip) title="{{ $card->tooltip }}" @endif
                     @if ($card->menu)
                         x-data="{ menusReady: false }"
-                        x-on:pointerenter.once="menusReady = true"
+                        x-on:pointerenter="menusReady ||= ! $event.buttons"
                         x-on:focusin.once="menusReady = true"
                     @endif
                     @if ($card->url)
@@ -223,6 +224,7 @@
                     @class([
                         'fi-kanban-card group relative flex gap-3 rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-950/5 transition-shadow hover:shadow-md dark:bg-gray-900 dark:ring-white/10',
                         'cursor-pointer' => $card->url,
+                        'crm-kanban-card-moved' => $movedCardId === (string) $recordKey,
                     ])
                 >
                     @if ($card->avatar)
@@ -443,7 +445,6 @@
         $hasLoading = $board->hasLoading();
     @endphp
 
-
     <div
         x-load
         x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('filament-kanban', 'wezlo/filament-kanban') }}"
@@ -453,16 +454,12 @@
             collapsible: @js($board->isCollapsible()),
             dragConstraints: @js($board->getDragConstraints()),
         })"
-        x-init="window.crmScheduleKanbanFit ? window.crmScheduleKanbanFit() : $nextTick(() => window.crmFitKanbanBoard?.($el))"
-        style="--crm-kanban-drop-label: '{{ addslashes(__('crm::filament/kanban.drop-here')) }}';"
+        x-init="$el.querySelector('.crm-kanban-columns')?.classList.add('crm-kanban-ready'); window.crmScheduleKanbanFit ? window.crmScheduleKanbanFit() : $nextTick(() => window.crmFitKanbanBoard?.($el))"
+        @if (method_exists($this, 'moveKanbanRecords'))
+            data-crm-batch-moves
+        @endif
         class="fi-kanban-board crm-kanban-board relative"
     >
-        @if($hasLoading)
-            <div class="crm-kanban-shimmer" aria-busy="true">
-                @include('crm::filament.kanban.shimmer')
-            </div>
-        @endif
-
         <div class="crm-kanban-columns relative flex gap-4 items-start overflow-x-auto pb-4" wire:ignore.self>
             <script>window.crmFitKanbanBoard?.(document.currentScript.closest('.crm-kanban-board'))</script>
             @forelse($columns as $column)
@@ -495,6 +492,11 @@
             @endif
         </div>
 
+        @if($hasLoading)
+            <div class="crm-kanban-shimmer" aria-busy="true">
+                @include('crm::filament.kanban.shimmer')
+            </div>
+        @endif
 
         <x-filament-actions::modals />
     </div>

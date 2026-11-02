@@ -210,7 +210,7 @@ class ListLeads extends ListRecords
 
         $record->save();
 
-        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+        $this->keepKanbanMove($recordId, $from, $newColumnValue, $orderedIds);
     }
 
     public function getPresetTableViews(): array

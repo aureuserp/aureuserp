@@ -195,7 +195,7 @@ class ListOpportunities extends ListRecords
         return $kanban
             ->relationshipColumn('stage', 'name', Stage::class, orderAttribute: 'sort')
             ->excludeColumns(Stage::hiddenColumnsForTeam($this->kanbanTeamFilterId()))
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(static::KANBAN_CARD_RELATIONS)->orderByDesc('crm_leads.updated_at')->orderByDesc('crm_leads.id'))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $this->orderKanbanCards($query->with(static::KANBAN_CARD_RELATIONS)))
             ->columnColor(fn (KanbanColumn $column): string => in_array($column->value, $wonStageIds, true) ? 'success' : 'gray')
             ->cardTitle(fn (Lead $record): string => $record->name)
             ->cardDescription(fn (Lead $record): string => collect([
@@ -288,7 +288,7 @@ class ListOpportunities extends ListRecords
         $this->moveBaseRecord($recordId, $newColumnValue, $orderedIds);
 
         if ((string) Lead::query()->withTrashed()->whereKey($recordId)->value('stage_id') === $newColumnValue) {
-            $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+            $this->keepKanbanMove($recordId, $from, $newColumnValue, $orderedIds);
         }
     }
 

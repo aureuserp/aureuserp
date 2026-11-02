@@ -22,7 +22,6 @@
         }
 
         document.documentElement.style.setProperty('--crm-board-offset', (row.getBoundingClientRect().top + window.scrollY + below) + 'px');
-        document.documentElement.dataset.crmBoardFitted = 'true';
     };
 
     let fitFrame = null;
@@ -54,19 +53,13 @@
         setTimeout(() => column.classList.remove('crm-kanban-column-new'), 2800);
     }, 50);
 
-    const cardOnlyCalls = ['moveRecord', 'setKanbanCardPriority', 'mountAction', 'unmountAction', 'callMountedAction'];
+    const cardOnlyCalls = ['moveRecord', 'moveKanbanRecords', 'setKanbanCardPriority', 'mountAction', 'unmountAction', 'callMountedAction'];
 
-    const layoutNeutralCalls = ['moveRecord', 'setKanbanCardPriority', 'mountAction', 'unmountAction'];
+    const layoutNeutralCalls = ['moveRecord', 'moveKanbanRecords', 'setKanbanCardPriority', 'mountAction', 'unmountAction'];
 
-    const reloadsBoard = (commit) => ! (commit.calls ?? []).some((call) => ['switchViewLayout', 'moveRecord'].includes(call.method))
+    const reloadsBoard = (commit) => ! (commit.calls ?? []).some((call) => ['switchViewLayout', 'moveRecord', 'moveKanbanRecords'].includes(call.method))
         && (Object.keys(commit.updates ?? {}).length > 0
             || (commit.calls ?? []).some((call) => ! cardOnlyCalls.includes(call.method)));
-
-    let dragSourceColumn = null;
-
-    let draggedCard = null;
-
-    let shiftedRecord = null;
 
     const columnSelector = (value) => `[data-kanban-column][data-column-value="${CSS.escape(String(value))}"]`;
 
@@ -83,38 +76,82 @@
         badge.textContent = badge.dataset.kanbanWipLimit ? `${count} / ${badge.dataset.kanbanWipLimit}` : String(count);
     };
 
-    const showMove = (boards, commit, succeed, fail) => {
-        const move = (commit.calls ?? []).find((call) => call.method === 'moveRecord');
+    const pendingMoves = [];
 
-        if (! move) {
+    let queuedMoves = [];
+
+    let flushingMoves = [];
+
+    let flushTimer = null;
+
+    const scheduleFlush = () => {
+        clearTimeout(flushTimer);
+        flushTimer = queuedMoves.length ? setTimeout(flushMoves, 600) : null;
+    };
+
+    const forgetMoves = (moves) => moves.forEach((move) => {
+        const index = pendingMoves.indexOf(move);
+
+        if (index !== -1) {
+            pendingMoves.splice(index, 1);
+        }
+    });
+
+    const flushMoves = () => {
+        clearTimeout(flushTimer);
+        flushTimer = null;
+
+        if (! queuedMoves.length) {
             return;
         }
 
-        const [recordId, targetColumn] = move.params;
-        const cardSelector = `[data-kanban-card][data-record-id="${CSS.escape(String(recordId))}"]`;
-        const board = boards.find((board) => board.querySelector(cardSelector));
-        const card = board?.querySelector(cardSelector);
+        const moves = queuedMoves;
+        const latest = new Map();
 
-        if (! card) {
+        queuedMoves = [];
+
+        moves.forEach((move) => {
+            latest.delete(move.recordId);
+            latest.set(move.recordId, move);
+        });
+
+        const changes = [...latest.values()].filter((move) => move.to !== moves.find((first) => first.recordId === move.recordId).from);
+
+        if (! changes.length) {
+            forgetMoves(moves);
+
             return;
         }
 
-        if (shiftedRecord !== String(recordId)
-            && dragSourceColumn !== null
-            && dragSourceColumn !== String(targetColumn)) {
-            shiftColumnCount(board, dragSourceColumn, -1);
-            shiftColumnCount(board, targetColumn, 1);
+        flushingMoves = moves;
+        moves[0].wire.moveKanbanRecords(changes.map((move) => [move.recordId, move.to, move.orderedIds]));
+    };
+
+    const queueDroppedMove = (event) => {
+        const board = event.to.closest('.crm-kanban-board');
+        const from = event.from.dataset.columnValue;
+        const to = event.to.dataset.columnValue;
+
+        setTimeout(() => {
+            window.Alpine.$data(board).dragStarted = false;
+        }, 0);
+
+        if (from === to) {
+            return;
         }
 
-        dragSourceColumn = null;
-        shiftedRecord = null;
+        const move = {
+            recordId: event.item.dataset.recordId,
+            from,
+            to,
+            orderedIds: [...event.to.querySelectorAll('[data-kanban-card]')].map((card) => card.dataset.recordId),
+            wire: window.Livewire.find(board.closest('[wire\\:id]').getAttribute('wire:id')),
+            action: null,
+        };
 
-        card.classList.add('crm-kanban-card-saving');
-
-        const done = () => card.classList.remove('crm-kanban-card-saving');
-
-        succeed(done);
-        fail(done);
+        pendingMoves.push(move);
+        queuedMoves.push(move);
+        scheduleFlush();
     };
 
     const registerShimmer = () => {
@@ -124,30 +161,37 @@
 
         window.crmKanbanShimmerRegistered = true;
 
-        document.addEventListener('pointerdown', (event) => {
-            draggedCard = event.target.closest?.('.crm-kanban-board [data-kanban-card]') ?? null;
-            dragSourceColumn = draggedCard?.closest('[data-kanban-column]')?.dataset.columnValue ?? null;
-            shiftedRecord = null;
-        }, true);
-
-        const shiftOnRelease = () => setTimeout(() => {
-            const targetColumn = draggedCard?.closest('[data-kanban-column]')?.dataset.columnValue ?? null;
-            const board = draggedCard?.closest('.crm-kanban-board');
-
-            if (board
-                && dragSourceColumn !== null
-                && targetColumn !== null
-                && targetColumn !== dragSourceColumn
-                && shiftedRecord !== draggedCard.dataset.recordId) {
-                shiftColumnCount(board, dragSourceColumn, -1);
-                shiftColumnCount(board, targetColumn, 1);
-                shiftedRecord = draggedCard.dataset.recordId;
+        window.Livewire.interceptAction(({ action, onFinish }) => {
+            if (action.name !== 'moveKanbanRecords') {
+                return;
             }
 
-            draggedCard = null;
-        }, 0);
+            const moves = flushingMoves;
 
-        document.addEventListener('pointerup', shiftOnRelease, true);
+            flushingMoves = [];
+            moves.forEach((move) => {
+                move.action = action;
+            });
+
+            onFinish(() => forgetMoves(moves));
+        });
+
+        window.Livewire.interceptMessage(({ message, onSuccess }) => {
+            onSuccess(({ payload }) => {
+                const partials = payload.effects?.partials;
+
+                if (! partials) {
+                    return;
+                }
+
+                pendingMoves
+                    .filter((move) => ! message.actions.has(move.action))
+                    .forEach((move) => {
+                        delete partials[`kanban-column-${move.from}`];
+                        delete partials[`kanban-column-${move.to}`];
+                    });
+            });
+        });
 
         window.Livewire.hook('commit', ({ component, commit, succeed, fail }) => {
             if (! component.el.querySelector('.crm-kanban-board')) {
@@ -159,8 +203,6 @@
             }
 
             const boards = [...component.el.querySelectorAll('.crm-kanban-board')];
-
-            showMove(boards, commit, succeed, fail);
 
             if (! reloadsBoard(commit)) {
                 return;
@@ -186,7 +228,8 @@
     let hoveredColumn = null;
 
     const highlightColumn = (column) => {
-        if (column === hoveredColumn) {
+        if (column === hoveredColumn
+            && (! column || column.classList.contains('crm-kanban-column-hover'))) {
             return;
         }
 
@@ -195,29 +238,9 @@
         hoveredColumn = column;
     };
 
-    const followPointer = (x, y) => {
-        const ghost = document.querySelector('.crm-kanban-board .fi-kanban-card-ghost');
+    const draggedGhost = () => document.querySelector('.crm-kanban-board .fi-kanban-card-ghost');
 
-        if (! ghost) {
-            return;
-        }
-
-        const element = document.elementFromPoint(x, y);
-        const column = element?.closest('.crm-kanban-board .fi-kanban-column') ?? null;
-        const list = column?.querySelector('[data-kanban-column]');
-
-        highlightColumn(column);
-
-        if (! list
-            || element.closest('[data-kanban-card]')
-            || ghost.parentElement === list && ghost === list.lastElementChild) {
-            return;
-        }
-
-        const below = [...list.querySelectorAll('[data-kanban-card]')].find((card) => card !== ghost && card.getBoundingClientRect().top > y);
-
-        below ? list.insertBefore(ghost, below) : list.appendChild(ghost);
-    };
+    const columnAt = (x, y) => document.elementFromPoint(x, y)?.closest('.crm-kanban-board .fi-kanban-column') ?? null;
 
     let followFrame = null;
 
@@ -229,7 +252,15 @@
         const floating = document.body.querySelector(':scope > .crm-kanban-card-floating');
 
         if (floating) {
+            const ghost = draggedGhost();
+
             document.documentElement.appendChild(floating);
+            ghost?.classList.add('crm-kanban-card-lifted');
+
+            if (ghost) {
+                ghost.__livewire_ignore = true;
+            }
+            ghost?.closest('.crm-kanban-columns')?.classList.add('crm-kanban-dragging');
         }
 
         if (followFrame !== null) {
@@ -238,8 +269,53 @@
 
         followFrame = requestAnimationFrame(() => {
             followFrame = null;
-            followPointer(event.clientX, event.clientY);
+            highlightColumn(draggedGhost() ? columnAt(event.clientX, event.clientY) : null);
         });
+    };
+
+    const endFollow = () => {
+        cancelAnimationFrame(followFrame);
+        followFrame = null;
+        highlightColumn(null);
+        document.querySelectorAll('.crm-kanban-dragging').forEach((columns) => columns.classList.remove('crm-kanban-dragging'));
+    };
+
+    const placeDroppedCard = (event) => {
+        endFollow();
+        scheduleFlush();
+
+        const ghost = draggedGhost();
+
+        if (! ghost) {
+            return;
+        }
+
+        const list = columnAt(event.clientX, event.clientY)?.querySelector('[data-kanban-column]');
+        const before = list && [...list.querySelectorAll('[data-kanban-card]')].find((card) => {
+            const rect = card.getBoundingClientRect();
+
+            return card !== ghost && rect.top + rect.height / 2 > event.clientY;
+        });
+
+        ghost.classList.remove('crm-kanban-card-lifted');
+        ghost.__livewire_ignore = false;
+
+        if (list
+            && ghost.parentElement !== list) {
+            const board = list.closest('.crm-kanban-board');
+            const from = ghost.parentElement.dataset.columnValue;
+
+            shiftColumnCount(board, from, -1);
+            shiftColumnCount(board, list.dataset.columnValue, 1);
+
+            document.querySelectorAll('.crm-kanban-card-moved').forEach((card) => card.classList.remove('crm-kanban-card-moved'));
+            ghost.classList.add('crm-kanban-card-moved');
+        }
+
+        if (list
+            && (ghost.parentElement !== list || ghost.nextElementSibling !== (before ?? null))) {
+            list.insertBefore(ghost, before ?? null);
+        }
     };
 
     const prepareDrag = (event) => {
@@ -247,7 +323,11 @@
             return;
         }
 
-        event.target.closest('.crm-kanban-board').querySelectorAll('[data-kanban-column]').forEach((list) => {
+        const board = event.target.closest('.crm-kanban-board');
+
+        clearTimeout(flushTimer);
+
+        board.querySelectorAll('[data-kanban-column]').forEach((list) => {
             const sortable = list[Object.keys(list).find((name) => name.startsWith('Sortable'))];
 
             if (! sortable) {
@@ -260,7 +340,11 @@
             sortable.option('fallbackOnBody', true);
             sortable.option('fallbackClass', 'crm-kanban-card-floating');
             sortable.option('fallbackTolerance', 3);
-            sortable.option('emptyInsertThreshold', 24);
+            sortable.option('onMove', () => false);
+
+            if (board.hasAttribute('data-crm-batch-moves')) {
+                sortable.option('onEnd', queueDroppedMove);
+            }
         });
     };
 
@@ -268,10 +352,19 @@
         window.crmKanbanDragListening = true;
         document.addEventListener('pointerdown', prepareDrag, true);
         document.addEventListener('pointermove', scheduleFollow);
-        document.addEventListener('pointerup', () => {
-            cancelAnimationFrame(followFrame);
-            followFrame = null;
-            highlightColumn(null);
+        document.addEventListener('pointerup', placeDroppedCard, true);
+        window.addEventListener('pagehide', flushMoves);
+        window.addEventListener('beforeunload', flushMoves);
+        document.addEventListener('pointercancel', () => {
+            const ghost = draggedGhost();
+
+            endFollow();
+            scheduleFlush();
+            ghost?.classList.remove('crm-kanban-card-lifted');
+
+            if (ghost) {
+                ghost.__livewire_ignore = false;
+            }
         }, true);
     }
 

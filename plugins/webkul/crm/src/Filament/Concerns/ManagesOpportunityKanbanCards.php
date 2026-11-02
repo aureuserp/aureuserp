@@ -32,6 +32,14 @@ trait ManagesOpportunityKanbanCards
 
     abstract protected function kanbanColumnKeyExpression(): string;
 
+    protected function orderKanbanCards(Builder $query): Builder
+    {
+        return $query
+            ->orderByDesc('crm_leads.priority')
+            ->orderByDesc('crm_leads.updated_at')
+            ->orderByDesc('crm_leads.id');
+    }
+
     public function getKanbanCard(Lead $record): KanbanCard
     {
         $key = (string) $record->getKey();

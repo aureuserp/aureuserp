@@ -44,7 +44,6 @@ test.describe("CRM Pipeline Kanban E2E", () => {
         await crmPage.gotoPipeline();
 
         await crmPage.expectCardInColumn(name, 1);
-        await expect(crmPage.column(1).locator("[data-kanban-card]").first()).toContainText(name);
 
         await crmPage.deleteOpportunity(name);
     });

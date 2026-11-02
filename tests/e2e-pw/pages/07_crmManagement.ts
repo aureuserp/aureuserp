@@ -75,9 +75,14 @@ export class CRMFlowPage {
 
     /**
      * Drags with real pointer steps: the board runs SortableJS in pointer (fallback) mode,
-     * so a single jump or an HTML5 drag event would not move the card.
+     * so a single jump or an HTML5 drag event would not move the card. The board saves
+     * moves in one batch a moment after the last drop, so this waits for that save.
      */
     async dragCardToColumn(name: string, targetIndex: number) {
+        const saved = this.page.waitForResponse(
+            (response) => response.url().includes("/update") && (response.request().postData() ?? "").includes("moveKanbanRecords")
+        );
+
         const from = await this.card(name).boundingBox();
         const to = await this.column(targetIndex).locator("[data-kanban-column]").boundingBox();
 
@@ -94,6 +99,7 @@ export class CRMFlowPage {
         await this.page.mouse.move(startX + 10, startY + 10, { steps: 3 });
         await this.page.mouse.move(endX, endY, { steps: 20 });
         await this.page.mouse.up();
+        await saved;
     }
 
     async expectCardInColumn(name: string, index: number) {

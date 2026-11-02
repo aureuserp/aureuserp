@@ -180,8 +180,16 @@
     max-height: none;
 }
 
-html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
+.crm-kanban-board .crm-kanban-columns:not(.crm-kanban-ready) {
     visibility: hidden;
+}
+
+.crm-kanban-board .fi-kanban-column {
+    user-select: none;
+}
+
+.crm-kanban-board .crm-kanban-columns.crm-kanban-dragging [data-kanban-card] {
+    pointer-events: none;
 }
 
 .crm-kanban-board .crm-kanban-add-column-opening {
@@ -220,10 +228,6 @@ html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
 
 .crm-kanban-board .fi-kanban-cards > .crm-kanban-empty:not(:only-child) {
     display: none;
-}
-
-.crm-kanban-board [data-kanban-card].crm-kanban-card-saving {
-    pointer-events: none;
 }
 
 .crm-kanban-board .crm-kanban-empty-board {
@@ -444,11 +448,11 @@ html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-columns {
 }
 
 .crm-kanban-board.crm-kanban-loading .crm-kanban-shimmer,
-html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-shimmer {
+.crm-kanban-board .crm-kanban-columns:not(.crm-kanban-ready) ~ .crm-kanban-shimmer {
     display: block;
 }
 
-html:not([data-crm-board-fitted]) .crm-kanban-board .crm-kanban-shimmer {
+.crm-kanban-board .crm-kanban-columns:not(.crm-kanban-ready) ~ .crm-kanban-shimmer {
     position: absolute;
     inset: 1rem 1rem auto;
     z-index: 1;
@@ -578,33 +582,33 @@ body:has(.crm-kanban-board) {
 }
 
 .crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost {
-    position: relative;
-    opacity: 1;
-    border-radius: 0.5rem;
-    background-color: color-mix(in oklab, var(--primary-500) 8%, transparent);
-    box-shadow: none;
-    outline: 2px dashed var(--primary-400);
-    outline-offset: -2px;
+    opacity: 0;
 }
 
-.crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost > * {
-    visibility: hidden;
+.crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost.crm-kanban-card-lifted {
+    display: none;
 }
 
-.crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost::after {
-    content: var(--crm-kanban-drop-label);
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-600);
-    font-size: 0.875rem;
-    font-weight: 600;
+.crm-kanban-board .fi-kanban-card.crm-kanban-card-moved {
+    --crm-kanban-moved-color: var(--primary-600);
+    outline: 2px solid transparent;
+    outline-offset: -1px;
+    animation: crm-kanban-card-moved 2s ease-out forwards;
 }
 
-.dark .crm-kanban-board .fi-kanban-card.fi-kanban-card-ghost::after {
-    color: var(--primary-400);
+.dark .crm-kanban-board .fi-kanban-card.crm-kanban-card-moved {
+    --crm-kanban-moved-color: var(--primary-500);
+}
+
+@keyframes crm-kanban-card-moved {
+    0%,
+    80% {
+        outline-color: var(--crm-kanban-moved-color);
+    }
+
+    100% {
+        outline-color: transparent;
+    }
 }
 
 .fi-kanban-card.crm-kanban-card-floating {

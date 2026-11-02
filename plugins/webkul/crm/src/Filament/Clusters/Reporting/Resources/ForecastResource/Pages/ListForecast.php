@@ -157,6 +157,6 @@ class ListForecast extends ReportPage
             ->title(__('crm::filament/clusters/reporting/resources/forecast.kanban.notifications.moved'))
             ->send();
 
-        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+        $this->keepKanbanMove($recordId, $from, $newColumnValue, $orderedIds);
     }
 }

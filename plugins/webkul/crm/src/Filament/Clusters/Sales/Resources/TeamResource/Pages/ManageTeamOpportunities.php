@@ -166,9 +166,7 @@ class ManageTeamOpportunities extends ManageRelatedRecords
 
     protected function getKanbanQuery(KanbanBoard $board): Builder
     {
-        $query = $this->filterTableQuery($this->modifyQueryWithActiveTab($this->getTeamOpportunitiesQuery()))
-            ->with(static::KANBAN_CARD_RELATIONS)
-            ->orderByDesc('crm_leads.updated_at')->orderByDesc('crm_leads.id');
+        $query = $this->orderKanbanCards($this->filterTableQuery($this->modifyQueryWithActiveTab($this->getTeamOpportunitiesQuery()))->with(static::KANBAN_CARD_RELATIONS));
 
         return $this->ignoreKanbanActivityFilter ? $query : $this->applyKanbanActivityFilter($query);
     }
@@ -224,7 +222,7 @@ class ManageTeamOpportunities extends ManageRelatedRecords
         $record->stage_id = (int) $newColumnValue;
         $record->save();
 
-        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+        $this->keepKanbanMove($recordId, $from, $newColumnValue, $orderedIds);
     }
 
     public function getPresetTableViews(): array

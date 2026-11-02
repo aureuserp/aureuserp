@@ -179,6 +179,6 @@ class ListCustomers extends BaseListPartners
         $record->{$group->field()} = $newColumnValue === 'none' ? null : (int) $newColumnValue;
         $record->save();
 
-        $this->keepKanbanMove($from, $newColumnValue, $orderedIds);
+        $this->keepKanbanMove($recordId, $from, $newColumnValue, $orderedIds);
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'drop-here' => 'أفلت هنا',
-
     'add-column' => [
         'stage'         => 'إضافة مرحلة',
         'activity-type' => 'إضافة نوع نشاط',

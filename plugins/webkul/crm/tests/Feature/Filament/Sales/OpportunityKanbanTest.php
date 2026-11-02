@@ -160,14 +160,30 @@ it('uses the stages, in order, as columns and colours won stages green', functio
         ->and($board->resolveColumnColor(pipelineBoardColumn($component, $firstStage)))->toBe('gray');
 });
 
-it('lists the cards of each column by last update, newest first', function () {
+it('lists higher priority cards first in each column', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
     $stage = CRMHelper::firstStage();
 
-    $older = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id]), now()->subDays(2));
-    $newest = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id]), now());
-    $middle = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id]), now()->subDay());
+    $low = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::LOW]), now());
+    $veryHigh = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::VERY_HIGH]), now()->subDays(3));
+    $medium = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::MEDIUM]), now()->subDay());
+    $high = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::HIGH]), now()->subDays(2));
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
+
+    expect(pipelineBoardColumn($component, $stage)->records->modelKeys())
+        ->toBe([$veryHigh->id, $high->id, $medium->id, $low->id]);
+});
+
+it('lists cards of the same priority by last update, newest first', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $stage = CRMHelper::firstStage();
+
+    $older = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::HIGH]), now()->subDays(2));
+    $newest = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::HIGH]), now());
+    $middle = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::HIGH]), now()->subDay());
 
     $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
@@ -175,22 +191,23 @@ it('lists the cards of each column by last update, newest first', function () {
         ->toBe([$newest->id, $middle->id, $older->id]);
 });
 
-it('shows a moved card at the top of its new column after a reload', function () {
+it('shows a moved card first among cards of its priority after a reload', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
     $from = CRMHelper::firstStage();
     $to = Stage::factory()->create(['name' => 'Reload target stage']);
 
-    $waiting = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $to->id]), now()->subHour());
-    $moved = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $from->id]), now()->subDays(3));
+    $higher = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $to->id, 'priority' => OpportunityPriority::VERY_HIGH]), now()->subDays(5));
+    $waiting = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $to->id, 'priority' => OpportunityPriority::MEDIUM]), now()->subHour());
+    $moved = pipelineUpdatedAt(CRMHelper::opportunity(['stage_id' => $from->id, 'priority' => OpportunityPriority::MEDIUM]), now()->subDays(3));
 
     Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
-        ->call('moveRecord', (string) $moved->id, (string) $to->id, [(string) $waiting->id, (string) $moved->id]);
+        ->call('moveRecord', (string) $moved->id, (string) $to->id, [(string) $higher->id, (string) $waiting->id, (string) $moved->id]);
 
     $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class);
 
     expect(pipelineBoardColumn($component, $to)->records->modelKeys())
-        ->toBe([$moved->id, $waiting->id]);
+        ->toBe([$higher->id, $moved->id, $waiting->id]);
 });
 
 it('sums the expected revenue of each column', function () {
@@ -419,6 +436,40 @@ it('re-renders only the two moved columns, with the moved card where it was drop
         ->and(strpos($targetHtml, 'kanban-card-'.$moved->id))->toBeLessThan(strpos($targetHtml, 'kanban-card-'.$already->id));
 });
 
+it('marks the card moved to another stage with a border only in the re-render after the move', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $source = CRMHelper::firstStage();
+    $target = Stage::factory()->create(['name' => 'Border target stage']);
+    $already = CRMHelper::opportunity(['stage_id' => $target->id]);
+    $moved = CRMHelper::opportunity(['stage_id' => $source->id]);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->call('moveRecord', (string) $moved->id, (string) $target->id, [(string) $moved->id, (string) $already->id]);
+
+    $targetHtml = $component->effects['partials']['kanban-column-'.$target->id] ?? '';
+    $border = strpos($targetHtml, 'crm-kanban-card-moved');
+
+    expect(substr_count($targetHtml, 'crm-kanban-card-moved'))->toBe(1)
+        ->and($border)->toBeGreaterThan(strpos($targetHtml, 'kanban-card-'.$moved->id))
+        ->and($border)->toBeLessThan(strpos($targetHtml, 'kanban-card-'.$already->id));
+
+    $component->call('$refresh')->assertDontSeeHtml('crm-kanban-card-moved');
+});
+
+it('does not mark a card reordered within its own stage', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $stage = CRMHelper::firstStage();
+    $first = CRMHelper::opportunity(['stage_id' => $stage->id]);
+    $second = CRMHelper::opportunity(['stage_id' => $stage->id]);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->call('moveRecord', (string) $second->id, (string) $stage->id, [(string) $second->id, (string) $first->id]);
+
+    expect(implode('', $component->effects['partials'] ?? []))->not->toContain('crm-kanban-card-moved');
+});
+
 it('re-renders the board when a move is refused so the card goes back', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
@@ -430,6 +481,49 @@ it('re-renders the board when a move is refused so the card goes back', function
 
     expect($component->effects)->toHaveKey('html')
         ->and($component->effects['partials'] ?? [])->toBe([])
+        ->and($lost->refresh()->stage_id)->toBe(CRMHelper::firstStage()->id);
+});
+
+it('saves a batch of moves in one call and re-renders every touched column once', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $source = CRMHelper::firstStage();
+    $middle = Stage::factory()->create(['name' => 'Batch middle stage']);
+    $target = Stage::factory()->create(['name' => 'Batch target stage']);
+    $first = CRMHelper::opportunity(['stage_id' => $source->id]);
+    $second = CRMHelper::opportunity(['stage_id' => $middle->id]);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->call('moveKanbanRecords', [
+            [(string) $first->id, (string) $middle->id, [(string) $first->id, (string) $second->id]],
+            [(string) $second->id, (string) $target->id, [(string) $second->id]],
+        ]);
+
+    $partials = $component->effects['partials'] ?? [];
+
+    expect($first->refresh()->stage_id)->toBe($middle->id)
+        ->and($second->refresh()->stage_id)->toBe($target->id)
+        ->and($component->effects)->not->toHaveKey('html')
+        ->and(array_keys($partials))->toEqualCanonicalizing([
+            'kanban-column-'.$source->id,
+            'kanban-column-'.$middle->id,
+            'kanban-column-'.$target->id,
+        ])
+        ->and($partials['kanban-column-'.$middle->id])->toContain('kanban-card-'.$first->id)
+        ->and($partials['kanban-column-'.$middle->id])->not->toContain('kanban-card-'.$second->id)
+        ->and($partials['kanban-column-'.$target->id])->toContain('kanban-card-'.$second->id);
+});
+
+it('re-renders the whole board when a move in a batch is refused', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $lost = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
+    $lost->markAsLost(null);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'lost'])->test(ListOpportunities::class)
+        ->call('moveKanbanRecords', [[(string) $lost->id, (string) Stage::factory()->create()->id, [(string) $lost->id]]]);
+
+    expect($component->effects)->toHaveKey('html')
         ->and($lost->refresh()->stage_id)->toBe(CRMHelper::firstStage()->id);
 });
 

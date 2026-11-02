@@ -154,9 +154,7 @@ trait ShowsSimilarLeadsBoard
 
     protected function getKanbanQuery(KanbanBoard $board): Builder
     {
-        $query = $this->filterTableQuery($this->modifyQueryWithActiveTab($this->getSimilarQuery()))
-            ->with(static::KANBAN_CARD_RELATIONS)
-            ->orderByDesc('crm_leads.updated_at')->orderByDesc('crm_leads.id');
+        $query = $this->orderKanbanCards($this->filterTableQuery($this->modifyQueryWithActiveTab($this->getSimilarQuery()))->with(static::KANBAN_CARD_RELATIONS));
 
         return $this->ignoreKanbanActivityFilter ? $query : $this->applyKanbanActivityFilter($query);
     }

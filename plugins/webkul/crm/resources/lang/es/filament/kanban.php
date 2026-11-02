@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'drop-here' => 'Suelta aquí',
-
     'add-column' => [
         'stage'         => 'Añadir etapa',
         'activity-type' => 'Añadir tipo de actividad',

@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'drop-here' => 'Drop here',
-
     'add-column' => [
         'stage'         => 'Add Stage',
         'activity-type' => 'Add Activity Type',
