@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Exports\BillExporter;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
@@ -317,11 +318,15 @@ class BillsTable
                 ActionGroup::make([
                     ViewAction::make()
                         ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
-                            ? $resource::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true)
+                            ? ($record->move_type === MoveType::IN_REFUND
+                                ? $resource::getRefundResource()::getUrl('view', ['record' => $record])
+                                : $resource::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true))
                             : null),
                     EditAction::make()
                         ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
-                            ? $resource::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true)
+                            ? ($record->move_type === MoveType::IN_REFUND
+                                ? $resource::getRefundResource()::getUrl('edit', ['record' => $record])
+                                : $resource::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true))
                             : null),
                     DeleteAction::make()
                         ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)

@@ -2,15 +2,20 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Livewire\Livewire;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ReverseAction;
+use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
 use Webkul\Contact\Filament\Resources\ContactBillResource;
 use Webkul\Contact\Filament\Resources\ContactInvoiceResource;
 use Webkul\Contact\Filament\Resources\ContactInvoiceResource\Pages\ViewInvoice;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageBills;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageInvoices;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -94,4 +99,20 @@ it('shows the reverse action on an invoice but not on a credit note opened from 
 
     expect($reverseVisible($posted(MoveType::OUT_INVOICE)))->toBeTrue()
         ->and($reverseVisible($posted(MoveType::OUT_REFUND)))->toBeFalse();
+});
+
+it('links credit note and refund rows on the partner tabs to their own resources', function () {
+    FilamentHelper::actingAs(['view_any_contact_partner', 'view_contact_partner', 'view_any_account_invoice', 'view_any_account_bill', 'view_any_account_credit_note', 'view_any_account_refund']);
+
+    $invoice = ($this->move)(MoveType::OUT_INVOICE);
+    $creditNote = ($this->move)(MoveType::OUT_REFUND);
+    $refund = ($this->move)(MoveType::IN_REFUND);
+
+    $viewUrl = fn (string $page, Move $move) => Livewire::test($page, ['record' => $this->partner->getKey()])
+        ->instance()->getTable()->getRecordActions()[1]
+        ->getActions()[0]->record($move)->getUrl();
+
+    expect($viewUrl(ManageInvoices::class, $creditNote))->toBe(CreditNoteResource::getUrl('view', ['record' => $creditNote]))
+        ->and($viewUrl(ManageInvoices::class, $invoice))->not->toBe(CreditNoteResource::getUrl('view', ['record' => $invoice]))
+        ->and($viewUrl(ManageBills::class, $refund))->toBe(RefundResource::getUrl('view', ['record' => $refund]));
 });

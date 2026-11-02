@@ -81,6 +81,11 @@ class BillResource extends Resource
         return InvoiceSummary::class;
     }
 
+    public static function getRefundResource(): string
+    {
+        return RefundResource::class;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
