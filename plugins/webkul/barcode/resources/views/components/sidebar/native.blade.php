@@ -21,4 +21,12 @@
             :active="$item['active']"
         />
     @endforeach
+
+    <native:side-nav-item
+        id="back-office"
+        label="{{ __('barcode::app.navigation.back-office') }}"
+        icon="business"
+        url="{{ url('/admin') }}"
+        :active="false"
+    />
 </native:side-nav>

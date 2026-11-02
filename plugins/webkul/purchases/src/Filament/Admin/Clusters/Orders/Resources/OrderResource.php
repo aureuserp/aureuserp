@@ -5,7 +5,6 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Settings\ProductSettings;
@@ -68,11 +67,5 @@ class OrderResource extends Resource
     public static function getProductSettings(): ProductSettings
     {
         return settings(ProductSettings::class);
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

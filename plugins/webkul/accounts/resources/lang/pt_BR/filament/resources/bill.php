@@ -100,7 +100,7 @@ return [
         'columns' => [
             'number'          => 'Número',
             'state'           => 'Estado',
-            'customer'        => 'Cliente',
+            'vendor'          => 'Fornecedor',
             'bill-date'       => 'Data da fatura de fornecedor',
             'checked'         => 'Verificado',
             'accounting-date' => 'Contabilidade',

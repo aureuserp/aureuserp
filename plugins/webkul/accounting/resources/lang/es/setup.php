@@ -7,4 +7,8 @@ return [
         'title' => 'Contabilidad configurada',
         'body'  => 'Se crearon el plan de cuentas, los diarios y los ajustes predeterminados para esta empresa.',
     ],
+    'error' => [
+        'title' => 'La configuración contable no se ejecutó',
+        'body'  => 'No se crearon el plan de cuentas, los diarios ni los ajustes predeterminados. Compruebe que la empresa predeterminada utilizada como plantilla esté completamente configurada e inténtelo de nuevo. Los detalles técnicos se han registrado.',
+    ],
 ];

@@ -86,7 +86,6 @@ class InvoiceResource extends Resource
         return parent::getEloquentQuery()
             ->when(Str::contains(static::class, 'InvoiceResource') && ! is_a(static::$parentResource, PartnerResource::class, true), function (Builder $query) {
                 $query->where('move_type', MoveType::OUT_INVOICE);
-            })
-            ->orderByDesc('id');
+            });
     }
 }

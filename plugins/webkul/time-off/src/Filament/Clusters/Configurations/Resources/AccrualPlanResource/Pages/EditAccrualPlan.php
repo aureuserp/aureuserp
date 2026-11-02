@@ -3,7 +3,6 @@
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
@@ -26,7 +25,6 @@ class EditAccrualPlan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

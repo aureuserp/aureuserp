@@ -35,7 +35,7 @@
 
         .header {
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .company-info {
@@ -56,39 +56,39 @@
         }
 
         .quote-number {
-            font-size: 24px;
+            font-size: 22px;
             color: #1a4587;
-            margin: 25px 0;
-            padding: 15px 0;
+            margin: 15px 0;
+            padding: 8px 0;
             border-bottom: 2px solid #1a4587;
         }
 
         .details-table {
             width: 100%;
-            margin: 20px 0;
+            margin: 10px 0;
             border-collapse: collapse;
         }
 
         .details-table td {
-            padding: 10px;
+            padding: 6px 8px;
             vertical-align: top;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
+            margin: 15px 0;
         }
 
         .items-table th {
             background: #1a4587;
             color: white;
-            padding: 12px;
+            padding: 8px 10px;
             text-align: left;
         }
 
         .items-table td {
-            padding: 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e9ecef;
         }
 
@@ -99,13 +99,13 @@
         .summary-table {
             width: 300px;
             float: right;
-            margin-top: 20px;
+            margin-top: 15px;
             background: #f8f9fa;
             border-collapse: collapse;
         }
 
         .summary-table td {
-            padding: 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e9ecef;
         }
 
@@ -115,15 +115,15 @@
         }
 
         .terms {
-            margin-top: 40px;
-            padding: 20px 0;
+            margin-top: 20px;
+            padding: 12px 0;
             border-top: 1px solid #e9ecef;
         }
 
         .note {
             color: #666;
             font-size: 0.9em;
-            margin-top: 30px;
+            margin-top: 15px;
             text-align: center;
         }
     </style>
@@ -135,7 +135,7 @@
             <!-- Header Section -->
             <div class="header">
                 <div class="company-info">
-                    <div style="font-size: 28px; color: #1a4587; margin-bottom: 10px;">{{ $record->company->name }}</div>
+                    <div style="font-size: 22px; color: #1a4587; margin-bottom: 6px;">{{ $record->company->name }}</div>
 
                     @if ($record->company->partner)
                         <div>
@@ -179,7 +179,7 @@
                 </div>
 
                 <div class="vendor-info">
-                    <div>{{ $record->partner->name }}</div>
+                    <div style="font-size: 22px; margin-bottom: 6px;">{{ $record->partner->name }}</div>
 
                     <div>
                         {{ $record->partner->street1 }}

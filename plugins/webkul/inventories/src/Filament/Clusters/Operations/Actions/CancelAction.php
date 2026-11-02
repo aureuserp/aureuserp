@@ -20,6 +20,11 @@ class CancelAction extends Action
         return 'inventories.operations.cancel';
     }
 
+    protected function getLivewireKey(): ?string
+    {
+        return 'cancel-action-btn';
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

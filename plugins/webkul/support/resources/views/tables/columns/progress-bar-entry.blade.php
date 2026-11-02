@@ -71,4 +71,13 @@
         font-weight: 600;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     }
+    .fi-ta-content-loading .progress-container {
+        animation: var(--loading-skeleton-animation);
+        background-color: var(--loading-skeleton-background-color);
+        box-shadow: none;
+    }
+    .fi-ta-content-loading .progress-container .progress-bar,
+    .fi-ta-content-loading .progress-container .progress-text {
+        visibility: hidden;
+    }
 </style>

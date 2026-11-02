@@ -58,7 +58,7 @@ class ListPlugins extends ListRecords
             Action::make('sync_plugins')
                 ->label(__('plugin-manager::filament/resources/plugin/pages/list-plugins.header-actions.sync.label'))
                 ->icon('heroicon-o-arrow-path')
-                ->color('info')
+                ->color('primary')
                 ->requiresConfirmation()
                 ->modalHeading(__('plugin-manager::filament/resources/plugin/pages/list-plugins.header-actions.sync.modal-heading'))
                 ->modalDescription(__('plugin-manager::filament/resources/plugin/pages/list-plugins.header-actions.sync.modal-description'))
