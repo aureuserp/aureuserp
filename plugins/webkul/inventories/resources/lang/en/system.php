@@ -30,6 +30,10 @@ return [
             'origin'               => 'Return of :operation_name',
             'return-of-return'     => 'Transfer :operation is a return and cannot be returned again.',
             'more-than-returnable' => 'You cannot return more than :quantity :uom of :product.',
+            'negative-quantity'    => 'You cannot return a negative quantity of :product.',
+            'nothing-to-return'    => 'There is nothing to return. Enter a quantity greater than zero for at least one product.',
+            'not-done'             => 'Transfer :operation is not done yet, so it cannot be returned.',
+            'failed'               => 'The return could not be created. Please try again or contact your administrator.',
         ],
     ],
 

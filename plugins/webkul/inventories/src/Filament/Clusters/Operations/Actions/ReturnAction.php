@@ -17,6 +17,7 @@ use Livewire\Component;
 use Throwable;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Exceptions\ReturnNotAllowedException;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Operation;
@@ -132,10 +133,19 @@ class ReturnAction extends Action
                     $livewire->updateForm();
 
                     redirect()->to(OperationResource::getUrl('edit', ['record' => $newRecord]));
-                } catch (Throwable $e) {
+                } catch (ReturnNotAllowedException $e) {
                     Notification::make()
                         ->danger()
                         ->body($e->getMessage())
+                        ->send();
+
+                    $this->halt(shouldRollBackDatabaseTransaction: true);
+                } catch (Throwable $e) {
+                    report($e);
+
+                    Notification::make()
+                        ->danger()
+                        ->body(__('inventories::system.inventory-manager.return.failed'))
                         ->send();
 
                     $this->halt(shouldRollBackDatabaseTransaction: true);
@@ -150,7 +160,7 @@ class ReturnAction extends Action
 
     private function isReturnOfReturnBlocked(): bool
     {
-        return (bool) $this->getRecord()->return_id && ! app(OperationSettings::class)->enable_returning_returns;
+        return ! app(OperationSettings::class)->enable_returning_returns && $this->getRecord()->isReturn();
     }
 
     private function getReturnableMoves(Operation $record): Collection

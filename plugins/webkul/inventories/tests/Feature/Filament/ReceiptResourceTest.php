@@ -11,7 +11,6 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Page
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\ListReceipts;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\ViewReceipt;
 use Webkul\Inventory\Models\Operation;
-use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -34,6 +33,8 @@ beforeEach(function () {
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 });
+
+afterEach(fn () => InventoryHelper::returnSettings());
 
 it('forbids listing receipts without permission', function () {
     FilamentHelper::actingAs([]);
@@ -183,15 +184,42 @@ it('shows the return action disabled on a done return while returning returns is
 });
 
 it('enables the return action on a done return when returning returns is allowed', function () {
-    $settings = app(OperationSettings::class);
-    $settings->enable_returning_returns = true;
-    $settings->save();
+    InventoryHelper::returnSettings(returns: true);
 
     FilamentHelper::actingAs(['view_any_inventory_receipt', 'view_inventory_receipt']);
 
     Livewire::test(ViewReceipt::class, ['record' => doneDeliveryReturn()->id])
         ->assertOk()
         ->assertActionEnabled(OperationActions\ReturnAction::class);
+});
+
+it('shows the return action disabled on the backorder of a partly validated return', function () {
+    FilamentHelper::actingAs(['view_any_inventory_receipt', 'view_inventory_receipt']);
+
+    $warehouse = InventoryHelper::warehouse();
+    $product = InventoryHelper::product();
+    $receipt = InventoryHelper::receipt($warehouse, [[$product, 10]]);
+
+    Inventory::confirmTransfer($receipt);
+    Inventory::completeTransfer($receipt->refresh());
+
+    $return = Inventory::createReturn($receipt->refresh(), [$receipt->moves->first()->id => 6]);
+
+    InventoryHelper::pick($return->refresh()->moves->first(), 2);
+    Inventory::completeTransfer($return->refresh());
+
+    $backorder = InventoryHelper::backorderOf($return);
+
+    InventoryHelper::pick($backorder->moves->first(), 4);
+    Inventory::completeTransfer($backorder->refresh());
+
+    expect($backorder->refresh()->state)->toBe(OperationState::DONE)
+        ->and($backorder->return_id)->toBeNull();
+
+    Livewire::test(ViewReceipt::class, ['record' => $backorder->id])
+        ->assertOk()
+        ->assertActionVisible(OperationActions\ReturnAction::class)
+        ->assertActionDisabled(OperationActions\ReturnAction::class);
 });
 
 it('hides the validate and cancel actions on a done receipt', function () {

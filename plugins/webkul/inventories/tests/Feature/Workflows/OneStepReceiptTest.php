@@ -4,11 +4,14 @@ use Illuminate\Support\Str;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Exceptions\ReturnNotAllowedException;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Models\PackageLevel;
 use Webkul\Inventory\Models\ProductQuantity;
-use Webkul\Inventory\Settings\OperationSettings;
+use Webkul\Inventory\Models\Rule;
+use Webkul\Security\Models\User;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Models\UOMCategory;
 
@@ -27,7 +30,11 @@ beforeEach(function () {
     $this->stock = $this->warehouse->lotStockLocation;
 });
 
-afterEach(fn () => Move::forgetAdditionalFlag());
+afterEach(function () {
+    Move::forgetAdditionalFlag();
+
+    InventoryHelper::returnSettings();
+});
 
 function addMoveTo(Operation $operation, $product, float $demand): Move
 {
@@ -303,7 +310,7 @@ it('refuses to return more than was received', function () {
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
     expect(fn () => Inventory::createReturn($operation, [$operation->moves->first()->id => 11]))
-        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'))
         ->and(InventoryHelper::returnOf($operation))->toBeNull();
 });
 
@@ -315,7 +322,7 @@ it('counts returns that are still pending when checking the returnable quantity'
     Inventory::createReturn($operation, [$moveId => 6]);
 
     expect(fn () => Inventory::createReturn($operation->refresh(), [$moveId => 5]))
-        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
 
     $second = Inventory::createReturn($operation->refresh(), [$moveId => 4]);
 
@@ -330,13 +337,11 @@ it('refuses to return a return', function () {
     Inventory::completeTransfer($return->refresh());
 
     expect(fn () => Inventory::createReturn($return->refresh(), [$return->moves->first()->id => 2]))
-        ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.return.return-of-return'), ':'));
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.return-of-return'), ':'));
 });
 
 it('returns more than was received when the setting allows it', function () {
-    $settings = app(OperationSettings::class);
-    $settings->enable_returning_more_than_received = true;
-    $settings->save();
+    InventoryHelper::returnSettings(moreThanReceived: true);
 
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
@@ -346,9 +351,7 @@ it('returns more than was received when the setting allows it', function () {
 });
 
 it('returns a return when the setting allows it', function () {
-    $settings = app(OperationSettings::class);
-    $settings->enable_returning_returns = true;
-    $settings->save();
+    InventoryHelper::returnSettings(returns: true);
 
     $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
 
@@ -360,6 +363,280 @@ it('returns a return when the setting allows it', function () {
 
     expect($returnOfReturn->return_id)->toBe($return->id)
         ->and((float) $returnOfReturn->moves->first()->product_uom_qty)->toBe(2.0);
+});
+
+function partlyValidatedReturnBackorder(Operation $operation, float $returned, float $validated): Operation
+{
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => $returned]);
+
+    InventoryHelper::pick($return->refresh()->moves->first(), $validated);
+
+    Inventory::completeTransfer($return->refresh());
+
+    $backorder = InventoryHelper::backorderOf($return);
+
+    InventoryHelper::pick($backorder->moves->first(), $returned - $validated);
+
+    Inventory::completeTransfer($backorder->refresh());
+
+    return $backorder->refresh();
+}
+
+it('leaves the source moves and lines unchanged when a return is created', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $operation->load(['moves.lines', 'moveLines']);
+
+    $snapshot = fn (Operation $operation): array => [
+        'moves' => $operation->moves->map(fn (Move $move): array => $move->only([
+            'id', 'name', 'reference', 'state', 'source_location_id', 'destination_location_id', 'operation_id', 'product_uom_qty', 'quantity',
+        ]))->all(),
+        'lines' => $operation->moveLines->map(fn ($line): array => $line->only([
+            'id', 'name', 'reference', 'state', 'source_location_id', 'destination_location_id', 'operation_id', 'qty',
+        ]))->all(),
+    ];
+
+    $before = $snapshot($operation);
+
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);
+
+    $source = Operation::query()->with(['moves', 'moveLines'])->findOrFail($operation->id);
+
+    expect($snapshot($source))->toEqual($before)
+        ->and($source->moves->first()->name)->not->toBe($return->name)
+        ->and($return->moves)->toHaveCount(1)
+        ->and($return->moves->first()->operation_id)->toBe($return->id);
+});
+
+it('gives the return moves and lines the return reference and fresh bookkeeping', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $otherUser = User::withoutEvents(fn (): User => User::factory()->create());
+
+    $operation->forceFill(['creator_id' => $otherUser->id])->saveQuietly();
+
+    $sourceMove = $operation->moves->first();
+
+    $packageLevel = PackageLevel::factory()->create([
+        'package_id'              => InventoryHelper::package()->id,
+        'operation_id'            => $operation->id,
+        'destination_location_id' => $operation->destination_location_id,
+    ]);
+
+    $sourceMove->forceFill([
+        'rule_id'          => Rule::factory()->create()->id,
+        'additional'       => true,
+        'creator_id'       => $otherUser->id,
+        'reservation_date' => now()->subDay(),
+        'package_level_id' => $packageLevel->id,
+        'alert_Date'       => now()->subDay(),
+    ])->saveQuietly();
+
+    $sourceReference = $sourceMove->reference;
+
+    $return = Inventory::createReturn($operation->refresh(), [$sourceMove->id => 4]);
+
+    $returnMove = $return->moves->first();
+
+    expect(auth()->id())->not->toBe($otherUser->id)
+        ->and($sourceReference)->toBe($operation->name)
+        ->and($sourceMove->refresh()->reference)->toBe($sourceReference)
+        ->and($sourceMove->package_level_id)->toBe($packageLevel->id)
+        ->and($returnMove->reference)->toBe($return->name)
+        ->and($returnMove->lines)->not->toBeEmpty()
+        ->and($returnMove->lines->pluck('reference')->unique()->all())->toBe([$return->name])
+        ->and($returnMove->rule_id)->toBeNull()
+        ->and($returnMove->additional)->toBeFalse()
+        ->and($returnMove->package_level_id)->toBeNull()
+        ->and($returnMove->alert_Date)->toBeNull()
+        ->and($returnMove->scrap_id)->toBeNull()
+        ->and($returnMove->creator_id)->toBe(auth()->id())
+        ->and($return->creator_id)->toBe(auth()->id());
+});
+
+it('leaves the source moves and lines unchanged when a backorder is created', function () {
+    $other = InventoryHelper::product();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10], [$other, 5]]);
+
+    Inventory::confirmTransfer($operation);
+
+    $operation->refresh()->load(['moves.lines', 'moveLines']);
+
+    $moves = $operation->moves->keyBy('product_id');
+
+    $kept = $moves[$this->product->id];
+
+    $carried = $moves[$other->id];
+
+    $keptBefore = $kept->only(['name', 'reference', 'operation_id', 'state']);
+
+    $keptLinesBefore = $kept->lines->map(fn ($line): array => $line->only(['id', 'name', 'reference', 'operation_id']))->all();
+
+    $carriedName = $carried->name;
+
+    $backorder = Inventory::createBackorder($operation, collect([$carried]));
+
+    $kept->refresh();
+
+    $carried->refresh();
+
+    expect($kept->only(['name', 'reference', 'operation_id', 'state']))->toEqual($keptBefore)
+        ->and($kept->lines->map(fn ($line): array => $line->only(['id', 'name', 'reference', 'operation_id']))->all())->toEqual($keptLinesBefore)
+        ->and($kept->name)->not->toBe($backorder->name)
+        ->and($carried->operation_id)->toBe($backorder->id)
+        ->and($carried->name)->toBe($carriedName)
+        ->and($carried->reference)->toBe($backorder->name)
+        ->and($carried->lines->every(fn ($line): bool => $line->reference === $backorder->name && $line->operation_id === $backorder->id))->toBeTrue();
+});
+
+it('refuses to return the backorder of a partly validated return', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $backorder = partlyValidatedReturnBackorder($operation, 6, 2);
+
+    expect($backorder->state)->toBe(OperationState::DONE)
+        ->and($backorder->return_id)->toBeNull()
+        ->and($backorder->isReturn())->toBeTrue();
+
+    expect(fn () => Inventory::createReturn($backorder, [$backorder->moves->first()->id => 1]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.return-of-return'), ':'));
+});
+
+it('returns the backorder of a partly validated return when the setting allows it', function () {
+    InventoryHelper::returnSettings(returns: true);
+
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $backorder = partlyValidatedReturnBackorder($operation, 6, 2);
+
+    $returnOfBackorder = Inventory::createReturn($backorder, [$backorder->moves->first()->id => 1]);
+
+    expect($returnOfBackorder->return_id)->toBe($backorder->id);
+});
+
+it('counts a return validated short without a backorder at its done quantity', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $sourceMove = $operation->moves->first();
+
+    $return = Inventory::createReturn($operation, [$sourceMove->id => 5]);
+
+    InventoryHelper::pick($return->refresh()->moves->first(), 3);
+
+    Inventory::completeTransfer($return->refresh(), cancelBackorder: true);
+
+    $returnMove = $return->refresh()->moves->first();
+
+    expect($returnMove->state)->toBe(MoveState::DONE)
+        ->and((float) $returnMove->product_uom_qty)->toBe(5.0)
+        ->and((float) $returnMove->quantity)->toBe(3.0)
+        ->and(InventoryHelper::backorderOf($return))->toBeNull()
+        ->and($sourceMove->refresh()->returnableQuantity())->toBe(7.0);
+
+    expect(fn () => Inventory::createReturn($operation->refresh(), [$sourceMove->id => 8]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
+
+    $second = Inventory::createReturn($operation->refresh(), [$sourceMove->id => 7]);
+
+    expect((float) $second->moves->first()->product_uom_qty)->toBe(7.0);
+});
+
+it('ignores cancelled returns when checking the returnable quantity', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $sourceMove = $operation->moves->first();
+
+    $return = Inventory::createReturn($operation, [$sourceMove->id => 4]);
+
+    Inventory::cancelTransfer($return->refresh());
+
+    expect($sourceMove->refresh()->returnableQuantity())->toBe(10.0);
+});
+
+it('ignores relations loaded before another return was created when checking the returnable quantity', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $operation->load('moves.returnedMoves');
+
+    $moveId = $operation->moves->first()->id;
+
+    Inventory::createReturn(Operation::query()->findOrFail($operation->id), [$moveId => 6]);
+
+    expect($operation->moves->first()->returnedMoves)->toHaveCount(0);
+
+    expect(fn () => Inventory::createReturn($operation, [$moveId => 5]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
+});
+
+it('refuses a negative return quantity', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    expect(fn () => Inventory::createReturn($operation, [$operation->moves->first()->id => -2]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.negative-quantity'), ':'))
+        ->and(InventoryHelper::returnOf($operation))->toBeNull();
+});
+
+it('refuses a return where every quantity is zero', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    expect(fn () => Inventory::createReturn($operation, [$operation->moves->first()->id => 0]))
+        ->toThrow(ReturnNotAllowedException::class, __('inventories::system.inventory-manager.return.nothing-to-return'))
+        ->and(fn () => Inventory::createReturn($operation, []))
+        ->toThrow(ReturnNotAllowedException::class, __('inventories::system.inventory-manager.return.nothing-to-return'))
+        ->and(InventoryHelper::returnOf($operation))->toBeNull();
+});
+
+it('skips the lines returned with a zero quantity', function () {
+    $other = InventoryHelper::product();
+
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10], [$other, 5]]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::completeTransfer($operation->refresh());
+
+    $operation->refresh();
+
+    $moves = $operation->moves->keyBy('product_id');
+
+    $return = Inventory::createReturn($operation, [
+        $moves[$this->product->id]->id => 3,
+        $moves[$other->id]->id         => 0,
+    ]);
+
+    expect($return->moves)->toHaveCount(1)
+        ->and($return->moves->first()->product_id)->toBe($this->product->id)
+        ->and((float) $return->moves->first()->product_uom_qty)->toBe(3.0)
+        ->and($moves[$other->id]->refresh()->returnableQuantity())->toBe(5.0);
+});
+
+it('returns in the unit of the source move and converts it for stock', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [
+        [$this->product, 2, InventoryHelper::dozensUom()],
+    ]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::completeTransfer($operation->refresh());
+
+    $sourceMove = $operation->refresh()->moves->first();
+
+    $return = Inventory::createReturn($operation, [$sourceMove->id => 1]);
+
+    $returnMove = $return->moves->first();
+
+    expect($returnMove->uom_id)->toBe(InventoryHelper::dozensUom()->id)
+        ->and((float) $returnMove->product_uom_qty)->toBe(1.0)
+        ->and((float) $returnMove->product_qty)->toBe(12.0)
+        ->and($sourceMove->refresh()->returnableQuantity())->toBe(1.0);
+
+    expect(fn () => Inventory::createReturn($operation->refresh(), [$sourceMove->id => 1.5]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
+
+    Inventory::completeTransfer($return->refresh());
+
+    expect(InventoryHelper::onHand($this->product, $this->stock))->toBe(12.0);
 });
 
 it('receives more than the demanded quantity without a backorder', function () {
@@ -748,4 +1025,60 @@ it('throws when a move line quantity violates the unit rounding precision', func
 
     expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, Str::before(__('inventories::system.inventory-manager.validate.quantity-rounding-mismatch'), ':'));
+});
+
+it('refuses to return a transfer that is not done', function () {
+    $operation = InventoryHelper::receipt($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    expect(fn () => Inventory::createReturn($operation->refresh(), [$operation->moves->first()->id => 2]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.not-done'), ':'))
+        ->and(InventoryHelper::returnOf($operation))->toBeNull();
+});
+
+it('ignores a scrapped or unfinished source move even when more than received may be returned', function () {
+    InventoryHelper::returnSettings(moreThanReceived: true);
+
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $move = $operation->moves->first();
+
+    $move->forceFill(['is_scraped' => true])->saveQuietly();
+
+    expect(fn () => Inventory::createReturn($operation->refresh(), [$move->id => 3]))
+        ->toThrow(ReturnNotAllowedException::class, __('inventories::system.inventory-manager.return.nothing-to-return'));
+
+    $move->forceFill(['is_scraped' => false, 'state' => MoveState::CANCELED])->saveQuietly();
+
+    expect(fn () => Inventory::createReturn($operation->refresh(), [$move->id => 3]))
+        ->toThrow(ReturnNotAllowedException::class, __('inventories::system.inventory-manager.return.nothing-to-return'))
+        ->and(InventoryHelper::returnOf($operation))->toBeNull();
+});
+
+it('refuses a zero quantity even when more than received may be returned', function () {
+    InventoryHelper::returnSettings(moreThanReceived: true);
+
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    expect(fn () => Inventory::createReturn($operation, [$operation->moves->first()->id => 0]))
+        ->toThrow(ReturnNotAllowedException::class, __('inventories::system.inventory-manager.return.nothing-to-return'));
+});
+
+it('counts the open backorder of a partly validated return as still to be returned', function () {
+    $operation = validatedOneStepReceipt($this->warehouse, $this->product, 10);
+
+    $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 6]);
+
+    InventoryHelper::pick($return->refresh()->moves->first(), 4);
+
+    Inventory::completeTransfer($return->refresh());
+
+    expect(InventoryHelper::backorderOf($return)->state)->not->toBe(OperationState::DONE);
+
+    $move = $operation->refresh()->moves->first();
+
+    expect($move->returnableQuantity())->toEqualWithDelta(4.0, 0.0001)
+        ->and(fn () => Inventory::createReturn($operation, [$move->id => 5]))
+        ->toThrow(ReturnNotAllowedException::class, Str::before(__('inventories::system.inventory-manager.return.more-than-returnable'), ':'));
 });

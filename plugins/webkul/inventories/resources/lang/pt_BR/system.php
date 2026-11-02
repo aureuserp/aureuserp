@@ -30,6 +30,10 @@ return [
             'origin'               => 'Devolução de :operation_name',
             'return-of-return'     => 'A transferência :operation é uma devolução e não pode ser devolvida novamente.',
             'more-than-returnable' => 'Você não pode devolver mais de :quantity :uom de :product.',
+            'negative-quantity'    => 'Você não pode devolver uma quantidade negativa de :product.',
+            'nothing-to-return'    => 'Não há nada para devolver. Informe uma quantidade maior que zero para pelo menos um produto.',
+            'not-done'             => 'A transferência :operation ainda não foi concluída, por isso não pode ser devolvida.',
+            'failed'               => 'Não foi possível criar a devolução. Tente novamente ou fale com o administrador.',
         ],
     ],
 
