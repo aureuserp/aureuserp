@@ -10,6 +10,8 @@ return [
     'filters' => [
         'heading'       => 'Filtres',
         'all-terminals' => 'Tous les terminaux',
+        'date-range' => 'Date Range',
+        'terminal' => 'Terminal',
     ],
 
     'summary' => [

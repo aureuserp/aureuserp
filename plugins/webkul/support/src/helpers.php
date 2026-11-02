@@ -473,3 +473,29 @@ if (! function_exists('allowed_company_ids')) {
         return app(CompanyContext::class)->allowedIds();
     }
 }
+
+if (! function_exists('compact_money')) {
+    /**
+     * Abbreviate a money amount to a compact, locale-aware form (for example $786K, ₹7.9L, ¥79万).
+     */
+    function compact_money(float $amount, ?string $currency = null): string
+    {
+        $currency ??= default_currency_code();
+
+        $locale = config('app.locale');
+
+        if (SupportServiceProvider::isRtl()) {
+            $locale = 'en';
+        } elseif (! str_contains($locale, '-u-nu-')) {
+            $locale .= '-u-nu-latn';
+        }
+
+        $formatted = MessageFormatter::formatMessage(
+            $locale,
+            '{0, number, :: compact-short currency/'.$currency.'}',
+            [$amount],
+        );
+
+        return $formatted !== false ? $formatted : money($amount, $currency);
+    }
+}

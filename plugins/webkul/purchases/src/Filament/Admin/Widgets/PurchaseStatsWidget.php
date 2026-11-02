@@ -3,21 +3,19 @@
 namespace Webkul\Purchase\Filament\Admin\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Webkul\Purchase\Filament\Admin\Widgets\Concerns\HasPurchaseDashboardFilters;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
-class PurchaseStatsWidget extends BaseWidget
+class PurchaseStatsWidget extends DashboardStatsWidget
 {
     use HasPurchaseDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 1;
-
-    protected static bool $isLazy = false;
-
-    protected int|string|array $columnSpan = 'full';
 
     public function getHeading(): ?string
     {
@@ -26,37 +24,75 @@ class PurchaseStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        [$previousStart, $previousEnd] = $this->previousPeriodRange();
-
         $confirmed = ['purchase', 'done'];
 
         return [
-            $this->makeStat(
+            $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.draft-rfqs'),
                 'heroicon-o-document-text',
-                $this->countByState(['draft']),
-                $this->countByState(['draft'], $previousStart, $previousEnd),
+                'warning',
+                ['draft'],
             ),
-            $this->makeStat(
+            $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.sent-rfqs'),
                 'heroicon-o-paper-airplane',
-                $this->countByState(['sent']),
-                $this->countByState(['sent'], $previousStart, $previousEnd),
+                'info',
+                ['sent'],
             ),
-            $this->makeStat(
+            $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.confirmed-orders'),
                 'heroicon-o-check-circle',
-                $this->countByState($confirmed),
-                $this->countByState($confirmed, $previousStart, $previousEnd),
+                'success',
+                $confirmed,
             ),
-            $this->makeStat(
+            $this->buildStat(
                 __('purchases::filament/admin/widgets/purchase-dashboard.stats.total-purchase-value'),
                 'heroicon-o-currency-dollar',
-                $this->sumByState($confirmed),
-                $this->sumByState($confirmed, $previousStart, $previousEnd),
+                'primary',
+                $confirmed,
                 money: true,
             ),
         ];
+    }
+
+    /**
+     * @param  list<string>  $states
+     */
+    protected function buildStat(string $label, string $icon, string $color, array $states, bool $money = false): Stat
+    {
+        [$previousStart, $previousEnd] = $this->previousPeriodRange();
+
+        $current = $money ? $this->sumByState($states) : $this->countByState($states);
+
+        $previous = $money
+            ? $this->sumByState($states, $previousStart, $previousEnd)
+            : $this->countByState($states, $previousStart, $previousEnd);
+
+        $value = $money ? compact_money($current, $this->dashboardCurrency()) : number_format($current);
+
+        $series = $this->trendSeries($states, $money ? 'sum' : 'count', $money ? 'total_cc_amount' : null);
+
+        return $this->themedStat($label, $icon, $color, $value, $current, $previous, $series);
+    }
+
+    /**
+     * @param  list<string>  $states
+     * @return list<float>
+     */
+    protected function trendSeries(array $states, string $aggregate, ?string $column = null): array
+    {
+        [$start, $end] = $this->periodRange();
+
+        $query = $this->scopedToStates($states, $start, $end);
+
+        $trend = Trend::query($query)
+            ->dateColumn('ordered_at')
+            ->between(start: $start, end: $end)
+            ->perDay();
+
+        $result = $aggregate === 'sum' ? $trend->sum($column) : $trend->count();
+
+        return $result->map(fn (TrendValue $value): float => round((float) $value->aggregate, 2))->all();
     }
 
     protected function countByState(array $states, ?Carbon $start = null, ?Carbon $end = null): float
@@ -74,55 +110,5 @@ class PurchaseStatsWidget extends BaseWidget
         $query = $this->purchaseOrders($start, $end);
 
         return $query->whereIn($query->qualifyColumn('state'), $states);
-    }
-
-    protected function makeStat(string $label, string $icon, float $current, float $previous, bool $money = false): Stat
-    {
-        [$description, $descriptionIcon, $color] = $this->trend($current, $previous);
-
-        return Stat::make($label, $money ? money($current, $this->dashboardCurrency()) : number_format($current))
-            ->description($description)
-            ->descriptionIcon($descriptionIcon)
-            ->color($color)
-            ->icon($icon)
-            ->chart([$previous, $current]);
-    }
-
-    /**
-     * @return array{0: string, 1: string, 2: string}
-     */
-    protected function trend(float $current, float $previous): array
-    {
-        if ($previous == 0.0 && $current == 0.0) {
-            return [
-                __('purchases::filament/admin/widgets/purchase-dashboard.stats.no-change'),
-                'heroicon-m-minus',
-                'gray',
-            ];
-        }
-
-        $percentage = $previous == 0.0 ? 100.0 : round((($current - $previous) / abs($previous)) * 100, 1);
-
-        if ($percentage < 0) {
-            return [
-                __('purchases::filament/admin/widgets/purchase-dashboard.stats.decrease', ['percent' => abs($percentage)]),
-                'heroicon-m-arrow-trending-down',
-                'danger',
-            ];
-        }
-
-        if ($percentage == 0.0) {
-            return [
-                __('purchases::filament/admin/widgets/purchase-dashboard.stats.no-change'),
-                'heroicon-m-minus',
-                'gray',
-            ];
-        }
-
-        return [
-            __('purchases::filament/admin/widgets/purchase-dashboard.stats.increase', ['percent' => $percentage]),
-            'heroicon-m-arrow-trending-up',
-            'success',
-        ];
     }
 }

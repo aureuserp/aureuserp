@@ -2,7 +2,9 @@
 
 namespace Webkul\Website\Filament\Admin\Widgets;
 
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,12 +14,23 @@ class TopCategoriesTable extends TableWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?int $sort = 3;
+
     public function getHeading(): ?string
     {
         return __('website::filament/admin/widgets/blog-chart.top-5-categories-with-most-blogs');
     }
 
-    protected static ?int $sort = 3;
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordClasses('dashboard-table-row');
+    }
+
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
 
     protected function getTableQuery(): Builder
     {
@@ -48,12 +61,15 @@ class TopCategoriesTable extends TableWidget
         return [
             Tables\Columns\TextColumn::make('name')
                 ->label(__('website::filament/admin/widgets/blog-chart.category'))
-                ->searchable()
+                ->weight(FontWeight::Bold)
+                ->color('primary')
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('filtered_posts_count')
                 ->label(__('website::filament/admin/widgets/blog-chart.number-of-blogs'))
-                ->sortable(),
+                ->numeric()
+                ->sortable()
+                ->alignEnd(),
         ];
     }
 }

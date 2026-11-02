@@ -3,41 +3,47 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Sale\Filament\Widgets\Concerns\HasSaleDashboardFilters;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class RevenueByCategoryChart extends ChartWidget
+class RevenueByCategoryChart extends DashboardChartWidget
 {
     use HasSaleDashboardFilters, HasWidgetShield;
 
-    protected const RAMP = ['#184f95', '#2a78d6', '#5598e7', '#86b6ef'];
-
     protected const TOP_SLICES = 3;
-
-    protected const INK_MUTED = '#898781';
 
     protected static ?int $sort = 3;
 
-    protected static bool $isLazy = false;
-
-    protected ?string $maxHeight = '300px';
+    /**
+     * @var array{labels: list<string>, data: list<float>}|null
+     */
+    protected ?array $resolvedData = null;
 
     public function getHeading(): string|Htmlable|null
     {
         return __('sales::filament/widgets/sales-dashboard.revenue-by-category.heading');
     }
 
-    protected function getData(): array
+    /**
+     * @return array{labels: list<string>, data: list<float>}
+     */
+    protected function resolveChartData(): array
     {
+        if ($this->resolvedData !== null) {
+            return $this->resolvedData;
+        }
+
+        $revenue = 'SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_order_lines.price_total / sales_orders.currency_rate ELSE sales_order_lines.price_total END)';
+
         $rows = $this->confirmedLines()
             ->leftJoin('products_products', 'products_products.id', '=', 'sales_order_lines.product_id')
             ->leftJoin('products_categories', 'products_categories.id', '=', 'products_products.category_id')
             ->leftJoin('sales_orders', 'sales_orders.id', '=', 'sales_order_lines.order_id')
             ->groupBy('products_categories.id', 'products_categories.name')
             ->addSelect('products_categories.name as name')
-            ->selectRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_order_lines.price_total / sales_orders.currency_rate ELSE sales_order_lines.price_total END) as revenue')
-            ->havingRaw('SUM(CASE WHEN sales_orders.currency_rate > 0 THEN sales_order_lines.price_total / sales_orders.currency_rate ELSE sales_order_lines.price_total END) > 0')
+            ->selectRaw("{$revenue} as revenue")
+            ->havingRaw("{$revenue} > 0")
             ->orderByDesc('revenue')
             ->get();
 
@@ -56,13 +62,21 @@ class RevenueByCategoryChart extends ChartWidget
             $data[] = $other;
         }
 
+        return $this->resolvedData = ['labels' => $labels, 'data' => $data];
+    }
+
+    protected function getData(): array
+    {
+        ['labels' => $labels, 'data' => $data] = $this->resolveChartData();
+
         return [
             'datasets' => [
                 [
                     'label'           => __('sales::filament/widgets/sales-dashboard.revenue-by-category.revenue'),
                     'data'            => $data,
-                    'backgroundColor' => array_slice(self::RAMP, 0, max(count($data), 1)),
+                    'backgroundColor' => array_slice($this->chartRamp(), 0, max(count($data), 1)),
                     'borderWidth'     => 0,
+                    'hoverOffset'     => 0,
                 ],
             ],
             'labels' => $labels,
@@ -71,22 +85,12 @@ class RevenueByCategoryChart extends ChartWidget
 
     protected function getOptions(): array
     {
-        return [
-            'maintainAspectRatio' => false,
-            'cutout'              => '58%',
-            'plugins'             => [
-                'legend' => [
-                    'position' => 'right',
-                    'labels'   => [
-                        'color'         => self::INK_MUTED,
-                        'boxWidth'      => 10,
-                        'boxHeight'     => 10,
-                        'usePointStyle' => true,
-                        'padding'       => 14,
-                    ],
-                ],
-            ],
-        ];
+        $total = array_sum($this->resolveChartData()['data']);
+
+        return $this->doughnutChartOptions(
+            compact_money($total, current_company()?->currency?->name),
+            __('sales::filament/widgets/sales-dashboard.revenue-by-category.revenue'),
+        );
     }
 
     protected function getType(): string

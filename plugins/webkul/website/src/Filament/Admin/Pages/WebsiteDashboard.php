@@ -7,6 +7,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
 use Webkul\PluginManager\Package;
@@ -61,6 +62,16 @@ class WebsiteDashboard extends BaseDashboard
                     ->placeholder(__('website::filament/admin/pages/dashboard.all-author')),
             ])
             ->columns(1);
+    }
+
+    public function getWidgetsContentComponent(): Component
+    {
+        return parent::getWidgetsContentComponent()
+            ->extraAttributes([
+                'data-dashboard-widgets' => 'true',
+                'wire:loading.class'     => 'dashboard-widgets--loading',
+                'wire:target'            => 'filters',
+            ]);
     }
 
     /**

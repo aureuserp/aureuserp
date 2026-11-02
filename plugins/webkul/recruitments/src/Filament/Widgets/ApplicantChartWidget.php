@@ -2,19 +2,19 @@
 
 namespace Webkul\Recruitment\Filament\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 use Webkul\Recruitment\Models\Applicant;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class ApplicantChartWidget extends ChartWidget
+class ApplicantChartWidget extends DashboardChartWidget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     protected ?string $maxHeight = '400px';
 
@@ -88,10 +88,10 @@ class ApplicantChartWidget extends ChartWidget
         };
 
         $colorMap = [
-            'Ongoing'  => '#3b82f6',
-            'Hired'    => '#22c55e',
-            'Refused'  => '#ef4444',
-            'Archived' => '#94a3b8',
+            'Ongoing'  => $this->brandColor('info'),
+            'Hired'    => $this->brandColor('success'),
+            'Refused'  => $this->brandColor('danger'),
+            'Archived' => $this->brandColor('gray'),
         ];
 
         $translatedLabels = array_map(fn ($key) => match ($key) {
@@ -107,11 +107,19 @@ class ApplicantChartWidget extends ChartWidget
                 [
                     'label'           => __('recruitments::filament/widgets/applicant.heading.title'),
                     'data'            => array_values($data),
-                    'backgroundColor' => array_map(fn ($key) => $colorMap[$key] ?? '#94a3b8', array_keys($data)),
+                    'backgroundColor' => array_map(fn ($key) => $colorMap[$key] ?? $this->brandColor('gray'), array_keys($data)),
+                    'borderRadius'    => 8,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 48,
                 ],
             ],
             'labels' => $translatedLabels,
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return $this->barChartOptions(8);
     }
 
     protected function getType(): string

@@ -51,4 +51,21 @@ return [
             'value'    => 'Valor Total',
         ],
     ],
+    'top-rfqs'     => [
+        'heading' => 'Top RFQs',
+        'columns' => [
+            'reference' => 'RFQ Number',
+            'status'    => 'Status',
+            'amount'    => 'Total Amount',
+        ],
+    ],
+
+    'top-vendors'  => [
+        'heading' => 'Top Vendors',
+        'columns' => [
+            'vendor' => 'Vendor',
+            'orders' => 'Orders',
+            'amount' => 'Total Spend',
+        ],
+    ],
 ];
