@@ -3,6 +3,7 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages;
 
 use Filament\Resources\Pages\ManageRelatedRecords;
+use Illuminate\Contracts\Support\Htmlable;
 use Livewire\Livewire;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorBillResource;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource;
@@ -23,6 +24,11 @@ class ManageBills extends ManageRelatedRecords
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/vendors/resources/bill.navigation.title');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return static::getNavigationLabel();
     }
 
     public static function getNavigationBadge($parameters = []): ?string

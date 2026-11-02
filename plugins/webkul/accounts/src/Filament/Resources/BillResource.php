@@ -84,8 +84,10 @@ class BillResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->when(Str::contains(static::class, 'BillResource') && ! is_a(static::$parentResource, PartnerResource::class, true), function (Builder $query) {
-                $query->where('move_type', MoveType::IN_INVOICE);
+            ->when(Str::contains(static::class, 'BillResource'), function (Builder $query) {
+                $query->whereIn('move_type', is_a(static::$parentResource, PartnerResource::class, true)
+                    ? [MoveType::IN_INVOICE, MoveType::IN_REFUND]
+                    : [MoveType::IN_INVOICE]);
             });
     }
 }

@@ -26,7 +26,7 @@ class CustomerInvoiceResource extends InvoiceResource
 
     public static function canAccess(): bool
     {
-        return static::$parentResource::canAccess();
+        return parent::canAccess() && static::$parentResource::canAccess();
     }
 
     public static function getParentResourceRegistration(): ?ParentResourceRegistration

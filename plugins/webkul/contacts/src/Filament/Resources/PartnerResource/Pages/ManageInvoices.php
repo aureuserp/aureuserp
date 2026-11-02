@@ -3,6 +3,7 @@
 namespace Webkul\Contact\Filament\Resources\PartnerResource\Pages;
 
 use Filament\Resources\Pages\ManageRelatedRecords;
+use Illuminate\Contracts\Support\Htmlable;
 use Livewire\Livewire;
 use Webkul\Contact\Filament\Resources\ContactInvoiceResource;
 use Webkul\Contact\Filament\Resources\PartnerResource;
@@ -23,6 +24,11 @@ class ManageInvoices extends ManageRelatedRecords
     public static function getNavigationLabel(): string
     {
         return __('contacts::filament/resources/partner.invoices.navigation.title');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return static::getNavigationLabel();
     }
 
     public static function getNavigationBadge($parameters = []): ?string

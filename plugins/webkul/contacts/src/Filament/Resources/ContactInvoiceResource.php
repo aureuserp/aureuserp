@@ -24,7 +24,7 @@ class ContactInvoiceResource extends BaseInvoiceResource
 
     public static function canAccess(): bool
     {
-        return static::$parentResource::canAccess();
+        return parent::canAccess() && static::$parentResource::canAccess();
     }
 
     public static function getParentResourceRegistration(): ?ParentResourceRegistration

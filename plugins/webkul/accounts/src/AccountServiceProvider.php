@@ -5,7 +5,6 @@ namespace Webkul\Account;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -278,12 +277,10 @@ class AccountServiceProvider extends PackageServiceProvider
         Partner::resolveRelationUsing('propertyOutboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_outbound_payment_method_line_id'));
         Partner::resolveRelationUsing('propertyInboundPaymentMethodLine', fn (Partner $partner) => $partner->belongsTo(PaymentMethodLine::class, 'property_inbound_payment_method_line_id'));
 
-        Partner::resolveRelationUsing('invoices', fn (Partner $partner) => Relation::noConstraints(fn () => $partner->hasMany(Move::class, 'partner_id'))
-            ->whereIn('partner_id', Partner::query()->where('id', $partner->id)->orWhere('parent_id', $partner->id)->select('id'))
+        Partner::resolveRelationUsing('invoices', fn (Partner $partner) => $partner->hasMany(Move::class, 'partner_id')
             ->whereIn('move_type', [MoveType::OUT_INVOICE, MoveType::OUT_REFUND]));
 
-        Partner::resolveRelationUsing('bills', fn (Partner $partner) => Relation::noConstraints(fn () => $partner->hasMany(Move::class, 'partner_id'))
-            ->whereIn('partner_id', Partner::query()->where('id', $partner->id)->orWhere('parent_id', $partner->id)->select('id'))
+        Partner::resolveRelationUsing('bills', fn (Partner $partner) => $partner->hasMany(Move::class, 'partner_id')
             ->whereIn('move_type', [MoveType::IN_INVOICE, MoveType::IN_REFUND]));
     }
 

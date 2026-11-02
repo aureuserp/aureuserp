@@ -29,7 +29,7 @@ class VendorBillResource extends BaseBillResource
     {
         $parentResource = static::$parentResource;
 
-        return $parentResource::canAccess();
+        return parent::canAccess() && $parentResource::canAccess();
     }
 
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
