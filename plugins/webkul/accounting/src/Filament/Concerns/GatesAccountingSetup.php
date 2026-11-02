@@ -51,7 +51,19 @@ trait GatesAccountingSetup
             ->icon(Heroicon::OutlinedCog6Tooth)
             ->requiresConfirmation()
             ->action(function (): void {
-                app(AccountingSetupService::class)->setUp(current_company());
+                $accountingSetUp = app(AccountingSetupService::class)->setUp(current_company());
+
+                if (! $accountingSetUp) {
+                    Notification::make()
+                        ->danger()
+                        ->title(__('accounting::setup.error.title'))
+                        ->body(__('accounting::setup.error.body'))
+                        ->send();
+
+                    $this->redirect(static::getUrl());
+
+                    return;
+                }
 
                 Notification::make()
                     ->success()

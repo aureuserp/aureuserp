@@ -33,4 +33,14 @@
             @endif
         @endforeach
     </nav>
+
+    <div class="mt-auto border-t border-gray-200 pt-3">
+        <a
+            href="{{ url('/admin') }}"
+            class="grid min-h-12 w-full grid-cols-[20px_minmax(0,1fr)] gap-x-2.5 gap-y-1 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm font-medium no-underline text-gray-950 transition-colors duration-150 hover:border-gray-200 hover:bg-gray-50 active:bg-gray-100 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-200)] focus-visible:ring-offset-2"
+        >
+            <x-filament::icon icon="heroicon-o-arrow-top-right-on-square" class="row-span-2 h-[18px] w-[18px]" />
+            <span class="col-start-2">{{ __('barcode::app.navigation.back-office') }}</span>
+        </a>
+    </div>
 </aside>

@@ -48,8 +48,7 @@ class OrderInvoiceResource extends BaseInvoiceResource
         }
 
         return $query
-            ->whereIn('move_type', [MoveType::OUT_INVOICE, MoveType::OUT_REFUND])
-            ->orderByDesc('id');
+            ->whereIn('move_type', [MoveType::OUT_INVOICE, MoveType::OUT_REFUND]);
     }
 
     public static function getParentResourceRegistration(): ?ParentResourceRegistration
