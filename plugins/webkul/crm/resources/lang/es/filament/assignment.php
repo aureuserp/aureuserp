@@ -126,5 +126,13 @@ return [
                 'title' => 'Un comercial solo puede estar en un equipo',
             ],
         ],
+
+        'move' => [
+            'heading'       => '{1} El comercial ya está en otro equipo|[2,*] :count comerciales ya están en otros equipos',
+            'member'        => ':name ya está asignado a :teams.',
+            'question-one'  => '¿Quieres quitar a :name de :teams y añadirlo a este equipo?',
+            'question-many' => '¿Quieres quitarlos de esos equipos y añadirlos a este equipo?',
+            'submit'        => 'Sí, mover',
+        ],
     ],
 ];

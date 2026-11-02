@@ -126,5 +126,13 @@ return [
                 'title' => 'Salespeople can only be in one team',
             ],
         ],
+
+        'move' => [
+            'heading'       => '{1} Salesperson already in another team|[2,*] :count salespeople already in other teams',
+            'member'        => ':name is already assigned to :teams.',
+            'question-one'  => 'Do you want to remove :name from :teams and add them to this team?',
+            'question-many' => 'Do you want to remove them from those teams and add them to this team?',
+            'submit'        => 'Yes, move',
+        ],
     ],
 ];

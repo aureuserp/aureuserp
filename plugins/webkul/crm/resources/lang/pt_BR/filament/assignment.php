@@ -126,5 +126,13 @@ return [
                 'title' => 'Um vendedor só pode estar em uma equipe',
             ],
         ],
+
+        'move' => [
+            'heading'       => '{1} O vendedor já está em outra equipe|[2,*] :count vendedores já estão em outras equipes',
+            'member'        => ':name já está atribuído a :teams.',
+            'question-one'  => 'Deseja remover :name de :teams e adicioná-lo a esta equipe?',
+            'question-many' => 'Deseja removê-los dessas equipes e adicioná-los a esta equipe?',
+            'submit'        => 'Sim, mover',
+        ],
     ],
 ];

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Schemas\TeamForm;
+use Webkul\Crm\Filament\Concerns\ConfirmsTeamMoves;
 use Webkul\Crm\Filament\Concerns\HasCRMClusterNavigation;
 use Webkul\Crm\Filament\Concerns\ManagesCRMTeam;
 use Webkul\Crm\Models\TeamMember;
@@ -31,7 +32,7 @@ use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageTeamMembers extends ManageRelatedRecords
 {
-    use HasCRMClusterNavigation, HasRecordNavigationTabs, ManagesCRMTeam {
+    use ConfirmsTeamMoves, HasCRMClusterNavigation, HasRecordNavigationTabs, ManagesCRMTeam {
         HasCRMClusterNavigation::getSubNavigation insteadof HasRecordNavigationTabs;
         HasCRMClusterNavigation::getSubNavigationPosition insteadof HasRecordNavigationTabs;
     }
@@ -62,6 +63,13 @@ class ManageTeamMembers extends ManageRelatedRecords
         parent::mount($record);
 
         app(TeamMembership::class)->sync($this->getRecord());
+    }
+
+    protected function afterTeamMoveConfirmed(array $arguments): void
+    {
+        $this->unmountAction(cancelParentActions: false);
+
+        $this->callMountedAction();
     }
 
     public function form(Schema $schema): Schema
@@ -187,7 +195,12 @@ class ManageTeamMembers extends ManageRelatedRecords
                     ->model(TeamMember::class)
                     ->visible($canEdit)
                     ->schema(fn (): array => static::memberFields($this))
+                    ->registerModalActions([$this->confirmTeamMoveAction()])
                     ->action(function (array $data): void {
+                        if ($this->confirmsTeamMove([$data['user_id']], $this->getRecord()->getKey())) {
+                            return;
+                        }
+
                         $removedFrom = app(TeamMembership::class)->addMember($this->getRecord(), (int) $data['user_id'], Arr::except($data, ['user_id']));
 
                         Notification::make()

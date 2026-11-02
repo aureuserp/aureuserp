@@ -11,6 +11,7 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\Edi
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamAlias;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamMembers;
 use Webkul\Crm\Models\TeamMember;
+use Webkul\Crm\Services\TeamMembership;
 use Webkul\Crm\Settings\CRMSettings;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
@@ -42,6 +43,18 @@ function useRuleBasedTeamAssignment(): void
     $settings = app(CRMSettings::class);
     $settings->use_auto_assignment = true;
     $settings->save();
+}
+
+function useSalespeopleInMultipleTeams(bool $enabled): void
+{
+    $settings = app(CRMSettings::class);
+    $settings->multi_teams = $enabled;
+    $settings->save();
+}
+
+function memberTeamIds(User $user): array
+{
+    return DB::table('sales_team_members')->where('user_id', $user->id)->orderBy('team_id')->pluck('team_id')->map(fn ($id): int => (int) $id)->all();
 }
 
 it('creates a sales team from the crm configuration and redirects inside crm', function () {
@@ -155,6 +168,81 @@ it('shows the members as core cards with the lead limit and the status badges', 
         ->assertTableColumnExists('user.email')
         ->assertTableColumnFormattedStateSet('lead_limit', __('crm::filament/clusters/configurations/resources/team.pages.members.lead-limit', ['assigned' => 0, 'max' => 12]), $member)
         ->assertTableColumnStateSet('assignment_badges', ['inactive', 'skipped'], $member);
+});
+
+it('asks with a warning before moving a member who is already in another team', function () {
+    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    useSalespeopleInMultipleTeams(false);
+
+    $first = Team::factory()->create(['name' => 'First single team', 'company_id' => Company::query()->value('id'), 'is_active' => true]);
+    $second = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
+
+    app(TeamMembership::class)->addMember($first, $user->id);
+
+    $component = Livewire::test(ManageTeamMembers::class, ['record' => $second->getRouteKey()])
+        ->callTableAction('addMember', data: ['user_id' => $user->id, 'assignment_max' => 25, 'is_active' => true])
+        ->assertActionMounted('confirmTeamMove');
+
+    $confirmation = $component->instance()->getMountedAction();
+
+    expect($confirmation->getModalIcon())->toBe('heroicon-o-exclamation-triangle')
+        ->and($confirmation->getModalIconColor())->toBe('warning')
+        ->and($confirmation->getColor())->toBe('warning')
+        ->and($confirmation->getModalDescription())->toContain(__('crm::filament/assignment.members.move.member', ['name' => $user->name, 'teams' => 'First single team']))
+        ->and(memberTeamIds($user))->toBe([$first->id]);
+
+    $component->callMountedAction()->assertActionNotMounted();
+
+    expect(memberTeamIds($user))->toBe([$second->id])
+        ->and(TeamMember::query()->where('team_id', $second->id)->where('user_id', $user->id)->value('assignment_max'))->toBe(25);
+});
+
+it('adds the member to the other team without asking when salespeople can be in multiple teams', function () {
+    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    useSalespeopleInMultipleTeams(true);
+
+    $first = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
+    $second = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
+
+    app(TeamMembership::class)->addMember($first, $user->id);
+
+    Livewire::test(ManageTeamMembers::class, ['record' => $second->getRouteKey()])
+        ->callTableAction('addMember', data: ['user_id' => $user->id, 'assignment_max' => 25, 'is_active' => true])
+        ->assertActionNotMounted();
+
+    expect(memberTeamIds($user))->toBe([$first->id, $second->id]);
+});
+
+it('asks with a warning before creating a team with a member of another team', function () {
+    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+
+    useSalespeopleInMultipleTeams(false);
+
+    $first = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
+
+    app(TeamMembership::class)->addMember($first, $user->id);
+
+    $component = Livewire::test(CreateTeam::class)
+        ->fillForm([
+            'name'       => 'Team taking a member',
+            'company_id' => Company::query()->value('id'),
+            'is_active'  => true,
+            'crmMembers' => [
+                ['user_id' => $user->id, 'assignment_max' => 30, 'assignment_optout' => false, 'is_active' => true],
+            ],
+        ])
+        ->call('create')
+        ->assertActionMounted('confirmTeamMove');
+
+    expect(Team::query()->where('name', 'Team taking a member')->exists())->toBeFalse();
+
+    $component->callMountedAction()->assertHasNoFormErrors();
+
+    $team = Team::query()->where('name', 'Team taking a member')->firstOrFail();
+
+    expect(memberTeamIds($user))->toBe([$team->id]);
 });
 
 it('saves the team email alias from its own tab', function () {

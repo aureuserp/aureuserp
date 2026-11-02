@@ -126,5 +126,13 @@ return [
                 'title' => 'Un vendeur ne peut être que dans une seule équipe',
             ],
         ],
+
+        'move' => [
+            'heading'       => '{1} Le vendeur est déjà dans une autre équipe|[2,*] :count vendeurs sont déjà dans d\'autres équipes',
+            'member'        => ':name est déjà affecté à :teams.',
+            'question-one'  => 'Voulez-vous retirer :name de :teams et l\'ajouter à cette équipe ?',
+            'question-many' => 'Voulez-vous les retirer de ces équipes et les ajouter à cette équipe ?',
+            'submit'        => 'Oui, déplacer',
+        ],
     ],
 ];

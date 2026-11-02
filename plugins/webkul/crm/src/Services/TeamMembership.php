@@ -2,11 +2,13 @@
 
 namespace Webkul\Crm\Services;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Webkul\Crm\Models\CRMTeam;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Models\Team;
+use Webkul\Security\Models\User;
 
 class TeamMembership
 {
@@ -49,6 +51,30 @@ class TeamMembership
 
             return $removedFrom;
         });
+    }
+
+    public function otherTeams(array $userIds, ?int $exceptTeamId = null): array
+    {
+        if ($this->isMultiTeams()
+            || $userIds === []) {
+            return [];
+        }
+
+        $rows = DB::table('sales_team_members')
+            ->whereIn('user_id', $userIds)
+            ->when($exceptTeamId, fn ($query) => $query->where('team_id', '!=', $exceptTeamId))
+            ->get(['user_id', 'team_id']);
+
+        $teamNames = Team::query()->withTrashed()->whereKey($rows->pluck('team_id')->unique())->pluck('name', 'id');
+
+        $userNames = User::query()->whereKey($rows->pluck('user_id')->unique())->pluck('name', 'id');
+
+        return $rows
+            ->groupBy('user_id')
+            ->mapWithKeys(fn (Collection $teams, int|string $userId): array => [
+                (string) $userNames[$userId] => $teams->map(fn (object $row): string => (string) $teamNames[$row->team_id])->unique()->values()->all(),
+            ])
+            ->all();
     }
 
     public function removeMember(TeamMember $member): void
