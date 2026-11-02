@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Exports\InvoiceExporter;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
@@ -320,8 +321,18 @@ class InvoicesTable
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
+                    ViewAction::make()
+                        ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
+                            ? ($record->move_type === MoveType::OUT_REFUND
+                                ? $resource::getCreditNoteResource()::getUrl('view', ['record' => $record])
+                                : $resource::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true))
+                            : null),
+                    EditAction::make()
+                        ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
+                            ? ($record->move_type === MoveType::OUT_REFUND
+                                ? $resource::getCreditNoteResource()::getUrl('edit', ['record' => $record])
+                                : $resource::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true))
+                            : null),
                     DeleteAction::make()
                         ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)
                         ->successNotification(

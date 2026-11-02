@@ -3,6 +3,7 @@
 namespace Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources;
 
 use BackedEnum;
+use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\CustomerResource as BaseCustomerResource;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource\Pages\CreateCustomer;
@@ -11,6 +12,7 @@ use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource\Pages\ManageAddresses;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource\Pages\ManageBankAccounts;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource\Pages\ManageContacts;
+use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource\Pages\ManageInvoices;
 use Webkul\PointOfSale\Filament\Admin\Clusters\Orders\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\PointOfSale\Models\Customer;
 
@@ -36,6 +38,18 @@ class CustomerResource extends BaseCustomerResource
         return __('point-of-sale::filament/admin/clusters/orders/resources/customer.navigation.title');
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewCustomer::class,
+            EditCustomer::class,
+            ManageContacts::class,
+            ManageAddresses::class,
+            ManageBankAccounts::class,
+            ManageInvoices::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
@@ -46,6 +60,7 @@ class CustomerResource extends BaseCustomerResource
             'contacts'      => ManageContacts::route('/{record}/contacts'),
             'addresses'     => ManageAddresses::route('/{record}/addresses'),
             'bank-accounts' => ManageBankAccounts::route('/{record}/bank-accounts'),
+            'invoices'      => ManageInvoices::route('/{record}/invoices'),
         ];
     }
 }

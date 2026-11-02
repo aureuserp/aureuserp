@@ -9,7 +9,9 @@ use Webkul\Contact\Filament\Resources\PartnerResource\Pages\EditPartner;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ListPartners;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageAddresses;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageBankAccounts;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageBills;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageContacts;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageInvoices;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ViewPartner;
 use Webkul\Contact\Models\Partner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
@@ -49,6 +51,11 @@ class PartnerResource extends BasePartnerResource
             $items[] = ManageBankAccounts::class;
         }
 
+        if (static::hasInvoicingPlugin()) {
+            $items[] = ManageInvoices::class;
+            $items[] = ManageBills::class;
+        }
+
         return $page->generateNavigationItems($items);
     }
 
@@ -67,6 +74,16 @@ class PartnerResource extends BasePartnerResource
             $pages['bank-accounts'] = ManageBankAccounts::route('/{record}/bank-accounts');
         }
 
+        if (static::hasInvoicingPlugin()) {
+            $pages['invoices'] = ManageInvoices::route('/{record}/invoices');
+            $pages['bills'] = ManageBills::route('/{record}/bills');
+        }
+
         return $pages;
+    }
+
+    protected static function hasInvoicingPlugin(): bool
+    {
+        return Package::isPluginInstalled('invoices') || Package::isPluginInstalled('accounting');
     }
 }

@@ -10,6 +10,7 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\E
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ListVendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageAddresses;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageBankAccounts;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageBills;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageContacts;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Accounting\Models\Vendor;
@@ -36,6 +37,7 @@ class VendorResource extends BaseVendorResource
             ManageContacts::class,
             ManageAddresses::class,
             ManageBankAccounts::class,
+            ManageBills::class,
         ]);
     }
 
@@ -49,6 +51,7 @@ class VendorResource extends BaseVendorResource
             'contacts'     => ManageContacts::route('/{record}/contacts'),
             'addresses'    => ManageAddresses::route('/{record}/addresses'),
             'bank-account' => ManageBankAccounts::route('/{record}/bank-accounts'),
+            'bills'        => ManageBills::route('/{record}/bills'),
         ];
     }
 }
