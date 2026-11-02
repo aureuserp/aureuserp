@@ -124,7 +124,7 @@ class ManageBranding extends SettingsPage
                                     ->description(__('support::filament/clusters/manage-branding.form.sections.palettes.description'))
                                     ->schema([
                                         View::make('support::filament.clusters.settings.pages.branding-palettes')
-                                            ->viewData([
+                                            ->viewData(fn (): array => [
                                                 'palettes' => $this->getSuggestedPalettes(),
                                                 'selected' => $this->detectSelectedPalette(),
                                             ])
