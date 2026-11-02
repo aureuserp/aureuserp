@@ -100,7 +100,7 @@ return [
         'columns' => [
             'number'           => 'Number',
             'state'            => 'State',
-            'customer'         => 'Customer',
+            'vendor'           => 'Vendor',
             'bill-date'        => 'Bill Date',
             'checked'          => 'Checked',
             'accounting-date'  => 'Accounting',

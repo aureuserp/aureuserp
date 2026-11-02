@@ -147,8 +147,7 @@ class PartnerInfolist
             ->tabs(array_merge(
                 [static::salesPurchaseTab()],
                 Registry::renderInfolist('tabs.append'),
-            ))
-            ->columnSpan(2);
+            ));
     }
 
     public static function salesPurchaseTab(): Tab

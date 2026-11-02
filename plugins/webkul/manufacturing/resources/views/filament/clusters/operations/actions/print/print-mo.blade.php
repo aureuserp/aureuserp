@@ -52,10 +52,10 @@
         }
 
         .slip-title {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: bold;
             color: #1a1a1a;
-            margin: 20px 0 10px 0;
+            margin: 15px 0 8px 0;
         }
 
         .barcode-container {
@@ -102,11 +102,11 @@
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #1a1a1a;
-            margin: 25px 0 10px 0;
-            padding-bottom: 5px;
+            margin: 15px 0 8px 0;
+            padding-bottom: 4px;
             border-bottom: 1px solid #333333;
         }
 
@@ -119,14 +119,14 @@
         .items-table th {
             background: #ffffff;
             border: 1px solid #cccccc;
-            padding: 10px 12px;
+            padding: 7px 10px;
             text-align: left;
             font-weight: bold;
             font-size: 13px;
         }
 
         .items-table td {
-            padding: 10px 12px;
+            padding: 7px 10px;
             border: 1px solid #cccccc;
             font-size: 13px;
         }
@@ -143,7 +143,7 @@
             width: 100%;
             border-top: 1px solid #cccccc;
             padding-top: 6px;
-            margin-top: 30px;
+            margin-top: 15px;
             font-size: 11px;
             color: #666666;
         }

@@ -189,6 +189,7 @@ class InvoicesTable
                     ->label(__('accounts::filament/resources/invoice.table.groups.invoice-partner-display-name'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('invoice_date')
+                    ->date()
                     ->label(__('accounts::filament/resources/invoice.table.groups.invoice-date'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('checked')
