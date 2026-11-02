@@ -3,13 +3,15 @@
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditActivityPlan extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ActivityPlanResource::class;
 
     protected function getSavedNotification(): Notification
@@ -23,7 +25,6 @@ class EditActivityPlan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()
@@ -32,14 +33,5 @@ class EditActivityPlan extends EditRecord
                         ->body(__('sales::filament/clusters/configurations/resources/activity-plan/pages/edit-activity-plan.header-actions.delete.notification.body')),
                 ),
         ];
-    }
-
-    public function getSubNavigation(): array
-    {
-        if (filled($cluster = static::getCluster())) {
-            return $this->generateNavigationItems($cluster::getClusteredComponents());
-        }
-
-        return [];
     }
 }
