@@ -24,7 +24,7 @@ trait IsCRMReportResource
 
     public static function getReportLayouts(): array
     {
-        return [ViewLayout::GRAPH, ViewLayout::LIST];
+        return [ViewLayout::LIST, ViewLayout::GRAPH];
     }
 
     public static function getReportTableFilters(): array

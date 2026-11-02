@@ -512,13 +512,15 @@ describe('sql', function () {
 });
 
 describe('table groups', function () {
-    it('turns a dimension into a summary table group with the right id and column', function (string $report, string $key, string $column, string $label) {
+    it('turns a dimension into a collapsible table group with the right id, column and label', function (string $report, string $key, string $column, string $label) {
         $group = $report::dimensions()[$key]->toTableGroup($key);
 
         expect($group)->toBeInstanceOf(Group::class)
             ->and($group->getId())->toBe($key)
             ->and($group->getColumn())->toBe($column)
-            ->and($group->getLabel())->toBe($label);
+            ->and($group->getLabel())->toBe($label)
+            ->and($group->isCollapsible())->toBeTrue()
+            ->and($group->isTitlePrefixedWithLabel())->toBeTrue();
     })->with([
         'relation'           => [PipelineReport::class, 'stage', 'stage.name', 'Stage'],
         'attribute'          => [PipelineReport::class, 'city', 'city', 'City'],

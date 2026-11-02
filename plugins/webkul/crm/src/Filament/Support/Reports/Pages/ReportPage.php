@@ -84,6 +84,7 @@ abstract class ReportPage extends ListRecords
                 ->emptyState(fn (): Schema => $this->getSchema('graph')),
             default => $resource::table($table)
                 ->filters($resource::getReportTableFilters())
+                ->groups($report::getTableGroups())
                 ->recordActions([])
                 ->toolbarActions($resource::getReportBulkActions()),
         };

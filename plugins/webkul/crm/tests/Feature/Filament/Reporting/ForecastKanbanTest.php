@@ -325,7 +325,7 @@ it('switches the forecast between kanban, graph and list without leaving the pag
         ->assertActionDoesNotExist('view_graph')
         ->assertSeeHtml('crm-layout-switcher');
 
-    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::GRAPH, ViewLayout::LIST])
+    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
         ->and($component->instance()->getViewLayout())->toBe(ViewLayout::KANBAN)
         ->and(method_exists($component->instance(), 'getRecordNavigationTabs'))->toBeFalse();
 

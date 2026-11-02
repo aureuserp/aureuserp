@@ -69,7 +69,7 @@ class ForecastResource extends Resource
 
     public static function getReportLayouts(): array
     {
-        return [ViewLayout::KANBAN, ViewLayout::GRAPH, ViewLayout::LIST];
+        return [ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH];
     }
 
     public static function getReportCustomFilters(): array

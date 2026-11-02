@@ -133,27 +133,15 @@ trait ManagesKanbanColumns
             ->color('danger')
             ->icon('heroicon-o-trash')
             ->requiresConfirmation()
-            ->modalHeading(function (array $arguments): string {
-                $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
-                $name = $record?->getAttribute('name');
-
-                return $record && $this->countKanbanColumnRecords($record) > 0
-                    ? __('crm::filament/kanban.column-actions.in-use.title', ['name' => $name])
-                    : __('crm::filament/kanban.column-actions.delete-heading', ['name' => $name]);
-            })
-            ->modalDescription(function (array $arguments): string {
-                $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
-                $count = $record ? $this->countKanbanColumnRecords($record) : 0;
-
-                return $count > 0
-                    ? trans_choice('crm::filament/kanban.column-actions.in-use.body', $count, ['count' => $count])
-                    : __('crm::filament/kanban.column-actions.delete-description');
-            })
-            ->modalSubmitAction(function (array $arguments): ?bool {
+            ->modalHidden(function (array $arguments): bool {
                 $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
 
-                return $record && $this->countKanbanColumnRecords($record) > 0 ? false : null;
+                return $record !== null && $this->countKanbanColumnRecords($record) > 0;
             })
+            ->modalHeading(fn (array $arguments): string => __('crm::filament/kanban.column-actions.delete-heading', [
+                'name' => $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''))?->getAttribute('name'),
+            ]))
+            ->modalDescription(__('crm::filament/kanban.column-actions.delete-description'))
             ->action(function (array $arguments): void {
                 $record = $this->findKanbanColumnRecord((string) ($arguments['column'] ?? ''));
 
@@ -166,7 +154,6 @@ trait ManagesKanbanColumns
                         ->danger()
                         ->title(__('crm::filament/kanban.column-actions.in-use.title', ['name' => $name]))
                         ->body(trans_choice('crm::filament/kanban.column-actions.in-use.body', $count, ['count' => $count]))
-                        ->persistent()
                         ->send();
 
                     return;

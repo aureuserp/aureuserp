@@ -140,7 +140,7 @@ class Dimension
         $group = Group::make($id)
             ->column($this->groupColumn ?? $id)
             ->label($this->label)
-            ->titlePrefixedWithLabel(false);
+            ->collapsible();
 
         if ($this->kind === DimensionKind::OPTIONS) {
             $options = ($this->resolveLabels)([]);

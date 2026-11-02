@@ -2,6 +2,7 @@
 
 use Filament\Actions\Exports\Models\Export;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Grouping\Group;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\ViewLayout;
@@ -115,6 +116,22 @@ describe('view switcher', function () {
                 ->and(method_exists($component->instance(), 'getRecordNavigationTabs'))->toBeFalse();
         }
     })->with('report pages');
+
+    it('opens the analysis reports on the list with the graph last, and the forecast on the kanban with the graph last', function () {
+        CRMHelper::actingAs(['view_any_crm_forecast', 'view_any_crm_pipeline::analysis', 'view_any_crm_lead::analysis', 'view_any_crm_activity::analysis']);
+
+        foreach ([ListPipelineAnalysis::class, ListLeadAnalysis::class, ListActivityAnalysis::class] as $page) {
+            $component = Livewire::test($page);
+
+            expect($component->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::GRAPH])
+                ->and($component->instance()->getViewLayout())->toBe(ViewLayout::LIST);
+        }
+
+        $forecast = Livewire::test(ListForecast::class);
+
+        expect($forecast->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
+            ->and($forecast->instance()->getViewLayout())->toBe(ViewLayout::KANBAN);
+    });
 
     it('offers the kanban view only on the forecast', function () {
         expect(ForecastResource::getReportLayouts())->toContain(ViewLayout::KANBAN)
@@ -240,6 +257,35 @@ describe('graph', function () {
 });
 
 describe('list', function () {
+    it('offers every report dimension as a collapsible group by, with no group by default', function (string $resource, string $graph, string $list, string $permission) {
+        CRMHelper::actingAs([$permission]);
+
+        /** @var class-string<Report> $report */
+        $report = $resource::getReport();
+
+        $component = reportPage($list);
+        $table = $component->instance()->getTable();
+
+        expect(array_keys($table->getGroups()))->toBe(array_keys($report::dimensions()))
+            ->and($table->getDefaultGroup())->toBeNull()
+            ->and(collect($table->getGroups())->every(fn (Group $group): bool => $group->isCollapsible() && $group->isTitlePrefixedWithLabel()))->toBeTrue();
+
+        foreach (array_keys($report::dimensions()) as $dimension) {
+            $component->set('tableGrouping', $dimension)->assertOk();
+        }
+    })->with('report pages');
+
+    it('groups the pipeline list by stage with the core group headings', function () {
+        CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
+
+        $opportunity = CRMHelper::opportunity();
+
+        reportPage(ListPipelineAnalysis::class.'@list')
+            ->set('tableGrouping', 'stage')
+            ->assertCanSeeTableRecords([$opportunity])
+            ->assertSee(__('crm::filament/clusters/reporting/report.dimensions.stage').': '.$opportunity->stage->name);
+    });
+
     it('turns on the default quick filters', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 

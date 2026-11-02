@@ -177,7 +177,8 @@ it('refuses to delete an activity type while activities are scheduled with it', 
     }
 
     Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
-        ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $type->id])
+        ->mountAction('deleteKanbanColumn', arguments: ['column' => (string) $type->id])
+        ->assertActionNotMounted('deleteKanbanColumn')
         ->assertNotified(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board type']));
 
     expect(ActivityType::query()->whereKey($type->id)->exists())->toBeTrue();

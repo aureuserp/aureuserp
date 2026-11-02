@@ -222,7 +222,9 @@ it('deletes an empty stage from the board', function () {
     $stage = Stage::factory()->create(['name' => 'Empty board stage']);
 
     Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
-        ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
+        ->mountAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
+        ->assertActionMounted('deleteKanbanColumn')
+        ->callMountedAction()
         ->assertNotified(__('crm::filament/kanban.column-actions.deleted', ['name' => 'Empty board stage']));
 
     expect(Stage::query()->whereKey($stage->id)->exists())->toBeFalse();
@@ -241,7 +243,8 @@ it('refuses to delete a stage that still holds records', function (string $holde
     };
 
     Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
-        ->callAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
+        ->mountAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
+        ->assertActionNotMounted('deleteKanbanColumn')
         ->assertNotified(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board stage']));
 
     expect(Stage::query()->whereKey($stage->id)->exists())->toBeTrue();
