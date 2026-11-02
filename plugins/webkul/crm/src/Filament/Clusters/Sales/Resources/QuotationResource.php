@@ -3,6 +3,8 @@
 namespace Webkul\Crm\Filament\Clusters\Sales\Resources;
 
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
+use Webkul\Crm\Enums\TeamOrderScope;
 use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\CreateQuotation;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\EditQuotation;
@@ -12,7 +14,10 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ManageI
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ManageOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Policies\QuotationPolicy;
+use Webkul\Sale\Enums\InvoiceStatus;
+use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource as BaseQuotationResource;
 
 class QuotationResource extends BaseQuotationResource
@@ -26,6 +31,35 @@ class QuotationResource extends BaseQuotationResource
     protected static ?int $navigationSort = 3;
 
     protected static bool $isGloballySearchable = false;
+
+    public static function getTeamOrdersParameters(int|string $teamId, ?TeamOrderScope $scope = null): array
+    {
+        return [
+            'activeTableView' => 'default',
+            'filters'         => ['queryBuilder' => ['rules' => [
+                'team' => LeadTableFilters::teamRule($teamId),
+                ...($scope?->getFilterRules() ?? []),
+            ]]],
+        ];
+    }
+
+    protected static function getTableQueryBuilderConstraints(array $include = [], array $exclude = []): array
+    {
+        return [
+            ...parent::getTableQueryBuilderConstraints($include, $exclude),
+            LeadTableFilters::relationship('team', __('sales::filament/clusters/orders/resources/quotation.table.columns.sales-team'), 'heroicon-o-user-group'),
+            SelectConstraint::make('state')
+                ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.status'))
+                ->icon('heroicon-o-flag')
+                ->options(OrderState::options())
+                ->multiple(),
+            SelectConstraint::make('invoice_status')
+                ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.invoice-status'))
+                ->icon('heroicon-o-document-check')
+                ->options(InvoiceStatus::options())
+                ->multiple(),
+        ];
+    }
 
     public static function getCRMPolicy(): string
     {

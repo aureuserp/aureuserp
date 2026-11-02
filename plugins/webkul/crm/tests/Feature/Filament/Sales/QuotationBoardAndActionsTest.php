@@ -213,13 +213,22 @@ it('limits the quotations to one sales team from the team card links', function 
     $teamOrder = boardQuotation(['team_id' => $team->id, 'state' => OrderState::SALE]);
     $otherQuotation = boardQuotation(['team_id' => $otherTeam->id]);
 
-    Livewire::withQueryParams(['activeTableView' => 'default', 'team' => $team->id, 'scope' => TeamOrderScope::QUOTATIONS->value])
+    $component = Livewire::withQueryParams(QuotationResource::getTeamOrdersParameters($team->id, TeamOrderScope::QUOTATIONS))
         ->test(ListQuotations::class)
         ->assertCanSeeTableRecords([$teamQuotation])
         ->assertCanNotSeeTableRecords([$teamOrder, $otherQuotation]);
 
-    Livewire::withQueryParams(['activeTableView' => 'default', 'team' => $team->id])
+    expect($component->instance()->getTable()->getFilter('queryBuilder')->getIndicators())->toHaveCount(2);
+
+    Livewire::withQueryParams(QuotationResource::getTeamOrdersParameters($team->id, TeamOrderScope::SALES_ORDERS))
+        ->test(ListQuotations::class)
+        ->assertCanSeeTableRecords([$teamOrder])
+        ->assertCanNotSeeTableRecords([$teamQuotation, $otherQuotation]);
+
+    Livewire::withQueryParams(QuotationResource::getTeamOrdersParameters($team->id))
         ->test(ListQuotations::class)
         ->assertCanSeeTableRecords([$teamQuotation, $teamOrder])
-        ->assertCanNotSeeTableRecords([$otherQuotation]);
+        ->assertCanNotSeeTableRecords([$otherQuotation])
+        ->call('removeTableFilters')
+        ->assertCanSeeTableRecords([$teamQuotation, $teamOrder, $otherQuotation]);
 });

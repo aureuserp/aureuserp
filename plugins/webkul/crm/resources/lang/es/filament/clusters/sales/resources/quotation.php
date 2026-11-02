@@ -48,9 +48,4 @@ return [
             'notification' => ':confirmed presupuesto(s) confirmado(s), :skipped omitido(s).',
         ],
     ],
-
-    'team-filter' => [
-        'label' => 'Equipo de ventas: :team',
-        'clear' => 'Mostrar todo',
-    ],
 ];

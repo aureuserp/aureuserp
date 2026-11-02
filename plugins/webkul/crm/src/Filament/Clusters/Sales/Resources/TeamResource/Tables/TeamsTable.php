@@ -133,7 +133,7 @@ class TeamsTable
                             ->state(fn (Team $record, ListTeams $livewire): int => $livewire->getTeamDashboard($record)['quotations'])
                             ->formatStateUsing(fn (int $state): string => trans_choice('crm::filament/clusters/sales/resources/team.grid.quotations', $state, ['count' => $state]))
                             ->color('primary')
-                            ->url(fn (Team $record): string => QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $record->getKey(), 'scope' => TeamOrderScope::QUOTATIONS->value])),
+                            ->url(fn (Team $record): string => QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($record->getKey(), TeamOrderScope::QUOTATIONS))),
                         TextColumn::make('quotations_amount')
                             ->state(fn (Team $record, ListTeams $livewire): float => $livewire->getTeamDashboard($record)['quotations_amount'])
                             ->money(fn (Team $record): ?string => $record->company?->currency?->code)
@@ -145,7 +145,7 @@ class TeamsTable
                             ->state(fn (Team $record, ListTeams $livewire): int => $livewire->getTeamDashboard($record)['orders_to_invoice'])
                             ->formatStateUsing(fn (int $state): string => trans_choice('crm::filament/clusters/sales/resources/team.grid.orders-to-invoice', $state, ['count' => $state]))
                             ->color('primary')
-                            ->url(fn (Team $record): string => QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $record->getKey(), 'scope' => TeamOrderScope::TO_INVOICE->value])),
+                            ->url(fn (Team $record): string => QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($record->getKey(), TeamOrderScope::TO_INVOICE))),
                         TextColumn::make('orders_to_invoice_amount')
                             ->state(fn (Team $record, ListTeams $livewire): float => $livewire->getTeamDashboard($record)['orders_to_invoice_amount'])
                             ->money(fn (Team $record): ?string => $record->company?->currency?->code)
@@ -192,7 +192,7 @@ class TeamsTable
                     Action::make('viewLeads')
                         ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.leads'))
                         ->icon('heroicon-o-funnel')
-                        ->url(fn (Team $record): string => LeadResource::getUrl('index', ['team' => $record->getKey()]))
+                        ->url(fn (Team $record): string => LeadResource::getUrl('index', ['activeTableView' => 'all', 'filters' => ['queryBuilder' => ['rules' => ['team' => LeadTableFilters::teamRule($record->getKey())]]]]))
                         ->visible(fn (): bool => LeadResource::canViewAny()),
                     Action::make('viewOpportunities')
                         ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.opportunities'))
@@ -201,12 +201,12 @@ class TeamsTable
                     Action::make('viewQuotations')
                         ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.quotations'))
                         ->icon('heroicon-o-document-text')
-                        ->url(fn (Team $record): string => QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $record->getKey(), 'scope' => TeamOrderScope::QUOTATIONS->value]))
+                        ->url(fn (Team $record): string => QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($record->getKey(), TeamOrderScope::QUOTATIONS)))
                         ->visible(fn (): bool => QuotationResource::canViewAny()),
                     Action::make('viewSalesOrders')
                         ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.sales-orders'))
                         ->icon('heroicon-o-shopping-bag')
-                        ->url(fn (Team $record): string => QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $record->getKey(), 'scope' => TeamOrderScope::SALES_ORDERS->value]))
+                        ->url(fn (Team $record): string => QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($record->getKey(), TeamOrderScope::SALES_ORDERS)))
                         ->visible(fn (): bool => QuotationResource::canViewAny()),
                 ])->dropdown(false),
                 ActionGroup::make([

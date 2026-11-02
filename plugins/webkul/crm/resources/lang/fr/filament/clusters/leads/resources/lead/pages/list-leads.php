@@ -14,11 +14,6 @@ return [
         ],
     ],
 
-    'team-filter' => [
-        'label' => 'Équipe commerciale : :team',
-        'clear' => 'Tout afficher',
-    ],
-
     'graph' => [
         'heading' => [
             'month'       => 'Pistes par mois',

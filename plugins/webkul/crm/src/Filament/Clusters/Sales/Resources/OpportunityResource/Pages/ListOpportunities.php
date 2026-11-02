@@ -28,6 +28,7 @@ use Webkul\Crm\Filament\Concerns\ManagesStageKanbanColumns;
 use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Exports\OpportunityExporter;
 use Webkul\Crm\Filament\Imports\OpportunityImporter;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
@@ -66,7 +67,7 @@ class ListOpportunities extends ListRecords
             $this->tableFilters = [
                 'queryBuilder' => [
                     'rules' => [
-                        'team' => ['type' => 'team', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $teamId]]]],
+                        'team' => LeadTableFilters::teamRule($teamId),
                     ],
                 ],
             ];

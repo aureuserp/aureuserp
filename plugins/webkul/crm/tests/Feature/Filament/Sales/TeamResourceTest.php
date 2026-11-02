@@ -14,6 +14,7 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ListTeams;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Services\TeamDashboard;
 use Webkul\Sale\Enums\InvoiceStatus;
@@ -264,9 +265,9 @@ it('links the team card menu to the team\'s records and reports', function () {
     $reportFilters = ['filters' => ['team_ids' => ['values' => [$team->id]]]];
 
     Livewire::test(ListTeams::class)
-        ->assertSeeHtml(e(LeadResource::getUrl('index', ['team' => $team->id])))
+        ->assertSeeHtml(e(LeadResource::getUrl('index', ['activeTableView' => 'all', 'filters' => ['queryBuilder' => ['rules' => ['team' => LeadTableFilters::teamRule($team->id)]]]])))
         ->assertSeeHtml(e(TeamResource::getUrl('opportunities', ['record' => $team, 'layout' => 'list'])))
-        ->assertSeeHtml(e(QuotationResource::getUrl('index', ['activeTableView' => 'default', 'team' => $team->id, 'scope' => TeamOrderScope::SALES_ORDERS->value])))
+        ->assertSeeHtml(e(QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($team->id, TeamOrderScope::SALES_ORDERS))))
         ->assertDontSeeHtml(e(LeadResource::getUrl('create', ['team' => $team->id])))
         ->assertSeeHtml(e(ConfigurationTeamResource::getUrl('edit', ['record' => $team])))
         ->assertDontSee(__('crm::filament/clusters/sales/resources/team.table.actions.pipeline.label'))
@@ -335,8 +336,8 @@ it('hides the team colour picker without the team update permission', function (
         ->assertActionDisabled(TestAction::make('teamColorDot')->table($team));
 });
 
-it('limits the team quotations to confirmed sales orders with the sales orders scope', function () {
-    $query = TeamOrderScope::SALES_ORDERS->apply(Order::query());
-
-    expect($query->toRawSql())->toContain("`state` = 'sale'");
+it('turns each team card figure into quotation list filter rules', function () {
+    expect(TeamOrderScope::SALES_ORDERS->getFilterRules())->toBe(['state' => ['type' => 'state', 'data' => ['operator' => 'is', 'settings' => ['values' => ['sale']]]]])
+        ->and(TeamOrderScope::QUOTATIONS->getFilterRules()['state']['data']['settings']['values'])->toBe(['draft', 'sent'])
+        ->and(TeamOrderScope::TO_INVOICE->getFilterRules()['invoice_status']['data']['settings']['values'])->toBe(['to_invoice']);
 });

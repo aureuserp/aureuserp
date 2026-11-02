@@ -4,6 +4,7 @@ use Livewire\Livewire;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ListLeads;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Models\UTMMedium;
 
@@ -185,10 +186,14 @@ it('opens on My Leads and shows unassigned leads on the Unassigned and All views
         ->assertCanSeeTableRecords([$unassigned]);
 });
 
-it('opens the All Leads view for a sales team link', function () {
+it('opens the All Leads view with the team as a table filter for a sales team link', function () {
     CRMHelper::actingAsCRMUser(['lead']);
 
-    Livewire::withQueryParams(['team' => Team::factory()->create(['company_id' => CRMHelper::companyId()])->id])
+    $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
+
+    $component = Livewire::withQueryParams(['activeTableView' => 'all', 'filters' => ['queryBuilder' => ['rules' => ['team' => LeadTableFilters::teamRule($team->id)]]]])
         ->test(ListLeads::class)
         ->assertSet('activeTableView', 'all');
+
+    expect($component->instance()->getTable()->getFilter('queryBuilder')->getIndicators())->toHaveCount(1);
 });

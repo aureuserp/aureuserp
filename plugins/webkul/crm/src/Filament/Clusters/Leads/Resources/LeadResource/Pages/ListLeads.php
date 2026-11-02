@@ -13,8 +13,6 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\HtmlString;
-use Livewire\Attributes\Url;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\CRMExportAction;
@@ -32,7 +30,6 @@ use Webkul\Crm\Filament\Imports\LeadImporter;
 use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
-use Webkul\Sale\Models\Team;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
@@ -51,60 +48,9 @@ class ListLeads extends ListRecords
 
     protected static string $resource = LeadResource::class;
 
-    #[Url(as: 'team')]
-    public ?string $teamFilter = null;
-
-    public function mount(): void
-    {
-        parent::mount();
-
-        if (filled($this->teamFilter)) {
-            $this->activeTableView ??= 'all';
-        }
-    }
-
     public function content(Schema $schema): Schema
     {
         return parent::content($schema);
-    }
-
-    public function getFilteredTeam(): ?Team
-    {
-        return filled($this->teamFilter) ? Team::query()->find((int) $this->teamFilter) : null;
-    }
-
-    protected function modifyQueryWithActiveTab(Builder $query, bool $isResolvingRecord = false): Builder
-    {
-        $query = parent::modifyQueryWithActiveTab($query, $isResolvingRecord);
-
-        return $isResolvingRecord ? $query : $this->applyTeamFilter($query);
-    }
-
-    protected function getTableViewCountQuery(): Builder
-    {
-        return $this->applyTeamFilter($this->getTableQuery());
-    }
-
-    protected function applyTeamFilter(Builder $query): Builder
-    {
-        $team = $this->getFilteredTeam();
-
-        return $team ? $query->where('crm_leads.team_id', $team->getKey()) : $query;
-    }
-
-    public function getSubheading(): string|Htmlable|null
-    {
-        $team = $this->getFilteredTeam();
-
-        if (! $team) {
-            return null;
-        }
-
-        return new HtmlString(
-            e(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.label', ['team' => $team->name]))
-            .' — <a href="'.e(LeadResource::getUrl('index', ['layout' => $this->getViewLayout()->value])).'" class="text-primary-600 hover:underline dark:text-primary-400">'
-            .e(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.clear')).'</a>'
-        );
     }
 
     public function getViewLayouts(): array

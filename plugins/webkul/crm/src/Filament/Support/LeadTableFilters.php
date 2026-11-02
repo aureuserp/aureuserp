@@ -62,6 +62,11 @@ class LeadTableFilters
         ]);
     }
 
+    public static function teamRule(int|string $teamId): array
+    {
+        return ['type' => 'team', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $teamId]]]];
+    }
+
     public static function make(array $constraints): QueryBuilder
     {
         return QueryBuilder::make()

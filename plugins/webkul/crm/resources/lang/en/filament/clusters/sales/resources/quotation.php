@@ -48,9 +48,4 @@ return [
             'notification' => ':confirmed quotation(s) confirmed, :skipped skipped.',
         ],
     ],
-
-    'team-filter' => [
-        'label' => 'Sales team: :team',
-        'clear' => 'Show all',
-    ],
 ];

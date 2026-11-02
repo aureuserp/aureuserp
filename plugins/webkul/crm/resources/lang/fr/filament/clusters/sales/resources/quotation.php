@@ -48,9 +48,4 @@ return [
             'notification' => ':confirmed devis confirmé(s), :skipped ignoré(s).',
         ],
     ],
-
-    'team-filter' => [
-        'label' => 'Équipe commerciale : :team',
-        'clear' => 'Tout afficher',
-    ],
 ];

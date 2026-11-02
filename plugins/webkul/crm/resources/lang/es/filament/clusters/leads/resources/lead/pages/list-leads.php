@@ -14,11 +14,6 @@ return [
         ],
     ],
 
-    'team-filter' => [
-        'label' => 'Equipo de ventas: :team',
-        'clear' => 'Mostrar todo',
-    ],
-
     'graph' => [
         'heading' => [
             'month'       => 'Leads por mes',

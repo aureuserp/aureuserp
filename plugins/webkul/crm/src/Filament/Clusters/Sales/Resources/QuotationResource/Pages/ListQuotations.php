@@ -13,14 +13,10 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
-use Illuminate\Support\HtmlString;
-use Livewire\Attributes\Url;
 use Webkul\Crm\Enums\QuotationBoardGroup;
-use Webkul\Crm\Enums\TeamOrderScope;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\CRMExportAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
@@ -39,7 +35,6 @@ use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQuotations as BaseListQuotations;
 use Webkul\Sale\Models\Order;
-use Webkul\Sale\Models\Team;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 use Wezlo\FilamentKanban\KanbanColumn;
@@ -50,61 +45,9 @@ class ListQuotations extends BaseListQuotations
 
     protected static string $resource = QuotationResource::class;
 
-    #[Url(as: 'team')]
-    public ?string $teamFilter = null;
-
-    #[Url(as: 'scope')]
-    public ?string $teamOrderScope = null;
-
     public function content(Schema $schema): Schema
     {
         return parent::content($schema);
-    }
-
-    public function getFilteredTeam(): ?Team
-    {
-        return filled($this->teamFilter) ? Team::query()->find((int) $this->teamFilter) : null;
-    }
-
-    protected function modifyQueryWithActiveTab(Builder $query, bool $isResolvingRecord = false): Builder
-    {
-        $query = parent::modifyQueryWithActiveTab($query, $isResolvingRecord);
-
-        return $isResolvingRecord ? $query : $this->applyTeamFilter($query);
-    }
-
-    protected function getTableViewCountQuery(): Builder
-    {
-        return $this->applyTeamFilter($this->getTableQuery());
-    }
-
-    protected function applyTeamFilter(Builder $query): Builder
-    {
-        $team = $this->getFilteredTeam();
-
-        if (! $team) {
-            return $query;
-        }
-
-        $query->where('team_id', $team->getKey());
-
-        return TeamOrderScope::tryFrom((string) $this->teamOrderScope)?->apply($query) ?? $query;
-    }
-
-    public function getSubheading(): string|Htmlable|null
-    {
-        $team = $this->getFilteredTeam();
-
-        if (! $team) {
-            return null;
-        }
-
-        $label = collect([
-            __('crm::filament/clusters/sales/resources/quotation.team-filter.label', ['team' => $team->name]),
-            TeamOrderScope::tryFrom((string) $this->teamOrderScope)?->getLabel(),
-        ])->filter()->implode(' · ');
-
-        return new HtmlString(e($label).' — <a href="'.e(static::getUrl()).'" class="text-primary-600 hover:underline dark:text-primary-400">'.e(__('crm::filament/clusters/sales/resources/quotation.team-filter.clear')).'</a>');
     }
 
     public function getTitle(): string

@@ -48,9 +48,4 @@ return [
             'notification' => 'تم تأكيد :confirmed عرض سعر، وتخطي :skipped.',
         ],
     ],
-
-    'team-filter' => [
-        'label' => 'فريق المبيعات: :team',
-        'clear' => 'عرض الكل',
-    ],
 ];

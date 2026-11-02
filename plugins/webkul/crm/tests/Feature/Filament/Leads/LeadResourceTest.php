@@ -12,6 +12,7 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\ViewLead;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Support\LeadResourceResolver;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\LostReason;
 use Webkul\Sale\Models\Team;
@@ -551,18 +552,19 @@ it('lets users without global access edit and delete only the records assigned t
     'opportunity' => [OpportunityResource::class, 'opportunity', LeadType::OPPORTUNITY],
 ]);
 
-it('filters the leads list by the sales team in the url', function () {
+it('filters the leads list by the sales team with a removable table filter', function () {
     CRMHelper::actingAsCRMUser(['lead']);
 
     $team = Team::factory()->create(['company_id' => CRMHelper::companyId()]);
     $inTeam = CRMHelper::lead(['team_id' => $team->id]);
     $outside = CRMHelper::lead();
 
-    Livewire::withQueryParams(['team' => $team->id])
+    Livewire::withQueryParams(['filters' => ['queryBuilder' => ['rules' => ['team' => LeadTableFilters::teamRule($team->id)]]]])
         ->test(ListLeads::class)
         ->assertCanSeeTableRecords([$inTeam])
         ->assertCanNotSeeTableRecords([$outside])
-        ->assertSee(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.team-filter.label', ['team' => $team->name]));
+        ->call('removeTableFilters')
+        ->assertCanSeeTableRecords([$inTeam, $outside]);
 });
 
 it('deletes a lead from its page as a soft delete and returns to the leads list', function () {
