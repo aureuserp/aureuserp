@@ -13,6 +13,8 @@ class SalesPersonPerformanceChart extends DashboardChartWidget
 
     protected static ?int $sort = 4;
 
+    protected int|string|array $columnSpan = 'full';
+
     public function getHeading(): string|Htmlable|null
     {
         return __('sales::filament/widgets/sales-dashboard.sales-persons.heading');

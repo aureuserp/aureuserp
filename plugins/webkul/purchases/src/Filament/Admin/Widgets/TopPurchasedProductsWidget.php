@@ -19,7 +19,7 @@ class TopPurchasedProductsWidget extends BaseWidget
 
     protected const TRACK_COLOR = 'color-mix(in srgb, var(--gray-500) 22%, transparent)';
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 6;
 
     protected static bool $isLazy = true;
 

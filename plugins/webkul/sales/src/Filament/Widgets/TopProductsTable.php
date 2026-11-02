@@ -19,7 +19,7 @@ class TopProductsTable extends TableWidget
 
     protected const TRACK_COLOR = 'color-mix(in srgb, var(--gray-500) 22%, transparent)';
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 7;
 
     protected static bool $isLazy = true;
 

@@ -18,6 +18,8 @@ use Webkul\Purchase\Filament\Admin\Widgets\PurchaseStatsWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\PurchaseTrendWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopOrdersWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopPurchasedProductsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\TopRfqsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\TopVendorsWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\VendorSpendChart;
 use Webkul\Purchase\Models\Order;
 use Webkul\Security\Models\User;
@@ -141,7 +143,9 @@ class Purchases extends BaseDashboard
             PurchaseTrendWidget::class,
             VendorSpendChart::class,
             TopOrdersWidget::class,
+            TopRfqsWidget::class,
             TopPurchasedProductsWidget::class,
+            TopVendorsWidget::class,
         ];
     }
 }

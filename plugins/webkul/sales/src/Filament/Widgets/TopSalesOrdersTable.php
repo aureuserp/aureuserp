@@ -17,7 +17,7 @@ class TopSalesOrdersTable extends TableWidget
 {
     use HasSaleDashboardFilters, HasWidgetShield;
 
-    protected static ?int $sort = 7;
+    protected static ?int $sort = 5;
 
     protected static bool $isLazy = true;
 
