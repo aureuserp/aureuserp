@@ -72,6 +72,7 @@ class Move extends Model
         'restrict_partner_id',
         'warehouse_id',
         'product_packaging_id',
+        'package_level_id',
         'scrap_id',
         'price_unit',
         'company_id',
@@ -761,6 +762,7 @@ class Move extends Model
             'deadline'                => $this->deadline,
             // 'rule_id'                 => null,
             'origin_returned_move_id' => $this->origin_returned_move_id,
+            'package_level_id'        => null,
             'move_origin_ids'         => $this->moveOrigins->pluck('id')->all(),
             'move_destination_ids'    => $this->moveDestinations
                 ->filter(fn ($x) => ! in_array($x->state, [MoveState::DONE, MoveState::CANCELED]))

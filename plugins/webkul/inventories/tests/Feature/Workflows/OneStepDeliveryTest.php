@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
@@ -8,6 +9,7 @@ use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Services\PackageLevelSynchronizer;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../Helpers/InventoryHelper.php';
@@ -24,6 +26,8 @@ beforeEach(function () {
     $this->shelfA = InventoryHelper::sublocation($this->stock, 'Shelf A');
     $this->shelfB = InventoryHelper::sublocation($this->stock, 'Shelf B');
 });
+
+afterEach(fn () => Model::preventSilentlyDiscardingAttributes(false));
 
 function confirmedOneStepDelivery($warehouse, $product, float $stock, float $demand): Operation
 {
@@ -801,6 +805,54 @@ it('packs an entire disposable package into a package level on confirm', functio
         ->and($line->package_id)->toBe($package->id)
         ->and($line->package_level_id)->not->toBeNull()
         ->and($line->result_package_id)->toBe($package->id);
+});
+
+it('links the move to the package level of a fully packed package with strict model writes', function () {
+    $package = InventoryHelper::package(PackageUse::REUSABLE, $this->stock);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Inventory::confirmTransfer($operation);
+
+    app(PackageLevelSynchronizer::class)->syncFor($operation->refresh());
+
+    $operation->refresh();
+
+    $move = $operation->moves->first();
+
+    expect($operation->packageLevels)->toHaveCount(1)
+        ->and($move->package_level_id)->toBe($operation->packageLevels->first()->id)
+        ->and($move->lines->first()->package_level_id)->toBe($move->package_level_id);
+});
+
+it('does not carry the package level of a packed delivery onto its return', function () {
+    $package = InventoryHelper::package(PackageUse::REUSABLE, $this->stock);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10, null, $package->id);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    app(PackageLevelSynchronizer::class)->syncFor($operation->refresh());
+
+    $operation->refresh();
+
+    $deliveredMove = $operation->moves->first();
+
+    Inventory::completeTransfer($operation);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    $return = Inventory::createReturn($operation->refresh(), [$deliveredMove->id => 4]);
+
+    expect($deliveredMove->refresh()->package_level_id)->not->toBeNull()
+        ->and($return->moves)->toHaveCount(1)
+        ->and($return->moves->first()->package_level_id)->toBeNull();
 });
 
 it('packs an entire reusable package without setting a result package', function () {

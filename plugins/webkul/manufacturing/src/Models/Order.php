@@ -615,7 +615,9 @@ class Order extends Model
             ]);
 
             if ($updatedValues) {
-                $this->finishedMoves->each->update($updatedValues);
+                $this->finishedMoves
+                    ->reject(fn (Move $move): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
+                    ->each->update($updatedValues);
             }
 
             return;

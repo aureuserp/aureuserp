@@ -1,19 +1,26 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
+use Webkul\Chatter\Livewire\ChatterPanel;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions\ConfirmAction;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions\CreateBillAction;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\CreatePurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\ListPurchaseOrders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\ViewPurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
 use Webkul\Purchase\Models\Order;
+use Webkul\Support\Models\ActivityPlan;
+use Webkul\Support\Models\ActivityPlanTemplate;
+use Webkul\Support\Models\ActivityType;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
@@ -35,6 +42,8 @@ beforeEach(function () {
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 });
+
+afterEach(fn () => Model::preventSilentlyDiscardingAttributes(false));
 
 function purchaseOrderRecord(?int $userId = null): Order
 {
@@ -219,4 +228,175 @@ it('refuses to open a purchase order owned by another company', function () {
 
     Livewire::test(ViewPurchaseOrder::class, ['record' => $order->id])
         ->assertNotFound();
+});
+
+function strictActivityPlan(Order $order, array $summaries): ActivityPlan
+{
+    $plan = ActivityPlan::create([
+        'name'       => 'Strict model writes plan',
+        'plugin'     => 'purchases',
+        'is_active'  => true,
+        'company_id' => $order->company_id,
+    ]);
+
+    $activityType = ActivityType::query()->firstOrFail();
+
+    foreach ($summaries as $summary) {
+        ActivityPlanTemplate::create([
+            'plan_id'          => $plan->id,
+            'activity_type_id' => $activityType->id,
+            'summary'          => $summary,
+            'note'             => $summary.' note',
+            'delay_count'      => 0,
+            'delay_unit'       => 'days',
+            'delay_from'       => 'previous_activity',
+        ]);
+    }
+
+    return $plan;
+}
+
+it('schedules an activity plan on a purchase order from the chatter with strict model writes', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord($user->id);
+
+    $plan = strictActivityPlan($order, ['First strict step', 'Second strict step']);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Livewire::test(ChatterPanel::class, [
+        'record'        => $order,
+        'resourceClass' => PurchaseOrderResource::class,
+        'activityPlans' => collect([$plan->id => $plan->name]),
+    ])
+        ->callAction('activity', data: [
+            'activity_plan_id' => $plan->id,
+            'date_deadline'    => now()->addDay()->toDateString(),
+        ]);
+
+    expect($order->activities()->pluck('summary')->sort()->values()->all())
+        ->toBe(['First strict step', 'Second strict step']);
+});
+
+it('edits a scheduled activity from the chatter with strict model writes', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord($user->id);
+
+    $plan = strictActivityPlan($order, ['Only strict step']);
+
+    $activityType = ActivityType::query()->where('category', '!=', 'meeting')->firstOrFail();
+
+    $activity = $order->addActivity([
+        'activity_type_id' => $activityType->id,
+        'summary'          => 'Before edit',
+        'date_deadline'    => now()->addDay()->toDateString(),
+    ]);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Livewire::test(ChatterPanel::class, [
+        'record'        => $order,
+        'resourceClass' => PurchaseOrderResource::class,
+        'activityPlans' => collect([$plan->id => $plan->name]),
+    ])
+        ->callAction('editActivity', data: [
+            'activity_type_id' => $activityType->id,
+            'summary'          => 'After edit',
+            'assigned_to'      => $user->id,
+            'date_deadline'    => now()->addDays(2)->toDateString(),
+        ], arguments: ['id' => $activity->id])
+        ->assertHasNoActionErrors();
+
+    expect($activity->refresh()->summary)->toBe('After edit');
+});
+
+it('schedules every activity of a plan from the chosen plan date and the template delay', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord($user->id);
+
+    $plan = strictActivityPlan($order, ['On plan date', 'Three days later']);
+
+    $plan->activityPlanTemplates()->where('summary', 'Three days later')->update([
+        'delay_count' => 3,
+        'delay_unit'  => 'days',
+        'delay_from'  => 'after_plan_date',
+    ]);
+
+    $planDate = now()->addWeek()->startOfDay();
+
+    Livewire::test(ChatterPanel::class, [
+        'record'        => $order,
+        'resourceClass' => PurchaseOrderResource::class,
+        'activityPlans' => collect([$plan->id => $plan->name]),
+    ])
+        ->callAction('activity', data: [
+            'activity_plan_id' => $plan->id,
+            'date_deadline'    => $planDate->toDateString(),
+        ]);
+
+    $deadlines = $order->activities()->get()->mapWithKeys(fn ($activity) => [$activity->summary => Carbon::parse($activity->date_deadline)->toDateString()]);
+
+    expect($deadlines->all())->toEqual([
+        'On plan date'     => $planDate->toDateString(),
+        'Three days later' => $planDate->copy()->addDays(3)->toDateString(),
+    ])
+        ->and($order->messages()->where('type', 'comment')->latest('id')->value('body'))
+        ->toContain(e(__('chatter::traits/has-chatter.activity-plan.started', ['plan' => $plan->name])));
+});
+
+it('offers only activity plans that have activities and schedules nothing for an empty plan', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord($user->id);
+
+    $plan = strictActivityPlan($order, ['Planned step']);
+
+    $emptyPlan = strictActivityPlan($order, []);
+
+    $options = ActivityPlan::withTemplates(collect([$plan->id => $plan->name, $emptyPlan->id => $emptyPlan->name]));
+
+    expect($options->keys()->all())->toBe([$plan->id]);
+
+    $messageCount = $order->messages()->count();
+
+    expect($order->scheduleActivityPlan($emptyPlan, ['date_deadline' => now()->addDay()->toDateString()]))->toBeEmpty()
+        ->and($order->messages()->count())->toBe($messageCount);
+});
+
+it('edits the deadline, assignee and note of a meeting activity', function () {
+    $user = FilamentHelper::actingAs(['view_any_purchase_purchase::order', 'view_purchase_purchase::order']);
+
+    $order = purchaseOrderRecord($user->id);
+
+    $meetingType = ActivityType::query()->where('category', 'meeting')->firstOrFail();
+
+    $activity = $order->addActivity([
+        'activity_type_id' => $meetingType->id,
+        'summary'          => 'Vendor meeting',
+        'date_deadline'    => now()->addDay()->toDateString(),
+    ]);
+
+    $deadline = now()->addDays(4)->toDateString();
+
+    Livewire::test(ChatterPanel::class, [
+        'record'        => $order,
+        'resourceClass' => PurchaseOrderResource::class,
+    ])
+        ->callAction('editActivity', data: [
+            'activity_type_id' => $meetingType->id,
+            'summary'          => 'Vendor meeting',
+            'date_deadline'    => $deadline,
+            'assigned_to'      => $user->id,
+            'body'             => '<p>Bring the price list</p>',
+        ], arguments: ['id' => $activity->id])
+        ->assertHasNoActionErrors();
+
+    $activity->refresh();
+
+    expect(Carbon::parse($activity->date_deadline)->toDateString())->toBe($deadline)
+        ->and((int) $activity->assigned_to)->toBe($user->id)
+        ->and($activity->body)->toContain('Bring the price list');
 });

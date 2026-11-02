@@ -44,6 +44,9 @@
         <testsuite name="SecurityFeature">
             <directory>plugins/webkul/security/tests/Feature</directory>
         </testsuite>
+        <testsuite name="TableViewsFeature">
+            <directory>plugins/webkul/table-views/tests/Feature</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

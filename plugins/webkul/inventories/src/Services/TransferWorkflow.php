@@ -218,6 +218,7 @@ class TransferWorkflow
             'operation_type_id'       => $return->operation_type_id,
             'warehouse_id'            => $return->operationType->warehouse_id,
             'origin_returned_move_id' => $move->id,
+            'package_level_id'        => null,
             'procure_method'          => ProcureMethod::MAKE_TO_STOCK,
             'procurement_group_id'    => $return->procurement_group_id,
         ];

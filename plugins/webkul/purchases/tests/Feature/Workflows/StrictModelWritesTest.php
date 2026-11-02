@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Webkul\Account\Enums\MoveState as AccountMoveState;
 use Webkul\Account\Enums\PaymentState;
@@ -85,4 +87,42 @@ it('adds a chatter follower with strict model writes', function () {
     expect($follower->partner_id)->toBe($partner->id)
         ->and($follower->followed_at)->not->toBeNull()
         ->and($order->isFollowedBy($partner))->toBeTrue();
+});
+
+it('posts a chatter message and a log note with an attachment with strict model writes', function () {
+    $order = PurchaseHelper::order();
+
+    $user = Auth::user();
+
+    $path = 'messages-attachments/strict-model-writes-'.uniqid().'.txt';
+
+    Storage::disk('public')->put($path, 'attachment');
+
+    $message = $order->addMessage([
+        'name'        => $order->name,
+        'body'        => 'A message with an attachment',
+        'type'        => 'comment',
+        'attachments' => [$path],
+    ]);
+
+    $note = $order->addMessage([
+        'name'        => $order->name,
+        'body'        => 'A log note with an attachment',
+        'type'        => 'note',
+        'causer_type' => $user->getMorphClass(),
+        'causer_id'   => $user->id,
+        'is_internal' => true,
+        'attachments' => [$path],
+    ]);
+
+    $order->addAttachments([$path], ['message_id' => $message->id]);
+
+    $order->addAttachments([$path], ['message_id' => $note->id]);
+
+    Storage::disk('public')->delete($path);
+
+    expect($message->exists)->toBeTrue()
+        ->and((bool) $note->refresh()->is_internal)->toBeTrue()
+        ->and($message->attachments()->pluck('file_path')->all())->toBe([$path])
+        ->and($note->attachments()->pluck('file_path')->all())->toBe([$path]);
 });

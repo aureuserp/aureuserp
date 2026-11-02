@@ -318,7 +318,6 @@ class JournalEntryForm
                     ->searchable()
                     ->multiple()
                     ->preload()
-                    ->dehydrated()
                     ->live()
                     ->wrapOptionLabels(false)
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::taxesUpdated($set, $get))

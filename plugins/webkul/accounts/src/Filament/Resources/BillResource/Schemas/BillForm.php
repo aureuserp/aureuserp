@@ -522,7 +522,6 @@ class BillForm
                     ->searchable()
                     ->multiple()
                     ->preload()
-                    ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
@@ -533,9 +532,11 @@ class BillForm
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Hidden::make('product_uom_qty')
-                    ->default(0),
+                    ->default(0)
+                    ->dehydrated(false),
                 Hidden::make('price_tax')
-                    ->default(0),
+                    ->default(0)
+                    ->dehydrated(false),
                 Hidden::make('price_total')
                     ->default(0),
             ])

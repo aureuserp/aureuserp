@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use Webkul\Support\Models\ActivityPlan;
 
 class ChatterAction extends Action
 {
@@ -129,6 +130,11 @@ class ChatterAction extends Action
     }
 
     public function getActivityPlans(): Collection
+    {
+        return ActivityPlan::withTemplates($this->resolveActivityPlans());
+    }
+
+    protected function resolveActivityPlans(): Collection
     {
         if ($this->activityPlans instanceof Collection) {
             return $this->activityPlans;

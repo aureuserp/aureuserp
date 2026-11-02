@@ -1,12 +1,15 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Manufacturing\Enums\BillOfMaterialConsumption;
+use Webkul\Manufacturing\Enums\BillOfMaterialType;
 use Webkul\Manufacturing\Enums\ManufacturingOrderState;
 use Webkul\Manufacturing\Facades\Manufacturing;
+use Webkul\Manufacturing\Models\BillOfMaterialLine;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -38,6 +41,8 @@ beforeEach(function () {
     $this->componentA = ManufacturingHelper::product();
     $this->componentB = ManufacturingHelper::product();
 });
+
+afterEach(fn () => Model::preventSilentlyDiscardingAttributes(false));
 
 it('explodes the bill of materials into raw and finished moves', function () {
     $bom = ManufacturingHelper::bom($this->finished, [[$this->componentA, 2], [$this->componentB, 3]]);
@@ -294,4 +299,61 @@ it('moves the finished move to the new finish date of a confirmed manufacturing 
     $order->refresh()->update(['finished_at' => $finishedAt]);
 
     expect($order->refresh()->finishedMoves->first()->scheduled_at->equalTo($finishedAt))->toBeTrue();
+});
+
+it('keeps the date of a done finished move when the finish date of its order changes', function () {
+    $bom = ManufacturingHelper::bom($this->finished, [[$this->componentA, 2]]);
+    $order = ManufacturingHelper::order($this->warehouse, $this->finished, $bom, 5);
+
+    InventoryHelper::stockUp($this->componentA, $this->stock, 10);
+
+    ManufacturingHelper::confirm($order);
+
+    $order = ManufacturingHelper::produce($order);
+
+    $finishedMove = $order->finishedMoves->first();
+
+    $scheduledAt = $finishedMove->scheduled_at;
+
+    $order->update(['finished_at' => now()->addDays(10)->startOfMinute()]);
+
+    $finishedMove->refresh();
+
+    expect($finishedMove->state)->toBe(MoveState::DONE)
+        ->and($finishedMove->scheduled_at?->equalTo($scheduledAt))->toBeTrue();
+});
+
+it('expands a kit component into its parts in the kit line unit with strict model writes', function () {
+    $kit = ManufacturingHelper::product();
+
+    $dozens = InventoryHelper::dozensUom();
+
+    $kitBom = ManufacturingHelper::bom($kit, [], ['type' => BillOfMaterialType::PHANTOM]);
+
+    BillOfMaterialLine::create([
+        'bill_of_material_id' => $kitBom->id,
+        'product_id'          => $this->componentB->id,
+        'uom_id'              => $dozens->id,
+        'quantity'            => 3,
+        'company_id'          => ManufacturingHelper::company()->id,
+    ]);
+
+    $bom = ManufacturingHelper::bom($this->finished, [[$this->componentA, 1]]);
+    $order = ManufacturingHelper::order($this->warehouse, $this->finished, $bom, 5);
+
+    ManufacturingHelper::addComponent($order, $kit, 2);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    ManufacturingHelper::confirm($order);
+
+    $rawMoves = $order->refresh()->rawMaterialMoves;
+
+    $part = $rawMoves->firstWhere('product_id', $this->componentB->id);
+
+    expect($rawMoves->contains('product_id', $kit->id))->toBeFalse()
+        ->and($part)->not->toBeNull()
+        ->and($part->uom_id)->toBe($dozens->id)
+        ->and((float) $part->product_uom_qty)->toBe(6.0)
+        ->and($part->raw_material_order_id)->toBe($order->id);
 });

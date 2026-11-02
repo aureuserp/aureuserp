@@ -25,9 +25,6 @@ return [
 
         'form' => [
             'fields' => [
-                'activity-plan' => 'Plan de actividad',
-                'plan-date'     => 'Fecha del plan',
-                'plan-summary'  => 'Resumen del plan',
                 'activity-type' => 'Tipo de actividad',
                 'due-date'      => 'Fecha de vencimiento',
                 'summary'       => 'Resumen',
