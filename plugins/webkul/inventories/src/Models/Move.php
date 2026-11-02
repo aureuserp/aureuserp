@@ -735,7 +735,7 @@ class Move extends Model
             $defaults['restrict_partner_id'] = $restrictPartnerId;
         }
 
-        $splitAttributes = array_merge(Arr::only($this->getAttributes(), (new self)->getFillable()), $defaults);
+        $splitAttributes = array_merge(Arr::only($this->getAttributes(), $this->getFillable()), $defaults);
 
         $remaining = float_round(
             $this->product->uom->computeQuantity(max(0, $this->product_qty - $qty), $this->uom, round: false),

@@ -47,6 +47,8 @@ class DynamicLineSynchronizer
         }
 
         foreach ($changes['tax_lines_to_add'] as $attributes) {
+            $taxIds = $attributes['tax_ids'] ?? [];
+
             unset($attributes['tax_ids']);
 
             $taxLine = MoveLine::create(array_merge($attributes, [
@@ -57,6 +59,10 @@ class DynamicLineSynchronizer
             $taxLine->computeCreditAndDebit();
 
             $taxLine->save();
+
+            if ($taxIds) {
+                $taxLine->taxes()->sync($taxIds);
+            }
         }
 
         foreach ($changes['tax_lines_to_update'] as $attributes) {
@@ -67,6 +73,10 @@ class DynamicLineSynchronizer
             $record->computeCreditAndDebit();
 
             $record->save();
+
+            if (array_key_exists('tax_ids', $attributes)) {
+                $record->taxes()->sync($attributes['tax_ids']);
+            }
         }
     }
 
