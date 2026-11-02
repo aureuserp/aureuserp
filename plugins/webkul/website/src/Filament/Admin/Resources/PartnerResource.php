@@ -4,10 +4,7 @@ namespace Webkul\Website\Filament\Admin\Resources;
 
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
 use Webkul\Support\Enums\NavigationGroup;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\CreatePartner;
 use Webkul\Website\Filament\Admin\Resources\PartnerResource\Pages\EditPartner;
@@ -45,21 +42,6 @@ class PartnerResource extends BasePartnerResource
             ManageContacts::class,
             ManageAddresses::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Contacts', [
-                ContactsRelationManager::class,
-            ])
-                ->icon('heroicon-o-users'),
-
-            RelationGroup::make('Addresses', [
-                AddressesRelationManager::class,
-            ])
-                ->icon('heroicon-o-map-pin'),
-        ];
     }
 
     public static function getPages(): array

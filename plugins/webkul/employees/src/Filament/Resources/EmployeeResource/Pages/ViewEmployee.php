@@ -29,11 +29,6 @@ class ViewEmployee extends ViewRecord
         ];
     }
 
-    public function getRelationManagers(): array
-    {
-        return [];
-    }
-
     private function getActivityPlans(): mixed
     {
         return ActivityPlan::employees()->pluck('name', 'id');

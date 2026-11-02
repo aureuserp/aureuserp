@@ -3,7 +3,6 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Webkul\Account\Filament\Resources\VendorResource as BaseVendorResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\CreateVendor;
@@ -13,7 +12,6 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageBankAccounts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageContacts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers\BankAccountsRelationManager;
 use Webkul\Invoice\Models\Vendor;
 
 class VendorResource extends BaseVendorResource
@@ -29,19 +27,6 @@ class VendorResource extends BaseVendorResource
     protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = Vendors::class;
-
-    public static function getRelations(): array
-    {
-        $table = parent::getRelations();
-
-        return [
-            ...$table,
-            RelationGroup::make('Bank Accounts', [
-                BankAccountsRelationManager::class,
-            ])
-                ->icon('heroicon-o-banknotes'),
-        ];
-    }
 
     public static function getRecordSubNavigation(Page $page): array
     {
