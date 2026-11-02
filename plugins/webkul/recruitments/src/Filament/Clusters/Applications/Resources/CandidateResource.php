@@ -3,7 +3,6 @@
 namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -15,7 +14,6 @@ use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResourc
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\ListCandidates;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\ManageSkill;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\ViewCandidate;
-use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\RelationManagers\SkillsRelationManager;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Schemas\CandidateForm;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Schemas\CandidateInfolist;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Tables\CandidatesTable;
@@ -88,16 +86,6 @@ class CandidateResource extends Resource
             EditCandidate::class,
             ManageSkill::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Manage Skills', [
-                SkillsRelationManager::class,
-            ])
-                ->icon('heroicon-o-bolt'),
-        ];
     }
 
     public static function getPages(): array
