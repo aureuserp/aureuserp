@@ -27,6 +27,7 @@
         $isOverWip = $board->isOverWipLimit($column);
         $summary = $board->resolveColumnSummary($column);
         $hasEmptyState = $board->hasEmptyState() && $column->count === 0;
+        $hasHeaderAction = $board->hasColumnHeaderAction();
         $canEditColumn = method_exists($this, 'canEditKanbanColumn') && $this->canEditKanbanColumn($column->value);
         $canDeleteColumn = method_exists($this, 'canDeleteKanbanColumn') && $this->canDeleteKanbanColumn($column->value);
 
@@ -79,6 +80,18 @@
                 >
                     {{ $column->count }}@if($wipLimit) / {{ $wipLimit }}@endif
                 </span>
+
+                @if($hasHeaderAction)
+                    <button
+                        type="button"
+                        wire:click="mountAction('kanbanColumn', { column: '{{ $column->value }}' })"
+                        class="rounded-md p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200/50 dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/10 transition"
+                        aria-label="{{ __('crm::filament/kanban.column-actions.add', ['name' => $column->label]) }}"
+                        title="{{ __('crm::filament/kanban.column-actions.add', ['name' => $column->label]) }}"
+                    >
+                        <x-filament::icon icon="heroicon-m-plus" class="h-4 w-4" />
+                    </button>
+                @endif
 
                 @if($canEditColumn
                     || $canDeleteColumn)

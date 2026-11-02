@@ -12,6 +12,7 @@ return [
     ],
 
     'column-actions' => [
+        'add'                => 'Add to :name',
         'settings'           => 'Settings: :name',
         'edit'               => 'Edit',
         'delete'             => 'Delete',

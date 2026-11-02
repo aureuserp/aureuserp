@@ -22,11 +22,6 @@ require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
 beforeEach(fn () => CRMHelper::bootstrap());
 
-/**
- * Ids of every card on the pipeline board, across all columns.
- *
- * @return array<int, int>
- */
 function pipelineBoardRecordIds(Testable $component): array
 {
     return collect($component->instance()->getKanbanColumns())
@@ -290,6 +285,15 @@ it('saves a view from the board for the pipeline list', function () {
     expect($view->filterable_type)->toBe(ListOpportunities::class)
         ->and(data_get($view->filters, 'tableFilters.queryBuilder.rules.priority.type'))->toBe('priority')
         ->and(array_keys(Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews()))->toContain($view->id);
+});
+
+it('shows a quick create button in each column header', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $stage = CRMHelper::firstStage();
+
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->assertSeeHtml("mountAction('kanbanColumn', { column: '{$stage->id}' })");
 });
 
 it('quick-creates an opportunity in the column\'s stage and the current company', function () {

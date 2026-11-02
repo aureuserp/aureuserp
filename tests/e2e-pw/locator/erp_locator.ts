@@ -525,6 +525,17 @@ export class ErpLocators {
     readonly blogPostsConfirmDeleteButton: Locator;
     readonly blogPostsSuccessToast: Locator;
 
+    /**
+     *  CRM Pipeline Kanban
+     */
+
+    readonly crmKanbanBoard: Locator;
+    readonly crmKanbanColumns: Locator;
+    readonly crmQuickCreateNameInput: Locator;
+    readonly crmQuickCreateSubmitButton: Locator;
+    readonly crmCardMenuDeleteOption: Locator;
+    readonly crmConfirmDeleteButton: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -1127,5 +1138,15 @@ export class ErpLocators {
             .first();
         this.blogPostsConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /delete/i }).first();
         this.blogPostsSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+
+        this.crmKanbanBoard = page.locator(".crm-kanban-board");
+        this.crmKanbanColumns = page.locator(".crm-kanban-board .fi-kanban-column");
+        this.crmQuickCreateNameInput = anyDialog(page).getByRole("textbox").first();
+        this.crmQuickCreateSubmitButton = anyDialog(page).locator('button[type="submit"]').first();
+        // The card menu is teleported to the body, so only the open panel is visible.
+        this.crmCardMenuDeleteOption = page
+            .locator(".fi-dropdown-panel:visible .fi-dropdown-list-item")
+            .filter({ hasText: /^\s*Delete\s*$/ });
+        this.crmConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /^\s*(Confirm|Delete)\s*$/i }).first();
     }
 }
