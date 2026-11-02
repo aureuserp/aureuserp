@@ -214,8 +214,12 @@ class ManageBranding extends SettingsPage
         try {
             $palettes = [];
 
+            $primaryHue = BrandPalette::hueOf($colors['primary_color']);
+
             foreach ($colors as $name => $hex) {
-                $palettes[$name] = BrandPalette::fromHex($hex);
+                $palettes[$name] = $name === 'gray_color'
+                    ? BrandPalette::fromHex($hex, $primaryHue)
+                    : BrandPalette::fromHex($hex);
             }
         } catch (\Throwable) {
             return '';

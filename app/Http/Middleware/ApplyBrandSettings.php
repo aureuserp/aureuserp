@@ -32,7 +32,7 @@ class ApplyBrandSettings
                 $panel->getColors(),
             );
 
-            $colorKeys = ['primary', 'success', 'danger', 'warning', 'info', 'gray'];
+            $colorKeys = ['primary', 'success', 'danger', 'warning', 'info'];
 
             $brandColors = [];
 
@@ -50,6 +50,22 @@ class ApplyBrandSettings
                 }
 
                 $brandColors[$colorKey] = $this->paletteFromHex($brandValue);
+            }
+
+            $primaryIsSet = ! empty($brand->primary_color);
+
+            $graySeed = ! empty($brand->gray_color)
+                ? $brand->gray_color
+                : ($primaryIsSet ? ($panelDefaultColors['gray'][600] ?? null) : null);
+
+            if ($graySeed !== null) {
+                $grayDefault = $panelDefaultColors['gray'][600] ?? null;
+
+                $tintHue = $primaryIsSet ? BrandPalette::hueOf($brand->primary_color) : null;
+
+                if ($tintHue !== null || ($grayDefault !== null && ! $this->isSameColor($graySeed, $grayDefault))) {
+                    $brandColors['gray'] = BrandPalette::fromHex($graySeed, $tintHue);
+                }
             }
 
             if ($brandColors !== []) {

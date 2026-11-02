@@ -16,7 +16,7 @@ class ButtonComponent extends BaseButtonComponent
 
         return ButtonComponentColorMap::make($color)
             ->minContrastRatio(Color::WCAG_AA_TEXT)
-            ->lightBackground(bg: 600, hover: 500)
+            ->lightBackground(bg: 600, hover: 500, alternateHover: 700)
             ->darkBackground(bg: 600, hover: 500, alternateHover: 700)
             ->get();
     }

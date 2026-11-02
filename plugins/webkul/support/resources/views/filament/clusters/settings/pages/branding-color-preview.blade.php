@@ -80,14 +80,6 @@
                 <span class="font-mono text-xs text-gray-500 dark:text-gray-400">{{ strtoupper($focus['hex']) }}</span>
             </div>
         </div>
-
-        @if ($focus['key'] === 'primary_color')
-            <span class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-600 dark:border-white/10 dark:text-gray-300">
-                {{ __($trans.'.shade-note') }}
-
-                <x-filament::icon icon="heroicon-m-chevron-down" class="h-4 w-4 text-gray-400" />
-            </span>
-        @endif
     </div>
 
     <div class="flex items-end gap-1.5">
