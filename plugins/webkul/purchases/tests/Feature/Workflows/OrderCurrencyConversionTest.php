@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Models\Plugin;
@@ -9,6 +10,7 @@ use Webkul\Product\Models\ProductSupplier;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Schemas\OrderForm;
 use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\OrderLine;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 use Webkul\Support\Models\UOM;
@@ -373,4 +375,27 @@ it('keeps the currency rate and totals of a confirmed order when its order date 
     PurchaseHelper::compute($order->refresh());
 
     expect(storedAmounts($order))->toEqualWithDelta($confirmed, 0.000001);
+});
+
+it('does not mark a whole unit price as changed when a confirmed order is recomputed', function () {
+    $order = PurchaseHelper::order([
+        'partner_id' => $this->partner->id,
+    ]);
+
+    PurchaseHelper::line($order, $this->product, qty: 2, priceUnit: 145);
+
+    Order::query()->findOrFail($order->id)->update(['state' => OrderState::PURCHASE]);
+
+    $changedPriceUnits = [];
+
+    Event::listen('eloquent.updated: '.OrderLine::class, function (OrderLine $line) use (&$changedPriceUnits) {
+        if ($line->wasChanged('price_unit')) {
+            $changedPriceUnits[] = $line->id;
+        }
+    });
+
+    PurchaseHelper::compute($order->refresh());
+
+    expect($changedPriceUnits)->toBe([])
+        ->and((float) $order->refresh()->lines->first()->price_unit)->toEqualWithDelta(145.0, 0.000001);
 });

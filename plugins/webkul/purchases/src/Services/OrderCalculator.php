@@ -70,11 +70,15 @@ class OrderCalculator
     {
         $currency = $line->order->currency;
 
-        $line->price_unit = float_round((float) $line->price_unit, precisionDigits: static::AMOUNT_PRECISION);
+        $roundedPriceUnit = float_round((float) $line->price_unit, precisionDigits: static::AMOUNT_PRECISION);
+
+        if (float_compare((float) $line->price_unit, $roundedPriceUnit, precisionDigits: static::AMOUNT_PRECISION + 2) !== 0) {
+            $line->price_unit = $roundedPriceUnit;
+        }
 
         $priceUnit = $line->discount > 0
-            ? $line->price_unit * (1 - ($line->discount / 100))
-            : $line->price_unit;
+            ? $roundedPriceUnit * (1 - ($line->discount / 100))
+            : $roundedPriceUnit;
 
         if ($line->taxes->isEmpty()) {
             $line->price_subtotal = $currency->round($priceUnit * $line->product_qty);
