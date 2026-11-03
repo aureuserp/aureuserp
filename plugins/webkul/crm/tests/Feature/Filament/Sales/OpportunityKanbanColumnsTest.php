@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Js;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Models\Stage;
@@ -250,6 +251,17 @@ it('refuses to delete a stage that still holds records', function (string $holde
     expect($component->effects)->not->toHaveKey('html')
         ->and(Stage::query()->whereKey($stage->id)->exists())->toBeTrue();
 })->with(['opportunity', 'lead', 'lost opportunity', 'lost lead']);
+
+it('renders the in-use warning on the board so deleting a stage with cards needs no request', function () {
+    actingAsStageColumnManager();
+
+    $stage = Stage::factory()->create(['name' => 'Busy board stage']);
+
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->assertSeeHtml('new FilamentNotification()')
+        ->assertSeeHtml(e(Js::from(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board stage']))))
+        ->assertSeeHtml('$wire.mountAction(\'deleteKanbanColumn\', { column: '.e(Js::from((string) $stage->id)).' })');
+});
 
 it('forbids deleting a stage from the board without the delete permission', function () {
     actingAsStageColumnManager(['view_any', 'view', 'create', 'update']);

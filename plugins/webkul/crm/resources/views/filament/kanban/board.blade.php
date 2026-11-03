@@ -135,7 +135,21 @@
                                         <x-filament::dropdown.list.item
                                             icon="heroicon-m-trash"
                                             color="danger"
-                                            wire:click="mountAction('deleteKanbanColumn', { column: '{{ $column->value }}' })"
+                                            x-on:click="
+                                                const count = parseInt($el.closest('.fi-kanban-column')?.querySelector('[data-kanban-count]')?.dataset.kanbanCount, 10)
+
+                                                if (count > 0) {
+                                                    new FilamentNotification()
+                                                        .title({{ Js::from(__('crm::filament/kanban.column-actions.in-use.title', ['name' => $column->label])) }})
+                                                        .body(count === 1
+                                                            ? {{ Js::from(trans_choice('crm::filament/kanban.column-actions.in-use.body', 1)) }}
+                                                            : {{ Js::from(trans_choice('crm::filament/kanban.column-actions.in-use.body', 2, ['count' => ':count'])) }}.replace(':count', count))
+                                                        .danger()
+                                                        .send()
+                                                } else {
+                                                    $wire.mountAction('deleteKanbanColumn', { column: {{ Js::from((string) $column->value) }} })
+                                                }
+                                            "
                                         >
                                             {{ __('crm::filament/kanban.column-actions.delete') }}
                                         </x-filament::dropdown.list.item>
