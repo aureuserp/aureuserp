@@ -114,22 +114,13 @@ class BackorderCreator
     protected function crossLink(Operation $operation, Operation $backorder): void
     {
         $backorder->addMessage([
-            'body' => "This transfer has been created from {$this->operationLink($operation)}.",
+            'body' => "This transfer has been created from {$operation->getChatterLink()}.",
             'type' => 'comment',
         ]);
 
         $operation->addMessage([
-            'body' => "The back order {$this->operationLink($backorder)} has been created.",
+            'body' => "The back order {$backorder->getChatterLink()} has been created.",
             'type' => 'comment',
         ]);
-    }
-
-    protected function operationLink(Operation $operation): string
-    {
-        $url = $operation->getChatterResourceUrl();
-
-        return $url
-            ? "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$operation->name}</a>"
-            : e($operation->name);
     }
 }

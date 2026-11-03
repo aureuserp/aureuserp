@@ -269,22 +269,13 @@ class TransferWorkflow
     protected function crossLink(Operation $operation, Operation $return): void
     {
         $return->addMessage([
-            'body' => "This transfer has been created from {$this->operationLink($operation)}.",
+            'body' => "This transfer has been created from {$operation->getChatterLink()}.",
             'type' => 'comment',
         ]);
 
         $operation->addMessage([
-            'body' => "The return {$this->operationLink($return)} has been created.",
+            'body' => "The return {$return->getChatterLink()} has been created.",
             'type' => 'comment',
         ]);
-    }
-
-    protected function operationLink(Operation $operation): string
-    {
-        $url = $operation->getChatterResourceUrl();
-
-        return $url
-            ? "<a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$operation->name}</a>"
-            : e($operation->name);
     }
 }

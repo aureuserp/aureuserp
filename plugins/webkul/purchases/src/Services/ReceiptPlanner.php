@@ -144,14 +144,8 @@ class ReceiptPlanner
 
     protected function linkBackToOrder($operation, Order $record): void
     {
-        $url = $record->getChatterResourceUrl();
-
-        $source = $url
-            ? "<a href=\"{$url}\" target=\"_blank\" class=\"fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-300 fi-link fi-size-sm\">{$record->name}</a>"
-            : e($record->name);
-
         $operation->addMessage([
-            'body' => "This transfer has been created from {$source}.",
+            'body' => "This transfer has been created from {$record->getChatterLink()}.",
             'type' => 'comment',
         ]);
     }

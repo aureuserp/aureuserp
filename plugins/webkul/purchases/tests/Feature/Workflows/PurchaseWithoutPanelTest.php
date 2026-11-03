@@ -3,7 +3,6 @@
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\TypeTaxUse;
@@ -18,8 +17,9 @@ use Webkul\PluginManager\Package;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Events\OrderConfirmed;
+use Webkul\Purchase\Exceptions\OrderApprovalException;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
-use Webkul\Purchase\Settings\OrderSettings;
+use Webkul\Security\Enums\PermissionType;
 use Webkul\Support\Services\CompanyContext;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -40,6 +40,8 @@ beforeEach(function () {
 
     Package::$plugins = Plugin::all()->keyBy('name');
 
+    $this->routesWithPanel = Route::getRoutes();
+
     $routes = new RouteCollection;
 
     foreach (Route::getRoutes() as $route) {
@@ -56,29 +58,8 @@ beforeEach(function () {
     $this->product = PurchaseHelper::product();
 });
 
-function recordEvents(array $events): ArrayObject
-{
-    $dispatched = new ArrayObject;
-
-    foreach ($events as $event) {
-        Event::listen($event, fn ($payload) => $dispatched[] = $payload);
-    }
-
-    return $dispatched;
-}
-
-function dispatchedOf(ArrayObject $dispatched, string $event): array
-{
-    return array_values(array_filter($dispatched->getArrayCopy(), fn ($payload) => $payload instanceof $event));
-}
-
-function messageBodies($record): string
-{
-    return $record->messages()->pluck('body')->implode(' ');
-}
-
 it('confirms a purchase order and plans its receipt without panel routes', function () {
-    $events = recordEvents([OrderConfirmed::class]);
+    $events = PurchaseHelper::recordEvents([OrderConfirmed::class]);
 
     $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
 
@@ -87,14 +68,15 @@ it('confirms a purchase order and plans its receipt without panel routes', funct
     expect($order->state)->toBe(OrderState::PURCHASE)
         ->and($receipt)->not->toBeNull()
         ->and((float) $receipt->moves->sum('product_uom_qty'))->toBe(10.0)
-        ->and(messageBodies($receipt))->toContain($order->name);
+        ->and(PurchaseHelper::messageBodies($receipt))->toContain($order->name)
+        ->and(PurchaseHelper::messageBodies($receipt))->not->toContain('<a href');
 
-    expect(dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1)
-        ->and(dispatchedOf($events, OrderConfirmed::class)[0]->order->is($order))->toBeTrue();
+    expect(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1)
+        ->and(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class)[0]->order->is($order))->toBeTrue();
 });
 
 it('receives part of a purchase order and creates the backorder without panel routes', function () {
-    $events = recordEvents([OperationDone::class, OperationBackOrdered::class]);
+    $events = PurchaseHelper::recordEvents([OperationDone::class, OperationBackOrdered::class]);
 
     $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
 
@@ -105,15 +87,17 @@ it('receives part of a purchase order and creates the backorder without panel ro
     expect($receipt->state)->toBe(OperationState::DONE)
         ->and($order->refresh()->receipt_status)->toBe(OrderReceiptStatus::PARTIAL)
         ->and($backorder)->not->toBeNull()
-        ->and(messageBodies($backorder))->toContain($receipt->name)
-        ->and(messageBodies($receipt))->toContain($backorder->name);
+        ->and(PurchaseHelper::messageBodies($backorder))->toContain($receipt->name)
+        ->and(PurchaseHelper::messageBodies($backorder))->not->toContain('<a href')
+        ->and(PurchaseHelper::messageBodies($receipt))->toContain($backorder->name)
+        ->and(PurchaseHelper::messageBodies($receipt))->not->toContain('<a href');
 
-    expect(dispatchedOf($events, OperationDone::class))->not->toBeEmpty()
-        ->and(dispatchedOf($events, OperationBackOrdered::class))->toHaveCount(1);
+    expect(PurchaseHelper::dispatchedOf($events, OperationDone::class))->not->toBeEmpty()
+        ->and(PurchaseHelper::dispatchedOf($events, OperationBackOrdered::class))->toHaveCount(1);
 });
 
 it('returns a received purchase without panel routes', function () {
-    $events = recordEvents([OperationReturned::class]);
+    $events = PurchaseHelper::recordEvents([OperationReturned::class]);
 
     $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
 
@@ -125,10 +109,39 @@ it('returns a received purchase without panel routes', function () {
 
     expect($return)->not->toBeNull()
         ->and((float) $return->moves->sum('product_uom_qty'))->toBe(4.0)
-        ->and(messageBodies($return))->toContain($receipt->name)
-        ->and(messageBodies($receipt->refresh()))->toContain($return->name);
+        ->and(PurchaseHelper::messageBodies($return))->toContain($receipt->name)
+        ->and(PurchaseHelper::messageBodies($return))->not->toContain('<a href')
+        ->and(PurchaseHelper::messageBodies($receipt->refresh()))->toContain($return->name)
+        ->and(PurchaseHelper::messageBodies($receipt))->not->toContain('<a href');
 
-    expect(dispatchedOf($events, OperationReturned::class))->toHaveCount(1);
+    expect(PurchaseHelper::dispatchedOf($events, OperationReturned::class))->toHaveCount(1);
+});
+
+it('links the purchase order, backorder and return in the chatter messages when panel routes exist', function () {
+    Route::setRoutes($this->routesWithPanel);
+
+    $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
+
+    $receipt = PurchaseHelper::partialReceive($order, 6);
+
+    $backorder = InventoryHelper::backorderOf($receipt);
+
+    $return = Inventory::createReturn($receipt->refresh(), [$receipt->moves->first()->id => 2]);
+
+    $orderUrl = $order->refresh()->getChatterResourceUrl();
+    $receiptUrl = $receipt->getChatterResourceUrl();
+    $backorderUrl = $backorder->getChatterResourceUrl();
+    $returnUrl = $return->getChatterResourceUrl();
+
+    expect($orderUrl)->not->toBe('')
+        ->and($receiptUrl)->not->toBe('')
+        ->and($backorderUrl)->not->toBe('')
+        ->and($returnUrl)->not->toBe('')
+        ->and(PurchaseHelper::messageBodies($receipt))->toContain('<a href="'.e($orderUrl).'"')
+        ->and(PurchaseHelper::messageBodies($receipt))->toContain('<a href="'.e($backorderUrl).'"')
+        ->and(PurchaseHelper::messageBodies($receipt))->toContain('<a href="'.e($returnUrl).'"')
+        ->and(PurchaseHelper::messageBodies($backorder))->toContain('<a href="'.e($receiptUrl).'"')
+        ->and(PurchaseHelper::messageBodies($return))->toContain('<a href="'.e($receiptUrl).'"');
 });
 
 it('bills a received purchase order without panel routes', function () {
@@ -153,7 +166,7 @@ it('confirms, receives, bills and posts a taxed purchase order with no authentic
 
     app()->forgetInstance(CompanyContext::class);
 
-    $events = recordEvents([OrderConfirmed::class, OperationDone::class, MoveConfirmed::class]);
+    $events = PurchaseHelper::recordEvents([OrderConfirmed::class, OperationDone::class, MoveConfirmed::class]);
 
     $order = PurchaseOrderFacade::confirmPurchaseOrder($order->refresh());
 
@@ -166,27 +179,97 @@ it('confirms, receives, bills and posts a taxed purchase order with no authentic
         ->and($order->receipt_status)->toBe(OrderReceiptStatus::FULL)
         ->and($bill->state)->toBe(MoveState::POSTED)
         ->and((float) $bill->amount_total)->toBe(345.0)
-        ->and(dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1)
-        ->and(dispatchedOf($events, OperationDone::class))->not->toBeEmpty()
-        ->and(dispatchedOf($events, MoveConfirmed::class))->toHaveCount(1);
+        ->and(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1)
+        ->and(PurchaseHelper::dispatchedOf($events, OperationDone::class))->not->toBeEmpty()
+        ->and(PurchaseHelper::dispatchedOf($events, MoveConfirmed::class))->toHaveCount(1);
 });
 
 it('leaves an order above the approval amount waiting for approval when no user is acting', function () {
-    $settings = app(OrderSettings::class);
-    $settings->enable_order_approval = true;
-    $settings->order_validation_amount = 100;
-    $settings->save();
-
-    $order = PurchaseHelper::order(['operation_type_id' => $this->warehouse->in_type_id]);
-
-    PurchaseHelper::line($order, $this->product, qty: 3, priceUnit: 100);
-
-    PurchaseHelper::compute($order->refresh());
-
-    Auth::logout();
-
-    $order = PurchaseOrderFacade::confirmPurchaseOrder($order->refresh());
+    $order = PurchaseOrderFacade::confirmPurchaseOrder(PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product));
 
     expect($order->state)->toBe(OrderState::TO_APPROVE)
+        ->and($order->operations()->exists())->toBeFalse();
+});
+
+it('confirms an order above the approval amount on behalf of an approver with no authenticated user', function () {
+    $approver = PurchaseHelper::userWithResourcePermission(PermissionType::GLOBAL);
+
+    $order = PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product);
+
+    $events = PurchaseHelper::recordEvents([OrderConfirmed::class]);
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder($order, $approver);
+
+    $receipt = $order->operations()->first();
+
+    expect(Auth::check())->toBeFalse()
+        ->and($order->state)->toBe(OrderState::PURCHASE)
+        ->and($order->approved_at)->not->toBeNull()
+        ->and($receipt)->not->toBeNull()
+        ->and((float) $receipt->moves->sum('product_uom_qty'))->toBe(3.0);
+
+    expect(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1)
+        ->and(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class)[0]->order->is($order))->toBeTrue();
+});
+
+it('leaves an order above the approval amount waiting for approval when confirmed on behalf of a non-approver', function () {
+    $clerk = PurchaseHelper::userWithResourcePermission(PermissionType::INDIVIDUAL);
+
+    $order = PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product);
+
+    $events = PurchaseHelper::recordEvents([OrderConfirmed::class]);
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder($order, $clerk);
+
+    expect($order->state)->toBe(OrderState::TO_APPROVE)
+        ->and($order->approved_at)->toBeNull()
+        ->and($order->operations()->exists())->toBeFalse()
+        ->and(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class))->toBeEmpty();
+});
+
+it('approves an order waiting for approval on behalf of an approver with no authenticated user', function () {
+    $approver = PurchaseHelper::userWithResourcePermission(PermissionType::GROUP);
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder(PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product));
+
+    expect($order->state)->toBe(OrderState::TO_APPROVE);
+
+    $events = PurchaseHelper::recordEvents([OrderConfirmed::class]);
+
+    $order = PurchaseOrderFacade::approvePurchaseOrder($order, $approver);
+
+    $receipt = $order->operations()->first();
+
+    expect(Auth::check())->toBeFalse()
+        ->and($order->state)->toBe(OrderState::PURCHASE)
+        ->and($order->approved_at)->not->toBeNull()
+        ->and($receipt)->not->toBeNull()
+        ->and((float) $receipt->moves->sum('product_uom_qty'))->toBe(3.0)
+        ->and(PurchaseHelper::messageBodies($receipt))->toContain($order->name);
+
+    expect(PurchaseHelper::dispatchedOf($events, OrderConfirmed::class))->toHaveCount(1);
+});
+
+it('refuses to approve an order on behalf of a user who may not approve', function () {
+    $clerk = PurchaseHelper::userWithResourcePermission(PermissionType::INDIVIDUAL);
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder(PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product));
+
+    expect(fn () => PurchaseOrderFacade::approvePurchaseOrder($order, $clerk))
+        ->toThrow(OrderApprovalException::class, __('purchases::system.order-workflow.approve.not-allowed'));
+
+    expect($order->refresh()->state)->toBe(OrderState::TO_APPROVE)
+        ->and($order->operations()->exists())->toBeFalse();
+});
+
+it('refuses to approve an order that is not waiting for approval', function () {
+    $approver = PurchaseHelper::userWithResourcePermission(PermissionType::GLOBAL);
+
+    $order = PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product);
+
+    expect(fn () => PurchaseOrderFacade::approvePurchaseOrder($order, $approver))
+        ->toThrow(OrderApprovalException::class, __('purchases::system.order-workflow.approve.not-waiting-approval'));
+
+    expect($order->refresh()->state)->toBe(OrderState::DRAFT)
         ->and($order->operations()->exists())->toBeFalse();
 });
