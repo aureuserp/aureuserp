@@ -246,6 +246,23 @@
     }
 }
 
+.fi-ta-content-loading > .fi-ta-content .fi-ta-card-tags,
+.fi-ta-content-loading > .fi-ta-table > .fi-ta-records > .fi-ta-row .fi-ta-card-tags {
+    @apply relative w-fit max-w-full;
+
+    & > * {
+        @apply invisible;
+    }
+
+    &::after {
+        @apply absolute inset-x-0 top-1/2 h-4 -translate-y-1/2;
+        animation: var(--loading-skeleton-animation);
+        background-color: var(--loading-skeleton-background-color);
+        border-radius: var(--loading-skeleton-border-radius);
+        content: '';
+    }
+}
+
 .fi-ta-text-summary {
     @apply flex flex-row items-center gap-1 py-2.5;
 }
