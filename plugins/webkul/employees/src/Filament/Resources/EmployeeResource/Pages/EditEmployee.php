@@ -46,12 +46,8 @@ class EditEmployee extends EditRecord
     {
         $partner = $this->record->partner;
 
-        if (! $partner) {
-            return $data;
-        }
-
         return [
-            ...$partner->toArray(),
+            ...($partner?->toArray() ?? []),
             ...$data,
         ];
     }

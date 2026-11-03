@@ -38,12 +38,8 @@ class ViewEmployee extends ViewRecord
     {
         $partner = $this->record->partner;
 
-        if (! $partner) {
-            return $data;
-        }
-
         return [
-            ...$partner->toArray(),
+            ...($partner?->toArray() ?? []),
             ...$data,
         ];
     }
