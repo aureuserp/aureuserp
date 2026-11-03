@@ -249,10 +249,8 @@ class Order extends Model
 
     public function computeCurrencyRate(): void
     {
-        if ((float) $this->currency_rate !== 0.0) {
-            if (! $this->exists || $this->wasRecentlyCreated || ! $this->isDirty(['currency_id', 'ordered_at'])) {
-                return;
-            }
+        if (! float_is_zero((float) $this->currency_rate, precisionDigits: 6) && ! $this->shouldRefreshCurrencyRate()) {
+            return;
         }
 
         $companyCurrencyId = Company::withTrashed()->whereKey($this->company_id)->value('currency_id');
@@ -272,6 +270,20 @@ class Order extends Model
         } else {
             $this->currency_rate = 1.0;
         }
+    }
+
+    protected function shouldRefreshCurrencyRate(): bool
+    {
+        if (! $this->exists || $this->wasRecentlyCreated) {
+            return false;
+        }
+
+        if ($this->isDirty('currency_id')) {
+            return true;
+        }
+
+        return $this->isDirty('ordered_at')
+            && in_array($this->state, [OrderState::DRAFT, OrderState::SENT], true);
     }
 
     public function updateName()

@@ -97,7 +97,9 @@ class OrderCalculator
 
         $rate = (float) $line->order->currency_rate;
 
-        $line->price_total_cc = $line->order->company->currency->round($rate ? $line->price_total / $rate : $line->price_total);
+        $line->price_total_cc = $line->order->company->currency->round(
+            float_is_zero($rate, precisionDigits: 6) ? $line->price_total : $line->price_total / $rate,
+        );
     }
 
     public function refreshInvoiceStatus(Order $order): Order
