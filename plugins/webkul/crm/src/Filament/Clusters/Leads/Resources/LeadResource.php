@@ -56,6 +56,11 @@ class LeadResource extends Resource
         return static::isQualificationStepEnabled() && parent::canViewAny();
     }
 
+    public static function canViewRecords(): bool
+    {
+        return parent::canViewAny();
+    }
+
     public static function canCreate(): bool
     {
         return static::isQualificationStepEnabled() && parent::canCreate();

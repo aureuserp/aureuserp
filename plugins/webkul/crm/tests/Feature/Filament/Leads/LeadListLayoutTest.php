@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Tables\Columns\TextColumn;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
@@ -28,8 +29,7 @@ it('shows lead, email, city, country, salesperson and sales team in the list', f
 
     $lead = CRMHelper::lead(['name' => 'List layout lead', 'city' => 'Pune']);
 
-    Livewire::test(ListLeads::class)
-        ->assertSet('viewLayout', 'list')
+    $component = Livewire::test(ListLeads::class)
         ->assertCanSeeTableRecords([$lead])
         ->assertTableColumnVisible('name')
         ->assertTableColumnVisible('email')
@@ -38,6 +38,8 @@ it('shows lead, email, city, country, salesperson and sales team in the list', f
         ->assertTableColumnVisible('user.name')
         ->assertTableColumnVisible('team.name')
         ->assertTableColumnHidden('contact_name');
+
+    expect($component->instance()->getViewLayout())->toBe(ViewLayout::LIST);
 });
 
 it('offers the medium in the column manager, hidden until toggled on', function () {
@@ -46,9 +48,9 @@ it('offers the medium in the column manager, hidden until toggled on', function 
     $lead = CRMHelper::lead(['utm_medium_id' => UTMMedium::query()->firstOrCreate(['name' => 'Website'])->getKey()]);
 
     Livewire::test(ListLeads::class)
-        ->assertTableColumnHidden('medium.name')
+        ->assertTableColumnExists('medium.name', fn (TextColumn $column): bool => $column->isToggledHidden())
         ->toggleAllTableColumns()
-        ->assertTableColumnVisible('medium.name')
+        ->assertTableColumnExists('medium.name', fn (TextColumn $column): bool => ! $column->isToggledHidden())
         ->assertTableColumnStateSet('medium.name', 'Website', $lead);
 });
 
@@ -130,7 +132,7 @@ it('counts the leads per group in the graph layout', function () {
     $unassigned = CRMHelper::lead(['name' => 'Graph lead unassigned']);
     $unassigned->forceFill(['user_id' => null])->saveQuietly();
 
-    $component = Livewire::withQueryParams(['layout' => 'graph'])
+    $component = Livewire::withQueryParams(['layout' => 'graph', 'activeTableView' => 'all'])
         ->test(ListLeads::class)
         ->set('tableGrouping', 'user.name');
 
@@ -151,7 +153,7 @@ it('shows the leads as a board with one column per group on the kanban', functio
 
     expect(Livewire::test(ListLeads::class)->set('tableGrouping', 'user.name')->instance()->getKanbanColumns())->toBe([]);
 
-    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListLeads::class)->set('tableGrouping', 'user.name');
+    $component = Livewire::withQueryParams(['layout' => 'kanban', 'activeTableView' => 'all'])->test(ListLeads::class)->set('tableGrouping', 'user.name');
 
     $columns = collect($component->instance()->getKanbanColumns())->keyBy('value');
 

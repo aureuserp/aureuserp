@@ -497,7 +497,7 @@ it('filters the board by due status and activity type like the list', function (
     $planned = scheduledCRMActivity($opportunity, ['date_deadline' => now()->addDays(5)->toDateString(), 'activity_type_id' => crmActivityType('Call')->id]);
 
     $ids = fn (array $filters): array => collect(Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
-        ->set('tableFilters', $filters)
+        ->set('tableFilters', ['queryBuilder' => ['rules' => []], ...$filters])
         ->instance()
         ->getKanbanColumns())
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
@@ -519,7 +519,7 @@ it('renders activity cards like the pipeline cards and marks an activity done fr
         ->assertSee('Card summary call')
         ->assertSee('Activity card opportunity')
         ->assertSeeHtml('window.location.href')
-        ->assertSeeHtml("actionName: 'done'");
+        ->assertSeeHtml(e("actionName: 'done'"));
 
     $component->callAction('kanbanCardFooter', arguments: ['record' => (string) $activity->id, 'actionName' => 'done']);
 

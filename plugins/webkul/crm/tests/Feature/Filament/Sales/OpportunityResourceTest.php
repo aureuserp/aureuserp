@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Tables\Columns\TextColumn;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
@@ -83,9 +84,9 @@ it('offers the medium in the opportunity column manager, hidden until toggled on
     $opportunity = CRMHelper::opportunity(['utm_medium_id' => UTMMedium::query()->firstOrCreate(['name' => 'Website'])->getKey()]);
 
     Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
-        ->assertTableColumnHidden('medium.name')
+        ->assertTableColumnExists('medium.name', fn (TextColumn $column): bool => $column->isToggledHidden())
         ->toggleAllTableColumns()
-        ->assertTableColumnVisible('medium.name')
+        ->assertTableColumnExists('medium.name', fn (TextColumn $column): bool => ! $column->isToggledHidden())
         ->assertTableColumnStateSet('medium.name', 'Website', $opportunity);
 });
 

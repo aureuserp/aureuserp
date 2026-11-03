@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
@@ -160,7 +159,7 @@ it('does not open another app\'s activity plan from crm by its url', function (s
         'is_active'  => true,
     ]);
 
-    expect(fn () => Livewire::test($page, ['record' => $salesPlan->id]))->toThrow(ModelNotFoundException::class);
+    Livewire::test($page, ['record' => $salesPlan->id])->assertNotFound();
 })->with([
     'view' => ViewActivityPlan::class,
     'edit' => EditActivityPlan::class,

@@ -38,6 +38,7 @@ function salesTeamInCompany(string $name, ?int $companyId = null): Team
         'name'       => $name,
         'company_id' => $companyId ?? CRMHelper::companyId(),
         'is_active'  => true,
+        'color'      => null,
     ]);
 }
 
@@ -270,7 +271,7 @@ it('links the team card menu to the team\'s records and reports', function () {
         ->assertSeeHtml(e(QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($team->id, TeamOrderScope::SALES_ORDERS))))
         ->assertDontSeeHtml(e(LeadResource::getUrl('create', ['team' => $team->id])))
         ->assertSeeHtml(e(ConfigurationTeamResource::getUrl('edit', ['record' => $team])))
-        ->assertDontSee(__('crm::filament/clusters/sales/resources/team.table.actions.pipeline.label'))
+        ->assertActionDoesNotExist(TestAction::make('pipeline')->table($team))
         ->assertSeeHtml(e(PipelineAnalysisResource::getUrl('index', $reportFilters)))
         ->assertSeeHtml(e(ForecastResource::getUrl('index', [...$reportFilters, 'layout' => 'graph'])));
 });

@@ -3,29 +3,32 @@
 namespace Webkul\Crm\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Crm\Filament\Widgets\Concerns\HasCRMDashboardFilters;
-use Webkul\Crm\Filament\Widgets\Concerns\StylesCRMDashboardCharts;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 use Webkul\Support\Models\UTMSource;
 
-class LeadsBySourceChart extends ChartWidget
+class LeadsBySourceChart extends DashboardChartWidget
 {
-    use HasCRMDashboardFilters, HasWidgetShield, StylesCRMDashboardCharts;
+    use HasCRMDashboardFilters, HasWidgetShield;
 
-    protected static ?int $sort = 4;
+    protected const TOP_SLICES = 3;
 
-    protected static bool $isLazy = false;
+    protected static ?int $sort = 3;
 
-    protected ?string $maxHeight = '300px';
+    protected ?array $resolvedData = null;
 
     public function getHeading(): string|Htmlable|null
     {
         return __('crm::filament/widgets/crm-dashboard.sources.heading');
     }
 
-    protected function getData(): array
+    protected function resolveChartData(): array
     {
+        if ($this->resolvedData !== null) {
+            return $this->resolvedData;
+        }
+
         $counts = $this->createdBetween($this->crmRecords(), null, null)
             ->selectRaw('crm_leads.utm_source_id, COUNT(*) as total')
             ->groupBy('crm_leads.utm_source_id')
@@ -34,25 +37,52 @@ class LeadsBySourceChart extends ChartWidget
 
         $names = UTMSource::query()->whereIn('id', $counts->keys()->filter())->pluck('name', 'id');
 
-        $labels = $counts->keys()->map(fn ($sourceId): string => $names[$sourceId] ?? __('crm::filament/widgets/crm-dashboard.sources.none'))->all();
+        $labels = [];
+        $data = [];
+
+        foreach ($counts->take(self::TOP_SLICES) as $sourceId => $total) {
+            $labels[] = $names[$sourceId] ?? __('crm::filament/widgets/crm-dashboard.sources.none');
+            $data[] = (int) $total;
+        }
+
+        $other = (int) $counts->skip(self::TOP_SLICES)->sum();
+
+        if ($other > 0) {
+            $labels[] = __('crm::filament/widgets/crm-dashboard.sources.other');
+            $data[] = $other;
+        }
+
+        return $this->resolvedData = ['labels' => $labels, 'data' => $data];
+    }
+
+    protected function getData(): array
+    {
+        ['labels' => $labels, 'data' => $data] = $this->resolveChartData();
 
         return [
-            'datasets' => [$this->barDataset(
-                __('crm::filament/widgets/crm-dashboard.sources.count'),
-                $counts->values()->map(fn ($total): int => (int) $total)->all(),
-                $counts->keys()->values()->map(fn ($sourceId, int $index): string => self::PALETTE[$index % count(self::PALETTE)])->all(),
-            )],
+            'datasets' => [
+                [
+                    'label'           => __('crm::filament/widgets/crm-dashboard.sources.count'),
+                    'data'            => $data,
+                    'backgroundColor' => array_slice($this->chartRamp(), 0, max(count($data), 1)),
+                    'borderWidth'     => 0,
+                    'hoverOffset'     => 0,
+                ],
+            ],
             'labels' => $labels,
         ];
     }
 
     protected function getOptions(): array
     {
-        return $this->barOptions();
+        return $this->doughnutChartOptions(
+            number_format(array_sum($this->resolveChartData()['data'])),
+            __('crm::filament/widgets/crm-dashboard.sources.count'),
+        );
     }
 
     protected function getType(): string
     {
-        return 'bar';
+        return 'doughnut';
     }
 }

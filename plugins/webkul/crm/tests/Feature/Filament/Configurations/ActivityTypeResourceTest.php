@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\CreateActivityType;
@@ -133,7 +132,7 @@ it('does not open another app\'s activity type from crm by its url', function (s
 
     $salesType = SupportActivityType::query()->create(crmActivityTypeAttributes('sales', 'Url guessed type (sales test)'));
 
-    expect(fn () => Livewire::test($page, ['record' => $salesType->id]))->toThrow(ModelNotFoundException::class);
+    Livewire::test($page, ['record' => $salesType->id])->assertNotFound();
 })->with([
     'view' => ViewActivityType::class,
     'edit' => EditActivityType::class,
@@ -144,13 +143,7 @@ it('keeps another app\'s activity type owned by that app', function () {
 
     $salesType = SupportActivityType::query()->create(crmActivityTypeAttributes('sales', 'Untouched type (sales test)'));
 
-    try {
-        Livewire::test(EditActivityType::class, ['record' => $salesType->id])
-            ->fillForm(['name' => 'Taken over'])
-            ->call('save');
-    } catch (ModelNotFoundException) {
-        //
-    }
+    Livewire::test(EditActivityType::class, ['record' => $salesType->id])->assertNotFound();
 
     expect($salesType->fresh()->plugin)->toBe('sales')
         ->and($salesType->fresh()->name)->toBe('Untouched type (sales test)');

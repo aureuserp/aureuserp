@@ -7,8 +7,6 @@ return [
         'new-opportunities' => 'New Opportunities',
         'won-revenue'       => 'Won Revenue',
         'win-rate'          => 'Win Rate',
-        'increase'          => 'increase',
-        'decrease'          => 'decrease',
     ],
 
     'won-revenue' => [
@@ -26,6 +24,7 @@ return [
         'heading' => 'Leads by Source',
         'count'   => 'Leads',
         'none'    => 'No source',
+        'other'   => 'Other',
     ],
 
     'salespeople' => [
@@ -38,7 +37,6 @@ return [
 
         'columns' => [
             'opportunity'      => 'Opportunity',
-            'customer'         => 'Customer',
             'stage'            => 'Stage',
             'salesperson'      => 'Salesperson',
             'probability'      => 'Probability',

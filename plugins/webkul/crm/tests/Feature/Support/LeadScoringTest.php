@@ -140,7 +140,7 @@ it('updates probabilities from the settings page', function () {
         ->assertFormFieldExists('scoring_variables')
         ->assertFormFieldExists('scoring_start_date')
         ->fillForm(['scoring_variables' => ['country_id', 'tags']])
-        ->callAction(TestAction::make('updateProbabilities')->schemaComponent('form'))
+        ->callAction(TestAction::make('updateProbabilities')->schemaComponent(schema: 'form'))
         ->assertNotified();
 
     expect(app(CRMSettings::class)->refresh()->scoring_variables)->toBe(['country_id', 'tags']);

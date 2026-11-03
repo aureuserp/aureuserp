@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
@@ -187,7 +186,7 @@ describe('create', function () {
             ->assertSchemaStateSet([
                 'user_id'     => $user->id,
                 'company_id'  => CRMHelper::companyId(),
-                'probability' => 10,
+                'probability' => null,
             ]);
     });
 
@@ -270,8 +269,7 @@ describe('view', function () {
 
         $opportunity = CRMHelper::opportunity();
 
-        expect(fn () => Livewire::test(ViewLead::class, ['record' => $opportunity->id]))
-            ->toThrow(ModelNotFoundException::class);
+        Livewire::test(ViewLead::class, ['record' => $opportunity->id])->assertNotFound();
     });
 
     it('forbids viewing a lead without the lead view permission', function () {
@@ -464,12 +462,14 @@ it('lists only the current company\'s teams in the leads team filter', function 
     $ownTeam = Team::factory()->create(['name' => 'Own company team (filter test)', 'company_id' => CRMHelper::companyId()]);
     $foreignTeam = Team::factory()->create(['name' => 'Other company team (filter test)', 'company_id' => Company::factory()->create()->id]);
 
-    $filter = Livewire::test(ListLeads::class)
+    $operator = Livewire::test(ListLeads::class)
         ->instance()
         ->getTable()
-        ->getFilter('team_id');
+        ->getFilter('queryBuilder')
+        ->getConstraint('team')
+        ->getOperator('isRelatedTo');
 
-    $modifyQuery = (fn () => $this->modifyRelationshipQueryUsing)->call($filter);
+    $modifyQuery = (fn () => $this->modifyRelationshipQueryUsing)->call($operator);
 
     $teamIds = $modifyQuery(Team::query())->pluck('id');
 
@@ -484,16 +484,16 @@ it('shows the number of records on each view tab of the opportunity list', funct
 
     $expected = fn (string $key): int => $views[$key]->modifyQuery(OpportunityResource::getEloquentQuery())->count();
 
-    expect($views['default']->getBadge())->toBe(OpportunityResource::getEloquentQuery()->count())
-        ->and($views['my_pipeline']->getBadge())->toBe($expected('my_pipeline'))
-        ->and($views['open']->getBadge())->toBe($expected('open'))
-        ->and($views['lost']->getBadge())->toBe($expected('lost'));
+    expect($views['default']->getBadge())->toBe((string) OpportunityResource::getEloquentQuery()->count())
+        ->and($views['my_pipeline']->getBadge())->toBe((string) $expected('my_pipeline'))
+        ->and($views['open']->getBadge())->toBe((string) $expected('open'))
+        ->and($views['lost']->getBadge())->toBe((string) $expected('lost'));
 
     CRMHelper::opportunity(['user_id' => $user->id]);
 
     $views = Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews();
 
-    expect($views['my_pipeline']->getBadge())->toBe(Lead::query()->withoutTrashed()->where('type', LeadType::OPPORTUNITY)->where('user_id', $user->id)->count());
+    expect($views['my_pipeline']->getBadge())->toBe((string) Lead::query()->withoutTrashed()->where('type', LeadType::OPPORTUNITY)->where('user_id', $user->id)->count());
 });
 
 it('counts a saved view with its own filters and keeps the current filters', function () {
@@ -515,7 +515,7 @@ it('counts a saved view with its own filters and keeps the current filters', fun
     $component = Livewire::test(ListLeads::class);
     $tabs = $component->instance()->getCachedFavoriteTableViews();
 
-    expect($tabs[$view->id]->getBadge())->toBe(Lead::query()->where('type', LeadType::LEAD)->where('priority', OpportunityPriority::HIGH)->count())
+    expect($tabs[$view->id]->getBadge())->toBe((string) Lead::query()->where('type', LeadType::LEAD)->where('priority', OpportunityPriority::HIGH)->count())
         ->and($component->get('tableFilters.queryBuilder.rules') ?? [])->toBeEmpty();
 });
 

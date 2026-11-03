@@ -94,8 +94,12 @@ it('opens a team\'s pipeline when ?team= is given', function () {
     $component = Livewire::withQueryParams(['team' => $team->id])
         ->test(ListOpportunities::class)
         ->assertOk()
-        ->assertSet('tableFilters.queryBuilder.rules.team.data.settings.values', [(string) $team->id])
         ->assertSet('activeTableView', 'default');
+
+    $rules = collect($component->get('tableFilters.queryBuilder.rules'));
+
+    expect($rules->pluck('type')->all())->toBe(['team'])
+        ->and(data_get($rules->first(), 'data.settings.values'))->toBe([(string) $team->id]);
 
     expect(pipelineBoardRecordIds($component))
         ->toContain($teamDeal->id)
@@ -272,7 +276,7 @@ it('shows the pipeline list tabs on the board and filters the cards by the chose
     $component->call('loadView', 'lost');
 
     expect(pipelineBoardRecordIds($component))->toBe([$lost->id])
-        ->and($component->instance()->getCachedFavoriteTableViews()['lost']->getBadge())->toBe(1);
+        ->and($component->instance()->getCachedFavoriteTableViews()['lost']->getBadge())->toBe('1');
 });
 
 it('shows views saved on the pipeline list as board tabs and applies their filters', function () {

@@ -30,6 +30,8 @@ function listedContact(array $attributes = []): Partner
         'sub_type'      => 'partner',
         'company_id'    => CRMHelper::companyId(),
         'customer_rank' => 1,
+        'phone'         => '+1 555 010 0000',
+        'mobile'        => null,
         ...$attributes,
     ]);
 
@@ -149,7 +151,7 @@ it('moves a contact to another salesperson on the board but not between company 
 });
 
 it('merges contacts into the one kept and moves their opportunities', function () {
-    CRMHelper::actingAsCRMUser(['contact', 'opportunity']);
+    CRMHelper::actingAsCRMUser(['customer', 'opportunity']);
 
     $kept = listedContact(['name' => 'Kept Contact', 'phone' => null]);
     $merged = listedContact(['name' => 'Merged Contact', 'phone' => '+91 98765 43210']);

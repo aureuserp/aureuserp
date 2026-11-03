@@ -3,21 +3,16 @@
 namespace Webkul\Crm\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Crm\Filament\Widgets\Concerns\HasCRMDashboardFilters;
-use Webkul\Crm\Filament\Widgets\Concerns\StylesCRMDashboardCharts;
 use Webkul\Crm\Models\Stage;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class PipelineByStageChart extends ChartWidget
+class PipelineByStageChart extends DashboardChartWidget
 {
-    use HasCRMDashboardFilters, HasWidgetShield, StylesCRMDashboardCharts;
+    use HasCRMDashboardFilters, HasWidgetShield;
 
-    protected static ?int $sort = 3;
-
-    protected static bool $isLazy = false;
-
-    protected ?string $maxHeight = '300px';
+    protected static ?int $sort = 4;
 
     public function getHeading(): string|Htmlable|null
     {
@@ -38,18 +33,26 @@ class PipelineByStageChart extends ChartWidget
 
         $stages = Stage::query()->where('is_won', false)->orderBy('sort')->get(['id', 'name']);
 
+        $ramp = $this->chartRamp();
+
         return [
-            'datasets' => [$this->barDataset(
-                __('crm::filament/widgets/crm-dashboard.pipeline.expected-revenue'),
-                $stages->map(fn (Stage $stage): float => round((float) ($revenues[$stage->id] ?? 0), 2))->all(),
-            )],
+            'datasets' => [
+                [
+                    'label'           => __('crm::filament/widgets/crm-dashboard.pipeline.expected-revenue'),
+                    'data'            => $stages->map(fn (Stage $stage): float => round((float) ($revenues[$stage->id] ?? 0), 2))->all(),
+                    'backgroundColor' => $stages->keys()->map(fn (int $index): string => $ramp[$index % count($ramp)])->all(),
+                    'borderRadius'    => 8,
+                    'borderSkipped'   => 'bottom',
+                    'maxBarThickness' => 34,
+                ],
+            ],
             'labels' => $stages->pluck('name')->all(),
         ];
     }
 
     protected function getOptions(): array
     {
-        return $this->barOptions();
+        return $this->barChartOptions();
     }
 
     protected function getType(): string

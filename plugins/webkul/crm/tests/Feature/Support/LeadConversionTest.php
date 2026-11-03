@@ -125,6 +125,6 @@ it('runs the mass conversion from the leads list', function () {
         ->callTableBulkAction('massConvertToOpportunities', $leads, data: ['customer' => 'none', 'deduplicate' => false])
         ->assertHasNoTableBulkActionErrors();
 
-    expect(Lead::query()->whereKey($leads->modelKeys())->pluck('type')->unique()->all())->toBe([LeadType::OPPORTUNITY])
+    expect(Lead::query()->whereKey($leads->pluck('id'))->pluck('type')->unique()->all())->toBe([LeadType::OPPORTUNITY])
         ->and(LeadMassConversion::query()->latest('id')->value('converted_count'))->toBe(2);
 });

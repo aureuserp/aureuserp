@@ -3,6 +3,7 @@
 namespace Webkul\Crm\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -26,7 +27,7 @@ class TopOpportunitiesTable extends TableWidget
     {
         return $table
             ->defaultKeySort(false)
-            ->paginated(false)
+            ->recordClasses('dashboard-table-row')
             ->recordUrl(fn (Lead $record): ?string => OpportunityResource::canView($record)
                 ? OpportunityResource::getUrl('view', ['record' => $record])
                 : null);
@@ -37,13 +38,18 @@ class TopOpportunitiesTable extends TableWidget
         return __('crm::filament/widgets/crm-dashboard.top-opportunities.heading');
     }
 
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
+
     protected function getTableQuery(): Builder
     {
         return $this->openOpportunities()
             ->with(['partner', 'stage', 'user'])
             ->where('crm_leads.expected_revenue', '>', 0)
             ->orderByDesc('crm_leads.expected_revenue')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
@@ -51,10 +57,10 @@ class TopOpportunitiesTable extends TableWidget
         return [
             TextColumn::make('name')
                 ->label(__('crm::filament/widgets/crm-dashboard.top-opportunities.columns.opportunity'))
+                ->weight(FontWeight::Bold)
+                ->color('primary')
+                ->description(fn (Lead $record): string => $record->partner?->name ?: '—')
                 ->wrap(),
-            TextColumn::make('partner.name')
-                ->label(__('crm::filament/widgets/crm-dashboard.top-opportunities.columns.customer'))
-                ->placeholder('—'),
             TextColumn::make('stage.name')
                 ->label(__('crm::filament/widgets/crm-dashboard.top-opportunities.columns.stage'))
                 ->badge(),
@@ -66,7 +72,9 @@ class TopOpportunitiesTable extends TableWidget
                 ->formatStateUsing(fn ($state): string => round((float) $state, 2).' %'),
             TextColumn::make('expected_revenue')
                 ->label(__('crm::filament/widgets/crm-dashboard.top-opportunities.columns.expected-revenue'))
-                ->money($this->currencyCode()),
+                ->money($this->currencyCode())
+                ->weight(FontWeight::Bold)
+                ->alignEnd(),
         ];
     }
 }

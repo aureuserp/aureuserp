@@ -87,7 +87,7 @@ class LeadMerger
 
             $this->moveChatter($head, $others);
 
-            ActivityLog::query()->whereIn('lead_id', $others->modelKeys())->update(['lead_id' => $head->getKey()]);
+            ActivityLog::query()->whereIn('lead_id', $others->map->getKey()->all())->update(['lead_id' => $head->getKey()]);
 
             LeadMerge::query()->create([
                 'lead_id'        => $head->getKey(),
@@ -193,7 +193,7 @@ class LeadMerger
     {
         $morphType = $head->getMorphClass();
 
-        $otherIds = $others->modelKeys();
+        $otherIds = $others->map->getKey()->all();
 
         foreach (['chatter_messages', 'chatter_attachments'] as $table) {
             DB::table($table)

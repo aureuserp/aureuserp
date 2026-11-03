@@ -7,8 +7,6 @@ return [
         'new-opportunities' => 'Novas oportunidades',
         'won-revenue'       => 'Receita ganha',
         'win-rate'          => 'Taxa de sucesso',
-        'increase'          => 'aumento',
-        'decrease'          => 'queda',
     ],
 
     'won-revenue' => [
@@ -26,6 +24,7 @@ return [
         'heading' => 'Leads por origem',
         'count'   => 'Leads',
         'none'    => 'Sem origem',
+        'other'   => 'Outros',
     ],
 
     'salespeople' => [
@@ -38,7 +37,6 @@ return [
 
         'columns' => [
             'opportunity'      => 'Oportunidade',
-            'customer'         => 'Cliente',
             'stage'            => 'Etapa',
             'salesperson'      => 'Vendedor',
             'probability'      => 'Probabilidade',

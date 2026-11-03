@@ -115,7 +115,7 @@ it('takes resource labels from the crm translations with a real plural', functio
     'leads'           => [LeadResource::class, 'crm::filament/clusters/leads/resources/lead', 'العملاء المحتملون'],
     'pipeline'        => [OpportunityResource::class, 'crm::filament/clusters/sales/resources/opportunity', 'الفرص'],
     'activities'      => [ActivityResource::class, 'crm::filament/clusters/sales/resources/activity', 'الأنشطة'],
-    'contacts'        => [CustomerResource::class, 'crm::filament/clusters/sales/resources/customer', 'جهات الاتصال'],
+    'customers'       => [CustomerResource::class, 'crm::filament/clusters/sales/resources/customer', 'العملاء'],
     'sales overview'  => [SalesTeamResource::class, 'crm::filament/clusters/sales/resources/team', 'فرق المبيعات'],
 ]);
 

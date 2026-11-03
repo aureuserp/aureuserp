@@ -31,7 +31,7 @@ beforeEach(function () {
     $settings->save();
 });
 
-function inboundAliasTeam(string $contact = MailAliasContact::EVERYONE, ?string $domain = 'example.com'): Team
+function inboundAliasTeam(MailAliasContact $contact = MailAliasContact::EVERYONE, ?string $domain = 'example.com'): Team
 {
     $team = Team::factory()->create(['company_id' => CRMHelper::companyId(), 'is_active' => true]);
 
@@ -299,8 +299,8 @@ describe('fetching', function () {
 
         $counts = $fetcher->fetch($server);
 
-        expect($counts[InboundEmailStatus::LEAD_CREATED])->toBe(1)
-            ->and($counts[InboundEmailStatus::IGNORED])->toBe(1)
+        expect($counts[InboundEmailStatus::LEAD_CREATED->value])->toBe(1)
+            ->and($counts[InboundEmailStatus::IGNORED->value])->toBe(1)
             ->and($server->fresh()->last_fetched_at)->not->toBeNull()
             ->and($server->fresh()->last_error)->toBeNull();
     });

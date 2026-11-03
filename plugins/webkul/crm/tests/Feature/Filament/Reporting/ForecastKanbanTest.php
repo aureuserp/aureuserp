@@ -8,7 +8,6 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource\Pages\List
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Models\Lead;
-use Webkul\Crm\Models\Stage;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
 use Wezlo\FilamentKanban\KanbanColumn;
@@ -84,7 +83,7 @@ it('shows the months with opportunities plus the current and next three months',
 
     $values = collect(forecastColumns(Livewire::test(ListForecast::class)))->pluck('value')->all();
 
-    expect($values)->toBe([...forecastMonths(0, 3), forecastMonth(6)]);
+    expect($values)->toBe(['none', ...forecastMonths(0, 3), forecastMonth(6)]);
 });
 
 it('labels the columns by month and highlights the current month', function () {
@@ -92,10 +91,10 @@ it('labels the columns by month and highlights the current month', function () {
 
     $columns = forecastColumns(Livewire::test(ListForecast::class));
 
-    expect($columns[0]->value)->toBe(forecastMonth(0))
-        ->and($columns[0]->label)->toBe(Dimension::monthLabel(forecastMonth(0)))
-        ->and($columns[0]->color)->toBe('primary')
-        ->and($columns[1]->color)->toBe('gray');
+    expect($columns[1]->value)->toBe(forecastMonth(0))
+        ->and($columns[1]->label)->toBe(Dimension::monthLabel(forecastMonth(0)))
+        ->and($columns[1]->color)->toBe('primary')
+        ->and($columns[2]->color)->toBe('gray');
 });
 
 it('shows the pipeline tabs and filters the months by the chosen tab', function () {
@@ -336,23 +335,20 @@ it('switches the forecast between kanban, graph and list without leaving the pag
     $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
 });
 
-it('applies the list toggle filters (won, lost) on the board', function () {
+it('shows the won and lost opportunities on their tabs of the board', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
     $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id, 'expected_closing_date' => now()->addMonth()->toDateString()]);
     $lost = CRMHelper::opportunity(['expected_closing_date' => now()->addMonth()->toDateString()]);
     $lost->markAsLost(null);
 
-    $ids = fn (array $presets): array => collect(forecastColumns(Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListForecast::class)
-        ->set('kanbanFilters.user_id', null)
-        ->set('kanbanFilters.period', 'all')
-        ->set('kanbanFilters.presets', $presets)))
+    $ids = fn (string $view): array => collect(forecastColumns(Livewire::test(ListForecast::class)->call('loadView', $view)))
         ->flatMap(fn (KanbanColumn $column): array => $column->records->modelKeys())
         ->all();
 
-    expect($ids([]))->toContain($won->id)->not->toContain($lost->id)
-        ->and($ids(['lost']))->toContain($lost->id)->not->toContain($won->id)
-        ->and($ids(['won']))->toContain($won->id)->not->toContain($lost->id);
+    expect($ids('default'))->toContain($won->id)->not->toContain($lost->id)
+        ->and($ids('lost'))->toContain($lost->id)->not->toContain($won->id)
+        ->and($ids('won'))->toContain($won->id)->not->toContain($lost->id);
 });
 
 it('shows the activity progress of each month and filters a month from it', function () {
@@ -383,15 +379,16 @@ it('shows the activity progress of each month and filters a month from it', func
         ->not->toContain($quiet->id);
 });
 
-it('marks won and lost opportunities with a ribbon', function () {
+it('marks won opportunities with a green status badge', function () {
     CRMHelper::actingAs(['view_any_crm_forecast']);
 
     $won = CRMHelper::opportunity([
         'expected_closing_date' => today()->addMonth()->toDateString(),
-        'stage_id'              => Stage::query()->where('is_won', true)->value('id'),
+        'stage_id'              => CRMHelper::wonStage()->id,
     ]);
 
-    Livewire::test(ListForecast::class)
-        ->assertSee($won->name)
-        ->assertSeeHtml('bg-success-600');
+    $label = e(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.won'));
+
+    expect(Livewire::test(ListForecast::class)->assertSee($won->name)->html())
+        ->toMatch('/class="[^"]*fi-badge[^"]*fi-color-success[^"]*"[^>]*>\\s*<span class="fi-badge-label-ctn">\\s*<span class="fi-badge-label">\\s*'.preg_quote($label, '/').'\\s*</');
 });

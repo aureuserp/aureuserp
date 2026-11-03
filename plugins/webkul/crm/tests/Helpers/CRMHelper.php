@@ -1,16 +1,20 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Webkul\Crm\Database\Seeders\DatabaseSeeder;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
+use Webkul\Crm\Services\LeadScoring;
 use Webkul\Crm\Settings\SMSSettings;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\TableViews\Filament\Components\PresetView;
 
 require_once __DIR__.'/../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../support/tests/Helpers/FilamentHelper.php';
@@ -31,9 +35,13 @@ class CRMHelper
         'restore', 'restore_any', 'force_delete', 'force_delete_any', 'reorder',
     ];
 
+    protected static bool $isSeeded = false;
+
     public static function bootstrap(): void
     {
         TestBootstrapHelper::ensurePluginInstalled('crm');
+
+        static::ensureSeeded();
 
         foreach (['contacts', 'sales', 'crm'] as $plugin) {
             DB::table('plugins')->updateOrInsert(
@@ -44,7 +52,42 @@ class CRMHelper
 
         Package::$plugins = Plugin::all()->keyBy('name');
 
+        Closure::bind(fn () => PresetView::$cachedFavoriteTableViews = null, null, PresetView::class)();
+
+        Closure::bind(fn () => LeadScoring::$refreshScheduled = false, null, LeadScoring::class)();
+
         URL::resolveMissingNamedRoutesUsing(fn () => '#');
+    }
+
+    protected static function ensureSeeded(): void
+    {
+        if (static::$isSeeded) {
+            return;
+        }
+
+        $default = config('database.default');
+
+        config(['database.connections.crm_seed' => config("database.connections.{$default}")]);
+
+        DB::purge('crm_seed');
+
+        config(['database.default' => 'crm_seed']);
+
+        try {
+            if (! DB::table('crm_stages')->exists()) {
+                Artisan::call('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true]);
+            }
+        } finally {
+            config(['database.default' => $default]);
+        }
+
+        if (DB::transactionLevel() > 0) {
+            DB::rollBack();
+
+            DB::beginTransaction();
+        }
+
+        static::$isSeeded = true;
     }
 
     /**

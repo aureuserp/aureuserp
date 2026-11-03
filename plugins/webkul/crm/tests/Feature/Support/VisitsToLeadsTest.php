@@ -254,7 +254,7 @@ it('shows a rule on its view page with view, edit and generated leads tabs', fun
         ->mapWithKeys(fn ($tab): array => [$tab->getLabel() => $tab->getBadge()]);
 
     expect($tabs->keys()->all())->toHaveCount(3)
-        ->and($tabs->get(ManageRevealRuleLeads::getNavigationLabel()))->toBe(1);
+        ->and($tabs->get(ManageRevealRuleLeads::getNavigationLabel()))->toBe('1');
 });
 
 it('lists only the leads a rule generated on its generated leads tab', function () {

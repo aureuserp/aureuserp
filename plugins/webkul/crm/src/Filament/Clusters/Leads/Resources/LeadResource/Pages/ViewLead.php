@@ -23,6 +23,11 @@ class ViewLead extends ViewRecord
 
     protected static string $resource = LeadResource::class;
 
+    public static function authorizeResourceAccess(): void
+    {
+        abort_unless(LeadResource::canViewRecords(), 403);
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -19,13 +19,13 @@ it('soft-deletes and restores the selected leads with the core bulk actions', fu
         ->assertTableBulkActionDoesNotExist('duplicateLeads')
         ->callTableBulkAction('delete', $leads);
 
-    expect(Lead::onlyTrashed()->whereKey($leads->modelKeys())->count())->toBe(2);
+    expect(Lead::onlyTrashed()->whereKey($leads->pluck('id'))->count())->toBe(2);
 
     Livewire::test(ListLeads::class)
         ->call('loadView', 'lost')
-        ->callTableBulkAction('restore', Lead::onlyTrashed()->whereKey($leads->modelKeys())->get());
+        ->callTableBulkAction('restore', Lead::onlyTrashed()->whereKey($leads->pluck('id'))->get());
 
-    expect(Lead::query()->whereKey($leads->modelKeys())->count())->toBe(2);
+    expect(Lead::query()->whereKey($leads->pluck('id'))->count())->toBe(2);
 });
 
 it('marks the selected leads as lost with a reason', function () {
@@ -56,7 +56,7 @@ it('emails the selected leads that have an email address and logs it on each lea
 
     Mail::assertSent(LeadMessageMail::class, fn (LeadMessageMail $mail): bool => $mail->hasTo('bulk-mail@acme.test')
         && str_contains($mail->mailSubject, '[Lead #'.$withEmail->id.']'));
-    Mail::assertSentCount(1);
+    Mail::assertSent(LeadMessageMail::class, 1);
 
     expect($withEmail->messages()->where('type', 'comment')->where('subject', 'like', 'Hello%')->exists())->toBeTrue();
 });

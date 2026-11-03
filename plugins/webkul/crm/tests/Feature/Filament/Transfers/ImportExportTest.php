@@ -222,9 +222,9 @@ it('fails a row whose id is unknown, another type or another company', function 
 
     expect(Lead::withoutGlobalScopes()->where('name', 'Hijacked')->exists())->toBeFalse();
 })->with([
-    'unknown id'      => fn () => fn (): int => 99999999,
-    'a lead id'       => fn () => fn (): int => CRMHelper::lead()->id,
-    'another company' => fn () => fn (): int => Lead::withoutGlobalScopes()->forceCreate([
+    'unknown id'      => fn (): int => 99999999,
+    'a lead id'       => fn (): int => CRMHelper::lead()->id,
+    'another company' => fn (): int => Lead::withoutGlobalScopes()->forceCreate([
         'type'       => LeadType::OPPORTUNITY,
         'name'       => 'Other company opportunity',
         'company_id' => transferOtherCompany()->id,

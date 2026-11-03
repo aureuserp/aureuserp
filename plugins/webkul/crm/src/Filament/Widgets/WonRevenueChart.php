@@ -3,22 +3,17 @@
 namespace Webkul\Crm\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Crm\Filament\Widgets\Concerns\HasCRMDashboardFilters;
-use Webkul\Crm\Filament\Widgets\Concerns\StylesCRMDashboardCharts;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class WonRevenueChart extends ChartWidget
+class WonRevenueChart extends DashboardChartWidget
 {
-    use HasCRMDashboardFilters, HasWidgetShield, StylesCRMDashboardCharts;
+    use HasCRMDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 2;
 
-    protected static bool $isLazy = false;
-
-    protected int|string|array $columnSpan = 'full';
-
-    protected ?string $maxHeight = '300px';
+    protected int|string|array $columnSpan = 1;
 
     public function getHeading(): string|Htmlable|null
     {
@@ -45,18 +40,24 @@ class WonRevenueChart extends ChartWidget
         }
 
         return [
-            'datasets' => [$this->barDataset(__('crm::filament/widgets/crm-dashboard.won-revenue.revenue'), $data)],
-            'labels'   => $labels,
+            'datasets' => [
+                $this->gradientLineDataset($data, __('crm::filament/widgets/crm-dashboard.won-revenue.revenue')),
+            ],
+            'labels' => $labels,
         ];
     }
 
     protected function getOptions(): array
     {
-        return $this->barOptions();
+        $options = $this->lineChartOptions(12);
+
+        $options['plugins']['lineGradient'] = $this->revenueLineGradient();
+
+        return $options;
     }
 
     protected function getType(): string
     {
-        return 'bar';
+        return 'line';
     }
 }

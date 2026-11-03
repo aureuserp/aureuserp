@@ -39,6 +39,8 @@ function crmContact(array $attributes = []): Partner
         'sub_type'      => 'partner',
         'company_id'    => CRMHelper::companyId(),
         'customer_rank' => 1,
+        'phone'         => '+1 555 010 0000',
+        'mobile'        => null,
         ...$attributes,
     ]);
 

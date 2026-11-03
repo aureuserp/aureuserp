@@ -162,13 +162,10 @@ it('shows the opportunity as a record tab that opens on the quotation like the d
     $opportunity = CRMHelper::opportunity();
     $quotation = boardQuotation(['opportunity_id' => $opportunity->id]);
 
-    $component = Livewire::test(ViewQuotation::class, ['record' => $quotation->id])
-        ->assertActionDoesNotExist('openOpportunity');
-
-    $tab = collect($component->instance()->getRecordNavigationTabs())
-        ->first(fn ($item): bool => $item->getLabel() === __('crm::filament/clusters/sales/resources/quotation.tabs.opportunity'));
-
-    expect($tab?->getUrl())->toBe(QuotationResource::getUrl('opportunity', ['record' => $quotation]));
+    Livewire::test(ViewQuotation::class, ['record' => $quotation->id])
+        ->assertActionDoesNotExist('openOpportunity')
+        ->assertSee(__('crm::filament/clusters/sales/resources/quotation.tabs.opportunity'))
+        ->assertSeeHtml(e(QuotationResource::getUrl('opportunity', ['record' => $quotation])));
 });
 
 it('lists the quotation\'s opportunity on the opportunity tab and links it to the opportunity page', function () {
@@ -197,10 +194,9 @@ it('hides the opportunity tab when the quotation has no opportunity', function (
 
     $quotation = boardQuotation();
 
-    $labels = collect(Livewire::test(ViewQuotation::class, ['record' => $quotation->id])->instance()->getRecordNavigationTabs())
-        ->map(fn ($item): string => $item->getLabel());
-
-    expect($labels)->not->toContain(__('crm::filament/clusters/sales/resources/quotation.tabs.opportunity'));
+    Livewire::test(ViewQuotation::class, ['record' => $quotation->id])
+        ->assertOk()
+        ->assertDontSeeHtml(e(QuotationResource::getUrl('opportunity', ['record' => $quotation])));
 });
 
 it('limits the quotations to one sales team from the team card links', function () {

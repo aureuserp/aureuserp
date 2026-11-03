@@ -3,10 +3,18 @@
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Pages\CRMDashboard;
+use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Filament\Widgets\CRMStatsOverview;
+use Webkul\Crm\Filament\Widgets\LeadsBySourceChart;
+use Webkul\Crm\Filament\Widgets\PipelineByStageChart;
+use Webkul\Crm\Filament\Widgets\SalespersonWonRevenueChart;
 use Webkul\Crm\Filament\Widgets\TopOpportunitiesTable;
+use Webkul\Crm\Filament\Widgets\WonRevenueChart;
+use Webkul\Crm\Models\Lead;
 use Webkul\Sale\Models\Team;
 use Webkul\Support\Enums\NavigationGroup;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 
 require_once __DIR__.'/../../../Helpers/CRMHelper.php';
 
@@ -49,6 +57,8 @@ it('counts new leads, new opportunities, won revenue and win rate for the period
 
     CRMHelper::lead();
     CRMHelper::opportunity();
+    CRMHelper::wonStage();
+
     $won = CRMHelper::opportunity(['expected_revenue' => 1500]);
     $won->markAsWon();
     $lost = CRMHelper::opportunity();
@@ -58,7 +68,7 @@ it('counts new leads, new opportunities, won revenue and win rate for the period
 
     expect($stats[0])->toBe('1')
         ->and($stats[1])->toBe('3')
-        ->and($stats[2])->toContain('1,500')
+        ->and($stats[2])->toBe(compact_money(1500, Report::getCurrencyCode()))
         ->and($stats[3])->toBe('50.0%');
 });
 
@@ -84,3 +94,44 @@ it('lists the open opportunities with the highest expected revenue', function ()
         ->assertCanSeeTableRecords([$big])
         ->assertCanNotSeeTableRecords([$lost]);
 });
+
+it('builds the dashboard on the shared dashboard widgets', function () {
+    expect(new CRMStatsOverview)->toBeInstanceOf(DashboardStatsWidget::class)
+        ->and(collect([WonRevenueChart::class, LeadsBySourceChart::class, PipelineByStageChart::class, SalespersonWonRevenueChart::class])
+            ->every(fn (string $chart): bool => is_subclass_of($chart, DashboardChartWidget::class)))->toBeTrue();
+});
+
+it('shows only the five largest open opportunities', function () {
+    CRMHelper::actingAs([...crmDashboardPermissions(), 'view_crm_opportunity']);
+
+    $opportunities = collect(range(1, 6))->map(fn (int $index): Lead => CRMHelper::opportunity(['expected_revenue' => $index * 1000]));
+
+    Livewire::test(TopOpportunitiesTable::class)
+        ->assertCanSeeTableRecords($opportunities->sortByDesc('expected_revenue')->take(5)->values())
+        ->assertCanNotSeeTableRecords([$opportunities->first()]);
+});
+
+it('renders every dashboard chart with the shared chart theme', function (string $chart, string $type) {
+    CRMHelper::actingAs([
+        ...crmDashboardPermissions(),
+        'widget_crm_won_revenue_chart',
+        'widget_crm_pipeline_by_stage_chart',
+        'widget_crm_leads_by_source_chart',
+        'widget_crm_salesperson_won_revenue_chart',
+    ]);
+
+    CRMHelper::wonStage();
+    CRMHelper::lead();
+    CRMHelper::opportunity(['expected_revenue' => 2500]);
+    CRMHelper::opportunity(['expected_revenue' => 4000])->markAsWon();
+
+    $component = Livewire::test($chart)->assertOk();
+
+    expect((fn (): string => $this->getType())->call($component->instance()))->toBe($type)
+        ->and((fn (): array => $this->getData())->call($component->instance())['datasets'])->not->toBeEmpty();
+})->with([
+    'won revenue'  => [WonRevenueChart::class, 'line'],
+    'sources'      => [LeadsBySourceChart::class, 'doughnut'],
+    'pipeline'     => [PipelineByStageChart::class, 'bar'],
+    'salespeople'  => [SalespersonWonRevenueChart::class, 'bar'],
+]);

@@ -41,16 +41,20 @@ function runCRMSetLocale(?User $user, array $query = []): string
     return App::getLocale();
 }
 
-it('uses the signed-in user\'s saved language over a stale session language', function () {
+it('uses the session language over the signed-in user\'s saved language, and the saved one without a session language', function () {
     $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'ar'])->saveQuietly();
 
     Session::put('locale', 'es');
 
+    expect(runCRMSetLocale($user))->toBe('es');
+
+    Session::forget('locale');
+
     expect(runCRMSetLocale($user))->toBe('ar');
 });
 
-it('switches the language with the lang query parameter and remembers it', function () {
+it('switches the language with the lang query parameter and remembers it in the session', function () {
     $user = CRMHelper::actingAs();
     $user->forceFill(['language' => 'ar'])->saveQuietly();
 
@@ -58,7 +62,7 @@ it('switches the language with the lang query parameter and remembers it', funct
 
     expect(runCRMSetLocale($user, ['lang' => 'fr']))->toBe('fr')
         ->and(Session::get('locale'))->toBe('fr')
-        ->and($user->fresh()->language)->toBe('fr');
+        ->and($user->fresh()->language)->toBe('ar');
 });
 
 it('keeps the switched language on the next request', function () {

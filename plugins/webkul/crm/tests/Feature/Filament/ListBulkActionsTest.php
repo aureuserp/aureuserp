@@ -90,7 +90,7 @@ it('soft-deletes, restores and permanently deletes lost reasons', function () {
 
     expect(LostReason::withTrashed()->find($archived->id)->trashed())->toBeTrue();
 
-    Livewire::test(ManageLostReasons::class)->callTableBulkAction('restore', [LostReason::withTrashed()->find($archived->id)]);
+    Livewire::test(ManageLostReasons::class)->set('activeTab', 'archived')->callTableBulkAction('restore', [LostReason::withTrashed()->find($archived->id)]);
     Livewire::test(ManageLostReasons::class)->callTableBulkAction('forceDelete', [$deleted]);
 
     expect(LostReason::query()->find($archived->id))->not->toBeNull()
@@ -115,7 +115,7 @@ it('emails and texts the selected contacts and logs it on each contact', functio
         ->callTableBulkAction('sendCustomersSMS', [$contact, $withoutDetails], ['message' => 'Hi there']);
 
     Mail::assertSent(LeadMessageMail::class, fn (LeadMessageMail $mail): bool => $mail->hasTo('bulk-contact@acme.test'));
-    Mail::assertSentCount(1);
+    Mail::assertSent(LeadMessageMail::class, 1);
     Http::assertSentCount(1);
     Http::assertSent(fn (Request $request): bool => $request['mobiles'] === '919876543210');
 
@@ -141,5 +141,5 @@ it('marks the selected activities as done', function () {
         ->assertTableBulkActionExists('delete')
         ->callTableBulkAction('markActivitiesAsDone', $activities, ['feedback' => 'All done']);
 
-    expect(Activity::query()->whereKey($activities->modelKeys())->count())->toBe(0);
+    expect(Activity::query()->whereKey($activities->pluck('id'))->count())->toBe(0);
 });

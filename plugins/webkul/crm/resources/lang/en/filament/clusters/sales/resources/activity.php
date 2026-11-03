@@ -93,7 +93,7 @@ return [
         ],
 
         'snooze' => [
-            'label'        => 'Snooze :daysd',
+            'label'        => 'Snooze :days d',
             'notification' => 'Activity snoozed until :date.',
         ],
 

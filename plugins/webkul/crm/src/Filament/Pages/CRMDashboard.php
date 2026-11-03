@@ -6,6 +6,7 @@ use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
@@ -80,8 +81,19 @@ class CRMDashboard extends BaseDashboard
                     ->columns([
                         'default' => 1,
                         'sm'      => 2,
-                        'xl'      => 3,
+                        'md'      => 3,
+                        'xl'      => 4,
                     ]),
+            ]);
+    }
+
+    public function getWidgetsContentComponent(): Component
+    {
+        return parent::getWidgetsContentComponent()
+            ->extraAttributes([
+                'data-dashboard-widgets' => 'true',
+                'wire:loading.class'     => 'dashboard-widgets--loading',
+                'wire:target'            => 'filters',
             ]);
     }
 

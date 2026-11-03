@@ -3,7 +3,12 @@
 use Webkul\Crm\Filament\Clusters\Configurations;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\ActivityTypeResource;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\InboundEmailResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\LostReasonResource;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\MailServerResource;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\PartnerLevelResource;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\RevealRuleResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\StageResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
@@ -18,6 +23,9 @@ use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\ActivityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\PaymentResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationDeliveryResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationInvoiceResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource as SalesTeamResource;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
@@ -42,6 +50,11 @@ return [
             LostReasonResource::class        => [...$basic, ...$delete, ...$restore, ...$forceDelete],
             ActivityTypeResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             ActivityPlanResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete],
+            RecurringPlanResource::class     => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            PartnerLevelResource::class      => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
+            RevealRuleResource::class        => [...$basic, ...$delete, ...$reorder],
+            MailServerResource::class        => [...$basic, ...$delete],
+            InboundEmailResource::class      => ['view_any', 'view', ...$delete],
             TeamResource::class              => [...$basic, ...$delete, ...$restore, ...$forceDelete, ...$reorder],
             ForecastResource::class          => ['view_any'],
             PipelineAnalysisResource::class  => ['view_any'],
@@ -50,6 +63,9 @@ return [
         ],
         'exclude' => [
             SalesTeamResource::class,
+            PaymentResource::class,
+            QuotationDeliveryResource::class,
+            QuotationInvoiceResource::class,
         ],
     ],
 

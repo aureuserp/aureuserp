@@ -121,7 +121,8 @@ it('allows viewing a quotation that the order scopes return', function () {
 it('refuses to view a quotation that the order scopes hide', function () {
     $user = CRMHelper::actingAs(['view_crm_quotation']);
 
-    $foreign = crmQuotation(['company_id' => Company::factory()->create()->id]);
+    $foreign = crmQuotation();
+    $foreign->forceFill(['company_id' => Company::factory()->create()->id])->saveQuietly();
 
     $quotation = Quotation::query()->withoutGlobalScopes()->findOrFail($foreign->id);
 

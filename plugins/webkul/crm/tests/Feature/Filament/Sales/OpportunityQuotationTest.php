@@ -34,7 +34,7 @@ it('offers "New Quotation" after chatter on the opportunity page header and on t
 
     $view = Livewire::test(ViewOpportunity::class, ['record' => $opportunity->getRouteKey()])->assertActionVisible('newQuotation');
 
-    expect(array_slice(array_keys($view->instance()->getCachedHeaderActions()), 0, 2))->toBe(['chatter.action', 'newQuotation']);
+    expect(collect($view->instance()->getCachedHeaderActions())->take(2)->map->getName()->all())->toBe(['chatter.action', 'newQuotation']);
 
     Livewire::test(EditOpportunity::class, ['record' => $opportunity->getRouteKey()])->assertActionVisible('newQuotation');
     Livewire::test(ManageQuotations::class, ['record' => $opportunity->getRouteKey()])->assertActionVisible('newQuotation');
