@@ -65,6 +65,12 @@ return [
             'parent'     => 'Parent',
             'work-email' => 'E-mail professionnel',
             'work-phone' => 'Téléphone professionnel',
+            'tags'       => 'Étiquettes',
+
+            'status' => [
+                'active'   => 'Actif',
+                'archived' => 'Archivé',
+            ],
         ],
 
         'groups' => [
