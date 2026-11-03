@@ -243,9 +243,9 @@ class PartnersTable
                 '2xl' => 3,
             ])
             ->paginated([
-                16,
-                32,
-                64,
+                18,
+                36,
+                72,
                 'all',
             ]);
     }
