@@ -36,7 +36,6 @@ class Biller
     public function createBillLine($accountMove, $orderLine): void
     {
         $accountMoveLine = $accountMove->lines()->create([
-            'state'                  => $accountMove->state,
             'name'                   => $orderLine->name,
             'date'                   => $accountMove->date,
             'parent_state'           => $accountMove->state,

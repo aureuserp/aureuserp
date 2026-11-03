@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
@@ -45,6 +46,21 @@ class ActivityPlan extends Model
     public function activityTypes(): HasMany
     {
         return $this->hasMany(ActivityType::class, 'activity_plan_id');
+    }
+
+    public static function withTemplates(Collection $options): Collection
+    {
+        if ($options->isEmpty()) {
+            return $options;
+        }
+
+        $ids = static::query()
+            ->whereKey($options->keys()->all())
+            ->whereHas('activityPlanTemplates')
+            ->pluck('id')
+            ->all();
+
+        return $options->only($ids);
     }
 
     public function activityPlanTemplates(): HasMany

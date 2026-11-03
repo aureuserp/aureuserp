@@ -15,6 +15,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,11 @@ class ActivityAction extends Action
     }
 
     public function getActivityPlans(): Collection
+    {
+        return ActivityPlan::withTemplates($this->resolveActivityPlans());
+    }
+
+    protected function resolveActivityPlans(): Collection
     {
         if ($this->activityPlans instanceof Collection) {
             return $this->activityPlans;
@@ -130,7 +136,6 @@ class ActivityAction extends Action
                                     DatePicker::make('date_deadline')
                                         ->label(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.due-date'))
                                         ->native(false)
-                                        ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))->category == 'meeting' : false)
                                         ->visible(fn (Get $get) => ! $get('activity_plan_id')),
                                     TextInput::make('summary')
                                         ->label(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.summary'))
@@ -138,7 +143,6 @@ class ActivityAction extends Action
                                     Select::make('assigned_to')
                                         ->label(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.assigned-to'))
                                         ->searchable()
-                                        ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))->category == 'meeting' : false)
                                         ->live()
                                         ->visible(fn (Get $get) => ! $get('activity_plan_id'))
                                         ->options(User::all()->pluck('name', 'id')->toArray())
@@ -147,7 +151,6 @@ class ActivityAction extends Action
                             RichEditor::make('body')
                                 ->hiddenLabel()
                                 ->mentions([ChatterMentions::provider()])
-                                ->hidden(fn (Get $get) => $get('activity_type_id') ? ActivityType::find($get('activity_type_id'))->category == 'meeting' : false)
                                 ->visible(fn (Get $get) => ! $get('activity_plan_id'))
                                 ->placeholder(__('chatter::filament/resources/actions/chatter/activity-action.setup.form.fields.log-note'))
                                 ->visible(fn (Get $get) => ! $get('activity_plan_id')),
@@ -162,37 +165,15 @@ class ActivityAction extends Action
 
                     $data['assigned_to'] = $data['assigned_to'] ?? $user->id;
 
-                    if (isset($data['activity_plan_id'])) {
-                        $activityPlan = ActivityPlan::find($data['activity_plan_id']);
+                    $activityPlanId = $data['activity_plan_id'] ?? null;
 
-                        $body = "The plan \"{$activityPlan->name}\" has been started";
+                    $data = Arr::except($data, ['activity_plan_id']);
 
-                        foreach ($activityPlan->activityPlanTemplates as $activityPlanTemplate) {
-                            $data = [
-                                ...$data,
-                                ...$activityPlanTemplate->toArray(),
-                                'body'        => $activityPlanTemplate['note'] ?? null,
-                                'causer_type' => $user?->getMorphClass(),
-                                'causer_id'   => $user->id,
-                            ];
-
-                            $body .= '<div class="space-y-2" style="margin-left: 20px;">
-                                <div class="flex items-center space-x-2">
-                                    <span>•</span>
-                                    <span style="margin-left:2px;">'.
-                                $activityPlanTemplate->summary.
-                                ' ('.(isset($data['date_deadline']) ? $data['date_deadline'] : now()->format('m/d/Y')).')'.
-                                '</span>
-                                </div>
-                            </div>';
-
-                            $record->addMessage($data, $user->id);
-                        }
-
-                        $data['type'] = 'comment';
-                        $data['body'] = $body;
-
-                        $record->addMessage($data, $user->id);
+                    if ($activityPlanId) {
+                        $record->scheduleActivityPlan(ActivityPlan::find($activityPlanId), [
+                            'date_deadline' => $data['date_deadline'] ?? null,
+                            'assigned_to'   => $data['assigned_to'],
+                        ]);
                     } else {
                         $data['causer_type'] = $user?->getMorphClass();
                         $data['causer_id'] = $user->id;

@@ -377,10 +377,6 @@ class Operation extends Model
         foreach ($this->moves as $move) {
             $move->update(['name' => $this->name]);
         }
-
-        foreach ($this->moveLines as $moveLine) {
-            $moveLine->update(['name' => $this->name]);
-        }
     }
 
     public function computeDeadline(): void

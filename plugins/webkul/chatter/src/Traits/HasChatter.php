@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -22,7 +23,11 @@ use Webkul\Chatter\Models\Message;
 use Webkul\Chatter\Relations\ChatterBelongsToMany;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
+use Webkul\Support\Enums\ActivityDelayInterval;
+use Webkul\Support\Enums\ActivityDelayUnit;
+use Webkul\Support\Enums\ActivityResponsibleType;
 use Webkul\Support\Models\ActivityPlan;
+use Webkul\Support\Models\ActivityPlanTemplate;
 
 trait HasChatter
 {
@@ -425,7 +430,7 @@ trait HasChatter
             'causer_type'   => $user?->getMorphClass(),
             'causer_id'     => $user?->id,
             'company_id'    => $data['company_id'] ?? (current_company()?->id ?? null),
-        ], $data));
+        ], Arr::except($data, ['attachments'])));
 
         $this->messages()->save($message);
 
@@ -441,6 +446,69 @@ trait HasChatter
         return $this->addMessage(array_merge($data, [
             'type' => 'activity',
         ]));
+    }
+
+    public function scheduleActivityPlan(ActivityPlan $plan, array $data = []): Collection
+    {
+        $user = Filament::auth()->user() ?? Auth::user();
+
+        $planDate = Carbon::parse($data['date_deadline'] ?? now())->startOfDay();
+
+        $assignedTo = $data['assigned_to'] ?? $user?->id;
+
+        $activities = new Collection;
+
+        $templates = $plan->activityPlanTemplates()->orderBy('sort')->get();
+
+        if ($templates->isEmpty()) {
+            return $activities;
+        }
+
+        foreach ($templates as $template) {
+            $activities->push($this->addActivity([
+                'activity_type_id' => $template->activity_type_id,
+                'summary'          => $template->summary,
+                'body'             => $template->note,
+                'date_deadline'    => $this->activityPlanTemplateDeadline($template, $planDate)->toDateString(),
+                'assigned_to'      => $template->responsible_type === ActivityResponsibleType::OTHER->value && $template->responsible_id
+                    ? $template->responsible_id
+                    : $assignedTo,
+            ]));
+        }
+
+        $items = $activities
+            ->map(fn (Message $activity): string => '<li>'.e($activity->summary).' ('.e(Carbon::parse($activity->date_deadline)->locale(app()->getLocale())->isoFormat('ll')).')</li>')
+            ->implode('');
+
+        $this->addMessage([
+            'type' => 'comment',
+            'body' => e(__('chatter::traits/has-chatter.activity-plan.started', ['plan' => $plan->name])).'<ul class="ms-5 list-disc space-y-1">'.$items.'</ul>',
+        ]);
+
+        return $activities;
+    }
+
+    protected function activityPlanTemplateDeadline(ActivityPlanTemplate $template, Carbon $planDate): Carbon
+    {
+        $count = (int) $template->delay_count;
+
+        if ($count === 0) {
+            return $planDate->copy();
+        }
+
+        $unit = $template->delay_unit instanceof ActivityDelayUnit
+            ? $template->delay_unit
+            : (ActivityDelayUnit::tryFrom((string) $template->delay_unit) ?? ActivityDelayUnit::DAYS);
+
+        $from = $template->delay_from instanceof ActivityDelayInterval
+            ? $template->delay_from
+            : ActivityDelayInterval::tryFrom((string) $template->delay_from);
+
+        $deadline = $planDate->copy();
+
+        return $from === ActivityDelayInterval::BEFORE_PLAN_DATE
+            ? $deadline->sub($unit->value, $count)
+            : $deadline->add($unit->value, $count);
     }
 
     protected function resolveChatterMessageOwner(): Model
@@ -530,7 +598,6 @@ trait HasChatter
     public function replyToMessage(Message $parentMessage, array $data): Message
     {
         return $this->addMessage(array_merge($data, [
-            'parent_id'        => $parentMessage->id,
             'company_id'       => $parentMessage->company_id,
             'activity_type_id' => $parentMessage->activity_type_id,
         ]));

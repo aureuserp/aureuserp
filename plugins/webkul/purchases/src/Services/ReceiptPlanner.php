@@ -125,12 +125,6 @@ class ReceiptPlanner
 
         $moves = InventoryFacade::confirmMoves($moves);
 
-        $sort = 0;
-
-        foreach ($moves->sortBy('date') as $move) {
-            $move->update(['sort' => $sort += 5]);
-        }
-
         $operation->refresh();
 
         InventoryFacade::reserveMoves($operation->moves);
@@ -165,7 +159,19 @@ class ReceiptPlanner
             $line->moveDestinations->each(fn ($move) => $move->purchaseOrderLines()->detach());
         }
 
-        return collect(array_map(fn ($values) => Move::create($values), $attributes));
+        return collect($attributes)->map(function (array $values): Move {
+            $destinationIds = $values['move_destination_ids'] ?? [];
+
+            unset($values['move_destination_ids']);
+
+            $move = Move::create($values);
+
+            if ($destinationIds) {
+                $move->moveDestinations()->syncWithoutDetaching($destinationIds);
+            }
+
+            return $move;
+        });
     }
 
     public function buildOperationAttributes(Order $order): array
@@ -230,7 +236,7 @@ class ReceiptPlanner
 
             $attributes[] = array_merge(
                 $this->buildMoveAttributes($line, $operation, $priceUnit, $productUomQty, $productUom),
-                ['move_destination_ids' => null]
+                ['move_destination_ids' => []]
             );
         }
 
@@ -270,12 +276,10 @@ class ReceiptPlanner
             'procurement_group_id'    => $line->order->procurement_group_id,
             'origin'                  => $line->order->name,
             'description_picking'     => $line->product->description_pickingin ?? $line->name,
-            'propagate_cancel'        => $line->propagate_cancel,
             'warehouse_id'            => $line->order->operationType->warehouse_id,
             'product_uom_qty'         => $productUomQty,
-            'product_uom'             => $productUom->id,
+            'uom_id'                  => $productUom->id,
             'product_packaging_id'    => $line->product_packaging_id,
-            'sort'                    => $line->sort,
         ];
     }
 

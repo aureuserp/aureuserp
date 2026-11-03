@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Models\Move;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\CreateJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\EditJournalEntry;
 use Webkul\PluginManager\Models\Plugin;
@@ -28,6 +30,8 @@ beforeEach(function () {
     $this->debitAccount = AccountHelper::account('expense');
     $this->creditAccount = AccountHelper::account('income');
 });
+
+afterEach(fn () => Model::preventSilentlyDiscardingAttributes(false));
 
 it('renders the journal entry create page', function () {
     FilamentHelper::actingAs(['view_any_accounting_journal::entry', 'create_accounting_journal::entry']);
@@ -72,4 +76,49 @@ it('recalculates the balancing line when a line amount changes', function () {
     $names = collect($component->get('data.lines'))->pluck('name');
 
     expect($names)->toContain('Automatic Balancing');
+});
+
+it('creates a journal entry with a taxed line through the create form with strict model writes', function () {
+    FilamentHelper::actingAs(['view_any_accounting_journal::entry', 'create_accounting_journal::entry']);
+
+    $journal = AccountHelper::generalJournal();
+
+    $tax = AccountHelper::tax();
+
+    $currency = AccountHelper::currency();
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Livewire::test(CreateJournalEntry::class)
+        ->fillForm([
+            'reference'  => 'strict-model-writes-entry',
+            'date'       => now(),
+            'journal_id' => $journal->id,
+            'lines'      => [
+                [
+                    'account_id'  => $this->debitAccount->id,
+                    'name'        => 'Taxed debit',
+                    'currency_id' => $currency->id,
+                    'taxes'       => [$tax->id],
+                    'debit'       => 100,
+                    'credit'      => 0,
+                ],
+                [
+                    'account_id'  => $this->creditAccount->id,
+                    'name'        => 'Plain credit',
+                    'currency_id' => $currency->id,
+                    'taxes'       => [],
+                    'debit'       => 0,
+                    'credit'      => 100,
+                ],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $entry = Move::query()->where('reference', 'strict-model-writes-entry')->firstOrFail();
+
+    $taxedLine = $entry->lines()->where('name', 'Taxed debit')->firstOrFail();
+
+    expect($taxedLine->taxes->pluck('id')->all())->toBe([$tax->id]);
 });
