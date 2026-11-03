@@ -177,9 +177,8 @@ export class PurchaseFlowPage {
     async editVendor(originalName: string, updates: PurchaseVendorData) {
         await this.gotoVendorsPage();
         await this.searchList(originalName);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.purchaseVendorEditButton.click();
+        await this.openRowActions();
+        await this.clickMenuAction(/Edit/i);
 
         if (updates.name) {
             await this.erpLocators.purchaseVendorNameInput.fill(updates.name);
@@ -196,9 +195,8 @@ export class PurchaseFlowPage {
     async deleteVendor(name: string) {
         await this.gotoVendorsPage();
         await this.searchList(name);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.purchaseVendorDeleteButton.click();
+        await this.openRowActions();
+        await this.clickMenuAction(/Delete/i);
         await this.erpLocators.purchaseConfirmDeleteButton.click();
         await this.expectSuccessToast();
     }
