@@ -3,6 +3,7 @@
 namespace Webkul\Website\Services;
 
 use DateTimeZone;
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -58,6 +59,11 @@ class IpGeolocation
         return strlen($packed) === 4 ? str_repeat("\0", 10)."\xff\xff".$packed : $packed;
     }
 
+    public static function toSqlBinary(string $binary): Expression
+    {
+        return DB::raw(DB::connection()->escape($binary, binary: true));
+    }
+
     public static function isPublic(?string $ip): bool
     {
         return filled($ip) && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
@@ -80,14 +86,20 @@ class IpGeolocation
 
             try {
                 $range = DB::table(self::TABLE)
-                    ->where('ip_from', '<=', $binary)
+                    ->where('ip_from', '<=', static::toSqlBinary($binary))
                     ->orderByDesc('ip_from')
                     ->first(['ip_to', 'country_code']);
             } catch (Throwable) {
                 return '';
             }
 
-            return $range && strcmp($range->ip_to, $binary) >= 0 && $range->country_code !== 'ZZ' ? strtoupper($range->country_code) : '';
+            if (! $range) {
+                return '';
+            }
+
+            $ipTo = is_resource($range->ip_to) ? stream_get_contents($range->ip_to) : (string) $range->ip_to;
+
+            return strcmp($ipTo, $binary) >= 0 && $range->country_code !== 'ZZ' ? strtoupper($range->country_code) : '';
         }) ?: null;
     }
 

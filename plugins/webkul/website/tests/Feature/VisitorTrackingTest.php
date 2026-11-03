@@ -127,8 +127,8 @@ it('deletes anonymous visitors inactive for 60 days but keeps contacts', functio
 
 it('finds the country from the IP address and uses its timezone', function () {
     DB::table(IpGeolocation::TABLE)->insertOrIgnore([
-        'ip_from'      => IpGeolocation::toBinary('49.36.0.0'),
-        'ip_to'        => IpGeolocation::toBinary('49.36.255.255'),
+        'ip_from'      => IpGeolocation::toSqlBinary(IpGeolocation::toBinary('49.36.0.0')),
+        'ip_to'        => IpGeolocation::toSqlBinary(IpGeolocation::toBinary('49.36.255.255')),
         'country_code' => 'IN',
     ]);
     Cache::forever(IpGeolocation::CACHE_VERSION_KEY, (int) Cache::get(IpGeolocation::CACHE_VERSION_KEY, 0) + 1);
