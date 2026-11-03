@@ -2,21 +2,13 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
+use Webkul\Crm\Filament\Support\LeadTableFilters;
+
 class LeadsAnalysisReport extends LeadReport
 {
-    protected static function getPresetDefaults(): array
+    public static function getDefaultRules(): array
     {
-        return [
-            'created_this_year' => true,
-            'my_pipeline'       => false,
-            'opportunities'     => false,
-            'leads'             => false,
-            'active'            => false,
-            'lost'              => false,
-            'won'               => false,
-            'upcoming_closings' => false,
-            'closed_this_year'  => false,
-        ];
+        return [LeadTableFilters::relativeDateRule('created_at', 'this_year')];
     }
 
     public static function getDefaultMeasure(): string

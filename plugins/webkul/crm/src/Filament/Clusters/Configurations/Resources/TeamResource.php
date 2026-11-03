@@ -22,9 +22,9 @@ use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\Vie
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Schemas\TeamForm;
 use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
 use Webkul\Crm\Filament\Exports\TeamExporter;
-use Webkul\Crm\Filament\Support\AssignmentRuleFields;
 use Webkul\Crm\Models\TeamMember;
 use Webkul\Crm\Policies\TeamPolicy;
+use Webkul\Crm\Services\AssignmentRules;
 use Webkul\Crm\Settings\CRMSettings;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource as BaseTeamResource;
 use Webkul\Security\Enums\PermissionType;
@@ -153,7 +153,7 @@ class TeamResource extends BaseTeamResource
 
         $badges = [
             ManageTeamMembers::getNavigationLabel()    => fn (): int => TeamMember::query()->where('team_id', $team->getKey())->count(),
-            ManageTeamAssignment::getNavigationLabel() => fn (): int => AssignmentRuleFields::matchingQuery($team->crmTeam?->assignment_domain ?? [], AssignmentRuleFields::unassignedToTeam())->count(),
+            ManageTeamAssignment::getNavigationLabel() => fn (): int => count(AssignmentRules::normalize($team->crmTeam?->assignment_domain)['conditions']),
         ];
 
         return array_map(

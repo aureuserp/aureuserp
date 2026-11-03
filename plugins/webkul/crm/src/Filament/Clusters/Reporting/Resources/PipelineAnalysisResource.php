@@ -69,7 +69,7 @@ class PipelineAnalysisResource extends Resource
     public static function getReportCustomFilters(): array
     {
         return [
-            LeadTableFilters::opportunities(),
+            LeadTableFilters::report(LeadTableFilters::opportunities(), static::getReport()::getDefaultRules()),
         ];
     }
 

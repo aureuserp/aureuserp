@@ -80,6 +80,7 @@ class MergeLeadsBulkAction extends BulkAction
                         ->addable(false)
                         ->reorderable(false)
                         ->minItems(2)
+                        ->extraAttributes(['class' => 'crm-merge-records'])
                         ->live()
                         ->afterStateUpdated(function (Get $get, Set $set) use ($remaining): void {
                             $records = $remaining($get);

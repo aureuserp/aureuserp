@@ -4,7 +4,6 @@ namespace Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Sch
 
 use Closure;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -52,15 +51,6 @@ class TeamForm
         return $schema
             ->components([
                 Group::make($salesComponents)
-                    ->columnSpanFull(),
-                static::getAssignmentSection()
-                    ->visible(fn (string $operation): bool => $operation === 'create' && TeamResource::usesRuleBasedAssignment())
-                    ->columnSpanFull(),
-                static::getAliasSection()
-                    ->visibleOn('create')
-                    ->columnSpanFull(),
-                static::getMembersSection()
-                    ->visibleOn('create')
                     ->columnSpanFull(),
             ]);
     }
@@ -178,25 +168,6 @@ class TeamForm
                 ->searchable()
                 ->columnSpanFull(),
         ];
-    }
-
-    public static function getMembersSection(): Section
-    {
-        return Section::make(__('crm::filament/assignment.members.title'))
-            ->description(__('crm::filament/assignment.members.description'))
-            ->schema([
-                Repeater::make('crmMembers')
-                    ->relationship('crmMembers')
-                    ->hiddenLabel()
-                    ->schema(static::getMemberFields(fn (Get $get): mixed => $get('../../company_id')))
-                    ->columns(4)
-                    ->itemLabel(fn (array $state): ?string => filled($state['user_id'] ?? null) ? User::query()->whereKey($state['user_id'])->value('name') : null)
-                    ->collapsible()
-                    ->collapsed(fn (string $operation): bool => $operation !== 'create')
-                    ->defaultItems(0)
-                    ->reorderable(false)
-                    ->addActionLabel(__('crm::filament/assignment.members.actions.add')),
-            ]);
     }
 
     public static function getMemberFields(Closure $companyId, ?Closure $excludeUserIds = null, ?Closure $teamId = null): array

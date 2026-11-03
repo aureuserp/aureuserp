@@ -576,6 +576,14 @@ body:has(.crm-kanban-board) {
     width: 2.75rem;
 }
 
+.fi-fo-table-repeater.crm-merge-records > table > thead > tr > th.fi-fo-table-repeater-empty-header-cell {
+    width: 4rem;
+}
+
+.fi-fo-table-repeater.crm-merge-records .fi-fo-table-repeater-actions {
+    justify-content: center;
+}
+
 .crm-report-measures .fi-sc-flex {
     align-items: center;
     column-gap: 0.75rem;

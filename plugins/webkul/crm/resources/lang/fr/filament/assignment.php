@@ -92,7 +92,6 @@ return [
         ],
 
         'title'       => 'Membres',
-        'description' => 'Les vendeurs de cette équipe, le nombre de pistes que chacun peut recevoir en 30 jours et les pistes qu\'ils acceptent.',
         'empty'       => 'Aucun membre pour le moment',
 
         'fields' => [

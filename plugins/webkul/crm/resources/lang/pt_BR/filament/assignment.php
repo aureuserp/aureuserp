@@ -92,7 +92,6 @@ return [
         ],
 
         'title'       => 'Membros',
-        'description' => 'Os vendedores desta equipe, quantos leads cada um pode receber em 30 dias e quais leads aceitam.',
         'empty'       => 'Ainda não há membros',
 
         'fields' => [

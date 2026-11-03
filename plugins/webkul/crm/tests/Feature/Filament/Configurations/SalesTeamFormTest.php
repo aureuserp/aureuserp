@@ -94,27 +94,12 @@ it('forbids creating a crm sales team without the crm create permission', functi
     Livewire::test(CreateTeam::class)->assertForbidden();
 });
 
-it('adds members with their capacity while creating a team', function () {
-    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
+it('keeps assignment rules, email alias and members off the create form', function () {
+    FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
 
     useRuleBasedTeamAssignment();
 
-    Livewire::test(CreateTeam::class)
-        ->fillForm([
-            'name'       => 'Team With Members',
-            'company_id' => Company::query()->value('id'),
-            'is_active'  => true,
-            'crmMembers' => [
-                ['user_id' => $user->id, 'assignment_max' => 45, 'assignment_optout' => false, 'is_active' => true],
-            ],
-        ])
-        ->call('create')
-        ->assertHasNoFormErrors();
-
-    $team = Team::query()->where('name', 'Team With Members')->firstOrFail();
-
-    expect(TeamMember::query()->where('team_id', $team->id)->where('user_id', $user->id)->value('assignment_max'))->toBe(45)
-        ->and($team->members()->pluck('users.id')->all())->toBe([$user->id]);
+    expect(Livewire::test(CreateTeam::class)->get('data'))->not->toHaveKeys(['crmTeam', 'crmAlias', 'crmMembers']);
 });
 
 it('adds, edits and removes team members from the members tab', function () {
@@ -213,36 +198,6 @@ it('adds the member to the other team without asking when salespeople can be in 
         ->assertActionNotMounted();
 
     expect(memberTeamIds($user))->toBe([$first->id, $second->id]);
-});
-
-it('asks with a warning before creating a team with a member of another team', function () {
-    $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
-
-    useSalespeopleInMultipleTeams(false);
-
-    $first = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
-
-    app(TeamMembership::class)->addMember($first, $user->id);
-
-    $component = Livewire::test(CreateTeam::class)
-        ->fillForm([
-            'name'       => 'Team taking a member',
-            'company_id' => Company::query()->value('id'),
-            'is_active'  => true,
-            'crmMembers' => [
-                ['user_id' => $user->id, 'assignment_max' => 30, 'assignment_optout' => false, 'is_active' => true],
-            ],
-        ])
-        ->call('create')
-        ->assertActionMounted('confirmTeamMove');
-
-    expect(Team::query()->where('name', 'Team taking a member')->exists())->toBeFalse();
-
-    $component->callMountedAction()->assertHasNoFormErrors();
-
-    $team = Team::query()->where('name', 'Team taking a member')->firstOrFail();
-
-    expect(memberTeamIds($user))->toBe([$team->id]);
 });
 
 it('saves the team email alias from its own tab', function () {

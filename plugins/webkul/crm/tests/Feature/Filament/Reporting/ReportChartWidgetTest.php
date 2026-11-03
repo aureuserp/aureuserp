@@ -35,7 +35,6 @@ function reportChartFixture(): array
     return [$firstStage, $secondStage, [
         'measure'  => 'count',
         'group_by' => 'stage',
-        'presets'  => [],
         'user_ids' => [auth()->id()],
         'team_ids' => [],
     ]];

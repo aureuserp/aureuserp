@@ -14,6 +14,7 @@ use Webkul\Crm\Filament\Clusters\Reporting;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\ListActivityAnalysis;
 use Webkul\Crm\Filament\Concerns\IsCRMReportResource;
 use Webkul\Crm\Filament\Exports\ActivityLogExporter;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Tables\ActivityLogTable;
 use Webkul\Crm\Models\ActivityLog;
@@ -66,6 +67,13 @@ class ActivityAnalysisResource extends Resource
     public static function table(Table $table): Table
     {
         return ActivityLogTable::configure($table);
+    }
+
+    public static function getReportCustomFilters(): array
+    {
+        return [
+            LeadTableFilters::activityLogs()->default(static::getReport()::getDefaultRules()),
+        ];
     }
 
     public static function getReportTableViews(): array

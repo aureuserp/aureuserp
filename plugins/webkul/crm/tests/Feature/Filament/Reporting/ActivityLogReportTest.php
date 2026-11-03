@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
+use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\ListActivityAnalysis;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Filament\Support\Reports\ActivityReport;
 use Webkul\Crm\Filament\Support\Reports\Dimension;
 use Webkul\Crm\Models\Activity;
@@ -188,7 +191,6 @@ describe('counting', function () {
         activityLogReportLog($lead, ['activity_type_id' => $call->id, 'done_at' => now()->startOfMonth()->subMonths(2)->addDays(3)]);
         activityLogReportLog($lead, ['activity_type_id' => $call->id, 'done_at' => now()->startOfMonth()->addHours(5)]);
         activityLogReportLog($lead, ['activity_type_id' => $email->id, 'done_at' => now()->startOfMonth()->addHours(6)]);
-        activityLogReportLog($lead, ['activity_type_id' => $email->id, 'done_at' => now()->subYears(2)]);
 
         $filters = ActivityReport::getDefaultFilters();
 
@@ -213,9 +215,9 @@ describe('counting', function () {
     });
 });
 
-describe('presets', function () {
-    it('applies the quick filter', function (string $preset, array $expected) {
-        CRMHelper::actingAs([]);
+describe('rules', function () {
+    it('rebuilds each former quick filter as a rule', function (string $rule, array $expected) {
+        $user = CRMHelper::actingAs(['view_any_crm_activity::analysis']);
 
         $other = activityLogReportUser();
 
@@ -229,24 +231,28 @@ describe('presets', function () {
             'recent assigned me lead' => activityLogReportLog($lead, ['done_at' => now()->subMonth(), 'done_by' => $other->id]),
         ];
 
-        $ids = ActivityReport::applyFilters(activityLogReportQuery([$opportunity, $lead]), ['presets' => [$preset]])
-            ->pluck('crm_activity_logs.id')
-            ->all();
+        $rules = [
+            'last 12 months' => LeadTableFilters::relativeDateRule('done_at', 'past_year'),
+            'my activities'  => ['type' => 'assignedTo', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $user->id]]]],
+            'done by me'     => ['type' => 'doneBy', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $user->id]]]],
+            'opportunities'  => ['type' => 'lead_type', 'data' => ['operator' => 'is', 'settings' => ['values' => [LeadType::OPPORTUNITY->value]]]],
+            'leads'          => ['type' => 'lead_type', 'data' => ['operator' => 'is', 'settings' => ['values' => [LeadType::LEAD->value]]]],
+        ];
 
-        $expectedIds = collect($expected)->map(fn (string $name): int => $logs[$name]->id)->all();
-
-        expect($ids)->toEqualCanonicalizing($expectedIds);
+        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])->test(ListActivityAnalysis::class)
+            ->filterTable('queryBuilder', ['rules' => ['rule' => $rules[$rule]]])
+            ->assertCanSeeTableRecords(collect($logs)->only($expected)->values()->all())
+            ->assertCanNotSeeTableRecords(collect($logs)->except($expected)->values()->all());
     })->with([
-        'last 12 months' => ['last_12_months', ['recent mine opportunity', 'recent done by me lead', 'recent assigned me lead']],
-        'my activities'  => ['my_activities', ['recent mine opportunity', 'old mine opportunity', 'recent assigned me lead']],
-        'done by me'     => ['done_by_me', ['recent mine opportunity', 'old mine opportunity', 'recent done by me lead']],
+        'last 12 months' => ['last 12 months', ['recent mine opportunity', 'recent done by me lead', 'recent assigned me lead']],
+        'my activities'  => ['my activities', ['recent mine opportunity', 'old mine opportunity', 'recent assigned me lead']],
+        'done by me'     => ['done by me', ['recent mine opportunity', 'old mine opportunity', 'recent done by me lead']],
         'opportunities'  => ['opportunities', ['recent mine opportunity', 'old mine opportunity']],
         'leads'          => ['leads', ['recent done by me lead', 'recent assigned me lead']],
     ]);
 
-    it('offers exactly the activity quick filters, with Last 12 Months on by default', function () {
-        expect(array_keys(ActivityReport::presets()))->toBe(['last_12_months', 'my_activities', 'done_by_me', 'opportunities', 'leads'])
-            ->and(ActivityReport::getDefaultPresets())->toBe(['last_12_months']);
+    it('pre-adds a completion date rule for the last 12 months instead of quick filters', function () {
+        expect(ActivityReport::getDefaultRules())->toBe([LeadTableFilters::relativeDateRule('done_at', 'past_year')]);
     });
 
     it('filters by the salesperson and team recorded on the log', function () {

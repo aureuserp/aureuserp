@@ -1,6 +1,7 @@
 <?php
 
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Navigation\NavigationItem;
 use Filament\Schemas\Components\Text;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
@@ -9,6 +10,7 @@ use Livewire\Livewire;
 use Webkul\Crm\Console\Commands\AssignLeads;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource;
+use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource\Pages\ManageTeamAssignment;
 use Webkul\Crm\Filament\Clusters\Settings\Pages\ManageCRM;
 use Webkul\Crm\Filament\Support\AssignmentRuleFields;
 use Webkul\Crm\Models\CRMTeam;
@@ -36,7 +38,7 @@ beforeEach(function () {
     $settings->auto_assignment_run_at = null;
     $settings->save();
 
-    CRMTeam::query()->update(['assignment_optout' => true]);
+    Team::query()->withoutGlobalScopes()->pluck('id')->each(fn (int $teamId) => CRMTeam::query()->updateOrCreate(['team_id' => $teamId], ['assignment_optout' => true]));
 });
 
 function assignmentSeller(string $name = 'Seller'): User
@@ -162,7 +164,7 @@ describe('assignment rule conditions', function () {
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('email', 'contains', 'example')]]))->toBeTrue()
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('email', 'not_contains', 'example')]]))->toBeFalse()
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('city', 'not_set')]]))->toBeTrue()
-            ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('type', 'in', [LeadType::OPPORTUNITY])]]))->toBeFalse()
+            ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('type', 'in', [LeadType::OPPORTUNITY->value])]]))->toBeFalse()
             ->and(AssignmentRules::matches($lead, ['conditions' => [$condition('probability', '>=', 40), $condition('city', 'not_set')]]))->toBeFalse()
             ->and(AssignmentRules::matches($lead, ['match' => 'any', 'conditions' => [$condition('probability', '>=', 40), $condition('city', 'not_set')]]))->toBeTrue();
     });
@@ -197,7 +199,7 @@ describe('assignment rule conditions', function () {
             ],
         ]]);
 
-        expect($crmTeam->fresh()->assignment_domain)->toBe([
+        expect($crmTeam->fresh()->assignment_domain)->toEqual([
             'match'      => 'all',
             'conditions' => [['field' => 'probability', 'operator' => '>=', 'value' => 20]],
         ]);
@@ -234,7 +236,7 @@ describe('rule-based assignment', function () {
         expect(AssignmentRules::matches($lead, null))->toBeTrue()
             ->and(AssignmentRules::matches($lead, ['country_ids' => [$us]]))->toBeTrue()
             ->and(AssignmentRules::matches($lead, ['country_ids' => [$us + 1]]))->toBeFalse()
-            ->and(AssignmentRules::matches($lead, ['lead_types' => [LeadType::OPPORTUNITY]]))->toBeFalse();
+            ->and(AssignmentRules::matches($lead, ['lead_types' => [LeadType::OPPORTUNITY->value]]))->toBeFalse();
     });
 
     it('assigns matching leads to the team and spreads them by member capacity', function () {
@@ -292,7 +294,7 @@ describe('rule-based assignment', function () {
         expect($third->fresh()->team_id)->toBeNull();
     });
 
-    it('does not assign lost or already-owned leads to a team', function () {
+    it('does not assign lost leads to a team, but gives one to a lead that already has a salesperson', function () {
         $owner = CRMHelper::actingAs();
 
         $team = assignmentTeam();
@@ -307,7 +309,7 @@ describe('rule-based assignment', function () {
         app(LeadAssignment::class)->run();
 
         expect(Lead::withTrashed()->find($lost->id)->team_id)->toBeNull()
-            ->and($owned->fresh()->team_id)->toBeNull();
+            ->and($owned->fresh()->team_id)->toBe($team->id);
     });
 
     it('runs from the command only when repeated assignment is due', function () {
@@ -469,4 +471,27 @@ it('shows the records matching the rules as a filament table with an empty messa
         ->and($showing->isHidden())->toBeTrue()
         ->and(AssignmentRuleFields::matchingRecords($rules('Matching rules table lead'), AssignmentRuleFields::unassignedToTeam())['records']->modelKeys())->toBe([$lead->id])
         ->and(AssignmentRuleFields::matchingRecords($rules('No lead has this name'), AssignmentRuleFields::unassignedToTeam())['records'])->toBeEmpty();
+});
+
+it('counts the saved conditions on the Assignment Rules tab', function () {
+    CRMHelper::actingAsCRMUser(['team']);
+
+    $team = assignmentTeam();
+
+    $badge = fn (): int => (int) collect(TeamResource::getRecordSubNavigation(Livewire::test(ManageTeamAssignment::class, ['record' => $team->getRouteKey()])->instance()))
+        ->first(fn (NavigationItem $item): bool => $item->getLabel() === ManageTeamAssignment::getNavigationLabel())
+        ?->getBadge();
+
+    expect($badge())->toBe(0);
+
+    CRMTeam::query()->where('team_id', $team->id)->firstOrFail()->update(['assignment_domain' => [
+        'match'      => 'all',
+        'conditions' => [
+            ['field' => 'probability', 'operator' => '>', 'value' => 10],
+            ['field' => 'city', 'operator' => 'contains', 'value' => 'Delhi'],
+            ['field' => 'email', 'operator' => 'contains', 'value' => ''],
+        ],
+    ]]);
+
+    expect($badge())->toBe(2);
 });

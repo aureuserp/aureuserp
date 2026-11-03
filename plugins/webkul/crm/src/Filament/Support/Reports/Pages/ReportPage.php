@@ -8,6 +8,7 @@ use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder as QueryBuilderFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -46,6 +47,24 @@ abstract class ReportPage extends ListRecords
         if (filled($this->tableFilters['team_ids']['values'] ?? null)) {
             $this->activeTableView ??= 'default';
         }
+    }
+
+    public function removeTableFilter(string $filterName, ?string $field = null, bool $isRemovingAllFilters = false): void
+    {
+        if (filled($field)
+            || ! $this->getTable()->getFilter($filterName) instanceof QueryBuilderFilter) {
+            parent::removeTableFilter($filterName, $field, $isRemovingAllFilters);
+
+            return;
+        }
+
+        $this->getTableFiltersForm()->getComponentByStatePath($filterName)?->getChildSchema()->fill(['rules' => []]);
+
+        if ($isRemovingAllFilters) {
+            return;
+        }
+
+        $this->getTable()->hasDeferredFilters() ? $this->applyTableFilters() : $this->handleTableFilterUpdates();
     }
 
     public function updatedGraphMeasure(): void

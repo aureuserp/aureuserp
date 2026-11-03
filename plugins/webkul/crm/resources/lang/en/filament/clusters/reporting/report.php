@@ -48,20 +48,9 @@ return [
     ],
 
     'presets' => [
-        'my-pipeline'       => 'My Pipeline',
-        'unassigned'        => 'Unassigned',
-        'opportunities'     => 'Opportunities',
-        'leads'             => 'Leads',
-        'upcoming-closings' => 'Upcoming Closings',
-        'active'            => 'Active',
         'ongoing'           => 'Ongoing',
         'won'               => 'Won',
         'lost'              => 'Lost',
-        'created-this-year' => 'Created This Year',
-        'closed-this-year'  => 'Closed This Year',
-        'last-12-months'    => 'Last 12 Months',
-        'my-activities'     => 'My Activities',
-        'done-by-me'        => 'Done by Me',
     ],
 
     'table' => [
@@ -89,6 +78,22 @@ return [
             'assigned-to'      => 'Assigned To',
             'done-by'          => 'Done By',
             'due-date'         => 'Due Date',
+        ],
+    ],
+
+    'rules' => [
+        'active' => [
+            'label'         => 'Active',
+            'is-active'     => 'Is active',
+            'is-not-active' => 'Is not active',
+            'not-active'    => 'Not active',
+        ],
+
+        'won' => [
+            'label'      => 'Won',
+            'is-won'     => 'Is won',
+            'is-not-won' => 'Is not won',
+            'not-won'    => 'Not won',
         ],
     ],
 

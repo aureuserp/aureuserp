@@ -5,6 +5,7 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Grouping\Group;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ActivityAnalysisResource\Pages\ListActivityAnalysis;
@@ -15,9 +16,12 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource\Pages\
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource\Pages\ListPipelineAnalysis;
 use Webkul\Crm\Filament\Exports\ForecastExporter;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
+use Webkul\Crm\Filament\Support\Reports\ForecastReport;
 use Webkul\Crm\Filament\Support\Reports\Report;
 use Webkul\Crm\Models\ActivityLog;
 use Webkul\Crm\Models\Lead;
+use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
 use Webkul\Security\Models\User;
 
@@ -64,6 +68,22 @@ function reportPagesActivityLog(Lead $lead, array $attributes = []): ActivityLog
         'done_at'     => now(),
         ...$attributes,
     ]);
+}
+
+function reportPagesRuleTypes(Testable $component): array
+{
+    return collect($component->get('tableFilters')['queryBuilder']['rules'] ?? [])->pluck('type')->values()->all();
+}
+
+function reportPagesRule(string $type, string $operator, array $settings = []): array
+{
+    return ['type' => $type, 'data' => ['operator' => $operator, 'settings' => $settings]];
+}
+
+function reportPagesWithRules(string $page, array $rules): Testable
+{
+    return Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])->test($page)
+        ->filterTable('queryBuilder', ['rules' => collect(array_values($rules))->mapWithKeys(fn (array $rule, int $index): array => ["rule-{$index}" => $rule])->all()]);
 }
 
 dataset('report pages', reportPagesDataset());
@@ -201,7 +221,7 @@ describe('graph', function () {
 
         expect($filters['group_by'])->toBe($defaults['group_by'])
             ->and($filters['split_by'])->toBe($defaults['split_by'])
-            ->and(array_diff($report::getDefaultPresets(), array_keys($component->instance()->getTable()->getFilters())))->toBe([]);
+            ->and(reportPagesRuleTypes($component))->toBe(array_column($report::getDefaultRules(), 'type'));
     })->with('report pages');
 
     it('offers measure and split by as prefixed toolbar selects after the group by on the graph', function () {
@@ -313,7 +333,7 @@ describe('list', function () {
             ->assertSee(__('crm::filament/clusters/reporting/report.dimensions.stage').': '.$opportunity->stage->name);
     });
 
-    it('turns on the default quick filters', function (string $resource, string $graph, string $list, string $permission) {
+    it('has no quick filter toggles and pre-adds the default rules of the report', function (string $resource, string $graph, string $list, string $permission) {
         CRMHelper::actingAs([$permission]);
 
         /** @var class-string<Report> $report */
@@ -321,16 +341,8 @@ describe('list', function () {
 
         $component = reportPage($list);
 
-        foreach (array_keys($report::presets()) as $preset) {
-            $component->assertTableFilterExists($preset);
-
-            expect((bool) ($component->get('tableFilters')[$preset]['isActive'] ?? false))
-                ->toBe(in_array($preset, $report::getDefaultPresets(), true));
-        }
-
-        $component
-            ->assertTableFilterExists('user_ids')
-            ->assertTableFilterExists('team_ids');
+        expect(array_keys($component->instance()->getTable()->getFilters()))->toBe(['user_ids', 'team_ids', 'queryBuilder'])
+            ->and(reportPagesRuleTypes($component))->toBe(array_column($report::getDefaultRules(), 'type'));
     })->with('report pages');
 
     it('lists the upcoming opportunities of the current user on the forecast', function () {
@@ -346,14 +358,79 @@ describe('list', function () {
             ->assertCanNotSeeTableRecords([$past, $theirs, $lead]);
     });
 
-    it('lists every salesperson once My Pipeline is turned off', function () {
+    it('lists every salesperson once the salesperson rule is removed', function () {
         CRMHelper::actingAs(['view_any_crm_forecast']);
 
         $theirs = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth(), 'user_id' => reportPagesUser()->id]);
 
-        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])->test(ListForecast::class)
-            ->filterTable('my_pipeline', false)
+        reportPagesWithRules(ListForecast::class, collect(ForecastReport::getDefaultRules())->reject(fn (array $rule): bool => $rule['type'] === 'user')->all())
             ->assertCanSeeTableRecords([$theirs]);
+    });
+
+    it('rebuilds the former quick filters of the pipeline analysis as rules', function () {
+        CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
+
+        $open = Stage::factory()->create(['is_won' => false]);
+
+        $mine = CRMHelper::opportunity(['stage_id' => $open->id, 'expected_closing_date' => today()->addMonth()]);
+        $theirs = CRMHelper::opportunity(['stage_id' => $open->id, 'expected_closing_date' => today()->subMonths(2), 'user_id' => reportPagesUser()->id]);
+        $unassigned = CRMHelper::opportunity(['stage_id' => $open->id]);
+        Lead::query()->whereKey($unassigned->id)->update(['user_id' => null]);
+        $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
+        $lost = CRMHelper::opportunity(['stage_id' => $open->id]);
+        $lost->markAsLost(null);
+        $old = CRMHelper::opportunity(['stage_id' => $open->id, 'created_at' => now()->subYear()->startOfYear()]);
+        $closed = CRMHelper::opportunity(['stage_id' => $open->id]);
+        Lead::query()->whereKey($closed->id)->update(['closed_at' => now()]);
+
+        $active = reportPagesRule('active', 'isActive');
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [LeadTableFilters::salespersonRule(auth()->id())])
+            ->assertCanSeeTableRecords([$mine])
+            ->assertCanNotSeeTableRecords([$theirs, $unassigned]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [reportPagesRule('user', 'isEmpty')])
+            ->assertCanSeeTableRecords([$unassigned])
+            ->assertCanNotSeeTableRecords([$mine, $theirs]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [LeadTableFilters::relativeDateRule('expected_closing_date', 'this_month')])
+            ->assertCanSeeTableRecords([$mine])
+            ->assertCanNotSeeTableRecords([$theirs]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [$active, reportPagesRule('won', 'isWon')])
+            ->assertCanSeeTableRecords([$won])
+            ->assertCanNotSeeTableRecords([$mine, $lost]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [$active, reportPagesRule('won', 'isWon.inverse')])
+            ->assertCanSeeTableRecords([$mine])
+            ->assertCanNotSeeTableRecords([$won, $lost]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [reportPagesRule('active', 'isActive.inverse')])
+            ->assertCanSeeTableRecords([$lost])
+            ->assertCanNotSeeTableRecords([$mine]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [LeadTableFilters::relativeDateRule('created_at', 'this_year')])
+            ->assertCanSeeTableRecords([$mine])
+            ->assertCanNotSeeTableRecords([$old]);
+
+        reportPagesWithRules(ListPipelineAnalysis::class, [LeadTableFilters::relativeDateRule('closed_at', 'this_year')])
+            ->assertCanSeeTableRecords([$closed])
+            ->assertCanNotSeeTableRecords([$mine]);
+    });
+
+    it('rebuilds the leads and opportunities quick filters of the leads analysis as a type rule', function () {
+        CRMHelper::actingAs(['view_any_crm_lead::analysis']);
+
+        $lead = CRMHelper::lead();
+        $opportunity = CRMHelper::opportunity();
+
+        reportPagesWithRules(ListLeadAnalysis::class, [reportPagesRule('type', 'is', ['values' => [LeadType::LEAD->value]])])
+            ->assertCanSeeTableRecords([$lead])
+            ->assertCanNotSeeTableRecords([$opportunity]);
+
+        reportPagesWithRules(ListLeadAnalysis::class, [reportPagesRule('type', 'is', ['values' => [LeadType::OPPORTUNITY->value]])])
+            ->assertCanSeeTableRecords([$opportunity])
+            ->assertCanNotSeeTableRecords([$lead]);
     });
 
     it('lists active opportunities on the pipeline analysis', function () {
@@ -367,6 +444,26 @@ describe('list', function () {
         reportPage(ListPipelineAnalysis::class.'@list')
             ->assertCanSeeTableRecords([$active])
             ->assertCanNotSeeTableRecords([$lost, $lead]);
+    });
+
+    it('inverts or removes the Active rule on the pipeline analysis, and reset puts it back', function () {
+        CRMHelper::actingAs(['view_any_crm_pipeline::analysis']);
+
+        $active = CRMHelper::opportunity();
+        $lost = CRMHelper::opportunity();
+        $lost->markAsLost(null);
+
+        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])->test(ListPipelineAnalysis::class)
+            ->assertCanSeeTableRecords([$active])
+            ->assertCanNotSeeTableRecords([$lost])
+            ->filterTable('queryBuilder', ['rules' => ['active' =>['type' => 'active', 'data' => ['operator' => 'isActive.inverse', 'settings' => []]]]])
+            ->assertCanSeeTableRecords([$lost])
+            ->assertCanNotSeeTableRecords([$active])
+            ->filterTable('queryBuilder', ['rules' => []])
+            ->assertCanSeeTableRecords([$active, $lost])
+            ->resetTableFilters()
+            ->assertCanSeeTableRecords([$active])
+            ->assertCanNotSeeTableRecords([$lost]);
     });
 
     it('lists leads and opportunities created this year, lost ones included, on the leads analysis', function () {
@@ -448,7 +545,7 @@ it('clears the split and the table filters on the graph', function (string $page
         ->call('removeTableFilters');
 
     expect($component->instance()->getGraphFilters()['split_by'])->toBeNull()
-        ->and(collect($component->get('tableFilters'))->filter(fn ($state): bool => (bool) ($state['isActive'] ?? false)))->toBeEmpty();
+        ->and($component->get('tableFilters')['queryBuilder']['rules'] ?? [])->toBeEmpty();
 })->with([
     'pipeline'   => [ListPipelineAnalysis::class, ['view_any_crm_pipeline::analysis']],
     'leads'      => [ListLeadAnalysis::class, ['view_any_crm_lead::analysis']],

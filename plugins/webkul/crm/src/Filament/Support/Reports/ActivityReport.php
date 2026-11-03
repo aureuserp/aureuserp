@@ -2,10 +2,9 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
 use Webkul\Crm\Models\ActivityType;
 use Webkul\Crm\Models\Stage;
 use Webkul\Sale\Models\Team;
@@ -41,31 +40,9 @@ class ActivityReport extends Report
         ];
     }
 
-    public static function presets(): array
+    public static function getDefaultRules(): array
     {
-        return [
-            'last_12_months' => [
-                'label'   => __('crm::filament/clusters/reporting/report.presets.last-12-months'),
-                'query'   => fn (Builder $query): Builder => $query->where('crm_activity_logs.done_at', '>=', now()->subYear()->startOfDay()),
-                'default' => true,
-            ],
-            'my_activities' => [
-                'label' => __('crm::filament/clusters/reporting/report.presets.my-activities'),
-                'query' => fn (Builder $query): Builder => $query->where('crm_activity_logs.assigned_to', Auth::id()),
-            ],
-            'done_by_me' => [
-                'label' => __('crm::filament/clusters/reporting/report.presets.done-by-me'),
-                'query' => fn (Builder $query): Builder => $query->where('crm_activity_logs.done_by', Auth::id()),
-            ],
-            'opportunities' => [
-                'label' => __('crm::filament/clusters/reporting/report.presets.opportunities'),
-                'query' => fn (Builder $query): Builder => $query->where('crm_activity_logs.lead_type', LeadType::OPPORTUNITY),
-            ],
-            'leads' => [
-                'label' => __('crm::filament/clusters/reporting/report.presets.leads'),
-                'query' => fn (Builder $query): Builder => $query->where('crm_activity_logs.lead_type', LeadType::LEAD),
-            ],
-        ];
+        return [LeadTableFilters::relativeDateRule('done_at', 'past_year')];
     }
 
     public static function getDefaultMeasure(): string

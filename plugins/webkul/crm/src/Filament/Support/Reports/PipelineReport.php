@@ -2,6 +2,8 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
+use Webkul\Crm\Filament\Support\LeadTableFilters;
+
 class PipelineReport extends LeadReport
 {
     public static function dimensions(): array
@@ -9,19 +11,9 @@ class PipelineReport extends LeadReport
         return collect(parent::dimensions())->except(['type'])->all();
     }
 
-    protected static function getPresetDefaults(): array
+    public static function getDefaultRules(): array
     {
-        return [
-            'active'            => true,
-            'my_pipeline'       => false,
-            'unassigned'        => false,
-            'upcoming_closings' => false,
-            'ongoing'           => false,
-            'won'               => false,
-            'lost'              => false,
-            'created_this_year' => false,
-            'closed_this_year'  => false,
-        ];
+        return [LeadTableFilters::activeRule()];
     }
 
     public static function getDefaultMeasure(): string

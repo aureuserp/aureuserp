@@ -3,6 +3,7 @@
 namespace Webkul\Crm\Filament\Clusters\Reporting\Resources;
 
 use Filament\Resources\Resource;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -70,7 +71,10 @@ class LeadAnalysisResource extends Resource
     public static function getReportCustomFilters(): array
     {
         return [
-            LeadTableFilters::leads(),
+            LeadTableFilters::report(LeadTableFilters::leads(), static::getReport()::getDefaultRules(), [
+                LeadTableFilters::leadType('type'),
+                DateConstraint::make('expected_closing_date')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-closing')),
+            ]),
         ];
     }
 

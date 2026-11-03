@@ -2,6 +2,9 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
+use Illuminate\Support\Facades\Auth;
+use Webkul\Crm\Filament\Support\LeadTableFilters;
+
 class ForecastReport extends LeadReport
 {
     public static function dimensions(): array
@@ -9,19 +12,13 @@ class ForecastReport extends LeadReport
         return collect(parent::dimensions())->except(['type'])->all();
     }
 
-    protected static function getPresetDefaults(): array
+    public static function getDefaultRules(): array
     {
-        return [
-            'upcoming_closings' => true,
-            'my_pipeline'       => true,
-            'unassigned'        => false,
-            'active'            => true,
-            'ongoing'           => false,
-            'won'               => false,
-            'lost'              => false,
-            'created_this_year' => false,
-            'closed_this_year'  => false,
-        ];
+        return array_values(array_filter([
+            filled(Auth::id()) ? LeadTableFilters::salespersonRule(Auth::id()) : null,
+            LeadTableFilters::relativeDateRule('expected_closing_date', 'this_month'),
+            LeadTableFilters::activeRule(),
+        ]));
     }
 
     public static function getDefaultMeasure(): string

@@ -48,20 +48,9 @@ return [
     ],
 
     'presets' => [
-        'my-pipeline'       => 'Meu funil',
-        'unassigned'        => 'Não atribuídos',
-        'opportunities'     => 'Oportunidades',
-        'leads'             => 'Leads',
-        'upcoming-closings' => 'Próximos fechamentos',
-        'active'            => 'Ativos',
         'ongoing'           => 'Em andamento',
         'won'               => 'Ganhos',
         'lost'              => 'Perdidos',
-        'created-this-year' => 'Criados este ano',
-        'closed-this-year'  => 'Fechados este ano',
-        'last-12-months'    => 'Últimos 12 meses',
-        'my-activities'     => 'Minhas atividades',
-        'done-by-me'        => 'Concluídas por mim',
     ],
 
     'table' => [
@@ -89,6 +78,22 @@ return [
             'assigned-to'      => 'Atribuído a',
             'done-by'          => 'Concluído por',
             'due-date'         => 'Data de vencimento',
+        ],
+    ],
+
+    'rules' => [
+        'active' => [
+            'label'         => 'Ativos',
+            'is-active'     => 'Está ativo',
+            'is-not-active' => 'Não está ativo',
+            'not-active'    => 'Não ativos',
+        ],
+
+        'won' => [
+            'label'      => 'Ganhos',
+            'is-won'     => 'Está ganho',
+            'is-not-won' => 'Não está ganho',
+            'not-won'    => 'Não ganhos',
         ],
     ],
 

@@ -56,47 +56,43 @@ function reportEngineTable(array $result): array
 }
 
 describe('default filters', function () {
-    it('starts the forecast on prorated revenue by expected closing, with My Pipeline, Upcoming Closings and Active', function () {
+    it('starts the forecast on prorated revenue by expected closing', function () {
         $filters = ForecastReport::getDefaultFilters();
 
         expect($filters['measure'])->toBe('prorated_revenue')
             ->and($filters['group_by'])->toBe('expected_closing')
             ->and($filters['split_by'])->toBeNull()
-            ->and($filters['presets'])->toEqualCanonicalizing(['my_pipeline', 'upcoming_closings', 'active'])
             ->and($filters['user_ids'])->toBe([])
             ->and($filters['team_ids'])->toBe([]);
     });
 
-    it('starts the pipeline analysis on expected revenue by stage, split by expected closing, Active only', function () {
+    it('starts the pipeline analysis on expected revenue by stage, split by expected closing', function () {
         $filters = PipelineReport::getDefaultFilters();
 
         expect($filters['measure'])->toBe('expected_revenue')
             ->and($filters['group_by'])->toBe('stage')
-            ->and($filters['split_by'])->toBe('expected_closing')
-            ->and($filters['presets'])->toBe(['active']);
+            ->and($filters['split_by'])->toBe('expected_closing');
     });
 
-    it('starts the leads analysis on count by creation month, split by team, Created This Year', function () {
+    it('starts the leads analysis on count by creation month, split by team', function () {
         $filters = LeadsAnalysisReport::getDefaultFilters();
 
         expect($filters['measure'])->toBe('count')
             ->and($filters['group_by'])->toBe('created_at')
-            ->and($filters['split_by'])->toBe('team')
-            ->and($filters['presets'])->toBe(['created_this_year']);
+            ->and($filters['split_by'])->toBe('team');
     });
 
-    it('starts the activities analysis on count by completion month, split by activity type, Last 12 Months', function () {
+    it('starts the activities analysis on count by completion month, split by activity type', function () {
         $filters = ActivityReport::getDefaultFilters();
 
         expect($filters['measure'])->toBe('count')
             ->and($filters['group_by'])->toBe('done_at')
-            ->and($filters['split_by'])->toBe('activity_type')
-            ->and($filters['presets'])->toBe(['last_12_months']);
+            ->and($filters['split_by'])->toBe('activity_type');
     });
 
     it('offers the expected filter keys for every report', function (string $report) {
         expect(array_keys($report::getDefaultFilters()))
-            ->toBe(['measure', 'group_by', 'split_by', 'presets', 'user_ids', 'team_ids']);
+            ->toBe(['measure', 'group_by', 'split_by', 'user_ids', 'team_ids']);
     })->with([ForecastReport::class, PipelineReport::class, LeadsAnalysisReport::class, ActivityReport::class]);
 
     it('only offers the record type dimension on the leads analysis', function () {
@@ -119,78 +115,25 @@ describe('default filters', function () {
     });
 });
 
+describe('default rules', function () {
+    it('pre-adds the former default quick filters as rules', function (string $report, array $types) {
+        CRMHelper::actingAs([]);
+
+        expect(array_column($report::getDefaultRules(), 'type'))->toBe($types);
+    })->with([
+        'forecast: my pipeline, upcoming closings, active' => [ForecastReport::class, ['user', 'expected_closing_date', 'active']],
+        'pipeline: active'                                 => [PipelineReport::class, ['active']],
+        'leads: created this year'                         => [LeadsAnalysisReport::class, ['created_at']],
+        'activities: last 12 months'                       => [ActivityReport::class, ['done_at']],
+    ]);
+
+    it('keeps the relative dates of the date rules', function () {
+        expect(LeadsAnalysisReport::getDefaultRules()[0]['data'])->toBe(['operator' => 'isAfter', 'settings' => ['mode' => 'relative', 'preset' => 'this_year']])
+            ->and(ActivityReport::getDefaultRules()[0]['data']['settings']['preset'])->toBe('past_year');
+    });
+});
+
 describe('applyFilters', function () {
-    it('applies the My Pipeline and Unassigned presets', function () {
-        $user = CRMHelper::actingAs([]);
-
-        $mine = CRMHelper::opportunity();
-        $theirs = CRMHelper::opportunity(['user_id' => reportEngineUser()->id]);
-        $unassigned = CRMHelper::opportunity();
-        Lead::query()->whereKey($unassigned->id)->update(['user_id' => null]);
-
-        $leads = [$mine, $theirs, $unassigned];
-
-        expect(ForecastReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['my_pipeline']])->pluck('crm_leads.id')->all())
-            ->toBe([$mine->id])
-            ->and(ForecastReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['unassigned']])->pluck('crm_leads.id')->all())
-            ->toBe([$unassigned->id]);
-    });
-
-    it('applies the Upcoming Closings, Active and Lost presets', function () {
-        CRMHelper::actingAs([]);
-
-        $upcoming = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth()]);
-        $past = CRMHelper::opportunity(['expected_closing_date' => today()->subMonths(2)->startOfMonth()]);
-        $lost = CRMHelper::opportunity(['expected_closing_date' => today()->addMonth()]);
-        $lost->markAsLost(null);
-
-        $leads = [$upcoming, $past, $lost];
-
-        expect(ForecastReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['upcoming_closings', 'active']])->pluck('crm_leads.id')->all())
-            ->toBe([$upcoming->id])
-            ->and(ForecastReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['lost']])->pluck('crm_leads.id')->all())
-            ->toBe([$lost->id]);
-    });
-
-    it('applies the Won and Ongoing presets', function () {
-        CRMHelper::actingAs([]);
-
-        $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
-        $ongoing = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
-
-        $leads = [$won, $ongoing];
-
-        expect(PipelineReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['won']])->pluck('crm_leads.id')->all())
-            ->toBe([$won->id])
-            ->and(PipelineReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['ongoing']])->pluck('crm_leads.id')->all())
-            ->toBe([$ongoing->id]);
-    });
-
-    it('applies the Leads, Opportunities and Created This Year presets', function () {
-        CRMHelper::actingAs([]);
-
-        $lead = CRMHelper::lead();
-        $opportunity = CRMHelper::opportunity();
-        $oldOpportunity = CRMHelper::opportunity(['created_at' => now()->subYear()->startOfYear()]);
-
-        $leads = [$lead, $opportunity, $oldOpportunity];
-
-        expect(LeadsAnalysisReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['leads']])->pluck('crm_leads.id')->all())
-            ->toBe([$lead->id])
-            ->and(LeadsAnalysisReport::applyFilters(reportEngineLeadQuery($leads), ['presets' => ['opportunities', 'created_this_year']])->pluck('crm_leads.id')->all())
-            ->toBe([$opportunity->id]);
-    });
-
-    it('ignores presets the report does not offer', function () {
-        CRMHelper::actingAs([]);
-
-        $lead = CRMHelper::lead();
-
-        expect(ForecastReport::presets())->not->toHaveKey('leads')
-            ->and(ForecastReport::applyFilters(reportEngineLeadQuery([$lead]), ['presets' => ['leads', 'no_such_preset']])->count())
-            ->toBe(1);
-    });
-
     it('filters by salespeople and sales teams', function () {
         CRMHelper::actingAs([]);
 

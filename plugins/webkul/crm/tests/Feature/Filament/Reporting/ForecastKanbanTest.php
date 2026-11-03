@@ -331,7 +331,7 @@ it('switches the forecast between kanban, graph and list without leaving the pag
 
     $component->call('switchViewLayout', 'list')->assertSet('viewLayout', 'list');
 
-    expect($component->instance()->getTableFilterState('upcoming_closings')['isActive'] ?? null)->toBeTrue();
+    expect(collect($component->get('tableFilters')['queryBuilder']['rules'] ?? [])->pluck('type')->all())->toContain('expected_closing_date');
 
     $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
 });

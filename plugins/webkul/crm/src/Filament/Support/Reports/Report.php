@@ -2,7 +2,6 @@
 
 namespace Webkul\Crm\Filament\Support\Reports;
 
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +16,7 @@ abstract class Report
 
     abstract public static function measures(): array;
 
-    abstract public static function presets(): array;
+    abstract public static function getDefaultRules(): array;
 
     abstract public static function getDefaultMeasure(): string;
 
@@ -38,18 +37,12 @@ abstract class Report
         return 'team_id';
     }
 
-    public static function getDefaultPresets(): array
-    {
-        return array_keys(array_filter(static::presets(), fn (array $preset): bool => $preset['default'] ?? false));
-    }
-
     public static function getDefaultFilters(): array
     {
         return [
             'measure'  => static::getDefaultMeasure(),
             'group_by' => static::getDefaultGroupBy(),
             'split_by' => static::getDefaultSplitBy(),
-            'presets'  => static::getDefaultPresets(),
             'user_ids' => [],
             'team_ids' => [],
         ];
@@ -69,14 +62,6 @@ abstract class Report
 
     public static function applyFilters(Builder $query, array $filters): Builder
     {
-        $presets = static::presets();
-
-        foreach ((array) ($filters['presets'] ?? []) as $preset) {
-            if (isset($presets[$preset])) {
-                $presets[$preset]['query']($query);
-            }
-        }
-
         $model = $query->getModel();
 
         return $query
@@ -146,22 +131,9 @@ abstract class Report
         return array_map(fn (Dimension $dimension): string => $dimension->label, static::dimensions());
     }
 
-    public static function getPresetOptions(): array
-    {
-        return array_map(fn (array $preset): string => $preset['label'], static::presets());
-    }
-
     public static function getTableFilters(): array
     {
         return [
-            ...collect(static::presets())
-                ->map(fn (array $preset, string $key): Filter => Filter::make($key)
-                    ->label($preset['label'])
-                    ->toggle()
-                    ->default($preset['default'] ?? false)
-                    ->query(fn (Builder $query): Builder => $preset['query']($query)))
-                ->values()
-                ->all(),
             SelectFilter::make('user_ids')
                 ->label(__('crm::filament/clusters/reporting/report.filters.salespeople'))
                 ->options(fn (): array => static::getSalespersonOptions())

@@ -4,13 +4,16 @@ namespace Webkul\Crm\Filament\Support;
 
 use Closure;
 use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\Constraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\Operators\Operator;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 
 class LeadTableFilters
@@ -67,9 +70,98 @@ class LeadTableFilters
         return ['type' => 'team', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $teamId]]]];
     }
 
+    public static function activityLogs(): QueryBuilder
+    {
+        return static::make([
+            static::relationship('activityType', __('crm::filament/clusters/reporting/report.dimensions.activity-type'), 'heroicon-o-clipboard-document-list'),
+            static::relationship('assignedTo', __('crm::filament/clusters/reporting/report.dimensions.assigned-to'), 'heroicon-o-user'),
+            static::relationship('doneBy', __('crm::filament/clusters/reporting/report.dimensions.done-by'), 'heroicon-o-user-circle'),
+            static::leadType('lead_type'),
+            DateConstraint::make('done_at')->label(__('crm::filament/clusters/reporting/report.dimensions.done-at')),
+        ]);
+    }
+
+    public static function report(QueryBuilder $filter, array $defaultRules, array $constraints = []): QueryBuilder
+    {
+        return $filter
+            ->constraints([
+                static::relationship('user', __('crm::filament/clusters/reporting/report.dimensions.salesperson'), 'heroicon-o-user-circle')->emptyable(),
+                ...$constraints,
+                static::active(),
+                static::won(),
+                DateConstraint::make('closed_at')->label(__('crm::filament/clusters/reporting/report.dimensions.closed-at')),
+            ])
+            ->default($defaultRules);
+    }
+
+    public static function activeRule(): array
+    {
+        return ['type' => 'active', 'data' => ['operator' => 'isActive', 'settings' => []]];
+    }
+
+    public static function salespersonRule(int|string $userId): array
+    {
+        return ['type' => 'user', 'data' => ['operator' => 'isRelatedTo', 'settings' => ['values' => [(string) $userId]]]];
+    }
+
+    public static function relativeDateRule(string $field, string $preset): array
+    {
+        return ['type' => $field, 'data' => ['operator' => 'isAfter', 'settings' => ['mode' => 'relative', 'preset' => $preset]]];
+    }
+
+    public static function leadType(string $column): SelectConstraint
+    {
+        return SelectConstraint::make($column)
+            ->label(__('crm::filament/clusters/reporting/report.dimensions.type'))
+            ->icon('heroicon-o-squares-2x2')
+            ->options(LeadType::class)
+            ->multiple();
+    }
+
+    protected static function won(): Constraint
+    {
+        $wonStage = fn (Builder $query): Builder => $query->where('is_won', true);
+
+        return Constraint::make('won')
+            ->label(__('crm::filament/clusters/reporting/report.rules.won.label'))
+            ->icon('heroicon-o-trophy')
+            ->operators([
+                Operator::make('isWon')
+                    ->label(fn (bool $isInverse): string => $isInverse
+                        ? __('crm::filament/clusters/reporting/report.rules.won.is-not-won')
+                        : __('crm::filament/clusters/reporting/report.rules.won.is-won'))
+                    ->summary(fn (bool $isInverse): string => $isInverse
+                        ? __('crm::filament/clusters/reporting/report.rules.won.not-won')
+                        : __('crm::filament/clusters/reporting/report.rules.won.label'))
+                    ->query(fn (Builder $query, bool $isInverse): Builder => $isInverse
+                        ? $query->whereDoesntHave('stage', $wonStage)
+                        : $query->whereHas('stage', $wonStage)),
+            ]);
+    }
+
+    protected static function active(): Constraint
+    {
+        return Constraint::make('active')
+            ->label(__('crm::filament/clusters/reporting/report.rules.active.label'))
+            ->icon('heroicon-o-check-circle')
+            ->attribute('deleted_at')
+            ->operators([
+                Operator::make('isActive')
+                    ->label(fn (bool $isInverse): string => $isInverse
+                        ? __('crm::filament/clusters/reporting/report.rules.active.is-not-active')
+                        : __('crm::filament/clusters/reporting/report.rules.active.is-active'))
+                    ->summary(fn (bool $isInverse): string => $isInverse
+                        ? __('crm::filament/clusters/reporting/report.rules.active.not-active')
+                        : __('crm::filament/clusters/reporting/report.rules.active.label'))
+                    ->query(fn (Builder $query, string $qualifiedColumn, bool $isInverse): Builder => $isInverse
+                        ? $query->whereNotNull($qualifiedColumn)
+                        : $query->whereNull($qualifiedColumn)),
+            ]);
+    }
+
     public static function make(array $constraints): QueryBuilder
     {
-        return QueryBuilder::make()
+        return DefaultRulesQueryBuilder::make()
             ->constraintPickerColumns(2)
             ->constraints(array_values(array_filter($constraints)));
     }

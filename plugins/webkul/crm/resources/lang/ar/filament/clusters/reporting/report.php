@@ -48,20 +48,9 @@ return [
     ],
 
     'presets' => [
-        'my-pipeline'       => 'مسار مبيعاتي',
-        'unassigned'        => 'غير مسندة',
-        'opportunities'     => 'الفرص',
-        'leads'             => 'العملاء المحتملون',
-        'upcoming-closings' => 'الإغلاقات القادمة',
-        'active'            => 'نشطة',
         'ongoing'           => 'جارية',
         'won'               => 'مكسوبة',
         'lost'              => 'خاسرة',
-        'created-this-year' => 'أنشئت هذا العام',
-        'closed-this-year'  => 'أغلقت هذا العام',
-        'last-12-months'    => 'آخر 12 شهراً',
-        'my-activities'     => 'أنشطتي',
-        'done-by-me'        => 'أنجزتها أنا',
     ],
 
     'table' => [
@@ -89,6 +78,22 @@ return [
             'assigned-to'      => 'مسند إلى',
             'done-by'          => 'أنجز بواسطة',
             'due-date'         => 'تاريخ الاستحقاق',
+        ],
+    ],
+
+    'rules' => [
+        'active' => [
+            'label'         => 'نشطة',
+            'is-active'     => 'نشطة',
+            'is-not-active' => 'غير نشطة',
+            'not-active'    => 'غير نشطة',
+        ],
+
+        'won' => [
+            'label'      => 'مكسوبة',
+            'is-won'     => 'مكسوبة',
+            'is-not-won' => 'غير مكسوبة',
+            'not-won'    => 'غير مكسوبة',
         ],
     ],
 

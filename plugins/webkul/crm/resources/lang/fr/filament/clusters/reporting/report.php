@@ -48,20 +48,9 @@ return [
     ],
 
     'presets' => [
-        'my-pipeline'       => 'Mon pipeline',
-        'unassigned'        => 'Non assignées',
-        'opportunities'     => 'Opportunités',
-        'leads'             => 'Pistes',
-        'upcoming-closings' => 'Clôtures à venir',
-        'active'            => 'Actives',
         'ongoing'           => 'En cours',
         'won'               => 'Gagnées',
         'lost'              => 'Perdues',
-        'created-this-year' => 'Créées cette année',
-        'closed-this-year'  => 'Clôturées cette année',
-        'last-12-months'    => '12 derniers mois',
-        'my-activities'     => 'Mes activités',
-        'done-by-me'        => 'Réalisées par moi',
     ],
 
     'table' => [
@@ -89,6 +78,22 @@ return [
             'assigned-to'      => 'Assigné à',
             'done-by'          => 'Réalisée par',
             'due-date'         => 'Date d\'échéance',
+        ],
+    ],
+
+    'rules' => [
+        'active' => [
+            'label'         => 'Actives',
+            'is-active'     => 'Est actif',
+            'is-not-active' => 'N\'est pas actif',
+            'not-active'    => 'Non actives',
+        ],
+
+        'won' => [
+            'label'      => 'Gagnées',
+            'is-won'     => 'Est gagnée',
+            'is-not-won' => 'N\'est pas gagnée',
+            'not-won'    => 'Non gagnées',
         ],
     ],
 
