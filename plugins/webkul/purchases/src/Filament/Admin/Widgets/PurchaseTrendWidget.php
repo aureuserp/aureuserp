@@ -5,30 +5,24 @@ namespace Webkul\Purchase\Filament\Admin\Widgets;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use DateInterval;
 use DatePeriod;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 use Webkul\Purchase\Filament\Admin\Widgets\Concerns\HasPurchaseDashboardFilters;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class PurchaseTrendWidget extends ChartWidget
+class PurchaseTrendWidget extends DashboardChartWidget
 {
     use HasPurchaseDashboardFilters, HasWidgetShield;
 
-    protected const SERIES = [
-        'draft'    => '#2a78d6',
-        'sent'     => '#eb6834',
-        'purchase' => '#1baf7a',
-        'done'     => '#eda100',
-        'canceled' => '#e87ba4',
+    protected const SERIES_COLORS = [
+        'draft'    => 'gray',
+        'sent'     => 'info',
+        'purchase' => 'success',
+        'done'     => 'warning',
+        'canceled' => 'danger',
     ];
 
-    protected const INK_MUTED = '#898781';
-
-    protected const GRID = 'rgba(137, 135, 129, 0.25)';
-
     protected static ?int $sort = 2;
-
-    protected static bool $isLazy = false;
 
     protected ?string $maxHeight = '320px';
 
@@ -46,14 +40,14 @@ class PurchaseTrendWidget extends ChartWidget
         $byDay = $orders->groupBy(fn ($order) => Carbon::parse($order->ordered_at)->format('Y-m-d'));
 
         $labels = [];
-        $series = array_fill_keys(array_keys(self::SERIES), []);
+        $series = array_fill_keys(array_keys(self::SERIES_COLORS), []);
 
         foreach (new DatePeriod($start, new DateInterval('P1D'), (clone $end)->addDay()) as $date) {
             $labels[] = $date->format('M d');
 
             $daily = $byDay[$date->format('Y-m-d')] ?? collect();
 
-            foreach (array_keys(self::SERIES) as $state) {
+            foreach (array_keys(self::SERIES_COLORS) as $state) {
                 $series[$state][] = $daily->filter(fn ($order) => $this->stateValue($order->state) === $state)->count();
             }
         }
@@ -63,14 +57,14 @@ class PurchaseTrendWidget extends ChartWidget
                 fn (string $state): array => [
                     'label'            => __('purchases::filament/admin/widgets/purchase-dashboard.trend.states.'.$state),
                     'data'             => $series[$state],
-                    'borderColor'      => self::SERIES[$state],
-                    'backgroundColor'  => self::SERIES[$state],
+                    'borderColor'      => $this->brandColor(self::SERIES_COLORS[$state]),
+                    'backgroundColor'  => $this->brandColor(self::SERIES_COLORS[$state], 500, 0.12),
                     'borderWidth'      => 2,
                     'pointRadius'      => 0,
                     'pointHoverRadius' => 4,
                     'tension'          => 0.3,
                 ],
-                array_keys(self::SERIES)
+                array_keys(self::SERIES_COLORS)
             ),
             'labels' => $labels,
         ];
@@ -83,34 +77,21 @@ class PurchaseTrendWidget extends ChartWidget
 
     protected function getOptions(): array
     {
-        return [
-            'maintainAspectRatio' => false,
-            'interaction'         => ['mode' => 'index', 'intersect' => false],
-            'plugins'             => [
-                'legend' => [
-                    'position' => 'bottom',
-                    'labels'   => [
-                        'color'         => self::INK_MUTED,
-                        'boxWidth'      => 10,
-                        'boxHeight'     => 10,
-                        'usePointStyle' => true,
-                    ],
-                ],
-            ],
-            'scales' => [
-                'x' => [
-                    'border' => ['display' => false],
-                    'grid'   => ['display' => false],
-                    'ticks'  => ['color' => self::INK_MUTED, 'maxTicksLimit' => 12],
-                ],
-                'y' => [
-                    'beginAtZero' => true,
-                    'border'      => ['display' => false],
-                    'grid'        => ['color' => self::GRID],
-                    'ticks'       => ['color' => self::INK_MUTED, 'precision' => 0],
-                ],
+        $options = $this->lineChartOptions(12);
+
+        $options['plugins']['legend'] = [
+            'display'  => true,
+            'position' => 'bottom',
+            'labels'   => [
+                'color'         => $this->brandColor('gray', 500),
+                'boxWidth'      => 10,
+                'boxHeight'     => 10,
+                'usePointStyle' => true,
+                'padding'       => 14,
             ],
         ];
+
+        return $options;
     }
 
     protected function getType(): string

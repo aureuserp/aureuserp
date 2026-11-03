@@ -2,23 +2,25 @@
 
 namespace Webkul\Invoice\Filament\Widgets\Concerns;
 
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Invoice\Models\Invoice;
+use Webkul\Support\Filament\Concerns\HasDashboardMetrics;
 
 trait HasInvoiceDashboardFilters
 {
-    use InteractsWithPageFilters;
+    use HasDashboardMetrics;
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function dashboardFilters(): array
+    protected function dashboardDateColumn(): string
     {
-        return $this->pageFilters ?? [];
+        return 'invoice_date';
+    }
+
+    protected function dashboardValueColumn(): string
+    {
+        return 'amount_total_signed';
     }
 
     protected function applyFilters(Builder $query, string $partnerFilter, ?Carbon $start = null, ?Carbon $end = null): Builder
@@ -70,42 +72,5 @@ trait HasInvoiceDashboardFilters
         return $this->applyFilters($query, 'vendor_id', $start, $end)
             ->where($query->qualifyColumn('move_type'), MoveType::IN_INVOICE)
             ->where($query->qualifyColumn('state'), MoveState::POSTED);
-    }
-
-    /**
-     * @return array{0: Carbon, 1: Carbon}
-     */
-    protected function periodRange(): array
-    {
-        $filters = $this->dashboardFilters();
-
-        $start = ! empty($filters['start_date'])
-            ? Carbon::parse($filters['start_date'])->startOfDay()
-            : now()->subMonth()->startOfDay();
-
-        $end = ! empty($filters['end_date'])
-            ? Carbon::parse($filters['end_date'])->endOfDay()
-            : now()->endOfDay();
-
-        return [$start, $end];
-    }
-
-    /**
-     * @return array{0: Carbon, 1: Carbon}
-     */
-    protected function previousPeriodRange(): array
-    {
-        [$start, $end] = $this->periodRange();
-
-        $length = $start->diffInDays($end) + 1;
-
-        $previousEnd = (clone $start)->subDay()->endOfDay();
-
-        return [(clone $previousEnd)->subDays($length - 1)->startOfDay(), $previousEnd];
-    }
-
-    protected function dashboardCurrency(): ?string
-    {
-        return current_company()?->currency?->name;
     }
 }

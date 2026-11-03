@@ -3,7 +3,6 @@
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -13,7 +12,6 @@ use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResourc
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\ListAccrualPlans;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\ManageMilestone;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\ViewAccrualPlan;
-use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\RelationManagers\MilestoneRelationManager;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Schemas\AccrualPlanForm;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Schemas\AccrualPlanInfolist;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Tables\AccrualPlansTable;
@@ -61,16 +59,6 @@ class AccrualPlanResource extends Resource
             EditAccrualPlan::class,
             ManageMilestone::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Manage Milestones', [
-                MilestoneRelationManager::class,
-            ])
-                ->icon('heroicon-o-clipboard-list'),
-        ];
     }
 
     public static function getPages(): array

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers;
+namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -15,18 +15,37 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Livewire\Livewire;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
-class SkillsRelationManager extends RelationManager
+class ManageSkills extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
+    protected static string $resource = SkillTypeResource::class;
+
     protected static string $relationship = 'skills';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bolt';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Skills');
+    }
+
+    public static function getNavigationBadge($parameters = []): ?string
+    {
+        return (string) Livewire::current()->getRecord()->skills()->count();
+    }
 
     public function form(Schema $schema): Schema
     {

@@ -5,7 +5,6 @@ namespace Webkul\Employee\Filament\Resources;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Panel;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -16,8 +15,6 @@ use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ListEmployees;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ManageResume;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ManageSkill;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ViewEmployee;
-use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\ResumeRelationManager;
-use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers\SkillsRelationManager;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Schemas\EmployeeForm;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Schemas\EmployeeInfolist;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Tables\EmployeesTable;
@@ -94,22 +91,6 @@ class EmployeeResource extends Resource
             ManageSkill::class,
             ManageResume::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        $relations = [
-            RelationGroup::make('Manage Skills', [
-                SkillsRelationManager::class,
-            ])
-                ->icon('heroicon-o-bolt'),
-            RelationGroup::make('Manage Resumes', [
-                ResumeRelationManager::class,
-            ])
-                ->icon('heroicon-o-clipboard-document-list'),
-        ];
-
-        return $relations;
     }
 
     public static function getSlug(?Panel $panel = null): string

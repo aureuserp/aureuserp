@@ -6,6 +6,7 @@ use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
@@ -58,7 +59,7 @@ class Dashboard extends BaseDashboard
                         'default' => 1,
                         'sm'      => 2,
                         'md'      => 3,
-                        'xl'      => 6,
+                        'xl'      => 5,
                     ])
 
                     ->schema([
@@ -95,6 +96,16 @@ class Dashboard extends BaseDashboard
                         ),
                     ])->columnSpanFull(),
 
+            ]);
+    }
+
+    public function getWidgetsContentComponent(): Component
+    {
+        return parent::getWidgetsContentComponent()
+            ->extraAttributes([
+                'data-dashboard-widgets' => 'true',
+                'wire:loading.class'     => 'dashboard-widgets--loading',
+                'wire:target'            => 'filters',
             ]);
     }
 

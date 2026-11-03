@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers;
+namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -17,21 +17,40 @@ use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Livewire\Livewire;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource;
 use Webkul\Support\Filament\Tables as CustomTables;
 use Webkul\Support\Filament\Tables\Infolists\ProgressBarEntry;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
-class SkillLevelRelationManager extends RelationManager
+class ManageSkillLevels extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
+    protected static string $resource = SkillTypeResource::class;
+
     protected static string $relationship = 'skillLevels';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Levels');
+    }
+
+    public static function getNavigationBadge($parameters = []): ?string
+    {
+        return (string) Livewire::current()->getRecord()->skillLevels()->count();
+    }
 
     public function form(Schema $schema): Schema
     {

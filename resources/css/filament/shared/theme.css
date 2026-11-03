@@ -770,3 +770,124 @@
         @apply size-3;
     }
 }
+
+.fi-wi-stats-overview-stat.dashboard-stat {
+    --stat-accent: var(--primary-500);
+
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    min-height: 6rem;
+    padding: 1.1rem 1.25rem 2.25rem 4.9rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat::before {
+    content: none;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px color-mix(in srgb, var(--gray-950) 12%, transparent);
+}
+
+.dark .fi-wi-stats-overview-stat.dashboard-stat:hover {
+    box-shadow: 0 10px 26px color-mix(in srgb, var(--gray-950) 45%, transparent);
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-label-ctn > svg,
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-label-ctn > .fi-icon {
+    position: absolute;
+    inset-inline-start: 1rem;
+    top: 1rem;
+    width: 2.9rem;
+    height: 2.9rem;
+    padding: 0.62rem;
+    border-radius: 0.9rem;
+    color: var(--stat-accent);
+    background: color-mix(in srgb, var(--stat-accent) 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--stat-accent) 22%, transparent);
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-content {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+        'value desc'
+        'label label';
+    align-items: baseline;
+    column-gap: 0.5rem;
+    row-gap: 0.1rem;
+    width: 100%;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-value {
+    grid-area: value;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-description {
+    grid-area: desc;
+    justify-self: start;
+    font-size: 0.8rem;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-label-ctn {
+    grid-area: label;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-label {
+    font-size: 0.8rem;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-chart {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat .fi-wi-stats-overview-stat-chart > canvas {
+    height: 2.1rem;
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat--primary {
+    --stat-accent: var(--primary-500);
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat--info {
+    --stat-accent: var(--info-500);
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat--success {
+    --stat-accent: var(--success-500);
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat--warning {
+    --stat-accent: var(--warning-500);
+}
+
+.fi-wi-stats-overview-stat.dashboard-stat--danger {
+    --stat-accent: var(--danger-500);
+}
+
+.dashboard-table-row .fi-ta-cell {
+    padding: 0px 4px;
+}
+
+.dashboard-table-row .fi-ta-text.fi-ta-text-has-descriptions {
+    gap: 0px;
+}
+
+[data-dashboard-widgets].dashboard-widgets--loading .fi-grid-col {
+    filter: blur(3px);
+    opacity: 0.6;
+    pointer-events: none;
+    transition: filter 0.15s ease, opacity 0.15s ease;
+}

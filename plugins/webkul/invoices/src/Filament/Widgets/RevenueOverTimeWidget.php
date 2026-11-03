@@ -9,22 +9,17 @@ use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
+use Webkul\Support\Filament\Concerns\HasChartTheme;
 
 class RevenueOverTimeWidget extends ChartWidget
 {
-    use HasInvoiceDashboardFilters, HasWidgetShield;
-
-    protected const BAR_COLOR = '#2a78d6';
-
-    protected const INK_MUTED = '#898781';
-
-    protected const GRID = 'rgba(137, 135, 129, 0.25)';
+    use HasChartTheme, HasInvoiceDashboardFilters, HasWidgetShield;
 
     protected static ?int $sort = 3;
 
     protected static bool $isLazy = false;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     protected ?string $maxHeight = '300px';
 
@@ -60,14 +55,7 @@ class RevenueOverTimeWidget extends ChartWidget
 
         return [
             'datasets' => [
-                [
-                    'label'           => __('invoices::filament/widgets/invoice-dashboard.revenue-over-time.revenue'),
-                    'data'            => $data,
-                    'backgroundColor' => self::BAR_COLOR,
-                    'borderRadius'    => 4,
-                    'borderSkipped'   => 'bottom',
-                    'maxBarThickness' => 24,
-                ],
+                $this->gradientLineDataset($data),
             ],
             'labels' => $labels,
         ];
@@ -77,25 +65,21 @@ class RevenueOverTimeWidget extends ChartWidget
     {
         return [
             'maintainAspectRatio' => false,
-            'plugins'             => ['legend' => ['display' => false]],
-            'scales'              => [
-                'x' => [
-                    'border' => ['display' => false],
-                    'grid'   => ['display' => false],
-                    'ticks'  => ['color' => self::INK_MUTED, 'maxTicksLimit' => 12],
-                ],
-                'y' => [
-                    'beginAtZero' => true,
-                    'border'      => ['display' => false],
-                    'grid'        => ['color' => self::GRID],
-                    'ticks'       => ['color' => self::INK_MUTED],
-                ],
+            'interaction'         => $this->chartInteraction('index'),
+            'plugins'             => [
+                'entrance' => ['type' => 'progressive-line', 'duration' => 700, 'stagger' => 22],
+
+                'lineGradient' => $this->revenueLineGradient(),
+
+                'legend'  => ['display' => false],
+                'tooltip' => $this->chartTooltip(),
             ],
+            'scales'              => $this->cartesianScales(12),
         ];
     }
 
     protected function getType(): string
     {
-        return 'bar';
+        return 'line';
     }
 }

@@ -3,6 +3,7 @@
 namespace Webkul\Purchase\Filament\Admin\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -24,6 +25,7 @@ class TopOrdersWidget extends BaseWidget
     {
         return $table
             ->defaultKeySort(false)
+            ->recordClasses('dashboard-table-row')
             ->recordUrl(fn ($record): ?string => PurchaseOrderResource::canAccess()
                 ? PurchaseOrderResource::getUrl('view', ['record' => $record->id])
                 : null);
@@ -45,18 +47,17 @@ class TopOrdersWidget extends BaseWidget
             ->with(['partner', 'currency'])
             ->where('total_amount', '>', 0)
             ->orderByDesc('total_amount')
-            ->limit(10);
+            ->limit(5);
     }
 
     protected function getTableColumns(): array
     {
         return [
             Tables\Columns\TextColumn::make('name')
-                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.reference')),
-            Tables\Columns\TextColumn::make('partner.name')
-                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.vendor'))
-                ->placeholder('-')
-                ->wrap(),
+                ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.reference'))
+                ->weight(FontWeight::Bold)
+                ->color('primary')
+                ->description(fn ($record): string => $record->partner?->name ?: '—'),
             Tables\Columns\TextColumn::make('receipt_status')
                 ->label(__('purchases::filament/admin/widgets/purchase-dashboard.receipt-status'))
                 ->badge()
@@ -68,6 +69,7 @@ class TopOrdersWidget extends BaseWidget
             Tables\Columns\TextColumn::make('total_amount')
                 ->label(__('purchases::filament/admin/widgets/purchase-dashboard.top-orders.columns.amount'))
                 ->money(fn (PurchaseOrder $record) => $record->currency?->name ?? $this->dashboardCurrency())
+                ->weight(FontWeight::Bold)
                 ->alignEnd(),
         ];
     }

@@ -2,22 +2,22 @@
 
 namespace Webkul\Website\Filament\Admin\Widgets;
 
-use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Webkul\Blog\Models\Category;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class CategoriesPieChart extends ChartWidget
+class CategoriesPieChart extends DashboardChartWidget
 {
     use InteractsWithPageFilters;
+
+    protected static ?int $sort = 2;
+
+    protected ?string $maxHeight = '250px';
 
     public function getHeading(): ?string
     {
         return __('website::filament/admin/widgets/blog-chart.blogs-by-category');
     }
-
-    protected static ?int $sort = 2;
-
-    protected ?string $maxHeight = '250px';
 
     protected function getType(): string
     {
@@ -52,34 +52,29 @@ class CategoriesPieChart extends ChartWidget
         $data = $categories->pluck('filtered_posts_count')->toArray();
 
         if (empty($labels)) {
-            return [
-                'datasets' => [
-                    [
-                        'label'           => 'Blogs by Category',
-                        'data'            => [0],
-                        'backgroundColor' => [
-                            '#4CAF50',
-                        ],
-                    ],
-                ],
+            $labels = [__('website::filament/admin/widgets/blog-chart.no-data-available')];
 
-                'labels' => [__('website::filament/admin/widgets/blog-chart.no-data-available')],
-            ];
+            $data = [0];
         }
+
+        $ramp = $this->chartRamp();
 
         return [
             'datasets' => [
                 [
-                    'label'           => 'Blogs by Category',
+                    'label'           => __('website::filament/admin/widgets/blog-chart.blogs-by-category'),
                     'data'            => $data,
-                    'backgroundColor' => [
-                        '#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0',
-                        '#00BCD4', '#8BC34A', '#FF9800', '#E91E63', '#795548',
-                    ],
+                    'backgroundColor' => array_map(fn (int $index): string => $ramp[$index % count($ramp)], array_keys($data)),
+                    'borderWidth'     => 0,
                 ],
             ],
 
             'labels' => $labels,
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return $this->doughnutChartOptions();
     }
 }

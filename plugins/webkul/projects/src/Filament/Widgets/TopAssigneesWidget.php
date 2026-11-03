@@ -70,12 +70,13 @@ class TopAssigneesWidget extends BaseWidget
             ->whereBetween('analytic_records.created_at', [$startDate, $endDate])
             ->groupBy('user_id', 'users.name')
             ->orderByRaw('SUM(unit_amount) DESC')
-            ->limit(10);
+            ->limit(5);
 
         return $table
             ->query($query)
             ->defaultKeySort(false)
-            ->defaultPaginationPageOption(5)
+            ->recordClasses('dashboard-table-row')
+            ->paginated(false)
             ->columns([
                 TextColumn::make('user_name')
                     ->label(__('projects::filament/widgets/top-assignees.table-columns.user'))

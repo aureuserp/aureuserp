@@ -11,6 +11,7 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pag
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ManageAddresses;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ManageBankAccounts;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ManageContacts;
+use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ManageInvoices;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\Accounting\Models\Customer;
 
@@ -34,6 +35,7 @@ class CustomerResource extends BaseCustomerResource
             ManageContacts::class,
             ManageAddresses::class,
             ManageBankAccounts::class,
+            ManageInvoices::class,
         ]);
     }
 
@@ -47,6 +49,7 @@ class CustomerResource extends BaseCustomerResource
             'contacts'      => ManageContacts::route('/{record}/contacts'),
             'addresses'     => ManageAddresses::route('/{record}/addresses'),
             'bank-accounts' => ManageBankAccounts::route('/{record}/bank-accounts'),
+            'invoices'      => ManageInvoices::route('/{record}/invoices'),
         ];
     }
 }
