@@ -460,8 +460,7 @@ class Lead extends Model
                 app(LeadScoring::class)->refresh($lead);
             }
 
-            if (! $lead->wasRecentlyCreated
-                && $lead->wasChanged('stage_id')
+            if ($lead->wasChanged('stage_id')
                 && Stage::query()->whereKey([$lead->stage_id, $lead->getOriginal('stage_id')])->where('is_won', true)->exists()) {
                 LeadScoring::scheduleRefresh();
             }

@@ -37,7 +37,7 @@ it('shows lead, email, city, country, salesperson and sales team in the list', f
         ->assertTableColumnVisible('country.name')
         ->assertTableColumnVisible('user.name')
         ->assertTableColumnVisible('team.name')
-        ->assertTableColumnHidden('contact_name');
+        ->assertTableColumnExists('contact_name', fn (TextColumn $column): bool => $column->isToggledHidden());
 
     expect($component->instance()->getViewLayout())->toBe(ViewLayout::LIST);
 });

@@ -389,6 +389,7 @@ it('marks won opportunities with a green status badge', function () {
 
     $label = e(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.won'));
 
-    expect(Livewire::test(ListForecast::class)->assertSee($won->name)->html())
-        ->toMatch('/class="[^"]*fi-badge[^"]*fi-color-success[^"]*"[^>]*>\\s*<span class="fi-badge-label-ctn">\\s*<span class="fi-badge-label">\\s*'.preg_quote($label, '/').'\\s*</');
+    $html = preg_replace('/<!--.*?-->/s', '', Livewire::test(ListForecast::class)->assertSee($won->name)->html());
+
+    expect($html)->toMatch('/class="(?=[^"]*\\bfi-badge\\b)(?=[^"]*\\bfi-color-success\\b)[^"]*"[^>]*>\\s*<span class="fi-badge-label-ctn">\\s*<span class="fi-badge-label">\\s*'.preg_quote($label, '/').'\\s*</');
 });

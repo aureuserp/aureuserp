@@ -22,7 +22,7 @@ class LeadFactory extends Factory
             'type'                  => LeadType::OPPORTUNITY,
             'name'                  => fake()->catchPhrase(),
             'email'                 => fake()->safeEmail(),
-            'phone'                 => fake()->phoneNumber(),
+            'phone'                 => fake()->numerify('+1 555 ### ####'),
             'expected_revenue'      => fake()->randomFloat(2, 500, 50000),
             'probability'           => fake()->numberBetween(10, 90),
             'priority'              => fake()->randomElement(OpportunityPriority::cases()),

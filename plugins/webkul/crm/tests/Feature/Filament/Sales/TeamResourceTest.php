@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Actions\Action;
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
@@ -265,15 +266,17 @@ it('links the team card menu to the team\'s records and reports', function () {
     $team = salesTeamInCompany('Menu team');
     $reportFilters = ['filters' => ['team_ids' => ['values' => [$team->id]]]];
 
-    Livewire::test(ListTeams::class)
+    $component = Livewire::test(ListTeams::class)
         ->assertSeeHtml(e(LeadResource::getUrl('index', ['activeTableView' => 'all', 'filters' => ['queryBuilder' => ['rules' => ['team' => LeadTableFilters::teamRule($team->id)]]]])))
         ->assertSeeHtml(e(TeamResource::getUrl('opportunities', ['record' => $team, 'layout' => 'list'])))
         ->assertSeeHtml(e(QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($team->id, TeamOrderScope::SALES_ORDERS))))
         ->assertDontSeeHtml(e(LeadResource::getUrl('create', ['team' => $team->id])))
         ->assertSeeHtml(e(ConfigurationTeamResource::getUrl('edit', ['record' => $team])))
-        ->assertActionDoesNotExist(TestAction::make('pipeline')->table($team))
         ->assertSeeHtml(e(PipelineAnalysisResource::getUrl('index', $reportFilters)))
         ->assertSeeHtml(e(ForecastResource::getUrl('index', [...$reportFilters, 'layout' => 'graph'])));
+
+    expect(collect($component->instance()->getTable()->getRecordActions())->filter(fn ($action): bool => $action instanceof Action)->map->getName()->all())
+        ->not->toContain('pipeline');
 });
 
 it('builds the team card from filament columns and record actions', function () {

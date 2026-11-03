@@ -400,14 +400,14 @@ describe('merging', function () {
         $record = CRMHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $user->id]);
         $duplicate = CRMHelper::opportunity(['email' => 'choose@acme.test', 'user_id' => $otherUser->id]);
 
-        Livewire::withQueryParams(['layout' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])
             ->test(SimilarOpportunities::class, ['record' => $record->id])
             ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id, 'user_id' => null])
             ->assertHasTableBulkActionErrors(['user_id' => 'required']);
 
         expect(Lead::query()->find($duplicate->id))->not->toBeNull();
 
-        Livewire::withQueryParams(['layout' => 'list'])
+        Livewire::withQueryParams(['layout' => 'list', 'activeTableView' => 'default'])
             ->test(SimilarOpportunities::class, ['record' => $record->id])
             ->callTableBulkAction('mergeLeads', [$record, $duplicate], ['head' => $record->id, 'user_id' => $otherUser->id])
             ->assertHasNoTableBulkActionErrors();

@@ -5,6 +5,7 @@ namespace Webkul\PluginManager;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelPackageTools\Package as BasePackage;
 use Symfony\Component\Process\ExecutableFinder;
@@ -205,14 +206,14 @@ class Package extends BasePackage
 
             if (app()->isProduction()) {
                 if (app()->runningInConsole()) {
-                    Artisan::call('optimize');
+                    static::optimizeInFreshProcess();
 
                     return;
                 }
 
                 app()->terminating(static function (): void {
                     try {
-                        Artisan::call('optimize');
+                        static::optimizeInFreshProcess();
                     } catch (Throwable $e) {
                         report($e);
                     }
@@ -221,6 +222,14 @@ class Package extends BasePackage
         } catch (Throwable $e) {
             report($e);
         }
+    }
+
+    protected static function optimizeInFreshProcess(): void
+    {
+        Process::path(base_path())
+            ->timeout(300)
+            ->run([static::phpBinaryPath(), 'artisan', 'optimize'])
+            ->throw();
     }
 
     public static function phpBinaryPath(): string

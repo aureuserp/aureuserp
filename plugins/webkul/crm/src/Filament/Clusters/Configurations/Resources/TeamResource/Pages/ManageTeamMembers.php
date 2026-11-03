@@ -196,9 +196,9 @@ class ManageTeamMembers extends ManageRelatedRecords
                     ->visible($canEdit)
                     ->schema(fn (): array => static::memberFields($this))
                     ->registerModalActions([$this->confirmTeamMoveAction()])
-                    ->action(function (array $data, Action $action): void {
+                    ->action(function (array $data): void {
                         if ($this->confirmsTeamMove([$data['user_id']], $this->getRecord()->getKey())) {
-                            $action->halt();
+                            return;
                         }
 
                         $removedFrom = app(TeamMembership::class)->addMember($this->getRecord(), (int) $data['user_id'], Arr::except($data, ['user_id']));

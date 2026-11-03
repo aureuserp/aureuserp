@@ -52,11 +52,16 @@ class CRMHelper
 
         Package::$plugins = Plugin::all()->keyBy('name');
 
-        Closure::bind(fn () => PresetView::$cachedFavoriteTableViews = null, null, PresetView::class)();
+        static::forgetFavoriteTableViews();
 
         Closure::bind(fn () => LeadScoring::$refreshScheduled = false, null, LeadScoring::class)();
 
         URL::resolveMissingNamedRoutesUsing(fn () => '#');
+    }
+
+    public static function forgetFavoriteTableViews(): void
+    {
+        Closure::bind(fn () => PresetView::$cachedFavoriteTableViews = null, null, PresetView::class)();
     }
 
     protected static function ensureSeeded(): void

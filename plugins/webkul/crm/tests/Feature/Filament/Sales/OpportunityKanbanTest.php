@@ -310,6 +310,8 @@ it('saves a view from the board for the pipeline list', function () {
 
     $view = TableView::query()->where('name', 'Board high priority')->firstOrFail();
 
+    CRMHelper::forgetFavoriteTableViews();
+
     expect($view->filterable_type)->toBe(ListOpportunities::class)
         ->and(data_get($view->filters, 'tableFilters.queryBuilder.rules.priority.type'))->toBe('priority')
         ->and(array_keys(Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)->instance()->getCachedFavoriteTableViews()))->toContain($view->id);
@@ -781,7 +783,9 @@ it('lists a card\'s activities in a modal and opens the schedule form from it', 
     Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->mountAction('kanbanCardActivities', ['record' => $opportunity->id])
         ->assertActionMounted('kanbanCardActivities')
-        ->assertSee('Pipeline card activity')
+        ->assertMountedActionModalSee('Pipeline card activity');
+
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->callAction([
             TestAction::make('kanbanCardActivities')->arguments(['record' => $opportunity->id]),
             TestAction::make('scheduleAnotherKanbanActivity'),

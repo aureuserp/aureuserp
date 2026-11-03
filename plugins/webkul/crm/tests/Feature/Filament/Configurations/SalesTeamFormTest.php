@@ -159,6 +159,7 @@ it('asks with a warning before moving a member who is already in another team', 
     $user = FilamentHelper::actingAs(['view_any_crm_team', 'view_crm_team', 'create_crm_team', 'update_crm_team']);
 
     useSalespeopleInMultipleTeams(false);
+    useRuleBasedTeamAssignment();
 
     $first = Team::factory()->create(['name' => 'First single team', 'company_id' => Company::query()->value('id'), 'is_active' => true]);
     $second = Team::factory()->create(['company_id' => Company::query()->value('id'), 'is_active' => true]);
