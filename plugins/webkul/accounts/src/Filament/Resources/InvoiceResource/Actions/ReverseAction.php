@@ -126,7 +126,7 @@ class ReverseAction extends Action
     {
         return [
             'reference'         => Str::limit(
-                "Reversal of: {$move->name}, {$moveReversal->reason}",
+                __('accounts::system.reversal.reference-with-reason', ['name' => $move->name, 'reason' => $moveReversal->reason]),
                 250
             ),
             'date'              => $moveReversal->date,

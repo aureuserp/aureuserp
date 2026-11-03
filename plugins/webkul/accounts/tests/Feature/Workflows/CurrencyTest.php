@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Webkul\Account\Contracts\PostingValidator;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PostingOperation;
 use Webkul\Account\Exceptions\PostingRejectedException;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
@@ -173,6 +175,94 @@ it('leaves the documents unreconciled when the exchange-difference entry is reje
     expect(fn () => AccountHelper::reconcile($invoice, $creditNote))->toThrow(PostingRejectedException::class)
         ->and((float) $invoice->refresh()->amount_residual)->toBe($residual)
         ->and(PartialReconcile::count())->toBe(0);
+});
+
+it('keeps the reconciliation when reversing its exchange-difference entry is rejected', function () {
+    AccountHelper::setCurrencyRate($this->foreign, 4.0, now()->toDateString());
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->subYear()->toDateString(),
+        'date'         => now()->subYear()->toDateString(),
+    ]);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->toDateString(),
+        'date'         => now()->toDateString(),
+    ]);
+    AccountHelper::productLine($creditNote, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($creditNote);
+
+    AccountHelper::reconcile($invoice, $creditNote);
+
+    $partial = PartialReconcile::whereNotNull('exchange_move_id')->latest('id')->firstOrFail();
+
+    AccountFacade::posting()->registerValidator(new class implements PostingValidator
+    {
+        public function validate(PostingContext $context): void
+        {
+            if ($context->operation === PostingOperation::REVERSE) {
+                throw new PostingRejectedException('closed period');
+            }
+        }
+    });
+
+    expect(fn () => AccountFacade::unReconcile($partial))->toThrow(PostingRejectedException::class)
+        ->and(PartialReconcile::whereKey($partial->id)->exists())->toBeTrue()
+        ->and(Move::where('reversed_entry_id', $partial->exchange_move_id)->exists())->toBeFalse();
+});
+
+it('keeps every reconciliation when resetting to draft is stopped by a rejected exchange reversal', function () {
+    AccountHelper::setCurrencyRate($this->foreign, 4.0, now()->toDateString());
+
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner, null, [
+        'currency_id'  => $this->foreign->id,
+        'invoice_date' => now()->subYear()->toDateString(),
+        'date'         => now()->subYear()->toDateString(),
+    ]);
+    AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+    AccountHelper::post($invoice);
+
+    foreach ([1, 2] as $index) {
+        $creditNote = AccountHelper::invoice(MoveType::OUT_REFUND, $this->partner, null, [
+            'currency_id'  => $this->foreign->id,
+            'invoice_date' => now()->toDateString(),
+            'date'         => now()->toDateString(),
+        ]);
+        AccountHelper::productLine($creditNote, $this->income, qty: 1, priceUnit: 100);
+        AccountHelper::post($creditNote);
+
+        AccountHelper::reconcile($invoice, $creditNote);
+    }
+
+    $invoiceLineIds = $invoice->refresh()->lines->pluck('id');
+
+    $partials = PartialReconcile::query()
+        ->where(fn ($query) => $query->whereIn('debit_move_id', $invoiceLineIds)->orWhereIn('credit_move_id', $invoiceLineIds))
+        ->orderBy('id')
+        ->get();
+
+    expect($partials->count())->toBeGreaterThanOrEqual(2)
+        ->and($partials->whereNotNull('exchange_move_id')->count())->toBeGreaterThanOrEqual(1)
+        ->and($partials->first()->exchange_move_id)->toBeNull();
+
+    AccountFacade::posting()->registerValidator(new class implements PostingValidator
+    {
+        public function validate(PostingContext $context): void
+        {
+            if ($context->operation === PostingOperation::REVERSE) {
+                throw new PostingRejectedException('closed period');
+            }
+        }
+    });
+
+    expect(fn () => AccountHelper::resetToDraft($invoice))->toThrow(PostingRejectedException::class)
+        ->and(PartialReconcile::whereKey($partials->pluck('id'))->count())->toBe($partials->count())
+        ->and(Move::whereIn('reversed_entry_id', $partials->pluck('exchange_move_id')->filter())->exists())->toBeFalse()
+        ->and($invoice->refresh()->state)->toBe(MoveState::POSTED);
 });
 
 it('marks a foreign-currency invoice paid when settled in its own currency', function () {

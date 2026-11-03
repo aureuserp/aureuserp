@@ -12,7 +12,18 @@ return [
         'rejected-by-validator' => 'O lançamento foi rejeitado: :reason',
         'move-not-postable'     => 'O lançamento contábil não pode ser lançado: :reason',
         'move-not-reversible'   => 'O lançamento contábil :move não pode ser estornado.',
-        'duplicate-source'      => 'A chave de origem já foi usada pelo lançamento contábil :move com linhas diferentes.',
+        'duplicate-source'      => 'A chave de origem já foi usada pelo lançamento contábil :move com dados diferentes.',
+        'unexpected-error'      => 'Ocorreu um erro inesperado, que foi registrado.',
+    ],
+
+    'reversal' => [
+        'reference'             => 'Estorno de: :name',
+        'reference-with-reason' => 'Estorno de: :name, :reason',
+    ],
+
+    'exchange-difference' => [
+        'line-label'     => 'Diferença de taxa de câmbio',
+        'not-configured' => 'Configure primeiro o diário de diferenças cambiais e as contas de ganhos e perdas cambiais.',
     ],
 
     'tax-formula' => [

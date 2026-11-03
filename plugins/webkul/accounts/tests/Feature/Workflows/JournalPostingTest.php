@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -8,6 +9,7 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PostingError;
 use Webkul\Account\Enums\PostingOperation;
+use Webkul\Account\Exceptions\MissingJournalException;
 use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Exceptions\PostingRejectedException;
 use Webkul\Account\Facades\Account as AccountFacade;
@@ -52,9 +54,9 @@ function postingEntry(array $overrides = []): EntryData
         'userId'     => $test->user->id,
         'journalId'  => $test->journal->id,
         'date'       => now()->toDateString(),
-        'reference'  => 'Z-REPORT-1',
-        'sourceType' => 'pos_session',
-        'sourceKey'  => 'session-1',
+        'reference'  => 'BATCH-REF-1',
+        'sourceType' => 'external_batch',
+        'sourceKey'  => 'batch-1',
         'lines'      => [
             new LineData(accountId: $test->debitAccount->id, debit: 100, label: 'Cash'),
             new LineData(accountId: $test->creditAccount->id, credit: 100, label: 'Sales'),
@@ -62,15 +64,20 @@ function postingEntry(array $overrides = []): EntryData
     ], $overrides));
 }
 
-function postingErrorOf(callable $callback): ?PostingError
+function postingExceptionOf(callable $callback): ?PostingException
 {
     try {
         $callback();
     } catch (PostingException $exception) {
-        return $exception->error;
+        return $exception;
     }
 
     return null;
+}
+
+function postingErrorOf(callable $callback): ?PostingError
+{
+    return postingExceptionOf($callback)?->error;
 }
 
 function rejectingValidator(PostingOperation $operation): PostingValidator
@@ -102,8 +109,8 @@ it('creates and posts an entry from structured data', function () {
         ->and($move->name)->not->toBeEmpty()
         ->and($move->journal_id)->toBe($this->journal->id)
         ->and($move->creator_id)->toBe($this->user->id)
-        ->and($move->source_document_type)->toBe('pos_session')
-        ->and($move->source_document_key)->toBe('session-1')
+        ->and($move->source_document_type)->toBe('external_batch')
+        ->and($move->source_document_key)->toBe('batch-1')
         ->and($move->lines->pluck('account_id')->sort()->values()->all())->toBe(collect([$this->debitAccount->id, $this->creditAccount->id])->sort()->values()->all())
         ->and((float) $move->lines->sum('debit'))->toBe(100.0)
         ->and((float) $move->lines->sum('credit'))->toBe(100.0);
@@ -116,7 +123,7 @@ it('returns the original entry when the same source is sent again', function () 
 
     expect($second->replayed)->toBeTrue()
         ->and($second->move->id)->toBe($first->move->id)
-        ->and(Move::where('source_document_key', 'session-1')->count())->toBe(1);
+        ->and(Move::where('source_document_key', 'batch-1')->count())->toBe(1);
 });
 
 it('rejects an unbalanced entry and leaves nothing behind', function () {
@@ -183,7 +190,7 @@ it('refuses to post an entry whose persisted lines do not balance', function () 
     AccountHelper::entryLine($entry, $this->debitAccount, debit: 100, credit: 0);
     AccountHelper::entryLine($entry, $this->creditAccount, debit: 0, credit: 90);
 
-    expect(fn () => AccountHelper::post($entry))->toThrow(Exception::class)
+    expect(postingErrorOf(fn () => AccountHelper::post($entry)))->toBe(PostingError::UNBALANCED)
         ->and($entry->refresh()->state)->toBe(MoveState::DRAFT);
 });
 
@@ -195,8 +202,8 @@ it('reverses an entry so both entries net to zero after recomputation', function
         userId: $this->user->id,
         moveId: $original->id,
         date: now()->toDateString(),
-        sourceType: 'pos_session',
-        sourceKey: 'session-1-reversal',
+        sourceType: 'external_batch',
+        sourceKey: 'batch-1-reversal',
     ))->move;
 
     AccountFacade::computeAccountMove($original->refresh());
@@ -212,7 +219,7 @@ it('reverses an entry so both entries net to zero after recomputation', function
         ->and((float) $reversedCash->debit)->toBe(0.0)
         ->and((float) $reversedCash->credit)->toBe(100.0)
         ->and($reversal->reversed_entry_id)->toBe($original->id)
-        ->and($reversal->source_document_key)->toBe('session-1-reversal')
+        ->and($reversal->source_document_key)->toBe('batch-1-reversal')
         ->and($net->unique()->values()->all())->toBe([0.0]);
 });
 
@@ -223,7 +230,7 @@ it('refuses to reverse an entry twice', function () {
         companyId: $this->company->id,
         userId: $this->user->id,
         moveId: $original->id,
-        sourceType: 'pos_session',
+        sourceType: 'external_batch',
         sourceKey: $key,
     ));
 
@@ -265,7 +272,7 @@ it('rejects the same source key when the lines differ', function () {
     ])));
 
     expect($error)->toBe(PostingError::DUPLICATE_SOURCE)
-        ->and(Move::where('source_document_key', 'session-1')->count())->toBe(1);
+        ->and(Move::where('source_document_key', 'batch-1')->count())->toBe(1);
 });
 
 it('stores line amounts at currency precision so a sub-cent residue never reaches the ledger', function () {
@@ -280,13 +287,19 @@ it('stores line amounts at currency precision so a sub-cent residue never reache
         ->and((float) $move->lines->sum('credit'))->toBe(100.0);
 });
 
-it('refuses to post persisted lines that differ by a sub-cent residue', function () {
+it('refuses to post persisted lines that differ by a residue under half a cent', function () {
     $entry = AccountHelper::journalEntry($this->journal);
     AccountHelper::entryLine($entry, $this->debitAccount, debit: 100, credit: 0);
     AccountHelper::entryLine($entry, $this->creditAccount, debit: 0, credit: 100.004);
 
-    expect(postingErrorOf(fn () => AccountHelper::post($entry)))->toBe(PostingError::UNBALANCED)
-        ->and($entry->refresh()->state)->toBe(MoveState::DRAFT);
+    $exception = postingExceptionOf(fn () => AccountHelper::post($entry));
+
+    expect($exception?->error)->toBe(PostingError::UNBALANCED)
+        ->and($exception->getMessage())->toBe(__('accounts::system.posting.unbalanced', $exception->details))
+        ->and($exception->details['debit'])->toEqualWithDelta(100.0, 0.00001)
+        ->and($exception->details['credit'])->toEqualWithDelta(100.004, 0.00001)
+        ->and($entry->refresh()->state)->toBe(MoveState::DRAFT)
+        ->and($entry->lines()->where('parent_state', MoveState::POSTED)->exists())->toBeFalse();
 });
 
 it('runs validators on exchange difference entries and leaves nothing behind when rejected', function () {
@@ -323,5 +336,223 @@ it('checks balance on the amounts that will be stored, before anything is writte
     ])));
 
     expect($error)->toBe(PostingError::UNBALANCED)
+        ->and(Move::count())->toBe($count);
+});
+
+it('authorizes the acting user before looking up an existing source key', function () {
+    AccountFacade::posting()->post(postingEntry());
+
+    $outsider = CompanyHelper::actingAsCompanyUser(CompanyHelper::company());
+
+    $exception = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry(['userId' => $outsider->id])));
+
+    expect($exception?->error)->toBe(PostingError::INVALID_ENTRY)
+        ->and($exception->details)->toBe(['field' => 'company_id']);
+});
+
+it('authorizes the acting user before looking up an existing reversal source key', function () {
+    $original = AccountFacade::posting()->post(postingEntry())->move;
+
+    $reversal = fn (int $userId) => AccountFacade::posting()->reverse(new ReversalData(
+        companyId: $this->company->id,
+        userId: $userId,
+        moveId: $original->id,
+        sourceType: 'external_batch',
+        sourceKey: 'batch-1-reversal',
+    ));
+
+    $reversal($this->user->id);
+
+    $outsider = CompanyHelper::actingAsCompanyUser(CompanyHelper::company());
+
+    expect(postingErrorOf(fn () => $reversal($outsider->id)))->toBe(PostingError::INVALID_ENTRY);
+});
+
+it('replays a request whose header and lines match the stored entry', function () {
+    $partner = AccountHelper::partner();
+
+    $entry = fn () => postingEntry([
+        'date'  => '2026-03-10',
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 100, partnerId: $partner->id),
+            new LineData(accountId: $this->creditAccount->id, credit: 100),
+        ],
+    ]);
+
+    $first = AccountFacade::posting()->post($entry());
+
+    $second = AccountFacade::posting()->post($entry());
+
+    expect($second->replayed)->toBeTrue()
+        ->and($second->move->id)->toBe($first->move->id);
+});
+
+it('rejects the same source key when the date differs', function () {
+    AccountFacade::posting()->post(postingEntry(['date' => '2026-03-10']));
+
+    expect(postingErrorOf(fn () => AccountFacade::posting()->post(postingEntry(['date' => '2026-03-11']))))->toBe(PostingError::DUPLICATE_SOURCE)
+        ->and(Move::where('source_document_key', 'batch-1')->count())->toBe(1);
+});
+
+it('rejects the same source key when a line partner differs', function () {
+    AccountFacade::posting()->post(postingEntry());
+
+    $error = postingErrorOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 100, label: 'Cash', partnerId: AccountHelper::partner()->id),
+            new LineData(accountId: $this->creditAccount->id, credit: 100, label: 'Sales'),
+        ],
+    ])));
+
+    expect($error)->toBe(PostingError::DUPLICATE_SOURCE);
+});
+
+it('rejects the same source key when the journal differs', function () {
+    AccountFacade::posting()->post(postingEntry());
+
+    $error = postingErrorOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'journalId' => AccountHelper::generalJournal()->id,
+    ])));
+
+    expect($error)->toBe(PostingError::DUPLICATE_SOURCE);
+});
+
+it('posts a foreign-currency entry whose currency amounts balance', function () {
+    $foreign = AccountHelper::otherCurrency();
+
+    $move = AccountFacade::posting()->post(postingEntry([
+        'currencyId' => $foreign->id,
+        'lines'      => [
+            new LineData(accountId: $this->debitAccount->id, debit: 50, amountCurrency: 100),
+            new LineData(accountId: $this->creditAccount->id, credit: 50, amountCurrency: -100),
+        ],
+    ]))->move;
+
+    expect($move->currency_id)->toBe($foreign->id)
+        ->and($move->lines->map(fn ($line) => (float) $line->amount_currency)->sort()->values()->all())->toBe([-100.0, 100.0]);
+});
+
+it('rejects a foreign-currency entry whose currency amounts do not balance and leaves nothing behind', function () {
+    $foreign = AccountHelper::otherCurrency();
+
+    $count = Move::count();
+
+    $exception = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'currencyId' => $foreign->id,
+        'lines'      => [
+            new LineData(accountId: $this->debitAccount->id, debit: 50, amountCurrency: 100),
+            new LineData(accountId: $this->creditAccount->id, credit: 50, amountCurrency: -90),
+        ],
+    ])));
+
+    expect($exception?->error)->toBe(PostingError::UNBALANCED)
+        ->and($exception->details['debit'])->toEqualWithDelta(100.0, 0.00001)
+        ->and($exception->details['credit'])->toEqualWithDelta(90.0, 0.00001)
+        ->and(Move::count())->toBe($count);
+});
+
+it('reports an unexpected failure with a generic reason instead of the raw error', function () {
+    AccountFacade::posting()->registerValidator(new class implements PostingValidator
+    {
+        public function validate(PostingContext $context): void
+        {
+            throw new RuntimeException('SQLSTATE[42S22]: internal detail');
+        }
+    });
+
+    $count = Move::count();
+
+    $exception = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry()));
+
+    expect($exception?->error)->toBe(PostingError::MOVE_NOT_POSTABLE)
+        ->and($exception->details)->toBe(['reason' => __('accounts::system.posting.unexpected-error')])
+        ->and($exception->getMessage())->not->toContain('SQLSTATE')
+        ->and($exception->getPrevious())->toBeInstanceOf(RuntimeException::class)
+        ->and(Move::count())->toBe($count);
+});
+
+it('keeps the translated rule message when a posting rule refuses the entry', function () {
+    $entry = AccountHelper::journalEntry($this->journal);
+
+    $exception = postingExceptionOf(fn () => AccountHelper::post($entry));
+
+    expect($exception?->error)->toBe(PostingError::MOVE_NOT_POSTABLE)
+        ->and($exception->getMessage())->toBe(__('accounts::account-manager.post-action-validate.lines-required'));
+});
+
+it('rejects a foreign-currency debit line whose currency amount is negative', function () {
+    $error = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'currencyId' => AccountHelper::otherCurrency()->id,
+        'lines'      => [
+            new LineData(accountId: $this->debitAccount->id, debit: 50, amountCurrency: -100),
+            new LineData(accountId: $this->creditAccount->id, credit: 50, amountCurrency: 100),
+        ],
+    ])));
+
+    expect($error?->error)->toBe(PostingError::INVALID_ENTRY)
+        ->and($error->details)->toBe(['field' => 'lines.0']);
+});
+
+it('rejects a foreign-currency credit line whose currency amount is positive', function () {
+    $error = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'currencyId' => AccountHelper::otherCurrency()->id,
+        'lines'      => [
+            new LineData(accountId: $this->debitAccount->id, debit: 50, amountCurrency: 0),
+            new LineData(accountId: $this->creditAccount->id, credit: 50, amountCurrency: 100),
+        ],
+    ])));
+
+    expect($error?->error)->toBe(PostingError::INVALID_ENTRY)
+        ->and($error->details)->toBe(['field' => 'lines.1']);
+});
+
+it('accepts a foreign-currency line with a company amount and a zero currency amount', function () {
+    $result = AccountFacade::posting()->post(postingEntry([
+        'currencyId' => AccountHelper::otherCurrency()->id,
+        'lines'      => [
+            new LineData(accountId: $this->debitAccount->id, debit: 0.01, amountCurrency: 0),
+            new LineData(accountId: $this->creditAccount->id, credit: 0.01, amountCurrency: 0),
+        ],
+    ]));
+
+    expect($result->move->state)->toBe(MoveState::POSTED);
+});
+
+it('reports a missing journal as an invalid journal with its own message', function () {
+    $message = __('accounts::system.move.no-journal-found', ['company' => $this->company->name, 'types' => 'general']);
+
+    AccountFacade::posting()->registerValidator(new class($message) implements PostingValidator
+    {
+        public function __construct(protected string $message) {}
+
+        public function validate(PostingContext $context): void
+        {
+            throw new MissingJournalException($this->message);
+        }
+    });
+
+    $exception = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry()));
+
+    expect($exception?->error)->toBe(PostingError::INVALID_ENTRY)
+        ->and($exception->details)->toBe(['field' => 'journal_id'])
+        ->and($exception->getMessage())->toBe($message);
+});
+
+it('reports a unique violation unrelated to the source key with a generic reason', function () {
+    AccountFacade::posting()->registerValidator(new class implements PostingValidator
+    {
+        public function validate(PostingContext $context): void
+        {
+            throw new UniqueConstraintViolationException('testing', 'insert into accounts_account_moves', [], new RuntimeException('SQLSTATE[23000]: duplicate entry'));
+        }
+    });
+
+    $count = Move::count();
+
+    $exception = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry()));
+
+    expect($exception?->error)->toBe(PostingError::MOVE_NOT_POSTABLE)
+        ->and($exception->details)->toBe(['reason' => __('accounts::system.posting.unexpected-error')])
+        ->and($exception->getMessage())->not->toContain('SQLSTATE')
         ->and(Move::count())->toBe($count);
 });

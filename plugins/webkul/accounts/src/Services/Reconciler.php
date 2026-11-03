@@ -55,34 +55,36 @@ class Reconciler
 
     public function unReconcile($partial): void
     {
-        $fullReconcile = $partial->fullReconcile;
+        DB::transaction(function () use ($partial): void {
+            $fullReconcile = $partial->fullReconcile;
 
-        $affectedLineIds = [$partial->debitMove->id, $partial->creditMove->id];
+            $affectedLineIds = [$partial->debitMove->id, $partial->creditMove->id];
 
-        $debitMove = $partial->debitMove->move;
+            $debitMove = $partial->debitMove->move;
 
-        $creditMove = $partial->creditMove->move;
+            $creditMove = $partial->creditMove->move;
 
-        $exchangeMove = $partial->exchangeMove;
+            $exchangeMove = $partial->exchangeMove;
 
-        $partial->delete();
+            $partial->delete();
 
-        $fullReconcile?->delete();
+            $fullReconcile?->delete();
 
-        if ($exchangeMove) {
-            app(MoveWorkflow::class)->reverse(collect([$exchangeMove]), [[
-                'date'      => $exchangeMove->date,
-                'reference' => __('Reversal of: :name', ['name' => $exchangeMove->name]),
-            ]], true);
-        }
+            if ($exchangeMove) {
+                app(MoveWorkflow::class)->reverse(collect([$exchangeMove]), [[
+                    'date'      => $exchangeMove->date,
+                    'reference' => __('accounts::system.reversal.reference', ['name' => $exchangeMove->name]),
+                ]], true);
+            }
 
-        $calculator = app(MoveCalculator::class);
+            $calculator = app(MoveCalculator::class);
 
-        $calculator->recompute($debitMove->refresh())->save();
+            $calculator->recompute($debitMove->refresh())->save();
 
-        $calculator->recompute($creditMove->refresh())->save();
+            $calculator->recompute($creditMove->refresh())->save();
 
-        $this->refreshMatchingNumbers($affectedLineIds);
+            $this->refreshMatchingNumbers($affectedLineIds);
+        });
     }
 
     public function reconcileGroups(array $plans): array

@@ -97,6 +97,11 @@ class MoveWorkflow
 
     public function resetToDraft(AccountMove $move): AccountMove
     {
+        return DB::transaction(fn (): AccountMove => $this->resetToDraftWithinTransaction($move));
+    }
+
+    protected function resetToDraftWithinTransaction(AccountMove $move): AccountMove
+    {
         if (! in_array($move->state, [MoveState::CANCEL, MoveState::POSTED])) {
             throw new Exception('Only posted/cancelled journal entries can be reset to draft.');
         }
@@ -271,57 +276,70 @@ class MoveWorkflow
     {
         if (! $move->partner_id) {
             if ($move->isSaleDocument(true)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.customer-required'));
+                $this->refusePosting(__('accounts::account-manager.post-action-validate.customer-required'));
             }
 
             if ($move->isPurchaseDocument(true)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.vendor-required'));
+                $this->refusePosting(__('accounts::account-manager.post-action-validate.vendor-required'));
             }
         }
 
         if ($move->partnerBank?->trashed()) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.bank-archived'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.bank-archived'));
         }
 
         if (float_compare($move->amount_total, 0, precisionRounding: $move->currency->rounding) < 0) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.negative-amount'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.negative-amount'));
         }
 
         if (! $move->invoice_date) {
             if ($move->isSaleDocument(true)) {
                 $move->invoice_date = now();
             } elseif ($move->isPurchaseDocument(true)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.date-required'));
+                $this->refusePosting(__('accounts::account-manager.post-action-validate.date-required'));
             }
         }
 
         if (in_array($move->state, [MoveState::POSTED, MoveState::CANCEL])) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.draft-state-required'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.draft-state-required'));
         }
 
         if ($move->lines->isEmpty()) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.lines-required'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
         if ($move->lines->some(fn (MoveLine $line) => $line->account && $line->account->deprecated)) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 
         if (! $move->journal) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.journal-archived'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.journal-archived'));
         }
 
         if (! $move->currency) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.currency-archived'));
         }
 
         if ($move->move_type === MoveType::ENTRY) {
-            $balance = $move->lines->sum(fn (MoveLine $line) => (float) $line->debit - (float) $line->credit);
+            $debit = $move->lines->sum(fn (MoveLine $line) => (float) $line->debit);
 
-            if (! float_is_zero($balance, precisionRounding: $move->currency->rounding)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.unbalanced'));
+            $credit = $move->lines->sum(fn (MoveLine $line) => (float) $line->credit);
+
+            $currency = $move->company->currency;
+
+            if ($currency->compareAmounts($debit, $credit) !== 0) {
+                throw new PostingException(PostingError::UNBALANCED, [
+                    'move'   => $move->name,
+                    'debit'  => $currency->round($debit),
+                    'credit' => $currency->round($credit),
+                ], __('accounts::account-manager.post-action-validate.unbalanced'));
             }
         }
+    }
+
+    protected function refusePosting(string $reason): never
+    {
+        throw new PostingException(PostingError::MOVE_NOT_POSTABLE, ['reason' => $reason], $reason);
     }
 
     protected function validatePosting(PostingOperation $operation, AccountMove $move, $date): void
@@ -341,13 +359,11 @@ class MoveWorkflow
             ->selectRaw('COALESCE(SUM(debit), 0) as total_debit, COALESCE(SUM(credit), 0) as total_credit')
             ->first();
 
-        $currency = $move->company->currency;
-
-        if (round((float) $totals->total_debit - (float) $totals->total_credit, 4) != 0.0) {
+        if (! float_is_zero((float) $totals->total_debit - (float) $totals->total_credit, precisionDigits: 4)) {
             throw new PostingException(PostingError::UNBALANCED, [
                 'move'   => $move->name,
-                'debit'  => $currency->round((float) $totals->total_debit),
-                'credit' => $currency->round((float) $totals->total_credit),
+                'debit'  => float_round((float) $totals->total_debit, precisionDigits: 4),
+                'credit' => float_round((float) $totals->total_credit, precisionDigits: 4),
             ]);
         }
     }

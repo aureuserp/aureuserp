@@ -12,7 +12,18 @@ return [
         'rejected-by-validator' => 'تم رفض الترحيل: :reason',
         'move-not-postable'     => 'لا يمكن ترحيل قيد اليومية: :reason',
         'move-not-reversible'   => 'لا يمكن عكس قيد اليومية :move.',
-        'duplicate-source'      => 'تم استخدام مفتاح المصدر بالفعل في قيد اليومية :move بسطور مختلفة.',
+        'duplicate-source'      => 'تم استخدام مفتاح المصدر بالفعل في قيد اليومية :move ببيانات مختلفة.',
+        'unexpected-error'      => 'حدث خطأ غير متوقع وتم تسجيله.',
+    ],
+
+    'reversal' => [
+        'reference'             => 'عكس: :name',
+        'reference-with-reason' => 'عكس: :name، :reason',
+    ],
+
+    'exchange-difference' => [
+        'line-label'     => 'فرق سعر صرف العملة',
+        'not-configured' => 'قم أولاً بإعداد دفتر فروق الصرف وحسابي أرباح وخسائر الصرف.',
     ],
 
     'tax-formula' => [

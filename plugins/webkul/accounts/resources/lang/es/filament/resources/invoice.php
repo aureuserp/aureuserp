@@ -295,6 +295,12 @@ return [
 
             'unreconcile' => [
                 'label' => 'Desvincular',
+
+                'notification' => [
+                    'error' => [
+                        'title' => 'No se pudieron desvincular los asientos',
+                    ],
+                ],
             ],
         ],
     ],

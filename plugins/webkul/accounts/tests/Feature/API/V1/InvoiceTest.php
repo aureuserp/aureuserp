@@ -1,12 +1,18 @@
 <?php
 
+use Webkul\Account\Contracts\PostingValidator;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PostingError;
+use Webkul\Account\Enums\PostingOperation;
+use Webkul\Account\Exceptions\PostingRejectedException;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Invoice;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
+use Webkul\Account\Support\Posting\PostingContext;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -416,6 +422,37 @@ it('reverses a posted invoice into a linked draft credit note', function () {
     ])->assertCreated()
         ->assertJsonPath('data.state', MoveState::DRAFT->value)
         ->assertJsonPath('data.reversed_entry_id', $invoiceId);
+});
+
+it('returns 422 and keeps the invoice posted when a validator rejects the reversal', function () {
+    actingAsInvoiceApiUser(['create_account_invoice', 'update_account_invoice']);
+
+    $invoiceId = $this->postJson(invoiceRoute('store'), invoicePayload())
+        ->assertCreated()
+        ->json('data.id');
+
+    $this->postJson(invoiceRoute('confirm', $invoiceId))->assertOk();
+
+    AccountFacade::posting()->registerValidator(new class implements PostingValidator
+    {
+        public function validate(PostingContext $context): void
+        {
+            if ($context->operation === PostingOperation::REVERSE) {
+                throw new PostingRejectedException('closed period');
+            }
+        }
+    });
+
+    $this->postJson(invoiceRoute('reverse', $invoiceId), [
+        'reason'     => 'Reversal reason',
+        'journal_id' => Journal::factory()->create()->id,
+        'date'       => now()->format('Y-m-d'),
+    ])->assertUnprocessable()
+        ->assertJsonPath('message', __('accounts::system.posting.rejected-by-validator', ['reason' => 'closed period']))
+        ->assertJsonPath('error', PostingError::REJECTED_BY_VALIDATOR->value);
+
+    expect(Move::query()->where('reversed_entry_id', $invoiceId)->exists())->toBeFalse()
+        ->and(Invoice::find($invoiceId)->state)->toBe(MoveState::POSTED);
 });
 
 it('dates and references the credit note with the values chosen for the reversal', function () {

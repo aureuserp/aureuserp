@@ -50,7 +50,7 @@ class ExchangeDifferenceRecorder
         $incomeAccountId = $settings->income_currency_exchange_account_id;
 
         if (! $journalId || ! $expenseAccountId || ! $incomeAccountId) {
-            throw new Exception('Exchange difference journal and accounts must be configured');
+            throw new Exception(__('accounts::system.exchange-difference.not-configured'));
         }
 
         $moveValues = [
@@ -74,7 +74,7 @@ class ExchangeDifferenceRecorder
             }
 
             $moveValues['lines'][] = [
-                'name'            => 'Currency exchange rate difference',
+                'name'            => __('accounts::system.exchange-difference.line-label'),
                 'debit'           => $residual < 0 ? abs($residual) : 0,
                 'credit'          => $residual > 0 ? $residual : 0,
                 'amount_currency' => 0,
@@ -84,7 +84,7 @@ class ExchangeDifferenceRecorder
             ];
 
             $moveValues['lines'][] = [
-                'name'            => 'Currency exchange rate difference',
+                'name'            => __('accounts::system.exchange-difference.line-label'),
                 'debit'           => $residual > 0 ? $residual : 0,
                 'credit'          => $residual < 0 ? abs($residual) : 0,
                 'amount_currency' => 0,
@@ -122,8 +122,10 @@ class ExchangeDifferenceRecorder
                 return app(MoveWorkflow::class)->post($move->refresh());
             });
 
+            $exchangeLines = $move->lines()->orderBy('id')->get();
+
             foreach ($difference['to_reconcile'] as $pairing) {
-                $exchangeLine = $move->lines[$pairing['sequence']];
+                $exchangeLine = $exchangeLines[$pairing['sequence']];
 
                 app(Reconciler::class)->reconcileGroups([
                     MoveLine::whereIn('id', [$pairing['source_line']->id, $exchangeLine->id])->get(),

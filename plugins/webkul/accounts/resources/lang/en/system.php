@@ -12,7 +12,18 @@ return [
         'rejected-by-validator' => 'Posting was rejected: :reason',
         'move-not-postable'     => 'The journal entry cannot be posted: :reason',
         'move-not-reversible'   => 'Journal entry :move cannot be reversed.',
-        'duplicate-source'      => 'The source key was already used by journal entry :move with different lines.',
+        'duplicate-source'      => 'The source key was already used by journal entry :move with different details.',
+        'unexpected-error'      => 'An unexpected error occurred and was logged.',
+    ],
+
+    'reversal' => [
+        'reference'             => 'Reversal of: :name',
+        'reference-with-reason' => 'Reversal of: :name, :reason',
+    ],
+
+    'exchange-difference' => [
+        'line-label'     => 'Currency exchange rate difference',
+        'not-configured' => 'Set up the exchange difference journal and the exchange gain and loss accounts first.',
     ],
 
     'tax-formula' => [

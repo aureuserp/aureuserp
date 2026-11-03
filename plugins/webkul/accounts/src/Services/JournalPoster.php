@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Webkul\Account\Contracts\PostingValidator;
 use Webkul\Account\Enums\DisplayType;
@@ -14,6 +15,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PostingError;
+use Webkul\Account\Exceptions\MissingJournalException;
 use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
@@ -44,20 +46,25 @@ class JournalPoster
 
     public function post(EntryData $data): PostingResult
     {
-        return $this->once($data->companyId, $data->sourceType, $data->sourceKey, fn (): Move => $this->actingAs(
+        return $this->actingAs($data->companyId, $data->userId, fn (): PostingResult => $this->once(
             $data->companyId,
-            $data->userId,
+            $data->sourceType,
+            $data->sourceKey,
             fn (): Move => $this->guard(fn (): Move => DB::transaction(fn (): Move => $this->createAndPost($data))),
-        ), fn (Move $existing): bool => $this->hasSameLines($existing, $data));
+            fn (Move $existing): bool => $this->isSameEntry($existing, $data),
+        ));
     }
 
     public function reverse(ReversalData $data): PostingResult
     {
-        return $this->once($data->companyId, $data->sourceType, $data->sourceKey, fn (): Move => $this->actingAs(
+        return $this->actingAs($data->companyId, $data->userId, fn (): PostingResult => $this->once(
             $data->companyId,
-            $data->userId,
+            $data->sourceType,
+            $data->sourceKey,
             fn (): Move => $this->guard(fn (): Move => DB::transaction(fn (): Move => $this->reverseAndPost($data))),
-        ), fn (Move $existing): bool => $existing->reversed_entry_id === $data->moveId);
+            fn (Move $existing): bool => (int) $existing->reversed_entry_id === $data->moveId
+                && ($data->date === null || $existing->date?->toDateString() === $this->date($data->date)),
+        ));
     }
 
     protected function createAndPost(EntryData $data): Move
@@ -82,9 +89,7 @@ class JournalPoster
         ]);
 
         foreach ($data->lines as $line) {
-            $debit = $company->currency->round($line->debit);
-
-            $credit = $company->currency->round($line->credit);
+            [$debit, $credit, $amountCurrency] = $this->storedAmounts($line, $company, $currency);
 
             $moveLine = MoveLine::create([
                 'move_id'         => $move->id,
@@ -95,7 +100,7 @@ class JournalPoster
                 'debit'           => $debit,
                 'credit'          => $credit,
                 'balance'         => $debit - $credit,
-                'amount_currency' => $line->amountCurrency === null ? $debit - $credit : $currency->round($line->amountCurrency),
+                'amount_currency' => $amountCurrency,
                 'currency_id'     => $currency->id,
                 'tax_line_id'     => $line->taxLineId,
             ]);
@@ -136,15 +141,37 @@ class JournalPoster
         ]], cancel: true)->first()->refresh();
     }
 
+    protected function storedAmounts(LineData $line, Company $company, Currency $currency): array
+    {
+        $debit = $company->currency->round($line->debit);
+
+        $credit = $company->currency->round($line->credit);
+
+        if ($currency->id === $company->currency_id) {
+            return [$debit, $credit, $debit - $credit];
+        }
+
+        return [$debit, $credit, $currency->round((float) $line->amountCurrency)];
+    }
+
     protected function guard(Closure $callback): Move
     {
         try {
             return $callback();
         } catch (PostingException|UniqueConstraintViolationException $exception) {
             throw $exception;
+        } catch (MissingJournalException $exception) {
+            throw new PostingException(PostingError::INVALID_ENTRY, ['field' => 'journal_id'], $exception->getMessage(), $exception);
         } catch (Throwable $exception) {
-            throw new PostingException(PostingError::MOVE_NOT_POSTABLE, ['reason' => $exception->getMessage()], previous: $exception);
+            $this->unexpected($exception);
         }
+    }
+
+    protected function unexpected(Throwable $exception): never
+    {
+        Log::error('Journal entry posting failed.', ['exception' => $exception]);
+
+        throw new PostingException(PostingError::MOVE_NOT_POSTABLE, ['reason' => __('accounts::system.posting.unexpected-error')], previous: $exception);
     }
 
     protected function assertEntry(EntryData $data, Company $company, ?Currency $currency): void
@@ -157,35 +184,57 @@ class JournalPoster
             $this->invalid('lines');
         }
 
+        $companyCurrency = $company->currency;
+
         $isForeign = $currency->id !== $company->currency_id;
 
         $debit = 0.0;
 
         $credit = 0.0;
 
+        $foreignDebit = 0.0;
+
+        $foreignCredit = 0.0;
+
         foreach ($data->lines as $index => $line) {
+            if (! $line instanceof LineData || ($isForeign && $line->amountCurrency === null)) {
+                $this->invalid("lines.{$index}");
+            }
+
+            [$lineDebit, $lineCredit, $amountCurrency] = $this->storedAmounts($line, $company, $currency);
+
+            $hasDebit = ! $companyCurrency->isZero($lineDebit);
+
+            $hasCredit = ! $companyCurrency->isZero($lineCredit);
+
             if (
-                ! $line instanceof LineData
-                || $line->debit < 0
-                || $line->credit < 0
-                || ($line->debit > 0 && $line->credit > 0)
-                || ($line->debit == 0 && $line->credit == 0 && ! $line->amountCurrency)
-                || ($isForeign && $line->amountCurrency === null)
+                $companyCurrency->compareAmounts($lineDebit, 0) < 0
+                || $companyCurrency->compareAmounts($lineCredit, 0) < 0
+                || ($hasDebit && $hasCredit)
+                || (! $hasDebit && ! $hasCredit && $currency->isZero($amountCurrency))
+                || ($isForeign && $hasDebit && $currency->compareAmounts($amountCurrency, 0) < 0)
+                || ($isForeign && $hasCredit && $currency->compareAmounts($amountCurrency, 0) > 0)
             ) {
                 $this->invalid("lines.{$index}");
             }
 
-            $debit += $company->currency->round($line->debit);
+            $debit += $lineDebit;
 
-            $credit += $company->currency->round($line->credit);
+            $credit += $lineCredit;
+
+            if ($currency->compareAmounts($amountCurrency, 0) > 0) {
+                $foreignDebit += $amountCurrency;
+            } else {
+                $foreignCredit -= $amountCurrency;
+            }
         }
 
-        if ($company->currency->compareAmounts($debit, $credit) !== 0) {
-            throw new PostingException(PostingError::UNBALANCED, [
-                'move'   => $data->reference ?? $data->sourceKey ?? '',
-                'debit'  => $company->currency->round($debit),
-                'credit' => $company->currency->round($credit),
-            ]);
+        if ($companyCurrency->compareAmounts($debit, $credit) !== 0) {
+            $this->unbalanced($data, $companyCurrency, $debit, $credit);
+        }
+
+        if ($isForeign && $currency->compareAmounts($foreignDebit, $foreignCredit) !== 0) {
+            $this->unbalanced($data, $currency, $foreignDebit, $foreignCredit);
         }
 
         $lines = collect($data->lines);
@@ -246,7 +295,7 @@ class JournalPoster
                 return $this->replay($existing, $isSameRequest);
             }
 
-            throw $exception;
+            $this->unexpected($exception);
         }
     }
 
@@ -259,21 +308,52 @@ class JournalPoster
         return new PostingResult($existing, replayed: true);
     }
 
-    protected function hasSameLines(Move $existing, EntryData $data): bool
+    protected function isSameEntry(Move $existing, EntryData $data): bool
     {
-        $currency = Company::withoutGlobalScopes()->find($data->companyId)->currency;
+        $company = Company::withoutGlobalScopes()->find($data->companyId);
 
-        $signature = fn ($lines) => collect($lines)->map(fn (array $line): string => implode('|', $line))->sort()->values()->all();
+        $currency = $data->currencyId ? Currency::find($data->currencyId) : $company->currency;
 
-        return $signature(MoveLine::withoutGlobalScopes()->where('move_id', $existing->id)->get()->map(fn (MoveLine $line): array => [
-            $line->account_id,
-            $currency->round((float) $line->debit),
-            $currency->round((float) $line->credit),
-        ])) === $signature(collect($data->lines)->map(fn (LineData $line): array => [
-            $line->accountId,
-            $currency->round($line->debit),
-            $currency->round($line->credit),
-        ]));
+        if (
+            ! $currency
+            || collect($data->lines)->contains(fn ($line): bool => ! $line instanceof LineData)
+            || (int) $existing->currency_id !== $currency->id
+            || ($data->journalId !== null && (int) $existing->journal_id !== $data->journalId)
+            || ($data->date !== null && $existing->date?->toDateString() !== $this->date($data->date))
+        ) {
+            return false;
+        }
+
+        $amount = fn (float $value): string => number_format($value + 0.0, 4, '.', '');
+
+        $signature = fn ($lines): array => collect($lines)->map(fn (array $line): string => implode('|', $line))->sort()->values()->all();
+
+        $stored = MoveLine::withoutGlobalScopes()
+            ->where('move_id', $existing->id)
+            ->get()
+            ->map(fn (MoveLine $line): array => [
+                $line->account_id,
+                $line->partner_id,
+                $line->tax_line_id,
+                $amount($company->currency->round((float) $line->debit)),
+                $amount($company->currency->round((float) $line->credit)),
+                $amount($currency->round((float) $line->amount_currency)),
+            ]);
+
+        $requested = collect($data->lines)->map(function (LineData $line) use ($company, $currency, $amount): array {
+            [$debit, $credit, $amountCurrency] = $this->storedAmounts($line, $company, $currency);
+
+            return [
+                $line->accountId,
+                $line->partnerId,
+                $line->taxLineId,
+                $amount($debit),
+                $amount($credit),
+                $amount($amountCurrency),
+            ];
+        });
+
+        return $signature($stored) === $signature($requested);
     }
 
     protected function findBySource(int $companyId, ?string $sourceType, ?string $sourceKey): ?Move
@@ -333,6 +413,15 @@ class JournalPoster
         } catch (Throwable) {
             $this->invalid('date');
         }
+    }
+
+    protected function unbalanced(EntryData $data, Currency $currency, float $debit, float $credit): never
+    {
+        throw new PostingException(PostingError::UNBALANCED, [
+            'move'   => $data->reference ?? $data->sourceKey ?? '',
+            'debit'  => $currency->round($debit),
+            'credit' => $currency->round($credit),
+        ]);
     }
 
     protected function invalid(string $field): never

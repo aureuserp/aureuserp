@@ -12,7 +12,18 @@ return [
         'rejected-by-validator' => 'La comptabilisation a été refusée : :reason',
         'move-not-postable'     => 'L\'écriture comptable ne peut pas être comptabilisée : :reason',
         'move-not-reversible'   => 'L\'écriture comptable :move ne peut pas être extournée.',
-        'duplicate-source'      => 'La clé source a déjà été utilisée par l\'écriture comptable :move avec des lignes différentes.',
+        'duplicate-source'      => 'La clé source a déjà été utilisée par l\'écriture comptable :move avec des données différentes.',
+        'unexpected-error'      => 'Une erreur inattendue s\'est produite et a été journalisée.',
+    ],
+
+    'reversal' => [
+        'reference'             => 'Extourne de : :name',
+        'reference-with-reason' => 'Extourne de : :name, :reason',
+    ],
+
+    'exchange-difference' => [
+        'line-label'     => 'Écart de taux de change',
+        'not-configured' => 'Configurez d\'abord le journal des écarts de change et les comptes de gains et pertes de change.',
     ],
 
     'tax-formula' => [
