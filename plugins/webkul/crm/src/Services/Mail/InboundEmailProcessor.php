@@ -3,6 +3,7 @@
 namespace Webkul\Crm\Services\Mail;
 
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -211,7 +212,7 @@ class InboundEmailProcessor
             'causer_id'   => $partner?->getKey(),
         ]);
 
-        $paths = [];
+        $attachments = [];
 
         foreach ($email->attachments as $attachment) {
             if (strlen($attachment['content']) > self::MAX_ATTACHMENT_SIZE) {
@@ -222,11 +223,19 @@ class InboundEmailProcessor
 
             Storage::disk('public')->put($path, $attachment['content']);
 
-            $paths[] = $path;
+            $attachments[] = [
+                'file_path'          => $path,
+                'original_file_name' => basename($path),
+                'mime_type'          => Storage::disk('public')->mimeType($path) ?: 'application/octet-stream',
+                'file_size'          => strlen($attachment['content']),
+                'creator_id'         => Auth::id(),
+                'message_id'         => $message->getKey(),
+                'company_id'         => $lead->company_id,
+            ];
         }
 
-        if ($paths) {
-            $lead->addAttachments($paths, ['message_id' => $message->getKey(), 'company_id' => $lead->company_id]);
+        if ($attachments) {
+            $lead->attachments()->createMany($attachments);
         }
     }
 
