@@ -18,6 +18,7 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResour
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource\Pages\ViewPurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages\EditQuotation;
 use Webkul\Purchase\Models\Order;
+use Webkul\Support\Enums\ActivityResponsibleType;
 use Webkul\Support\Models\ActivityPlan;
 use Webkul\Support\Models\ActivityPlanTemplate;
 use Webkul\Support\Models\ActivityType;
@@ -250,6 +251,7 @@ function strictActivityPlan(Order $order, array $summaries): ActivityPlan
             'delay_count'      => 0,
             'delay_unit'       => 'days',
             'delay_from'       => 'previous_activity',
+            'responsible_type' => ActivityResponsibleType::ON_DEMAND->value,
         ]);
     }
 
