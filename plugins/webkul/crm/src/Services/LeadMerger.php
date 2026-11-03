@@ -5,6 +5,7 @@ namespace Webkul\Crm\Services;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Number;
 use InvalidArgumentException;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Models\ActivityLog;
@@ -105,15 +106,36 @@ class LeadMerger
 
             $head->addMessage([
                 'type' => 'comment',
-                'body' => __('crm::filament/similar-leads.merge.chatter-note', [
-                    'records' => $others->map(fn (Lead $lead): string => e($lead->name).' (#'.$lead->getKey().')')->implode(', '),
-                ]),
+                'body' => $this->mergeNote($others),
             ]);
 
             $others->each(fn (Lead $lead) => $lead->forceDelete());
 
             return $head->refresh();
         });
+    }
+
+    protected function mergeNote(Collection $others): string
+    {
+        return '<p>'.e(__('crm::filament/similar-leads.merge.chatter-note')).'</p>'
+            .$others->map(function (Lead $lead): string {
+                $details = collect([
+                    __('crm::filament/similar-leads.merge.chatter-details.type')        => $lead->type?->getLabel(),
+                    __('crm::filament/similar-leads.merge.chatter-details.probability') => Number::percentage((float) $lead->probability, maxPrecision: 2),
+                    __('crm::filament/similar-leads.merge.chatter-details.priority')    => $lead->priority?->getLabel(),
+                    __('crm::filament/similar-leads.merge.chatter-details.created-on')  => $lead->created_at?->translatedFormat('M j, Y'),
+                    __('crm::filament/similar-leads.merge.chatter-details.salesperson') => $lead->user?->name,
+                    __('crm::filament/similar-leads.merge.chatter-details.team')        => $lead->team?->name,
+                    __('crm::filament/similar-leads.merge.chatter-details.company')     => $lead->company?->name,
+                    __('crm::filament/similar-leads.merge.chatter-details.contact')     => $lead->contact_name,
+                    __('crm::filament/similar-leads.merge.chatter-details.email')       => $lead->email,
+                    __('crm::filament/similar-leads.merge.chatter-details.phone')       => $lead->phone,
+                ])->filter(fn (?string $value): bool => filled($value));
+
+                return '<p><strong>'.e($lead->name).' (#'.$lead->getKey().')</strong></p>'
+                    .'<ul>'.$details->map(fn (string $value, string $label): string => '<li>'.e($label).': '.e($value).'</li>')->implode('').'</ul>';
+            })
+                ->implode('');
     }
 
     protected function mergeFields(Lead $head, Collection $others): void

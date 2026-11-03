@@ -23,7 +23,20 @@ return [
         'heading'      => 'Merge similar leads and opportunities',
         'submit'       => 'Merge',
         'description'  => 'Empty fields of the record you keep are filled from the others, and their notes, tags, messages, activities and attachments move to it. The other records are then deleted. The result is an opportunity if any of them is one, and it is active even if some were lost.',
-        'chatter-note' => 'Merged into this record: :records',
+        'chatter-note' => 'Merged into this record:',
+
+        'chatter-details' => [
+            'type'        => 'Type',
+            'probability' => 'Probability',
+            'priority'    => 'Priority',
+            'created-on'  => 'Created on',
+            'salesperson' => 'Salesperson',
+            'team'        => 'Sales Team',
+            'company'     => 'Company',
+            'contact'     => 'Contact Name',
+            'email'       => 'Email',
+            'phone'       => 'Phone',
+        ],
 
         'fields' => [
             'records'         => 'Records to merge',

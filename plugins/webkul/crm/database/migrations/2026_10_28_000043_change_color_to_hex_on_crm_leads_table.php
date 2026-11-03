@@ -43,7 +43,7 @@ return new class extends Migration
         DB::table('crm_leads')->whereNull('color')->orWhere('color', 'like', '#%')->update(['color' => '0']);
 
         Schema::table('crm_leads', function (Blueprint $table) {
-            $table->unsignedTinyInteger('color')->default(0)->comment('Kanban card colour: 0 = none, 1-11 = palette')->change();
+            $table->unsignedTinyInteger('color')->default(0)->comment('Kanban card colour: 0 = none, 1-11 = palette')->using('color::smallint')->change();
         });
     }
 };

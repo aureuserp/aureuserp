@@ -23,7 +23,20 @@ return [
         'heading'      => 'Mesclar leads e oportunidades semelhantes',
         'submit'       => 'Mesclar',
         'description'  => 'Os campos vazios do registro mantido são preenchidos com os dos outros, e suas notas, tags, mensagens, atividades e anexos passam para ele. Em seguida, os outros registros são excluídos. O resultado é uma oportunidade se algum deles for, e fica ativo mesmo que algum estivesse perdido.',
-        'chatter-note' => 'Mesclados neste registro: :records',
+        'chatter-note' => 'Mesclados neste registro:',
+
+        'chatter-details' => [
+            'type'        => 'Tipo',
+            'probability' => 'Probabilidade',
+            'priority'    => 'Prioridade',
+            'created-on'  => 'Criado em',
+            'salesperson' => 'Vendedor',
+            'team'        => 'Equipe de vendas',
+            'company'     => 'Empresa',
+            'contact'     => 'Nome do contato',
+            'email'       => 'E-mail',
+            'phone'       => 'Telefone',
+        ],
 
         'fields' => [
             'records'         => 'Registros a mesclar',

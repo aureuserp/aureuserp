@@ -110,7 +110,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoManageOperationsPage() {
-        await this.page.goto("/admin/settings/inventory/manage-operations");
+        await this.safeGoto("/admin/settings/inventory/manage-operations");
         await expect(this.page).toHaveURL(/manage-operations/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventorySettingsSaveButton).toBeVisible();
@@ -129,7 +129,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoManageProductsSettingsPage() {
-        await this.page.goto("/admin/settings/inventory/manage-products");
+        await this.safeGoto("/admin/settings/inventory/manage-products");
         await expect(this.page).toHaveURL(/manage-products/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventorySettingsSaveButton).toBeVisible();
@@ -150,7 +150,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoManageWarehousesSettingsPage() {
-        await this.page.goto("/admin/settings/inventory/manage-warehouses");
+        await this.safeGoto("/admin/settings/inventory/manage-warehouses");
         await expect(this.page).toHaveURL(/manage-warehouses/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventorySettingsSaveButton).toBeVisible();
@@ -170,7 +170,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoManageTraceabilitySettingsPage() {
-        await this.page.goto("/admin/settings/inventory/manage-traceability");
+        await this.safeGoto("/admin/settings/inventory/manage-traceability");
         await expect(this.page).toHaveURL(/manage-traceability/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventorySettingsSaveButton).toBeVisible();
@@ -193,7 +193,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoManageLogisticsSettingsPage() {
-        await this.page.goto("/admin/settings/inventory/manage-logistics");
+        await this.safeGoto("/admin/settings/inventory/manage-logistics");
         await expect(this.page).toHaveURL(/manage-logistics/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventorySettingsSaveButton).toBeVisible();
@@ -235,7 +235,7 @@ export class InventoriesManagementPage {
 
     async gotoWarehousesPage() {
         await this.page.waitForLoadState("networkidle");
-        await this.page.goto("/admin/inventory/configurations/warehouses");
+        await this.safeGoto("/admin/inventory/configurations/warehouses");
         await expect(this.page).toHaveURL(/configurations\/warehouses/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryWarehouseTable.first()).toBeVisible();
@@ -246,8 +246,8 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryWarehouseCreateButton.click();
         await expect(this.page).toHaveURL(/warehouses\/create/);
 
-        await this.erpLocators.inventoryWarehouseNameInput.fill(data.name);
-        await this.erpLocators.inventoryWarehouseCodeInput.fill(data.code);
+        await this.fillWhenReady(this.erpLocators.inventoryWarehouseNameInput, data.name);
+        await this.fillWhenReady(this.erpLocators.inventoryWarehouseCodeInput, data.code);
 
         if (data.receptionStep) {
             await this.selectReceptionStep(data.receptionStep);
@@ -332,7 +332,7 @@ export class InventoriesManagementPage {
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
             await this.page.waitForTimeout(1000);
 
-            await this.page.goto(editUrl);
+            await this.safeGoto(editUrl);
             await this.page.waitForLoadState("networkidle").catch(() => undefined);
 
             if (await this.areWarehouseStepsSelected(receptionStep, deliveryStep)) {
@@ -376,35 +376,35 @@ export class InventoriesManagementPage {
 
     async gotoLocationsPage() {
         await this.page.waitForLoadState("networkidle");
-        await this.page.goto("/admin/inventory/configurations/locations");
+        await this.safeGoto("/admin/inventory/configurations/locations");
         await expect(this.page).toHaveURL(/configurations\/locations/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryLocationsTable.first()).toBeVisible();
     }
 
     async gotoOperationTypesPage() {
-        await this.page.goto("/admin/inventory/configurations/operation-types");
+        await this.safeGoto("/admin/inventory/configurations/operation-types");
         await expect(this.page).toHaveURL(/operation-types/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryOperationTypesTable.first()).toBeVisible();
     }
 
     async gotoRoutesPage() {
-        await this.page.goto("/admin/inventory/configurations/routes");
+        await this.safeGoto("/admin/inventory/configurations/routes");
         await expect(this.page).toHaveURL(/configurations\/routes/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryRoutesTable.first()).toBeVisible();
     }
 
     async gotoRulesPage() {
-        await this.page.goto("/admin/inventory/configurations/rules");
+        await this.safeGoto("/admin/inventory/configurations/rules");
         await expect(this.page).toHaveURL(/configurations\/rules/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryRulesTable.first()).toBeVisible();
     }
 
     async gotoStorageCategoriesPage() {
-        await this.page.goto("/admin/inventory/configurations/storage-categories");
+        await this.safeGoto("/admin/inventory/configurations/storage-categories");
         await expect(this.page).toHaveURL(/storage-categories/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryStorageCategoriesTable.first()).toBeVisible();
@@ -492,7 +492,7 @@ export class InventoriesManagementPage {
      * Configurations - Putaway Rules (redirect arriving product to a sub-location).
      */
     async gotoPutawayRulesPage() {
-        await this.page.goto("/admin/inventory/configurations/putaway-rules");
+        await this.safeGoto("/admin/inventory/configurations/putaway-rules");
         await expect(this.page).toHaveURL(/putaway-rules/);
         await this.page.waitForLoadState("networkidle");
     }
@@ -587,7 +587,7 @@ export class InventoriesManagementPage {
      * landing that doesn't depend on the list's "New" button).
      */
     async gotoOperationTypeCreatePage() {
-        await this.page.goto("/admin/inventory/configurations/operation-types/create");
+        await this.safeGoto("/admin/inventory/configurations/operation-types/create");
         await expect(this.page).toHaveURL(/operation-types\/create/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible();
@@ -760,7 +760,7 @@ export class InventoriesManagementPage {
     async expectOperationTypeLots(which: "create" | "existing") {
         const l = this.erpLocators;
         const editUrl = `${this.page.url().replace(/\/$/, "")}/edit`;
-        await this.page.goto(editUrl);
+        await this.safeGoto(editUrl);
         await expect(l.inventoryConfigNameInput).toBeVisible({ timeout: 15000 });
         await expect(l.inventoryOperationTypeUseCreateLotsToggle).toHaveAttribute(
             "aria-checked",
@@ -945,7 +945,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoProductsPage() {
-        await this.page.goto("/admin/inventory/products/products");
+        await this.safeGoto("/admin/inventory/products/products");
         await expect(this.page).toHaveURL(/inventory\/products\/products/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryProductTable.first()).toBeVisible();
@@ -960,10 +960,10 @@ export class InventoriesManagementPage {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
         await expect(input).toBeVisible();
 
-        for (let attempt = 0; attempt < 3; attempt++) {
+        for (let attempt = 0; attempt < 10; attempt++) {
             await input.fill(value);
 
-            if ((await input.inputValue()) === value) {
+            if (await this.livewireHasValue(input, value)) {
                 return;
             }
 
@@ -971,6 +971,47 @@ export class InventoriesManagementPage {
         }
 
         await expect(input).toHaveValue(value);
+    }
+
+    /**
+     * Whether Livewire itself holds the value, not just the input: a field filled before its
+     * component starts keeps the text on screen but never reaches the form, and the next
+     * re-render (e.g. picking delivery steps) clears it.
+     */
+    private async livewireHasValue(input: ReturnType<Page["locator"]>, value: string): Promise<boolean> {
+        return input.evaluate((element: HTMLInputElement, expected: string) => {
+            const model = [...element.attributes].find((attribute) => attribute.name.startsWith("wire:model"))?.value;
+            const id = element.closest("[wire\\:id]")?.getAttribute("wire:id");
+            const component = id ? (window as any).Livewire?.find(id) : null;
+
+            if (!model || !component) {
+                return element.value === expected;
+            }
+
+            return String(component.$get(model) ?? "") === expected;
+        }, value);
+    }
+
+    /**
+     * Navigate, retrying when a redirect still in flight from the previous page aborts or
+     * interrupts this one (net::ERR_ABORTED).
+     */
+    private async safeGoto(url: string) {
+        await this.page.waitForLoadState("domcontentloaded").catch(() => undefined);
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await this.page.goto(url);
+                return;
+            } catch (error) {
+                if (!/ERR_ABORTED|interrupted by another navigation/.test((error as Error).message)) {
+                    throw error;
+                }
+                await this.page.waitForTimeout(500);
+            }
+        }
+
+        await this.page.goto(url);
     }
 
     async createInventoryProduct(product: InventoryProductData) {
@@ -1082,7 +1123,7 @@ export class InventoriesManagementPage {
         await this.openProductByName(productName);
         const id = this.page.url().match(/products\/(\d+)/)?.[1];
         if (id) {
-            await this.page.goto(`/admin/inventory/products/products/${id}/edit`);
+            await this.safeGoto(`/admin/inventory/products/products/${id}/edit`);
             await this.page.waitForLoadState("networkidle");
         }
     }
@@ -1128,7 +1169,7 @@ export class InventoriesManagementPage {
      * Quantities: set the counted quantity to 0 and apply.
      */
     async clearStockViaAdjustment(productName: string) {
-        await this.page.goto("/admin/inventory/operations/quantities");
+        await this.safeGoto("/admin/inventory/operations/quantities");
         await expect(this.page).toHaveURL(/operations\/quantities/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
@@ -1318,7 +1359,7 @@ export class InventoriesManagementPage {
 
     async gotoReceiptsPage() {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.goto("/admin/inventory/operations/receipts");
+        await this.safeGoto("/admin/inventory/operations/receipts");
         await expect(this.page).toHaveURL(/operations\/receipts/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
@@ -1473,7 +1514,7 @@ export class InventoriesManagementPage {
      * Lots / Serial Numbers listing (Products cluster).
      */
     async gotoLotsPage() {
-        await this.page.goto("/admin/inventory/products/lots");
+        await this.safeGoto("/admin/inventory/products/lots");
         await expect(this.page).toHaveURL(/products\/lots/);
         await this.page.waitForLoadState("networkidle");
     }
@@ -1708,7 +1749,7 @@ export class InventoriesManagementPage {
 
     async gotoDeliveriesPage() {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.goto("/admin/inventory/operations/deliveries");
+        await this.safeGoto("/admin/inventory/operations/deliveries");
         await expect(this.page).toHaveURL(/operations\/deliveries/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
@@ -1875,7 +1916,7 @@ export class InventoriesManagementPage {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
 
         const editUrl = `${this.page.url().replace(/\/$/, "")}/edit`;
-        await this.page.goto(editUrl);
+        await this.safeGoto(editUrl);
         await expect(this.erpLocators.inventoryConfigNameInput).toBeVisible({ timeout: 15000 });
 
         await this.erpLocators.inventoryOperationTypeBackorderSelect.selectOption(policy);
@@ -2138,7 +2179,7 @@ export class InventoriesManagementPage {
             return;
         }
         const url = this.page.url().replace(/\/edit(\?.*)?$/, "/view");
-        await this.page.goto(url);
+        await this.safeGoto(url);
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
     }
 
@@ -2233,7 +2274,7 @@ export class InventoriesManagementPage {
 
     async gotoInternalTransfersPage() {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.goto("/admin/inventory/operations/internals");
+        await this.safeGoto("/admin/inventory/operations/internals");
         await expect(this.page).toHaveURL(/operations\/internals/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();
@@ -2266,7 +2307,7 @@ export class InventoriesManagementPage {
      */
 
     async gotoQuantitiesPage() {
-        await this.page.goto("/admin/inventory/operations/quantities");
+        await this.safeGoto("/admin/inventory/operations/quantities");
         await expect(this.page).toHaveURL(/operations\/quantities/);
         await this.page.waitForLoadState("networkidle");
     }
@@ -2282,7 +2323,7 @@ export class InventoriesManagementPage {
      * Package Types list. Only registered when packages are enabled.
      */
     async gotoPackageTypesPage() {
-        await this.page.goto("/admin/inventory/configurations/package-types");
+        await this.safeGoto("/admin/inventory/configurations/package-types");
         await expect(this.page).toHaveURL(/package-types/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryPackageTypeTable.first()).toBeVisible();
@@ -2296,12 +2337,12 @@ export class InventoriesManagementPage {
         await this.erpLocators.inventoryPackageTypeCreateButton.click();
         await expect(this.page).toHaveURL(/package-types\/create/);
 
-        await this.erpLocators.inventoryPackageTypeNameInput.fill(data.name);
-        await this.erpLocators.inventoryPackageTypeLengthInput.fill(data.length ?? "10");
-        await this.erpLocators.inventoryPackageTypeWidthInput.fill(data.width ?? "10");
-        await this.erpLocators.inventoryPackageTypeHeightInput.fill(data.height ?? "10");
-        await this.erpLocators.inventoryPackageTypeBaseWeightInput.fill(data.baseWeight ?? "1");
-        await this.erpLocators.inventoryPackageTypeMaxWeightInput.fill(data.maxWeight ?? "100");
+        await this.fillWhenReady(this.erpLocators.inventoryPackageTypeNameInput, data.name);
+        await this.fillWhenReady(this.erpLocators.inventoryPackageTypeLengthInput, data.length ?? "10");
+        await this.fillWhenReady(this.erpLocators.inventoryPackageTypeWidthInput, data.width ?? "10");
+        await this.fillWhenReady(this.erpLocators.inventoryPackageTypeHeightInput, data.height ?? "10");
+        await this.fillWhenReady(this.erpLocators.inventoryPackageTypeBaseWeightInput, data.baseWeight ?? "1");
+        await this.fillWhenReady(this.erpLocators.inventoryPackageTypeMaxWeightInput, data.maxWeight ?? "100");
 
         await this.erpLocators.inventoryPackageTypeSaveButton.click();
         await expect(this.page).not.toHaveURL(/package-types\/create/);
@@ -2312,7 +2353,7 @@ export class InventoriesManagementPage {
      * Packages list. Only registered when packages are enabled.
      */
     async gotoPackagesPage() {
-        await this.page.goto("/admin/inventory/products/packages");
+        await this.safeGoto("/admin/inventory/products/packages");
         await expect(this.page).toHaveURL(/products\/packages/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryPackageTable.first()).toBeVisible();
@@ -2377,7 +2418,7 @@ export class InventoriesManagementPage {
 
         const id = this.page.url().match(/packages\/(\d+)/)?.[1];
         if (id) {
-            await this.page.goto(`/admin/inventory/products/packages/${id}/products`);
+            await this.safeGoto(`/admin/inventory/products/packages/${id}/products`);
             await this.page.waitForLoadState("networkidle");
         }
     }
@@ -2414,7 +2455,7 @@ export class InventoriesManagementPage {
 
     async gotoScrapsPage() {
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
-        await this.page.goto("/admin/inventory/operations/scraps");
+        await this.safeGoto("/admin/inventory/operations/scraps");
         await expect(this.page).toHaveURL(/operations\/scraps/);
         await this.page.waitForLoadState("networkidle");
         await expect(this.erpLocators.inventoryOperationTable.first()).toBeVisible();

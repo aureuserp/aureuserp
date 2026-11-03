@@ -31,6 +31,7 @@ use Webkul\Crm\Filament\Concerns\ShowsRecordsGraph;
 use Webkul\Crm\Filament\Exports\OpportunityExporter;
 use Webkul\Crm\Filament\Imports\OpportunityImporter;
 use Webkul\Crm\Filament\Support\LeadTableFilters;
+use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Filament\Widgets\RecordsChart;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
@@ -95,7 +96,7 @@ class ListOpportunities extends ListRecords
 
     protected function kanbanColumnKeyExpression(): string
     {
-        return 'crm_leads.stage_id';
+        return Sql::text('crm_leads.stage_id');
     }
 
     public function getViewLayouts(): array

@@ -7,6 +7,7 @@ use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
+use Webkul\Crm\Filament\Support\Reports\Sql;
 use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Models\Stage;
 use Webkul\Crm\Models\Tag;
@@ -158,6 +159,12 @@ it('uses the stages, in order, as columns and colours won stages green', functio
 
     expect($board->resolveColumnColor(pipelineBoardColumn($component, $wonStage)))->toBe('success')
         ->and($board->resolveColumnColor(pipelineBoardColumn($component, $firstStage)))->toBe('gray');
+});
+
+it('casts the stage column key to text, so the progress query also works on PostgreSQL', function () {
+    $page = new ListOpportunities;
+
+    expect((fn (): string => $this->kanbanColumnKeyExpression())->call($page))->toBe(Sql::text('crm_leads.stage_id'));
 });
 
 it('lists higher priority cards first in each column', function () {

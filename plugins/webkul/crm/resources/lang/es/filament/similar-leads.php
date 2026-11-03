@@ -23,7 +23,20 @@ return [
         'heading'      => 'Fusionar leads y oportunidades similares',
         'submit'       => 'Fusionar',
         'description'  => 'Los campos vacíos del registro que se conserva se completan con los de los demás, y sus notas, etiquetas, mensajes, actividades y adjuntos pasan a él. Después se eliminan los demás registros. El resultado es una oportunidad si alguno lo es, y queda activo aunque alguno estuviera perdido.',
-        'chatter-note' => 'Fusionados en este registro: :records',
+        'chatter-note' => 'Fusionados en este registro:',
+
+        'chatter-details' => [
+            'type'        => 'Tipo',
+            'probability' => 'Probabilidad',
+            'priority'    => 'Prioridad',
+            'created-on'  => 'Creado el',
+            'salesperson' => 'Vendedor',
+            'team'        => 'Equipo de ventas',
+            'company'     => 'Empresa',
+            'contact'     => 'Nombre de contacto',
+            'email'       => 'Correo electrónico',
+            'phone'       => 'Teléfono',
+        ],
 
         'fields' => [
             'records'         => 'Registros a fusionar',

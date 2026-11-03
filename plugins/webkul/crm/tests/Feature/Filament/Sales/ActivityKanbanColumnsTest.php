@@ -176,12 +176,13 @@ it('refuses to delete an activity type while activities are scheduled with it', 
         $lead->markAsLost(null);
     }
 
-    Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
+    $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListActivities::class)
         ->mountAction('deleteKanbanColumn', arguments: ['column' => (string) $type->id])
         ->assertActionNotMounted('deleteKanbanColumn')
         ->assertNotified(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board type']));
 
-    expect(ActivityType::query()->whereKey($type->id)->exists())->toBeTrue();
+    expect($component->effects)->not->toHaveKey('html')
+        ->and(ActivityType::query()->whereKey($type->id)->exists())->toBeTrue();
 })->with([
     'on an open opportunity' => [false],
     'on a lost opportunity'  => [true],

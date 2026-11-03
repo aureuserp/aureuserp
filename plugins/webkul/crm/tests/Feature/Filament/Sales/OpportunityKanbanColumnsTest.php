@@ -242,12 +242,13 @@ it('refuses to delete a stage that still holds records', function (string $holde
         'lost lead'        => CRMHelper::lead(['stage_id' => $stage->id])->markAsLost(null),
     };
 
-    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+    $component = Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
         ->mountAction('deleteKanbanColumn', arguments: ['column' => (string) $stage->id])
         ->assertActionNotMounted('deleteKanbanColumn')
         ->assertNotified(__('crm::filament/kanban.column-actions.in-use.title', ['name' => 'Busy board stage']));
 
-    expect(Stage::query()->whereKey($stage->id)->exists())->toBeTrue();
+    expect($component->effects)->not->toHaveKey('html')
+        ->and(Stage::query()->whereKey($stage->id)->exists())->toBeTrue();
 })->with(['opportunity', 'lead', 'lost opportunity', 'lost lead']);
 
 it('forbids deleting a stage from the board without the delete permission', function () {

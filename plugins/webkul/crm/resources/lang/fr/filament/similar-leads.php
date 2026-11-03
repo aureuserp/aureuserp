@@ -23,7 +23,20 @@ return [
         'heading'      => 'Fusionner les pistes et opportunités similaires',
         'submit'       => 'Fusionner',
         'description'  => 'Les champs vides de l\'enregistrement conservé sont remplis à partir des autres, et leurs notes, étiquettes, messages, activités et pièces jointes lui sont transférés. Les autres enregistrements sont ensuite supprimés. Le résultat est une opportunité si l\'un d\'eux en est une, et il est actif même si certains étaient perdus.',
-        'chatter-note' => 'Fusionnés dans cet enregistrement : :records',
+        'chatter-note' => 'Fusionnés dans cet enregistrement :',
+
+        'chatter-details' => [
+            'type'        => 'Type',
+            'probability' => 'Probabilité',
+            'priority'    => 'Priorité',
+            'created-on'  => 'Créé le',
+            'salesperson' => 'Commercial',
+            'team'        => 'Équipe commerciale',
+            'company'     => 'Société',
+            'contact'     => 'Nom du contact',
+            'email'       => 'E-mail',
+            'phone'       => 'Téléphone',
+        ],
 
         'fields' => [
             'records'         => 'Enregistrements à fusionner',

@@ -5,6 +5,7 @@ namespace Webkul\Crm\Filament\Concerns;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
+use Filament\Support\Livewire\Partials\PartialsComponentHook;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -155,6 +156,8 @@ trait ManagesKanbanColumns
                         ->title(__('crm::filament/kanban.column-actions.in-use.title', ['name' => $name]))
                         ->body(trans_choice('crm::filament/kanban.column-actions.in-use.body', $count, ['count' => $count]))
                         ->send();
+
+                    app(PartialsComponentHook::class)->skipPartialRender($this);
 
                     return;
                 }

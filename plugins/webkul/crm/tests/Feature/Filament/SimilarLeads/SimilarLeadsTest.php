@@ -2,6 +2,7 @@
 
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\MergeLeadsBulkAction;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
@@ -247,6 +248,35 @@ describe('merging', function () {
         expect($mergeRecord->merged_by)->toBe($user->id)
             ->and($mergeRecord->merged_records[0]['id'])->toBe($other->id)
             ->and($mergeRecord->merged_records[0]['name'])->toBe($other->name);
+    });
+
+    it('writes the merged records\' details into the kept record\'s chatter', function () {
+        $user = CRMHelper::actingAs();
+
+        $kept = CRMHelper::opportunity(['email' => 'details@acme.test']);
+        $other = CRMHelper::lead([
+            'name'         => 'Duplicate desk request',
+            'email'        => 'details@acme.test',
+            'phone'        => '+1 555 0100',
+            'contact_name' => 'Robin',
+            'probability'  => 35,
+            'priority'     => OpportunityPriority::HIGH,
+            'user_id'      => $user->id,
+        ]);
+
+        app(LeadMerger::class)->merge(collect([$kept, $other]), $kept);
+
+        expect($kept->messages()->latest('id')->value('body'))
+            ->toContain('Merged into this record:')
+            ->toContain('Duplicate desk request (#'.$other->id.')')
+            ->toContain('Type: Lead')
+            ->toContain('Probability: 35%')
+            ->toContain('Priority: High')
+            ->toContain('Created on: ')
+            ->toContain('Salesperson: '.e($user->name))
+            ->toContain('Contact Name: Robin')
+            ->toContain('Email: details@acme.test')
+            ->toContain('Phone: +1 555 0100');
     });
 
     it('makes the result active when the kept record was lost', function () {

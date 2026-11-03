@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource\Pages\EditLead;
@@ -71,7 +72,7 @@ it('shows chatter first and email, SMS and delete as buttons without an actions 
 
     $component->assertActionHidden('restore');
 
-    expect(array_key_first($component->instance()->getCachedHeaderActions()))->toBe('chatter.action');
+    expect(Arr::first($component->instance()->getCachedHeaderActions())->getName())->toBe('chatter.action');
 })->with([
     'lead'        => [ViewLead::class, 'lead'],
     'opportunity' => [ViewOpportunity::class, 'opportunity'],
@@ -100,7 +101,7 @@ it('puts chatter first on the lead and opportunity edit pages', function (string
 
     $record = $type === 'lead' ? CRMHelper::lead() : CRMHelper::opportunity();
 
-    expect(array_key_first(Livewire::test($page, ['record' => $record->getKey()])->instance()->getCachedHeaderActions()))->toBe('chatter.action');
+    expect(Arr::first(Livewire::test($page, ['record' => $record->getKey()])->instance()->getCachedHeaderActions())->getName())->toBe('chatter.action');
 })->with([
     'lead'        => [EditLead::class, 'lead'],
     'opportunity' => [EditOpportunity::class, 'opportunity'],
