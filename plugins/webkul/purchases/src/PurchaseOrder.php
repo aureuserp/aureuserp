@@ -10,6 +10,7 @@ use Webkul\Purchase\Services\OrderCalculator;
 use Webkul\Purchase\Services\OrderWorkflow;
 use Webkul\Purchase\Services\ReceiptPlanner;
 use Webkul\Purchase\Settings\OrderSettings;
+use Webkul\Security\Models\User;
 
 class PurchaseOrder
 {
@@ -41,9 +42,14 @@ class PurchaseOrder
         return $this->workflow->countVendorsWithoutEmail($vendorIds);
     }
 
-    public function confirmPurchaseOrder(Order $record): Order
+    public function confirmPurchaseOrder(Order $record, ?User $actor = null): Order
     {
-        return $this->workflow->confirm($record);
+        return $this->workflow->confirm($record, $actor);
+    }
+
+    public function approvePurchaseOrder(Order $record, ?User $actor = null): Order
+    {
+        return $this->workflow->approve($record, $actor);
     }
 
     public function canUserApprove($user): bool

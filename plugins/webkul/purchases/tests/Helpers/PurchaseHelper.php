@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
@@ -19,10 +20,13 @@ use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\OrderLine;
+use Webkul\Purchase\Settings\OrderSettings;
+use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Services\CompanyContext;
 
 class PurchaseHelper
 {
@@ -219,5 +223,54 @@ class PurchaseHelper
         Inventory::completeTransfer($leg->refresh());
 
         return $leg->refresh();
+    }
+
+    public static function recordEvents(array $events): ArrayObject
+    {
+        $dispatched = new ArrayObject;
+
+        foreach ($events as $event) {
+            Event::listen($event, fn ($payload) => $dispatched[] = $payload);
+        }
+
+        return $dispatched;
+    }
+
+    public static function dispatchedOf(ArrayObject $dispatched, string $event): array
+    {
+        return array_values(array_filter($dispatched->getArrayCopy(), fn ($payload) => $payload instanceof $event));
+    }
+
+    public static function messageBodies($record): string
+    {
+        return $record->messages()->pluck('body')->implode(' ');
+    }
+
+    public static function userWithResourcePermission(PermissionType $permission): User
+    {
+        return User::withoutEvents(fn (): User => User::factory()->create([
+            'default_company_id'  => static::company()->id,
+            'resource_permission' => $permission,
+        ]));
+    }
+
+    public static function orderAboveApprovalAmount(Warehouse $warehouse, Product $product): Order
+    {
+        $settings = app(OrderSettings::class);
+        $settings->enable_order_approval = true;
+        $settings->order_validation_amount = 100;
+        $settings->save();
+
+        $order = static::order(['operation_type_id' => $warehouse->in_type_id]);
+
+        static::line($order, $product, qty: 3, priceUnit: 100);
+
+        static::compute($order->refresh());
+
+        Auth::logout();
+
+        app()->forgetInstance(CompanyContext::class);
+
+        return $order->refresh();
     }
 }

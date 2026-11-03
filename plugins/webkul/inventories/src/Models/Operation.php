@@ -97,10 +97,23 @@ class Operation extends Model
     public function getChatterResourceUrl(): string
     {
         try {
-            return OperationResource::getUrl('view', ['record' => $this], panel: 'admin');
+            $url = OperationResource::getUrl('view', ['record' => $this], panel: 'admin');
         } catch (Throwable $e) {
             return '';
         }
+
+        return $url === '#' ? '' : $url;
+    }
+
+    public function getChatterLink(): string
+    {
+        $url = $this->getChatterResourceUrl();
+
+        if (! $url) {
+            return e($this->name);
+        }
+
+        return '<a href="'.e($url).'" target="_blank" class="text-primary-600 dark:text-primary-400">'.e($this->name).'</a>';
     }
 
     protected function getLogAttributeLabels(): array

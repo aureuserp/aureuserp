@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -98,6 +99,8 @@ class OperationResource extends Resource
 
     public static function getUrl(?string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null, bool $shouldGuessMissingParameters = false, ?string $configuration = null): string
     {
+        $panelInstance = $panel ? Filament::getPanel($panel) : null;
+
         $resource = match ($parameters['record']?->operationType->type) {
             Enums\OperationType::INCOMING => ReceiptResource::class,
             Enums\OperationType::INTERNAL => InternalResource::class,
@@ -106,11 +109,11 @@ class OperationResource extends Resource
             default                       => null,
         };
 
-        if ($resource && Route::has($resource::getRouteBaseName($panel).'.view')) {
+        if ($resource && Route::has($resource::getRouteBaseName($panelInstance).'.view')) {
             return $resource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant);
         }
 
-        if (Route::has(ReceiptResource::getRouteBaseName($panel).'.index')) {
+        if (Route::has(ReceiptResource::getRouteBaseName($panelInstance).'.index')) {
             return ReceiptResource::getUrl('index', [], $isAbsolute, $panel, $tenant);
         }
 
