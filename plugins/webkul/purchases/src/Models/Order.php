@@ -249,24 +249,41 @@ class Order extends Model
 
     public function computeCurrencyRate(): void
     {
-        if ((float) $this->currency_rate !== 0.0) {
-            if (! $this->exists || $this->wasRecentlyCreated || ! $this->isDirty('currency_id')) {
-                return;
-            }
+        if (! float_is_zero((float) $this->currency_rate, precisionDigits: 6) && ! $this->shouldRefreshCurrencyRate()) {
+            return;
         }
 
         $companyCurrencyId = Company::withTrashed()->whereKey($this->company_id)->value('currency_id');
 
         if ($companyCurrencyId && $this->currency_id && (int) $this->currency_id !== (int) $companyCurrencyId) {
             $companyCurrency = Currency::find($companyCurrencyId);
-            $orderCurrency   = Currency::find($this->currency_id);
+            $orderCurrency = Currency::find($this->currency_id);
 
             $this->currency_rate = ($companyCurrency && $orderCurrency)
-                ? (float) $orderCurrency->getConversionRate($companyCurrency, $orderCurrency)
+                ? (float) $orderCurrency->getConversionRate(
+                    $companyCurrency,
+                    $orderCurrency,
+                    Company::withTrashed()->find($this->company_id),
+                    ($this->ordered_at ?? now())->toDateString(),
+                )
                 : 1.0;
         } else {
             $this->currency_rate = 1.0;
         }
+    }
+
+    protected function shouldRefreshCurrencyRate(): bool
+    {
+        if (! $this->exists || $this->wasRecentlyCreated) {
+            return false;
+        }
+
+        if ($this->isDirty('currency_id')) {
+            return true;
+        }
+
+        return $this->isDirty('ordered_at')
+            && in_array($this->state, [OrderState::DRAFT, OrderState::SENT], true);
     }
 
     public function updateName()

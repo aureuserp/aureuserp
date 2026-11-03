@@ -56,9 +56,9 @@ class CurrencyForm
                                         TextInput::make('rounding')
                                             ->label(__('support::filament/resources/currency.form.sections.format-information.fields.rounding'))
                                             ->numeric()
-                                            ->step(0.01)
+                                            ->step(0.000001)
                                             ->minValue(0)
-                                            ->default(0.00)
+                                            ->default(0.01)
                                             ->helperText(__('support::filament/resources/currency.form.sections.format-information.fields.rounding-helper-text')),
                                     ])
                                     ->columns(2),
