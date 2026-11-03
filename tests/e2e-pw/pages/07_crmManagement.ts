@@ -2,6 +2,10 @@ import { Locator, Page, expect } from "@playwright/test";
 import { ErpLocators } from "../locator/erp_locator";
 import { PluginManagementPage } from "./01_pluginManagement";
 
+export type CRMLayout = "list" | "kanban" | "graph" | "grid";
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export class CRMFlowPage {
     readonly page: Page;
     readonly erpLocators: ErpLocators;
@@ -37,6 +41,156 @@ export class CRMFlowPage {
         }
 
         await this.page.goto(url);
+    }
+
+    /**
+     * Fill a field once its form is done hydrating: a value typed before Livewire binds the
+     * field stays in the input but never reaches the form, so it is read back and retyped.
+     */
+    private async fillWhenReady(input: Locator, value: string) {
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(input).toBeVisible();
+
+        for (let attempt = 0; attempt < 3; attempt++) {
+            await input.fill(value);
+
+            if ((await input.inputValue()) === value) {
+                return;
+            }
+
+            await this.page.waitForTimeout(500);
+        }
+
+        await expect(input).toHaveValue(value);
+    }
+
+    async gotoCRMPage(path: string, title: RegExp) {
+        await this.safeGoto(path);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page).toHaveTitle(title);
+    }
+
+    /**
+     * Opens a page in one of its view layouts (the switcher keeps the choice in ?layout=) and
+     * checks both the selected switcher button and the content that layout renders.
+     */
+    async expectLayout(path: string, layout: CRMLayout) {
+        await this.safeGoto(`${path}${path.includes("?") ? "&" : "?"}layout=${layout}`);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        await expect(this.erpLocators.crmSelectedLayout).toHaveAccessibleName(new RegExp(`^${layout}$`, "i"));
+
+        const content = {
+            list: this.erpLocators.crmListContent,
+            kanban: this.erpLocators.crmKanbanContent,
+            graph: this.erpLocators.crmGraphContent,
+            grid: this.erpLocators.crmGridContent,
+        }[layout];
+
+        await expect(content).toBeVisible();
+    }
+
+    /**
+     * Boards grouped by a field (leads, customers) show no columns until a Group by is picked.
+     */
+    async expectGroupByPrompt(path: string) {
+        await this.safeGoto(`${path}${path.includes("?") ? "&" : "?"}layout=kanban`);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+
+        await expect(this.erpLocators.crmGroupByPrompt).toBeVisible();
+        await expect(this.erpLocators.crmKanbanContent).toHaveCount(0);
+    }
+
+    tableRow(name: string): Locator {
+        return this.page.locator(".fi-ta-row").filter({ hasText: name });
+    }
+
+    /**
+     * Opens a list filtered by the table search, which Filament keeps in ?search=.
+     */
+    async searchList(path: string, name: string) {
+        const separator = path.includes("?") ? "&" : "?";
+
+        await this.safeGoto(`${path}${separator}search=${encodeURIComponent(name)}`);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.erpLocators.crmListContent).toBeVisible();
+    }
+
+    async expectListed(path: string, name: string) {
+        await this.searchList(path, name);
+        await expect(this.tableRow(name).first()).toBeVisible();
+    }
+
+    async expectNotListed(path: string, name: string) {
+        await this.searchList(path, name);
+        await expect(this.tableRow(name)).toHaveCount(0);
+    }
+
+    /**
+     * Creates a record through its full-page create form and returns the view page it lands on.
+     */
+    async createRecord(createPath: string, name: string): Promise<string> {
+        await this.safeGoto(createPath);
+        await this.fillWhenReady(this.erpLocators.crmFormNameInput, name);
+        await this.erpLocators.crmFormCreateButton.click();
+
+        await this.page.waitForURL(/\/\d+$/);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page.getByText(name).first()).toBeVisible();
+
+        return new URL(this.page.url()).pathname;
+    }
+
+    async editRecord(viewPath: string, name: string) {
+        await this.safeGoto(`${viewPath}/edit`);
+        await this.fillWhenReady(this.erpLocators.crmFormNameInput, name);
+        await this.erpLocators.crmFormSaveButton.click();
+        await expect(this.page.locator(".fi-no-notification-title").first()).toBeVisible();
+
+        await this.safeGoto(viewPath);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await expect(this.page.getByText(name).first()).toBeVisible();
+    }
+
+    async deleteRecord(viewPath: string, indexPath: string) {
+        await this.safeGoto(viewPath);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.erpLocators.crmHeaderDeleteButton.click();
+        await this.erpLocators.crmConfirmDeleteButton.click();
+
+        await this.page.waitForURL(new RegExp(`${escapeRegExp(indexPath)}(\\?.*)?$`));
+    }
+
+    /**
+     * Configuration pages (tags, lost reasons) create and edit their records in a modal.
+     */
+    async createInModal(path: string, newButton: RegExp, name: string) {
+        await this.safeGoto(path);
+        await this.page.waitForLoadState("networkidle").catch(() => undefined);
+        await this.page.locator(".fi-header").getByRole("button", { name: newButton }).click();
+        await this.fillWhenReady(this.erpLocators.crmModalNameInput, name);
+        await this.erpLocators.crmModalCreateButton.click();
+        await expect(this.erpLocators.crmModalNameInput).toBeHidden();
+
+        await this.expectListed(path, name);
+    }
+
+    async editInModal(path: string, name: string, newName: string) {
+        await this.searchList(path, name);
+        await this.tableRow(name).first().getByRole("button", { name: /^Edit$/ }).click();
+        await this.fillWhenReady(this.erpLocators.crmModalNameInput, newName);
+        await this.erpLocators.crmModalSaveButton.click();
+        await expect(this.erpLocators.crmModalNameInput).toBeHidden();
+
+        await this.expectListed(path, newName);
+    }
+
+    async deleteInModal(path: string, name: string) {
+        await this.searchList(path, name);
+        await this.tableRow(name).first().getByRole("button", { name: /^Delete$/ }).click();
+        await this.erpLocators.crmConfirmDeleteButton.click();
+
+        await expect(this.tableRow(name)).toHaveCount(0);
     }
 
     /**
