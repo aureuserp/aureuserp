@@ -22,6 +22,7 @@ class UTMMediumSeeder extends Seeder
             'LinkedIn',
             'Television',
             'Google',
+            'Website',
         ];
 
         $user = User::first();

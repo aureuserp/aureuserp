@@ -76,6 +76,11 @@ class PageForm
                                 Toggle::make('is_footer_visible')
                                     ->label(__('website::filament/admin/resources/page.form.sections.settings.fields.is-footer-visible'))
                                     ->inline(false),
+                                Toggle::make('is_tracked')
+                                    ->label(__('website::filament/admin/resources/page.form.sections.settings.fields.is-tracked'))
+                                    ->helperText(__('website::filament/admin/resources/page.form.sections.settings.fields.is-tracked-helper'))
+                                    ->default(true)
+                                    ->inline(false),
                             ]),
                     ]),
                 Section::make()

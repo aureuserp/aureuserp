@@ -90,6 +90,10 @@ class PageInfolist
                                 IconEntry::make('is_footer_visible')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.settings.entries.is-footer-visible'))
                                     ->boolean(),
+
+                                IconEntry::make('is_tracked')
+                                    ->label(__('website::filament/admin/resources/page.infolist.sections.settings.entries.is-tracked'))
+                                    ->boolean(),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

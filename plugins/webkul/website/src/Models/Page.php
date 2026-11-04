@@ -34,6 +34,7 @@ class Page extends Model
         'published_at',
         'is_header_visible',
         'is_footer_visible',
+        'is_tracked',
         'meta_title',
         'meta_keywords',
         'meta_description',
@@ -44,6 +45,7 @@ class Page extends Model
         'is_published'      => 'boolean',
         'is_header_visible' => 'boolean',
         'is_footer_visible' => 'boolean',
+        'is_tracked'        => 'boolean',
         'published_at'      => 'datetime',
     ];
 

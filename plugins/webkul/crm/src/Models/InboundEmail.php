@@ -1,0 +1,47 @@
+<?php
+
+namespace Webkul\Crm\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Webkul\Crm\Enums\InboundEmailStatus;
+
+class InboundEmail extends Model
+{
+    protected $table = 'crm_inbound_emails';
+
+    protected $fillable = [
+        'mail_server_id',
+        'alias_id',
+        'lead_id',
+        'message_id',
+        'in_reply_to',
+        'from_email',
+        'from_name',
+        'recipients',
+        'subject',
+        'status',
+        'reason',
+        'received_at',
+    ];
+
+    protected $casts = [
+        'status'      => InboundEmailStatus::class,
+        'received_at' => 'datetime',
+    ];
+
+    public function mailServer(): BelongsTo
+    {
+        return $this->belongsTo(MailServer::class, 'mail_server_id');
+    }
+
+    public function alias(): BelongsTo
+    {
+        return $this->belongsTo(MailAlias::class, 'alias_id');
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class, 'lead_id')->withTrashed();
+    }
+}

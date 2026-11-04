@@ -525,6 +525,32 @@ export class ErpLocators {
     readonly blogPostsConfirmDeleteButton: Locator;
     readonly blogPostsSuccessToast: Locator;
 
+    /**
+     *  CRM Pipeline Kanban
+     */
+
+    readonly crmKanbanBoard: Locator;
+    readonly crmKanbanColumns: Locator;
+    readonly crmQuickCreateNameInput: Locator;
+    readonly crmQuickCreateSubmitButton: Locator;
+    readonly crmCardMenuDeleteOption: Locator;
+    readonly crmConfirmDeleteButton: Locator;
+    readonly crmFormNameInput: Locator;
+    readonly crmFormCreateButton: Locator;
+    readonly crmFormSaveButton: Locator;
+    readonly crmHeaderDeleteButton: Locator;
+    readonly crmModalNameInput: Locator;
+    readonly crmModalCreateButton: Locator;
+    readonly crmModalSaveButton: Locator;
+    readonly crmTableSearchInput: Locator;
+    readonly crmSelectedLayout: Locator;
+    readonly crmListContent: Locator;
+    readonly crmKanbanContent: Locator;
+    readonly crmGraphContent: Locator;
+    readonly crmGridContent: Locator;
+    readonly crmGroupByPrompt: Locator;
+    readonly crmGroupBySelect: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -1127,5 +1153,32 @@ export class ErpLocators {
             .first();
         this.blogPostsConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /delete/i }).first();
         this.blogPostsSuccessToast = page.locator("h3.fi-no-notification-title, .fi-toast-message-success").first();
+
+        this.crmKanbanBoard = page.locator(".crm-kanban-board");
+        this.crmKanbanColumns = page.locator(".crm-kanban-board .fi-kanban-column");
+        this.crmQuickCreateNameInput = anyDialog(page).getByRole("textbox").first();
+        this.crmQuickCreateSubmitButton = anyDialog(page).locator('button[type="submit"]').first();
+        // The card menu is teleported to the body, so only the open panel is visible.
+        this.crmCardMenuDeleteOption = page
+            .locator(".fi-dropdown-panel:visible .fi-dropdown-list-item")
+            .filter({ hasText: /^\s*Delete\s*$/ });
+        this.crmConfirmDeleteButton = anyDialog(page).getByRole("button", { name: /^\s*(Confirm|Delete)\s*$/i }).first();
+        // CRM create/edit pages name their main field "name", and the record header holds Delete.
+        this.crmFormNameInput = page.locator('[id="form.name"]');
+        this.crmFormCreateButton = page.locator('button[type="submit"]').filter({ hasText: /^\s*Create\s*$/ }).first();
+        this.crmFormSaveButton = page.locator('button[type="submit"]').filter({ hasText: /^\s*Save changes\s*$/ }).first();
+        this.crmHeaderDeleteButton = page.locator(".fi-header").getByRole("button", { name: /^Delete$/ });
+        // Configuration pages (tags, lost reasons) create and edit in a modal.
+        this.crmModalNameInput = page.locator('[id="mountedActionSchema0.name"]');
+        this.crmModalCreateButton = anyDialog(page).getByRole("button", { name: /^Create$/ });
+        this.crmModalSaveButton = anyDialog(page).getByRole("button", { name: /^Save changes$/ });
+        this.crmTableSearchInput = page.locator(".fi-ta-search-field input").first();
+        this.crmSelectedLayout = page.locator('.crm-layout-switcher [aria-selected="true"]');
+        this.crmListContent = page.locator(".fi-ta-table, .fi-ta-empty-state").first();
+        this.crmKanbanContent = page.locator(".crm-kanban-board .crm-kanban-columns.crm-kanban-ready");
+        this.crmGraphContent = page.locator("canvas").first();
+        this.crmGridContent = page.locator(".fi-ta-content-grid").first();
+        this.crmGroupByPrompt = page.locator(".fi-ta-empty-state").filter({ hasText: "Choose a Group by" });
+        this.crmGroupBySelect = page.getByRole("combobox", { name: "Group by" });
     }
 }

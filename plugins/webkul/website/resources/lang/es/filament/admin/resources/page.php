@@ -34,6 +34,8 @@ return [
                 'fields' => [
                     'is-header-visible' => 'Mostrar menú de encabezado',
                     'is-footer-visible' => 'Mostrar menú de pie de página',
+                    'is-tracked'        => 'Seguir visitantes',
+                    'is-tracked-helper' => 'Registrar las visitas de los visitantes a esta página.',
                 ],
             ],
         ],
@@ -156,6 +158,7 @@ return [
                 'entries' => [
                     'is-header-visible' => 'Mostrar menú de encabezado',
                     'is-footer-visible' => 'Mostrar menú de pie de página',
+                    'is-tracked'        => 'Seguir visitantes',
                 ],
             ],
         ],

@@ -5,6 +5,19 @@ return [
 
     'form' => [
         'sections' => [
+            'contact-form' => [
+                'title'       => 'Contact Us',
+                'description' => 'The Contact Us form of the website and what happens when a visitor sends it.',
+
+                'fields' => [
+                    'enabled'        => 'Enable Contact Us',
+                    'enabled-helper' => 'Shows the Contact Us page and its link in the website menu.',
+                    'action'         => 'After submission',
+                    'email-helper'   => 'The message is emailed to :email.',
+                    'crm-helper'     => 'The message creates a record in CRM with the visitor\'s details.',
+                ],
+            ],
+
             'contacts' => [
                 'title' => 'Contacts',
 

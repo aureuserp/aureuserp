@@ -34,6 +34,7 @@
         "spatie/eloquent-sortable": "^5.0",
         "spatie/laravel-query-builder": "^7.0",
         "spatie/laravel-translatable": "^6.14",
+        "wezlo/filament-kanban": "^1.0",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
