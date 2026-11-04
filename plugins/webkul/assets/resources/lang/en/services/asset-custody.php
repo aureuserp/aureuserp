@@ -40,6 +40,10 @@ return [
     'bulk-tag-required'                        => 'Every unit requires an explicit asset tag because automatic tag generation is disabled. Missing: :values.',
     'bulk-duplicate-in-batch'                  => 'Duplicate values in the batch: :values.',
     'bulk-duplicate-in-database'               => 'These values already exist, including archived assets: :values.',
+    'quantity-must-be-positive'                => 'The quantity must be greater than zero.',
+    'insufficient-consumable-quantity'         => 'The requested quantity (:requested) exceeds the available balance (:available).',
+    'single-employee-only-for-assets'          => 'Fixed assets can only be issued to a single employee.',
+    'batch-issue-disabled'                     => 'Batch issuance for consumables is disabled. Select a single employee.',
 
     'chatter' => [
         'issued'      => 'Asset issued to :holder.',

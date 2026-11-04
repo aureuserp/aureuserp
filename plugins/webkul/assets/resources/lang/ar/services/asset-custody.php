@@ -40,6 +40,10 @@ return [
     'bulk-tag-required'                        => 'كل وحدة تحتاج إلى وسم أصل صريح لأن إنشاء الوسم التلقائي معطّل. المفقود: :values.',
     'bulk-duplicate-in-batch'                  => 'قيم مكررة في الدفعة: :values.',
     'bulk-duplicate-in-database'               => 'هذه القيم موجودة بالفعل، بما في ذلك الأصول المؤرشفة: :values.',
+    'quantity-must-be-positive'                => 'يجب أن تكون الكمية أكبر من صفر.',
+    'insufficient-consumable-quantity'         => 'الكمية المطلوبة (:requested) تتجاوز الرصيد المتاح (:available).',
+    'single-employee-only-for-assets'          => 'الأصول الثابتة تُصرف لموظف واحد فقط.',
+    'batch-issue-disabled'                     => 'الصرف الجماعي للمستهلكات معطّل. اختر موظفاً واحداً.',
 
     'chatter' => [
         'issued'      => 'تم تسليم الأصل إلى :holder.',

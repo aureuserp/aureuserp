@@ -48,10 +48,12 @@ class AssetServiceProvider extends PackageServiceProvider
                 '2026_03_20_000001_create_asset_sites_table',
                 '2026_03_20_000002_create_assets_table',
                 '2026_03_20_000003_create_asset_assignments_table',
+                '2026_11_03_000001_add_consumable_quantities_to_assets_tables',
             ])
             ->runsMigrations()
             ->hasSettings([
                 '2026_03_20_000001_create_assets_settings',
+                '2026_11_03_000001_add_consumables_settings_to_assets_settings',
             ])
             ->runsSettings()
             ->hasDependencies(['employees'])
@@ -125,6 +127,12 @@ class AssetServiceProvider extends PackageServiceProvider
 }
 .fi-ta-hscroll-track {
     height: 1px;
+}
+.fi-fo-select-scrollable .fi-select-input-value-badges-ctn {
+    max-height: 7.5rem;
+    overflow-y: auto;
+    padding-inline-end: 0.25rem;
+    scrollbar-width: thin;
 }
 </style>'),
         );

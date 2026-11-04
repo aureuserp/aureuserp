@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSiteUsage;
 use Webkul\Asset\Enums\AssetSourceType;
 use Webkul\Asset\Enums\AssetStatus;
@@ -60,6 +61,11 @@ function custodyResetSettings(): void
     $settings->require_attachments_on_termination = false;
     $settings->restrict_termination_to_managers = false;
     $settings->termination_approval_cost_threshold = null;
+    $settings->enable_consumables_batch_issue = true;
+    $settings->auto_fill_consumable_employees_by_site = true;
+    $settings->default_consumable_issue_quantity = 1;
+    $settings->require_site_on_consumable_issue = false;
+    $settings->require_attachments_on_consumable_issue = false;
 
     $settings->save();
 }
@@ -915,4 +921,262 @@ it('persists initial_attachments into registered movement without SQL column err
         'assets/attachments/return-doc.pdf',
         'assets/attachments/issue-doc.pdf',
     ]);
+});
+
+it('registers a consumable batch with initial quantity without requiring a serial number even when require_serial_by_default is enabled', function () {
+    $company = Company::factory()->create();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+        'cost' => 15.50,
+    ]);
+
+    $settings = app(AssetSettings::class);
+    $settings->require_serial_by_default = true;
+    $settings->save();
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 100,
+    ]);
+
+    expect($batch->isConsumable())->toBeTrue()
+        ->and((float) $batch->initial_quantity)->toBe(100.0)
+        ->and((float) $batch->quantity)->toBe(100.0)
+        ->and($batch->serial_no)->toBeNull()
+        ->and($batch->status)->toBe(AssetStatus::Available);
+
+    $movement = $batch->movements()->first();
+    expect($movement->type)->toBe(MovementType::Registered)
+        ->and((float) $movement->quantity)->toBe(100.0);
+});
+
+it('prevents changing product type once asset or batch records exist', function () {
+    $company = Company::factory()->create();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+
+    Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 25,
+    ]);
+
+    expect(fn () => $product->update(['type' => AssetProductType::Asset]))
+        ->toThrow(ValidationException::class);
+});
+
+it('issues consumable quantities to multiple employees in one batch operation and transitions to consumed when depleted', function () {
+    $company = Company::factory()->create();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $site = AssetSite::factory()->company($company)->custodyZone()->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+        'cost' => 10,
+    ]);
+
+    $emp1 = Employee::factory()->create(['company_id' => $company->id, 'user_id' => User::factory(), 'is_active' => true]);
+    $emp2 = Employee::factory()->create(['company_id' => $company->id, 'user_id' => User::factory(), 'is_active' => true]);
+    $emp3 = Employee::factory()->create(['company_id' => $company->id, 'user_id' => User::factory(), 'is_active' => true]);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    $service = app(AssetCustodyService::class);
+
+    $service->issue($batch, [
+        'employee_ids' => [$emp1->id, $emp2->id, $emp3->id],
+        'site_id'      => $site->id,
+        'quantity'     => 2,
+        'note'         => 'توزيع قرطاسية',
+    ]);
+
+    $batch->refresh();
+    expect((float) $batch->quantity)->toBe(4.0)
+        ->and($batch->status)->toBe(AssetStatus::Available)
+        ->and($batch->warehouse_id)->toBe($warehouse->id)
+        ->and($batch->movements()->where('type', MovementType::Issued)->count())->toBe(3)
+        ->and((float) $batch->movements()->where('type', MovementType::Issued)->sum('quantity'))->toBe(6.0);
+
+    expect(fn () => $service->issue($batch, [
+        'employee_ids' => [$emp1->id, $emp2->id],
+        'quantity'     => 3,
+    ]))->toThrow(ValidationException::class);
+
+    $service->issue($batch, [
+        'employee_ids' => [$emp1->id],
+        'quantity'     => 4,
+    ]);
+
+    $batch->refresh();
+    expect((float) $batch->quantity)->toBe(0.0)
+        ->and($batch->status)->toBe(AssetStatus::Consumed)
+        ->and($batch->warehouse_id)->toBeNull();
+});
+
+it('rejects issuing a fixed asset to several employees at once', function () {
+    $company = custodyCompany();
+    $warehouse = custodyWarehouse($company);
+    $employee = custodyEmployee($company);
+    $colleague = custodyEmployee($company);
+    $asset = custodyAsset($company, ['warehouse_id' => $warehouse->id]);
+
+    expect(fn () => custodyService()->issue($asset, [
+        'employee_ids' => [$employee->id, $colleague->id],
+    ]))->toThrow(ValidationException::class, __('assets::services/asset-custody.single-employee-only-for-assets'));
+
+    expect($asset->fresh()->status)->toBe(AssetStatus::Available);
+
+    custodyService()->issue($asset, ['employee_id' => $employee->id]);
+
+    expect($asset->fresh()->current_employee_id)->toBe($employee->id);
+});
+
+it('rejects consumable multi-recipient issuance when batch issuance is disabled', function () {
+    $company = custodyCompany();
+    $warehouse = custodyWarehouse($company);
+    $product = custodyProduct($company, ['type' => AssetProductType::Consumable]);
+    $employee = custodyEmployee($company);
+    $colleague = custodyEmployee($company);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    $settings = app(AssetSettings::class);
+    $settings->enable_consumables_batch_issue = false;
+    $settings->save();
+
+    expect(fn () => custodyService()->issue($batch, [
+        'employee_ids' => [$employee->id, $colleague->id],
+    ]))->toThrow(ValidationException::class, __('assets::services/asset-custody.batch-issue-disabled'));
+
+    custodyService()->issue($batch, ['employee_ids' => [$employee->id]]);
+
+    expect((float) $batch->fresh()->quantity)->toBe(9.0);
+});
+
+it('keeps consumable site and attachment requirements independent from custody rules', function () {
+    $company = custodyCompany();
+    $warehouse = custodyWarehouse($company);
+    $product = custodyProduct($company, ['type' => AssetProductType::Consumable]);
+    $employee = custodyEmployee($company);
+    $assetProduct = custodyProduct($company);
+    $fixedAsset = custodyAsset($company, [
+        'warehouse_id' => $warehouse->id,
+        'product_id'   => $assetProduct->id,
+    ]);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 100,
+    ]);
+
+    $settings = app(AssetSettings::class);
+    $settings->require_site_on_custody = true;
+    $settings->require_attachments_on_custody = true;
+    $settings->require_site_on_consumable_issue = false;
+    $settings->require_attachments_on_consumable_issue = false;
+    $settings->save();
+
+    expect(fn () => custodyService()->issue($fixedAsset, [
+        'employee_id' => $employee->id,
+    ]))->toThrow(ValidationException::class, __('assets::services/asset-custody.site-required'));
+
+    $movement = custodyService()->issue($batch, [
+        'employee_ids' => [$employee->id],
+        'quantity'     => 5,
+    ]);
+
+    expect($movement->type)->toBe(MovementType::Issued)
+        ->and((float) $batch->fresh()->quantity)->toBe(95.0);
+});
+
+it('enforces consumable-only site and attachment requirements', function () {
+    $company = custodyCompany();
+    $warehouse = custodyWarehouse($company);
+    $site = custodySite($company);
+    $product = custodyProduct($company, ['type' => AssetProductType::Consumable]);
+    $employee = custodyEmployee($company);
+    $assetProduct = custodyProduct($company);
+    $fixedAsset = custodyAsset($company, [
+        'warehouse_id' => $warehouse->id,
+        'product_id'   => $assetProduct->id,
+    ]);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 20,
+    ]);
+
+    $settings = app(AssetSettings::class);
+    $settings->require_site_on_custody = false;
+    $settings->require_attachments_on_custody = false;
+    $settings->require_site_on_consumable_issue = true;
+    $settings->require_attachments_on_consumable_issue = true;
+    $settings->save();
+
+    expect(fn () => custodyService()->issue($batch, [
+        'employee_ids' => [$employee->id],
+    ]))->toThrow(ValidationException::class, __('assets::services/asset-custody.site-required'));
+
+    expect(fn () => custodyService()->issue($batch, [
+        'employee_ids' => [$employee->id],
+        'site_id'      => $site->id,
+    ]))->toThrow(ValidationException::class, __('assets::services/asset-custody.attachments-required'));
+
+    custodyService()->issue($batch, [
+        'employee_ids' => [$employee->id],
+        'site_id'      => $site->id,
+        'quantity'     => 2,
+        'attachments'  => ['assets/receipts/handover.pdf'],
+    ]);
+
+    expect((float) $batch->fresh()->quantity)->toBe(18.0);
+
+    custodyService()->issue($fixedAsset, ['employee_id' => $employee->id]);
+
+    expect($fixedAsset->fresh()->current_employee_id)->toBe($employee->id);
+});
+
+it('uses the configured default consumable issue quantity when none is provided', function () {
+    $company = custodyCompany();
+    $warehouse = custodyWarehouse($company);
+    $product = custodyProduct($company, ['type' => AssetProductType::Consumable]);
+    $employee = custodyEmployee($company);
+    $colleague = custodyEmployee($company);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 20,
+    ]);
+
+    $settings = app(AssetSettings::class);
+    $settings->default_consumable_issue_quantity = 3;
+    $settings->save();
+
+    custodyService()->issue($batch, [
+        'employee_ids' => [$employee->id, $colleague->id],
+    ]);
+
+    expect((float) $batch->fresh()->quantity)->toBe(14.0)
+        ->and((float) $batch->movements()->where('type', MovementType::Issued)->sum('quantity'))->toBe(6.0);
 });

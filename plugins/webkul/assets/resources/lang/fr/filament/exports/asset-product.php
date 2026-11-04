@@ -3,6 +3,7 @@
 return [
     'columns' => [
         'name'                    => 'Nom du Produit',
+        'type'                    => 'Type de Produit',
         'category'                => 'Catégorie',
         'model'                   => 'Modèle',
         'cost'                    => 'Coût',

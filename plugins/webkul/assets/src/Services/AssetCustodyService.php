@@ -58,7 +58,7 @@ class AssetCustodyService
         return $tag;
     }
 
-    public function validateHeldState(Asset $asset): void
+    public function validateHeldState(Asset $asset, ?bool $requireSite = null): void
     {
         $employeeId = $asset->current_employee_id;
         $siteId = $asset->current_site_id;
@@ -69,6 +69,7 @@ class AssetCustodyService
 
         $companyId = (int) $asset->company_id;
         $settings = app(AssetSettings::class);
+        $requireSite ??= (bool) $settings->require_site_on_custody;
 
         if (blank($employeeId) && filled($siteId) && ! $settings->enable_site_assets) {
             $this->fail('site_id', 'site-assets-disabled');
@@ -110,7 +111,7 @@ class AssetCustodyService
                 }
             }
 
-            if ($settings->require_site_on_custody && blank($siteId)) {
+            if ($requireSite && blank($siteId)) {
                 $this->fail('site_id', 'site-required');
             }
         }
@@ -148,15 +149,23 @@ class AssetCustodyService
     }
 
     /**
-     * @param  array{employee_id?: int|null, site_id?: int|null, allocation_mode?: string|null, condition_out?: AssetCondition|string|null, condition?: AssetCondition|string|null, issued_at?: mixed, occurred_at?: mixed, expected_return_at?: mixed, note?: string|null, issue_note?: string|null, attachments?: array<int, string>|null, issue_attachments?: array<int, string>|null, issued_by_user_id?: int|null, performed_by_user_id?: int|null}  $data
+     * @param  array{employee_id?: int|null, employee_ids?: array<int, int>|null, site_id?: int|null, allocation_mode?: string|null, quantity?: float|int|string|null, condition_out?: AssetCondition|string|null, condition?: AssetCondition|string|null, issued_at?: mixed, occurred_at?: mixed, expected_return_at?: mixed, note?: string|null, issue_note?: string|null, attachments?: array<int, string>|null, issue_attachments?: array<int, string>|null, issued_by_user_id?: int|null, performed_by_user_id?: int|null}  $data
      */
     public function issue(Asset $asset, array $data): AssetMovement
     {
         return DB::transaction(function () use ($asset, $data): AssetMovement {
             $asset = $this->lockAsset($asset);
 
+            if ($asset->isConsumable()) {
+                return $this->issueConsumableLocked($asset, $data);
+            }
+
             if ($asset->status !== AssetStatus::Available) {
                 $this->fail('asset', 'asset-not-available');
+            }
+
+            if (count(array_filter((array) ($data['employee_ids'] ?? []))) > 1) {
+                $this->fail('employee_id', 'single-employee-only-for-assets');
             }
 
             $holder = $this->resolveHolder($asset, $data);
@@ -211,6 +220,172 @@ class AssetCustodyService
 
             return $movement;
         });
+    }
+
+    public function validateConsumableHolder(Asset $asset): void
+    {
+        $dummy = new Asset([
+            'company_id'          => $asset->company_id,
+            'product_id'          => $asset->product_id,
+            'current_employee_id' => $asset->current_employee_id,
+            'current_site_id'     => $asset->current_site_id,
+            'status'              => AssetStatus::Held,
+        ]);
+
+        $this->validateHeldState($dummy, (bool) app(AssetSettings::class)->require_site_on_consumable_issue);
+    }
+
+    /**
+     * @param  array{employee_id?: int|null, employee_ids?: array<int, int>|null, site_id?: int|null, allocation_mode?: string|null, quantity?: float|int|string|null, issued_at?: mixed, occurred_at?: mixed, note?: string|null, issue_note?: string|null, attachments?: array<int, string>|null, issue_attachments?: array<int, string>|null, issued_by_user_id?: int|null, performed_by_user_id?: int|null}  $data
+     */
+    protected function issueConsumableLocked(Asset $asset, array $data): AssetMovement
+    {
+        if ($asset->status !== AssetStatus::Available || (float) $asset->quantity <= 0) {
+            $this->fail('asset', 'asset-not-available');
+        }
+
+        $settings = app(AssetSettings::class);
+
+        $quantityPerRecipient = filled($data['quantity'] ?? null)
+            ? (float) $data['quantity']
+            : (float) max(1, (int) ($settings->default_consumable_issue_quantity ?? 1));
+
+        if ($quantityPerRecipient <= 0) {
+            $this->fail('quantity', 'quantity-must-be-positive');
+        }
+
+        $recipients = $this->resolveConsumableRecipients($asset, $data);
+
+        $available = (float) $asset->quantity;
+        $totalQuantity = round($quantityPerRecipient * count($recipients), 4);
+
+        if ($totalQuantity > $available) {
+            $this->fail('quantity', 'insufficient-consumable-quantity', [
+                'requested' => $totalQuantity,
+                'available' => $available,
+            ]);
+        }
+
+        $attachments = $this->normalizeAttachments($data['attachments'] ?? $data['issue_attachments'] ?? null);
+
+        if ($settings->require_attachments_on_consumable_issue && $attachments === []) {
+            $this->fail('attachments', 'attachments-required');
+        }
+
+        $issuedAt = $data['issued_at'] ?? $data['occurred_at'] ?? now();
+        $note = $data['note'] ?? $data['issue_note'] ?? null;
+        $performedBy = $data['issued_by_user_id'] ?? $data['performed_by_user_id'] ?? Auth::id();
+
+        $movement = null;
+
+        foreach ($recipients as $recipient) {
+            $movement = AssetMovement::query()->create([
+                'company_id'           => $asset->company_id,
+                'asset_id'             => $asset->id,
+                'type'                 => MovementType::Issued,
+                'quantity'             => $quantityPerRecipient,
+                'from_warehouse_id'    => $asset->warehouse_id,
+                'to_employee_id'       => $recipient['employee_id'],
+                'to_site_id'           => $recipient['site_id'],
+                'condition'            => $asset->condition,
+                'occurred_at'          => $issuedAt,
+                'performed_by_user_id' => $performedBy,
+                'note'                 => $note,
+                'attachments'          => $attachments ?: null,
+            ]);
+
+            $this->log($asset, 'issued', $recipient, $note);
+        }
+
+        $remaining = round($available - $totalQuantity, 4);
+
+        $asset->update([
+            'quantity'     => max(0, $remaining),
+            'status'       => $remaining <= 0 ? AssetStatus::Consumed : AssetStatus::Available,
+            'warehouse_id' => $remaining <= 0 ? null : $asset->warehouse_id,
+        ]);
+
+        return $movement;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<int, array{employee_id: int|null, site_id: int|null}>
+     */
+    protected function resolveConsumableRecipients(Asset $asset, array $data): array
+    {
+        $settings = app(AssetSettings::class);
+        $siteId = filled($data['site_id'] ?? null) ? (int) $data['site_id'] : null;
+
+        if (($data['allocation_mode'] ?? null) === 'site_asset') {
+            if (! $settings->enable_site_assets) {
+                $this->fail('site_id', 'site-assets-disabled');
+            }
+
+            if (blank($siteId)) {
+                $this->fail('site_id', 'site-required');
+            }
+
+            $this->assertConsumableRecipient($asset, null, $siteId);
+
+            return [['employee_id' => null, 'site_id' => $siteId]];
+        }
+
+        $employeeIds = $data['employee_ids'] ?? null;
+
+        if (! is_array($employeeIds)) {
+            $employeeIds = filled($data['employee_id'] ?? null) ? [$data['employee_id']] : [];
+        }
+
+        $employeeIds = collect($employeeIds)
+            ->map(fn ($id): int => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($employeeIds->isEmpty() && filled($siteId)) {
+            $custodianId = AssetSite::withoutGlobalScopes()
+                ->whereNull('deleted_at')
+                ->whereKey($siteId)
+                ->value('default_custodian_employee_id');
+
+            if (filled($custodianId)) {
+                $employeeIds = collect([(int) $custodianId]);
+            }
+        }
+
+        if ($employeeIds->isEmpty()) {
+            $this->fail('employee_id', 'employee-required');
+        }
+
+        if (! $settings->enable_consumables_batch_issue && $employeeIds->count() > 1) {
+            $this->fail('employee_id', 'batch-issue-disabled');
+        }
+
+        $recipients = [];
+
+        foreach ($employeeIds as $employeeId) {
+            $this->assertConsumableRecipient($asset, $employeeId, $siteId);
+
+            $recipients[] = ['employee_id' => $employeeId, 'site_id' => $siteId];
+        }
+
+        return $recipients;
+    }
+
+    protected function assertConsumableRecipient(Asset $asset, ?int $employeeId, ?int $siteId): void
+    {
+        $dummy = new Asset([
+            'company_id'          => $asset->company_id,
+            'product_id'          => $asset->product_id,
+            'current_employee_id' => $employeeId,
+            'current_site_id'     => $siteId,
+            'status'              => AssetStatus::Held,
+        ]);
+        $dummy->id = $asset->id;
+        $dummy->exists = true;
+
+        $this->validateHeldState($dummy, (bool) app(AssetSettings::class)->require_site_on_consumable_issue);
     }
 
     /**
@@ -698,6 +873,7 @@ class AssetCustodyService
                 'company_id'           => $asset->company_id,
                 'asset_id'             => $asset->id,
                 'type'                 => $movementType,
+                'quantity'             => $asset->quantity ?? 1,
                 'from_warehouse_id'    => $asset->warehouse_id,
                 'from_employee_id'     => $asset->current_employee_id,
                 'from_site_id'         => $asset->current_site_id,
@@ -710,6 +886,7 @@ class AssetCustodyService
 
             $asset->update([
                 'status'              => $status,
+                'quantity'            => $asset->isConsumable() ? 0 : 1,
                 'condition'           => $condition,
                 'warehouse_id'        => null,
                 'current_employee_id' => null,

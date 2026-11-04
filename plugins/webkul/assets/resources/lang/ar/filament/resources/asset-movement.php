@@ -14,6 +14,7 @@ return [
             'asset-tag'          => 'رقم الأصل',
             'asset-name'         => 'اسم الأصل',
             'type'               => 'نوع الحركة',
+            'quantity'           => 'الكمية',
             'source-type'        => 'المصدر',
             'from'               => 'من',
             'to'                 => 'إلى',
@@ -32,6 +33,7 @@ return [
         ],
         'filters' => [
             'type'         => 'نوع الحركة',
+            'product-type' => 'نوع المنتج',
             'source-type'  => 'المصدر',
             'condition'    => 'الحالة الفنية',
             'category'     => 'الفئة',
@@ -59,6 +61,8 @@ return [
         'list' => [
             'tabs' => [
                 'all'           => 'الكل',
+                'assets'        => 'الأصول',
+                'consumables'   => 'المستهلكات',
                 'issues'        => 'عمليات الصرف',
                 'returns'       => 'عمليات الإرجاع',
                 'transfers'     => 'عمليات النقل',

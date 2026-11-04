@@ -129,6 +129,29 @@ it('saves custody duration and assignment settings', function () {
         ->and($settings->prevent_duplicate_product_custody)->toBeTrue();
 });
 
+it('saves dedicated consumables issuance settings from the custody page', function () {
+    FilamentHelper::actingAs(['page_asset_manage_assets']);
+
+    Livewire::test(ManageCustody::class)
+        ->fillForm([
+            'enable_consumables_batch_issue'          => false,
+            'auto_fill_consumable_employees_by_site'  => false,
+            'default_consumable_issue_quantity'       => 5,
+            'require_site_on_consumable_issue'        => true,
+            'require_attachments_on_consumable_issue' => true,
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $settings = app(AssetSettings::class);
+
+    expect($settings->enable_consumables_batch_issue)->toBeFalse()
+        ->and($settings->auto_fill_consumable_employees_by_site)->toBeFalse()
+        ->and((int) $settings->default_consumable_issue_quantity)->toBe(5)
+        ->and($settings->require_site_on_consumable_issue)->toBeTrue()
+        ->and($settings->require_attachments_on_consumable_issue)->toBeTrue();
+});
+
 it('saves custody attachment and termination governance settings', function () {
     FilamentHelper::actingAs(['page_asset_manage_assets']);
 

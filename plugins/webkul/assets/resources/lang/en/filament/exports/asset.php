@@ -4,6 +4,9 @@ return [
     'columns' => [
         'asset-tag'          => 'Asset Tag',
         'product'            => 'Product',
+        'product-type'       => 'Product Type',
+        'initial-quantity'   => 'Initial Quantity',
+        'quantity'           => 'Quantity',
         'model'              => 'Model',
         'category'           => 'Category',
         'serial-no'          => 'Serial Number',

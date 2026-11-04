@@ -14,6 +14,7 @@ return [
             'asset-tag'          => 'Asset Tag',
             'asset-name'         => 'Asset Name',
             'type'               => 'Movement Type',
+            'quantity'           => 'Quantity',
             'source-type'        => 'Source',
             'from'               => 'From',
             'to'                 => 'To',
@@ -32,6 +33,7 @@ return [
         ],
         'filters' => [
             'type'         => 'Movement Type',
+            'product-type' => 'Product Type',
             'source-type'  => 'Source',
             'condition'    => 'Condition',
             'category'     => 'Category',
@@ -59,6 +61,8 @@ return [
         'list' => [
             'tabs' => [
                 'all'           => 'All',
+                'assets'        => 'Assets',
+                'consumables'   => 'Consumables',
                 'issues'        => 'Issues',
                 'returns'       => 'Returns',
                 'transfers'     => 'Transfers',

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Webkul\Asset\Database\Factories\AssetFactory;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSourceType;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Asset\Enums\MovementType;
@@ -40,6 +41,10 @@ class Asset extends Model
 
     public ?array $initialAttachments = null;
 
+    public ?int $initialConsumableEmployeeId = null;
+
+    public ?int $initialConsumableSiteId = null;
+
     protected $fillable = [
         'company_id',
         'product_id',
@@ -48,6 +53,8 @@ class Asset extends Model
         'serial_no',
         'status',
         'condition',
+        'initial_quantity',
+        'quantity',
         'current_employee_id',
         'current_site_id',
         'issued_at',
@@ -64,12 +71,31 @@ class Asset extends Model
     protected $casts = [
         'status'             => AssetStatus::class,
         'condition'          => AssetCondition::class,
+        'initial_quantity'   => 'decimal:4',
+        'quantity'           => 'decimal:4',
         'issued_at'          => 'datetime',
         'expected_return_at' => 'date',
         'purchase_date'      => 'date',
         'warranty_until'     => 'date',
         'cost'               => 'decimal:4',
     ];
+
+    public function isConsumable(): bool
+    {
+        if ($this->relationLoaded('product') && $this->product) {
+            return $this->product->isConsumable();
+        }
+
+        if (blank($this->product_id)) {
+            return false;
+        }
+
+        return AssetProduct::withoutGlobalScopes()
+            ->withTrashed()
+            ->whereKey($this->product_id)
+            ->first()
+            ?->isConsumable() ?? false;
+    }
 
     public static function resolveDefaultWarehouseId(?int $companyId): ?int
     {
@@ -120,6 +146,27 @@ class Asset extends Model
                 ]);
             }
 
+            $isConsumable = $product->type === AssetProductType::Consumable;
+
+            if ($isConsumable) {
+                $enteredQuantity = (float) ($asset->initial_quantity ?? $asset->quantity ?? 1);
+
+                if ($enteredQuantity <= 0) {
+                    throw ValidationException::withMessages([
+                        'initial_quantity' => __('assets::services/asset-custody.quantity-must-be-positive'),
+                    ]);
+                }
+
+                $asset->initial_quantity = $enteredQuantity;
+                $asset->serial_no = null;
+                $asset->warranty_until = null;
+                $asset->condition = AssetCondition::New;
+                $asset->expected_return_at = null;
+            } else {
+                $asset->initial_quantity = 1;
+                $asset->quantity = 1;
+            }
+
             if ((blank($asset->cost) || (float) $asset->cost === 0.0) && filled($product->cost)) {
                 $asset->cost = $product->cost;
             }
@@ -135,6 +182,26 @@ class Asset extends Model
 
             if ($asset->status === AssetStatus::Available && blank($asset->warehouse_id)) {
                 $asset->warehouse_id = static::resolveDefaultWarehouseId((int) $asset->company_id);
+            }
+
+            if ($isConsumable && (filled($asset->current_employee_id) || filled($asset->current_site_id) || $asset->status === AssetStatus::Consumed)) {
+                app(AssetCustodyService::class)->validateConsumableHolder($asset);
+
+                if (app(AssetSettings::class)->require_attachments_on_consumable_issue && blank($asset->initialAttachments)) {
+                    throw ValidationException::withMessages([
+                        'initial_attachments' => __('assets::services/asset-custody.attachments-required'),
+                    ]);
+                }
+
+                $asset->initialConsumableEmployeeId = filled($asset->current_employee_id) ? (int) $asset->current_employee_id : null;
+                $asset->initialConsumableSiteId = filled($asset->current_site_id) ? (int) $asset->current_site_id : null;
+                $asset->status = AssetStatus::Consumed;
+                $asset->quantity = 0;
+                $asset->warehouse_id = null;
+                $asset->current_employee_id = null;
+                $asset->current_site_id = null;
+            } elseif ($isConsumable) {
+                $asset->quantity = $asset->initial_quantity;
             }
 
             CompanyConsistencyGuard::assert(
@@ -175,7 +242,7 @@ class Asset extends Model
 
             $settings = app(AssetSettings::class);
 
-            if ($settings->require_serial_by_default && blank($asset->serial_no)) {
+            if (! $isConsumable && $settings->require_serial_by_default && blank($asset->serial_no)) {
                 throw ValidationException::withMessages([
                     'serial_no' => __('assets::services/asset-custody.serial-required'),
                 ]);
@@ -197,17 +264,20 @@ class Asset extends Model
         });
 
         static::created(function (self $asset): void {
-            if (in_array($asset->status, [AssetStatus::Available, AssetStatus::Held], true)) {
+            if (in_array($asset->status, [AssetStatus::Available, AssetStatus::Held, AssetStatus::Consumed], true)) {
+                $isConsumed = $asset->status === AssetStatus::Consumed;
+
                 AssetMovement::query()->create([
                     'company_id'           => $asset->company_id,
                     'asset_id'             => $asset->id,
                     'type'                 => MovementType::Registered,
+                    'quantity'             => $asset->initial_quantity ?? 1,
                     'source_type'          => $asset->initialSourceType ?? AssetSourceType::Manual,
                     'reference_type'       => $asset->initialReference?->getMorphClass(),
                     'reference_id'         => $asset->initialReference?->getKey(),
                     'to_warehouse_id'      => $asset->warehouse_id,
-                    'to_employee_id'       => $asset->current_employee_id,
-                    'to_site_id'           => $asset->current_site_id,
+                    'to_employee_id'       => $isConsumed ? $asset->initialConsumableEmployeeId : $asset->current_employee_id,
+                    'to_site_id'           => $isConsumed ? $asset->initialConsumableSiteId : $asset->current_site_id,
                     'condition'            => $asset->condition,
                     'occurred_at'          => $asset->issued_at ?? $asset->created_at ?? now(),
                     'expected_return_at'   => $asset->expected_return_at,
@@ -219,6 +289,24 @@ class Asset extends Model
         });
 
         static::updating(function (self $asset): void {
+            if ($asset->isDirty('product_id')) {
+                $originalType = AssetProduct::withoutGlobalScopes()
+                    ->withTrashed()
+                    ->find($asset->getOriginal('product_id'))
+                    ?->type;
+
+                $newType = AssetProduct::withoutGlobalScopes()
+                    ->withTrashed()
+                    ->find($asset->product_id)
+                    ?->type;
+
+                if ($originalType !== $newType) {
+                    throw ValidationException::withMessages([
+                        'product_id' => __('assets::models/asset.product-type-immutable'),
+                    ]);
+                }
+            }
+
             if ($asset->isDirty('company_id')) {
                 $hasCustodyOrHistory = $asset->getOriginal('status') === AssetStatus::Held
                     || $asset->status === AssetStatus::Held

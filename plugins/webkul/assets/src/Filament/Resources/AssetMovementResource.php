@@ -10,6 +10,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -18,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSourceType;
 use Webkul\Asset\Enums\MovementType;
 use Webkul\Asset\Filament\Exports\AssetMovementExporter;
@@ -103,6 +105,12 @@ class AssetMovementResource extends Resource
                     ->label(__('assets::filament/resources/asset-movement.table.columns.type'))
                     ->badge(),
 
+                TextColumn::make('quantity')
+                    ->label(__('assets::filament/resources/asset-movement.table.columns.quantity'))
+                    ->numeric(decimalPlaces: 0)
+                    ->sortable()
+                    ->summarize(Sum::make()),
+
                 TextColumn::make('source_type')
                     ->label(__('assets::filament/resources/asset-movement.table.columns.source-type'))
                     ->badge()
@@ -154,6 +162,13 @@ class AssetMovementResource extends Resource
                     ->label(__('assets::filament/resources/asset-movement.table.groups.performed-by')),
             ])
             ->filters([
+                SelectFilter::make('product_type')
+                    ->label(__('assets::filament/resources/asset-movement.table.filters.product-type'))
+                    ->options(AssetProductType::class)
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
+                        ? $query->whereHas('asset.product', fn (Builder $q) => $q->where('type', $data['value']))
+                        : $query),
+
                 SelectFilter::make('type')
                     ->label(__('assets::filament/resources/asset-movement.table.filters.type'))
                     ->options(MovementType::class)
@@ -326,6 +341,10 @@ class AssetMovementResource extends Resource
                     TextEntry::make('type')
                         ->label(__('assets::filament/resources/asset-movement.table.columns.type'))
                         ->badge(),
+
+                    TextEntry::make('quantity')
+                        ->label(__('assets::filament/resources/asset-movement.table.columns.quantity'))
+                        ->numeric(decimalPlaces: 0),
 
                     TextEntry::make('source_type')
                         ->label(__('assets::filament/resources/asset-movement.table.columns.source-type'))

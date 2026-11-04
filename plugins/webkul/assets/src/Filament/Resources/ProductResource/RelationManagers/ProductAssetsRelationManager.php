@@ -72,6 +72,11 @@ class ProductAssetsRelationManager extends RelationManager
                     ->badge()
                     ->sortable(),
 
+                TextColumn::make('quantity')
+                    ->label(__('assets::filament/resources/asset.table.columns.quantity'))
+                    ->numeric(decimalPlaces: 0)
+                    ->sortable(),
+
                 TextColumn::make('condition')
                     ->label(__('assets::filament/resources/asset.table.columns.condition'))
                     ->badge()

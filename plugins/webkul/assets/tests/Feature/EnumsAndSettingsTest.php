@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSourceType;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Asset\Enums\MovementType;
@@ -62,4 +63,32 @@ it('resolves the company asset settings defaults', function () {
         ->and($settings->restrict_termination_to_managers)->toBeFalse()
         ->and($settings->termination_approval_cost_threshold)->toBeNull()
         ->and(AssetSettings::group())->toBe('assets');
+});
+
+it('resolves the dedicated consumables issuance settings defaults', function () {
+    $settings = app(AssetSettings::class);
+
+    expect($settings->enable_consumables_batch_issue)->toBeTrue()
+        ->and($settings->auto_fill_consumable_employees_by_site)->toBeTrue()
+        ->and($settings->default_consumable_issue_quantity)->toBe(1)
+        ->and($settings->require_site_on_consumable_issue)->toBeFalse()
+        ->and($settings->require_attachments_on_consumable_issue)->toBeFalse();
+});
+
+it('provides concise parenthesis-free labels for AssetProductType and Consumed status across locales', function () {
+    app()->setLocale('ar');
+    expect(AssetProductType::Asset->getLabel())->toBe('أصل')
+        ->and(AssetProductType::Consumable->getLabel())->toBe('مستهلكات')
+        ->and(AssetStatus::Consumed->getLabel())->toBe('مصروف بالكامل');
+
+    app()->setLocale('en');
+    expect(AssetProductType::Asset->getLabel())->toBe('Asset')
+        ->and(AssetProductType::Consumable->getLabel())->toBe('Consumable')
+        ->and(AssetStatus::Consumed->getLabel())->toBe('Consumed');
+
+    foreach (['ar', 'en', 'es', 'fr', 'pt_BR'] as $locale) {
+        app()->setLocale($locale);
+        expect(AssetProductType::Asset->getLabel())->not->toContain('(')
+            ->and(AssetProductType::Consumable->getLabel())->not->toContain('(');
+    }
 });

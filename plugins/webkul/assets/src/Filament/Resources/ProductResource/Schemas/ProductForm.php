@@ -13,6 +13,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Filament\Resources\AssetCategoryResource\Schemas\AssetCategoryForm;
 use Webkul\Asset\Filament\Resources\ProductResource;
 use Webkul\Asset\Models\Asset;
@@ -61,6 +62,18 @@ class ProductForm
                                     ->editOptionAction(fn ($action, Select $component) => $action
                                         ->visible(fn (): bool => filled($component->getState()) && (bool) auth()->user()?->can('update_asset_product'))
                                         ->authorize(fn (): bool => filled($component->getState()) && (bool) auth()->user()?->can('update_asset_product'))),
+
+                                Select::make('type')
+                                    ->label(__('assets::filament/resources/product.form.sections.general.fields.type'))
+                                    ->options(AssetProductType::class)
+                                    ->default(AssetProductType::Asset->value)
+                                    ->required()
+                                    ->live()
+                                    ->helperText(fn (Get $get): string => ($get('type') === AssetProductType::Consumable || $get('type') === AssetProductType::Consumable->value)
+                                        ? __('assets::filament/resources/product.form.sections.general.fields.type-consumable-hint')
+                                        : __('assets::filament/resources/product.form.sections.general.fields.type-asset-hint'))
+                                    ->disabled(fn (?Model $record): bool => static::isReferenced($record))
+                                    ->dehydrated(),
 
                                 TextInput::make('model')
                                     ->label(__('assets::filament/resources/product.form.sections.general.fields.model'))

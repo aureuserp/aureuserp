@@ -29,6 +29,7 @@ class AssetMovement extends Model
         'company_id',
         'asset_id',
         'type',
+        'quantity',
         'source_type',
         'reference_type',
         'reference_id',
@@ -48,6 +49,7 @@ class AssetMovement extends Model
 
     protected $casts = [
         'type'               => MovementType::class,
+        'quantity'           => 'decimal:4',
         'source_type'        => AssetSourceType::class,
         'condition'          => AssetCondition::class,
         'occurred_at'        => 'datetime',

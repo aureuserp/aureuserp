@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Webkul\Asset\Database\Factories\AssetProductFactory;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -31,6 +32,7 @@ class AssetProduct extends Model
     protected $fillable = [
         'company_id',
         'category_id',
+        'type',
         'name',
         'model',
         'cost',
@@ -40,9 +42,15 @@ class AssetProduct extends Model
     ];
 
     protected $casts = [
+        'type'      => AssetProductType::class,
         'cost'      => 'decimal:4',
         'is_active' => 'boolean',
     ];
+
+    public function isConsumable(): bool
+    {
+        return $this->type === AssetProductType::Consumable;
+    }
 
     public function getModelTitle(): string
     {
@@ -67,6 +75,10 @@ class AssetProduct extends Model
                 $product->creator_id = Auth::id();
             }
 
+            if (blank($product->type)) {
+                $product->type = AssetProductType::Asset;
+            }
+
             if (blank($product->company_id)) {
                 throw ValidationException::withMessages([
                     'company_id' => __('assets::services/asset-custody.company-required'),
@@ -81,6 +93,19 @@ class AssetProduct extends Model
         });
 
         static::updating(function (self $product): void {
+            if ($product->isDirty('type')) {
+                $hasAssets = Asset::withoutGlobalScopes()
+                    ->withTrashed()
+                    ->where('product_id', $product->id)
+                    ->exists();
+
+                if ($hasAssets) {
+                    throw ValidationException::withMessages([
+                        'type' => __('assets::models/asset.product-type-immutable'),
+                    ]);
+                }
+            }
+
             if ($product->isDirty('company_id')) {
                 $isReferenced = Asset::withoutGlobalScopes()
                     ->withTrashed()

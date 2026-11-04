@@ -5,8 +5,10 @@ namespace Webkul\Asset\Filament\Resources\AssetResource\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Validation\ValidationException;
@@ -32,16 +34,34 @@ class IssueAssetAction
                 && (bool) auth()->user()?->can('issue', $record))
             ->authorize(fn (Asset $record): bool => (bool) auth()->user()?->can('issue', $record))
             ->modalHeading(__('assets::filament/resources/asset.actions.issue.modal.heading'))
-            ->modalDescription(__('assets::filament/resources/asset.actions.issue.modal.description'))
+            ->modalDescription(fn (Asset $record): string => $record->isConsumable()
+                ? __('assets::filament/resources/asset.actions.issue.modal.consumable-description', ['quantity' => (float) $record->quantity])
+                : __('assets::filament/resources/asset.actions.issue.modal.description'))
             ->modalSubmitActionLabel(__('assets::filament/resources/asset.actions.issue.modal.submit'))
             ->schema([
+                Hidden::make('selected_consumable')
+                    ->default(fn (Asset $record): bool => $record->isConsumable())
+                    ->dehydrated(false),
+
                 ...static::getHolderFields('issue'),
 
                 Select::make('condition_out')
                     ->label(__('assets::filament/resources/asset.actions.issue.fields.condition-out'))
                     ->options(AssetCondition::class)
                     ->default(fn (Asset $record): mixed => $record->condition)
-                    ->required(),
+                    ->visible(fn (Get $get): bool => ! (bool) $get('selected_consumable'))
+                    ->required(fn (Get $get): bool => ! (bool) $get('selected_consumable')),
+
+                TextInput::make('quantity')
+                    ->label(__('assets::filament/resources/asset.actions.issue.fields.quantity'))
+                    ->helperText(__('assets::filament/resources/asset.actions.issue.fields.quantity-help'))
+                    ->numeric()
+                    ->default(fn (): int => max(1, (int) (app(AssetSettings::class)->default_consumable_issue_quantity ?? 1)))
+                    ->minValue(0.01)
+                    ->maxValue(fn (Asset $record): float => (float) $record->quantity)
+                    ->live()
+                    ->visible(fn (Get $get): bool => (bool) $get('selected_consumable'))
+                    ->required(fn (Get $get): bool => (bool) $get('selected_consumable')),
 
                 DateTimePicker::make('issued_at')
                     ->label(__('assets::filament/resources/asset.actions.issue.fields.issued-at'))
@@ -55,8 +75,8 @@ class IssueAssetAction
                     ->default(fn (): ?string => filled(app(AssetSettings::class)->default_custody_duration_days) && (int) app(AssetSettings::class)->default_custody_duration_days > 0
                         ? now()->addDays((int) app(AssetSettings::class)->default_custody_duration_days)->toDateString()
                         : null)
-                    ->required(fn (Get $get): bool => (bool) app(AssetSettings::class)->require_expected_return_date && ($get('allocation_mode') ?? 'employee_custody') === 'employee_custody')
-                    ->visible(fn (Get $get): bool => ($get('allocation_mode') ?? 'employee_custody') === 'employee_custody'),
+                    ->required(fn (Get $get): bool => ! (bool) $get('selected_consumable') && (bool) app(AssetSettings::class)->require_expected_return_date && ($get('allocation_mode') ?? 'employee_custody') === 'employee_custody')
+                    ->visible(fn (Get $get): bool => ! (bool) $get('selected_consumable') && ($get('allocation_mode') ?? 'employee_custody') === 'employee_custody'),
 
                 Textarea::make('issue_note')
                     ->label(__('assets::filament/resources/asset.actions.issue.fields.issue-note'))
@@ -64,7 +84,9 @@ class IssueAssetAction
                     ->columnSpanFull(),
 
                 static::attachmentUploadField('issue_attachments', __('assets::filament/resources/asset.actions.issue.fields.issue-attachments'))
-                    ->required(fn (): bool => (bool) app(AssetSettings::class)->require_attachments_on_custody),
+                    ->required(fn (Get $get): bool => (bool) $get('selected_consumable')
+                        ? (bool) app(AssetSettings::class)->require_attachments_on_consumable_issue
+                        : (bool) app(AssetSettings::class)->require_attachments_on_custody),
             ])
             ->action(function (Asset $record, array $data, Action $action): void {
                 try {

@@ -9,6 +9,7 @@ return [
         'category'           => 'Categoría',
         'serial-no'          => 'Número de serie',
         'type'               => 'Tipo de movimiento',
+        'quantity'           => 'Cantidad',
         'source-type'        => 'Tipo de origen',
         'from'               => 'Desde',
         'to'                 => 'Hacia',

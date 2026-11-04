@@ -5,8 +5,12 @@ require_once __DIR__.'/../../../support/tests/Helpers/FilamentHelper.php';
 require_once __DIR__.'/../../../support/tests/Helpers/CompanyHelper.php';
 
 use Livewire\Livewire;
+use Webkul\Asset\AssetServiceProvider;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetStatus;
+use Webkul\Asset\Enums\MovementType;
+use Webkul\Asset\Filament\Resources\AssetResource\Actions\IssueAssetAction;
 use Webkul\Asset\Filament\Resources\AssetResource\Pages\CreateAsset;
 use Webkul\Asset\Filament\Resources\AssetResource\Pages\EditAsset;
 use Webkul\Asset\Filament\Resources\AssetResource\Pages\ListAssets;
@@ -47,6 +51,11 @@ beforeEach(function () {
     $settings->require_site_on_custody = false;
     $settings->require_attachments_on_custody = false;
     $settings->require_attachments_on_damage = false;
+    $settings->enable_consumables_batch_issue = true;
+    $settings->auto_fill_consumable_employees_by_site = true;
+    $settings->default_consumable_issue_quantity = 1;
+    $settings->require_site_on_consumable_issue = false;
+    $settings->require_attachments_on_consumable_issue = false;
     $settings->save();
 });
 
@@ -916,4 +925,324 @@ it('supports multi-select filtering on products, categories, and sites', functio
         ->filterTable('current_site_id', [$site1->id, $site2->id])
         ->assertCanSeeTableRecords([$asset1, $asset2])
         ->assertCanNotSeeTableRecords([$asset3]);
+});
+
+it('creates a consumable batch with quantity from the asset form without a serial number', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'create_asset_asset',
+        'view_any_asset_product',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+
+    Livewire::test(CreateAsset::class)
+        ->fillForm([
+            'company_id'            => $company->id,
+            'product_id'            => $product->id,
+            'selected_product_type' => AssetProductType::Consumable->value,
+            'warehouse_id'          => $warehouse->id,
+            'initial_quantity'      => 50,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $batch = Asset::query()->where('product_id', $product->id)->firstOrFail();
+
+    expect($batch->isConsumable())->toBeTrue()
+        ->and((float) $batch->initial_quantity)->toBe(50.0)
+        ->and((float) $batch->quantity)->toBe(50.0)
+        ->and($batch->serial_no)->toBeNull()
+        ->and($batch->status)->toBe(AssetStatus::Available);
+});
+
+it('issues consumable quantities to multiple employees from the asset table', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+
+    $emp1 = createAssetEmployee($company);
+    $emp2 = createAssetEmployee($company);
+    $emp3 = createAssetEmployee($company);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 50,
+    ]);
+
+    Livewire::test(ListAssets::class)
+        ->callTableAction('issue', $batch, data: [
+            'employee_ids' => [$emp1->id, $emp2->id, $emp3->id],
+            'quantity'     => 5,
+            'issued_at'    => now(),
+        ])
+        ->assertHasNoTableActionErrors();
+
+    $batch->refresh();
+
+    expect((float) $batch->quantity)->toBe(35.0)
+        ->and($batch->status)->toBe(AssetStatus::Available)
+        ->and($batch->movements()->where('type', MovementType::Issued)->count())->toBe(3)
+        ->and((float) $batch->movements()->where('type', MovementType::Issued)->sum('quantity'))->toBe(15.0);
+});
+
+it('resolves active site employees for consumable issuance auto-fill', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $site = AssetSite::factory()->company($company)->custodyZone()->create();
+
+    $custodian = createAssetEmployee($company);
+    $holder = createAssetEmployee($company);
+    $inactive = createAssetEmployee($company, ['is_active' => false]);
+
+    $site->update(['default_custodian_employee_id' => $custodian->id]);
+
+    Asset::factory()->company($company)->heldByEmployee($holder, $site)->create();
+
+    $employeeIds = IssueAssetAction::siteActiveEmployeeIds($site->id, $company->id);
+
+    expect($employeeIds)->toContain($custodian->id)
+        ->and($employeeIds)->toContain($holder->id)
+        ->and($employeeIds)->not->toContain($inactive->id);
+});
+
+it('auto-fills consumable recipients from selected departments and applies the default quantity', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+    $department = Department::factory()->create(['company_id' => $company->id]);
+
+    $first = createAssetEmployee($company, ['department_id' => $department->id]);
+    $second = createAssetEmployee($company, ['department_id' => $department->id]);
+    $inactive = createAssetEmployee($company, ['department_id' => $department->id, 'is_active' => false]);
+    $outsider = createAssetEmployee($company);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 50,
+    ]);
+
+    $employeeIds = IssueAssetAction::departmentActiveEmployeeIds([$department->id], $company->id);
+
+    expect($employeeIds)->toEqualCanonicalizing([$first->id, $second->id]);
+    expect($employeeIds)->not->toContain($inactive->id)
+        ->not->toContain($outsider->id);
+
+    app(AssetSettings::class)->fill(['default_consumable_issue_quantity' => 2])->save();
+
+    Livewire::test(ListAssets::class)
+        ->callTableAction('issue', $batch, data: [
+            'department_ids' => [$department->id],
+            'issued_at'      => now(),
+        ])
+        ->assertHasNoTableActionErrors();
+
+    $batch->refresh();
+
+    expect((float) $batch->quantity)->toBe(46.0)
+        ->and($batch->movements()->where('type', MovementType::Issued)->count())->toBe(2)
+        ->and((float) $batch->movements()->where('type', MovementType::Issued)->sum('quantity'))->toBe(4.0);
+});
+
+it('auto-fills consumable recipients from the selected site when the setting is enabled', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $site = AssetSite::factory()->company($company)->custodyZone()->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+    $assetProduct = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Asset,
+    ]);
+    $holder = createAssetEmployee($company);
+
+    Asset::factory()->forProduct($assetProduct)->company($company)->heldByEmployee($holder, $site)->create();
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    Livewire::test(ListAssets::class)
+        ->callTableAction('issue', $batch, data: [
+            'site_id'   => $site->id,
+            'issued_at' => now(),
+        ])
+        ->assertHasNoTableActionErrors();
+
+    $batch->refresh();
+
+    $issued = $batch->movements()->where('type', MovementType::Issued)->get();
+
+    expect((float) $batch->quantity)->toBe(9.0)
+        ->and($issued)->toHaveCount(1)
+        ->and($issued->first()->to_employee_id)->toBe($holder->id);
+});
+
+it('does not auto-fill consumable recipients from the site when the setting is disabled', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $site = AssetSite::factory()->company($company)->custodyZone()->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+    $assetProduct = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Asset,
+    ]);
+    $holder = createAssetEmployee($company);
+
+    Asset::factory()->forProduct($assetProduct)->company($company)->heldByEmployee($holder, $site)->create();
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    app(AssetSettings::class)->fill(['auto_fill_consumable_employees_by_site' => false])->save();
+
+    Livewire::test(ListAssets::class)
+        ->callTableAction('issue', $batch, data: [
+            'site_id'   => $site->id,
+            'issued_at' => now(),
+        ])
+        ->assertHasTableActionErrors(['employee_ids']);
+
+    expect((float) $batch->fresh()->quantity)->toBe(10.0);
+});
+
+it('restricts multiple employee recipients to consumables when batch issuance is enabled', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+    $assetProduct = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Asset,
+    ]);
+
+    $fixedAsset = Asset::factory()->forProduct($assetProduct)->company($company)->create(['warehouse_id' => $warehouse->id]);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    Livewire::test(ListAssets::class)
+        ->mountTableAction('issue', $fixedAsset)
+        ->assertFormFieldIsVisible('employee_id')
+        ->assertFormFieldIsHidden('employee_ids')
+        ->assertFormFieldIsHidden('department_ids');
+
+    Livewire::test(ListAssets::class)
+        ->mountTableAction('issue', $batch)
+        ->assertFormFieldIsHidden('employee_id')
+        ->assertFormFieldIsVisible('employee_ids')
+        ->assertFormFieldIsVisible('department_ids');
+});
+
+it('falls back to a single employee field for consumables when batch issuance is disabled', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    app(AssetSettings::class)->fill(['enable_consumables_batch_issue' => false])->save();
+
+    Livewire::test(ListAssets::class)
+        ->mountTableAction('issue', $batch)
+        ->assertFormFieldIsVisible('employee_id')
+        ->assertFormFieldIsHidden('employee_ids')
+        ->assertFormFieldIsHidden('department_ids');
+});
+
+it('registers the scrollable recipients container and applies it to the recipients select', function () {
+    $providerSource = file_get_contents((new ReflectionClass(AssetServiceProvider::class))->getFileName());
+
+    expect($providerSource)->toContain('.fi-fo-select-scrollable .fi-select-input-value-badges-ctn');
+
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+        'update_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+    $product = AssetProduct::factory()->company($company)->create([
+        'type' => AssetProductType::Consumable,
+    ]);
+
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $product->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    Livewire::test(ListAssets::class)
+        ->mountTableAction('issue', $batch)
+        ->tap(function ($component): void {
+            $field = $component->instance()->mountedActionSchema0->getFlatFields(withHidden: true)['employee_ids'];
+
+            expect($field->getExtraFieldWrapperAttributes())->toMatchArray(['class' => 'fi-fo-select-scrollable'])
+                ->and($field->getExtraAttributes())->toMatchArray(['class' => 'fi-fo-select-scrollable']);
+        });
 });

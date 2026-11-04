@@ -13,12 +13,15 @@ return [
             'general' => [
                 'title'  => 'Informations Générales',
                 'fields' => [
-                    'name'            => 'Nom du Produit',
-                    'category'        => 'Catégorie',
-                    'model'           => 'Modèle',
-                    'cost'            => 'Coût Standard',
-                    'is-active'       => 'Actif',
-                    'note'            => 'Description / Spécifications',
+                    'name'                 => 'Nom du Produit',
+                    'category'             => 'Catégorie',
+                    'type'                 => 'Type de Produit',
+                    'type-asset-hint'      => 'Une unité suivie identifiée par un numéro de série et un détenteur.',
+                    'type-consumable-hint' => 'Un lot de quantité émis par unités sans suivi de retour.',
+                    'model'                => 'Modèle',
+                    'cost'                 => 'Coût Standard',
+                    'is-active'            => 'Actif',
+                    'note'                 => 'Description / Spécifications',
                 ],
             ],
 
@@ -38,6 +41,7 @@ return [
                 'entries' => [
                     'name'      => 'Nom du Produit',
                     'category'  => 'Catégorie',
+                    'type'      => 'Type de Produit',
                     'model'     => 'Modèle',
                     'cost'      => 'Coût Standard',
                     'is-active' => 'Actif',
@@ -67,6 +71,7 @@ return [
         'columns' => [
             'name'                    => 'Nom du Produit',
             'category'                => 'Catégorie',
+            'type'                    => 'Type de Produit',
             'model'                   => 'Modèle',
             'cost'                    => 'Coût',
             'assets-count'            => 'Actifs Enregistrés',
@@ -87,6 +92,7 @@ return [
 
         'filters' => [
             'category'  => 'Catégorie',
+            'type'      => 'Type de Produit',
             'is-active' => 'Actif',
             'company'   => 'Société',
         ],

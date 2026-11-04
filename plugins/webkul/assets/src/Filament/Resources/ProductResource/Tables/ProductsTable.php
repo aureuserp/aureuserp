@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Asset\Filament\Exports\AssetProductExporter;
 use Webkul\Asset\Filament\Resources\ProductResource;
@@ -47,6 +48,11 @@ class ProductsTable
                     ->sortable()
                     ->wrap(),
 
+                TextColumn::make('type')
+                    ->label(__('assets::filament/resources/product.table.columns.type'))
+                    ->badge()
+                    ->sortable(),
+
                 TextColumn::make('category.full_name')
                     ->label(__('assets::filament/resources/product.table.columns.category'))
                     ->badge()
@@ -67,20 +73,26 @@ class ProductsTable
 
                 TextColumn::make('assets_count')
                     ->label(__('assets::filament/resources/product.table.columns.assets-count'))
-                    ->counts('assets')
+                    ->sum('assets as assets_count', 'initial_quantity')
+                    ->numeric(decimalPlaces: 0)
+                    ->default(0)
                     ->sortable()
                     ->badge(),
 
                 TextColumn::make('available_assets_count')
                     ->label(__('assets::filament/resources/product.table.columns.available-assets-count'))
-                    ->counts(['assets as available_assets_count' => fn (Builder $query) => $query->where('status', AssetStatus::Available)])
+                    ->sum(['assets as available_assets_count' => fn (Builder $query) => $query->where('status', AssetStatus::Available)], 'quantity')
+                    ->numeric(decimalPlaces: 0)
+                    ->default(0)
                     ->sortable()
                     ->badge()
                     ->color('success'),
 
                 TextColumn::make('held_assets_count')
                     ->label(__('assets::filament/resources/product.table.columns.held-assets-count'))
-                    ->counts(['assets as held_assets_count' => fn (Builder $query) => $query->where('status', AssetStatus::Held)])
+                    ->sum(['assets as held_assets_count' => fn (Builder $query) => $query->where('status', AssetStatus::Held)], 'quantity')
+                    ->numeric(decimalPlaces: 0)
+                    ->default(0)
                     ->sortable()
                     ->badge()
                     ->color('warning'),
@@ -134,6 +146,10 @@ class ProductsTable
                     ->label(__('assets::filament/resources/product.table.groups.category')),
             ])
             ->filters([
+                SelectFilter::make('type')
+                    ->label(__('assets::filament/resources/product.table.filters.type'))
+                    ->options(AssetProductType::class),
+
                 SelectFilter::make('category_id')
                     ->label(__('assets::filament/resources/product.table.filters.category'))
                     ->relationship('category', 'full_name')

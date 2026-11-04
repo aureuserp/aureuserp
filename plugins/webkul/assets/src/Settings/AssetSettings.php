@@ -30,6 +30,16 @@ class AssetSettings extends Settings
 
     public bool $require_attachments_on_custody = false;
 
+    public bool $enable_consumables_batch_issue = true;
+
+    public bool $auto_fill_consumable_employees_by_site = true;
+
+    public int $default_consumable_issue_quantity = 1;
+
+    public bool $require_site_on_consumable_issue = false;
+
+    public bool $require_attachments_on_consumable_issue = false;
+
     public bool $require_attachments_on_damage = true;
 
     public bool $require_attachments_on_termination = false;

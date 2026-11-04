@@ -4,6 +4,9 @@ return [
     'columns' => [
         'asset-tag'          => 'Étiquette de l\'actif',
         'product'            => 'Produit',
+        'product-type'       => 'Type de Produit',
+        'initial-quantity'   => 'Quantité initiale',
+        'quantity'           => 'Quantité',
         'model'              => 'Modèle',
         'category'           => 'Catégorie',
         'serial-no'          => 'Numéro de série',

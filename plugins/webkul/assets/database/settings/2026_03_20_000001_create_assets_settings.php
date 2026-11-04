@@ -22,6 +22,20 @@ return new class extends SettingsMigration
         $this->migrator->add('assets.require_attachments_on_termination', false);
         $this->migrator->add('assets.restrict_termination_to_managers', false);
         $this->migrator->add('assets.termination_approval_cost_threshold', null);
+
+        $consumableDefaults = [
+            'assets.enable_consumables_batch_issue'          => true,
+            'assets.auto_fill_consumable_employees_by_site'  => true,
+            'assets.default_consumable_issue_quantity'       => 1,
+            'assets.require_site_on_consumable_issue'        => false,
+            'assets.require_attachments_on_consumable_issue' => false,
+        ];
+
+        foreach ($consumableDefaults as $key => $value) {
+            if (! $this->migrator->exists($key)) {
+                $this->migrator->add($key, $value);
+            }
+        }
     }
 
     public function down(): void
@@ -42,5 +56,10 @@ return new class extends SettingsMigration
         $this->migrator->deleteIfExists('assets.require_attachments_on_termination');
         $this->migrator->deleteIfExists('assets.restrict_termination_to_managers');
         $this->migrator->deleteIfExists('assets.termination_approval_cost_threshold');
+        $this->migrator->deleteIfExists('assets.enable_consumables_batch_issue');
+        $this->migrator->deleteIfExists('assets.auto_fill_consumable_employees_by_site');
+        $this->migrator->deleteIfExists('assets.default_consumable_issue_quantity');
+        $this->migrator->deleteIfExists('assets.require_site_on_consumable_issue');
+        $this->migrator->deleteIfExists('assets.require_attachments_on_consumable_issue');
     }
 };

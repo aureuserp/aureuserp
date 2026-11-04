@@ -15,4 +15,5 @@ return [
     'company'  => [
         'immutable' => 'Impossible de modifier la société d\'un actif en garde ou ayant un historique.',
     ],
+    'product-type-immutable' => 'Le type de produit ne peut pas être modifié car des enregistrements d\'actifs ou de lots existent déjà pour ce produit.',
 ];

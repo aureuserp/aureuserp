@@ -17,6 +17,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSiteUsage;
 use Webkul\Asset\Filament\Resources\AssetResource;
 use Webkul\Asset\Filament\Resources\AssetResource\Actions\Concerns\HasCustodyHolderFields;
@@ -80,6 +81,7 @@ class BulkRegisterAssetsAction
                                     ->with('category')
                                     ->where(hide_deleted_unless_selected($state))
                                     ->where(fn (Builder $q) => $q->where('is_active', true)->when(filled($state), fn (Builder $sq) => $sq->orWhereKey($state)))
+                                    ->where('type', AssetProductType::Asset->value)
                                     ->where(owned_by_company($get('company_id'))),
                             )
                             ->getOptionLabelFromRecordUsing(fn (AssetProduct $record): string => $record->name

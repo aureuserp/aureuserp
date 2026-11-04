@@ -28,6 +28,20 @@ class AssetInfolist
                                     ->url(fn (Asset $record): ?string => $record->product_id ? ProductResource::getUrl('view', ['record' => $record->product_id]) : null)
                                     ->columnSpanFull(),
 
+                                TextEntry::make('product.type')
+                                    ->label(__('assets::filament/resources/asset.form.sections.general.fields.product-type'))
+                                    ->badge(),
+
+                                TextEntry::make('initial_quantity')
+                                    ->label(__('assets::filament/resources/asset.infolist.sections.custody.entries.initial-quantity'))
+                                    ->numeric(decimalPlaces: 0)
+                                    ->visible(fn (Asset $record): bool => (bool) $record->product?->isConsumable()),
+
+                                TextEntry::make('quantity')
+                                    ->label(__('assets::filament/resources/asset.infolist.sections.custody.entries.available-quantity'))
+                                    ->numeric(decimalPlaces: 0)
+                                    ->visible(fn (Asset $record): bool => (bool) $record->product?->isConsumable()),
+
                                 TextEntry::make('asset_tag')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.asset-tag'))
                                     ->icon('heroicon-o-qr-code')
@@ -36,6 +50,7 @@ class AssetInfolist
 
                                 TextEntry::make('serial_no')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.serial-no'))
+                                    ->visible(fn (Asset $record): bool => ! (bool) $record->product?->isConsumable())
                                     ->placeholder('—'),
 
                                 TextEntry::make('product.model')
@@ -49,7 +64,8 @@ class AssetInfolist
 
                                 TextEntry::make('condition')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.condition'))
-                                    ->badge(),
+                                    ->badge()
+                                    ->visible(fn (Asset $record): bool => ! (bool) $record->product?->isConsumable()),
                             ])
                             ->columns(2),
 
@@ -63,6 +79,7 @@ class AssetInfolist
                                 TextEntry::make('warranty_until')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.warranty-until'))
                                     ->date()
+                                    ->visible(fn (Asset $record): bool => ! (bool) $record->product?->isConsumable())
                                     ->placeholder('—'),
 
                                 TextEntry::make('cost')
@@ -106,6 +123,7 @@ class AssetInfolist
                                 TextEntry::make('expected_return_at')
                                     ->label(__('assets::filament/resources/asset.infolist.sections.custody.entries.expected-return-at'))
                                     ->date()
+                                    ->visible(fn (Asset $record): bool => ! (bool) $record->product?->isConsumable())
                                     ->placeholder('—'),
 
                                 TextEntry::make('custody_note')

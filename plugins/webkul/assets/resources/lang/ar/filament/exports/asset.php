@@ -4,6 +4,9 @@ return [
     'columns' => [
         'asset-tag'          => 'رمز الأصل',
         'product'            => 'المنتج',
+        'product-type'       => 'نوع المنتج',
+        'initial-quantity'   => 'الكمية الابتدائية',
+        'quantity'           => 'الكمية',
         'model'              => 'الموديل',
         'category'           => 'الفئة',
         'serial-no'          => 'الرقم التسلسلي',

@@ -26,6 +26,10 @@ class ProductInfolist
                                     ->weight(FontWeight::Bold)
                                     ->columnSpanFull(),
 
+                                TextEntry::make('type')
+                                    ->label(__('assets::filament/resources/product.infolist.sections.general.entries.type'))
+                                    ->badge(),
+
                                 TextEntry::make('category.full_name')
                                     ->label(__('assets::filament/resources/product.infolist.sections.general.entries.category'))
                                     ->badge()

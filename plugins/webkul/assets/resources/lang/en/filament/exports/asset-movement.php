@@ -9,6 +9,7 @@ return [
         'category'           => 'Category',
         'serial-no'          => 'Serial Number',
         'type'               => 'Movement Type',
+        'quantity'           => 'Quantity',
         'source-type'        => 'Source Type',
         'from'               => 'From',
         'to'                 => 'To',

@@ -6,6 +6,7 @@ require_once __DIR__.'/../../../support/tests/Helpers/CompanyHelper.php';
 
 use Livewire\Livewire;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Filament\Resources\AssetMovementResource;
 use Webkul\Asset\Filament\Resources\AssetMovementResource\Pages\ListAssetMovements;
 use Webkul\Asset\Filament\Resources\AssetResource\Pages\ListAssets;
@@ -164,11 +165,50 @@ it('verifies navigation groups and movement table preset views', function () {
     $livewire = Livewire::test(ListAssetMovements::class);
     $views = $livewire->instance()->getPresetTableViews();
 
-    expect($views)->toHaveKeys(['all', 'issues', 'returns', 'transfers', 'scrapped_lost', 'damaged']);
+    expect($views)->toHaveKeys(['all', 'assets', 'consumables', 'issues', 'returns', 'transfers', 'scrapped_lost', 'damaged']);
 
     foreach (array_keys($views) as $viewKey) {
         $livewire->set('activeTab', $viewKey)->assertOk();
     }
+});
+
+it('separates asset and consumable movements into dedicated preset views', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_asset',
+    ]);
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+
+    $assetProduct = AssetProduct::factory()->create([
+        'company_id' => $company->id,
+        'type'       => AssetProductType::Asset,
+    ]);
+    $consumableProduct = AssetProduct::factory()->create([
+        'company_id' => $company->id,
+        'type'       => AssetProductType::Consumable,
+    ]);
+
+    $asset = Asset::factory()->forProduct($assetProduct)->company($company)->available()->create();
+    $batch = Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $consumableProduct->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 10,
+    ]);
+
+    $assetMovement = $asset->movements()->firstOrFail();
+    $consumableMovement = $batch->movements()->firstOrFail();
+
+    Livewire::test(ListAssetMovements::class)
+        ->call('loadView', 'assets')
+        ->assertCanSeeTableRecords([$assetMovement])
+        ->assertCanNotSeeTableRecords([$consumableMovement]);
+
+    Livewire::test(ListAssetMovements::class)
+        ->call('loadView', 'consumables')
+        ->assertCanSeeTableRecords([$consumableMovement])
+        ->assertCanNotSeeTableRecords([$assetMovement]);
 });
 
 it('shows archived products under archived_products preset view', function () {
@@ -250,4 +290,48 @@ it('hides editOptionAction on category_id when empty and shows it when selected'
     $action = $component->getAction('editOption');
 
     expect($action->isVisible())->toBeTrue();
+});
+
+it('exposes product type field, filter, and quantity aware counters', function () {
+    FilamentHelper::actingAs([
+        'view_any_asset_product',
+        'create_asset_product',
+    ]);
+
+    $livewire = Livewire::test(CreateProduct::class);
+    $components = $livewire->instance()->getSchema('form')->getFlatComponents();
+
+    expect($components)->toHaveKey('type');
+
+    $list = Livewire::test(ListProducts::class);
+
+    expect($list->instance()->getTable()->getFilters())->toHaveKey('type');
+
+    $company = Company::query()->firstOrFail();
+    $warehouse = AssetWarehouse::factory()->company($company)->create();
+
+    $assetProduct = AssetProduct::factory()->create([
+        'company_id' => $company->id,
+        'type'       => AssetProductType::Asset,
+    ]);
+
+    $consumableProduct = AssetProduct::factory()->create([
+        'company_id' => $company->id,
+        'type'       => AssetProductType::Consumable,
+    ]);
+
+    Asset::factory()->company($company)->available()->forProduct($assetProduct)->create(['warehouse_id' => $warehouse->id]);
+    Asset::factory()->company($company)->available()->forProduct($assetProduct)->create(['warehouse_id' => $warehouse->id]);
+
+    Asset::query()->create([
+        'company_id'       => $company->id,
+        'product_id'       => $consumableProduct->id,
+        'warehouse_id'     => $warehouse->id,
+        'initial_quantity' => 50,
+    ]);
+
+    $list->assertTableColumnStateSet('assets_count', 2, $assetProduct)
+        ->assertTableColumnStateSet('assets_count', 50, $consumableProduct)
+        ->assertTableColumnStateSet('available_assets_count', 2, $assetProduct)
+        ->assertTableColumnStateSet('available_assets_count', 50, $consumableProduct);
 });

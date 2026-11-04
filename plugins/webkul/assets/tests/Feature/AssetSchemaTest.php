@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../../support/tests/Helpers/TestBootstrapHelper.php';
 
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 use Webkul\Asset\Enums\AssetCondition;
 use Webkul\Asset\Enums\AssetSiteUsage;
@@ -329,4 +330,11 @@ it('supports direct placement creation of held fixed site assets and employee cu
             'warehouse_id'        => null,
         ]);
     })->toThrow(ValidationException::class);
+});
+
+it('adds product type and batch quantity columns to existing asset tables', function () {
+    expect(Schema::hasColumn('asset_products', 'type'))->toBeTrue()
+        ->and(Schema::hasColumn('assets', 'initial_quantity'))->toBeTrue()
+        ->and(Schema::hasColumn('assets', 'quantity'))->toBeTrue()
+        ->and(Schema::hasColumn('asset_movements', 'quantity'))->toBeTrue();
 });

@@ -4,6 +4,7 @@ namespace Webkul\Asset\Filament\Resources\AssetResource\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -16,6 +17,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSiteUsage;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Asset\Enums\MovementType;
@@ -45,6 +47,16 @@ class AssetForm
                     ->schema([
                         Section::make(__('assets::filament/resources/asset.form.sections.general.title'))
                             ->schema([
+                                Hidden::make('selected_product_type')
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Hidden $component, ?Model $record): void {
+                                        $component->state(
+                                            $record instanceof Asset && $record->exists
+                                                ? ($record->product?->type?->value ?? AssetProductType::Asset->value)
+                                                : AssetProductType::Asset->value
+                                        );
+                                    }),
+
                                 Select::make('product_id')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.product'))
                                     ->relationship(
@@ -68,10 +80,14 @@ class AssetForm
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, Get $get, mixed $state): void {
                                         if (! $state) {
+                                            $set('selected_product_type', AssetProductType::Asset->value);
+
                                             return;
                                         }
 
                                         $product = AssetProduct::withTrashed()->find($state);
+
+                                        $set('selected_product_type', $product?->type?->value ?? AssetProductType::Asset->value);
 
                                         if ($product && (blank($get('cost')) || (float) $get('cost') === 0.0) && filled($product->cost)) {
                                             $set('cost', $product->cost);
@@ -111,7 +127,7 @@ class AssetForm
 
                                 TextInput::make('serial_no')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.serial-no'))
-                                    ->required(fn (): bool => (bool) app(AssetSettings::class)->require_serial_by_default)
+                                    ->required(fn (?Model $record, Get $get): bool => ! static::isConsumableState($record, $get) && (bool) app(AssetSettings::class)->require_serial_by_default)
                                     ->unique(
                                         ignoreRecord: true,
                                         modifyRuleUsing: fn ($rule, Get $get) => $rule->where('company_id', $get('company_id') ?: current_company_id()),
@@ -119,12 +135,24 @@ class AssetForm
                                     ->validationMessages([
                                         'unique' => __('assets::services/asset-custody.serial-already-exists'),
                                     ])
+                                    ->visible(fn (?Model $record, Get $get): bool => ! static::isConsumableState($record, $get))
                                     ->maxLength(255),
+
+                                TextInput::make('initial_quantity')
+                                    ->label(__('assets::filament/resources/asset.form.sections.general.fields.quantity'))
+                                    ->helperText(__('assets::filament/resources/asset.form.sections.general.fields.quantity-help'))
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->default(1)
+                                    ->required(fn (?Model $record, Get $get): bool => static::isConsumableState($record, $get))
+                                    ->visible(fn (?Model $record, Get $get): bool => static::isConsumableState($record, $get))
+                                    ->disabled(fn (?Model $record): bool => $record !== null && $record->exists),
 
                                 Select::make('condition')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.condition'))
                                     ->options(AssetCondition::class)
-                                    ->required()
+                                    ->required(fn (?Model $record, Get $get): bool => ! static::isConsumableState($record, $get))
+                                    ->visible(fn (?Model $record, Get $get): bool => ! static::isConsumableState($record, $get))
                                     ->default(fn (): mixed => AssetCondition::tryFrom((string) app(AssetSettings::class)->default_condition) ?? AssetCondition::New),
                             ])
                             ->columns(2),
@@ -137,7 +165,8 @@ class AssetForm
 
                                 DatePicker::make('warranty_until')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.warranty-until'))
-                                    ->native(false),
+                                    ->native(false)
+                                    ->visible(fn (?Model $record, Get $get): bool => ! static::isConsumableState($record, $get)),
 
                                 TextInput::make('cost')
                                     ->label(__('assets::filament/resources/asset.form.sections.general.fields.cost'))
@@ -237,7 +266,14 @@ class AssetForm
                                     ->preload()
                                     ->live()
                                     ->visible(fn (?Model $record, Get $get): bool => ! $record?->exists && in_array($get('initial_placement'), ['site_asset', 'employee_custody']))
-                                    ->required(fn (?Model $record, Get $get): bool => ! $record?->exists && ($get('initial_placement') === 'site_asset' || ($get('initial_placement') === 'employee_custody' && (bool) app(AssetSettings::class)->require_site_on_custody)))
+                                    ->required(fn (?Model $record, Get $get): bool => ! $record?->exists && (
+                                        $get('initial_placement') === 'site_asset'
+                                        || ($get('initial_placement') === 'employee_custody' && (
+                                            static::isConsumableState($record, $get)
+                                                ? (bool) app(AssetSettings::class)->require_site_on_consumable_issue
+                                                : (bool) app(AssetSettings::class)->require_site_on_custody
+                                        ))
+                                    ))
                                     ->afterStateUpdated(function (Set $set, Get $get, mixed $state): void {
                                         if (($get('initial_placement') ?? 'employee_custody') === 'employee_custody' && blank($get('current_employee_id'))) {
                                             $custodianId = static::siteDefaultCustodian($state ? (int) $state : null);
@@ -283,8 +319,8 @@ class AssetForm
                                     ->default(fn (): ?string => filled(app(AssetSettings::class)->default_custody_duration_days) && (int) app(AssetSettings::class)->default_custody_duration_days > 0
                                         ? now()->addDays((int) app(AssetSettings::class)->default_custody_duration_days)->toDateString()
                                         : null)
-                                    ->required(fn (?Model $record, Get $get): bool => ! $record?->exists && $get('initial_placement') === 'employee_custody' && (bool) app(AssetSettings::class)->require_expected_return_date)
-                                    ->visible(fn (?Model $record, Get $get): bool => ! $record?->exists && $get('initial_placement') === 'employee_custody'),
+                                    ->required(fn (?Model $record, Get $get): bool => ! $record?->exists && ! static::isConsumableState($record, $get) && $get('initial_placement') === 'employee_custody' && (bool) app(AssetSettings::class)->require_expected_return_date)
+                                    ->visible(fn (?Model $record, Get $get): bool => ! $record?->exists && ! static::isConsumableState($record, $get) && $get('initial_placement') === 'employee_custody'),
 
                                 Textarea::make('custody_note')
                                     ->label(__('assets::filament/resources/asset.actions.issue.fields.issue-note'))
@@ -294,7 +330,11 @@ class AssetForm
 
                                 static::attachmentUploadField('initial_attachments', __('assets::filament/resources/asset.actions.issue.fields.issue-attachments'))
                                     ->visible(fn (?Model $record, Get $get): bool => ! $record?->exists && in_array($get('initial_placement'), ['site_asset', 'employee_custody']))
-                                    ->required(fn (?Model $record, Get $get): bool => ! $record?->exists && in_array($get('initial_placement'), ['site_asset', 'employee_custody']) && (bool) app(AssetSettings::class)->require_attachments_on_custody),
+                                    ->required(fn (?Model $record, Get $get): bool => ! $record?->exists
+                                        && in_array($get('initial_placement'), ['site_asset', 'employee_custody'])
+                                        && (static::isConsumableState($record, $get)
+                                            ? (bool) app(AssetSettings::class)->require_attachments_on_consumable_issue
+                                            : (bool) app(AssetSettings::class)->require_attachments_on_custody)),
                             ]),
 
                         Section::make(__('assets::filament/resources/asset.infolist.sections.notes.title'))
@@ -332,6 +372,19 @@ class AssetForm
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
+    }
+
+    protected static function isConsumableState(?Model $record, Get $get): bool
+    {
+        $type = $get('selected_product_type');
+
+        if (filled($type)) {
+            return $type === AssetProductType::Consumable || $type === AssetProductType::Consumable->value;
+        }
+
+        return $record instanceof Asset
+            && $record->relationLoaded('product')
+            && (bool) $record->product?->isConsumable();
     }
 
     protected static function isLockedCompany(?Model $record): bool

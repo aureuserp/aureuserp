@@ -185,6 +185,9 @@ class AssetMovementExporter extends Exporter
                 ->label(__('assets::filament/exports/asset-movement.columns.type'))
                 ->formatStateUsing(fn ($state) => is_object($state) ? ($state->getLabel() ?? $state->value ?? '') : (string) $state),
 
+            ExportColumn::make('quantity')
+                ->label(__('assets::filament/exports/asset-movement.columns.quantity')),
+
             ExportColumn::make('source_type')
                 ->label(__('assets::filament/exports/asset-movement.columns.source-type'))
                 ->formatStateUsing(fn ($state) => is_object($state) ? ($state->getLabel() ?? $state->value ?? '') : (string) $state),

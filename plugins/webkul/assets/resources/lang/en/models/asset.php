@@ -15,4 +15,5 @@ return [
     'company'  => [
         'immutable' => 'Cannot change company for an asset that is held or has custody history.',
     ],
+    'product-type-immutable' => 'The product type cannot be changed because asset or batch records already exist for this product.',
 ];

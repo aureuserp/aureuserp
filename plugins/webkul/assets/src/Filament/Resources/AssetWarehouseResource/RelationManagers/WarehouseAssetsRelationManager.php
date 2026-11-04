@@ -85,6 +85,11 @@ class WarehouseAssetsRelationManager extends RelationManager
                     ->searchable()
                     ->placeholder('—'),
 
+                TextColumn::make('quantity')
+                    ->label(__('assets::filament/resources/asset.table.columns.quantity'))
+                    ->numeric(decimalPlaces: 0)
+                    ->sortable(),
+
                 TextColumn::make('condition')
                     ->label(__('assets::filament/resources/asset-warehouse.relation-manager.warehouse-assets.columns.condition'))
                     ->badge(),

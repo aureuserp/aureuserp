@@ -90,11 +90,19 @@ class AssetPolicy
 
     public function transfer(User $user, Asset $asset): bool
     {
+        if ($asset->isConsumable()) {
+            return false;
+        }
+
         return $this->update($user, $asset);
     }
 
     public function return(User $user, Asset $asset): bool
     {
+        if ($asset->isConsumable()) {
+            return false;
+        }
+
         return $this->update($user, $asset);
     }
 

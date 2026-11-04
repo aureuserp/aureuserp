@@ -14,6 +14,7 @@ return [
             'asset-tag'          => 'Etiqueta do Ativo',
             'asset-name'         => 'Nome do Ativo',
             'type'               => 'Tipo de Movimentação',
+            'quantity'           => 'Quantidade',
             'source-type'        => 'Origem',
             'from'               => 'De',
             'to'                 => 'Para',
@@ -32,6 +33,7 @@ return [
         ],
         'filters' => [
             'type'         => 'Tipo de Movimentação',
+            'product-type' => 'Tipo de Produto',
             'source-type'  => 'Origem',
             'condition'    => 'Condição',
             'category'     => 'Categoria',
@@ -59,6 +61,8 @@ return [
         'list' => [
             'tabs' => [
                 'all'           => 'Todos',
+                'assets'        => 'Ativos',
+                'consumables'   => 'Consumíveis',
                 'issues'        => 'Saídas',
                 'returns'       => 'Devoluções',
                 'transfers'     => 'Transferências',

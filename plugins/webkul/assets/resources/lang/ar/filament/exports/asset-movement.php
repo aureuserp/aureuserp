@@ -9,6 +9,7 @@ return [
         'category'           => 'الفئة',
         'serial-no'          => 'الرقم التسلسلي',
         'type'               => 'نوع الحركة',
+        'quantity'           => 'الكمية',
         'source-type'        => 'نوع المصدر',
         'from'               => 'من',
         'to'                 => 'إلى',

@@ -22,11 +22,11 @@ class AssetProductExporter extends Exporter
             ->when(auth()->check(), fn (Builder $q) => $q->whereIn('company_id', auth()->user()->allowedCompanies()->pluck('companies.id')->push(auth()->user()->default_company_id)->filter()->unique()->values()->all()))
             ->with(['category', 'company'])
             ->withCount([
-                'assets',
-                'assets as available_assets_count'  => fn (Builder $q) => $q->where('status', AssetStatus::Available),
-                'assets as held_assets_count'       => fn (Builder $q) => $q->where('status', AssetStatus::Held),
                 'assets as terminated_assets_count' => fn (Builder $q) => $q->whereIn('status', [AssetStatus::Scrapped, AssetStatus::Lost]),
             ])
+            ->withSum('assets as assets_count', 'initial_quantity')
+            ->withSum(['assets as available_assets_count' => fn (Builder $q) => $q->where('status', AssetStatus::Available)], 'quantity')
+            ->withSum(['assets as held_assets_count' => fn (Builder $q) => $q->where('status', AssetStatus::Held)], 'quantity')
             ->withSum('assets', 'cost');
     }
 
@@ -38,6 +38,10 @@ class AssetProductExporter extends Exporter
         return [
             ExportColumn::make('name')
                 ->label(__('assets::filament/exports/asset-product.columns.name')),
+
+            ExportColumn::make('type')
+                ->label(__('assets::filament/exports/asset-product.columns.type'))
+                ->formatStateUsing(fn ($state) => is_object($state) ? ($state->getLabel() ?? $state->value ?? '') : (string) $state),
 
             ExportColumn::make('category.full_name')
                 ->label(__('assets::filament/exports/asset-product.columns.category')),

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Webkul\Asset\Enums\AssetCondition;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetSiteUsage;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Asset\Filament\Exports\AssetExporter;
@@ -58,6 +59,11 @@ class AssetsTable
                     ->sortable()
                     ->wrap(),
 
+                TextColumn::make('product.type')
+                    ->label(__('assets::filament/resources/asset.table.columns.product-type'))
+                    ->badge()
+                    ->toggleable(),
+
                 TextColumn::make('product.model')
                     ->label(__('assets::filament/resources/asset.table.columns.model'))
                     ->placeholder('—')
@@ -77,6 +83,11 @@ class AssetsTable
                     ->label(__('assets::filament/resources/asset.table.columns.serial-no'))
                     ->placeholder('—')
                     ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('quantity')
+                    ->label(__('assets::filament/resources/asset.table.columns.quantity'))
+                    ->numeric(decimalPlaces: 0)
                     ->sortable(),
 
                 TextColumn::make('status')
@@ -153,6 +164,13 @@ class AssetsTable
                     ->label(__('assets::filament/resources/asset.table.groups.current-site')),
             ])
             ->filters([
+                SelectFilter::make('product_type')
+                    ->label(__('assets::filament/resources/asset.table.filters.product-type'))
+                    ->options(AssetProductType::class)
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['value'] ?? null)
+                        ? $query->whereHas('product', fn (Builder $q) => $q->where('type', $data['value']))
+                        : $query),
+
                 SelectFilter::make('status')
                     ->label(__('assets::filament/resources/asset.table.filters.status'))
                     ->options(AssetStatus::class)

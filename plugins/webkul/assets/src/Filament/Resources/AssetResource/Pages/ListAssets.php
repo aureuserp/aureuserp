@@ -6,6 +6,7 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Asset\Enums\AssetProductType;
 use Webkul\Asset\Enums\AssetStatus;
 use Webkul\Asset\Filament\Resources\AssetResource;
 use Webkul\Asset\Filament\Resources\AssetResource\Actions\BulkRegisterAssetsAction;
@@ -47,6 +48,11 @@ class ListAssets extends ListRecords
                 ->icon('heroicon-s-check-circle')
                 ->favorite()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', AssetStatus::Available)),
+
+            'consumables' => PresetView::make(__('assets::filament/resources/asset.pages.list.tabs.consumables'))
+                ->icon('heroicon-s-archive-box')
+                ->favorite()
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('product', fn (Builder $q) => $q->where('type', AssetProductType::Consumable))),
 
             'site_assets' => app(AssetSettings::class)->enable_site_assets
                 ? PresetView::make(__('assets::filament/resources/asset.pages.list.tabs.site-assets'))

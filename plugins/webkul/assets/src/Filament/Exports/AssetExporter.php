@@ -209,6 +209,16 @@ class AssetExporter extends Exporter
             ExportColumn::make('product.model')
                 ->label(__('assets::filament/exports/asset.columns.model')),
 
+            ExportColumn::make('product.type')
+                ->label(__('assets::filament/exports/asset.columns.product-type'))
+                ->formatStateUsing(fn ($state) => is_object($state) ? ($state->getLabel() ?? $state->value ?? '') : (string) $state),
+
+            ExportColumn::make('initial_quantity')
+                ->label(__('assets::filament/exports/asset.columns.initial-quantity')),
+
+            ExportColumn::make('quantity')
+                ->label(__('assets::filament/exports/asset.columns.quantity')),
+
             ExportColumn::make('product.category.full_name')
                 ->label(__('assets::filament/exports/asset.columns.category')),
 

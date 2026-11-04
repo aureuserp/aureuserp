@@ -78,6 +78,36 @@ class ManageCustody extends SettingsPage
                             ->helperText(__('assets::filament/pages/manage-assets.form.helpers.prevent-duplicate-product-custody')),
                     ])
                     ->columns(2),
+
+                Section::make(__('assets::filament/pages/manage-assets.form.sections.consumables_rules.title'))
+                    ->description(__('assets::filament/pages/manage-assets.form.sections.consumables_rules.description'))
+                    ->schema([
+                        Toggle::make('enable_consumables_batch_issue')
+                            ->label(__('assets::filament/pages/manage-assets.form.fields.enable-consumables-batch-issue'))
+                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.enable-consumables-batch-issue')),
+
+                        Toggle::make('auto_fill_consumable_employees_by_site')
+                            ->label(__('assets::filament/pages/manage-assets.form.fields.auto-fill-consumable-employees-by-site'))
+                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.auto-fill-consumable-employees-by-site')),
+
+                        TextInput::make('default_consumable_issue_quantity')
+                            ->label(__('assets::filament/pages/manage-assets.form.fields.default-consumable-issue-quantity'))
+                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.default-consumable-issue-quantity'))
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(10000)
+                            ->default(1)
+                            ->required(),
+
+                        Toggle::make('require_site_on_consumable_issue')
+                            ->label(__('assets::filament/pages/manage-assets.form.fields.require-site-on-consumable-issue'))
+                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.require-site-on-consumable-issue')),
+
+                        Toggle::make('require_attachments_on_consumable_issue')
+                            ->label(__('assets::filament/pages/manage-assets.form.fields.require-attachments-on-consumable-issue'))
+                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.require-attachments-on-consumable-issue')),
+                    ])
+                    ->columns(2),
             ]);
     }
 }

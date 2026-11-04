@@ -60,6 +60,11 @@ class AssignmentsRelationManager extends RelationManager
                     ->label(__('assets::filament/resources/asset.relation-manager.assignments.columns.type'))
                     ->badge(),
 
+                TextColumn::make('quantity')
+                    ->label(__('assets::filament/resources/asset-movement.table.columns.quantity'))
+                    ->numeric(decimalPlaces: 0)
+                    ->sortable(),
+
                 TextColumn::make('source_type')
                     ->label(__('assets::filament/resources/asset.relation-manager.assignments.columns.source-type'))
                     ->badge()

@@ -71,9 +71,36 @@ it('ensures zero summarizers across all asset and movement tables', function () 
 
     foreach ($tables as $table) {
         foreach ($table->getColumns() as $column) {
+            if ($column->getName() === 'quantity') {
+                continue;
+            }
+
             expect($column->getSummarizers())->toBeEmpty();
         }
     }
+});
+
+it('exposes movement quantity and product type ledger columns and exporter fields', function () {
+    FilamentHelper::actingAs(['view_any_asset_asset']);
+
+    $table = Livewire::test(ListAssetMovements::class)->instance()->getTable();
+
+    $columns = collect($table->getColumns())->keyBy(fn ($column): string => $column->getName());
+
+    expect($columns->has('quantity'))->toBeTrue()
+        ->and($columns['quantity']->getSummarizers())->not->toBeEmpty()
+        ->and($table->getFilters())->toHaveKey('product_type');
+
+    $movementColumns = collect(AssetMovementExporter::getColumns())->keyBy(fn ($column): string => $column->getName());
+    expect($movementColumns->has('quantity'))->toBeTrue();
+
+    $assetColumns = collect(AssetExporter::getColumns())->keyBy(fn ($column): string => $column->getName());
+    expect($assetColumns->has('product.type'))->toBeTrue()
+        ->and($assetColumns->has('initial_quantity'))->toBeTrue()
+        ->and($assetColumns->has('quantity'))->toBeTrue();
+
+    $productColumns = collect(AssetProductExporter::getColumns())->keyBy(fn ($column): string => $column->getName());
+    expect($productColumns->has('type'))->toBeTrue();
 });
 
 it('calculates product distribution status counts and cost valuation', function () {
@@ -560,9 +587,9 @@ it('verifies calculations and column configurations of all new table exporters',
         ->and($prodColumns->has('assets_sum_cost'))->toBeTrue();
 
     $prodRow = AssetProductExporter::modifyQuery(AssetProduct::query()->whereKey($prod->id))->first();
-    expect($prodRow->assets_count)->toBe(2)
-        ->and($prodRow->available_assets_count)->toBe(1)
-        ->and($prodRow->held_assets_count)->toBe(1)
+    expect((float) $prodRow->assets_count)->toBe(2.0)
+        ->and((float) $prodRow->available_assets_count)->toBe(1.0)
+        ->and((float) $prodRow->held_assets_count)->toBe(1.0)
         ->and((float) $prodRow->assets_sum_cost)->toBe(1000.00);
 
     // Warehouse Exporter

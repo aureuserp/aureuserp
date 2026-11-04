@@ -15,4 +15,5 @@ return [
     'company'  => [
         'immutable' => 'Não é possível alterar a empresa de um ativo em custódia ou com histórico.',
     ],
+    'product-type-immutable' => 'O tipo de produto não pode ser alterado porque já existem registros de ativos ou lotes para este produto.',
 ];

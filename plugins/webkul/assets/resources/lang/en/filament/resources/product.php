@@ -13,12 +13,15 @@ return [
             'general' => [
                 'title'  => 'General Information',
                 'fields' => [
-                    'name'            => 'Product Name',
-                    'category'        => 'Category',
-                    'model'           => 'Model',
-                    'cost'            => 'Standard Cost',
-                    'is-active'       => 'Active',
-                    'note'            => 'Description / Specifications',
+                    'name'                 => 'Product Name',
+                    'category'             => 'Category',
+                    'type'                 => 'Product Type',
+                    'type-asset-hint'      => 'A tracked unit identified by serial number and custody holder.',
+                    'type-consumable-hint' => 'A quantity batch issued in units without return tracking.',
+                    'model'                => 'Model',
+                    'cost'                 => 'Standard Cost',
+                    'is-active'            => 'Active',
+                    'note'                 => 'Description / Specifications',
                 ],
             ],
 
@@ -38,6 +41,7 @@ return [
                 'entries' => [
                     'name'      => 'Product Name',
                     'category'  => 'Category',
+                    'type'      => 'Product Type',
                     'model'     => 'Model',
                     'cost'      => 'Standard Cost',
                     'is-active' => 'Active',
@@ -67,6 +71,7 @@ return [
         'columns' => [
             'name'                    => 'Product Name',
             'category'                => 'Category',
+            'type'                    => 'Product Type',
             'model'                   => 'Model',
             'cost'                    => 'Cost',
             'assets-count'            => 'Registered Assets',
@@ -87,6 +92,7 @@ return [
 
         'filters' => [
             'category'  => 'Category',
+            'type'      => 'Product Type',
             'is-active' => 'Active',
             'company'   => 'Company',
         ],
