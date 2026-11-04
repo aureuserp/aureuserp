@@ -45,28 +45,19 @@ class EmployeesTable
                     Split::make([
                         ImageColumn::make('partner.avatar')
                             ->circular()
-                            ->imageSize(96)
+                            ->imageSize(72)
                             ->defaultImageUrl(fn (Employee $record): string => (new UiAvatarsProvider)->get($record))
                             ->grow(false),
 
                         Stack::make([
-                            Split::make([
-                                TextColumn::make('name')
-                                    ->label(__('employees::filament/resources/employee.table.columns.name'))
-                                    ->weight(FontWeight::Bold)
-                                    ->size(TextSize::Large)
-                                    ->searchable()
-                                    ->sortable()
-                                    ->grow(false),
-
-                                TextColumn::make('status')
-                                    ->state(fn (Employee $record): string => $record->trashed()
-                                        ? __('employees::filament/resources/employee.table.columns.status.archived')
-                                        : __('employees::filament/resources/employee.table.columns.status.active'))
-                                    ->badge()
-                                    ->color(fn (Employee $record): string => $record->trashed() ? 'gray' : 'success')
-                                    ->grow(false),
-                            ]),
+                            TextColumn::make('name')
+                                ->label(__('employees::filament/resources/employee.table.columns.name'))
+                                ->weight(FontWeight::Bold)
+                                ->size(TextSize::Large)
+                                ->searchable()
+                                ->sortable()
+                                ->lineClamp(1)
+                                ->extraAttributes(['class' => 'pe-10']),
 
                             Stack::make([
                                 TextColumn::make('job_title')
@@ -123,13 +114,15 @@ class EmployeesTable
             ], $customColumns))
             ->recordClasses('fi-ta-card-select')
             ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
+                'sm'  => 1,
+                'md'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
             ])
             ->paginated([
-                18,
+                12,
+                24,
                 36,
-                72,
                 'all',
             ])
             ->filtersFormColumns(3)
