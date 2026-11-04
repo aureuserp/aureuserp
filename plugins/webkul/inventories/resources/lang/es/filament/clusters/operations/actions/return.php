@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'label' => 'Devolver',
+    'label'                     => 'Devolver',
+    'return-of-return-disabled' => 'La devolución de una devolución está desactivada en los ajustes de operaciones de inventario.',
 
     'modal' => [
         'form' => [

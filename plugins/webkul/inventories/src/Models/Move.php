@@ -217,7 +217,11 @@ class Move extends Model
     {
         return $this->returnedMoves
             ->reject(fn (self $move) => $move->state === MoveState::CANCELED)
-            ->sum(fn (self $move) => $move->uom->computeQuantity($move->product_uom_qty, $this->uom, roundingMethod: 'HALF-UP'));
+            ->sum(fn (self $move) => $move->uom->computeQuantity(
+                $move->state === MoveState::DONE ? $move->quantity : $move->product_uom_qty,
+                $this->uom,
+                roundingMethod: 'HALF-UP',
+            ));
     }
 
     public function returnableQuantity(): float

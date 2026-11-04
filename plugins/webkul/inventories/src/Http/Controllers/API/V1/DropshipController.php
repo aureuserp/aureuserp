@@ -181,6 +181,8 @@ class DropshipController extends OperationController
     #[UrlParam('id', 'integer', 'The dropship ID', required: true, example: 1)]
     #[ResponseFromApiResource(DropshipResource::class, Dropship::class, additional: ['message' => 'Dropship return created successfully.'])]
     #[Response(status: 422, description: 'Only done operations can be returned.')]
+    #[Response(status: 422, description: 'Transfer is a return and cannot be returned again.', content: '{"message": "Transfer WH/IN/00002 is a return and cannot be returned again.", "errors": {"moves": ["Transfer WH/IN/00002 is a return and cannot be returned again."]}}')]
+    #[Response(status: 422, description: 'Nothing is left to return.', content: '{"message": "There is nothing to return. Enter a quantity greater than zero for at least one product.", "errors": {"moves": ["There is nothing to return. Enter a quantity greater than zero for at least one product."]}}')]
     #[Response(status: 404, description: 'Dropship not found')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function returnTransfer(string $id)

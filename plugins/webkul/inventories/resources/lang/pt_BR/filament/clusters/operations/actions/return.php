@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'label' => 'Devolução',
+    'label'                     => 'Devolução',
+    'return-of-return-disabled' => 'A devolução de uma devolução está desativada nas configurações de operações de estoque.',
 
     'modal' => [
         'form' => [
