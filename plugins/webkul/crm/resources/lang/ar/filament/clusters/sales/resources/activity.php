@@ -11,6 +11,7 @@ return [
     'table' => [
         'columns' => [
             'due-date'      => 'تاريخ الاستحقاق',
+            'due-status'    => 'حالة الاستحقاق',
             'opportunity'   => 'عميل محتمل / فرصة',
             'customer'      => 'العميل',
             'activity-type' => 'نوع النشاط',

@@ -11,6 +11,7 @@ return [
     'table' => [
         'columns' => [
             'due-date'      => 'Data de vencimento',
+            'due-status'    => 'Status de vencimento',
             'opportunity'   => 'Lead / Oportunidade',
             'customer'      => 'Cliente',
             'activity-type' => 'Tipo de atividade',

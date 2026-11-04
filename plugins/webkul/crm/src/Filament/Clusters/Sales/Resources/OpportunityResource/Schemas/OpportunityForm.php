@@ -20,10 +20,11 @@ use Webkul\Crm\Filament\Support\ProbabilityHint;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Partner\Models\Partner;
+use Webkul\Sale\Models\Team;
 
 class OpportunityForm
 {
-    public static function configure(Schema $schema, bool $withinTeam = false): Schema
+    public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
@@ -131,7 +132,7 @@ class OpportunityForm
                                     ->relationship('team', 'name', modifyQueryUsing: fn (Builder $query, Get $get): Builder => $query->where(owned_by_company($get('company_id'))))
                                     ->searchable()
                                     ->preload()
-                                    ->hidden($withinTeam),
+                                    ->default(fn (): ?int => ($teamId = request()->integer('team')) ? Team::query()->where(owned_by_company(current_company_id()))->whereKey($teamId)->value('id') : null),
                                 Select::make('company_id')
                                     ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.company'))
                                     ->relationship('company', 'name')

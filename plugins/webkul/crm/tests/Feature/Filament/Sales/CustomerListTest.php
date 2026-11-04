@@ -2,6 +2,7 @@
 
 use Livewire\Livewire;
 use Webkul\Contact\Models\Partner;
+use Webkul\Crm\Enums\CustomerBoardGroup;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Actions\DownloadCustomersVCardBulkAction;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCustomers;
@@ -87,11 +88,15 @@ it('shows the customers in the list with their avatar, email and phone', functio
         ->assertSee('card.contact@example.com');
 });
 
-it('asks for a group by on the kanban until one is chosen', function () {
+it('opens the kanban grouped by the first group by and asks for one once it is cleared', function () {
     CRMHelper::actingAsCRMUser(['customer']);
 
     $component = Livewire::withQueryParams(['layout' => 'kanban'])->test(ListCustomers::class)
-        ->set('tableGrouping', null)
+        ->assertSet('tableGrouping', CustomerBoardGroup::SALESPERSON->value.':asc');
+
+    expect($component->instance()->getBoardGroup())->toBe(CustomerBoardGroup::SALESPERSON);
+
+    $component->set('tableGrouping', null)
         ->assertSee(__('crm::filament/kanban.choose-group.heading'));
 
     expect($component->instance()->needsBoardGroup())->toBeTrue()

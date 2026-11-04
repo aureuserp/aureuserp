@@ -53,9 +53,11 @@ it('switches quotations between list, kanban and graph without leaving the page'
     expect($component->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH])
         ->and($component->instance()->getViewLayout())->toBe(ViewLayout::LIST);
 
-    $component->call('switchViewLayout', 'kanban')->assertSet('viewLayout', 'kanban');
+    $component->call('switchViewLayout', 'kanban')
+        ->assertSet('viewLayout', 'kanban')
+        ->assertSet('tableGrouping', 'medium.name:asc');
 
-    expect($component->instance()->getBoardGroup())->toBe(QuotationBoardGroup::STATUS);
+    expect($component->instance()->getBoardGroup())->toBe(QuotationBoardGroup::MEDIUM);
 
     $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
 

@@ -95,6 +95,13 @@ return [
             'is-not-won' => 'N\'est pas gagnée',
             'not-won'    => 'Non gagnées',
         ],
+
+        'lost' => [
+            'label'       => 'Perdues',
+            'is-lost'     => 'Est perdue',
+            'is-not-lost' => 'N\'est pas perdue',
+            'not-lost'    => 'Non perdues',
+        ],
     ],
 
     'tabs' => [

@@ -54,11 +54,19 @@ it('offers the medium in the column manager, hidden until toggled on', function 
         ->assertTableColumnStateSet('medium.name', 'Website', $lead);
 });
 
-it('asks for a group by on the kanban until one is chosen', function () {
+it('opens the kanban grouped by sales team and asks for a group by once it is cleared', function () {
     CRMHelper::actingAsCRMUser(['lead']);
 
     $component = Livewire::withQueryParams(['layout' => 'kanban'])
         ->test(ListLeads::class)
+        ->assertSet('tableGrouping', 'team.name:asc')
+        ->assertDontSee(__('crm::filament/kanban.choose-group.heading'));
+
+    expect($component->instance()->getBoardGroup())->toBe(ListLeads::BOARD_GROUPS['team.name']);
+
+    $component->call('loadView', 'all')->assertSet('tableGrouping', 'team.name:asc');
+
+    $component->set('tableGrouping', null)
         ->assertSee(__('crm::filament/kanban.choose-group.heading'));
 
     expect($component->instance()->needsBoardGroup())->toBeTrue()
@@ -79,8 +87,10 @@ it('switches list, kanban and graph from the toolbar icons without reloading the
     $component = Livewire::test(ListLeads::class)
         ->assertSeeHtml('crm-layout-switcher')
         ->assertSeeHtml('aria-label="'.ViewLayout::KANBAN->getLabel().'"')
+        ->assertSet('tableGrouping', null)
         ->call('switchViewLayout', 'kanban')
-        ->assertSet('viewLayout', 'kanban');
+        ->assertSet('viewLayout', 'kanban')
+        ->assertSet('tableGrouping', 'team.name:asc');
 
     expect($component->instance()->getViewLayouts())->toBe([ViewLayout::LIST, ViewLayout::KANBAN, ViewLayout::GRAPH])
         ->and($component->instance()->getTableRecords())->toBeEmpty()
@@ -88,7 +98,7 @@ it('switches list, kanban and graph from the toolbar icons without reloading the
 
     $component->call('switchViewLayout', 'graph')
         ->assertSet('viewLayout', 'graph')
-        ->assertSee(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.month'));
+        ->assertSee(__('crm::filament/clusters/leads/resources/lead/pages/list-leads.graph.heading.team'));
 
     $component->call('switchViewLayout', 'list')
         ->assertSet('viewLayout', 'list')

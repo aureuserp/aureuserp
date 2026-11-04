@@ -8,7 +8,6 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
-use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -27,7 +26,6 @@ use Webkul\Crm\Filament\Clusters\Reporting\Resources\LeadAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ListTeams;
 use Webkul\Crm\Filament\Exports\TeamExporter;
 use Webkul\Crm\Filament\Support\LeadTableFilters;
@@ -45,17 +43,17 @@ class TeamsTable
                 ->recordUrl(null)
                 ->recordActions(static::gridActions())
             : $table
-                ->columns(static::listColumns())
-                ->recordUrl(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record]))
+                ->columns(array_values(ConfigurationTeamResource::table(clone $table)->getColumns()))
+                ->recordUrl(fn (Team $record): string => static::pipelineUrl($record))
                 ->recordActions([
                     Action::make('pipeline')
                         ->label(__('crm::filament/clusters/sales/resources/team.table.actions.pipeline.label'))
                         ->icon('heroicon-o-funnel')
-                        ->url(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record])),
+                        ->url(fn (Team $record): string => static::pipelineUrl($record)),
                 ]);
 
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with(['user', 'company.currency']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['user', 'creator', 'company.currency']))
             ->filtersFormColumns(2)
             ->filters([
                 LeadTableFilters::make([
@@ -72,39 +70,6 @@ class TeamsTable
             ]);
     }
 
-    public static function listColumns(): array
-    {
-        return [
-            TextColumn::make('name')
-                ->label(__('crm::filament/clusters/sales/resources/team.table.columns.name'))
-                ->description(fn (Team $record): ?string => $record->user?->name)
-                ->searchable()
-                ->sortable()
-                ->weight('medium'),
-            ColorColumn::make('color')
-                ->label(''),
-            TextColumn::make('open_opportunities_count')
-                ->label(__('crm::filament/clusters/sales/resources/team.table.columns.open-opportunities'))
-                ->badge()
-                ->color('primary')
-                ->sortable(),
-            TextColumn::make('open_expected_revenue')
-                ->label(__('crm::filament/clusters/sales/resources/team.table.columns.expected-revenue'))
-                ->money(fn (Team $record): ?string => $record->company?->currency?->code)
-                ->default(0)
-                ->sortable(),
-            TextColumn::make('members.name')
-                ->label(__('crm::filament/clusters/sales/resources/team.table.columns.members'))
-                ->badge()
-                ->limitList(3)
-                ->toggleable(),
-            TextColumn::make('company.name')
-                ->label(__('crm::filament/clusters/sales/resources/team.table.columns.company'))
-                ->placeholder('—')
-                ->toggleable(),
-        ];
-    }
-
     public static function gridColumns(): array
     {
         return [
@@ -114,7 +79,7 @@ class TeamsTable
                     ->weight(FontWeight::Bold)
                     ->size(TextSize::Large)
                     ->color('primary')
-                    ->url(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record]))
+                    ->url(fn (Team $record): string => static::pipelineUrl($record))
                     ->searchable()
                     ->sortable(),
                 Stack::make([
@@ -122,7 +87,7 @@ class TeamsTable
                         TextColumn::make('open_opportunities_count')
                             ->formatStateUsing(fn (int $state): string => trans_choice('crm::filament/clusters/sales/resources/team.grid.open-opportunities', $state, ['count' => $state]))
                             ->color('primary')
-                            ->url(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record, 'layout' => 'list', 'activeTableView' => 'open'])),
+                            ->url(fn (Team $record): string => static::pipelineUrl($record, ['layout' => 'list', 'activeTableView' => 'open'])),
                         TextColumn::make('open_expected_revenue')
                             ->money(fn (Team $record): ?string => $record->company?->currency?->code)
                             ->default(0)
@@ -185,7 +150,7 @@ class TeamsTable
             Action::make('newOpportunity')
                 ->label(__('crm::filament/clusters/sales/resources/team.grid.new'))
                 ->button()
-                ->url(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record, 'action' => 'create']))
+                ->url(fn (Team $record): string => OpportunityResource::getUrl('create', ['team' => $record->getKey()]))
                 ->visible(fn (): bool => OpportunityResource::canCreate()),
             ActionGroup::make([
                 ActionGroup::make([
@@ -197,7 +162,7 @@ class TeamsTable
                     Action::make('viewOpportunities')
                         ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.opportunities'))
                         ->icon('heroicon-o-star')
-                        ->url(fn (Team $record): string => TeamResource::getUrl('opportunities', ['record' => $record, 'layout' => 'list'])),
+                        ->url(fn (Team $record): string => static::pipelineUrl($record, ['layout' => 'list'])),
                     Action::make('viewQuotations')
                         ->label(__('crm::filament/clusters/sales/resources/team.grid-menu.quotations'))
                         ->icon('heroicon-o-document-text')
@@ -267,6 +232,11 @@ class TeamsTable
     protected static function reportFilters(Team $team): array
     {
         return ['filters' => ['team_ids' => ['values' => [$team->getKey()]]]];
+    }
+
+    protected static function pipelineUrl(Team $team, array $parameters = []): string
+    {
+        return OpportunityResource::getUrl('index', ['team' => $team->getKey(), ...$parameters]);
     }
 
     protected static function weeklyChart(array $weeks): Htmlable

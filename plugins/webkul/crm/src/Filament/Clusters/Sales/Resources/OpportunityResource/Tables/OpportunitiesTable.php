@@ -33,7 +33,7 @@ use Webkul\Crm\Models\Lead;
 
 class OpportunitiesTable
 {
-    public static function configure(Table $table, bool $withinTeam = false): Table
+    public static function configure(Table $table): Table
     {
         return $table
             ->columns([
@@ -79,8 +79,7 @@ class OpportunitiesTable
                 TextColumn::make('team.name')
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.team'))
                     ->sortable()
-                    ->placeholder('—')
-                    ->hidden($withinTeam),
+                    ->placeholder('—'),
                 TextColumn::make('expected_closing_date')
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.expected-closing'))
                     ->date()
@@ -112,11 +111,11 @@ class OpportunitiesTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->groups(array_values(array_filter([
+            ->groups([
                 Group::make('stage.name')
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.stage'))
                     ->collapsible(),
-                $withinTeam ? null : Group::make('team.name')
+                Group::make('team.name')
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.team'))
                     ->collapsible(),
                 Group::make('user.name')
@@ -129,11 +128,11 @@ class OpportunitiesTable
                     ->label(__('crm::filament/clusters/sales/resources/opportunity.table.groups.expected-closing'))
                     ->date()
                     ->collapsible(),
-            ])))
+            ])
             ->defaultSort('created_at', 'desc')
             ->filtersFormColumns(2)
             ->filters([
-                LeadTableFilters::opportunities(withinTeam: $withinTeam),
+                LeadTableFilters::opportunities()->constraints([LeadTableFilters::won(), LeadTableFilters::lost()]),
             ])
             ->recordActions([
                 ActivityTableAction::make()

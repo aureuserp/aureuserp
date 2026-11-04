@@ -3,7 +3,6 @@
 use Filament\Actions\Action;
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
-use Webkul\Crm\Enums\LeadType;
 use Webkul\Crm\Enums\TeamOrderScope;
 use Webkul\Crm\Enums\ViewLayout;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TeamResource as ConfigurationTeamResource;
@@ -11,12 +10,11 @@ use Webkul\Crm\Filament\Clusters\Leads\Resources\LeadResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\ForecastResource;
 use Webkul\Crm\Filament\Clusters\Reporting\Resources\PipelineAnalysisResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
+use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\CreateOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ListTeams;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
 use Webkul\Crm\Filament\Support\LeadTableFilters;
-use Webkul\Crm\Models\Lead;
 use Webkul\Crm\Services\TeamDashboard;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Models\Order;
@@ -72,119 +70,29 @@ it('shows each team\'s open opportunity count and open expected revenue', functi
     expect((int) $record->open_opportunities_count)->toBe(2)
         ->and((float) $record->open_expected_revenue)->toBe(1250.0);
 
-    Livewire::withQueryParams(['layout' => 'list'])
-        ->test(ListTeams::class)
+    Livewire::test(ListTeams::class)
         ->searchTable('Revenue team')
         ->assertTableColumnStateSet('open_opportunities_count', 2, $team);
+});
+
+it('lists the teams with the configuration table columns, one detail per column', function () {
+    actingAsSalesTeamViewer();
+
+    $team = salesTeamInCompany('Columns team');
+
+    $component = Livewire::withQueryParams(['layout' => 'list'])
+        ->test(ListTeams::class)
+        ->searchTable('Columns team')
+        ->assertCanSeeTableRecords([$team]);
+
+    expect(array_keys($component->instance()->getTable()->getColumns()))
+        ->toBe(['name', 'id', 'company.name', 'user.name', 'color', 'creator.name', 'is_active', 'invoiced_target', 'created_at', 'updated_at']);
 });
 
 it('forbids the teams overview with only the sales plugin permissions', function () {
     CRMHelper::actingAs(['view_any_sale_team', 'view_sale_team']);
 
     Livewire::test(ListTeams::class)->assertForbidden();
-});
-
-it('lists only the team\'s opportunities on its pipeline page', function () {
-    actingAsSalesTeamViewer();
-
-    $team = salesTeamInCompany('Pipeline page team');
-    $otherTeam = salesTeamInCompany('Other pipeline team');
-
-    $inTeam = CRMHelper::opportunity(['team_id' => $team->id]);
-    $inOtherTeam = CRMHelper::opportunity(['team_id' => $otherTeam->id]);
-    $withoutTeam = CRMHelper::opportunity();
-    $leadInTeam = CRMHelper::lead(['team_id' => $team->id]);
-
-    Livewire::withQueryParams(['layout' => 'list'])
-        ->test(ManageTeamOpportunities::class, ['record' => $team->id])
-        ->assertOk()
-        ->assertCanSeeTableRecords([$inTeam])
-        ->assertCanNotSeeTableRecords([$inOtherTeam, $withoutTeam, $leadInTeam]);
-});
-
-it('creates an opportunity inside the team', function () {
-    $user = actingAsSalesTeamViewer();
-
-    $team = salesTeamInCompany('Create inside team');
-
-    Livewire::test(ManageTeamOpportunities::class, ['record' => $team->id])
-        ->callAction('create', data: [
-            'name'             => 'Deal created in the team',
-            'expected_revenue' => 3000,
-        ])
-        ->assertHasNoActionErrors()
-        ->assertNotified(__('crm::filament/clusters/sales/resources/team/pages/manage-team-opportunities.header-actions.create.notification.title'));
-
-    $lead = Lead::query()->where('name', 'Deal created in the team')->firstOrFail();
-
-    expect($lead->team_id)->toBe($team->id)
-        ->and($lead->type)->toBe(LeadType::OPPORTUNITY)
-        ->and($lead->user_id)->toBe($user->id)
-        ->and($lead->company_id)->toBe(CRMHelper::companyId());
-});
-
-it('labels the team pipeline records as opportunities', function () {
-    actingAsSalesTeamViewer();
-
-    $team = salesTeamInCompany('Labelled team');
-
-    $table = Livewire::test(ManageTeamOpportunities::class, ['record' => $team->id])->instance()->getTable();
-
-    expect($table->getModelLabel())->toBe(OpportunityResource::getModelLabel())
-        ->and($table->getPluralModelLabel())->toBe(OpportunityResource::getPluralModelLabel());
-});
-
-it('switches the team pipeline between kanban, list and graph with kanban by default', function (array $query, ViewLayout $active) {
-    actingAsSalesTeamViewer();
-
-    $team = salesTeamInCompany('Tabbed team');
-
-    $component = Livewire::withQueryParams($query)->test(ManageTeamOpportunities::class, ['record' => $team->id])
-        ->assertSeeHtml('crm-layout-switcher');
-
-    expect($component->instance()->getViewLayouts())->toBe([ViewLayout::KANBAN, ViewLayout::LIST, ViewLayout::GRAPH])
-        ->and($component->instance()->getViewLayout())->toBe($active);
-
-    $component->call('switchViewLayout', 'graph')->assertSet('viewLayout', 'graph');
-})->with([
-    'kanban' => [[], ViewLayout::KANBAN],
-    'list'   => [['layout' => 'list'], ViewLayout::LIST],
-    'graph'  => [['layout' => 'graph'], ViewLayout::GRAPH],
-    'bad'    => [['layout' => 'nope'], ViewLayout::KANBAN],
-]);
-
-it('shows only the team\'s opportunities on the team kanban board', function () {
-    actingAsSalesTeamViewer();
-
-    $team = salesTeamInCompany('Board team');
-    $otherTeam = salesTeamInCompany('Other board team');
-
-    $inTeam = CRMHelper::opportunity(['team_id' => $team->id]);
-    $inOtherTeam = CRMHelper::opportunity(['team_id' => $otherTeam->id]);
-
-    $component = Livewire::test(ManageTeamOpportunities::class, ['record' => $team->id]);
-
-    $ids = collect($component->instance()->getKanbanColumns())->flatMap(fn ($column) => $column->records->modelKeys())->all();
-
-    expect($ids)->toContain($inTeam->id)
-        ->not->toContain($inOtherTeam->id)
-        ->and($component->instance()->getTableRecords())->toHaveCount(0);
-});
-
-it('counts the team\'s opportunities per stage on the team graph', function () {
-    actingAsSalesTeamViewer();
-
-    $team = salesTeamInCompany('Graph team');
-
-    CRMHelper::opportunity(['team_id' => $team->id]);
-    CRMHelper::opportunity(['team_id' => salesTeamInCompany('Not in graph')->id]);
-
-    $chart = Livewire::withQueryParams(['layout' => 'graph'])
-        ->test(ManageTeamOpportunities::class, ['record' => $team->id])
-        ->instance()
-        ->getRecordsGraph()['data'];
-
-    expect(array_sum($chart['datasets'][0]['data']))->toBe(1);
 });
 
 it('shows the teams as cards by default with list as the second view', function (array $query, ViewLayout $active) {
@@ -223,41 +131,30 @@ it('builds the team card figures and counts new opportunities per week', functio
         ->and($dashboard['invoiced_month'])->toEqual(0);
 });
 
-it('forbids the team pipeline without the opportunity permissions', function () {
-    CRMHelper::actingAsCRMUser(['team']);
-
-    $team = salesTeamInCompany('Forbidden team');
-
-    Livewire::test(ManageTeamOpportunities::class, ['record' => $team->id])->assertForbidden();
-});
-
-it('forbids the team pipeline with the opportunity permissions but without the team permissions', function () {
-    CRMHelper::actingAsCRMUser(['opportunity']);
-
-    $team = salesTeamInCompany('Team without team access');
-
-    Livewire::test(ManageTeamOpportunities::class, ['record' => $team->id])->assertForbidden();
-});
-
-it('forbids the team pipeline without permission to view a single team', function () {
-    CRMHelper::actingAs([
-        ...CRMHelper::permissionsFor(['opportunity']),
-        'view_any_crm_team',
-    ]);
-
-    $team = salesTeamInCompany('Team without view access');
-
-    expect(ManageTeamOpportunities::canAccess(['record' => $team]))->toBeFalse();
-});
-
-it('opens the team pipeline with both the team and the opportunity permissions', function () {
+it('opens the pipeline filtered by the team from the team card and creates opportunities in the team', function () {
     actingAsSalesTeamViewer();
 
-    $team = salesTeamInCompany('Team with full access');
+    $team = salesTeamInCompany('Pipeline link team');
 
-    expect(ManageTeamOpportunities::canAccess(['record' => $team]))->toBeTrue();
+    Livewire::test(ListTeams::class)
+        ->assertSeeHtml(e(OpportunityResource::getUrl('index', ['team' => $team->id])))
+        ->assertSeeHtml(e(OpportunityResource::getUrl('index', ['team' => $team->id, 'layout' => 'list', 'activeTableView' => 'open'])))
+        ->assertSeeHtml(e(OpportunityResource::getUrl('create', ['team' => $team->id])));
+});
 
-    Livewire::test(ManageTeamOpportunities::class, ['record' => $team->id])->assertSuccessful();
+it('prefills the team when an opportunity is created from a team card', function () {
+    actingAsSalesTeamViewer();
+
+    $team = salesTeamInCompany('Prefilled team');
+    $otherCompanyTeam = salesTeamInCompany('Other company team', Company::factory()->create()->id);
+
+    Livewire::withQueryParams(['team' => $team->id])
+        ->test(CreateOpportunity::class)
+        ->assertSchemaStateSet(['team_id' => $team->id]);
+
+    Livewire::withQueryParams(['team' => $otherCompanyTeam->id])
+        ->test(CreateOpportunity::class)
+        ->assertSchemaStateSet(['team_id' => null]);
 });
 
 it('links the team card menu to the team\'s records and reports', function () {
@@ -268,7 +165,7 @@ it('links the team card menu to the team\'s records and reports', function () {
 
     $component = Livewire::test(ListTeams::class)
         ->assertSeeHtml(e(LeadResource::getUrl('index', ['activeTableView' => 'all', 'filters' => ['queryBuilder' => ['rules' => ['team' => LeadTableFilters::teamRule($team->id)]]]])))
-        ->assertSeeHtml(e(TeamResource::getUrl('opportunities', ['record' => $team, 'layout' => 'list'])))
+        ->assertSeeHtml(e(OpportunityResource::getUrl('index', ['team' => $team->id, 'layout' => 'list'])))
         ->assertSeeHtml(e(QuotationResource::getUrl('index', QuotationResource::getTeamOrdersParameters($team->id, TeamOrderScope::SALES_ORDERS))))
         ->assertDontSeeHtml(e(LeadResource::getUrl('create', ['team' => $team->id])))
         ->assertSeeHtml(e(ConfigurationTeamResource::getUrl('edit', ['record' => $team])))

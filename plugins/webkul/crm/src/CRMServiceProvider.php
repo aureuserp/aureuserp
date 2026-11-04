@@ -29,7 +29,6 @@ use Webkul\Crm\Filament\Clusters\Sales\Resources\CustomerResource\Pages\ListCust
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\ListOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\SimilarOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\QuotationResource\Pages\ListQuotations;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
 use Webkul\Crm\Filament\Support\Reports\Pages\ReportPage;
 use Webkul\Crm\Filament\Support\Reports\Widgets\ReportChart;
 use Webkul\Crm\Filament\Support\VersionedJs;
@@ -150,7 +149,6 @@ class CRMServiceProvider extends PackageServiceProvider
                 ListQuotations::class,
                 ListActivities::class,
                 ListCustomers::class,
-                ManageTeamOpportunities::class,
                 ListForecast::class,
             ],
         );

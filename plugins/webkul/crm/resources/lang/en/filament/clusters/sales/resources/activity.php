@@ -11,6 +11,7 @@ return [
     'table' => [
         'columns' => [
             'due-date'      => 'Due Date',
+            'due-status'    => 'Due Status',
             'opportunity'   => 'Lead / Opportunity',
             'customer'      => 'Customer',
             'activity-type' => 'Activity Type',

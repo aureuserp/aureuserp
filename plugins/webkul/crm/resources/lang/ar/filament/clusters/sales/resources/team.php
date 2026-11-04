@@ -10,11 +10,9 @@ return [
 
     'table' => [
         'columns' => [
-            'name'               => 'فريق المبيعات',
-            'open-opportunities' => 'الفرص المفتوحة',
-            'expected-revenue'   => 'الإيرادات المتوقعة',
-            'members'            => 'الأعضاء',
-            'company'            => 'الشركة',
+            'name'    => 'فريق المبيعات',
+            'members' => 'الأعضاء',
+            'company' => 'الشركة',
         ],
 
         'filters' => [

@@ -7,7 +7,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Crm\Filament\Clusters\Sales;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ListTeams;
-use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Pages\ManageTeamOpportunities;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\TeamResource\Tables\TeamsTable;
 use Webkul\Crm\Filament\Concerns\HasCRMAuthorization;
 use Webkul\Crm\Policies\TeamPolicy;
@@ -66,8 +65,7 @@ class TeamResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'         => ListTeams::route('/'),
-            'opportunities' => ManageTeamOpportunities::route('/{record}/opportunities'),
+            'index' => ListTeams::route('/'),
         ];
     }
 }

@@ -69,6 +69,11 @@ class ListLeads extends ListRecords
         return $this->isViewLayout(ViewLayout::KANBAN) ? $this->getTableGroup() : null;
     }
 
+    public function getDefaultBoardGroup(Table $table): ?string
+    {
+        return 'team.name';
+    }
+
     public function table(Table $table): Table
     {
         return $this->configureGroupBoardTable(LeadsTable::configure($table))

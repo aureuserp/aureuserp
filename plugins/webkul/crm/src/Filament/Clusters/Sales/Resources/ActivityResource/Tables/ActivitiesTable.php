@@ -37,11 +37,11 @@ class ActivitiesTable
                 TextColumn::make('date_deadline')
                     ->label(__('crm::filament/clusters/sales/resources/activity.table.columns.due-date'))
                     ->date()
-                    ->badge()
-                    ->color(fn (Activity $record): string => $record->getDueStatus()->getColor())
-                    ->icon(fn (Activity $record): string => $record->getDueStatus()->getIcon())
-                    ->description(fn (Activity $record): string => $record->getDueStatus()->getLabel())
                     ->sortable(),
+                TextColumn::make('due_status')
+                    ->label(__('crm::filament/clusters/sales/resources/activity.table.columns.due-status'))
+                    ->state(fn (Activity $record): ActivityDueStatus => $record->getDueStatus())
+                    ->badge(),
                 TextColumn::make('lead.name')
                     ->hidden($withinRecord)
                     ->label(__('crm::filament/clusters/sales/resources/activity.table.columns.opportunity'))

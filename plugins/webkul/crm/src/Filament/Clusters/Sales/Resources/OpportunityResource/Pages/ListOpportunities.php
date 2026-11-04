@@ -64,7 +64,7 @@ class ListOpportunities extends ListRecords
         parent::mount();
 
         if ($teamId = request()->integer('team')) {
-            $this->activeTableView ??= 'default';
+            $this->activeTableView ??= 'my_pipeline';
 
             $this->tableFilters = [
                 'queryBuilder' => [
@@ -164,27 +164,32 @@ class ListOpportunities extends ListRecords
                 ->icon('heroicon-s-user')
                 ->favorite()
                 ->setAsDefault()
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->where('user_id', Auth::id())),
+                ->modifyQueryUsing(fn (Builder $query): Builder => static::withoutLost($query)->where('user_id', Auth::id())),
 
             'open' => PresetView::make(__('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.open'))
                 ->icon('heroicon-s-funnel')
                 ->favorite()
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->open()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => static::withoutLost($query)->open()),
 
             'unassigned' => PresetView::make(__('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.unassigned'))
                 ->icon('heroicon-s-user-minus')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->whereNull('user_id')),
+                ->modifyQueryUsing(fn (Builder $query): Builder => static::withoutLost($query)->whereNull('user_id')),
 
             'won' => PresetView::make(__('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.won'))
                 ->icon('heroicon-s-trophy')
                 ->favorite()
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutTrashed()->won()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => static::withoutLost($query)->won()),
 
             'lost' => PresetView::make(__('crm::filament/clusters/sales/resources/opportunity/pages/list-opportunities.tabs.lost'))
                 ->icon('heroicon-s-hand-thumb-down')
                 ->favorite()
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->onlyTrashed()),
         ];
+    }
+
+    protected static function withoutLost(Builder $query): Builder
+    {
+        return $query->withGlobalScope(SoftDeletingScope::class, new SoftDeletingScope);
     }
 
     public function kanban(KanbanBoard $kanban): KanbanBoard
@@ -275,7 +280,7 @@ class ListOpportunities extends ListRecords
 
     public function moveRecord(string $recordId, string $newColumnValue, array $orderedIds): void
     {
-        if ($this->activeTableView === 'lost') {
+        if (Lead::query()->onlyTrashed()->whereKey($recordId)->exists()) {
             Notification::make()
                 ->warning()
                 ->title(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.lost-move'))

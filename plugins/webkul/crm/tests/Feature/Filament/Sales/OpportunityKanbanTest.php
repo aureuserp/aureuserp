@@ -48,6 +48,11 @@ function pipelineRule(string $type, array $values, string $operator = 'isRelated
     return ['queryBuilder' => ['rules' => [$type => ['type' => $type, 'data' => ['operator' => $operator, 'settings' => ['values' => array_map('strval', $values)]]]]]];
 }
 
+function pipelineOutcomeRule(string $type, string $operator): array
+{
+    return ['queryBuilder' => ['rules' => [$type => ['type' => $type, 'data' => ['operator' => $operator, 'settings' => []]]]]];
+}
+
 function pipelineUpdatedAt(Lead $opportunity, Carbon $updatedAt): Lead
 {
     Lead::query()->whereKey($opportunity->getKey())->update(['updated_at' => $updatedAt]);
@@ -83,18 +88,18 @@ it('opens on the My Pipeline tab, showing the user\'s opportunities', function (
     expect(pipelineBoardRecordIds($component))->toContain($mine->id, $someoneElses->id);
 })->with(['kanban' => [null], 'list' => ['list'], 'graph' => ['graph']]);
 
-it('opens a team\'s pipeline when ?team= is given', function () {
+it('opens My Pipeline filtered by the team when ?team= is given', function () {
     CRMHelper::actingAsCRMUser(['opportunity']);
 
     $team = pipelineTeam();
 
-    $teamDeal = CRMHelper::opportunity(['team_id' => $team->id, 'user_id' => pipelineOtherUserId()]);
+    $teamDeal = CRMHelper::opportunity(['team_id' => $team->id]);
     $mineWithoutTeam = CRMHelper::opportunity();
 
     $component = Livewire::withQueryParams(['team' => $team->id])
         ->test(ListOpportunities::class)
         ->assertOk()
-        ->assertSet('activeTableView', 'default');
+        ->assertSet('activeTableView', 'my_pipeline');
 
     $rules = collect($component->get('tableFilters.queryBuilder.rules'));
 
@@ -255,6 +260,50 @@ it('hides lost opportunities and leads from the board', function () {
         ->toContain($open->id)
         ->not->toContain($lost->id)
         ->not->toContain($lead->id);
+});
+
+it('shows lost opportunities in the stage they were lost in with the lost rule', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $stage = CRMHelper::firstStage();
+    $open = CRMHelper::opportunity(['stage_id' => $stage->id]);
+    $lost = CRMHelper::opportunity(['stage_id' => $stage->id]);
+    $lost->markAsLost(null, 'Gone');
+
+    $component = Livewire::test(ListOpportunities::class)
+        ->assertSet('activeTableView', 'my_pipeline')
+        ->set('tableFilters', pipelineOutcomeRule('lost', 'isLost'))
+        ->assertSee(__('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.lost'));
+
+    expect(pipelineBoardColumn($component, $stage)->records->modelKeys())->toContain($lost->id)->not->toContain($open->id);
+
+    $component->set('tableFilters', pipelineOutcomeRule('lost', 'isLost.inverse'));
+
+    expect(pipelineBoardColumn($component, $stage)->records->modelKeys())->toContain($open->id)->not->toContain($lost->id);
+
+    $component->call('moveRecord', (string) $lost->id, (string) CRMHelper::wonStage()->id, [(string) $lost->id]);
+
+    expect($lost->refresh()->stage_id)->toBe($stage->id);
+
+    Livewire::withQueryParams(['layout' => 'list'])->test(ListOpportunities::class)
+        ->set('tableFilters', pipelineOutcomeRule('lost', 'isLost'))
+        ->assertCanSeeTableRecords([$lost])
+        ->assertCanNotSeeTableRecords([$open]);
+});
+
+it('filters the board by the won rule', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $open = CRMHelper::opportunity(['stage_id' => CRMHelper::firstStage()->id]);
+    $won = CRMHelper::opportunity(['stage_id' => CRMHelper::wonStage()->id]);
+
+    $component = Livewire::test(ListOpportunities::class)->set('tableFilters', pipelineOutcomeRule('won', 'isWon'));
+
+    expect(pipelineBoardRecordIds($component))->toContain($won->id)->not->toContain($open->id);
+
+    $component->set('tableFilters', pipelineOutcomeRule('won', 'isWon.inverse'));
+
+    expect(pipelineBoardRecordIds($component))->toContain($open->id)->not->toContain($won->id);
 });
 
 it('shows the pipeline list tabs on the board and filters the cards by the chosen tab', function () {

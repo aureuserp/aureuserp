@@ -41,7 +41,7 @@ class LeadTableFilters
         ]);
     }
 
-    public static function opportunities(bool $withinTeam = false): QueryBuilder
+    public static function opportunities(): QueryBuilder
     {
         return static::make([
             TextConstraint::make('name')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.name'))->icon('heroicon-o-document-text'),
@@ -50,7 +50,7 @@ class LeadTableFilters
             TextConstraint::make('phone')->label(__('crm::filament/clusters/sales/resources/opportunity.table.columns.phone'))->icon('heroicon-o-phone'),
             static::relationship('stage', __('crm::filament/clusters/sales/resources/opportunity.table.columns.stage'), 'heroicon-o-funnel'),
             static::relationship('user', __('crm::filament/clusters/sales/resources/opportunity.table.columns.salesperson'), 'heroicon-o-user-circle'),
-            $withinTeam ? null : static::relationship('team', __('crm::filament/clusters/sales/resources/opportunity.table.columns.team'), 'heroicon-o-user-group', static::companyTeams()),
+            static::relationship('team', __('crm::filament/clusters/sales/resources/opportunity.table.columns.team'), 'heroicon-o-user-group', static::companyTeams()),
             static::relationship('tags', __('crm::filament/clusters/sales/resources/opportunity.table.columns.tags'), 'heroicon-o-tag'),
             static::priority(__('crm::filament/clusters/sales/resources/opportunity.table.columns.priority')),
             static::relationship('source', __('crm::filament/clusters/leads/resources/lead.table.columns.source'), 'heroicon-o-speaker-wave'),
@@ -118,7 +118,16 @@ class LeadTableFilters
             ->multiple();
     }
 
-    protected static function won(): Constraint
+    public static function lost(): Constraint
+    {
+        return Constraint::make('lost')
+            ->label(__('crm::filament/clusters/reporting/report.rules.lost.label'))
+            ->icon('heroicon-o-hand-thumb-down')
+            ->attribute('deleted_at')
+            ->operators([IsLostOperator::class]);
+    }
+
+    public static function won(): Constraint
     {
         $wonStage = fn (Builder $query): Builder => $query->where('is_won', true);
 

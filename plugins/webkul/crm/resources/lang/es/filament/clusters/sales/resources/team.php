@@ -10,11 +10,9 @@ return [
 
     'table' => [
         'columns' => [
-            'name'               => 'Equipo de ventas',
-            'open-opportunities' => 'Oportunidades abiertas',
-            'expected-revenue'   => 'Ingresos esperados',
-            'members'            => 'Miembros',
-            'company'            => 'Empresa',
+            'name'    => 'Equipo de ventas',
+            'members' => 'Miembros',
+            'company' => 'Empresa',
         ],
 
         'filters' => [

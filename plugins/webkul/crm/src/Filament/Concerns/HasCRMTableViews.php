@@ -14,9 +14,45 @@ trait HasCRMTableViews
     use HasTableViews {
         HasTableViews::createTableViewAction as getBaseCreateTableViewAction;
         HasTableViews::getCachedFavoriteTableViews as getBaseCachedFavoriteTableViews;
+        HasTableViews::resetTableGrouping as resetBaseTableGrouping;
+        HasTableViews::loadView as loadBaseView;
     }
 
     protected array $tableViewCounts = [];
+
+    public function resetTableGrouping(): void
+    {
+        $this->resetBaseTableGrouping();
+
+        $table = $this->getTable();
+
+        if ($table->isDefaultGroupSelectable()) {
+            $this->tableGrouping = $table->getDefaultGroup()->getId().':'.$table->getDefaultGroupDirection();
+        }
+    }
+
+    public function loadView($tabKey): void
+    {
+        if (($this->getAllTableViews()[$tabKey] ?? null) instanceof SavedView) {
+            $this->loadBaseView($tabKey);
+
+            return;
+        }
+
+        $filters = $this->tableFilters;
+
+        $search = $this->tableSearch;
+
+        $this->loadBaseView($tabKey);
+
+        $this->getTableFiltersForm()->fill($filters);
+
+        if ($this->getTable()->hasDeferredFilters()) {
+            $this->tableFilters = $this->tableDeferredFilters;
+        }
+
+        $this->tableSearch = $search;
+    }
 
     public function createTableViewAction(): Action
     {
@@ -63,7 +99,7 @@ trait HasCRMTableViews
         $query = $view->modifyQuery($this->getTableViewCountQuery());
 
         if (! $view instanceof SavedView) {
-            return $query->count();
+            return $this->applySearchToTableQuery($this->applyFiltersToTableQuery($query))->count();
         }
 
         $currentFilters = $this->tableFilters;
