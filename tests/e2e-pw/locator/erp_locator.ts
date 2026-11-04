@@ -549,6 +549,7 @@ export class ErpLocators {
     readonly crmGraphContent: Locator;
     readonly crmGridContent: Locator;
     readonly crmGroupByPrompt: Locator;
+    readonly crmGroupBySelect: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -1178,5 +1179,6 @@ export class ErpLocators {
         this.crmGraphContent = page.locator("canvas").first();
         this.crmGridContent = page.locator(".fi-ta-content-grid").first();
         this.crmGroupByPrompt = page.locator(".fi-ta-empty-state").filter({ hasText: "Choose a Group by" });
+        this.crmGroupBySelect = page.getByRole("combobox", { name: "Group by" });
     }
 }

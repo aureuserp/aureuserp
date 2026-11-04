@@ -23,7 +23,7 @@ test.describe("CRM Leads E2E", () => {
             await crmPage.expectLayout(LEADS, layout);
         }
 
-        await crmPage.expectGroupByPrompt(LEADS);
+        await crmPage.expectDefaultGroupBy(LEADS, "team.name");
         await crmPage.expectLayout(`${LEADS}?grouping=user.name`, "kanban");
     });
 

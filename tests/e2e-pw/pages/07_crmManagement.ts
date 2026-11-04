@@ -91,14 +91,16 @@ export class CRMFlowPage {
     }
 
     /**
-     * Boards grouped by a field (leads, customers) show no columns until a Group by is picked.
+     * Boards grouped by a field (leads, customers, quotations) open with their default Group by
+     * already selected, so the board renders instead of asking for a Group by.
      */
-    async expectGroupByPrompt(path: string) {
+    async expectDefaultGroupBy(path: string, group: string) {
         await this.safeGoto(`${path}${path.includes("?") ? "&" : "?"}layout=kanban`);
         await this.page.waitForLoadState("networkidle").catch(() => undefined);
 
-        await expect(this.erpLocators.crmGroupByPrompt).toBeVisible();
-        await expect(this.erpLocators.crmKanbanContent).toHaveCount(0);
+        await expect(this.erpLocators.crmGroupBySelect).toHaveValue(group);
+        await expect(this.erpLocators.crmGroupByPrompt).toHaveCount(0);
+        await expect(this.erpLocators.crmKanbanContent).toBeVisible();
     }
 
     tableRow(name: string): Locator {
