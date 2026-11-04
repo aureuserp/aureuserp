@@ -1,7 +1,9 @@
 <?php
 
+use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Filament\PanelRegistry;
 use Filament\Schemas\Schema;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -20,12 +22,40 @@ use Webkul\PluginManager\Filament\Resources\PluginResource;
 use Webkul\Security\Filament\Resources\CompanyResource as SecurityCompanyResource;
 use Webkul\Security\Filament\Resources\RoleResource;
 use Webkul\Security\Filament\Resources\UserResource;
+use Webkul\Support\Filament\Customization\CustomizablePanelRegistry;
 use Webkul\Support\Filament\Customization\PanelCustomizer;
 use Webkul\Support\Filament\Resources\CompanyResource as SupportCompanyResource;
 
 require_once __DIR__.'/../../Helpers/TestBootstrapHelper.php';
 
+class CustomizationTestPlugin implements Plugin
+{
+    public function __construct(
+        protected string $id,
+        protected array $resources,
+    ) {}
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function register(Panel $panel): void
+    {
+        $panel->resources($this->resources);
+    }
+
+    public function boot(Panel $panel): void {}
+}
+
 afterEach(fn () => PanelCustomizer::flush());
+
+function registeredPanel(Panel $panel): Panel
+{
+    app(PanelRegistry::class)->register($panel);
+
+    return $panel;
+}
 
 function customizedPanel(array $resources, int $registrations = 1): Panel
 {
@@ -39,7 +69,18 @@ function customizedPanel(array $resources, int $registrations = 1): Panel
         }
     });
 
-    return Panel::make()->id('customization');
+    return registeredPanel(Panel::make()->id('customization'));
+}
+
+function panelWithPluginsAfterId(array ...$pluginResources): Panel
+{
+    $panel = Panel::make()->id('customization');
+
+    foreach ($pluginResources as $index => $resources) {
+        $panel->plugin(new CustomizationTestPlugin("customization-test-{$index}", $resources));
+    }
+
+    return registeredPanel($panel);
 }
 
 it('applies host schema defaults after package defaults whatever the registration order', function () {
@@ -86,6 +127,50 @@ it('keeps one cluster entry per component when a plugin registers twice', functi
 
     expect($panel->getClusteredComponents(Operations::class))->toBe([ReplenishmentResource::class]);
 });
+
+it('keeps one cluster entry per component when plugins added after the panel id repeat it', function () {
+    $panel = panelWithPluginsAfterId([ReplenishmentResource::class], [ReplenishmentResource::class, UserResource::class]);
+
+    expect($panel->getClusteredComponents(Operations::class))->toBe([ReplenishmentResource::class]);
+});
+
+it('excludes and replaces resources contributed by plugins added after the panel id', function () {
+    PanelCustomizer::excludeResources('customization', [PluginResource::class]);
+    PanelCustomizer::replaceResource('customization', SecurityCompanyResource::class, RoleResource::class);
+
+    $resources = panelWithPluginsAfterId(
+        [UserResource::class],
+        [PluginResource::class, SecurityCompanyResource::class],
+    )->getResources();
+
+    expect($resources)->toContain(UserResource::class, RoleResource::class)
+        ->not->toContain(PluginResource::class)
+        ->not->toContain(SecurityCompanyResource::class);
+});
+
+it('runs host panel callbacks after plugins added after the panel id', function () {
+    $seen = [];
+
+    PanelCustomizer::panel('customization', function (Panel $panel) use (&$seen): void {
+        $seen = $panel->getResources();
+    });
+
+    panelWithPluginsAfterId([UserResource::class]);
+
+    expect($seen)->toContain(UserResource::class);
+});
+
+it('customizes every panel through the Filament panel registry', function () {
+    expect(app(PanelRegistry::class))->toBeInstanceOf(CustomizablePanelRegistry::class);
+});
+
+it('refuses to take over a panel registry that already holds panels', function () {
+    $registry = new PanelRegistry;
+
+    $registry->panels['early'] = Panel::make()->id('early');
+
+    CustomizablePanelRegistry::from($registry);
+})->throws(LogicException::class);
 
 it('runs host panel callbacks after the plugins registered', function () {
     PanelCustomizer::panel('customization', fn (Panel $panel) => $panel->resources([RoleResource::class]));

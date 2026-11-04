@@ -4,9 +4,11 @@ namespace Webkul\Support\Traits;
 
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Filament\PanelRegistry;
 use Filament\Resources\ResourceConfiguration;
 use Livewire\Livewire;
 use Webkul\Support\Filament\Customization\CustomizableNavigationItem;
+use Webkul\Support\Filament\Customization\CustomizablePanelRegistry;
 use Webkul\Support\Filament\Customization\PanelCustomizer;
 use Webkul\Support\Livewire\PageHeaderActions;
 
@@ -43,7 +45,10 @@ trait HasPanelCustomization
             return $this;
         });
 
-        Panel::configureUsing(fn (Panel $panel) => PanelCustomizer::apply($panel), isImportant: true);
+        $this->app->extend(
+            PanelRegistry::class,
+            fn (PanelRegistry $registry): PanelRegistry => $registry instanceof CustomizablePanelRegistry ? $registry : CustomizablePanelRegistry::from($registry),
+        );
 
         $this->app->bind(NavigationItem::class, CustomizableNavigationItem::class);
 

@@ -6,14 +6,15 @@ use Closure;
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\Schemas\Schema;
-use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 use UnitEnum;
+use WeakMap;
 
 class PanelCustomizer
 {
@@ -30,6 +31,8 @@ class PanelCustomizer
     protected static array $replacedPages = [];
 
     protected static array $headerActions = [];
+
+    protected static ?WeakMap $panelsWithHeaderActionsHook = null;
 
     public static function panel(?string $panelId, Closure $callback): void
     {
@@ -82,23 +85,28 @@ class PanelCustomizer
 
     public static function headerActions(string $page, Closure $factory): void
     {
-        if (! isset(static::$headerActions[$page])) {
-            FilamentView::registerRenderHook(
-                PanelsRenderHook::PAGE_HEADER_ACTIONS_AFTER,
-                fn (): string => static::renderHeaderActions($page),
-                scopes: $page,
-            );
+        static::$headerActions[] = [$page, $factory];
+    }
+
+    public static function hasHeaderActions(string $page): bool
+    {
+        foreach (static::$headerActions as [$registered]) {
+            if (is_a($page, $registered, true)) {
+                return true;
+            }
         }
 
-        static::$headerActions[$page][] = $factory;
+        return false;
     }
 
     public static function headerActionsFor(string $page, ?Model $record): array
     {
         $actions = [];
 
-        foreach (static::$headerActions[$page] ?? [] as $factory) {
-            $actions = [...$actions, ...$factory($record)];
+        foreach (static::$headerActions as [$registered, $factory]) {
+            if (is_a($page, $registered, true)) {
+                $actions = [...$actions, ...$factory($record)];
+            }
         }
 
         return $actions;
@@ -144,6 +152,17 @@ class PanelCustomizer
             $panel->livewireComponents(array_values(static::$replacedPages));
         }
 
+        static::$panelsWithHeaderActionsHook ??= new WeakMap;
+
+        if (! isset(static::$panelsWithHeaderActionsHook[$panel])) {
+            $panel->renderHook(
+                PanelsRenderHook::PAGE_HEADER_ACTIONS_AFTER,
+                fn (array $scopes = []): string => static::renderHeaderActions($scopes),
+            );
+
+            static::$panelsWithHeaderActionsHook[$panel] = true;
+        }
+
         $panel->customizeResources(
             static::forPanel(static::$excludedResources, $panel->getId()),
             static::forPanel(static::$replacedResources, $panel->getId()),
@@ -176,8 +195,14 @@ class PanelCustomizer
         static::$headerActions = [];
     }
 
-    protected static function renderHeaderActions(string $page): string
+    protected static function renderHeaderActions(array $scopes): string
     {
+        $page = Arr::first($scopes, fn (mixed $scope): bool => is_string($scope) && static::hasHeaderActions($scope));
+
+        if (! $page) {
+            return '';
+        }
+
         $livewire = Livewire::current();
 
         $record = $livewire && method_exists($livewire, 'getRecord') ? $livewire->getRecord() : null;
