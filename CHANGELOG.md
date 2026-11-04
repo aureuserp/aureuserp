@@ -1,3 +1,44 @@
+# 🚀 CHANGELOG — v1.8.0
+
+### 🧩 Features
+
+* Added the CRM plugin with leads, opportunities, a Kanban sales pipeline, sales teams, quotations, and reports
+* Added branding and theme customization: live theme preview, color palettes, and improved branding settings
+* Added enhanced dashboards with themed widgets and animated charts
+* Added nested Invoices and Bills tabs to customer and vendor pages, including POS invoices and bills
+* Added permission descriptions and a masonry layout to the role form
+* Added a Back Office link to the Barcode sidebar
+* Added Activity Plan Templates, Skill Type and Project relations as record navigation tabs on view/edit pages
+
+### ✨ Improvements
+
+* Compact UI pass: plugin cards, table rows, attribute options repeater, employee and partner cards (corner checkbox), and vacant space cards (18 per page)
+* Moved the add-quantity action to the page header
+* Removed duplicate relationship sections and duplicate View/Edit header actions across resource pages
+* Moved default sort to the table so group-by shows each group once
+* Added a group summary loading skeleton and scoped invoice preview fonts
+* Added horizontal scroll to the repeater table on overflow
+* Moved the app menu scrollbar to the right screen edge at all zoom levels
+* Consistent button hover text contrast in light and dark modes
+* Added Point of Sale to the README
+
+### 🐛 Fixes
+
+* #1573 [fixed] - Accounting setup now reports failure instead of a false success
+* #1671 [fixed] - Fixed issue #1671
+* #1663 [fixed] - Fixed issue #1663
+* #1662 [fixed] - Fixed issue #1662
+* #1659 [fixed] - Fixed issue #1659
+* [fixed] - Direct URL access to the incomplete Replenishment resource now returns 404
+* [fixed] - Partner invoice and bill tabs now respect invoice permission and move-type scope, and show only when the Invoices or Accounting plugin is installed
+* [fixed] - Credit notes and refunds open in their own resources from partner tabs
+* [fixed] - Credit notes, refunds and child contact moves now show in the Invoices and Bills tabs
+* [fixed] - Manufacturing work order group-by rows stay together
+* [fixed] - Light preview modals in dark mode and plain date in group headers
+* [fixed] - Collapsible groups, group checkbox alignment, validate spinner target, and todo unmount on error
+* [fixed] - Partner name font size aligned with company name in print/preview, and header layout fixed
+* [fixed] - Shimmer loading on vacant space cards
+
 # 🚀 CHANGELOG — v1.7.0
 
 ### 🧩 Features
