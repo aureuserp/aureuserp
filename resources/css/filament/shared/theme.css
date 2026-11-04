@@ -899,8 +899,12 @@
         @apply absolute start-2 top-2 z-10 m-0;
     }
 
+    & .fi-ta-card-portal-access {
+        @apply absolute end-2 top-2 z-10 m-0;
+    }
+
     & .fi-ta-record-content-ctn {
-        @apply ps-0;
+        @apply ps-0 pt-5;
     }
 
     & .fi-ta-actions > .fi-ta-card-tags {

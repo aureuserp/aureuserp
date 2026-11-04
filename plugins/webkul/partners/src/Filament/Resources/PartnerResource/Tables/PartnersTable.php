@@ -48,27 +48,18 @@ class PartnersTable
                     Split::make([
                         ImageColumn::make('avatar')
                             ->circular()
-                            ->imageSize(96)
+                            ->imageSize(72)
                             ->defaultImageUrl(fn (Partner $record): string => (new UiAvatarsProvider)->get($record))
                             ->grow(false),
 
                         Stack::make([
-                            Split::make([
-                                TextColumn::make('name')
-                                    ->weight(FontWeight::Bold)
-                                    ->size(TextSize::Large)
-                                    ->searchable()
-                                    ->sortable()
-                                    ->grow(false),
-
-                                TextColumn::make('status')
-                                    ->state(fn (Partner $record): string => $record->trashed()
-                                        ? __('partners::filament/resources/partner.table.columns.status.archived')
-                                        : __('partners::filament/resources/partner.table.columns.status.active'))
-                                    ->badge()
-                                    ->color(fn (Partner $record): string => $record->trashed() ? 'gray' : 'success')
-                                    ->grow(false),
-                            ]),
+                            TextColumn::make('name')
+                                ->weight(FontWeight::Bold)
+                                ->size(TextSize::Large)
+                                ->searchable()
+                                ->sortable()
+                                ->lineClamp(1)
+                                ->extraAttributes(['class' => 'pe-10']),
 
                             Stack::make([
                                 TextColumn::make('job_title')
@@ -240,12 +231,12 @@ class PartnersTable
                 'sm'  => 1,
                 'md'  => 2,
                 'xl'  => 3,
-                '2xl' => 3,
+                '2xl' => 4,
             ])
             ->paginated([
-                18,
+                12,
+                24,
                 36,
-                72,
                 'all',
             ]);
     }
