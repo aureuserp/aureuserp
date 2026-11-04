@@ -292,12 +292,9 @@ it('transfers custody between employees (Test 4)', function () {
     $employeeA = createAssetEmployee($company);
     $employeeB = createAssetEmployee($company);
 
-    $asset = Asset::factory()->heldByEmployee($employeeA)->create(['company_id' => $company->id]);
-    AssetMovement::factory()->issue()->create([
-        'asset_id'       => $asset->id,
-        'company_id'     => $company->id,
-        'to_employee_id' => $employeeA->id,
-        'occurred_at'    => now()->subDay(),
+    $asset = Asset::factory()->heldByEmployee($employeeA)->create([
+        'company_id' => $company->id,
+        'issued_at'  => now()->subDay(),
     ]);
 
     Livewire::test(ListAssets::class)

@@ -1180,3 +1180,64 @@ it('uses the configured default consumable issue quantity when none is provided'
     expect((float) $batch->fresh()->quantity)->toBe(14.0)
         ->and((float) $batch->movements()->where('type', MovementType::Issued)->sum('quantity'))->toBe(6.0);
 });
+
+it('records both Registered and Issued movements when registering an asset directly in custody', function () {
+    $company = custodyCompany();
+    $product = custodyProduct($company);
+    $employee = custodyEmployee($company);
+    $custodyZone = custodySite($company);
+    $siteLocation = AssetSite::factory()->company($company)->assetLocation()->create();
+
+    $directEmployeeAsset = Asset::query()->create([
+        'company_id'          => $company->id,
+        'product_id'          => $product->id,
+        'status'              => AssetStatus::Held,
+        'current_employee_id' => $employee->id,
+        'current_site_id'     => $custodyZone->id,
+        'custody_note'        => 'Direct handover on registration',
+        'initial_attachments' => ['assets/attachments/direct-handover.pdf'],
+    ]);
+
+    $movements = AssetMovement::query()
+        ->where('asset_id', $directEmployeeAsset->id)
+        ->orderBy('id')
+        ->get();
+
+    expect($movements)->toHaveCount(2)
+        ->and($movements[0]->type)->toBe(MovementType::Registered)
+        ->and($movements[0]->source_type)->toBe(AssetSourceType::Manual)
+        ->and($movements[0]->to_employee_id)->toBe($employee->id)
+        ->and($movements[0]->to_site_id)->toBe($custodyZone->id)
+        ->and($movements[1]->type)->toBe(MovementType::Issued)
+        ->and($movements[1]->source_type)->toBe(AssetSourceType::Manual)
+        ->and($movements[1]->from_display)->toBe(AssetSourceType::Manual->getLabel())
+        ->and($movements[1]->to_employee_id)->toBe($employee->id)
+        ->and($movements[1]->to_site_id)->toBe($custodyZone->id)
+        ->and($movements[1]->note)->toBe('Direct handover on registration')
+        ->and($movements[1]->attachments)->toBe(['assets/attachments/direct-handover.pdf']);
+
+    $bulkSiteAssets = custodyService()->bulkRegister([
+        'company_id'        => $company->id,
+        'product_id'        => $product->id,
+        'initial_placement' => 'site_asset',
+        'site_id'           => $siteLocation->id,
+        'tracking_mode'     => 'with_serials',
+        'items'             => [
+            ['serial_no' => 'DIRECT-SITE-SN-1', 'asset_tag' => 'AST-DIR-001'],
+        ],
+    ]);
+
+    $bulkMovements = AssetMovement::query()
+        ->where('asset_id', $bulkSiteAssets->first()->id)
+        ->orderBy('id')
+        ->get();
+
+    expect($bulkMovements)->toHaveCount(2)
+        ->and($bulkMovements[0]->type)->toBe(MovementType::Registered)
+        ->and($bulkMovements[0]->source_type)->toBe(AssetSourceType::Bulk)
+        ->and($bulkMovements[1]->type)->toBe(MovementType::Issued)
+        ->and($bulkMovements[1]->source_type)->toBe(AssetSourceType::Bulk)
+        ->and($bulkMovements[1]->from_display)->toBe(AssetSourceType::Bulk->getLabel())
+        ->and($bulkMovements[1]->to_site_id)->toBe($siteLocation->id)
+        ->and($bulkMovements[1]->to_employee_id)->toBeNull();
+});

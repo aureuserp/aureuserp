@@ -266,25 +266,52 @@ class Asset extends Model
         static::created(function (self $asset): void {
             if (in_array($asset->status, [AssetStatus::Available, AssetStatus::Held, AssetStatus::Consumed], true)) {
                 $isConsumed = $asset->status === AssetStatus::Consumed;
+                $sourceType = $asset->initialSourceType ?? AssetSourceType::Manual;
+                $toEmployeeId = $isConsumed ? $asset->initialConsumableEmployeeId : $asset->current_employee_id;
+                $toSiteId = $isConsumed ? $asset->initialConsumableSiteId : $asset->current_site_id;
+                $occurredAt = $asset->issued_at ?? $asset->created_at ?? now();
+                $performedBy = $asset->creator_id ?? Auth::id();
+                $note = $asset->custody_note ?? $asset->note;
 
                 AssetMovement::query()->create([
                     'company_id'           => $asset->company_id,
                     'asset_id'             => $asset->id,
                     'type'                 => MovementType::Registered,
                     'quantity'             => $asset->initial_quantity ?? 1,
-                    'source_type'          => $asset->initialSourceType ?? AssetSourceType::Manual,
+                    'source_type'          => $sourceType,
                     'reference_type'       => $asset->initialReference?->getMorphClass(),
                     'reference_id'         => $asset->initialReference?->getKey(),
                     'to_warehouse_id'      => $asset->warehouse_id,
-                    'to_employee_id'       => $isConsumed ? $asset->initialConsumableEmployeeId : $asset->current_employee_id,
-                    'to_site_id'           => $isConsumed ? $asset->initialConsumableSiteId : $asset->current_site_id,
+                    'to_employee_id'       => $toEmployeeId,
+                    'to_site_id'           => $toSiteId,
                     'condition'            => $asset->condition,
-                    'occurred_at'          => $asset->issued_at ?? $asset->created_at ?? now(),
+                    'occurred_at'          => $occurredAt,
                     'expected_return_at'   => $asset->expected_return_at,
-                    'performed_by_user_id' => $asset->creator_id ?? Auth::id(),
-                    'note'                 => $asset->custody_note ?? $asset->note,
+                    'performed_by_user_id' => $performedBy,
+                    'note'                 => $asset->note ?? $asset->custody_note,
                     'attachments'          => $asset->initialAttachments,
                 ]);
+
+                // Record a dedicated Issued movement when registered directly into custody.
+                if (in_array($asset->status, [AssetStatus::Held, AssetStatus::Consumed], true)) {
+                    AssetMovement::query()->create([
+                        'company_id'           => $asset->company_id,
+                        'asset_id'             => $asset->id,
+                        'type'                 => MovementType::Issued,
+                        'quantity'             => $asset->initial_quantity ?? 1,
+                        'source_type'          => $sourceType,
+                        'reference_type'       => $asset->initialReference?->getMorphClass(),
+                        'reference_id'         => $asset->initialReference?->getKey(),
+                        'to_employee_id'       => $toEmployeeId,
+                        'to_site_id'           => $toSiteId,
+                        'condition'            => $asset->condition,
+                        'occurred_at'          => $occurredAt,
+                        'expected_return_at'   => $asset->expected_return_at,
+                        'performed_by_user_id' => $performedBy,
+                        'note'                 => $note,
+                        'attachments'          => $asset->initialAttachments,
+                    ]);
+                }
             }
         });
 

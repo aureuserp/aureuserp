@@ -97,7 +97,7 @@ class AssetMovement extends Model
             return $this->fromWarehouse?->name ?? '—';
         }
 
-        return '—';
+        return $this->source_type?->getLabel() ?? '—';
     }
 
     public function getToDisplayAttribute(): string

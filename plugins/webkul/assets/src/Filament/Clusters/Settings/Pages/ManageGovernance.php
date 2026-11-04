@@ -3,11 +3,9 @@
 namespace Webkul\Asset\Filament\Clusters\Settings\Pages;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use UnitEnum;
 use Webkul\Asset\Settings\AssetSettings;
@@ -72,15 +70,7 @@ class ManageGovernance extends SettingsPage
                             ->helperText(__('assets::filament/pages/manage-assets.form.helpers.require-attachments-on-termination')),
                         Toggle::make('restrict_termination_to_managers')
                             ->label(__('assets::filament/pages/manage-assets.form.fields.restrict-termination-to-managers'))
-                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.restrict-termination-to-managers'))
-                            ->live(),
-                        TextInput::make('termination_approval_cost_threshold')
-                            ->label(__('assets::filament/pages/manage-assets.form.fields.termination-approval-cost-threshold'))
-                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.termination-approval-cost-threshold'))
-                            ->numeric()
-                            ->minValue(0)
-                            ->nullable()
-                            ->visible(fn (Get $get): bool => (bool) $get('restrict_termination_to_managers')),
+                            ->helperText(__('assets::filament/pages/manage-assets.form.helpers.restrict-termination-to-managers')),
                     ])
                     ->columns(2),
             ]);
