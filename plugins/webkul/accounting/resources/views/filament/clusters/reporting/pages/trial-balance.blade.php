@@ -28,37 +28,37 @@
                         <tr>
                             <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
                             <th colspan="2" scope="col" class="border-b border-gray-200 px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-white/5! dark:text-gray-400">
-                                Initial Balance
+                                {{ __('accounting::filament/clusters/reporting.common.initial-balance') }}
                             </th>
                             <th colspan="2" scope="col" class="border-b border-gray-200 px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-white/5! dark:text-gray-400">
-                                {{ \Carbon\Carbon::parse($data['date_from'])->format('d M Y').' - '.\Carbon\Carbon::parse($data['date_to'])->format('d M Y') }}
+                                {{ __('accounting::filament/clusters/reporting/pages/trial-balance.date-range', ['from' => format_date($data['date_from']), 'to' => format_date($data['date_to'])]) }}
                             </th>
                             <th colspan="2" scope="col" class="border-b border-gray-200 px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-white/5! dark:text-gray-400">
-                                End Balance
+                                {{ __('accounting::filament/clusters/reporting.common.end-balance') }}
                             </th>
                         </tr>
 
                         <tr class="border-b border-gray-200 dark:border-white/5!">
                             <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Account
+                                {{ __('accounting::filament/clusters/reporting.common.account') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Debit
+                                {{ __('accounting::filament/clusters/reporting.common.debit') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Credit
+                                {{ __('accounting::filament/clusters/reporting.common.credit') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Debit
+                                {{ __('accounting::filament/clusters/reporting.common.debit') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Credit
+                                {{ __('accounting::filament/clusters/reporting.common.credit') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Debit
+                                {{ __('accounting::filament/clusters/reporting.common.debit') }}
                             </th>
                             <th scope="col" class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                                Credit
+                                {{ __('accounting::filament/clusters/reporting.common.credit') }}
                             </th>
                         </tr>
                     </thead>
@@ -71,22 +71,22 @@
                                         {{ $account->code ? $account->code . ' ' : '' }}{{ $account->name }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100!">
-                                        {{ $account->initial_debit > 0 ? number_format($account->initial_debit, 2) : '0.00' }}
+                                        {{ $account->initial_debit > 0 ? format_number($account->initial_debit) : format_number(0) }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100!">
-                                        {{ $account->initial_credit > 0 ? number_format($account->initial_credit, 2) : '0.00' }}
+                                        {{ $account->initial_credit > 0 ? format_number($account->initial_credit) : format_number(0) }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100!">
-                                        {{ $account->period_debit > 0 ? number_format($account->period_debit, 2) : '0.00' }}
+                                        {{ $account->period_debit > 0 ? format_number($account->period_debit) : format_number(0) }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100!">
-                                        {{ $account->period_credit > 0 ? number_format($account->period_credit, 2) : '0.00' }}
+                                        {{ $account->period_credit > 0 ? format_number($account->period_credit) : format_number(0) }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100!">
-                                        {{ $account->end_debit > 0 ? number_format($account->end_debit, 2) : '0.00' }}
+                                        {{ $account->end_debit > 0 ? format_number($account->end_debit) : format_number(0) }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100!">
-                                        {{ $account->end_credit > 0 ? number_format($account->end_credit, 2) : '0.00' }}
+                                        {{ $account->end_credit > 0 ? format_number($account->end_credit) : format_number(0) }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -94,31 +94,31 @@
                             {{-- Total Row --}}
                             <tr class="bg-gray-100/80 dark:bg-white/5 font-semibold border-t-2 border-gray-300 dark:border-white/5!">
                                 <td class="px-3 py-2 text-gray-900 dark:text-white">
-                                    Total
+                                    {{ __('accounting::filament/clusters/reporting.common.total') }}
                                 </td>
                                 <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                    {{ number_format($data['totals']['initial_debit'], 2) }}
+                                    {{ format_number($data['totals']['initial_debit']) }}
                                 </td>
                                 <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                    {{ number_format($data['totals']['initial_credit'], 2) }}
+                                    {{ format_number($data['totals']['initial_credit']) }}
                                 </td>
                                 <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                    {{ number_format($data['totals']['period_debit'], 2) }}
+                                    {{ format_number($data['totals']['period_debit']) }}
                                 </td>
                                 <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                    {{ number_format($data['totals']['period_credit'], 2) }}
+                                    {{ format_number($data['totals']['period_credit']) }}
                                 </td>
                                 <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                    {{ number_format($data['totals']['end_debit'], 2) }}
+                                    {{ format_number($data['totals']['end_debit']) }}
                                 </td>
                                 <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                    {{ number_format($data['totals']['end_credit'], 2) }}
+                                    {{ format_number($data['totals']['end_credit']) }}
                                 </td>
                             </tr>
                         @else
                             <tr>
                                 <td colspan="7" class="px-3 py-6 text-center text-gray-500 dark:text-gray-400">
-                                    No accounts with transactions in this period
+                                    {{ __('accounting::filament/clusters/reporting.common.no-accounts-transactions') }}
                                 </td>
                             </tr>
                         @endif

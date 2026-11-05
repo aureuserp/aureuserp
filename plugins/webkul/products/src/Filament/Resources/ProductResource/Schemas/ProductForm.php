@@ -170,9 +170,9 @@ class ProductForm
                             ->where(hide_deleted_unless_selected($state)),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
-                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                    ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                     ->placeholder(__('products::filament/resources/product.form.sections.settings.fields.company-placeholder'))
                     ->searchable()
                     ->preload()

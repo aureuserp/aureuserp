@@ -12,7 +12,7 @@
             @endphp
             
             <x-slot name="heading">
-                {{ __('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.partner-ledger.navigation.title'), 'from' => \Carbon\Carbon::parse($data['date_from'])->format('M d, Y'), 'to' => \Carbon\Carbon::parse($data['date_to'])->format('M d, Y')]) }}
+                {{ __('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.partner-ledger.navigation.title'), 'from' => format_date($data['date_from']), 'to' => format_date($data['date_to'])]) }}
             </x-slot>
 
             <x-slot name="afterHeader">
@@ -106,17 +106,17 @@
                                         <td class="px-3 py-2"></td>
                                         <td class="px-3 py-2 text-right whitespace-nowrap">
                                             <span class="text-gray-900 dark:text-white">
-                                                {{ number_format($partner->period_debit, 2) }}
+                                                {{ format_number($partner->period_debit) }}
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-right whitespace-nowrap">
                                             <span class="text-gray-900 dark:text-white">
-                                                {{ number_format($partner->period_credit, 2) }}
+                                                {{ format_number($partner->period_credit) }}
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-right whitespace-nowrap font-semibold">
                                             <span class="text-gray-900 dark:text-white">
-                                                {{ number_format($partner->ending_balance, 2) }}
+                                                {{ format_number($partner->ending_balance) }}
                                             </span>
                                         </td>
                                     </tr>
@@ -127,27 +127,27 @@
                                             <td class="px-3 py-1.5"></td>
                                             <td class="px-3 py-1.5 pl-8 whitespace-nowrap text-sm">
                                                 <span class="italic text-gray-600 dark:text-gray-400">
-                                                    Opening Balance
+                                                    {{ __('accounting::filament/clusters/reporting.common.opening-balance') }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                                                {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}
+                                                {{ format_date($data['date_from']) }}
                                             </td>
                                             <td class="px-3 py-1.5"></td>
                                             <td class="px-3 py-1.5"></td>
                                             <td class="px-3 py-1.5"></td>
                                             <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
-                                                    {{ $partner->opening_balance > 0 ? number_format($partner->opening_balance, 2) : '' }}
+                                                    {{ $partner->opening_balance > 0 ? format_number($partner->opening_balance) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
-                                                    {{ $partner->opening_balance < 0 ? number_format(abs($partner->opening_balance), 2) : '' }}
+                                                    {{ $partner->opening_balance < 0 ? format_number(abs($partner->opening_balance)) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
-                                                <span class="font-semibold text-gray-600 dark:text-gray-400">{{ number_format($partner->opening_balance, 2) }}</span>
+                                                <span class="font-semibold text-gray-600 dark:text-gray-400">{{ format_number($partner->opening_balance) }}</span>
                                             </td>
                                         </tr>
                                     @endif
@@ -182,24 +182,24 @@
                                                 @endif
                                             </td>
                                             <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                                                {{ \Carbon\Carbon::parse($move['invoice_date'])->format('M d, Y') }}
+                                                {{ format_date($move['invoice_date']) }}
                                             </td>
                                             <td class="px-3 py-1.5 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                                                {{ \Carbon\Carbon::parse($move['invoice_date_due'])->format('M d, Y') }}
+                                                {{ format_date($move['invoice_date_due']) }}
                                             </td>
                                             <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
-                                                    {{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}
+                                                    {{ $move['debit'] > 0 ? format_number($move['debit']) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
-                                                    {{ $move['credit'] > 0 ? number_format($move['credit'], 2) : '' }}
+                                                    {{ $move['credit'] > 0 ? format_number($move['credit']) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-1.5 text-right text-sm whitespace-nowrap">
                                                 <span class="font-medium text-gray-600 dark:text-gray-400">
-                                                    {{ number_format($runningBalance, 2) }}
+                                                    {{ format_number($runningBalance) }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -213,17 +213,17 @@
                                 <tr class="bg-gray-100/80 dark:bg-white/5 font-semibold border-t-2 border-gray-300 dark:border-white/5!">
                                     <td class="px-3 py-2"></td>
                                     <td class="px-3 py-2 text-gray-900 dark:text-white">
-                                        Total Partner Ledger
+                                        {{ __('accounting::filament/clusters/reporting/pages/partner-ledger.table.total') }}
                                     </td>
                                     <td class="px-3 py-2"></td>
                                     <td class="px-3 py-2"></td>
                                     <td class="px-3 py-2"></td>
                                     <td class="px-3 py-2"></td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                        {{ number_format($totalDebit, 2) }}
+                                        {{ format_number($totalDebit) }}
                                     </td>
                                     <td class="px-3 py-2 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                        {{ number_format($totalCredit, 2) }}
+                                        {{ format_number($totalCredit) }}
                                     </td>
                                     <td class="px-3 py-2"></td>
                                 </tr>
@@ -232,7 +232,7 @@
                             <tbody>
                                 <tr>
                                     <td colspan="9" class="px-3 py-6 text-center text-gray-500 dark:text-gray-400">
-                                        No partners with transactions in this period
+                                        {{ __('accounting::filament/clusters/reporting/pages/partner-ledger.table.empty') }}
                                     </td>
                                 </tr>
                             </tbody>

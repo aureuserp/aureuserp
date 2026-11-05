@@ -199,10 +199,10 @@ class PaymentForm
                                                 modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->where('partner_id', $get('partner_id')),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->account_number.' - '.$record->bank->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
+                                            ->disableOptionWhen(function ($component, $value) {
+                                                return is_trashed_option($component, $value);
                                             })
                                             ->required(function (Get $get) {
                                                 return static::computePayment($get)->require_partner_bank_account

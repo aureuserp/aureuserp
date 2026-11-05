@@ -25,6 +25,10 @@ return [
         'not-due'                  => 'A vencer',
         'no-data'                  => 'Nenhum dado disponível',
         'no-accounts-transactions' => 'Nenhuma conta com transações neste período',
+        'currency-notice'          => [
+            'consolidated'  => 'Consolidado em :count empresas, exibido em :currency.',
+            'missing-rates' => 'Nenhuma taxa de câmbio encontrada para :companies. Os valores desta empresa estão incluídos sem conversão e os totais abaixo não são confiáveis.|Nenhuma taxa de câmbio encontrada para :companies. Os valores destas empresas estão incluídos sem conversão e os totais abaixo não são confiáveis.',
+        ],
     ],
     'pages' => [
         'balance-sheet' => [

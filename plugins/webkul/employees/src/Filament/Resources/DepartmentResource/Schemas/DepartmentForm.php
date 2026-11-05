@@ -43,10 +43,10 @@ class DepartmentForm
                                                     ->where(owned_by_company($get('company_id'))),
                                             )
                                             ->getOptionLabelFromRecordUsing(
-                                                fn (Model $record): string => $record->complete_name.($record->trashed() ? ' (Deleted)' : ''),
+                                                fn (Model $record): string => $record->complete_name.trashed_label_suffix($record),
                                             )
                                             ->disableOptionWhen(
-                                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
+                                                fn ($component, $value): bool => is_trashed_option($component, $value),
                                             )
                                             ->searchable()
                                             ->preload()
@@ -66,10 +66,10 @@ class DepartmentForm
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.company'))
                                             ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                             ->getOptionLabelFromRecordUsing(function (Model $record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
+                                            ->disableOptionWhen(function ($component, $value) {
+                                                return is_trashed_option($component, $value);
                                             })
                                             ->preload()
                                             ->searchable()
