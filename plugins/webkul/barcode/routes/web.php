@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\ApplyBrandSettings;
+use App\Http\Middleware\SetLocale;
 use Filament\Http\Middleware\SetUpPanel;
 use Illuminate\Support\Facades\Route;
 use Webkul\Barcode\Http\Middleware\Authenticate;
@@ -24,7 +26,7 @@ Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class
     });
 });
 
-Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class, SetUpPanel::class.':admin'])->prefix('admin/barcode')->name('barcode.')->group(function (): void {
+Route::middleware(['web', PersistNativeShell::class, RenderHostedNativeUi::class, SetUpPanel::class.':admin', SetLocale::class, ApplyBrandSettings::class])->prefix('admin/barcode')->name('barcode.')->group(function (): void {
     Route::get('/login', Login::class)->name('login');
 
     Route::middleware([Authenticate::class])->group(function (): void {
