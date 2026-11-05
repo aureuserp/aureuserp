@@ -3,6 +3,7 @@
 use Filament\Tables\Columns\TextColumn;
 use Livewire\Livewire;
 use Webkul\Crm\Enums\LeadType;
+use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\CreateOpportunity;
 use Webkul\Crm\Filament\Clusters\Sales\Resources\OpportunityResource\Pages\EditOpportunity;
@@ -482,4 +483,44 @@ it('hides the activities section without the activity permission', function () {
 
     expect(ManageActivities::canAccess(['record' => $opportunity]))->toBeFalse()
         ->and(ManageActivities::navigationItems(Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])->instance()))->toBe([]);
+});
+
+it('picks the priority with stars on the create and edit forms', function () {
+    actingAsOpportunityManager();
+
+    Livewire::test(CreateOpportunity::class)
+        ->assertOk()
+        ->assertSeeHtml('data-priority-stars')
+        ->fillForm(['name' => 'Starred opportunity', 'priority' => OpportunityPriority::HIGH->value])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $opportunity = Lead::query()->where('name', 'Starred opportunity')->firstOrFail();
+
+    expect($opportunity->priority)->toBe(OpportunityPriority::HIGH);
+
+    Livewire::test(EditOpportunity::class, ['record' => $opportunity->id])
+        ->assertSeeHtml('data-priority-stars')
+        ->fillForm(['priority' => OpportunityPriority::VERY_HIGH->value])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($opportunity->refresh()->priority)->toBe(OpportunityPriority::VERY_HIGH);
+});
+
+it('hides the stage on the view page of a lost opportunity and shows the lost section in red', function () {
+    actingAsOpportunityManager();
+
+    $opportunity = CRMHelper::opportunity();
+
+    Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])
+        ->assertSeeHtml('crm-stepper-previous-active')
+        ->assertDontSeeHtml('crm-lost-section');
+
+    $opportunity->markAsLost(null, 'Gone');
+
+    Livewire::test(ViewOpportunity::class, ['record' => $opportunity->id])
+        ->assertDontSeeHtml('crm-stepper-previous-active')
+        ->assertSeeHtml('crm-lost-section')
+        ->assertSeeHtml('fi-color-danger');
 });
