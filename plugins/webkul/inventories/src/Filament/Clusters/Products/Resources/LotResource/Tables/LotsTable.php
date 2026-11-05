@@ -37,7 +37,7 @@ class LotsTable
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(function ($record) {
-                        return $record->product->name.($record->product->trashed() ? ' (Deleted)' : '');
+                        return $record->product->name.trashed_label_suffix($record->product);
                     }),
                 TextColumn::make('reference')
                     ->label(__('inventories::filament/clusters/products/resources/lot.table.columns.reference'))

@@ -131,10 +131,10 @@ class JournalEntryForm
                                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.company'))
                                     ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(function ($label) {
-                                        return str_contains($label, ' (Deleted)');
+                                    ->disableOptionWhen(function ($component, $value) {
+                                        return is_trashed_option($component, $value);
                                     })
                                     ->searchable()
                                     ->preload()

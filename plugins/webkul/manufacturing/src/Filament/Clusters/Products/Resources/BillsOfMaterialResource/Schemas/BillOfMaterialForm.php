@@ -61,11 +61,11 @@ class BillOfMaterialForm
                                         ->whereNull('parent_id')
                                         ->where(owned_by_company($get('company_id'))))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
                                     ->wrapOptionLabels(false)
                                     ->disableOptionWhen(function ($label, $value, $state, $component) {
-                                        $isDeleted = str_contains($label, ' (Deleted)');
+                                        $isDeleted = is_trashed_option($component, $value);
 
                                         $isDuplicate = false;
 
@@ -360,11 +360,11 @@ class BillOfMaterialForm
                     ->createOptionAction(fn (Action $action) => $action->modalWidth(Width::SevenExtraLarge))
                     ->live()
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->wrapOptionLabels(false)
                     ->disableOptionWhen(function ($label, $value, $state, $component, Get $get) {
-                        $isDeleted = str_contains($label, ' (Deleted)');
+                        $isDeleted = is_trashed_option($component, $value);
 
                         $isDuplicate = false;
 
@@ -720,11 +720,11 @@ class BillOfMaterialForm
                     ->required()
                     ->live()
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->wrapOptionLabels(false)
                     ->disableOptionWhen(function ($label, $value, $state, $component) {
-                        $isDeleted = str_contains($label, ' (Deleted)');
+                        $isDeleted = is_trashed_option($component, $value);
 
                         $isDuplicate = false;
 

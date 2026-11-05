@@ -3,6 +3,8 @@
 use ArPHP\I18N\Arabic;
 use Carbon\Carbon;
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Select;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -420,6 +422,55 @@ if (! function_exists('hide_deleted_unless_selected')) {
 
             return $query;
         };
+    }
+}
+
+if (! function_exists('trashed_label_suffix')) {
+    function trashed_label_suffix(?Model $record): string
+    {
+        if (! $record || ! method_exists($record, 'trashed') || ! $record->trashed()) {
+            return '';
+        }
+
+        return ' '.__('support::support.trashed-suffix');
+    }
+}
+
+if (! function_exists('is_trashed_option')) {
+    function is_trashed_option(?Field $component, mixed $value): bool
+    {
+        if (! $component instanceof Select || blank($value)) {
+            return false;
+        }
+
+        $relationship = $component->getRelationship();
+
+        if (! $relationship) {
+            return false;
+        }
+
+        $keys = trashed_record_keys(
+            $relationship->getRelated()::class,
+            $component->getQualifiedRelatedKeyNameForRelationship($relationship),
+        );
+
+        return isset($keys[(string) $value]);
+    }
+}
+
+if (! function_exists('trashed_record_keys')) {
+    function trashed_record_keys(string $model, string $keyColumn): array
+    {
+        if (! in_array(SoftDeletes::class, class_uses_recursive($model), true)) {
+            return [];
+        }
+
+        return once(fn (): array => (new $model)->newQuery()
+            ->onlyTrashed()
+            ->pluck($keyColumn)
+            ->map(fn ($key): string => (string) $key)
+            ->flip()
+            ->all());
     }
 }
 

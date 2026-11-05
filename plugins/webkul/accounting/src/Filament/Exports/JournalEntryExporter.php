@@ -44,12 +44,12 @@ class JournalEntryExporter extends Exporter
     public static function getCompletedNotificationBody(Export $export): string
     {
         $body = __('accounting::filament/exports/journal-entry.notification.completed', [
-            'count' => number_format($export->successful_rows),
+            'count' => format_number($export->successful_rows, 0),
         ]);
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
             $body .= ' '.__('accounting::filament/exports/journal-entry.notification.failed', [
-                'count' => number_format($failedRowsCount),
+                'count' => format_number($failedRowsCount, 0),
             ]);
         }
 

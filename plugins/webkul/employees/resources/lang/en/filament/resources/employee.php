@@ -151,6 +151,7 @@ return [
                     'flexible-work-arrangement'      => 'Flexible Work Arrangement',
                     'fully-flexible-schedule'        => 'Fully Flexible Schedule',
                     'work-permit-scheduled-activity' => 'Work Permit Scheduled Activity',
+                    'user-assigned-suffix'           => '(Assigned)',
                     'related-user'                   => 'Related User',
                     'create-user'                    => 'Create User',
                     'departure-reason'               => 'Departure Reason',

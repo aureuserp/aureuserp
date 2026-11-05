@@ -95,8 +95,8 @@ class InvoiceForm
                                     ->schema([
                                         Select::make('partner_id')
                                             ->label(__('accounts::filament/resources/invoice.form.section.general.fields.customer'))
-                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.trashed_label_suffix($record))
+                                            ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                             ->relationship(
                                                 'partner',
                                                 'name',
@@ -147,10 +147,10 @@ class InvoiceForm
                                                             ->where(owned_by_company($get('company_id'))),
                                                     )
                                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                        return $record->name.trashed_label_suffix($record);
                                                     })
-                                                    ->disableOptionWhen(function ($label) {
-                                                        return str_contains($label, ' (Deleted)');
+                                                    ->disableOptionWhen(function ($component, $value) {
+                                                        return is_trashed_option($component, $value);
                                                     })
                                                     ->required(fn (Get $get) => $get('invoice_date_due') === null)
                                                     ->live()
@@ -282,10 +282,10 @@ class InvoiceForm
                                                 }
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank?->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->account_number.' - '.$record->bank?->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
+                                            ->disableOptionWhen(function ($component, $value) {
+                                                return is_trashed_option($component, $value);
                                             })
                                             ->default(fn (Get $get) => static::getDefaultRecipientBankId($get('move_type'), $get('company_id'), $get('partner_id')))
                                             ->searchable()
@@ -309,10 +309,10 @@ class InvoiceForm
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.company'))
                                             ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
+                                            ->disableOptionWhen(function ($component, $value) {
+                                                return is_trashed_option($component, $value);
                                             })
                                             ->searchable()
                                             ->preload()
@@ -485,10 +485,10 @@ class InvoiceForm
                     )
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
-                        if (str_contains($label, ' (Deleted)')) {
+                        if (is_trashed_option($component, $value)) {
                             return true;
                         }
 

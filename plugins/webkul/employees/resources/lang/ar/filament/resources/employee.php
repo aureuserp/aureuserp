@@ -151,6 +151,7 @@ return [
                     'flexible-work-arrangement'      => 'ترتيب عمل مرن',
                     'fully-flexible-schedule'        => 'جدول مرن بالكامل',
                     'work-permit-scheduled-activity' => 'نشاط مجدول لتصريح العمل',
+                    'user-assigned-suffix'           => '(مُعيَّن)',
                     'related-user'                   => 'المستخدم المرتبط',
                     'create-user'                    => 'إنشاء مستخدم',
                     'departure-reason'               => 'سبب المغادرة',
