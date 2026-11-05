@@ -71,6 +71,10 @@ return [
             'name'       => 'Nombre completo',
             'tags'       => 'Etiquetas',
             'evaluation' => 'Evaluación',
+            'email'      => 'Correo electrónico',
+            'phone'      => 'Teléfono',
+            'degree'     => 'Título',
+            'manager'    => 'Responsable',
         ],
 
         'filters' => [

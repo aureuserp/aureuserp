@@ -11,7 +11,9 @@ use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -42,54 +44,64 @@ class ProjectsTable
         return $table
             ->columns(array_merge([
                 Stack::make([
-                    Stack::make([
+                    Split::make([
                         TextColumn::make('name')
                             ->weight(FontWeight::Bold)
+                            ->size(TextSize::Large)
                             ->label(__('projects::filament/resources/project.table.columns.name'))
                             ->searchable()
-                            ->sortable(),
+                            ->sortable()
+                            ->lineClamp(2)
+                            ->tooltip(fn (Project $record): string => $record->name)
+                            ->grow(true),
+
+                        TextColumn::make('remaining_hours')
+                            ->icon('heroicon-o-clock')
+                            ->badge()
+                            ->color(fn (?Project $record): string => $record && $record->remaining_hours < 0 ? 'danger' : 'success')
+                            ->state(fn (?Project $record): string => $record ? $record->remaining_hours.' Hours' : '')
+                            ->tooltip(__('projects::filament/resources/project.table.columns.remaining-hours'))
+                            ->visible(fn (?Project $record): bool => $record === null
+                                || (ProjectResource::getTimeSettings()->enable_timesheets && (bool) $record->allocated_hours))
+                            ->grow(false),
                     ]),
+
                     Stack::make([
-                        TextColumn::make('partner.name')
-                            ->label(__('projects::filament/resources/project.table.columns.customer'))
-                            ->icon('heroicon-o-phone')
-                            ->tooltip(__('projects::filament/resources/project.table.columns.customer'))
-                            ->sortable(),
+                        TextColumn::make('stage.name')
+                            ->badge()
+                            ->color('info'),
                     ])
-                        ->visible(fn (Project $record) => filled($record->partner)),
+                        ->visible(fn (Project $record) => filled($record->stage)),
+
                     Stack::make([
-                        TextColumn::make('start_date')
-                            ->label(__('projects::filament/resources/project.table.columns.start-date'))
-                            ->sortable()
-                            ->extraAttributes(['class' => 'hidden']),
-                        TextColumn::make('end_date')
-                            ->label(__('projects::filament/resources/project.table.columns.end-date'))
-                            ->sortable()
-                            ->extraAttributes(['class' => 'hidden']),
                         TextColumn::make('planned_date')
                             ->icon('heroicon-o-calendar')
+                            ->color('gray')
                             ->tooltip(__('projects::filament/resources/project.table.columns.planned-date'))
                             ->state(fn (Project $record): string => $record->start_date->format('d M Y').' - '.$record->end_date->format('d M Y')),
                     ])
                         ->visible(fn (Project $record) => filled($record->start_date) && filled($record->end_date)),
-                    Stack::make([
-                        TextColumn::make('remaining_hours')
-                            ->icon('heroicon-o-clock')
-                            ->badge()
-                            ->color('success')
-                            ->color(fn (Project $record): string => $record->remaining_hours < 0 ? 'danger' : 'success')
-                            ->state(fn (Project $record): string => $record->remaining_hours.' Hours')
-                            ->tooltip(__('projects::filament/resources/project.table.columns.remaining-hours')),
-                    ])
-                        ->visible(fn (Project $record) => ProjectResource::getTimeSettings()->enable_timesheets && $record->allow_milestones && $record->remaining_hours),
-                    Stack::make([
+
+                    Split::make([
+                        TextColumn::make('partner.name')
+                            ->label(__('projects::filament/resources/project.table.columns.customer'))
+                            ->icon('heroicon-o-building-office-2')
+                            ->color('gray')
+                            ->tooltip(__('projects::filament/resources/project.table.columns.customer'))
+                            ->placeholder('—')
+                            ->sortable()
+                            ->grow(true),
+
                         TextColumn::make('user.name')
                             ->label(__('projects::filament/resources/project.table.columns.project-manager'))
                             ->icon('heroicon-o-user')
-                            ->label(__('projects::filament/resources/project.table.columns.project-manager'))
-                            ->sortable(),
+                            ->color('gray')
+                            ->tooltip(__('projects::filament/resources/project.table.columns.project-manager'))
+                            ->sortable()
+                            ->grow(false),
                     ])
-                        ->visible(fn (Project $record) => filled($record->user)),
+                        ->visible(fn (Project $record) => filled($record->partner) || filled($record->user)),
+
                     Stack::make([
                         TextColumn::make('tags.name')
                             ->badge()
@@ -99,15 +111,15 @@ class ProjectsTable
                                     'color' => $tag->color ?? '#808080',
                                 ])->toArray();
                             })
-                            ->badge()
                             ->formatStateUsing(fn ($state) => $state['label'])
                             ->color(fn ($state) => Color::generateV3Palette($state['color']))
                             ->weight(FontWeight::Bold),
                     ])
                         ->visible(fn (Project $record): bool => (bool) $record->tags?->count()),
                 ])
-                    ->space(3),
+                    ->space(2),
             ], $customColumns))
+            ->recordClasses('fi-ta-card-select')
             ->groups([
                 Tables\Grouping\Group::make('stage.name')
                     ->label(__('projects::filament/resources/project.table.groups.stage')),
@@ -222,8 +234,6 @@ class ProjectsTable
             )
             ->filtersFormColumns(2)
             ->recordActions([
-                ActivityTableAction::make(),
-
                 Action::make('is_favorite_by_user')
                     ->hiddenLabel()
                     ->icon(fn (Project $record): string => $record->is_favorite_by_user ? 'heroicon-s-star' : 'heroicon-o-star')
@@ -244,6 +254,9 @@ class ProjectsTable
                     ->url('https:example.com/tasks/{record}')
                     ->hidden(fn ($record) => $record->trashed())
                     ->url(fn (Project $record): string => ManageTasks::getUrl(['record' => $record])),
+
+                ActivityTableAction::make()
+                    ->extraAttributes(['class' => 'ms-auto']),
 
                 Action::make('milestones')
                     ->label(fn (Project $record): string => $record->milestones->where('is_completed', true)->count().'/'.$record->milestones->count())
@@ -290,8 +303,8 @@ class ProjectsTable
                             }
                         }),
                 ])
-                    ->link()
-                    ->hiddenLabel(),
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray'),
             ])
             ->recordUrl(fn (Project $record): string => ProjectResource::getUrl('view', ['record' => $record]))
             ->contentGrid([
@@ -300,9 +313,20 @@ class ProjectsTable
                 'xl'  => 3,
                 '2xl' => 4,
             ])
+            ->paginated([
+                12,
+                24,
+                48,
+                'all',
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 $query->with([
                     'milestones',
+                    'tasks',
+                    'tags',
+                    'stage',
+                    'partner',
+                    'user',
                     'favoriteUsers' => function ($query) {
                         $query->where('user_id', Auth::id());
                     },
