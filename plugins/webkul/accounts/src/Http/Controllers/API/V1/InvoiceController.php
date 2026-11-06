@@ -306,7 +306,14 @@ class InvoiceController extends Controller
             ], 422);
         }
 
-        $invoice = AccountFacade::cancelMove($invoice);
+        try {
+            $invoice = AccountFacade::cancelMove($invoice);
+        } catch (PostingException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'error'   => $exception->error->value,
+            ], 422);
+        }
 
         return (new MoveResource($invoice->refresh()))
             ->additional(['message' => 'Invoice cancelled successfully.']);

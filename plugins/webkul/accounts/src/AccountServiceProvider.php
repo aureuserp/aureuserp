@@ -30,6 +30,7 @@ use Webkul\Account\Models\Tax;
 use Webkul\Account\Observers\CompanyObserver;
 use Webkul\Account\Services\PostingValidatorRegistry;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Account\Support\Posting\PostingClock;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\Partner\Filament\Resources\PartnerResource\Support\PartnerSchemaRegistry;
 use Webkul\Partner\Models\Partner;
@@ -404,5 +405,6 @@ class AccountServiceProvider extends PackageServiceProvider
         $this->app->singleton('tax', TaxManager::class);
         $this->app->singleton('account', AccountManager::class);
         $this->app->singleton(PostingValidatorRegistry::class);
+        $this->app->singleton(PostingClock::class);
     }
 }

@@ -33,6 +33,8 @@ class MoveWorkflow
 {
     public function cancel(AccountMove $move): AccountMove
     {
+        $this->validatePosting(PostingOperation::CANCEL, $move, $move->date);
+
         $move->state = MoveState::CANCEL;
 
         $move->save();
@@ -107,6 +109,8 @@ class MoveWorkflow
         }
 
         $this->assertNotExchangeDifference($move);
+
+        $this->validatePosting(PostingOperation::RESET_TO_DRAFT, $move, $move->date);
 
         $reconciler = app(Reconciler::class);
 

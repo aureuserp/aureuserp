@@ -7,11 +7,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Exceptions\PostingRejectedException;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\Payment;
+use Webkul\Account\Support\Posting\PostingClock;
 
 class Reconciler
 {
@@ -71,10 +73,7 @@ class Reconciler
             $fullReconcile?->delete();
 
             if ($exchangeMove) {
-                app(MoveWorkflow::class)->reverse(collect([$exchangeMove]), [[
-                    'date'      => $exchangeMove->date,
-                    'reference' => __('accounts::system.reversal.reference', ['name' => $exchangeMove->name]),
-                ]], true);
+                $this->reverseExchangeMove($exchangeMove);
             }
 
             $calculator = app(MoveCalculator::class);
@@ -85,6 +84,19 @@ class Reconciler
 
             $this->refreshMatchingNumbers($affectedLineIds);
         });
+    }
+
+    protected function reverseExchangeMove($exchangeMove): void
+    {
+        $workflow = app(MoveWorkflow::class);
+
+        $reference = __('accounts::system.reversal.reference', ['name' => $exchangeMove->name]);
+
+        try {
+            $workflow->reverse(collect([$exchangeMove]), [['date' => $exchangeMove->date, 'reference' => $reference]], true);
+        } catch (PostingRejectedException) {
+            $workflow->reverse(collect([$exchangeMove]), [['date' => app(PostingClock::class)->today(), 'reference' => $reference]], true);
+        }
     }
 
     public function reconcileGroups(array $plans): array
