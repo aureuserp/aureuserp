@@ -110,9 +110,17 @@ class KanbanCard
         return $this;
     }
 
-    public static function stars(string $recordId, int $value, array $labels, bool $editable, string $label, ?string $current = null): array
+    public static function stars(string $recordId, int $value, array $labels, bool $editable, string $label): array
     {
-        return ['type' => 'stars', 'record' => $recordId, 'value' => $value, 'labels' => $labels, 'editable' => $editable, 'label' => $label, 'tooltip' => $label.': '.$current];
+        return [
+            'type'        => 'stars',
+            'record'      => $recordId,
+            'value'       => $value,
+            'labels'      => array_filter($labels, fn (int|string $star): bool => (int) $star > 0, ARRAY_FILTER_USE_KEY),
+            'valueLabels' => $labels,
+            'editable'    => $editable,
+            'label'       => $label,
+        ];
     }
 
     public static function button(string $icon, string $click, string $label, ?string $tooltip = null, ?string $color = null): array

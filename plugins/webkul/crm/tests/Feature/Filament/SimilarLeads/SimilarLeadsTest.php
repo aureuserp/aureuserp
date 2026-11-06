@@ -441,3 +441,23 @@ describe('merging', function () {
             ->and(Lead::query()->find($second->id))->not->toBeNull();
     });
 });
+
+it('opens the merge modal from the similar board without the page record in the click', function () {
+    CRMHelper::actingAsCRMUser(['lead', 'opportunity']);
+
+    $record = CRMHelper::lead(['email' => 'merge-modal@acme.test']);
+    $duplicate = CRMHelper::lead(['email' => 'merge-modal@acme.test']);
+
+    $component = Livewire::withQueryParams(['layout' => 'list'])
+        ->test(SimilarLeadsPage::class, ['record' => $record->id])
+        ->selectTableRecords([$record->id, $duplicate->id]);
+
+    $click = str($component->html())->after("mountAction('mergeLeads'")->before(')')->toString();
+
+    expect($click)->not->toContain('recordKey');
+
+    $component
+        ->call('mountAction', 'mergeLeads', [], ['table' => true, 'bulk' => true])
+        ->assertHasNoActionErrors()
+        ->assertOk();
+});

@@ -178,7 +178,23 @@ class Lead extends Model
             'closed_at'      => now(),
         ])->save();
 
+        $this->logChatterStateChange('lost');
+
         $this->delete();
+    }
+
+    public function logChatterStateChange(string $state): void
+    {
+        $this->addMessage([
+            'type'     => 'notification',
+            'event'    => 'updated',
+            'log_name' => 'default',
+            'body'     => match ($state) {
+                'won'      => __('crm::models/opportunity.chatter.won', ['model' => $this->getModelTitle()]),
+                'lost'     => __('crm::models/opportunity.chatter.lost', ['model' => $this->getModelTitle()]),
+                'restored' => __('crm::models/opportunity.chatter.restored', ['model' => $this->getModelTitle()]),
+            },
+        ]);
     }
 
     public function convertToOpportunity(array $options = []): self
@@ -460,10 +476,26 @@ class Lead extends Model
                 app(LeadScoring::class)->refresh($lead);
             }
 
-            if ($lead->wasChanged('stage_id')
-                && Stage::query()->whereKey([$lead->stage_id, $lead->getOriginal('stage_id')])->where('is_won', true)->exists()) {
+            if (! $lead->wasChanged('stage_id')) {
+                return;
+            }
+
+            $wonStageIds = Stage::query()->where('is_won', true)->pluck('id')->map(fn (mixed $id): int => (int) $id)->all();
+
+            if (in_array((int) $lead->stage_id, $wonStageIds, true)
+                || in_array((int) $lead->getOriginal('stage_id'), $wonStageIds, true)) {
                 LeadScoring::scheduleRefresh();
             }
+
+            if (! $lead->wasRecentlyCreated
+                && in_array((int) $lead->stage_id, $wonStageIds, true)
+                && ! in_array((int) $lead->getOriginal('stage_id'), $wonStageIds, true)) {
+                $lead->logChatterStateChange('won');
+            }
+        });
+
+        static::restored(function (self $lead): void {
+            $lead->logChatterStateChange('restored');
         });
 
         static::created(fn (self $lead) => app(LeadAssignment::class)->assignLead($lead));
