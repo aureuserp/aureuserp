@@ -9,13 +9,13 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
-use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
@@ -103,19 +103,10 @@ class ProjectsTable
                         ->visible(fn (Project $record) => filled($record->partner) || filled($record->user)),
 
                     Stack::make([
-                        TextColumn::make('tags.name')
-                            ->badge()
-                            ->state(function (Project $record): array {
-                                return $record->tags->map(fn ($tag) => [
-                                    'label' => $tag->name,
-                                    'color' => $tag->color ?? '#808080',
-                                ])->toArray();
-                            })
-                            ->formatStateUsing(fn ($state) => $state['label'])
-                            ->color(fn ($state) => Color::generateV3Palette($state['color']))
-                            ->weight(FontWeight::Bold),
+                        ViewColumn::make('tags')
+                            ->view('support::tables.columns.tags'),
                     ])
-                        ->visible(fn (Project $record): bool => (bool) $record->tags?->count()),
+                        ->visible(fn (Project $record): bool => $record->tags->isNotEmpty()),
                 ])
                     ->space(2),
             ], $customColumns))

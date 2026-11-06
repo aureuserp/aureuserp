@@ -923,3 +923,15 @@
         @apply min-w-0 flex-1 shrink;
     }
 }
+
+.fi-ta-card-tags {
+    @apply flex-nowrap;
+
+    & > .fi-badge {
+        @apply min-w-0;
+    }
+
+    & > .fi-badge:last-child {
+        @apply shrink;
+    }
+}
