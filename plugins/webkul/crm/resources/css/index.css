@@ -324,6 +324,20 @@
     background-size: 200% 100%;
 }
 
+.fi-ta-content-loading .crm-team-new-opportunity {
+    color: transparent !important;
+    background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%) !important;
+    background-size: 200% 100% !important;
+    border-color: transparent !important;
+    animation: crm-board-shimmer 1.2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.dark .fi-ta-content-loading .crm-team-new-opportunity {
+    background: linear-gradient(90deg, var(--gray-700) 25%, var(--gray-600) 50%, var(--gray-700) 75%) !important;
+    background-size: 200% 100% !important;
+}
+
 @keyframes crm-board-shimmer {
     from {
         background-position: 200% 0;
