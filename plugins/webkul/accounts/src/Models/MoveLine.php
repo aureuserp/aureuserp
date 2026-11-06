@@ -458,6 +458,10 @@ class MoveLine extends Model implements Sortable
                 break;
 
             default:
+                if ($this->account_id) {
+                    break;
+                }
+
                 $previousAccounts = MoveLine::where('move_id', $this->move->id)
                     ->where('display_type', $this->display_type)
                     ->whereNotNull('account_id')

@@ -295,6 +295,12 @@ return [
 
             'unreconcile' => [
                 'label' => 'Dissocier',
+
+                'notification' => [
+                    'error' => [
+                        'title' => 'Les écritures n\'ont pas pu être dissociées',
+                    ],
+                ],
             ],
         ],
     ],

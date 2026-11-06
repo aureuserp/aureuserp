@@ -4,13 +4,16 @@ namespace Webkul\Account\Services;
 
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Exceptions\PostingRejectedException;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\Payment;
+use Webkul\Account\Support\Posting\PostingClock;
 
 class Reconciler
 {
@@ -54,51 +57,65 @@ class Reconciler
 
     public function unReconcile($partial): void
     {
-        $fullReconcile = $partial->fullReconcile;
+        DB::transaction(function () use ($partial): void {
+            $fullReconcile = $partial->fullReconcile;
 
-        $affectedLineIds = [$partial->debitMove->id, $partial->creditMove->id];
+            $affectedLineIds = [$partial->debitMove->id, $partial->creditMove->id];
 
-        $debitMove = $partial->debitMove->move;
+            $debitMove = $partial->debitMove->move;
 
-        $creditMove = $partial->creditMove->move;
+            $creditMove = $partial->creditMove->move;
 
-        $exchangeMove = $partial->exchangeMove;
+            $exchangeMove = $partial->exchangeMove;
 
-        $partial->delete();
+            $partial->delete();
 
-        $fullReconcile?->delete();
+            $fullReconcile?->delete();
 
-        if ($exchangeMove) {
-            app(MoveWorkflow::class)->reverse(collect([$exchangeMove]), [[
-                'date'      => $exchangeMove->date,
-                'reference' => __('Reversal of: :name', ['name' => $exchangeMove->name]),
-            ]], true);
+            if ($exchangeMove) {
+                $this->reverseExchangeMove($exchangeMove);
+            }
+
+            $calculator = app(MoveCalculator::class);
+
+            $calculator->recompute($debitMove->refresh())->save();
+
+            $calculator->recompute($creditMove->refresh())->save();
+
+            $this->refreshMatchingNumbers($affectedLineIds);
+        });
+    }
+
+    protected function reverseExchangeMove($exchangeMove): void
+    {
+        $workflow = app(MoveWorkflow::class);
+
+        $reference = __('accounts::system.reversal.reference', ['name' => $exchangeMove->name]);
+
+        try {
+            $workflow->reverse(collect([$exchangeMove]), [['date' => $exchangeMove->date, 'reference' => $reference]], true);
+        } catch (PostingRejectedException) {
+            $workflow->reverse(collect([$exchangeMove]), [['date' => app(PostingClock::class)->today(), 'reference' => $reference]], true);
         }
-
-        $calculator = app(MoveCalculator::class);
-
-        $calculator->recompute($debitMove->refresh())->save();
-
-        $calculator->recompute($creditMove->refresh())->save();
-
-        $this->refreshMatchingNumbers($affectedLineIds);
     }
 
     public function reconcileGroups(array $plans): array
     {
-        $partials = [];
+        return DB::transaction(function () use ($plans): array {
+            $partials = [];
 
-        $fulls = [];
+            $fulls = [];
 
-        foreach ($plans as $lines) {
-            $results = $this->reconcileNode($this->buildPlan($lines));
+            foreach ($plans as $lines) {
+                $results = $this->reconcileNode($this->buildPlan($lines));
 
-            $partials = array_merge($partials, $results['partial_reconciles']);
+                $partials = array_merge($partials, $results['partial_reconciles']);
 
-            $fulls = array_merge($fulls, $results['full_reconciles']);
-        }
+                $fulls = array_merge($fulls, $results['full_reconciles']);
+            }
 
-        return ['partial_reconciles' => $partials, 'full_reconciles' => $fulls];
+            return ['partial_reconciles' => $partials, 'full_reconciles' => $fulls];
+        });
     }
 
     protected function buildPlan(Collection $lines): array

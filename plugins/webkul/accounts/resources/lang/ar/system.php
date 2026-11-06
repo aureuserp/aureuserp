@@ -6,6 +6,26 @@ return [
         'no-journal-found'       => 'لم يتم العثور على دفتر يومية في شركة :company لأي من هذه الأنواع: :types. يرجى إعداد شجرة الحسابات لهذه الشركة أولاً.',
     ],
 
+    'posting' => [
+        'invalid-entry'         => 'قيد اليومية غير صالح: :field.',
+        'unbalanced'            => 'قيد اليومية :move غير متوازن: المدين :debit، الدائن :credit.',
+        'rejected-by-validator' => 'تم رفض الترحيل: :reason',
+        'move-not-postable'     => 'لا يمكن ترحيل قيد اليومية: :reason',
+        'move-not-reversible'   => 'لا يمكن عكس قيد اليومية :move.',
+        'duplicate-source'      => 'تم استخدام مفتاح المصدر بالفعل في قيد اليومية :move ببيانات مختلفة.',
+        'unexpected-error'      => 'حدث خطأ غير متوقع وتم تسجيله.',
+    ],
+
+    'reversal' => [
+        'reference'             => 'عكس: :name',
+        'reference-with-reason' => 'عكس: :name، :reason',
+    ],
+
+    'exchange-difference' => [
+        'line-label'     => 'فرق سعر صرف العملة',
+        'not-configured' => 'قم أولاً بإعداد دفتر فروق الصرف وحسابي أرباح وخسائر الصرف.',
+    ],
+
     'tax-formula' => [
         'empty'                => 'لا يمكن أن تكون الصيغة فارغة.',
         'invalid-character'    => 'تحتوي الصيغة على حرف غير صالح: :character',

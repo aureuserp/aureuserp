@@ -295,6 +295,12 @@ return [
 
             'unreconcile' => [
                 'label' => 'Unlink',
+
+                'notification' => [
+                    'error' => [
+                        'title' => 'The entries could not be unlinked',
+                    ],
+                ],
             ],
         ],
     ],

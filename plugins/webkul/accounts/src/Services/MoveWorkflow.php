@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Services;
 
+use Carbon\CarbonImmutable;
 use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
@@ -12,22 +13,28 @@ use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PostingError;
+use Webkul\Account\Enums\PostingOperation;
 use Webkul\Account\Events\MoveCancelled;
 use Webkul\Account\Events\MoveConfirmed;
 use Webkul\Account\Events\MoveDrafted;
 use Webkul\Account\Events\MoveReversed;
+use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Support\Posting\PostingContext;
 use Webkul\Support\Services\EmailService;
 
 class MoveWorkflow
 {
     public function cancel(AccountMove $move): AccountMove
     {
+        $this->validatePosting(PostingOperation::CANCEL, $move, $move->date);
+
         $move->state = MoveState::CANCEL;
 
         $move->save();
@@ -45,7 +52,14 @@ class MoveWorkflow
 
     public function post(AccountMove $move): AccountMove
     {
+        return DB::transaction(fn (): AccountMove => $this->postWithinTransaction($move));
+    }
+
+    protected function postWithinTransaction(AccountMove $move): AccountMove
+    {
         $this->assertPostable($move);
+
+        $this->validatePosting(PostingOperation::POST, $move, $move->date);
 
         $move->state = MoveState::POSTED;
 
@@ -60,6 +74,8 @@ class MoveWorkflow
         $this->stampLineStates($move, MoveState::POSTED);
 
         $move->refresh();
+
+        $this->assertBalanced($move);
 
         if ($move->reversedEntry?->state == MoveState::POSTED) {
             $this->reconcileAgainstReversedEntry($move);
@@ -83,11 +99,18 @@ class MoveWorkflow
 
     public function resetToDraft(AccountMove $move): AccountMove
     {
+        return DB::transaction(fn (): AccountMove => $this->resetToDraftWithinTransaction($move));
+    }
+
+    protected function resetToDraftWithinTransaction(AccountMove $move): AccountMove
+    {
         if (! in_array($move->state, [MoveState::CANCEL, MoveState::POSTED])) {
             throw new Exception('Only posted/cancelled journal entries can be reset to draft.');
         }
 
         $this->assertNotExchangeDifference($move);
+
+        $this->validatePosting(PostingOperation::RESET_TO_DRAFT, $move, $move->date);
 
         $reconciler = app(Reconciler::class);
 
@@ -118,6 +141,15 @@ class MoveWorkflow
 
     public function reverse(Collection $moves, array $defaultValuesPerMove = [], bool $cancel = false): Collection
     {
+        return DB::transaction(fn (): Collection => $this->reverseWithinTransaction($moves, $defaultValuesPerMove, $cancel));
+    }
+
+    protected function reverseWithinTransaction(Collection $moves, array $defaultValuesPerMove, bool $cancel): Collection
+    {
+        foreach ($moves->values() as $index => $move) {
+            $this->validatePosting(PostingOperation::REVERSE, $move, $defaultValuesPerMove[$index]['date'] ?? $move->date);
+        }
+
         if ($cancel) {
             $moves->flatMap(fn (AccountMove $move) => $move->lines)->each(function (MoveLine $line) {
                 $line->matchedDebits->each(fn ($partial) => $partial->delete());
@@ -158,6 +190,10 @@ class MoveWorkflow
     protected function buildReversal(AccountMove $move, array $defaultValues): AccountMove
     {
         $reversal = $move->replicate();
+
+        $reversal->source_document_type = null;
+
+        $reversal->source_document_key = null;
 
         $reversal->fill(array_merge($defaultValues, [
             'move_type'         => $move->typeReverseMapping[$move->move_type->value],
@@ -244,56 +280,95 @@ class MoveWorkflow
     {
         if (! $move->partner_id) {
             if ($move->isSaleDocument(true)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.customer-required'));
+                $this->refusePosting(__('accounts::account-manager.post-action-validate.customer-required'));
             }
 
             if ($move->isPurchaseDocument(true)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.vendor-required'));
+                $this->refusePosting(__('accounts::account-manager.post-action-validate.vendor-required'));
             }
         }
 
         if ($move->partnerBank?->trashed()) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.bank-archived'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.bank-archived'));
         }
 
         if (float_compare($move->amount_total, 0, precisionRounding: $move->currency->rounding) < 0) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.negative-amount'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.negative-amount'));
         }
 
         if (! $move->invoice_date) {
             if ($move->isSaleDocument(true)) {
                 $move->invoice_date = now();
             } elseif ($move->isPurchaseDocument(true)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.date-required'));
+                $this->refusePosting(__('accounts::account-manager.post-action-validate.date-required'));
             }
         }
 
         if (in_array($move->state, [MoveState::POSTED, MoveState::CANCEL])) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.draft-state-required'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.draft-state-required'));
         }
 
         if ($move->lines->isEmpty()) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.lines-required'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
         if ($move->lines->some(fn (MoveLine $line) => $line->account && $line->account->deprecated)) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 
         if (! $move->journal) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.journal-archived'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.journal-archived'));
         }
 
         if (! $move->currency) {
-            throw new Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
+            $this->refusePosting(__('accounts::account-manager.post-action-validate.currency-archived'));
         }
 
         if ($move->move_type === MoveType::ENTRY) {
-            $balance = $move->lines->sum(fn (MoveLine $line) => (float) $line->debit - (float) $line->credit);
+            $debit = $move->lines->sum(fn (MoveLine $line) => (float) $line->debit);
 
-            if (! float_is_zero($balance, precisionRounding: $move->currency->rounding)) {
-                throw new Exception(__('accounts::account-manager.post-action-validate.unbalanced'));
+            $credit = $move->lines->sum(fn (MoveLine $line) => (float) $line->credit);
+
+            $currency = $move->company->currency;
+
+            if ($currency->compareAmounts($debit, $credit) !== 0) {
+                throw new PostingException(PostingError::UNBALANCED, [
+                    'move'   => $move->name,
+                    'debit'  => $currency->round($debit),
+                    'credit' => $currency->round($credit),
+                ], __('accounts::account-manager.post-action-validate.unbalanced'));
             }
+        }
+    }
+
+    protected function refusePosting(string $reason): never
+    {
+        throw new PostingException(PostingError::MOVE_NOT_POSTABLE, ['reason' => $reason], $reason);
+    }
+
+    protected function validatePosting(PostingOperation $operation, AccountMove $move, $date): void
+    {
+        app(PostingValidatorRegistry::class)->validate(new PostingContext(
+            operation: $operation,
+            move: $move,
+            date: CarbonImmutable::parse($date ?? now())->startOfDay(),
+            userId: Auth::id(),
+        ));
+    }
+
+    protected function assertBalanced(AccountMove $move): void
+    {
+        $totals = MoveLine::withoutGlobalScopes()
+            ->where('move_id', $move->id)
+            ->selectRaw('COALESCE(SUM(debit), 0) as total_debit, COALESCE(SUM(credit), 0) as total_credit')
+            ->first();
+
+        if (! float_is_zero((float) $totals->total_debit - (float) $totals->total_credit, precisionDigits: 4)) {
+            throw new PostingException(PostingError::UNBALANCED, [
+                'move'   => $move->name,
+                'debit'  => float_round((float) $totals->total_debit, precisionDigits: 4),
+                'credit' => float_round((float) $totals->total_credit, precisionDigits: 4),
+            ]);
         }
     }
 

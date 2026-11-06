@@ -295,6 +295,12 @@ return [
 
             'unreconcile' => [
                 'label' => 'إلغاء الربط',
+
+                'notification' => [
+                    'error' => [
+                        'title' => 'تعذر إلغاء ربط القيود',
+                    ],
+                ],
             ],
         ],
     ],

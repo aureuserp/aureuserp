@@ -3,6 +3,7 @@
 namespace Webkul\Account\Services;
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
@@ -49,7 +50,7 @@ class ExchangeDifferenceRecorder
         $incomeAccountId = $settings->income_currency_exchange_account_id;
 
         if (! $journalId || ! $expenseAccountId || ! $incomeAccountId) {
-            throw new Exception('Exchange difference journal and accounts must be configured');
+            throw new Exception(__('accounts::system.exchange-difference.not-configured'));
         }
 
         $moveValues = [
@@ -73,7 +74,7 @@ class ExchangeDifferenceRecorder
             }
 
             $moveValues['lines'][] = [
-                'name'            => 'Currency exchange rate difference',
+                'name'            => __('accounts::system.exchange-difference.line-label'),
                 'debit'           => $residual < 0 ? abs($residual) : 0,
                 'credit'          => $residual > 0 ? $residual : 0,
                 'amount_currency' => 0,
@@ -83,7 +84,7 @@ class ExchangeDifferenceRecorder
             ];
 
             $moveValues['lines'][] = [
-                'name'            => 'Currency exchange rate difference',
+                'name'            => __('accounts::system.exchange-difference.line-label'),
                 'debit'           => $residual > 0 ? $residual : 0,
                 'credit'          => $residual < 0 ? abs($residual) : 0,
                 'amount_currency' => 0,
@@ -111,20 +112,20 @@ class ExchangeDifferenceRecorder
                 continue;
             }
 
-            $move = AccountMove::create($moveValues);
+            $move = DB::transaction(function () use ($moveValues) {
+                $move = AccountMove::create($moveValues);
 
-            $move->state = 'posted';
+                foreach ($moveValues['lines'] as $lineValues) {
+                    MoveLine::create($lineValues + ['move_id' => $move->id]);
+                }
 
-            $move->save();
+                return app(MoveWorkflow::class)->post($move->refresh());
+            });
 
-            foreach ($moveValues['lines'] as $lineValues) {
-                MoveLine::create($lineValues + ['move_id' => $move->id]);
-            }
-
-            $move = app(MoveCalculator::class)->recompute($move);
+            $exchangeLines = $move->lines()->orderBy('id')->get();
 
             foreach ($difference['to_reconcile'] as $pairing) {
-                $exchangeLine = $move->lines[$pairing['sequence']];
+                $exchangeLine = $exchangeLines[$pairing['sequence']];
 
                 app(Reconciler::class)->reconcileGroups([
                     MoveLine::whereIn('id', [$pairing['source_line']->id, $exchangeLine->id])->get(),
