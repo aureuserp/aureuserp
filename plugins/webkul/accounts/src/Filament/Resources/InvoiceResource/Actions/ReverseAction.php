@@ -26,7 +26,7 @@ class ReverseAction extends Action
 
     protected bool|Closure $hasDatabaseTransactions = true;
 
-    protected static string $resource = CreditNoteResource::class;
+    protected string $resource = CreditNoteResource::class;
 
     public static function getDefaultName(): ?string
     {
@@ -35,7 +35,7 @@ class ReverseAction extends Action
 
     public function setResource(string $resource): self
     {
-        static::$resource = $resource;
+        $this->resource = $resource;
 
         return $this;
     }
@@ -43,9 +43,9 @@ class ReverseAction extends Action
     /**
      * @return class-string
      */
-    public static function getResource(): string
+    public function getResource(): string
     {
-        return static::$resource;
+        return $this->resource;
     }
 
     protected function setUp(): void
@@ -108,7 +108,7 @@ class ReverseAction extends Action
 
                 AccountFacade::computeAccountMove($record);
 
-                $redirectUrl = static::getResource()::getUrl('edit', ['record' => $reversedMoves->first()->id]);
+                $redirectUrl = $this->getResource()::getUrl('edit', ['record' => $reversedMoves->first()->id]);
 
                 $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
             } catch (Throwable $e) {
