@@ -63,9 +63,11 @@ class OrderCalculator
 
         $line->technical_price_unit = $line->price_unit;
 
-        $line->price_reduce_taxexcl = $line->product_uom_qty ? round($line->price_subtotal / $line->product_uom_qty, 4) : 0.0;
+        $quantity = (float) $line->product_uom_qty;
 
-        $line->price_reduce_taxinc = $line->product_uom_qty ? round($line->price_total / $line->product_uom_qty, 4) : 0.0;
+        $line->price_reduce_taxexcl = float_is_zero($quantity, precisionDigits: 4) ? 0.0 : round($line->price_subtotal / $quantity, 4);
+
+        $line->price_reduce_taxinc = float_is_zero($quantity, precisionDigits: 4) ? 0.0 : round($line->price_total / $quantity, 4);
 
         $line->state = $line->order->state;
 
