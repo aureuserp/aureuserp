@@ -3,12 +3,15 @@
 return [
     'action'       => 'Set up accounting for this company',
     'notice'       => 'Accounting is not set up for this company yet. Use \'Set up accounting\' below to create its chart of accounts, journals and default settings.',
-    'notification' => [
-        'title' => 'Accounting set up',
-        'body'  => 'Chart of accounts, journals and default settings were created for this company.',
-    ],
-    'error' => [
-        'title' => 'Accounting setup did not run',
-        'body'  => 'No chart of accounts, journals or default settings were created. Make sure the default company used as a template is fully set up, then try again. Technical details were logged.',
+    'results'      => [
+        'failed' => [
+            'title' => 'Accounting setup failed',
+            'body'  => 'An unexpected error stopped the setup and nothing was created for this company. Try again, or contact your administrator. Technical details were logged.',
+        ],
+
+        'no-company' => [
+            'title' => 'No company selected',
+            'body'  => 'Select the company to set up accounting for, then try again.',
+        ],
     ],
 ];
