@@ -21,6 +21,7 @@ return [
         'setting'       => 'Paramètres',
         'help'          => 'Aide',
         'point-of-sale' => 'Point de vente',
+        'assets'        => 'Actifs',
         'barcode'       => 'Code-barres',
     ],
 
