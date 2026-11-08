@@ -1,12 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Webkul\Partner\Models\Partner;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\ProductSupplier;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Schemas\OrderForm;
+use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\OrderLine;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 use Webkul\Support\Models\UOM;
@@ -213,4 +217,185 @@ it('applies the uom factor on top of the currency conversion', function () {
     ]);
 
     expect($price)->toEqualWithDelta(8800.0 * 12, 1);
+});
+
+function storedAmounts(Order $order): array
+{
+    $order = Order::query()->with('lines')->findOrFail($order->id);
+
+    $lines = $order->lines->sortBy('id')->values();
+
+    return [
+        'header' => [
+            'subtotal' => (float) $order->untaxed_amount,
+            'tax'      => (float) $order->tax_amount,
+            'total'    => (float) $order->total_amount,
+            'total_cc' => (float) $order->total_cc_amount,
+        ],
+        'lines' => $lines->map(fn ($line) => [
+            'price_unit' => (float) $line->price_unit,
+            'subtotal'   => (float) $line->price_subtotal,
+            'tax'        => (float) $line->price_tax,
+            'total'      => (float) $line->price_total,
+            'total_cc'   => (float) $line->price_total_cc,
+        ])->all(),
+        'sums' => [
+            'subtotal' => $lines->sum(fn ($line) => (float) $line->price_subtotal),
+            'tax'      => $lines->sum(fn ($line) => (float) $line->price_tax),
+            'total'    => $lines->sum(fn ($line) => (float) $line->price_total),
+            'total_cc' => $lines->sum(fn ($line) => (float) $line->price_total_cc),
+        ],
+    ];
+}
+
+function expectAtCurrencyPrecision(array $amounts, Currency $currency): void
+{
+    foreach ($amounts as $amount) {
+        expect($amount)->toEqualWithDelta($currency->round($amount), 0.000001);
+    }
+}
+
+it('stores header totals equal to the sum of the stored lines and keeps them on recompute', function (int $decimalPlaces, float $rounding) {
+    $currency = Currency::factory()->create([
+        'decimal_places' => $decimalPlaces,
+        'rounding'       => $rounding,
+    ]);
+
+    rateFor($currency, 88);
+
+    $tax = PurchaseHelper::tax(15);
+
+    $order = PurchaseHelper::order([
+        'currency_id'   => $currency->id,
+        'partner_id'    => $this->partner->id,
+        'currency_rate' => 0,
+    ]);
+
+    PurchaseHelper::line($order, $this->product, qty: 3, priceUnit: 33.335, discount: 7.5, taxes: [$tax]);
+    PurchaseHelper::line($order, $this->product, qty: 7, priceUnit: 12.3456, taxes: [$tax]);
+    PurchaseHelper::line($order, $this->product, qty: 1, priceUnit: 0.3333, discount: 12.5);
+    PurchaseHelper::line($order, $this->product, qty: 2.5, priceUnit: 1234.5678, discount: 3, taxes: [$tax]);
+
+    PurchaseHelper::compute($order->refresh());
+
+    $first = storedAmounts($order);
+
+    expect((float) $order->refresh()->currency_rate)->toEqualWithDelta(88.0, 0.000001)
+        ->and($first['header'])->toEqualWithDelta($first['sums'], 0.000001)
+        ->and($first['header']['total'])->toEqualWithDelta($first['header']['subtotal'] + $first['header']['tax'], 0.000001);
+
+    expectAtCurrencyPrecision([$first['header']['subtotal'], $first['header']['tax'], $first['header']['total']], $currency);
+
+    expectAtCurrencyPrecision([$first['header']['total_cc']], $this->companyCurrency);
+
+    foreach ($first['lines'] as $line) {
+        expectAtCurrencyPrecision([$line['subtotal'], $line['tax'], $line['total']], $currency);
+
+        expectAtCurrencyPrecision([$line['total_cc']], $this->companyCurrency);
+    }
+
+    PurchaseHelper::compute($order->refresh());
+
+    expect(storedAmounts($order))->toEqualWithDelta($first, 0.000001);
+})->with([
+    'two decimals'   => [2, 0.01],
+    'no decimals'    => [0, 1],
+    'three decimals' => [3, 0.001],
+]);
+
+it('fills a missing currency rate from the rate on the order date', function () {
+    CurrencyRate::factory()->create([
+        'currency_id' => $this->orderCurrency->id,
+        'company_id'  => null,
+        'rate'        => 70,
+        'name'        => now()->subDays(30)->toDateString(),
+    ]);
+
+    $order = PurchaseHelper::order([
+        'currency_id'   => $this->orderCurrency->id,
+        'partner_id'    => $this->partner->id,
+        'ordered_at'    => now()->subDays(30),
+        'currency_rate' => 0,
+    ]);
+
+    expect((float) $order->refresh()->currency_rate)->toEqualWithDelta(70.0, 0.000001);
+});
+
+it('refreshes the currency rate of a request for quotation when its order date changes', function (OrderState $state) {
+    CurrencyRate::factory()->create([
+        'currency_id' => $this->orderCurrency->id,
+        'company_id'  => null,
+        'rate'        => 70,
+        'name'        => now()->subDays(30)->toDateString(),
+    ]);
+
+    $order = PurchaseHelper::order([
+        'state'         => $state,
+        'currency_id'   => $this->orderCurrency->id,
+        'partner_id'    => $this->partner->id,
+        'currency_rate' => 0,
+    ]);
+
+    expect((float) $order->refresh()->currency_rate)->toEqualWithDelta(88.0, 0.000001);
+
+    Order::query()->findOrFail($order->id)->update(['ordered_at' => now()->subDays(30)]);
+
+    expect((float) $order->refresh()->currency_rate)->toEqualWithDelta(70.0, 0.000001);
+})->with([
+    'draft' => [OrderState::DRAFT],
+    'sent'  => [OrderState::SENT],
+]);
+
+it('keeps the currency rate and totals of a confirmed order when its order date changes', function () {
+    CurrencyRate::factory()->create([
+        'currency_id' => $this->orderCurrency->id,
+        'company_id'  => null,
+        'rate'        => 70,
+        'name'        => now()->subDays(30)->toDateString(),
+    ]);
+
+    $order = PurchaseHelper::order([
+        'currency_id'   => $this->orderCurrency->id,
+        'partner_id'    => $this->partner->id,
+        'currency_rate' => 0,
+    ]);
+
+    PurchaseHelper::line($order, $this->product, qty: 3, priceUnit: 33.335, discount: 7.5, taxes: [PurchaseHelper::tax(15)]);
+
+    Order::query()->findOrFail($order->id)->update(['state' => OrderState::PURCHASE]);
+
+    PurchaseHelper::compute($order->refresh());
+
+    $confirmed = storedAmounts($order);
+
+    Order::query()->findOrFail($order->id)->update(['ordered_at' => now()->subDays(30)]);
+
+    expect((float) $order->refresh()->currency_rate)->toEqualWithDelta(88.0, 0.000001);
+
+    PurchaseHelper::compute($order->refresh());
+
+    expect(storedAmounts($order))->toEqualWithDelta($confirmed, 0.000001);
+});
+
+it('does not mark a whole unit price as changed when a confirmed order is recomputed', function () {
+    $order = PurchaseHelper::order([
+        'partner_id' => $this->partner->id,
+    ]);
+
+    PurchaseHelper::line($order, $this->product, qty: 2, priceUnit: 145);
+
+    Order::query()->findOrFail($order->id)->update(['state' => OrderState::PURCHASE]);
+
+    $changedPriceUnits = [];
+
+    Event::listen('eloquent.updated: '.OrderLine::class, function (OrderLine $line) use (&$changedPriceUnits) {
+        if ($line->wasChanged('price_unit')) {
+            $changedPriceUnits[] = $line->id;
+        }
+    });
+
+    PurchaseHelper::compute($order->refresh());
+
+    expect($changedPriceUnits)->toBe([])
+        ->and((float) $order->refresh()->lines->first()->price_unit)->toEqualWithDelta(145.0, 0.000001);
 });

@@ -33,4 +33,11 @@ return [
         'terms-and-conditions'  => 'الشروط والأحكام:',
         'additional-terms'      => 'شروط إضافية:',
     ],
+
+    'api' => [
+        'purchase-order' => [
+            'currency-locked'   => 'لا يمكن تغيير العملة بعد تأكيد أمر الشراء.',
+            'order-date-locked' => 'لا يمكن تغيير الموعد النهائي للطلب بعد تأكيد أمر الشراء.',
+        ],
+    ],
 ];
