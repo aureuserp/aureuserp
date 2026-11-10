@@ -7,7 +7,14 @@ use Filament\PanelRegistry;
 use Filament\Schemas\Schema;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Http\Request;
+use Illuminate\Routing\CompiledRouteCollection;
+use Illuminate\Routing\Route;
+use Illuminate\Routing\RouteCollection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
+use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
+use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource;
 use Webkul\Inventory\Filament\Clusters\Operations;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReplenishmentResource;
@@ -238,4 +245,58 @@ it('hides the navigation entries of resources that repeat another plugin entry',
     foreach ($kept as $resource) {
         expect($visibility($resource))->toContain(true);
     }
+});
+
+it('keeps the swapped controller in the compiled route cache', function () {
+    $route = new Route('GET', 'page-swap-cache/{record}', ['uses' => ViewBill::class.'@__invoke', 'controller' => ViewBill::class]);
+
+    $route->name('page-swap-cache');
+
+    app('router')->getRoutes()->add($route);
+
+    PanelCustomizer::replacePage(ViewBill::class, EditBill::class);
+
+    PanelCustomizer::swapPageRoutes();
+
+    $collection = new RouteCollection;
+
+    $collection->add($route);
+
+    $collection->refreshNameLookups();
+
+    $collection->refreshActionLookups();
+
+    foreach ($collection as $registered) {
+        $registered->prepareForSerialization();
+    }
+
+    $compiled = $collection->compile();
+
+    $cached = (new CompiledRouteCollection($compiled['compiled'], $compiled['attributes']))->setRouter(app('router'))->setContainer(app());
+
+    $matched = $cached->match(Request::create('/page-swap-cache/1', 'GET'));
+
+    expect($matched->getAction('controller'))->toBe(EditBill::class)
+        ->and($matched->getAction('uses'))->toBe(EditBill::class.'@__invoke')
+        ->and($cached->getByName('page-swap-cache')->getAction('controller'))->toBe(EditBill::class);
+});
+
+it('writes the replacement page into the filament component cache', function () {
+    $cachePath = sys_get_temp_dir().'/filament-cache-'.uniqid();
+
+    config(['filament.cache_path' => $cachePath]);
+
+    PanelCustomizer::replacePage(ViewBill::class, EditBill::class);
+
+    $panel = Panel::make()->id('swap-cache');
+
+    PanelCustomizer::apply($panel);
+
+    $panel->cacheComponents();
+
+    $cache = require $panel->getComponentCachePath();
+
+    File::deleteDirectory($cachePath);
+
+    expect($cache['livewireComponents'])->toContain(EditBill::class);
 });
