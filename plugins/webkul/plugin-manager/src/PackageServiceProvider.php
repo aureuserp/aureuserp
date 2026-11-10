@@ -19,15 +19,7 @@ abstract class PackageServiceProvider extends BasePackageServiceProvider
     {
         $this->registeringPackage();
 
-        $this->package = $this->newPackage();
-
-        $this->package->setBasePath($this->getPackageBaseDir());
-
-        $this->configureCustomPackage($this->package);
-
-        if (empty($this->package->name)) {
-            throw InvalidPackage::nameIsRequired();
-        }
+        $this->package = $this->describePackage();
 
         foreach ($this->package->configFileNames as $configFileName) {
             $this->mergeConfigFrom($this->package->basePath("/../config/{$configFileName}.php"), $configFileName);
@@ -38,6 +30,26 @@ abstract class PackageServiceProvider extends BasePackageServiceProvider
         $this->packageRegistered();
 
         return $this;
+    }
+
+    public function describePackage(): Package
+    {
+        $package = $this->newPackage();
+
+        $package->setBasePath($this->getPackageBaseDir());
+
+        $this->configureCustomPackage($package);
+
+        if (empty($package->name)) {
+            throw InvalidPackage::nameIsRequired();
+        }
+
+        return $package;
+    }
+
+    protected function registersMigrations(): bool
+    {
+        return ! config('plugin-manager.disable_migration_registration', false);
     }
 
     protected function mergeShieldConfig(): void
@@ -127,7 +139,7 @@ abstract class PackageServiceProvider extends BasePackageServiceProvider
                     ),
                 ], "{$this->package->shortName()}-migrations");
 
-                if ($this->package->runsMigrations) {
+                if ($this->package->runsMigrations && $this->registersMigrations()) {
                     if ($this->package->isCore) {
                         $this->loadMigrationsFrom($filePath);
                     } elseif ($this->package->isInstalled()) {
@@ -150,7 +162,7 @@ abstract class PackageServiceProvider extends BasePackageServiceProvider
                     ),
                 ], "{$this->package->shortName()}-settings");
 
-                if ($this->package->runsSettings) {
+                if ($this->package->runsSettings && $this->registersMigrations()) {
                     if ($this->package->isCore) {
                         $this->loadMigrationsFrom($filePath);
                     } elseif ($this->package->isInstalled()) {
