@@ -35,6 +35,9 @@
         <testsuite name="ProductFeature">
             <directory>plugins/webkul/products/tests/Feature</directory>
         </testsuite>
+        <testsuite name="PluginManagerFeature">
+            <directory>plugins/webkul/plugin-manager/tests/Feature</directory>
+        </testsuite>
         <testsuite name="SupportFeature">
             <directory>plugins/webkul/support/tests/Feature</directory>
         </testsuite>
