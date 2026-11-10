@@ -76,7 +76,7 @@ class BackorderCreator
             return null;
         }
 
-        $backorder = $operation->replicate(['name', 'return_id', 'closed_at', 'is_printed', 'moves', 'moveLines']);
+        $backorder = $operation->withoutRelations()->replicate(['name', 'return_id', 'closed_at', 'is_printed']);
 
         $backorder->fill([
             'name'          => '/',
@@ -88,6 +88,7 @@ class BackorderCreator
 
         $carriedOver->each->update([
             'operation_id' => $backorder->id,
+            'reference'    => $backorder->name,
             'is_picked'    => false,
         ]);
 
@@ -95,7 +96,20 @@ class BackorderCreator
             ->each->update(['operation_id' => $backorder->id]);
 
         $carriedOver->flatMap->lines
-            ->each->update(['operation_id' => $backorder->id]);
+            ->each->update([
+                'operation_id' => $backorder->id,
+                'reference'    => $backorder->name,
+            ]);
+
+        $backorder->refresh();
+
+        $backorder->computeState();
+
+        $backorder->computeDeadline();
+
+        $backorder->computeScheduledAt();
+
+        $backorder->saveQuietly();
 
         if ($backorder->operationType->reservation_method === ReservationMethod::AT_CONFIRM) {
             app(TransferWorkflow::class)->reserve($backorder);

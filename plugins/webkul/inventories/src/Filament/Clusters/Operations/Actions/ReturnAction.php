@@ -17,9 +17,11 @@ use Livewire\Component;
 use Throwable;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Exceptions\ReturnNotAllowedException;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn as RepeaterTableColumn;
 
@@ -131,16 +133,34 @@ class ReturnAction extends Action
                     $livewire->updateForm();
 
                     redirect()->to(OperationResource::getUrl('edit', ['record' => $newRecord]));
-                } catch (Throwable $e) {
+                } catch (ReturnNotAllowedException $e) {
                     Notification::make()
                         ->danger()
                         ->body($e->getMessage())
                         ->send();
 
                     $this->halt(shouldRollBackDatabaseTransaction: true);
+                } catch (Throwable $e) {
+                    report($e);
+
+                    Notification::make()
+                        ->danger()
+                        ->body(__('inventories::system.inventory-manager.return.failed'))
+                        ->send();
+
+                    $this->halt(shouldRollBackDatabaseTransaction: true);
                 }
             })
-            ->visible(fn () => $this->getRecord()->state == OperationState::DONE);
+            ->visible(fn () => $this->getRecord()->state == OperationState::DONE)
+            ->disabled(fn (): bool => $this->isReturnOfReturnBlocked())
+            ->tooltip(fn (): ?string => $this->isReturnOfReturnBlocked()
+                ? __('inventories::filament/clusters/operations/actions/return.return-of-return-disabled')
+                : null);
+    }
+
+    private function isReturnOfReturnBlocked(): bool
+    {
+        return ! app(OperationSettings::class)->enable_returning_returns && $this->getRecord()->isReturn();
     }
 
     private function getReturnableMoves(Operation $record): Collection

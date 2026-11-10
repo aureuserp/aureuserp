@@ -17,6 +17,8 @@ beforeEach(function () {
     $this->stock = $this->warehouse->lotStockLocation;
 });
 
+afterEach(fn () => InventoryHelper::returnSettings());
+
 function replicationDelivery($warehouse, $product, float $stock, float $demand, ?float $picked = null)
 {
     InventoryHelper::stockUp($product, $warehouse->lotStockLocation, $stock);
@@ -261,6 +263,8 @@ it('keeps a counted quant with a zero quantity instead of sweeping it', function
 });
 
 it('returns the reserved quantity to stock when a return of a return is created', function () {
+    InventoryHelper::returnSettings(returns: true);
+
     $operation = replicationDelivery($this->warehouse, $this->product, 10, 10);
 
     $return = Inventory::createReturn($operation, [$operation->moves->first()->id => 4]);

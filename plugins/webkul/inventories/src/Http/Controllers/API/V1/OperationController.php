@@ -13,6 +13,7 @@ use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Enums\OperationType as OperationTypeEnum;
 use Webkul\Inventory\Enums\ProcureMethod;
+use Webkul\Inventory\Exceptions\ReturnNotAllowedException;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Http\Requests\OperationRequest;
 use Webkul\Inventory\Http\Resources\V1\OperationResource;
@@ -144,7 +145,21 @@ class OperationController extends Controller
     protected function returnById(string $id): Operation
     {
         $operation = $this->findOperationById($id);
-        $newOperation = Inventory::createReturn($operation);
+
+        $moveQuantities = $operation->moves()
+            ->where('state', MoveState::DONE)
+            ->where('is_scraped', false)
+            ->get()
+            ->mapWithKeys(fn (Move $move): array => [$move->id => $move->returnableQuantity()])
+            ->all();
+
+        try {
+            $newOperation = Inventory::createReturn($operation, $moveQuantities);
+        } catch (ReturnNotAllowedException $exception) {
+            throw ValidationException::withMessages([
+                'moves' => [$exception->getMessage()],
+            ]);
+        }
 
         return $newOperation->refresh()->load($this->allowedIncludes);
     }
