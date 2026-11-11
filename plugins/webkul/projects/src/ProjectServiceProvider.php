@@ -3,13 +3,21 @@
 namespace Webkul\Project;
 
 use Filament\Panel;
+use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
+use Illuminate\Contracts\View\View;
+use Livewire\Livewire;
 use Webkul\Chatter\Services\ChatterCleanupService;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Project\Filament\Resources\ProjectResource\Pages\ManageTasks;
+use Webkul\Project\Filament\Resources\TaskResource\Pages\ListTasks;
 use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Task;
+use Webkul\Support\Support\VersionedCss;
 
 class ProjectServiceProvider extends PackageServiceProvider
 {
@@ -19,6 +27,7 @@ class ProjectServiceProvider extends PackageServiceProvider
     {
         $package->name(static::$name)
             ->hasRoute('api')
+            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 '2024_12_12_074920_create_projects_project_stages_table',
@@ -56,7 +65,31 @@ class ProjectServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        //
+        FilamentAsset::register([
+            VersionedCss::make('projects', __DIR__.'/../resources/dist/projects.css'),
+        ], 'projects');
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_COLUMN_MANAGER_TRIGGER_AFTER,
+            fn (): string|View => method_exists($page = Livewire::current(), 'getTaskViewLayouts')
+                ? view('projects::filament.view-layout-switcher', [
+                    'layouts'      => $page->getTaskViewLayouts(),
+                    'activeLayout' => $page->getTaskViewLayout(),
+                ])
+                : '',
+            scopes: [ManageTasks::class, ListTasks::class],
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::CONTENT_BEFORE,
+            fn (): string|View => method_exists($page = Livewire::current(), 'getTaskViewLayouts')
+                ? view('projects::filament.view-layout-shimmer', [
+                    'layouts'      => $page->getTaskViewLayouts(),
+                    'activeLayout' => $page->getTaskViewLayout(),
+                ])
+                : '',
+            scopes: [ManageTasks::class, ListTasks::class],
+        );
     }
 
     public function packageRegistered(): void
