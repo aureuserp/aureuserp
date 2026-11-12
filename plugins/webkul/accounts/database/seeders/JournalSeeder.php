@@ -3,7 +3,6 @@
 namespace Webkul\Account\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -15,8 +14,6 @@ class JournalSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('accounts_journals')->delete();
-
         $user = User::first();
 
         $company = Company::first();
@@ -42,7 +39,8 @@ class JournalSeeder extends Seeder
                 'invoice_reference_type'   => 'invoice',
                 'invoice_reference_model'  => 'aureus',
                 'bank_statements_source'   => null,
-                'name'                     => 'Customer Invoices',
+                'key'                      => 'journal.sale',
+                'name'                     => __('accounts::seeders.journals.sale'),
                 'order_override_regex'     => null,
                 'auto_check_on_post'       => true,
                 'restrict_mode_hash_table' => false,
@@ -68,7 +66,8 @@ class JournalSeeder extends Seeder
                 'invoice_reference_type'   => 'invoice',
                 'invoice_reference_model'  => 'aureus',
                 'bank_statements_source'   => null,
-                'name'                     => 'Vendor Bills',
+                'key'                      => 'journal.purchase',
+                'name'                     => __('accounts::seeders.journals.purchase'),
                 'order_override_regex'     => null,
                 'auto_check_on_post'       => true,
                 'restrict_mode_hash_table' => false,
@@ -94,7 +93,8 @@ class JournalSeeder extends Seeder
                 'invoice_reference_type'   => 'invoice',
                 'invoice_reference_model'  => 'aureus',
                 'bank_statements_source'   => null,
-                'name'                     => 'Miscellaneous Operations',
+                'key'                      => 'journal.miscellaneous',
+                'name'                     => __('accounts::seeders.journals.miscellaneous'),
                 'order_override_regex'     => null,
                 'auto_check_on_post'       => true,
                 'restrict_mode_hash_table' => false,
@@ -120,7 +120,8 @@ class JournalSeeder extends Seeder
                 'invoice_reference_type'   => 'invoice',
                 'invoice_reference_model'  => 'aureus',
                 'bank_statements_source'   => null,
-                'name'                     => 'Exchange Difference',
+                'key'                      => 'journal.exchange-difference',
+                'name'                     => __('accounts::seeders.journals.exchange-difference'),
                 'order_override_regex'     => null,
                 'auto_check_on_post'       => true,
                 'restrict_mode_hash_table' => false,
@@ -146,7 +147,8 @@ class JournalSeeder extends Seeder
                 'invoice_reference_type'   => 'invoice',
                 'invoice_reference_model'  => 'aureus',
                 'bank_statements_source'   => null,
-                'name'                     => 'Bank Transactions',
+                'key'                      => 'journal.bank',
+                'name'                     => __('accounts::seeders.journals.bank'),
                 'order_override_regex'     => null,
                 'auto_check_on_post'       => true,
                 'restrict_mode_hash_table' => false,
@@ -173,7 +175,8 @@ class JournalSeeder extends Seeder
                 'invoice_reference_type'   => 'invoice',
                 'invoice_reference_model'  => 'aureus',
                 'bank_statements_source'   => null,
-                'name'                     => 'Cash Transactions',
+                'key'                      => 'journal.cash',
+                'name'                     => __('accounts::seeders.journals.cash'),
                 'order_override_regex'     => null,
                 'auto_check_on_post'       => true,
                 'restrict_mode_hash_table' => false,
@@ -183,6 +186,6 @@ class JournalSeeder extends Seeder
             ],
         ];
 
-        DB::table('accounts_journals')->insert($journals);
+        seed_rows('accounts_journals', $journals);
     }
 }

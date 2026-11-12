@@ -151,6 +151,7 @@ return [
                     'flexible-work-arrangement'      => 'Modalidad de trabajo flexible',
                     'fully-flexible-schedule'        => 'Horario totalmente flexible',
                     'work-permit-scheduled-activity' => 'Actividad programada del permiso de trabajo',
+                    'user-assigned-suffix'           => '(Asignado)',
                     'related-user'                   => 'Usuario relacionado',
                     'create-user'                    => 'Crear usuario',
                     'departure-reason'               => 'Motivo de baja',

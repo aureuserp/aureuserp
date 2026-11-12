@@ -20,6 +20,7 @@ use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\FormatsReportValues;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\ShowsCurrencyNotice;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\ProfitAndLossExport;
@@ -27,7 +28,7 @@ use Webkul\Accounting\Support\CompanyRateMap;
 
 class ProfitLoss extends Page implements HasForms
 {
-    use HasPageShield, InteractsWithForms, NormalizeDateFilter;
+    use FormatsReportValues, HasPageShield, InteractsWithForms, NormalizeDateFilter;
     use ShowsCurrencyNotice;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.profit-loss';
@@ -90,7 +91,10 @@ class ProfitLoss extends Page implements HasForms
                     $dateTo = Carbon::parse($data['date_to']);
                     $filename = 'profit-loss-'.$dateFrom->format('Y-m-d').'-to-'.$dateTo->format('Y-m-d').'.pdf';
 
-                    $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.profit-loss', ['data' => $data]);
+                    $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.profit-loss', [
+                        'data'     => $data,
+                        'currency' => $this->reportCurrency(),
+                    ]);
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
@@ -113,14 +117,14 @@ class ProfitLoss extends Page implements HasForms
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
-                            'Today'        => [now()->startOfDay(), now()->endOfDay()],
-                            'Yesterday'    => [now()->subDay()->startOfDay(), now()->subDay()->endOfDay()],
-                            'This Month'   => [now()->startOfMonth(), now()->endOfMonth()],
-                            'Last Month'   => [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()],
-                            'This Quarter' => [now()->startOfQuarter(), now()->endOfQuarter()],
-                            'Last Quarter' => [now()->subQuarter()->startOfQuarter(), now()->subQuarter()->endOfQuarter()],
-                            'This Year'    => [now()->startOfYear(), now()->endOfYear()],
-                            'Last Year'    => [now()->subYear()->startOfYear(), now()->subYear()->endOfYear()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.today')        => [now()->startOfDay(), now()->endOfDay()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.yesterday')    => [now()->subDay()->startOfDay(), now()->subDay()->endOfDay()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.this-month')   => [now()->startOfMonth(), now()->endOfMonth()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.last-month')   => [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.this-quarter') => [now()->startOfQuarter(), now()->endOfQuarter()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.last-quarter') => [now()->subQuarter()->startOfQuarter(), now()->subQuarter()->endOfQuarter()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.this-year')    => [now()->startOfYear(), now()->endOfYear()],
+                            __('accounting::filament/clusters/reporting/pages/profit-loss.filters.ranges.last-year')    => [now()->subYear()->startOfYear(), now()->subYear()->endOfYear()],
                         ])
                         ->alwaysShowCalendar()
                         ->live()

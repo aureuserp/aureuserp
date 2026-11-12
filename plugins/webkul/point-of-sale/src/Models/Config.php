@@ -576,7 +576,9 @@ class Config extends Model implements Sortable
     {
         $journal = Journal::query()
             ->where('type', JournalType::GENERAL)
-            ->where('code', self::TERMINAL_JOURNAL_CODE)
+            ->where(fn ($query) => $query
+                ->where('key', 'journal.pos-terminal')
+                ->orWhere('code', self::TERMINAL_JOURNAL_CODE))
             ->where(owned_by_company($this->company_id))
             ->orderBy('id')
             ->first();
@@ -585,7 +587,18 @@ class Config extends Model implements Sortable
             return $journal;
         }
 
+        $keyTaken = Journal::query()
+            ->withoutGlobalScope(CompanyScope::class)
+            ->where('key', 'journal.pos-terminal')
+            ->where('company_id', $this->company_id)
+            ->exists();
+
+        if ($keyTaken) {
+            return null;
+        }
+
         return Journal::create([
+            'key'        => 'journal.pos-terminal',
             'name'       => __('point-of-sale::system.config.terminal-journal'),
             'code'       => self::TERMINAL_JOURNAL_CODE,
             'type'       => JournalType::GENERAL,

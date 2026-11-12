@@ -177,9 +177,9 @@ class UserForm
                                                 modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->withoutGlobalScope(AllowedCompanyScope::class),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                            ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                             ->required()
                                             ->rule(fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                                 $allowed = $get('allowed_companies') ?? [];

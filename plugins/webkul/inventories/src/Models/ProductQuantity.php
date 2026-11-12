@@ -249,8 +249,8 @@ class ProductQuantity extends Model
         ?Package $destinationPackage
     ): Move {
         $reference = float_is_zero($quantity, precisionRounding: $this->product->uom->rounding)
-            ? 'Product Quantity Confirmed'
-            : 'Product Quantity Updated';
+            ? __('inventories::models/product-quantity.adjustment.confirmed')
+            : __('inventories::models/product-quantity.adjustment.updated');
 
         $companyId = $this->company->id ?? current_company_id();
 

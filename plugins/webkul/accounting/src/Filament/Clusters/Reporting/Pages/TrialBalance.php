@@ -116,14 +116,14 @@ class TrialBalance extends Page implements HasForms
                         ->suffixIcon('heroicon-o-calendar')
                         ->defaultThisMonth()
                         ->ranges([
-                            'Today'        => [now()->startOfDay(), now()->endOfDay()],
-                            'Yesterday'    => [now()->subDay()->startOfDay(), now()->subDay()->endOfDay()],
-                            'This Month'   => [now()->startOfMonth(), now()->endOfMonth()],
-                            'Last Month'   => [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()],
-                            'This Quarter' => [now()->startOfQuarter(), now()->endOfQuarter()],
-                            'Last Quarter' => [now()->subQuarter()->startOfQuarter(), now()->subQuarter()->endOfQuarter()],
-                            'This Year'    => [now()->startOfYear(), now()->endOfYear()],
-                            'Last Year'    => [now()->subYear()->startOfYear(), now()->subYear()->endOfYear()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.today')        => [now()->startOfDay(), now()->endOfDay()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.yesterday')    => [now()->subDay()->startOfDay(), now()->subDay()->endOfDay()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.this-month')   => [now()->startOfMonth(), now()->endOfMonth()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.last-month')   => [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.this-quarter') => [now()->startOfQuarter(), now()->endOfQuarter()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.last-quarter') => [now()->subQuarter()->startOfQuarter(), now()->subQuarter()->endOfQuarter()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.this-year')    => [now()->startOfYear(), now()->endOfYear()],
+                            __('accounting::filament/clusters/reporting/pages/trial-balance.filters.ranges.last-year')    => [now()->subYear()->startOfYear(), now()->subYear()->endOfYear()],
                         ])
                         ->alwaysShowCalendar()
                         ->live()

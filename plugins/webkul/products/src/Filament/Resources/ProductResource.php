@@ -119,23 +119,8 @@ class ProductResource extends Resource
             $type = ProductType::tryFrom($type);
         }
 
-        if ($type === ProductType::SERVICE) {
-            $hoursUomId = UOM::query()
-                ->whereHas('category', fn (Builder $query) => $query->where('name', 'Working Time'))
-                ->whereRaw('LOWER(name) = ?', ['hours'])
-                ->orderBy('id')
-                ->value('id');
-
-            if ($hoursUomId) {
-                return $hoursUomId;
-            }
-        }
-
-        $categoryName = $type === ProductType::SERVICE ? 'Working Time' : 'Unit';
-
         return UOM::query()
-            ->whereHas('category', fn (Builder $query) => $query->where('name', $categoryName))
-            ->orderBy('id')
+            ->where('key', $type === ProductType::SERVICE ? 'uom.hours' : 'uom.units')
             ->value('id')
             ?? UOM::query()->orderBy('id')->value('id');
     }

@@ -121,7 +121,7 @@
 <body>
     <div class="header">
         <h2>{{ __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title') }}</h2>
-        <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</p>
+        <p>{{ __('accounting::filament/clusters/reporting/pages/trial-balance.period', ['from' => format_date($data['date_from'], 'LL'), 'to' => format_date($data['date_to'], 'LL')]) }}</p>
     </div>
 
     @if($data['accounts']->isEmpty())
@@ -132,7 +132,7 @@
                 <tr>
                     <th rowspan="2" class="text-left">{{ __('accounting::filament/clusters/reporting.common.account') }}</th>
                     <th colspan="2" class="text-center group-header">{{ __('accounting::filament/clusters/reporting.common.initial-balance') }}</th>
-                    <th colspan="2" class="text-center group-header">{{ \Carbon\Carbon::parse($data['date_from'])->format('d M Y') }} - {{ \Carbon\Carbon::parse($data['date_to'])->format('d M Y') }}</th>
+                    <th colspan="2" class="text-center group-header">{{ __('accounting::filament/clusters/reporting/pages/trial-balance.date-range', ['from' => format_date($data['date_from']), 'to' => format_date($data['date_to'])]) }}</th>
                     <th colspan="2" class="text-center group-header">{{ __('accounting::filament/clusters/reporting.common.end-balance') }}</th>
                 </tr>
                 <tr>
@@ -148,30 +148,30 @@
                 @foreach($data['accounts'] as $account)
                     <tr>
                         <td class="text-left">{{ $account->code ? $account->code . ' ' : '' }}{{ $account->name }}</td>
-                        <td class="text-right">{{ $account->initial_debit > 0 ? number_format($account->initial_debit, 2) : '0.00' }}</td>
-                        <td class="text-right">{{ $account->initial_credit > 0 ? number_format($account->initial_credit, 2) : '0.00' }}</td>
-                        <td class="text-right">{{ $account->period_debit > 0 ? number_format($account->period_debit, 2) : '0.00' }}</td>
-                        <td class="text-right">{{ $account->period_credit > 0 ? number_format($account->period_credit, 2) : '0.00' }}</td>
-                        <td class="text-right">{{ $account->end_debit > 0 ? number_format($account->end_debit, 2) : '0.00' }}</td>
-                        <td class="text-right">{{ $account->end_credit > 0 ? number_format($account->end_credit, 2) : '0.00' }}</td>
+                        <td class="text-right">{{ $account->initial_debit > 0 ? format_number($account->initial_debit) : format_number(0) }}</td>
+                        <td class="text-right">{{ $account->initial_credit > 0 ? format_number($account->initial_credit) : format_number(0) }}</td>
+                        <td class="text-right">{{ $account->period_debit > 0 ? format_number($account->period_debit) : format_number(0) }}</td>
+                        <td class="text-right">{{ $account->period_credit > 0 ? format_number($account->period_credit) : format_number(0) }}</td>
+                        <td class="text-right">{{ $account->end_debit > 0 ? format_number($account->end_debit) : format_number(0) }}</td>
+                        <td class="text-right">{{ $account->end_credit > 0 ? format_number($account->end_credit) : format_number(0) }}</td>
                     </tr>
                 @endforeach
 
                 <tr class="total-row">
                     <td>{{ __('accounting::filament/clusters/reporting.common.total') }}</td>
-                    <td class="text-right">{{ number_format($data['totals']['initial_debit'], 2) }}</td>
-                    <td class="text-right">{{ number_format($data['totals']['initial_credit'], 2) }}</td>
-                    <td class="text-right">{{ number_format($data['totals']['period_debit'], 2) }}</td>
-                    <td class="text-right">{{ number_format($data['totals']['period_credit'], 2) }}</td>
-                    <td class="text-right">{{ number_format($data['totals']['end_debit'], 2) }}</td>
-                    <td class="text-right">{{ number_format($data['totals']['end_credit'], 2) }}</td>
+                    <td class="text-right">{{ format_number($data['totals']['initial_debit']) }}</td>
+                    <td class="text-right">{{ format_number($data['totals']['initial_credit']) }}</td>
+                    <td class="text-right">{{ format_number($data['totals']['period_debit']) }}</td>
+                    <td class="text-right">{{ format_number($data['totals']['period_credit']) }}</td>
+                    <td class="text-right">{{ format_number($data['totals']['end_debit']) }}</td>
+                    <td class="text-right">{{ format_number($data['totals']['end_credit']) }}</td>
                 </tr>
             </tbody>
         </table>
     @endif
 
     <div class="footer">
-        <div>Generated on {{ now()->format('F j, Y \\a\\t g:i A') }}</div>
+        <div>{{ __('accounting::filament/clusters/reporting/pages/trial-balance.footer.generated-on', ['date' => format_date(now(), 'LLL')]) }}</div>
     </div>
 </body>
 </html>

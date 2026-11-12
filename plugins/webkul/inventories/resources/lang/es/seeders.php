@@ -1,0 +1,63 @@
+<?php
+
+return [
+    'locations' => [
+        'physical'                => 'Ubicaciones físicas',
+        'partners'                => 'Socios',
+        'virtual'                 => 'Ubicaciones virtuales',
+        'vendors'                 => 'Proveedores',
+        'customers'               => 'Clientes',
+        'inter-company-transit'   => 'Tránsito entre empresas',
+        'inter-warehouse-transit' => 'Tránsito entre almacenes',
+        'inventory-adjustment'    => 'Ajuste de inventario',
+        'production'              => 'Producción',
+        'scrap'                   => 'Desecho',
+        'stock'                   => 'Existencias',
+        'input'                   => 'Entrada',
+        'quality-control'         => 'Control de calidad',
+        'output'                  => 'Salida',
+        'packing-zone'            => 'Zona de embalaje',
+    ],
+
+    'operation-types' => [
+        'receipts'           => 'Recepciones',
+        'delivery-orders'    => 'Órdenes de entrega',
+        'pick'               => 'Recogida',
+        'pack'               => 'Embalaje',
+        'quality-control'    => 'Control de calidad',
+        'storage'            => 'Almacenamiento',
+        'internal-transfers' => 'Transferencias internas',
+        'cross-dock'         => 'Cross docking',
+        'dropship'           => 'Envío directo',
+    ],
+
+    'routes' => [
+        'mto'                   => 'Reabastecer bajo pedido (MTO)',
+        'reception-one-step'    => ':warehouse: Recibir en 1 paso (existencias)',
+        'reception-two-steps'   => ':warehouse: Recibir en 2 pasos (entrada + existencias)',
+        'reception-three-steps' => ':warehouse: Recibir en 3 pasos (entrada + calidad + existencias)',
+        'delivery-one-step'     => ':warehouse: Entregar en 1 paso (envío)',
+        'delivery-two-steps'    => ':warehouse: Entregar en 2 pasos (recogida + envío)',
+        'delivery-three-steps'  => ':warehouse: Entregar en 3 pasos (recogida + embalaje + envío)',
+        'crossdock'             => ':warehouse: Cross docking',
+        'buy'                   => 'Comprar',
+        'dropship'              => 'Envío directo',
+    ],
+
+    'rules' => [
+        'vendors-stock'         => ':code: Proveedores → Existencias',
+        'stock-customers'       => ':code: Existencias → Clientes',
+        'vendors-customers'     => ':code: Proveedores → Clientes',
+        'input-output'          => ':code: Entrada → Salida',
+        'stock-customers-mto'   => ':code: Existencias → Clientes (MTO)',
+        'input-quality-control' => ':code: Entrada → Control de calidad',
+        'quality-control-stock' => ':code: Control de calidad → Existencias',
+        'stock-customers-pick'  => ':code: Existencias → Clientes',
+        'packing-zone-output'   => ':code: Zona de embalaje → Salida',
+        'output-customers'      => ':code: Salida → Clientes',
+        'input-stock'           => ':code: Entrada → Existencias',
+        'buy-customers'         => ':code: Falso → Clientes',
+        'buy'                   => ':code: Existencias (compra)',
+        'dropship'              => 'Proveedores → Clientes',
+    ],
+];

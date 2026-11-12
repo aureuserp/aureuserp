@@ -34,25 +34,25 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
     public function headings(): array
     {
         return [
-            ['Trial Balance - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
+            [__('accounting::filament/clusters/reporting.common.from-to', ['report' => __('accounting::filament/clusters/reporting.pages.trial-balance.navigation.title'), 'from' => format_date($this->dateFrom), 'to' => format_date($this->dateTo)])],
             [],
             [
                 '',
-                'Initial Balance',
+                __('accounting::filament/clusters/reporting.common.initial-balance'),
                 '',
-                $this->dateFrom->format('d M Y').' - '.$this->dateTo->format('d M Y'),
+                __('accounting::filament/clusters/reporting/pages/trial-balance.date-range', ['from' => format_date($this->dateFrom), 'to' => format_date($this->dateTo)]),
                 '',
-                'End Balance',
+                __('accounting::filament/clusters/reporting.common.end-balance'),
                 '',
             ],
             [
-                'Account',
-                'Debit',
-                'Credit',
-                'Debit',
-                'Credit',
-                'Debit',
-                'Credit',
+                __('accounting::filament/clusters/reporting.common.account'),
+                __('accounting::filament/clusters/reporting.common.debit'),
+                __('accounting::filament/clusters/reporting.common.credit'),
+                __('accounting::filament/clusters/reporting.common.debit'),
+                __('accounting::filament/clusters/reporting.common.credit'),
+                __('accounting::filament/clusters/reporting.common.debit'),
+                __('accounting::filament/clusters/reporting.common.credit'),
             ],
         ];
     }
@@ -65,12 +65,12 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
         collect($this->accounts)->each(function ($account) use (&$rows, &$rowIndex) {
             $rows[] = [
                 '        '.($account['code'] ?? '').' '.($account['name'] ?? ''),
-                $account['initial_debit'] > 0 ? $account['initial_debit'] : '0.00',
-                $account['initial_credit'] > 0 ? $account['initial_credit'] : '0.00',
-                $account['period_debit'] > 0 ? $account['period_debit'] : '0.00',
-                $account['period_credit'] > 0 ? $account['period_credit'] : '0.00',
-                $account['end_debit'] > 0 ? $account['end_debit'] : '0.00',
-                $account['end_credit'] > 0 ? $account['end_credit'] : '0.00',
+                $account['initial_debit'] > 0 ? $account['initial_debit'] : 0,
+                $account['initial_credit'] > 0 ? $account['initial_credit'] : 0,
+                $account['period_debit'] > 0 ? $account['period_debit'] : 0,
+                $account['period_credit'] > 0 ? $account['period_credit'] : 0,
+                $account['end_debit'] > 0 ? $account['end_debit'] : 0,
+                $account['end_credit'] > 0 ? $account['end_credit'] : 0,
             ];
             $this->rowMetadata[$rowIndex++] = 'account_line';
         });
@@ -79,7 +79,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
         $rowIndex++;
 
         $rows[] = [
-            'Total',
+            __('accounting::filament/clusters/reporting.common.total'),
             $this->totals['initial_debit'],
             $this->totals['initial_credit'],
             $this->totals['period_debit'],

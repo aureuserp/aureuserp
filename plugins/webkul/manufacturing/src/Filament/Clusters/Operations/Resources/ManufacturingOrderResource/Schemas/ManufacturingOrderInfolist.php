@@ -113,7 +113,7 @@ class ManufacturingOrderInfolist
                                     ->schema([
                                         TextEntry::make('product.name')
                                             ->hiddenLabel()
-                                            ->formatStateUsing(fn (mixed $state, Move $record): string => $record->product?->trashed() ? $state.' (Deleted)' : $state)
+                                            ->formatStateUsing(fn (mixed $state, Move $record): string => $state.trashed_label_suffix($record->product))
                                             ->placeholder('—'),
                                         TextEntry::make('sourceLocation.full_name')
                                             ->hiddenLabel()

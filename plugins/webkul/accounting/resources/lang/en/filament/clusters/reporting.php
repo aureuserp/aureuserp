@@ -25,6 +25,10 @@ return [
         'not-due'                  => 'Not due',
         'no-data'                  => 'No data available',
         'no-accounts-transactions' => 'No accounts with transactions in this period',
+        'currency-notice'          => [
+            'consolidated'  => 'Consolidated across :count companies, shown in :currency.',
+            'missing-rates' => 'No exchange rate found for :companies. Amounts from this company are included unconverted and the totals below are not reliable.|No exchange rate found for :companies. Amounts from these companies are included unconverted and the totals below are not reliable.',
+        ],
     ],
     'pages' => [
         'balance-sheet' => [

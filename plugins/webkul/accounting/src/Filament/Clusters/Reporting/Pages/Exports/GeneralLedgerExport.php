@@ -37,9 +37,21 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function headings(): array
     {
         return [
-            ['General Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
+            [__('accounting::filament/clusters/reporting.common.from-to', [
+                'report' => __('accounting::filament/clusters/reporting.pages.general-ledger.navigation.title'),
+                'from'   => format_date($this->dateFrom),
+                'to'     => format_date($this->dateTo),
+            ])],
             [],
-            ['Account', 'Date', 'Communication', 'Partner', 'Debit', 'Credit', 'Balance'],
+            [
+                __('accounting::filament/clusters/reporting.common.account'),
+                __('accounting::filament/clusters/reporting.common.date'),
+                __('accounting::filament/clusters/reporting.common.communication'),
+                __('accounting::filament/clusters/reporting.common.partner'),
+                __('accounting::filament/clusters/reporting.common.debit'),
+                __('accounting::filament/clusters/reporting.common.credit'),
+                __('accounting::filament/clusters/reporting.common.balance'),
+            ],
         ];
     }
 
@@ -70,8 +82,8 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             if (in_array($account->id, $this->expandedAccounts)) {
                 if ($account->opening_balance != 0) {
                     $rows[] = [
-                        '        Opening Balance',
-                        $this->dateFrom->format('M d, Y'),
+                        '        '.__('accounting::filament/clusters/reporting.common.opening-balance'),
+                        format_date($this->dateFrom),
                         '',
                         '',
                         $account->opening_balance > 0 ? $account->opening_balance : '',
@@ -88,7 +100,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                     $runningBalance += $move['debit'] - $move['credit'];
                     $rows[] = [
                         '        '.$move['move_name'],
-                        Carbon::parse($move['date'])->format('M d, Y'),
+                        format_date($move['date']),
                         ($move['move_type'] ?? null) == 'entry' ? ($move['name'] ?? '') : '',
                         $move['partner_name'] ?? '',
                         $move['debit'] > 0 ? $move['debit'] : '',
@@ -101,7 +113,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         }
 
         $rows[] = [
-            'Total General Ledger',
+            __('accounting::filament/clusters/reporting/pages/general-ledger.table.total'),
             '',
             '',
             '',

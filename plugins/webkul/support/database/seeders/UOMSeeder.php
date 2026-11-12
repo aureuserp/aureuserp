@@ -4,7 +4,6 @@ namespace Webkul\Support\Database\Seeders;
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
 use Webkul\Security\Models\User;
@@ -32,10 +31,11 @@ class UOMSeeder extends Seeder
 
             $user = User::first();
 
-            DB::table('unit_of_measures')->insert([
+            seed_rows('unit_of_measures', [
                 [
                     'type'        => UOMType::REFERENCE,
-                    'name'        => 'Units',
+                    'key'         => 'uom.units',
+                    'name'        => __('support::seeders.uoms.units'),
                     'category_id' => 1,
                     'factor'      => 1.0,
                     'rounding'    => 0.01,
@@ -45,7 +45,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'Dozens',
+                    'key'         => 'uom.dozens',
+                    'name'        => __('support::seeders.uoms.dozens'),
                     'category_id' => 1,
                     'factor'      => '0.08333333333333333',
                     'rounding'    => 0.01,
@@ -55,7 +56,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::REFERENCE,
-                    'name'        => 'kg',
+                    'key'         => 'uom.kg',
+                    'name'        => __('support::seeders.uoms.kg'),
                     'category_id' => 2,
                     'factor'      => 1.0,
                     'rounding'    => 0.01,
@@ -65,7 +67,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'g',
+                    'key'         => 'uom.g',
+                    'name'        => __('support::seeders.uoms.g'),
                     'category_id' => 2,
                     'factor'      => 1000.0,
                     'rounding'    => 0.01,
@@ -75,7 +78,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 't',
+                    'key'         => 'uom.t',
+                    'name'        => __('support::seeders.uoms.t'),
                     'category_id' => 2,
                     'factor'      => 0.001,
                     'rounding'    => 0.01,
@@ -85,7 +89,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'lb',
+                    'key'         => 'uom.lb',
+                    'name'        => __('support::seeders.uoms.lb'),
                     'category_id' => 2,
                     'factor'      => 2.20462,
                     'rounding'    => 0.01,
@@ -95,7 +100,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'oz',
+                    'key'         => 'uom.oz',
+                    'name'        => __('support::seeders.uoms.oz'),
                     'category_id' => 2,
                     'factor'      => 35.274,
                     'rounding'    => 0.01,
@@ -105,7 +111,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::REFERENCE,
-                    'name'        => 'Days',
+                    'key'         => 'uom.days',
+                    'name'        => __('support::seeders.uoms.days'),
                     'category_id' => 3,
                     'factor'      => 8.0,
                     'rounding'    => 0.01,
@@ -115,7 +122,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'Hours',
+                    'key'         => 'uom.hours',
+                    'name'        => __('support::seeders.uoms.hours'),
                     'category_id' => 3,
                     'factor'      => 1.0,
                     'rounding'    => 0.01,
@@ -125,7 +133,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::REFERENCE,
-                    'name'        => 'm',
+                    'key'         => 'uom.m',
+                    'name'        => __('support::seeders.uoms.m'),
                     'category_id' => 4,
                     'factor'      => 1.0,
                     'rounding'    => 0.01,
@@ -135,7 +144,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'mm',
+                    'key'         => 'uom.mm',
+                    'name'        => __('support::seeders.uoms.mm'),
                     'category_id' => 4,
                     'factor'      => 1000.0,
                     'rounding'    => 0.01,
@@ -145,7 +155,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'km',
+                    'key'         => 'uom.km',
+                    'name'        => __('support::seeders.uoms.km'),
                     'category_id' => 4,
                     'factor'      => 0.001,
                     'rounding'    => 0.01,
@@ -155,7 +166,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'cm',
+                    'key'         => 'uom.cm',
+                    'name'        => __('support::seeders.uoms.cm'),
                     'category_id' => 4,
                     'factor'      => 100.0,
                     'rounding'    => 0.01,
@@ -165,7 +177,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'in',
+                    'key'         => 'uom.in',
+                    'name'        => __('support::seeders.uoms.in'),
                     'category_id' => 4,
                     'factor'      => 39.3701,
                     'rounding'    => 0.01,
@@ -175,7 +188,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'ft',
+                    'key'         => 'uom.ft',
+                    'name'        => __('support::seeders.uoms.ft'),
                     'category_id' => 4,
                     'factor'      => 3.28084,
                     'rounding'    => 0.01,
@@ -185,7 +199,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'yd',
+                    'key'         => 'uom.yd',
+                    'name'        => __('support::seeders.uoms.yd'),
                     'category_id' => 4,
                     'factor'      => 1.09361,
                     'rounding'    => 0.01,
@@ -195,7 +210,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'mi',
+                    'key'         => 'uom.mi',
+                    'name'        => __('support::seeders.uoms.mi'),
                     'category_id' => 4,
                     'factor'      => 1.09361,
                     'rounding'    => 0.01,
@@ -205,7 +221,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::REFERENCE,
-                    'name'        => 'm²',
+                    'key'         => 'uom.m2',
+                    'name'        => __('support::seeders.uoms.m2'),
                     'category_id' => 5,
                     'factor'      => 1.0,
                     'rounding'    => 0.01,
@@ -215,7 +232,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'ft²',
+                    'key'         => 'uom.ft2',
+                    'name'        => __('support::seeders.uoms.ft2'),
                     'category_id' => 5,
                     'factor'      => 10.76391,
                     'rounding'    => 0.01,
@@ -225,7 +243,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::REFERENCE,
-                    'name'        => 'L',
+                    'key'         => 'uom.l',
+                    'name'        => __('support::seeders.uoms.l'),
                     'category_id' => 6,
                     'factor'      => 1.0,
                     'rounding'    => 0.01,
@@ -235,7 +254,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'm³',
+                    'key'         => 'uom.m3',
+                    'name'        => __('support::seeders.uoms.m3'),
                     'category_id' => 6,
                     'factor'      => 0.001,
                     'rounding'    => 0.01,
@@ -245,7 +265,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'fl oz (US)',
+                    'key'         => 'uom.fl-oz-us',
+                    'name'        => __('support::seeders.uoms.fl-oz-us'),
                     'category_id' => 6,
                     'factor'      => 33.814,
                     'rounding'    => 0.01,
@@ -255,7 +276,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'qt (US)',
+                    'key'         => 'uom.qt-us',
+                    'name'        => __('support::seeders.uoms.qt-us'),
                     'category_id' => 6,
                     'factor'      => 1.05669,
                     'rounding'    => 0.01,
@@ -265,7 +287,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'gal (US)',
+                    'key'         => 'uom.gal-us',
+                    'name'        => __('support::seeders.uoms.gal-us'),
                     'category_id' => 6,
                     'factor'      => '0.26417217685798894',
                     'rounding'    => 0.01,
@@ -275,7 +298,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::SMALLER,
-                    'name'        => 'in³',
+                    'key'         => 'uom.in3',
+                    'name'        => __('support::seeders.uoms.in3'),
                     'category_id' => 6,
                     'factor'      => 61.0237,
                     'rounding'    => 0.01,
@@ -285,7 +309,8 @@ class UOMSeeder extends Seeder
                 ],
                 [
                     'type'        => UOMType::BIGGER,
-                    'name'        => 'ft³',
+                    'key'         => 'uom.ft3',
+                    'name'        => __('support::seeders.uoms.ft3'),
                     'category_id' => 6,
                     'factor'      => '0.035314724827664144',
                     'rounding'    => 0.01,
@@ -293,7 +318,7 @@ class UOMSeeder extends Seeder
                     'created_at'  => Carbon::now(),
                     'updated_at'  => Carbon::now(),
                 ],
-            ]);
+            ], 'key');
         } catch (Throwable $e) {
             report($e);
         }

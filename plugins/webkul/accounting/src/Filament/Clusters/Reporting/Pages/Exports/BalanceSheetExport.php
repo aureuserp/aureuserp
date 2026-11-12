@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
@@ -27,9 +28,9 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
     public function collection()
     {
         $rows = collect([
-            [null, 'As of '.$this->date->format('M d, Y')],
+            [null, __('accounting::filament/clusters/reporting/pages/balance-sheet.as-of', ['date' => format_date($this->date)])],
             [null, null],
-            [null, 'Balance'],
+            [null, __('accounting::filament/clusters/reporting.common.balance')],
             [null, null],
         ]);
 
@@ -52,14 +53,14 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
                             $accountName = ($account['code'] ? $account['code'].' - ' : '').$account['name'];
                             $rows->push([
                                 '                        '.$accountName,
-                                number_format($account['balance'], 2),
+                                (float) $account['balance'],
                             ]);
                             $this->rowMetadata[$rowIndex++] = 'account_line';
                         });
 
                         $rows->push([
                             '            '.$subsection['total_label'],
-                            number_format($subsection['total'], 2),
+                            (float) $subsection['total'],
                         ]);
                         $this->rowMetadata[$rowIndex++] = 'subsection_total';
                     }
@@ -68,7 +69,7 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
 
             $rows->push([
                 $section['total_label'],
-                number_format($section['total'], 2),
+                (float) $section['total'],
             ]);
             $this->rowMetadata[$rowIndex++] = 'section_total';
 
@@ -78,7 +79,7 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
 
         $rows->push([
             $this->balanceSheetData['grand_total_label'],
-            number_format($this->balanceSheetData['grand_total'], 2),
+            (float) $this->balanceSheetData['grand_total'],
         ]);
         $this->rowMetadata[$rowIndex] = 'grand_total';
 
@@ -172,6 +173,8 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
         }
 
         $sheet->getStyle("B5:B{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $sheet->getStyle("B5:B{$lastRow}")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
         return [];
     }

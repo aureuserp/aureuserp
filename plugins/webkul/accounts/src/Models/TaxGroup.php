@@ -23,6 +23,7 @@ class TaxGroup extends Model implements Sortable
     protected $table = 'accounts_tax_groups';
 
     protected $fillable = [
+        'key',
         'sort',
         'company_id',
         'country_id',

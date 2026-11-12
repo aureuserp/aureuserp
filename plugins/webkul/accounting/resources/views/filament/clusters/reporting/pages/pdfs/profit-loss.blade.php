@@ -115,7 +115,7 @@
 <body>
     <div class="header">
         <h1>{{ __('accounting::filament/clusters/reporting.pages.profit-loss.navigation.title') }}</h1>
-        <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</p>
+        <p>{{ __('accounting::filament/clusters/reporting/pages/profit-loss.period', ['from' => format_date($data['date_from']), 'to' => format_date($data['date_to'])]) }}</p>
     </div>
 
     <table>
@@ -130,13 +130,13 @@
                         <td class="account-line">
                             {{ $account['code'] ? $account['code'] . ' - ' : '' }}{{ $account['name'] }}
                         </td>
-                        <td class="account-line amount">{{ number_format($account['balance'], 2) }}</td>
+                        <td class="account-line amount">{{ money($account['balance'], $currency) }}</td>
                     </tr>
                 @endforeach
 
                 <tr>
                     <td class="total-line">{{ $section['total_label'] }}</td>
-                    <td class="total-line amount">{{ number_format($section['total'], 2) }}</td>
+                    <td class="total-line amount">{{ money($section['total'], $currency) }}</td>
                 </tr>
             @else
                 <tr>
@@ -148,13 +148,13 @@
         @endforeach
 
         <tr>
-            <td class="net-income">{{ $data['is_profit'] ? 'Net Profit' : 'Net Loss' }}</td>
-            <td class="net-income amount">{{ number_format(abs($data['net_income']), 2) }}</td>
+            <td class="net-income">{{ $data['is_profit'] ? __('accounting::filament/clusters/reporting/pages/profit-loss.totals.net-profit') : __('accounting::filament/clusters/reporting/pages/profit-loss.totals.net-loss') }}</td>
+            <td class="net-income amount">{{ money(abs($data['net_income']), $currency) }}</td>
         </tr>
     </table>
 
     <div class="footer">
-        <div>Generated on {{ now()->format('F j, Y \\a\\t g:i A') }}</div>
+        <div>{{ __('accounting::filament/clusters/reporting/pages/profit-loss.footer.generated-on', ['date' => format_date(now(), 'LLL')]) }}</div>
     </div>
 </body>
 </html>

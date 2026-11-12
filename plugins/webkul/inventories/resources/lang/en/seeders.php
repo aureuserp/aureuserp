@@ -1,0 +1,63 @@
+<?php
+
+return [
+    'locations' => [
+        'physical'                => 'Physical Locations',
+        'partners'                => 'Partners',
+        'virtual'                 => 'Virtual Locations',
+        'vendors'                 => 'Vendors',
+        'customers'               => 'Customers',
+        'inter-company-transit'   => 'Inter Company Transit',
+        'inter-warehouse-transit' => 'Inter Warehouse Transit',
+        'inventory-adjustment'    => 'Inventory Adjustment',
+        'production'              => 'Production',
+        'scrap'                   => 'Scrap',
+        'stock'                   => 'Stock',
+        'input'                   => 'Input',
+        'quality-control'         => 'Quality Control',
+        'output'                  => 'Output',
+        'packing-zone'            => 'Packing Zone',
+    ],
+
+    'operation-types' => [
+        'receipts'           => 'Receipts',
+        'delivery-orders'    => 'Delivery Orders',
+        'pick'               => 'Pick',
+        'pack'               => 'Pack',
+        'quality-control'    => 'Quality Control',
+        'storage'            => 'Storage',
+        'internal-transfers' => 'Internal Transfers',
+        'cross-dock'         => 'Cross Dock',
+        'dropship'           => 'Dropship',
+    ],
+
+    'routes' => [
+        'mto'                   => 'Replenish on Order (MTO)',
+        'reception-one-step'    => ':warehouse: Receive in 1 step (Stock)',
+        'reception-two-steps'   => ':warehouse: Receive in 2 steps (Input + Stock)',
+        'reception-three-steps' => ':warehouse: Receive in 3 steps (Input + Quality + Stock)',
+        'delivery-one-step'     => ':warehouse: Deliver in 1 step (Ship)',
+        'delivery-two-steps'    => ':warehouse: Deliver in 2 steps (Pick + Ship)',
+        'delivery-three-steps'  => ':warehouse: Deliver in 3 steps (Pick + Pack + Ship)',
+        'crossdock'             => ':warehouse: Cross-Dock',
+        'buy'                   => 'Buy',
+        'dropship'              => 'Dropship',
+    ],
+
+    'rules' => [
+        'vendors-stock'         => ':code: Vendors → Stock',
+        'stock-customers'       => ':code: Stock → Customers',
+        'vendors-customers'     => ':code: Vendors → Customers',
+        'input-output'          => ':code: Input → Output',
+        'stock-customers-mto'   => ':code: Stock → Customers (MTO)',
+        'input-quality-control' => ':code: Input → Quality Control',
+        'quality-control-stock' => ':code: Quality Control → Stock',
+        'stock-customers-pick'  => ':code: Stock → Customers',
+        'packing-zone-output'   => ':code: Packing Zone → Output',
+        'output-customers'      => ':code: Output → Customers',
+        'input-stock'           => ':code: Input → Stock',
+        'buy-customers'         => ':code: False → Customers',
+        'buy'                   => ':code: Stock (Buy)',
+        'dropship'              => 'Vendors → Customers',
+    ],
+];
