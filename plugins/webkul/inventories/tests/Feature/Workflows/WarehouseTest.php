@@ -1,11 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Support\Models\Company;
@@ -456,4 +459,44 @@ it('allows two companies to own warehouses with the same name and code', functio
     expect($first->name)->toBe($second->name)
         ->and($first->code)->toBe($second->code)
         ->and($first->company_id)->not->toBe($second->company_id);
+});
+
+it('provisions keyed locations, operation types, routes and rules unique per warehouse', function () {
+    $first = InventoryHelper::warehouse();
+
+    $second = InventoryHelper::warehouse();
+
+    foreach ([$first, $second] as $warehouse) {
+        foreach (['inventories_locations' => 6, 'inventories_operation_types' => 8, 'inventories_rules' => 12] as $table => $count) {
+            $keys = DB::table($table)->where('warehouse_id', $warehouse->id)->whereNotNull('key')->pluck('key');
+
+            expect($keys->count())->toBeGreaterThanOrEqual($count)
+                ->and($keys->unique())->toHaveCount($keys->count());
+        }
+    }
+
+    expect(DB::table('inventories_operation_types')->where('id', $first->in_type_id)->value('key'))->toBe('operation-type.receipts')
+        ->and(DB::table('inventories_locations')->where('id', $second->lot_stock_location_id)->value('key'))->toBe('location.stock')
+        ->and(DB::table('inventories_routes')->where('id', $first->reception_route_id)->value('key'))->toBe('route.reception');
+});
+
+it('names provisioned rows in the active locale', function () {
+    App::setLocale('fr');
+
+    $warehouse = InventoryHelper::warehouse();
+
+    App::setLocale('en');
+
+    expect(DB::table('inventories_locations')->where('id', $warehouse->lot_stock_location_id)->value('name'))->toBe('Stock')
+        ->and(DB::table('inventories_operation_types')->where('id', $warehouse->in_type_id)->value('name'))->toBe('Réceptions');
+});
+
+it('keeps a renamed route when the warehouse is saved without step changes', function () {
+    $warehouse = InventoryHelper::warehouse();
+
+    Route::withTrashed()->whereKey($warehouse->reception_route_id)->update(['name' => 'Inbound']);
+
+    $warehouse->refresh()->update(['sort' => 3]);
+
+    expect(Route::withTrashed()->whereKey($warehouse->reception_route_id)->value('name'))->toBe('Inbound');
 });

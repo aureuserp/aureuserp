@@ -34,8 +34,6 @@ use Webkul\Support\Traits\BelongsToCompany;
 
 class Warehouse extends Model implements Sortable
 {
-    public const MTO_ROUTE_NAME = 'Replenish on Order (MTO)';
-
     use BelongsToCompany;
     use HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
 
@@ -405,6 +403,7 @@ class Warehouse extends Model implements Sortable
     {
         $this->view_location_id = Location::create([
             'type'         => LocationType::VIEW,
+            'key'          => 'location.view',
             'name'         => $this->code,
             'is_scrap'     => false,
             'is_replenish' => false,
@@ -415,7 +414,8 @@ class Warehouse extends Model implements Sortable
 
         $this->lot_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
-            'name'         => 'Stock',
+            'key'          => 'location.stock',
+            'name'         => __('inventories::seeders.locations.stock'),
             'barcode'      => $this->code.'STOCK',
             'is_scrap'     => false,
             'is_replenish' => true,
@@ -426,7 +426,8 @@ class Warehouse extends Model implements Sortable
 
         $this->input_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
-            'name'         => 'Input',
+            'key'          => 'location.input',
+            'name'         => __('inventories::seeders.locations.input'),
             'barcode'      => $this->code.'INPUT',
             'is_scrap'     => false,
             'is_replenish' => false,
@@ -438,7 +439,8 @@ class Warehouse extends Model implements Sortable
 
         $this->qc_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
-            'name'         => 'Quality Control',
+            'key'          => 'location.quality-control',
+            'name'         => __('inventories::seeders.locations.quality-control'),
             'barcode'      => $this->code.'QUALITY',
             'is_scrap'     => false,
             'is_replenish' => false,
@@ -450,7 +452,8 @@ class Warehouse extends Model implements Sortable
 
         $this->output_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
-            'name'         => 'Output',
+            'key'          => 'location.output',
+            'name'         => __('inventories::seeders.locations.output'),
             'barcode'      => $this->code.'OUTPUT',
             'is_scrap'     => false,
             'is_replenish' => false,
@@ -462,7 +465,8 @@ class Warehouse extends Model implements Sortable
 
         $this->pack_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
-            'name'         => 'Packing Zone',
+            'key'          => 'location.packing-zone',
+            'name'         => __('inventories::seeders.locations.packing-zone'),
             'barcode'      => $this->code.'PACKING',
             'is_scrap'     => false,
             'is_replenish' => false,
@@ -481,7 +485,8 @@ class Warehouse extends Model implements Sortable
 
         $this->in_type_id = OperationType::create([
             'sort'                    => 1,
-            'name'                    => 'Receipts',
+            'key'                     => 'operation-type.receipts',
+            'name'                    => __('inventories::seeders.operation-types.receipts'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INCOMING,
             'sequence_code'           => 'IN',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -507,7 +512,8 @@ class Warehouse extends Model implements Sortable
 
         $this->out_type_id = OperationType::create([
             'sort'                    => 2,
-            'name'                    => 'Delivery Orders',
+            'key'                     => 'operation-type.delivery-orders',
+            'name'                    => __('inventories::seeders.operation-types.delivery-orders'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::OUTGOING,
             'sequence_code'           => 'OUT',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -533,7 +539,8 @@ class Warehouse extends Model implements Sortable
 
         $this->pick_type_id = OperationType::create([
             'sort'                    => 3,
-            'name'                    => 'Pick',
+            'key'                     => 'operation-type.pick',
+            'name'                    => __('inventories::seeders.operation-types.pick'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'PICK',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -560,7 +567,8 @@ class Warehouse extends Model implements Sortable
 
         $this->pack_type_id = OperationType::create([
             'sort'                    => 4,
-            'name'                    => 'Pack',
+            'key'                     => 'operation-type.pack',
+            'name'                    => __('inventories::seeders.operation-types.pack'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'PACK',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -583,7 +591,8 @@ class Warehouse extends Model implements Sortable
 
         $this->qc_type_id = OperationType::create([
             'sort'                    => 5,
-            'name'                    => 'Quality Control',
+            'key'                     => 'operation-type.quality-control',
+            'name'                    => __('inventories::seeders.operation-types.quality-control'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'QC',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -606,7 +615,8 @@ class Warehouse extends Model implements Sortable
 
         $this->store_type_id = OperationType::create([
             'sort'                    => 6,
-            'name'                    => 'Storage',
+            'key'                     => 'operation-type.storage',
+            'name'                    => __('inventories::seeders.operation-types.storage'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'STOR',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -633,7 +643,8 @@ class Warehouse extends Model implements Sortable
 
         $this->internal_type_id = OperationType::create([
             'sort'                    => 7,
-            'name'                    => 'Internal Transfers',
+            'key'                     => 'operation-type.internal-transfers',
+            'name'                    => __('inventories::seeders.operation-types.internal-transfers'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'INT',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -656,7 +667,8 @@ class Warehouse extends Model implements Sortable
 
         $this->xdock_type_id = OperationType::create([
             'sort'                    => 8,
-            'name'                    => 'Cross Dock',
+            'key'                     => 'operation-type.cross-dock',
+            'name'                    => __('inventories::seeders.operation-types.cross-dock'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'XD',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -682,10 +694,11 @@ class Warehouse extends Model implements Sortable
     protected function createRoutes(): void
     {
         $this->reception_route_id = Route::create([
-            'name' => match ($this->reception_steps) {
-                ReceptionStep::ONE_STEP    => $this->name.': Receive in 1 step (Stock)',
-                ReceptionStep::TWO_STEPS   => $this->name.': Receive in 2 steps (Input + Stock)',
-                ReceptionStep::THREE_STEPS => $this->name.': Receive in 3 steps (Input + Quality + Stock)',
+            'key'      => 'route.reception',
+            'name'     => match ($this->reception_steps) {
+                ReceptionStep::ONE_STEP    => __('inventories::seeders.routes.reception-one-step', ['warehouse' => $this->name]),
+                ReceptionStep::TWO_STEPS   => __('inventories::seeders.routes.reception-two-steps', ['warehouse' => $this->name]),
+                ReceptionStep::THREE_STEPS => __('inventories::seeders.routes.reception-three-steps', ['warehouse' => $this->name]),
             },
             'product_selectable'          => false,
             'product_category_selectable' => true,
@@ -696,10 +709,11 @@ class Warehouse extends Model implements Sortable
         ])->id;
 
         $this->delivery_route_id = Route::create([
-            'name' => match ($this->delivery_steps) {
-                DeliveryStep::ONE_STEP    => $this->name.': Deliver in 1 step (Ship)',
-                DeliveryStep::TWO_STEPS   => $this->name.': Deliver in 2 steps (Pick + Ship)',
-                DeliveryStep::THREE_STEPS => $this->name.': Deliver in 3 steps (Pick + Pack + Ship)',
+            'key'      => 'route.delivery',
+            'name'     => match ($this->delivery_steps) {
+                DeliveryStep::ONE_STEP    => __('inventories::seeders.routes.delivery-one-step', ['warehouse' => $this->name]),
+                DeliveryStep::TWO_STEPS   => __('inventories::seeders.routes.delivery-two-steps', ['warehouse' => $this->name]),
+                DeliveryStep::THREE_STEPS => __('inventories::seeders.routes.delivery-three-steps', ['warehouse' => $this->name]),
             },
             'product_selectable'          => false,
             'product_category_selectable' => true,
@@ -710,7 +724,8 @@ class Warehouse extends Model implements Sortable
         ])->id;
 
         $this->crossdock_route_id = Route::create([
-            'name'                        => $this->name.': Cross-Dock',
+            'key'                         => 'route.crossdock',
+            'name'                        => __('inventories::seeders.routes.crossdock', ['warehouse' => $this->name]),
             'product_selectable'          => true,
             'product_category_selectable' => true,
             'warehouse_selectable'        => false,
@@ -730,7 +745,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 1,
-            'name'                     => $this->code.': Vendors → Stock',
+            'key'                      => 'rule.vendors-stock',
+            'name'                     => __('inventories::seeders.rules.vendors-stock', ['code' => $this->code]),
             'route_sort'               => 9,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -749,7 +765,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                      => 2,
-            'name'                      => $this->code.': Stock → Customers',
+            'key'                       => 'rule.stock-customers',
+            'name'                      => __('inventories::seeders.rules.stock-customers', ['code' => $this->code]),
             'route_sort'                => 10,
             'group_propagation_option'  => GroupPropagation::PROPAGATE,
             'action'                    => RuleAction::PULL,
@@ -768,7 +785,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 3,
-            'name'                     => $this->code.': Vendors → Customers',
+            'key'                      => 'rule.vendors-customers',
+            'name'                     => __('inventories::seeders.rules.vendors-customers', ['code' => $this->code]),
             'route_sort'               => 20,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -788,7 +806,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 4,
-            'name'                     => $this->code.': Input → Output',
+            'key'                      => 'rule.input-output',
+            'name'                     => __('inventories::seeders.rules.input-output', ['code' => $this->code]),
             'route_sort'               => 20,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -808,7 +827,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = $this->mto_pull_id = Rule::create([
             'sort'                     => 5,
-            'name'                     => $this->code.': Stock → Customers (MTO)',
+            'key'                      => 'rule.stock-customers-mto',
+            'name'                     => __('inventories::seeders.rules.stock-customers-mto', ['code' => $this->code]),
             'route_sort'               => 5,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -826,7 +846,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 6,
-            'name'                     => $this->code.': Input → Quality Control',
+            'key'                      => 'rule.input-quality-control',
+            'name'                     => __('inventories::seeders.rules.input-quality-control', ['code' => $this->code]),
             'route_sort'               => 6,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -845,7 +866,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 7,
-            'name'                     => $this->code.': Quality Control → Stock',
+            'key'                      => 'rule.quality-control-stock',
+            'name'                     => __('inventories::seeders.rules.quality-control-stock', ['code' => $this->code]),
             'route_sort'               => 7,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -864,7 +886,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 8,
-            'name'                     => $this->code.': Stock → Customers',
+            'key'                      => 'rule.stock-customers-pick',
+            'name'                     => __('inventories::seeders.rules.stock-customers-pick', ['code' => $this->code]),
             'route_sort'               => 8,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -883,7 +906,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 9,
-            'name'                     => $this->code.': Packing Zone → Output',
+            'key'                      => 'rule.packing-zone-output',
+            'name'                     => __('inventories::seeders.rules.packing-zone-output', ['code' => $this->code]),
             'route_sort'               => 9,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -902,7 +926,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 10,
-            'name'                     => $this->code.': Output → Customers',
+            'key'                      => 'rule.output-customers',
+            'name'                     => __('inventories::seeders.rules.output-customers', ['code' => $this->code]),
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -921,7 +946,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 11,
-            'name'                     => $this->code.': Input → Stock',
+            'key'                      => 'rule.input-stock',
+            'name'                     => __('inventories::seeders.rules.input-stock', ['code' => $this->code]),
             'route_sort'               => 11,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -940,7 +966,8 @@ class Warehouse extends Model implements Sortable
 
         $this->ruleIds[] = Rule::create([
             'sort'                     => 12,
-            'name'                     => $this->code.': False → Customers',
+            'key'                      => 'rule.buy-customers',
+            'name'                     => __('inventories::seeders.rules.buy-customers', ['code' => $this->code]),
             'route_sort'               => 12,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::BUY,
@@ -1155,21 +1182,25 @@ class Warehouse extends Model implements Sortable
             Rule::withTrashed()->where('route_id', $this->crossdock_route_id)->update(['deleted_at' => now()]);
         }
 
-        $this->receptionRoute?->update([
-            'name' => match ($this->reception_steps) {
-                ReceptionStep::ONE_STEP    => $this->name.': Receive in 1 step (Stock)',
-                ReceptionStep::TWO_STEPS   => $this->name.': Receive in 2 steps (Input + Stock)',
-                ReceptionStep::THREE_STEPS => $this->name.': Receive in 3 steps (Input + Quality + Stock)',
-            },
-        ]);
+        if ($this->wasChanged(['name', 'reception_steps'])) {
+            $this->receptionRoute?->update([
+                'name' => match ($this->reception_steps) {
+                    ReceptionStep::ONE_STEP    => __('inventories::seeders.routes.reception-one-step', ['warehouse' => $this->name]),
+                    ReceptionStep::TWO_STEPS   => __('inventories::seeders.routes.reception-two-steps', ['warehouse' => $this->name]),
+                    ReceptionStep::THREE_STEPS => __('inventories::seeders.routes.reception-three-steps', ['warehouse' => $this->name]),
+                },
+            ]);
+        }
 
-        $this->deliveryRoute?->update([
-            'name' => match ($this->delivery_steps) {
-                DeliveryStep::ONE_STEP    => $this->name.': Deliver in 1 step (Ship)',
-                DeliveryStep::TWO_STEPS   => $this->name.': Deliver in 2 steps (Pick + Ship)',
-                DeliveryStep::THREE_STEPS => $this->name.': Deliver in 3 steps (Pick + Pack + Ship)',
-            },
-        ]);
+        if ($this->wasChanged(['name', 'delivery_steps'])) {
+            $this->deliveryRoute?->update([
+                'name' => match ($this->delivery_steps) {
+                    DeliveryStep::ONE_STEP    => __('inventories::seeders.routes.delivery-one-step', ['warehouse' => $this->name]),
+                    DeliveryStep::TWO_STEPS   => __('inventories::seeders.routes.delivery-two-steps', ['warehouse' => $this->name]),
+                    DeliveryStep::THREE_STEPS => __('inventories::seeders.routes.delivery-three-steps', ['warehouse' => $this->name]),
+                },
+            ]);
+        }
 
         $this->updateRules(
             'reception_steps',
@@ -1352,7 +1383,7 @@ class Warehouse extends Model implements Sortable
 
     protected function resolveMtoRouteId(): int
     {
-        $query = fn () => Route::withoutGlobalScopes()->where('name', static::MTO_ROUTE_NAME);
+        $query = fn () => Route::withoutGlobalScopes()->where('key', 'route.mto');
 
         $route = $query()->where('company_id', $this->company_id)->first()
             ?? $query()->whereNull('company_id')->first();
@@ -1363,7 +1394,8 @@ class Warehouse extends Model implements Sortable
 
         return Route::create([
             'sort'                        => 1,
-            'name'                        => static::MTO_ROUTE_NAME,
+            'key'                         => 'route.mto',
+            'name'                        => __('inventories::seeders.routes.mto'),
             'product_selectable'          => true,
             'product_category_selectable' => false,
             'warehouse_selectable'        => false,

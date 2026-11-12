@@ -18,6 +18,7 @@ class UOMCategory extends Model
     protected $table = 'unit_of_measure_categories';
 
     protected $fillable = [
+        'key',
         'name',
         'creator_id',
     ];

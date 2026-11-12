@@ -19,6 +19,7 @@ class UOM extends Model
     protected $table = 'unit_of_measures';
 
     protected $fillable = [
+        'key',
         'type',
         'name',
         'factor',

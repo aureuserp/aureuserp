@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
@@ -16,6 +17,23 @@ use Webkul\Support\Models\Currency;
 use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\SettingsRegistry;
 use Webkul\Support\SupportServiceProvider;
+
+if (! function_exists('seed_rows')) {
+    function seed_rows(string $table, array $rows, string $key = 'id', array $preserved = ['name']): void
+    {
+        foreach ($rows as $row) {
+            $query = DB::table($table)->where($key, $row[$key]);
+
+            if ($query->exists()) {
+                $query->update(Arr::except($row, [...$preserved, $key, 'created_at']));
+
+                continue;
+            }
+
+            DB::table($table)->insert($row);
+        }
+    }
+}
 
 if (! function_exists('settings')) {
     function settings(string $settings): object

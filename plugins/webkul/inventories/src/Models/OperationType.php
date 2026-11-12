@@ -33,6 +33,7 @@ class OperationType extends Model implements Sortable
     protected $table = 'inventories_operation_types';
 
     protected $fillable = [
+        'key',
         'name',
         'type',
         'sort',

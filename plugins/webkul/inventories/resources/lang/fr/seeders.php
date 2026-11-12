@@ -1,0 +1,63 @@
+<?php
+
+return [
+    'locations' => [
+        'physical'                => 'Emplacements physiques',
+        'partners'                => 'Partenaires',
+        'virtual'                 => 'Emplacements virtuels',
+        'vendors'                 => 'Fournisseurs',
+        'customers'               => 'Clients',
+        'inter-company-transit'   => 'Transit inter-sociétés',
+        'inter-warehouse-transit' => 'Transit inter-entrepôts',
+        'inventory-adjustment'    => 'Ajustement d\'inventaire',
+        'production'              => 'Production',
+        'scrap'                   => 'Rebut',
+        'stock'                   => 'Stock',
+        'input'                   => 'Entrée',
+        'quality-control'         => 'Contrôle qualité',
+        'output'                  => 'Sortie',
+        'packing-zone'            => 'Zone d\'emballage',
+    ],
+
+    'operation-types' => [
+        'receipts'           => 'Réceptions',
+        'delivery-orders'    => 'Bons de livraison',
+        'pick'               => 'Prélèvement',
+        'pack'               => 'Emballage',
+        'quality-control'    => 'Contrôle qualité',
+        'storage'            => 'Rangement',
+        'internal-transfers' => 'Transferts internes',
+        'cross-dock'         => 'Transbordement',
+        'dropship'           => 'Livraison directe',
+    ],
+
+    'routes' => [
+        'mto'                   => 'Réapprovisionner sur commande (MTO)',
+        'reception-one-step'    => ':warehouse : Recevoir en 1 étape (stock)',
+        'reception-two-steps'   => ':warehouse : Recevoir en 2 étapes (entrée + stock)',
+        'reception-three-steps' => ':warehouse : Recevoir en 3 étapes (entrée + qualité + stock)',
+        'delivery-one-step'     => ':warehouse : Livrer en 1 étape (expédition)',
+        'delivery-two-steps'    => ':warehouse : Livrer en 2 étapes (prélèvement + expédition)',
+        'delivery-three-steps'  => ':warehouse : Livrer en 3 étapes (prélèvement + emballage + expédition)',
+        'crossdock'             => ':warehouse : Transbordement',
+        'buy'                   => 'Acheter',
+        'dropship'              => 'Livraison directe',
+    ],
+
+    'rules' => [
+        'vendors-stock'         => ':code : Fournisseurs → Stock',
+        'stock-customers'       => ':code : Stock → Clients',
+        'vendors-customers'     => ':code : Fournisseurs → Clients',
+        'input-output'          => ':code : Entrée → Sortie',
+        'stock-customers-mto'   => ':code : Stock → Clients (MTO)',
+        'input-quality-control' => ':code : Entrée → Contrôle qualité',
+        'quality-control-stock' => ':code : Contrôle qualité → Stock',
+        'stock-customers-pick'  => ':code : Stock → Clients',
+        'packing-zone-output'   => ':code : Zone d\'emballage → Sortie',
+        'output-customers'      => ':code : Sortie → Clients',
+        'input-stock'           => ':code : Entrée → Stock',
+        'buy-customers'         => ':code : Faux → Clients',
+        'buy'                   => ':code : Stock (achat)',
+        'dropship'              => 'Fournisseurs → Clients',
+    ],
+];

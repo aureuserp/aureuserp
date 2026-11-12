@@ -31,6 +31,7 @@ class Location extends Model
     protected $table = 'inventories_locations';
 
     protected $fillable = [
+        'key',
         'position_x',
         'position_y',
         'position_z',

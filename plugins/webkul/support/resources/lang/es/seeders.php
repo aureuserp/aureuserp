@@ -1,0 +1,41 @@
+<?php
+
+return [
+    'uom-categories' => [
+        'unit'         => 'Unidad',
+        'weight'       => 'Peso',
+        'working-time' => 'Tiempo de trabajo',
+        'length'       => 'Longitud / Distancia',
+        'surface'      => 'Superficie',
+        'volume'       => 'Volumen',
+    ],
+
+    'uoms' => [
+        'units'    => 'Unidades',
+        'dozens'   => 'Docenas',
+        'kg'       => 'kg',
+        'g'        => 'g',
+        't'        => 't',
+        'lb'       => 'lb',
+        'oz'       => 'oz',
+        'days'     => 'Días',
+        'hours'    => 'Horas',
+        'm'        => 'm',
+        'mm'       => 'mm',
+        'km'       => 'km',
+        'cm'       => 'cm',
+        'in'       => 'pulg',
+        'ft'       => 'pie',
+        'yd'       => 'yd',
+        'mi'       => 'mi',
+        'm2'       => 'm²',
+        'ft2'      => 'pie²',
+        'l'        => 'L',
+        'm3'       => 'm³',
+        'fl-oz-us' => 'fl oz (EE. UU.)',
+        'qt-us'    => 'qt (EE. UU.)',
+        'gal-us'   => 'gal (EE. UU.)',
+        'in3'      => 'pulg³',
+        'ft3'      => 'pie³',
+    ],
+];

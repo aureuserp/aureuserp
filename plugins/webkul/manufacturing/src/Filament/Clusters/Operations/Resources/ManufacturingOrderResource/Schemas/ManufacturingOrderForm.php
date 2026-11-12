@@ -1077,9 +1077,9 @@ class ManufacturingOrderForm
     private static function getDefaultUomId(): ?int
     {
         return UOM::query()
-            ->where('name', 'Units')
+            ->where('key', 'uom.units')
             ->value('id')
-            ?? UOM::query()->value('id');
+            ?? UOM::query()->orderBy('id')->value('id');
     }
 
     private static function applyQuantityProducingDefaults(

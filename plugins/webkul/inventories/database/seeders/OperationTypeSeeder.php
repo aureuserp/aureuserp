@@ -25,7 +25,8 @@ class OperationTypeSeeder extends Seeder
             [
                 'id'                      => 1,
                 'sort'                    => 1,
-                'name'                    => 'Receipts',
+                'key'                     => 'operation-type.receipts',
+                'name'                    => __('inventories::seeders.operation-types.receipts'),
                 'type'                    => OperationType::INCOMING,
                 'sequence_code'           => 'IN',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -49,7 +50,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 2,
                 'sort'                    => 2,
-                'name'                    => 'Delivery Orders',
+                'key'                     => 'operation-type.delivery-orders',
+                'name'                    => __('inventories::seeders.operation-types.delivery-orders'),
                 'type'                    => OperationType::OUTGOING,
                 'sequence_code'           => 'OUT',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -73,7 +75,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 3,
                 'sort'                    => 3,
-                'name'                    => 'Pick',
+                'key'                     => 'operation-type.pick',
+                'name'                    => __('inventories::seeders.operation-types.pick'),
                 'type'                    => OperationType::INTERNAL,
                 'sequence_code'           => 'PICK',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -97,7 +100,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 4,
                 'sort'                    => 4,
-                'name'                    => 'Pack',
+                'key'                     => 'operation-type.pack',
+                'name'                    => __('inventories::seeders.operation-types.pack'),
                 'type'                    => OperationType::INTERNAL,
                 'sequence_code'           => 'PACK',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -121,7 +125,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 5,
                 'sort'                    => 5,
-                'name'                    => 'Quality Control',
+                'key'                     => 'operation-type.quality-control',
+                'name'                    => __('inventories::seeders.operation-types.quality-control'),
                 'type'                    => OperationType::INTERNAL,
                 'sequence_code'           => 'QC',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -145,7 +150,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 6,
                 'sort'                    => 6,
-                'name'                    => 'Storage',
+                'key'                     => 'operation-type.storage',
+                'name'                    => __('inventories::seeders.operation-types.storage'),
                 'type'                    => OperationType::INTERNAL,
                 'sequence_code'           => 'STOR',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -169,7 +175,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 7,
                 'sort'                    => 7,
-                'name'                    => 'Internal Transfers',
+                'key'                     => 'operation-type.internal-transfers',
+                'name'                    => __('inventories::seeders.operation-types.internal-transfers'),
                 'type'                    => OperationType::INTERNAL,
                 'sequence_code'           => 'INT',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -193,7 +200,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 8,
                 'sort'                    => 8,
-                'name'                    => 'Cross Dock',
+                'key'                     => 'operation-type.cross-dock',
+                'name'                    => __('inventories::seeders.operation-types.cross-dock'),
                 'type'                    => OperationType::INTERNAL,
                 'sequence_code'           => 'XD',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -217,7 +225,8 @@ class OperationTypeSeeder extends Seeder
             ], [
                 'id'                      => 9,
                 'sort'                    => 9,
-                'name'                    => 'Dropship',
+                'key'                     => 'operation-type.dropship',
+                'name'                    => __('inventories::seeders.operation-types.dropship'),
                 'type'                    => OperationType::DROPSHIP,
                 'sequence_code'           => 'DS',
                 'reservation_method'      => ReservationMethod::AT_CONFIRM,

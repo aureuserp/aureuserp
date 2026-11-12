@@ -26,6 +26,7 @@ class Account extends Model
     protected $table = 'accounts_accounts';
 
     protected $fillable = [
+        'key',
         'currency_id',
         'creator_id',
         'parent_id',

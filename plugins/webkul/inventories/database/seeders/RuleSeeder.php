@@ -25,7 +25,8 @@ class RuleSeeder extends Seeder
             [
                 'id'                       => 1,
                 'sort'                     => 1,
-                'name'                     => 'WH: Vendors → Stock',
+                'key'                      => 'rule.vendors-stock',
+                'name'                     => __('inventories::seeders.rules.vendors-stock', ['code' => 'WH']),
                 'route_sort'               => 9,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -47,7 +48,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 2,
                 'sort'                     => 2,
-                'name'                     => 'WH: Stock → Customers',
+                'key'                      => 'rule.stock-customers',
+                'name'                     => __('inventories::seeders.rules.stock-customers', ['code' => 'WH']),
                 'route_sort'               => 10,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -69,7 +71,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 3,
                 'sort'                     => 3,
-                'name'                     => 'WH: Vendors → Customers',
+                'key'                      => 'rule.vendors-customers',
+                'name'                     => __('inventories::seeders.rules.vendors-customers', ['code' => 'WH']),
                 'route_sort'               => 20,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -91,7 +94,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 4,
                 'sort'                     => 4,
-                'name'                     => 'WH: Input → Output',
+                'key'                      => 'rule.input-output',
+                'name'                     => __('inventories::seeders.rules.input-output', ['code' => 'WH']),
                 'route_sort'               => 20,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -113,7 +117,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 5,
                 'sort'                     => 5,
-                'name'                     => 'WH: Stock → Customers (MTO)',
+                'key'                      => 'rule.stock-customers-mto',
+                'name'                     => __('inventories::seeders.rules.stock-customers-mto', ['code' => 'WH']),
                 'route_sort'               => 5,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -135,7 +140,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 6,
                 'sort'                     => 6,
-                'name'                     => 'WH: Input → Quality Control',
+                'key'                      => 'rule.input-quality-control',
+                'name'                     => __('inventories::seeders.rules.input-quality-control', ['code' => 'WH']),
                 'route_sort'               => 6,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -157,7 +163,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 7,
                 'sort'                     => 7,
-                'name'                     => 'WH: Quality Control → Stock',
+                'key'                      => 'rule.quality-control-stock',
+                'name'                     => __('inventories::seeders.rules.quality-control-stock', ['code' => 'WH']),
                 'route_sort'               => 7,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -179,7 +186,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 8,
                 'sort'                     => 8,
-                'name'                     => 'WH: Stock → Customers',
+                'key'                      => 'rule.stock-customers-pick',
+                'name'                     => __('inventories::seeders.rules.stock-customers-pick', ['code' => 'WH']),
                 'route_sort'               => 8,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -201,7 +209,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 9,
                 'sort'                     => 9,
-                'name'                     => 'WH: Packing Zone → Output',
+                'key'                      => 'rule.packing-zone-output',
+                'name'                     => __('inventories::seeders.rules.packing-zone-output', ['code' => 'WH']),
                 'route_sort'               => 9,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -223,7 +232,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 10,
                 'sort'                     => 10,
-                'name'                     => 'WH: Output → Customers',
+                'key'                      => 'rule.output-customers',
+                'name'                     => __('inventories::seeders.rules.output-customers', ['code' => 'WH']),
                 'route_sort'               => 10,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -245,7 +255,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 11,
                 'sort'                     => 11,
-                'name'                     => 'WH: Input → Stock',
+                'key'                      => 'rule.input-stock',
+                'name'                     => __('inventories::seeders.rules.input-stock', ['code' => 'WH']),
                 'route_sort'               => 11,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -267,7 +278,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 12,
                 'sort'                     => 12,
-                'name'                     => 'WH: False → Customers',
+                'key'                      => 'rule.buy-customers',
+                'name'                     => __('inventories::seeders.rules.buy-customers', ['code' => 'WH']),
                 'route_sort'               => 12,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,
@@ -289,7 +301,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 13,
                 'sort'                     => 13,
-                'name'                     => 'WH: Stock (Buy)',
+                'key'                      => 'rule.buy',
+                'name'                     => __('inventories::seeders.rules.buy', ['code' => 'WH']),
                 'route_sort'               => 13,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::NONE,
@@ -311,7 +324,8 @@ class RuleSeeder extends Seeder
             ], [
                 'id'                       => 14,
                 'sort'                     => 14,
-                'name'                     => 'Vendors → Customers',
+                'key'                      => 'rule.dropship',
+                'name'                     => __('inventories::seeders.rules.dropship'),
                 'route_sort'               => 14,
                 'delay'                    => 0,
                 'group_propagation_option' => GroupPropagation::PROPAGATE,

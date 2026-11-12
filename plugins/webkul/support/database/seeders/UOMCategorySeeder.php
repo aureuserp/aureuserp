@@ -4,7 +4,6 @@ namespace Webkul\Support\Database\Seeders;
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
 use Webkul\Security\Models\User;
@@ -31,26 +30,18 @@ class UOMCategorySeeder extends Seeder
 
             $user = User::first();
 
-            $categories = [
-                ['id' => 1, 'name' => 'Unit'],
-                ['id' => 2, 'name' => 'Weight'],
-                ['id' => 3, 'name' => 'Working Time'],
-                ['id' => 4, 'name' => 'Length / Distance'],
-                ['id' => 5, 'name' => 'Surface'],
-                ['id' => 6, 'name' => 'Volume'],
-            ];
+            $categories = ['unit', 'weight', 'working-time', 'length', 'surface', 'volume'];
 
-            foreach ($categories as $category) {
-                DB::table('unit_of_measure_categories')->updateOrInsert(
-                    ['id' => $category['id']],
-                    [
-                        'name'       => $category['name'],
-                        'creator_id' => $user?->id,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]
-                );
-            }
+            seed_rows('unit_of_measure_categories', collect($categories)
+                ->map(fn (string $key, int $index): array => [
+                    'id'         => $index + 1,
+                    'key'        => "uom-category.{$key}",
+                    'name'       => __("support::seeders.uom-categories.{$key}"),
+                    'creator_id' => $user?->id,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ])
+                ->all());
         } catch (Throwable $e) {
             report($e);
         }
