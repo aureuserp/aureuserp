@@ -32,7 +32,6 @@
 .projects-list-shimmer {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
 }
 
 .projects-list-shimmer-row {
@@ -42,7 +41,15 @@
     gap: 1rem;
     min-height: 3.25rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.projects-list-shimmer-row:last-child {
+    border-bottom: 0;
+}
+
+.dark .projects-list-shimmer-row {
+    border-color: var(--gray-700);
 }
 
 .projects-graph-shimmer {
@@ -69,6 +76,20 @@
 
 .dark .projects-graph-shimmer-bars {
     border-color: var(--gray-700);
+}
+
+.projects-graph {
+    padding: 1rem 1rem 0;
+}
+
+.projects-graph-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.projects-graph-canvas {
+    animation: projects-view-fade 0.25s ease-out;
 }
 
 .projects-kanban-column-primary {
@@ -206,16 +227,6 @@
     user-select: none;
 }
 
-.projects-kanban-collapsed-title {
-    writing-mode: vertical-rl;
-    white-space: nowrap;
-    letter-spacing: 0.01em;
-}
-
-[x-cloak] {
-    display: none !important;
-}
-
 .projects-kanban-board .projects-kanban-empty {
     display: flex;
     flex-direction: column;
@@ -242,6 +253,10 @@
     flex: 0 0 auto;
     min-height: 10rem;
     margin: 0.25rem;
+}
+
+.projects-kanban-board .fi-kanban-cards:has([data-kanban-card]) .projects-kanban-empty-column {
+    display: none;
 }
 
 .projects-kanban-board.projects-kanban-loading .projects-kanban-columns {
@@ -447,6 +462,18 @@
     rotate: -3deg;
     cursor: grabbing;
     box-shadow: 0 12px 28px -6px rgb(0 0 0 / 0.25), 0 4px 10px -4px rgb(0 0 0 / 0.15);
+}
+
+.projects-kanban-board .fi-kanban-column:has(.fi-kanban-card-ghost) {
+    border-color: var(--primary-400);
+    background-color: var(--primary-50);
+    box-shadow: inset 0 0 0 1px var(--primary-400);
+}
+
+.dark .projects-kanban-board .fi-kanban-column:has(.fi-kanban-card-ghost) {
+    border-color: color-mix(in oklab, var(--primary-400) 60%, transparent);
+    background-color: color-mix(in oklab, var(--primary-500) 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-400) 60%, transparent);
 }
 
 .fi-body:has(.projects-kanban-board) .fi-main-ctn {

@@ -13,6 +13,7 @@ use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Project\Enums\TaskViewLayout;
 use Webkul\Project\Filament\Resources\ProjectResource\Pages\ManageTasks;
 use Webkul\Project\Filament\Resources\TaskResource\Pages\ListTasks;
 use Webkul\Project\Models\Project;
@@ -86,6 +87,18 @@ class ProjectServiceProvider extends PackageServiceProvider
                 ? view('projects::filament.view-layout-shimmer', [
                     'layouts'      => $page->getTaskViewLayouts(),
                     'activeLayout' => $page->getTaskViewLayout(),
+                ])
+                : '',
+            scopes: [ManageTasks::class, ListTasks::class],
+        );
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_START,
+            fn (): string|View => method_exists($page = Livewire::current(), 'getTaskViewLayouts') && $page->isTaskViewLayout(TaskViewLayout::GRAPH)
+                ? view('projects::filament.graph-controls', [
+                    'graphType'    => $page->graphType,
+                    'graphStacked' => $page->graphStacked,
+                    'graphSort'    => $page->graphSort,
                 ])
                 : '',
             scopes: [ManageTasks::class, ListTasks::class],

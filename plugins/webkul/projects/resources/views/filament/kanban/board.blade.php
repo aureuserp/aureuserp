@@ -2,7 +2,8 @@
     use Webkul\Project\Enums\TaskState;
     use Webkul\Project\Filament\Resources\TaskResource;
 
-    $stages = $this->getKanbanStages();
+    $columns = $this->getKanbanColumns();
+    $grouping = $this->getKanbanGrouping();
     $canManageStages = $this->canManageTaskStages();
     $states = TaskState::cases();
     $stateColors = [
@@ -12,11 +13,12 @@
         'danger'  => '#ef4444',
         'success' => '#22c55e',
     ];
-    $activityProgressColors = [
-        'overdue' => 'bg-danger-500',
-        'today'   => 'bg-warning-400',
-        'planned' => 'bg-success-500',
-        'none'    => 'bg-gray-300 dark:bg-gray-600',
+    $stateProgressColors = [
+        'gray'    => 'bg-gray-400 dark:bg-gray-500',
+        'warning' => 'bg-warning-500',
+        'primary' => 'bg-primary-500',
+        'danger'  => 'bg-danger-500',
+        'success' => 'bg-success-500',
     ];
     $activityIconColors = [
         'gray'    => 'text-gray-400 hover:text-primary-600 dark:hover:text-primary-400',
@@ -52,61 +54,44 @@
     </div>
 
     <div class="projects-kanban-columns relative flex items-start gap-4 overflow-x-auto pb-4" wire:ignore.self>
-        @forelse ($stages as $stage)
+        @forelse ($columns as $column)
             @php
-                $isLast = $loop->last;
+                $tasks = $column['tasks'];
+                $isLast = $grouping === 'stage' && $loop->last;
                 $columnClass = $isLast ? 'projects-kanban-column-primary' : 'projects-kanban-column-gray';
                 $countClass = $isLast ? 'projects-kanban-count-primary' : 'projects-kanban-count-gray';
             @endphp
 
             <div
-                wire:key="projects-kanban-column-{{ $stage->getKey() }}"
-                x-data="{ collapsed: localStorage.getItem('projects-kanban-stage-{{ $stage->getKey() }}') === '1', toggle() { this.collapsed = ! this.collapsed; localStorage.setItem('projects-kanban-stage-{{ $stage->getKey() }}', this.collapsed ? '1' : '0') } }"
-                :class="collapsed ? 'w-12' : 'w-80'"
-                @class(['fi-kanban-column flex shrink-0 flex-col rounded-xl border transition-[width] duration-200', $columnClass])
+                wire:key="projects-kanban-column-{{ $grouping }}-{{ $column['value'] }}"
+                @class(['fi-kanban-column w-80 flex shrink-0 flex-col rounded-xl border', $columnClass])
                 role="group"
-                aria-label="{{ $stage->name }}"
+                aria-label="{{ $column['label'] }}"
             >
-                <button
-                    type="button"
-                    x-show="collapsed"
-                    x-cloak
-                    x-on:click="toggle()"
-                    class="flex w-full items-center justify-center p-2.5 text-gray-400 transition hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                    title="{{ $stage->name }}"
-                >
-                    <x-filament::icon icon="heroicon-m-chevron-double-right" class="h-4 w-4 shrink-0" />
-                </button>
-
-                <div x-show="! collapsed" class="flex items-center justify-between gap-2 p-3">
+                <div class="flex items-center justify-between gap-2 p-3">
                     <h3 class="flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-gray-950 dark:text-white">
-                        <button
-                            type="button"
-                            x-on:click="toggle()"
-                            class="shrink-0 rounded-md p-0.5 text-gray-400 transition hover:bg-gray-200/50 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-white/10 dark:hover:text-gray-300"
-                            title="{{ __('projects::filament/kanban.column.fold') }}"
-                        >
-                            <x-filament::icon icon="heroicon-m-chevron-down" class="h-4 w-4" />
-                        </button>
 
-                        <span class="truncate">{{ $stage->name }}</span>
+                        @if ($column['type'] === 'none')
+                            <x-filament::icon icon="heroicon-m-lock-closed" class="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                        @endif
+                        <span class="truncate">{{ $column['label'] }}</span>
                     </h3>
 
                     <div class="flex shrink-0 items-center gap-1.5">
                         <button
                             type="button"
-                            wire:click="mountAction('quickCreateTask', { stage: '{{ $stage->getKey() }}' })"
+                            wire:click="mountAction('quickCreateTask', { group: '{{ $grouping }}', value: '{{ $column['value'] }}' })"
                             class="rounded-md p-0.5 text-gray-400 transition hover:bg-gray-200/50 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-white/10 dark:hover:text-gray-300"
                             title="{{ __('projects::filament/kanban.card.quick-create') }}"
                         >
                             <x-filament::icon icon="heroicon-m-plus" class="h-4 w-4" />
                         </button>
 
-                        <span @class(['inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium', $countClass])>
-                            {{ $stage->tasks->count() }}
+                        <span data-kanban-count @class(['inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium', $countClass])>
+                            {{ $tasks->count() }}
                         </span>
 
-                        @if ($canManageStages)
+                        @if ($grouping === 'stage' && $column['type'] === 'stage' && $canManageStages)
                             <x-filament::dropdown placement="bottom-end" teleport>
                                 <x-slot name="trigger">
                                     <button
@@ -121,7 +106,7 @@
                                 <x-filament::dropdown.list>
                                     <x-filament::dropdown.list.item
                                         icon="heroicon-m-pencil-square"
-                                        wire:click="mountAction('editTaskStage', { stage: '{{ $stage->getKey() }}' })"
+                                        wire:click="mountAction('editTaskStage', { stage: '{{ $column['value'] }}' })"
                                     >
                                         {{ __('projects::filament/kanban.column.edit') }}
                                     </x-filament::dropdown.list.item>
@@ -129,7 +114,7 @@
                                     <x-filament::dropdown.list.item
                                         icon="heroicon-m-trash"
                                         color="danger"
-                                        wire:click="mountAction('deleteTaskStage', { stage: '{{ $stage->getKey() }}' })"
+                                        wire:click="mountAction('deleteTaskStage', { stage: '{{ $column['value'] }}' })"
                                     >
                                         {{ __('projects::filament/kanban.column.delete') }}
                                     </x-filament::dropdown.list.item>
@@ -140,23 +125,24 @@
                 </div>
 
                 @php
-                    $progress = $this->kanbanStageActivityProgress($stage);
+                    $progress = $this->kanbanStateProgress($tasks);
                     $progressTotal = array_sum($progress);
                 @endphp
 
                 @if ($progressTotal > 0)
-                    <div x-show="! collapsed" class="flex items-center gap-3 px-3 pb-2">
+                    <div class="flex items-center gap-3 px-3 pb-2">
                         <div
+                            data-kanban-progress
                             class="flex h-2.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
                             role="img"
                             aria-label="{{ __('projects::filament/kanban.progress.label') }}"
                         >
-                            @foreach ($activityProgressColors as $key => $barColor)
-                                @if (($progress[$key] ?? 0) > 0)
+                            @foreach ($states as $state)
+                                @if (($progress[$state->value] ?? 0) > 0)
                                     <span
-                                        class="h-full {{ $barColor }} transition"
-                                        style="width: {{ round($progress[$key] / $progressTotal * 100, 2) }}%;"
-                                        title="{{ __('projects::filament/kanban.progress.'.$key) }}: {{ $progress[$key] }}"
+                                        class="h-full {{ $stateProgressColors[$state->getColor()] ?? 'bg-gray-400' }} transition"
+                                        style="width: {{ round($progress[$state->value] / $progressTotal * 100, 2) }}%;"
+                                        title="{{ $state->getLabel() }}: {{ $progress[$state->value] }}"
                                     ></span>
                                 @endif
                             @endforeach
@@ -166,18 +152,13 @@
 
                 <div
                     data-kanban-column
-                    data-column-value="{{ $stage->getKey() }}"
+                    data-column-value="{{ $column['value'] }}"
                     class="fi-kanban-cards relative flex min-h-16 grow flex-col gap-2.5 overflow-y-auto p-2.5"
                     role="list"
                 >
-                    <div x-show="collapsed" x-cloak class="pointer-events-none absolute inset-x-0 top-2 flex justify-center">
-                        <span class="projects-kanban-collapsed-title text-sm font-semibold text-gray-950 dark:text-white">{{ $stage->name }} ({{ $stage->tasks->count() }})</span>
-                    </div>
-
-                    @forelse ($stage->tasks as $task)
+                    @forelse ($tasks as $task)
                         @php
                             $state = $task->state;
-                            $assignee = $task->users->first();
                             $activity = $this->taskActivityIndicator($task);
                             $visibleTags = $task->tags->take(3);
                             $hiddenTags = $task->tags->slice(3);
@@ -189,7 +170,7 @@
                             wire:key="projects-kanban-card-{{ $task->getKey() }}"
                             data-kanban-card
                             data-record-id="{{ $task->getKey() }}"
-                            x-show="! collapsed"
+                            data-task-state="{{ $task->state?->value }}"
                             role="listitem"
                             aria-label="{{ $task->title }}"
                             class="fi-kanban-card group relative rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-950/5 transition hover:shadow-md dark:bg-gray-900 dark:ring-white/10"
@@ -290,10 +271,10 @@
                             @endif
 
                             <div class="mt-3 flex items-center gap-2">
-                                @if (TaskResource::canEdit($task))
+                                @if (TaskResource::canEdit($task) || $task->activities->isNotEmpty())
                                     <button
                                         type="button"
-                                        wire:click="mountAction('scheduleTaskActivity', { record: '{{ $task->getKey() }}' })"
+                                        wire:click="mountAction('{{ $task->activities->isEmpty() ? 'scheduleTaskActivity' : 'taskActivities' }}', { record: '{{ $task->getKey() }}' })"
                                         data-card-control
                                         @class(['shrink-0 transition', $activityIconColors[$activity['color']] ?? $activityIconColors['gray']])
                                         title="{{ __('chatter::filament/resources/actions/chatter/activity-action.setup.title') }}"
@@ -351,40 +332,27 @@
                                         </x-filament::dropdown>
                                     @endif
 
-                                    @if ($assignee)
-                                        <x-filament::dropdown placement="bottom-end" teleport width="xs">
-                                            <x-slot name="trigger">
-                                                <span class="projects-kanban-avatar flex h-6 w-6 items-center justify-center text-[10px] font-semibold" title="{{ $assignee->name }}">
-                                                    {{ \Illuminate\Support\Str::of($assignee->name)->explode(' ')->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))->take(2)->implode('') }}
-                                                </span>
-                                            </x-slot>
+                                    <div class="flex items-center">
+                                        @if ($task->users->isNotEmpty())
+                                            @include('projects::filament.kanban.partials.assignees', ['task' => $task])
+                                        @endif
 
-                                            <div class="p-3">
-                                                <p class="text-[10px] font-bold uppercase tracking-wide text-gray-400">
-                                                    {{ __('projects::filament/kanban.card.assignees') }}
-                                                </p>
-
-                                                <div class="mt-2 space-y-2">
-                                                    @foreach ($task->users as $user)
-                                                        <div class="flex items-center gap-2">
-                                                            <span class="projects-kanban-avatar flex h-7 w-7 items-center justify-center text-[10px] font-semibold">
-                                                                {{ \Illuminate\Support\Str::of($user->name)->explode(' ')->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))->take(2)->implode('') }}
-                                                            </span>
-                                                            <div class="min-w-0">
-                                                                <p class="truncate text-sm font-medium text-gray-950 dark:text-white">{{ $user->name }}</p>
-                                                                <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</p>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </x-filament::dropdown>
-                                    @endif
+                                        @if ($task->users->isEmpty() && TaskResource::canEdit($task))
+                                            <button
+                                                type="button"
+                                                wire:click="mountAction('assignTask', { record: '{{ $task->getKey() }}' })"
+                                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-primary-600 dark:text-gray-500 dark:hover:bg-white/10 dark:hover:text-primary-400"
+                                                title="{{ __('projects::filament/kanban.assign.label') }}"
+                                            >
+                                                <x-filament::icon icon="heroicon-m-user-plus" class="h-4 w-4" />
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <div x-show="! collapsed" class="projects-kanban-empty projects-kanban-empty-column">
+                        <div class="projects-kanban-empty projects-kanban-empty-column">
                             <x-filament::icon icon="heroicon-o-inbox" class="h-8 w-8 text-gray-300 dark:text-gray-600" />
                             <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">{{ __('projects::filament/kanban.column.empty-heading') }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('projects::filament/kanban.column.empty-description') }}</p>
@@ -400,7 +368,7 @@
             </div>
         @endforelse
 
-        @if ($canManageStages)
+        @if ($grouping === 'stage' && $canManageStages)
             <button
                 type="button"
                 wire:click="mountAction('addTaskStage')"
@@ -416,3 +384,110 @@
 
     <x-filament-actions::modals />
 </div>
+
+@once
+    <script>
+        document.addEventListener('livewire:init', () => {
+            window.Livewire.on('kanban-stats-refresh', () => {
+                requestAnimationFrame(() => {
+                    const order = ['in_progress', 'change_requested', 'approved', 'cancelled', 'done'];
+                    const colors = {
+                        in_progress: 'bg-gray-400 dark:bg-gray-500',
+                        change_requested: 'bg-warning-500',
+                        approved: 'bg-primary-500',
+                        cancelled: 'bg-danger-500',
+                        done: 'bg-success-500',
+                    };
+
+                    document.querySelectorAll('.projects-kanban-board .fi-kanban-column').forEach((column) => {
+                        const cards = column.querySelectorAll('[data-kanban-card]');
+                        const total = cards.length;
+
+                        const badge = column.querySelector('[data-kanban-count]');
+
+                        if (badge) {
+                            badge.textContent = total;
+                        }
+
+                        const bar = column.querySelector('[data-kanban-progress]');
+
+                        if (! bar) {
+                            return;
+                        }
+
+                        const tally = {};
+                        order.forEach((state) => (tally[state] = 0));
+                        cards.forEach((card) => {
+                            const state = card.dataset.taskState;
+
+                            if (state && tally[state] !== undefined) {
+                                tally[state]++;
+                            }
+                        });
+
+                        bar.innerHTML = '';
+
+                        if (total === 0) {
+                            return;
+                        }
+
+                        order.forEach((state) => {
+                            if (tally[state] > 0) {
+                                const span = document.createElement('span');
+                                span.className = 'h-full transition ' + colors[state];
+                                span.style.width = ((tally[state] / total) * 100).toFixed(2) + '%';
+                                bar.appendChild(span);
+                            }
+                        });
+                    });
+                });
+            });
+
+            if (! window.__projectsKanbanAutoScroll) {
+                window.__projectsKanbanAutoScroll = true;
+
+                const EDGE = 72;
+                const SPEED = 22;
+                let pointerX = null;
+                let raf = null;
+
+                const container = () => document.querySelector('.projects-kanban-columns');
+                const dragging = () => !! document.querySelector('.fi-kanban-card-ghost');
+
+                const loop = () => {
+                    if (! dragging()) {
+                        raf = null;
+
+                        return;
+                    }
+
+                    const el = container();
+
+                    if (el && pointerX !== null) {
+                        const rect = el.getBoundingClientRect();
+
+                        if (pointerX > rect.right - EDGE) {
+                            el.scrollLeft += SPEED;
+                        } else if (pointerX < rect.left + EDGE) {
+                            el.scrollLeft -= SPEED;
+                        }
+                    }
+
+                    raf = requestAnimationFrame(loop);
+                };
+
+                const track = (event) => {
+                    pointerX = event.touches && event.touches[0] ? event.touches[0].clientX : event.clientX;
+
+                    if (dragging() && ! raf) {
+                        raf = requestAnimationFrame(loop);
+                    }
+                };
+
+                ['dragover', 'pointermove', 'touchmove'].forEach((name) => {
+                    document.addEventListener(name, track, { capture: true, passive: true });
+                });
+            }
+        });
+    </script>
+@endonce
