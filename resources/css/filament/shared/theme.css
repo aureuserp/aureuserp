@@ -903,11 +903,35 @@
         @apply absolute end-2 top-2 z-10 m-0;
     }
 
+    & .fi-ta-card-top-right {
+        @apply absolute end-2 top-2 z-10 m-0;
+    }
+
+    & .fi-ta-card-hours {
+        @apply absolute end-2 top-2 z-10 m-0;
+    }
+
+    & .fi-ta-card-title {
+        @apply pe-24;
+    }
+
     & .fi-ta-record-content-ctn {
         @apply ps-0 pt-5;
     }
 
     & .fi-ta-actions > .fi-ta-card-tags {
         @apply min-w-0 flex-1 shrink;
+    }
+}
+
+.fi-ta-card-tags {
+    @apply flex-nowrap;
+
+    & > .fi-badge {
+        @apply min-w-0;
+    }
+
+    & > .fi-badge:last-child {
+        @apply shrink;
     }
 }

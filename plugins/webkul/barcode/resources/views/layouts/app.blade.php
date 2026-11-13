@@ -47,7 +47,14 @@
             }
 
             html.fi {
+                color-scheme: light;
+                background-color: var(--gray-50);
                 --livewire-progress-bar-color: var(--primary-500);
+            }
+
+            html.fi.dark {
+                color-scheme: dark;
+                background-color: var(--gray-950);
             }
         </style>
 
@@ -72,7 +79,7 @@
         <div class="min-h-screen">
             @unless ($nativeBridgeEnabled)
                 <div
-                    class="fixed inset-0 z-39 bg-slate-900/45"
+                    class="fixed inset-0 z-39 bg-gray-950/50"
                     x-show="sidebarOpen"
                     x-transition.opacity
                     x-on:click="sidebarOpen = false"

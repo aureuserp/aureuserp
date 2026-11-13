@@ -30,14 +30,10 @@ class ManufacturingOrderInfolist
                     ->options(function (Order $record): array {
                         $options = ManufacturingOrderState::options();
 
-                        unset(
-                            $options[ManufacturingOrderState::PROGRESS->value],
-                            $options[ManufacturingOrderState::TO_CLOSE->value],
-                            $options[ManufacturingOrderState::CANCEL->value],
-                        );
-
-                        if ($record->state === ManufacturingOrderState::CANCEL) {
-                            $options[ManufacturingOrderState::CANCEL->value] = ManufacturingOrderState::CANCEL->getLabel();
+                        foreach ([ManufacturingOrderState::PROGRESS, ManufacturingOrderState::TO_CLOSE, ManufacturingOrderState::CANCEL] as $state) {
+                            if ($record->state !== $state) {
+                                unset($options[$state->value]);
+                            }
                         }
 
                         return $options;

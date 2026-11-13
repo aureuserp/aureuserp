@@ -247,7 +247,9 @@
 }
 
 .fi-ta-content-loading > .fi-ta-content .fi-ta-card-tags,
-.fi-ta-content-loading > .fi-ta-table > .fi-ta-records > .fi-ta-row .fi-ta-card-tags {
+.fi-ta-content-loading > .fi-ta-table > .fi-ta-records > .fi-ta-row .fi-ta-card-tags,
+.fi-ta-content-loading > .fi-ta-content .fi-ta-card-evaluation,
+.fi-ta-content-loading > .fi-ta-table > .fi-ta-records > .fi-ta-row .fi-ta-card-evaluation {
     @apply relative w-fit max-w-full;
 
     & > * {
