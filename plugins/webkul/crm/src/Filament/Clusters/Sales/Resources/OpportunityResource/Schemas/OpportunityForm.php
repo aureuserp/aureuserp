@@ -13,9 +13,9 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\RecurringPlanResource;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Schemas\TagForm;
+use Webkul\Crm\Filament\Forms\Components\PriorityStars;
 use Webkul\Crm\Filament\Support\ProbabilityHint;
 use Webkul\Crm\Models\Stage;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
@@ -143,10 +143,8 @@ class OpportunityForm
                                 DatePicker::make('expected_closing_date')
                                     ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.expected-closing'))
                                     ->native(false),
-                                Select::make('priority')
-                                    ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.priority'))
-                                    ->options(OpportunityPriority::class)
-                                    ->default(OpportunityPriority::LOW),
+                                PriorityStars::make('priority')
+                                    ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.priority')),
                                 Select::make('tags')
                                     ->label(__('crm::filament/clusters/sales/resources/opportunity.form.sections.sales.fields.tags'))
                                     ->relationship('tags', 'name')

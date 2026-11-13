@@ -3,6 +3,12 @@
 return [
     'title' => 'الفرصة',
 
+    'chatter' => [
+        'won'      => 'تم تعليم :model كمكسوبة',
+        'lost'     => 'تم تعليم :model كخاسرة',
+        'restored' => 'تمت إعادة :model إلى خط الأنابيب',
+    ],
+
     'log-attributes' => [
         'name'             => 'الفرصة',
         'stage'            => 'المرحلة',

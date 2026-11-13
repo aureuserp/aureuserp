@@ -22,6 +22,8 @@ class LeadInfolist
                     ->schema([
                         Section::make(__('crm::filament/clusters/leads/resources/lead.infolist.sections.lost'))
                             ->icon('heroicon-o-hand-thumb-down')
+                            ->iconColor('danger')
+                            ->extraAttributes(['class' => 'crm-lost-section'])
                             ->visible(fn (Lead $record): bool => $record->trashed())
                             ->schema([
                                 TextEntry::make('lostReason.name')

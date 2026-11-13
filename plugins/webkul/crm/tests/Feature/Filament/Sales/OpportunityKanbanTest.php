@@ -841,3 +841,21 @@ it('lists a card\'s activities in a modal and opens the schedule form from it', 
         ])
         ->assertActionMounted('scheduleKanbanActivity');
 });
+
+it('fills the card stars on click, before the server answers, and re-sorts the card', function () {
+    CRMHelper::actingAsCRMUser(['opportunity']);
+
+    $stage = CRMHelper::firstStage();
+    $opportunity = CRMHelper::opportunity(['stage_id' => $stage->id, 'priority' => OpportunityPriority::LOW]);
+
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->assertSeeHtml('data-card-priority="'.OpportunityPriority::LOW->value.'"')
+        ->assertSeeHtml('x-on:click="select('.OpportunityPriority::HIGH->value.')"')
+        ->assertSeeHtml('crmSortKanbanCard')
+        ->assertSeeHtml('setKanbanCardPriority');
+
+    $opportunity->update(['priority' => OpportunityPriority::HIGH]);
+
+    Livewire::withQueryParams(['activeTableView' => 'default'])->test(ListOpportunities::class)
+        ->assertSeeHtml('data-card-priority="'.OpportunityPriority::HIGH->value.'"');
+});
