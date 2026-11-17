@@ -211,7 +211,12 @@ class PanelCustomizer
             'page'      => $page,
             'model'     => $record ? $record::class : null,
             'recordKey' => $record?->getKey(),
-        ], 'page-header-actions-'.md5($page.'|'.$record?->getKey()));
+        ], static::headerActionsKey($page, $record));
+    }
+
+    protected static function headerActionsKey(string $page, ?Model $record): string
+    {
+        return 'page-header-actions-'.md5($page.'|'.$record?->getKey().'|'.$record?->getAttribute('updated_at'));
     }
 
     protected static function forPanel(array $registry, ?string $panelId): array

@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Actions\Action;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
@@ -13,6 +14,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
+use Livewire\Livewire;
 use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource;
@@ -32,6 +34,8 @@ use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Support\Filament\Customization\CustomizablePanelRegistry;
 use Webkul\Support\Filament\Customization\PanelCustomizer;
 use Webkul\Support\Filament\Resources\CompanyResource as SupportCompanyResource;
+use Webkul\Support\Livewire\PageHeaderActions;
+use Webkul\Support\Models\Company;
 
 require_once __DIR__.'/../../Helpers/TestBootstrapHelper.php';
 
@@ -299,4 +303,29 @@ it('writes the replacement page into the filament component cache', function () 
     File::deleteDirectory($cachePath);
 
     expect($cache['livewireComponents'])->toContain(EditBill::class);
+});
+
+it('remounts the header actions once the page record changes', function () {
+    $record = (new Company)->forceFill(['id' => 7, 'updated_at' => '2026-11-17 10:00:00']);
+
+    $key = fn (): string => (fn () => static::headerActionsKey(EditBill::class, $record))->bindTo(null, PanelCustomizer::class)();
+
+    $before = $key();
+
+    expect($key())->toBe($before);
+
+    $record->forceFill(['updated_at' => '2026-11-17 10:00:05']);
+
+    expect($key())->not->toBe($before);
+});
+
+it('renders only the visible header actions', function () {
+    PanelCustomizer::headerActions(EditBill::class, fn (): array => [
+        Action::make('shownHostAction')->label('Shown host action'),
+        Action::make('hiddenHostAction')->label('Hidden host action')->visible(false),
+    ]);
+
+    Livewire::test(PageHeaderActions::class, ['page' => EditBill::class])
+        ->assertSee('Shown host action')
+        ->assertDontSee('Hidden host action');
 });
