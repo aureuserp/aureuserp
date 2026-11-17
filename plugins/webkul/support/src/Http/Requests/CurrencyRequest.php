@@ -36,7 +36,7 @@ class CurrencyRequest extends FormRequest
             'iso_numeric'    => ['nullable', 'string', 'max:3'],
             'decimal_places' => [...$requiredRule, 'integer', 'min:0', 'max:10'],
             'full_name'      => ['nullable', 'string', 'max:255'],
-            'rounding'       => ['nullable', 'numeric', 'min:0'],
+            'rounding'       => ['sometimes', 'numeric', 'gt:0'],
             'active'         => [...$requiredRule, 'boolean'],
         ];
 
@@ -72,7 +72,7 @@ class CurrencyRequest extends FormRequest
                 'example'     => 'United States Dollar',
             ],
             'rounding' => [
-                'description' => 'Rounding precision (minimum 0).',
+                'description' => 'Rounding precision, greater than 0.',
                 'example'     => 0.01,
             ],
             'active' => [

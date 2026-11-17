@@ -90,6 +90,19 @@ it('validates required fields when creating a currency', function (string $field
         ->assertJsonValidationErrors([$field]);
 })->with(['name', 'symbol', 'decimal_places', 'active']);
 
+it('rejects a rounding that is not positive', function (float|int|null $rounding) {
+    actingWithPermissions(['create_support_currency']);
+
+    $payload = Currency::factory()->make([
+        'name'     => 'Test Currency '.uniqid(),
+        'rounding' => $rounding,
+    ])->toArray();
+
+    $this->postJson(currencyRoute('store'), $payload)
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['rounding']);
+})->with([0, -0.01, null]);
+
 it('shows a currency for authorized users', function () {
     actingWithPermissions(['view_support_currency']);
 
