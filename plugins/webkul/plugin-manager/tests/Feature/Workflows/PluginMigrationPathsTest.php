@@ -79,8 +79,39 @@ it('describes a plugin whose provider is not registered in the application', fun
 
     expect($names)->toBe([...array_slice($names, 0, -1), 'unregistered-plugin'])
         ->and(array_search('accounts', $names))->toBeLessThan(array_search('unregistered-plugin', $names))
-        ->and($paths['unregistered-plugin']['migrations'][0])->toEndWith('2030_01_01_000000_create_unregistered_table.php')
-        ->and($paths['unregistered-plugin']['settings_migrations'][0])->toEndWith('2030_01_01_000001_create_unregistered_settings.php');
+        ->and($paths['unregistered-plugin']['dependencies'])->toBe(['accounts']);
+});
+
+it('only lists migration and settings files that exist on disk', function () {
+    $paths = PluginMigrationPaths::all();
+
+    $missing = collect($paths)
+        ->flatMap(fn (array $plugin): array => [...$plugin['migrations'], ...$plugin['settings_migrations']])
+        ->reject(fn (string $path): bool => is_file($path));
+
+    expect($missing->all())->toBe([])
+        ->and($paths['support']['migrations'])->not->toContain(base_path('plugins/webkul/support/database/migrations/2024_11_05_105102_create_plugins_table.php'));
+});
+
+it('lists core plugins before the others', function () {
+    $paths = PluginMigrationPaths::all();
+
+    $providers = (fn (): array => static::discoverProviderClasses())->bindTo(null, PluginMigrationPaths::class)();
+
+    $coreNames = collect($providers)
+        ->map(fn (string $provider): Package => (new $provider(app()))->describePackage())
+        ->filter(fn (Package $package): bool => $package->isCore)
+        ->map(fn (Package $package): string => $package->name);
+
+    expect(collect($paths)->filter(fn (array $plugin): bool => $plugin['is_core'])->keys()->all())
+        ->toEqualCanonicalizing($coreNames->values()->all());
+
+    $order = array_keys($paths);
+
+    $lastCore = $coreNames->map(fn (string $name): int => array_search($name, $order))->max();
+
+    expect($coreNames)->not->toBeEmpty()
+        ->and(array_slice($order, 0, $lastCore + 1))->toEqualCanonicalizing($coreNames->values()->all());
 });
 
 it('throws on circular dependencies', function () {

@@ -21,6 +21,7 @@ class PluginMigrationPaths
 
         foreach (static::sortByDependencies($packages) as $name => $package) {
             $result[$name] = [
+                'is_core'             => $package->isCore,
                 'dependencies'        => array_values(array_unique($package->dependencies)),
                 'migrations'          => static::resolve($package, 'migrations', $package->migrationFileNames),
                 'settings_migrations' => static::resolve($package, 'settings', $package->settingFileNames),
@@ -73,7 +74,9 @@ class PluginMigrationPaths
             $sorted[$name] = $packages[$name];
         };
 
-        foreach (array_keys($packages) as $name) {
+        $coreFirst = collect($packages)->sortBy(fn (Package $package): int => $package->isCore ? 0 : 1)->keys();
+
+        foreach ($coreFirst as $name) {
             $visit($name, []);
         }
 
@@ -87,7 +90,11 @@ class PluginMigrationPaths
         foreach ($fileNames as $fileName) {
             $path = $package->basePath("/../database/{$directory}/{$fileName}.php");
 
-            $paths[] = realpath($path) ?: $path;
+            $existing = realpath($path) ?: realpath($path.'.stub');
+
+            if ($existing) {
+                $paths[] = $existing;
+            }
         }
 
         return $paths;
