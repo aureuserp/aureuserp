@@ -57,7 +57,9 @@ class CurrencyForm
                                             ->label(__('support::filament/resources/currency.form.sections.format-information.fields.rounding'))
                                             ->numeric()
                                             ->step(0.000001)
+                                            ->required()
                                             ->minValue(0.000001)
+                                            ->maxValue(999999)
                                             ->default(0.01)
                                             ->helperText(__('support::filament/resources/currency.form.sections.format-information.fields.rounding-helper-text')),
                                     ])

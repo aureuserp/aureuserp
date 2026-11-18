@@ -34,9 +34,9 @@ class CurrencyRequest extends FormRequest
             'name'           => [...$requiredRule, 'string', 'max:255', 'unique:currencies,name'.($currencyId ? ','.$currencyId : '')],
             'symbol'         => [...$requiredRule, 'string', 'max:10'],
             'iso_numeric'    => ['nullable', 'string', 'max:3'],
-            'decimal_places' => [...$requiredRule, 'integer', 'min:0', 'max:10'],
+            'decimal_places' => [...$requiredRule, 'integer', 'min:0', 'max:6'],
             'full_name'      => ['nullable', 'string', 'max:255'],
-            'rounding'       => ['sometimes', 'numeric', 'gt:0'],
+            'rounding'       => ['sometimes', 'numeric', 'min:0.000001', 'max:999999'],
             'active'         => [...$requiredRule, 'boolean'],
         ];
 
@@ -64,7 +64,7 @@ class CurrencyRequest extends FormRequest
                 'example'     => '840',
             ],
             'decimal_places' => [
-                'description' => 'Number of decimal places (0-10).',
+                'description' => 'Number of decimal places (0-6).',
                 'example'     => 2,
             ],
             'full_name' => [
@@ -72,7 +72,7 @@ class CurrencyRequest extends FormRequest
                 'example'     => 'United States Dollar',
             ],
             'rounding' => [
-                'description' => 'Rounding precision, greater than 0.',
+                'description' => 'Rounding precision, from 0.000001 to 999999.',
                 'example'     => 0.01,
             ],
             'active' => [

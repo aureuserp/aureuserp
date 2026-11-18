@@ -195,11 +195,17 @@ class BranchesRelationManager extends RelationManager
                                                             ->numeric()
                                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.currency-decimal-places'))
                                                             ->required()
-                                                            ->rules('min:0', 'max:10'),
+                                                            ->integer()
+                                                            ->minValue(0)
+                                                            ->maxValue(6)
+                                                            ->default(2),
                                                         TextInput::make('rounding')
                                                             ->numeric()
                                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.currency-rounding'))
-                                                            ->required(),
+                                                            ->required()
+                                                            ->minValue(0.000001)
+                                                            ->maxValue(999999)
+                                                            ->default(0.01),
                                                         Toggle::make('active')
                                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.currency-status'))
                                                             ->default(true),

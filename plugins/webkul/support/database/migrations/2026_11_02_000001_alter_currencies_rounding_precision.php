@@ -19,7 +19,7 @@ return new class extends Migration
             ->get(['id', 'decimal_places'])
             ->each(fn (object $currency) => DB::table('currencies')
                 ->where('id', $currency->id)
-                ->update(['rounding' => number_format(10 ** -max(0, (int) $currency->decimal_places), 6, '.', '')]));
+                ->update(['rounding' => number_format(10 ** -min(6, max(0, (int) ($currency->decimal_places ?? 2))), 6, '.', '')]));
     }
 
     public function down(): void

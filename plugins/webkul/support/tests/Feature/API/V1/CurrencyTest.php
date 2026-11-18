@@ -90,7 +90,7 @@ it('validates required fields when creating a currency', function (string $field
         ->assertJsonValidationErrors([$field]);
 })->with(['name', 'symbol', 'decimal_places', 'active']);
 
-it('rejects a rounding that is not positive', function (float|int|null $rounding) {
+it('rejects a rounding outside the allowed range', function (float|int|null $rounding) {
     actingWithPermissions(['create_support_currency']);
 
     $payload = Currency::factory()->make([
@@ -101,7 +101,34 @@ it('rejects a rounding that is not positive', function (float|int|null $rounding
     $this->postJson(currencyRoute('store'), $payload)
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['rounding']);
-})->with([0, -0.01, null]);
+})->with([0, -0.01, 0.0000001, 1000000, null]);
+
+it('rejects decimal places outside the allowed range', function (int|float $decimalPlaces) {
+    actingWithPermissions(['create_support_currency']);
+
+    $payload = Currency::factory()->make([
+        'name'           => 'Test Currency '.uniqid(),
+        'decimal_places' => $decimalPlaces,
+    ])->toArray();
+
+    $this->postJson(currencyRoute('store'), $payload)
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['decimal_places']);
+})->with([-1, 7, 10, 1.5]);
+
+it('accepts the largest allowed decimal places', function () {
+    actingWithPermissions(['create_support_currency']);
+
+    $payload = Currency::factory()->make([
+        'name'           => 'Test Currency '.uniqid(),
+        'decimal_places' => 6,
+        'rounding'       => 0.000001,
+    ])->toArray();
+
+    $this->postJson(currencyRoute('store'), $payload)
+        ->assertCreated()
+        ->assertJsonPath('data.decimal_places', 6);
+});
 
 it('shows a currency for authorized users', function () {
     actingWithPermissions(['view_support_currency']);
