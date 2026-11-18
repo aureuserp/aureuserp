@@ -500,3 +500,41 @@ it('keeps a renamed route when the warehouse is saved without step changes', fun
 
     expect(Route::withTrashed()->whereKey($warehouse->reception_route_id)->value('name'))->toBe('Inbound');
 });
+
+it('restores inventory keys from the seeded ids and the warehouse structure when names are translated', function () {
+    InventoryHelper::warehouse(ReceptionStep::THREE_STEPS, DeliveryStep::THREE_STEPS);
+
+    $otherPluginKeys = [
+        'location.pre-production',
+        'location.post-production',
+        'operation-type.manufacturing',
+        'operation-type.pick-components',
+        'operation-type.store-finished-product',
+        'operation-type.pos-orders',
+        'operation-type.pos-returns',
+        'route.manufacture',
+        'rule.stock-pre-production',
+        'rule.pre-production-production',
+        'rule.post-production-stock',
+    ];
+
+    $expected = [];
+
+    foreach (['inventories_locations', 'inventories_operation_types', 'inventories_routes', 'inventories_rules'] as $table) {
+        $expected[$table] = DB::table($table)->whereNotNull('key')->whereNotIn('key', $otherPluginKeys)->pluck('key', 'id')->all();
+
+        foreach (array_keys($expected[$table]) as $id) {
+            DB::table($table)->where('id', $id)->update(['key' => null, 'name' => "Nom {$id}"]);
+        }
+    }
+
+    (require __DIR__.'/../../../database/migrations/2026_11_06_100000_add_key_to_inventories_tables.php')->backfill();
+
+    expect(collect($expected['inventories_rules'])->countBy()->get('rule.vendors-stock'))->toBeGreaterThanOrEqual(2)
+        ->and($expected['inventories_rules'])->toContain('rule.buy', 'rule.dropship', 'rule.stock-customers-pick')
+        ->and($expected['inventories_locations'])->toContain('location.vendors', 'location.scrap');
+
+    foreach ($expected as $table => $keys) {
+        expect(DB::table($table)->whereIn('id', array_keys($keys))->pluck('key', 'id')->all())->toEqual($keys);
+    }
+});

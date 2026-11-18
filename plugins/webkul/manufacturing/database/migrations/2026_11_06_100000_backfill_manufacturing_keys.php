@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,12 +16,23 @@ return new class extends Migration
         'pbm_route_id' => ['inventories_routes', 'route.manufacture'],
     ];
 
+    protected array $warehouseRules = [
+        'stock-pre-production'      => ['lot_stock_location_id', 'pbm_loc_id', 'pbm_type_id'],
+        'pre-production-production' => ['pbm_loc_id', 'location.production', 'manu_type_id'],
+        'post-production-stock'     => ['sam_loc_id', 'lot_stock_location_id', 'sam_type_id'],
+    ];
+
     public function up(): void
     {
         if (! Schema::hasColumn('inventories_rules', 'key')) {
             return;
         }
 
+        $this->backfill();
+    }
+
+    public function backfill(): void
+    {
         foreach ($this->warehouseColumns as $column => [$table, $seedKey]) {
             DB::table($table)
                 ->whereIn('id', DB::table('inventories_warehouses')->whereNotNull($column)->select($column))
@@ -28,20 +40,55 @@ return new class extends Migration
                 ->update(['key' => $seedKey]);
         }
 
-        foreach (['stock-pre-production', 'pre-production-production', 'post-production-stock'] as $key) {
-            $ids = DB::table('inventories_rules')
-                ->whereNotNull('warehouse_id')
-                ->whereNull('key')
-                ->where('name', 'like', trans("manufacturing::seeders.rules.{$key}", ['code' => '%'], 'en'))
-                ->get(['id', 'warehouse_id'])
-                ->groupBy('warehouse_id')
-                ->filter(fn ($rows) => $rows->count() === 1)
-                ->map(fn ($rows) => $rows->first()->id)
-                ->values();
+        $productionLocationIds = DB::table('inventories_locations')->where('key', 'location.production')->pluck('id');
 
-            DB::table('inventories_rules')->whereIn('id', $ids)->update(['key' => "rule.{$key}"]);
+        foreach (DB::table('inventories_warehouses')->get() as $warehouse) {
+            foreach ($this->warehouseRules as $key => [$source, $destination, $operationType]) {
+                $references = [
+                    'source_location_id'      => $warehouse->{$source} ?? null,
+                    'destination_location_id' => $destination === 'location.production'
+                        ? ($productionLocationIds->count() === 1 ? $productionLocationIds->first() : null)
+                        : ($warehouse->{$destination} ?? null),
+                    'route_id'                => $warehouse->pbm_route_id ?? null,
+                    'operation_type_id'       => $warehouse->{$operationType} ?? null,
+                ];
+
+                if (in_array(null, $references, true)) {
+                    continue;
+                }
+
+                $this->assignKey(DB::table('inventories_rules')->where('warehouse_id', $warehouse->id)->where($references), $warehouse->id, "rule.{$key}");
+            }
+
+            foreach ($this->warehouseRules as $key => $structure) {
+                if (! isset($warehouse->{$structure[2]})) {
+                    continue;
+                }
+
+                $this->assignKey(
+                    DB::table('inventories_rules')
+                        ->where('warehouse_id', $warehouse->id)
+                        ->where('operation_type_id', $warehouse->{$structure[2]})
+                        ->where('name', 'like', trans("manufacturing::seeders.rules.{$key}", ['code' => '%'], 'en')),
+                    $warehouse->id,
+                    "rule.{$key}",
+                );
+            }
         }
     }
 
     public function down(): void {}
+
+    protected function assignKey(Builder $candidates, int $warehouseId, string $seedKey): void
+    {
+        if (DB::table('inventories_rules')->where('warehouse_id', $warehouseId)->where('key', $seedKey)->exists()) {
+            return;
+        }
+
+        $ids = $candidates->whereNull('key')->pluck('id');
+
+        if ($ids->count() === 1) {
+            DB::table('inventories_rules')->where('id', $ids->first())->update(['key' => $seedKey]);
+        }
+    }
 };

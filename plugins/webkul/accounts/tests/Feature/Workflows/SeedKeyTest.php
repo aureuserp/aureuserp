@@ -60,3 +60,36 @@ it('carries keys over when accounting is copied to a new company', function () {
         ->and($accountKeys)->toContain('account.current-assets')
         ->and(DB::table('accounts_tax_groups')->where('company_id', $company->id)->pluck('key'))->toContain('tax-group.tax-15');
 });
+
+it('restores accounting keys from the seeded ids when names and codes are translated', function () {
+    app(AccountingSetupService::class)->setUp(Company::factory()->create());
+
+    $expected = [
+        'accounts_journals'   => DB::table('accounts_journals')
+            ->whereIn('key', ['journal.sale', 'journal.purchase', 'journal.miscellaneous', 'journal.exchange-difference', 'journal.bank', 'journal.cash'])
+            ->pluck('key', 'id')
+            ->all(),
+        'accounts_accounts'   => DB::table('accounts_accounts')->where('key', 'like', 'account.%')->pluck('key', 'id')->all(),
+        'accounts_tax_groups' => DB::table('accounts_tax_groups')->where('key', 'like', 'tax-group.%')->pluck('key', 'id')->all(),
+    ];
+
+    foreach ($expected as $table => $keys) {
+        foreach (array_keys($keys) as $id) {
+            DB::table($table)->where('id', $id)->update(['key' => null, 'name' => "Nom {$id}"]);
+        }
+    }
+
+    DB::table('accounts_journals')->whereIn('id', array_keys($expected['accounts_journals']))->update(['code' => DB::raw("concat('L', code)")]);
+
+    DB::table('accounts_accounts')->whereIn('id', array_keys($expected['accounts_accounts']))->update(['code' => DB::raw("concat('9', code)")]);
+
+    (require __DIR__.'/../../../database/migrations/2026_11_06_100000_add_key_to_accounts_tables.php')->backfill();
+
+    expect(count($expected['accounts_journals']))->toBeGreaterThanOrEqual(12)
+        ->and(count($expected['accounts_accounts']))->toBeGreaterThanOrEqual(102)
+        ->and(count($expected['accounts_tax_groups']))->toBeGreaterThanOrEqual(2);
+
+    foreach ($expected as $table => $keys) {
+        expect(DB::table($table)->whereIn('id', array_keys($keys))->pluck('key', 'id')->all())->toEqual($keys);
+    }
+});

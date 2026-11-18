@@ -57,3 +57,24 @@ it('resolves the default units by key after they are renamed', function () {
     expect(ProductResource::getDefaultUomIdByProductType(ProductType::GOODS))->toBe(UOM::where('key', 'uom.units')->value('id'))
         ->and(ProductResource::getDefaultUomIdByProductType(ProductType::SERVICE))->toBe(UOM::where('key', 'uom.hours')->value('id'));
 });
+
+it('restores unit keys from the seeded ids when the names are translated', function () {
+    $expected = [];
+
+    foreach (['unit_of_measure_categories', 'unit_of_measures'] as $table) {
+        $expected[$table] = DB::table($table)->whereNotNull('key')->pluck('key', 'id')->all();
+
+        foreach (array_keys($expected[$table]) as $id) {
+            DB::table($table)->where('id', $id)->update(['key' => null, 'name' => "Nom {$id}"]);
+        }
+    }
+
+    (require __DIR__.'/../../../database/migrations/2026_11_06_100000_add_key_to_unit_of_measures_tables.php')->backfill();
+
+    expect($expected['unit_of_measure_categories'])->toHaveCount(6)
+        ->and($expected['unit_of_measures'])->toHaveCount(26);
+
+    foreach ($expected as $table => $keys) {
+        expect(DB::table($table)->whereIn('id', array_keys($keys))->pluck('key', 'id')->all())->toEqual($keys);
+    }
+});
