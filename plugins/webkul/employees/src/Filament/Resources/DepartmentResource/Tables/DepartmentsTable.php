@@ -12,10 +12,13 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -24,6 +27,9 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Webkul\Chatter\Filament\Actions\ActivityTableAction;
+use Webkul\Employee\Models\Department;
 
 class DepartmentsTable
 {
@@ -32,39 +38,84 @@ class DepartmentsTable
         return $table
             ->columns([
                 Stack::make([
-                    ImageColumn::make('manager.partner.avatar')
-                        ->imageHeight(35)
-                        ->circular()
-                        ->width(35),
-                    Stack::make([
-                        TextColumn::make('name')
-                            ->weight(FontWeight::Bold)
-                            ->label(__('employees::filament/resources/department.table.columns.name'))
-                            ->searchable()
-                            ->sortable(),
+                    Split::make([
+                        ImageColumn::make('manager.partner.avatar')
+                            ->circular()
+                            ->imageSize(64)
+                            ->defaultImageUrl(fn (Department $record): string => (new UiAvatarsProvider)->get($record))
+                            ->grow(false),
+
                         Stack::make([
-                            TextColumn::make('manager.name')
-                                ->icon('heroicon-m-briefcase')
-                                ->label(__('employees::filament/resources/department.table.columns.manager-name'))
-                                ->sortable()
-                                ->searchable(),
-                        ])
-                            ->visible(fn ($record) => filled($record?->manager?->name)),
-                        Stack::make([
-                            TextColumn::make('company.name')
+                            TextColumn::make('name')
+                                ->label(__('employees::filament/resources/department.table.columns.name'))
+                                ->weight(FontWeight::Bold)
+                                ->size(TextSize::Large)
                                 ->searchable()
-                                ->label(__('employees::filament/resources/department.table.columns.company-name'))
-                                ->icon('heroicon-m-building-office-2')
-                                ->searchable(),
-                        ])
-                            ->visible(fn ($record) => filled($record?->company?->name)),
-                    ])->space(1),
-                ])->space(4),
+                                ->sortable()
+                                ->lineClamp(1)
+                                ->tooltip(fn (Department $record): string => $record->name)
+                                ->extraAttributes(['class' => 'fi-ta-card-title']),
+
+                            Stack::make([
+                                TextColumn::make('parent.name')
+                                    ->label(__('employees::filament/resources/department.table.columns.parent'))
+                                    ->icon('heroicon-o-building-library')
+                                    ->weight(FontWeight::Medium)
+                                    ->tooltip(fn (Department $record): ?string => $record->parent?->complete_name ?? $record->parent?->name)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Department $record): bool => filled($record->parent_id)),
+
+                            Stack::make([
+                                TextColumn::make('manager.name')
+                                    ->label(__('employees::filament/resources/department.table.columns.manager-name'))
+                                    ->icon('heroicon-o-user')
+                                    ->color('gray')
+                                    ->sortable()
+                                    ->searchable()
+                                    ->tooltip(fn (Department $record): ?string => $record->manager?->name)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Department $record): bool => filled($record->manager_id)),
+
+                            Stack::make([
+                                TextColumn::make('company.name')
+                                    ->label(__('employees::filament/resources/department.table.columns.company-name'))
+                                    ->icon('heroicon-o-building-office-2')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->tooltip(fn (Department $record): ?string => $record->company?->name)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Department $record): bool => filled($record->company_id)),
+                        ])->space(1),
+                    ])->from('sm'),
+
+                    TextColumn::make('employees_count')
+                        ->label(__('employees::filament/resources/department.table.columns.employees'))
+                        ->badge()
+                        ->icon('heroicon-m-user-group')
+                        ->color('gray')
+                        ->formatStateUsing(fn ($state): string => __('employees::filament/resources/department.table.columns.employees-count', ['count' => $state])),
+                ])->space(3),
             ])
+            ->recordClasses('fi-ta-card-select')
             ->contentGrid([
-                'md' => 2,
-                'xl' => 4,
+                'sm'  => 1,
+                'md'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
             ])
+            ->paginated([
+                12,
+                24,
+                36,
+                'all',
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['manager.partner', 'parent', 'company'])->withCount('employees'))
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('employees::filament/resources/department.table.groups.name'))
@@ -122,16 +173,21 @@ class DepartmentsTable
                     ]),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('employees::filament/resources/department.table.actions.delete.notification.title'))
-                            ->body(__('employees::filament/resources/department.table.actions.delete.notification.body')),
-                    ),
+                ActivityTableAction::make()
+                    ->hidden(fn (Department $record): bool => $record->trashed())
+                    ->extraAttributes(['class' => 'fi-ta-card-top-right']),
                 ActionGroup::make([
+                    ViewAction::make()
+                        ->hidden(fn (Department $record): bool => $record->trashed()),
+                    EditAction::make()
+                        ->hidden(fn (Department $record): bool => $record->trashed()),
+                    DeleteAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('employees::filament/resources/department.table.actions.delete.notification.title'))
+                                ->body(__('employees::filament/resources/department.table.actions.delete.notification.body')),
+                        ),
                     RestoreAction::make()
                         ->successNotification(
                             Notification::make()
@@ -146,7 +202,10 @@ class DepartmentsTable
                                 ->title(__('employees::filament/resources/department.table.actions.force-delete.notification.title'))
                                 ->body(__('employees::filament/resources/department.table.actions.force-delete.notification.body')),
                         ),
-                ]),
+                ])
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray')
+                    ->extraDropdownAttributes(['class' => 'ms-auto']),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

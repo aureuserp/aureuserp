@@ -150,6 +150,7 @@ class TeamsTable
             Action::make('newOpportunity')
                 ->label(__('crm::filament/clusters/sales/resources/team.grid.new'))
                 ->button()
+                ->extraAttributes(['class' => 'crm-team-new-opportunity'])
                 ->url(fn (Team $record): string => OpportunityResource::getUrl('create', ['team' => $record->getKey()]))
                 ->visible(fn (): bool => OpportunityResource::canCreate()),
             ActionGroup::make([

@@ -37,9 +37,12 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'الاسم',
-            'manager-name' => 'المدير',
-            'company-name' => 'الشركة',
+            'name'            => 'الاسم',
+            'manager-name'    => 'المدير',
+            'company-name'    => 'الشركة',
+            'parent'          => 'القسم الرئيسي',
+            'employees'       => 'الموظفون',
+            'employees-count' => ':count موظف',
         ],
 
         'groups' => [
