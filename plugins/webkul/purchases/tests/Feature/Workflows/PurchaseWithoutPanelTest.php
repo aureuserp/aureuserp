@@ -258,7 +258,8 @@ it('refuses to approve an order on behalf of a user who may not approve', functi
     expect(fn () => PurchaseOrderFacade::approvePurchaseOrder($order, $clerk))
         ->toThrow(OrderApprovalException::class, __('purchases::system.order-workflow.approve.not-allowed'));
 
-    expect($order->refresh()->state)->toBe(OrderState::TO_APPROVE)
+    expect(Auth::check())->toBeFalse()
+        ->and($order->refresh()->state)->toBe(OrderState::TO_APPROVE)
         ->and($order->operations()->exists())->toBeFalse();
 });
 
@@ -272,4 +273,85 @@ it('refuses to approve an order that is not waiting for approval', function () {
 
     expect($order->refresh()->state)->toBe(OrderState::DRAFT)
         ->and($order->operations()->exists())->toBeFalse();
+});
+
+it('records the approver confirming with no authenticated user as author of the order log, the receipt and their messages', function () {
+    $approver = PurchaseHelper::userWithResourcePermission(PermissionType::GLOBAL);
+
+    $order = PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product);
+
+    $lastMessageId = PurchaseHelper::lastMessageId();
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder($order->fresh(), $approver);
+
+    $receipt = $order->operations()->first();
+
+    expect(Auth::check())->toBeFalse()
+        ->and($order->state)->toBe(OrderState::PURCHASE)
+        ->and(PurchaseHelper::messageCausersSince($order, $lastMessageId))->toBe([$approver->id])
+        ->and($receipt->creator_id)->toBe($approver->id)
+        ->and($receipt->moves->pluck('creator_id')->unique()->values()->all())->toBe([$approver->id])
+        ->and(PurchaseHelper::messageCausersSince($receipt, $lastMessageId))->toBe([$approver->id]);
+});
+
+it('records the approver approving with no authenticated user as author of the order log, the receipt and their messages', function () {
+    $approver = PurchaseHelper::userWithResourcePermission(PermissionType::GROUP);
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder(PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product));
+
+    $lastMessageId = PurchaseHelper::lastMessageId();
+
+    $order = PurchaseOrderFacade::approvePurchaseOrder($order->fresh(), $approver);
+
+    $receipt = $order->operations()->first();
+
+    expect(Auth::check())->toBeFalse()
+        ->and($order->state)->toBe(OrderState::PURCHASE)
+        ->and(PurchaseHelper::messageCausersSince($order, $lastMessageId))->toBe([$approver->id])
+        ->and($receipt->creator_id)->toBe($approver->id)
+        ->and($receipt->moves->pluck('creator_id')->unique()->values()->all())->toBe([$approver->id])
+        ->and(PurchaseHelper::messageCausersSince($receipt, $lastMessageId))->toBe([$approver->id]);
+});
+
+it('records the acting user as author of the validated receipt and the bill with no authenticated user', function () {
+    $clerk = PurchaseHelper::userWithResourcePermission(PermissionType::INDIVIDUAL);
+
+    $order = PurchaseHelper::confirmedOrder($this->warehouse, $this->product, 10);
+
+    $receipt = $order->operations->first();
+
+    Auth::logout();
+
+    app()->forgetInstance(CompanyContext::class);
+
+    $lastMessageId = PurchaseHelper::lastMessageId();
+
+    Inventory::completeTransfer($receipt->fresh(), actor: $clerk);
+
+    PurchaseOrderFacade::createPurchaseOrderBill($order->refresh(), $clerk);
+
+    $bill = $order->refresh()->accountMoves()->orderByDesc('id')->firstOrFail();
+
+    expect(Auth::check())->toBeFalse()
+        ->and($receipt->refresh()->state)->toBe(OperationState::DONE)
+        ->and(PurchaseHelper::messageCausersSince($receipt, $lastMessageId))->toBe([$clerk->id])
+        ->and($bill->creator_id)->toBe($clerk->id)
+        ->and(PurchaseHelper::messageCausersSince($bill, $lastMessageId))->toBe([$clerk->id]);
+});
+
+it('keeps the authenticated user after confirming on behalf of another user', function () {
+    $approver = PurchaseHelper::userWithResourcePermission(PermissionType::GLOBAL);
+
+    $order = PurchaseHelper::orderAboveApprovalAmount($this->warehouse, $this->product);
+
+    $admin = PurchaseHelper::actingAsAdmin();
+
+    $lastMessageId = PurchaseHelper::lastMessageId();
+
+    $order = PurchaseOrderFacade::confirmPurchaseOrder($order->fresh(), $approver);
+
+    expect(Auth::id())->toBe($admin->id)
+        ->and($order->state)->toBe(OrderState::PURCHASE)
+        ->and(PurchaseHelper::messageCausersSince($order, $lastMessageId))->toBe([$approver->id])
+        ->and($order->operations()->first()->creator_id)->toBe($approver->id);
 });

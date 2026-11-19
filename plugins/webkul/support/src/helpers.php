@@ -2,9 +2,11 @@
 
 use ArPHP\I18N\Arabic;
 use Filament\Forms\Components\Field;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
@@ -471,5 +473,30 @@ if (! function_exists('allowed_company_ids')) {
     function allowed_company_ids(): array
     {
         return app(CompanyContext::class)->allowedIds();
+    }
+}
+
+if (! function_exists('acting_as')) {
+    function acting_as(?Authenticatable $actor, Closure $callback): mixed
+    {
+        if (! $actor) {
+            return $callback();
+        }
+
+        $guard = Auth::guard();
+
+        $previous = $guard->user();
+
+        $guard->setUser($actor);
+
+        app()->forgetInstance(CompanyContext::class);
+
+        try {
+            return $callback();
+        } finally {
+            $previous ? $guard->setUser($previous) : $guard->forgetUser();
+
+            app()->forgetInstance(CompanyContext::class);
+        }
     }
 }

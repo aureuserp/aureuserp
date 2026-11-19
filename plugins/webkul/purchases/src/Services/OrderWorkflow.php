@@ -88,31 +88,35 @@ class OrderWorkflow
 
     public function confirm(Order $record, ?User $actor = null): Order
     {
-        $settings = settings(OrderSettings::class);
+        return acting_as($actor, function () use ($record): Order {
+            $settings = settings(OrderSettings::class);
 
-        $needsApproval = $settings->enable_order_approval
-            && $record->total_amount >= $settings->order_validation_amount;
+            $needsApproval = $settings->enable_order_approval
+                && $record->total_amount >= $settings->order_validation_amount;
 
-        if (! $needsApproval || $this->canApprove($actor ?? Auth::user())) {
-            return $this->confirmApproved($record, $settings);
-        }
+            if (! $needsApproval || $this->canApprove(Auth::user())) {
+                return $this->confirmApproved($record, $settings);
+            }
 
-        $record->update(['state' => PurchaseEnums\OrderState::TO_APPROVE]);
+            $record->update(['state' => PurchaseEnums\OrderState::TO_APPROVE]);
 
-        return $this->calculator->recompute($record);
+            return $this->calculator->recompute($record);
+        });
     }
 
     public function approve(Order $record, ?User $actor = null): Order
     {
-        if ($record->state !== PurchaseEnums\OrderState::TO_APPROVE) {
-            throw new OrderApprovalException(__('purchases::system.order-workflow.approve.not-waiting-approval'));
-        }
+        return acting_as($actor, function () use ($record): Order {
+            if ($record->state !== PurchaseEnums\OrderState::TO_APPROVE) {
+                throw new OrderApprovalException(__('purchases::system.order-workflow.approve.not-waiting-approval'));
+            }
 
-        if (! $this->canApprove($actor ?? Auth::user())) {
-            throw new OrderApprovalException(__('purchases::system.order-workflow.approve.not-allowed'));
-        }
+            if (! $this->canApprove(Auth::user())) {
+                throw new OrderApprovalException(__('purchases::system.order-workflow.approve.not-allowed'));
+            }
 
-        return $this->confirmApproved($record, settings(OrderSettings::class));
+            return $this->confirmApproved($record, settings(OrderSettings::class));
+        });
     }
 
     protected function confirmApproved(Order $record, OrderSettings $settings): Order

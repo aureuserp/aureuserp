@@ -77,11 +77,13 @@ class PurchaseOrder
         return $this->workflow->unlock($record);
     }
 
-    public function createPurchaseOrderBill(Order $record): Order
+    public function createPurchaseOrderBill(Order $record, ?User $actor = null): Order
     {
-        $this->biller->createBill($record);
+        return acting_as($actor, function () use ($record): Order {
+            $this->biller->createBill($record);
 
-        return $this->calculator->recompute($record);
+            return $this->calculator->recompute($record);
+        });
     }
 
     public function computePurchaseOrder(Order $record): Order

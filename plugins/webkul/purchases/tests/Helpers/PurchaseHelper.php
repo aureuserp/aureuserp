@@ -8,6 +8,7 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Tax;
+use Webkul\Chatter\Models\Message;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\OperationState;
@@ -246,12 +247,31 @@ class PurchaseHelper
         return $record->messages()->pluck('body')->implode(' ');
     }
 
+    public static function lastMessageId(): int
+    {
+        return (int) Message::query()->max('id');
+    }
+
+    public static function messageCausersSince($record, int $messageId): array
+    {
+        return $record->messages()
+            ->where('id', '>', $messageId)
+            ->pluck('causer_id')
+            ->unique()
+            ->values()
+            ->all();
+    }
+
     public static function userWithResourcePermission(PermissionType $permission): User
     {
-        return User::withoutEvents(fn (): User => User::factory()->create([
+        $user = User::withoutEvents(fn (): User => User::factory()->create([
             'default_company_id'  => static::company()->id,
             'resource_permission' => $permission,
         ]));
+
+        $user->allowedCompanies()->sync([static::company()->id]);
+
+        return $user;
     }
 
     public static function orderAboveApprovalAmount(Warehouse $warehouse, Product $product): Order

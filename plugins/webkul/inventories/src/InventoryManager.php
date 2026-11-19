@@ -17,6 +17,7 @@ use Webkul\Inventory\Services\MoveStateResolver;
 use Webkul\Inventory\Services\ProcurementRunner;
 use Webkul\Inventory\Services\RuleResolver;
 use Webkul\Inventory\Services\TransferWorkflow;
+use Webkul\Security\Models\User;
 
 class InventoryManager
 {
@@ -41,9 +42,9 @@ class InventoryManager
         return $this->transfers->reserve($operation);
     }
 
-    public function completeTransfer(Operation $operation, bool $cancelBackorder = false): Operation
+    public function completeTransfer(Operation $operation, bool $cancelBackorder = false, ?User $actor = null): Operation
     {
-        return $this->transfers->complete($operation, $cancelBackorder);
+        return acting_as($actor, fn (): Operation => $this->transfers->complete($operation, $cancelBackorder));
     }
 
     public function cancelTransfer(Operation $operation): Operation
