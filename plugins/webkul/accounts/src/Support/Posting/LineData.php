@@ -13,5 +13,6 @@ class LineData
         public readonly ?float $amountCurrency = null,
         public readonly array $taxIds = [],
         public readonly ?int $taxLineId = null,
+        public readonly ?array $analyticDistribution = null,
     ) {}
 }

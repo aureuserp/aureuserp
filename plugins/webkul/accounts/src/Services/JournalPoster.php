@@ -92,17 +92,18 @@ class JournalPoster
             [$debit, $credit, $amountCurrency] = $this->storedAmounts($line, $company, $currency);
 
             $moveLine = MoveLine::create([
-                'move_id'         => $move->id,
-                'display_type'    => DisplayType::PRODUCT,
-                'account_id'      => $line->accountId,
-                'partner_id'      => $line->partnerId,
-                'name'            => $line->label,
-                'debit'           => $debit,
-                'credit'          => $credit,
-                'balance'         => $debit - $credit,
-                'amount_currency' => $amountCurrency,
-                'currency_id'     => $currency->id,
-                'tax_line_id'     => $line->taxLineId,
+                'move_id'               => $move->id,
+                'display_type'          => DisplayType::PRODUCT,
+                'account_id'            => $line->accountId,
+                'partner_id'            => $line->partnerId,
+                'name'                  => $line->label,
+                'debit'                 => $debit,
+                'credit'                => $credit,
+                'balance'               => $debit - $credit,
+                'amount_currency'       => $amountCurrency,
+                'currency_id'           => $currency->id,
+                'tax_line_id'           => $line->taxLineId,
+                'analytic_distribution' => $line->analyticDistribution ?: null,
             ]);
 
             if ($line->taxIds) {
@@ -197,7 +198,11 @@ class JournalPoster
         $foreignCredit = 0.0;
 
         foreach ($data->lines as $index => $line) {
-            if (! $line instanceof LineData || ($isForeign && $line->amountCurrency === null)) {
+            if (
+                ! $line instanceof LineData
+                || ($isForeign && $line->amountCurrency === null)
+                || ! $this->isValidAnalyticDistribution($line->analyticDistribution)
+            ) {
                 $this->invalid("lines.{$index}");
             }
 
@@ -338,6 +343,7 @@ class JournalPoster
                 $amount($company->currency->round((float) $line->debit)),
                 $amount($company->currency->round((float) $line->credit)),
                 $amount($currency->round((float) $line->amount_currency)),
+                $this->analyticSignature($line->analytic_distribution),
             ]);
 
         $requested = collect($data->lines)->map(function (LineData $line) use ($company, $currency, $amount): array {
@@ -350,10 +356,38 @@ class JournalPoster
                 $amount($debit),
                 $amount($credit),
                 $amount($amountCurrency),
+                $this->analyticSignature($line->analyticDistribution),
             ];
         });
 
         return $signature($stored) === $signature($requested);
+    }
+
+    protected function isValidAnalyticDistribution(?array $distribution): bool
+    {
+        foreach ($distribution ?? [] as $key => $percentage) {
+            if (
+                ! preg_match('/^[1-9]\d*(,[1-9]\d*)*$/', (string) $key)
+                || (! is_int($percentage) && ! is_float($percentage))
+                || $percentage <= 0
+                || $percentage > 100
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function analyticSignature(?array $distribution): string
+    {
+        if (! $distribution) {
+            return '';
+        }
+
+        ksort($distribution, SORT_STRING);
+
+        return json_encode(array_map(fn ($percentage): string => number_format((float) $percentage, 4, '.', ''), $distribution));
     }
 
     protected function findBySource(int $companyId, ?string $sourceType, ?string $sourceKey): ?Move

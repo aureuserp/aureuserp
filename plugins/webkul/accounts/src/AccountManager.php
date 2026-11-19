@@ -121,6 +121,11 @@ class AccountManager
         return $this->payments->postPayment($payment);
     }
 
+    public function resetToDraftPayment(Payment $payment): Payment
+    {
+        return $this->payments->resetToDraft($payment);
+    }
+
     public function createExchangeDifferenceMoves(array $differences): array
     {
         return $this->exchangeDifferences->postDifferences($differences);

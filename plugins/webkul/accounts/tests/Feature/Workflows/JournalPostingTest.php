@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\URL;
 use Webkul\Account\Contracts\PostingValidator;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\PostingError;
 use Webkul\Account\Enums\PostingOperation;
 use Webkul\Account\Exceptions\MissingJournalException;
@@ -14,6 +16,7 @@ use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Exceptions\PostingRejectedException;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Models\Payment;
 use Webkul\Account\Services\ExchangeDifferenceRecorder;
 use Webkul\Account\Support\Posting\EntryData;
 use Webkul\Account\Support\Posting\LineData;
@@ -555,4 +558,102 @@ it('reports a unique violation unrelated to the source key with a generic reason
         ->and($exception->details)->toBe(['reason' => __('accounts::system.posting.unexpected-error')])
         ->and($exception->getMessage())->not->toContain('SQLSTATE')
         ->and(Move::count())->toBe($count);
+});
+
+it('stores a line analytic distribution on the posted move line', function () {
+    $move = AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 100, label: 'Cash', analyticDistribution: ['7' => 60, '8,9' => 40]),
+            new LineData(accountId: $this->creditAccount->id, credit: 100, label: 'Sales'),
+        ],
+    ]))->move;
+
+    expect($move->lines->firstWhere('account_id', $this->debitAccount->id)->analytic_distribution)->toBe(['7' => 60, '8,9' => 40])
+        ->and($move->lines->firstWhere('account_id', $this->creditAccount->id)->analytic_distribution)->toBeNull();
+});
+
+it('rejects a malformed line analytic distribution and leaves nothing behind', function (array $distribution) {
+    $count = Move::count();
+
+    $exception = postingExceptionOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 100, analyticDistribution: $distribution),
+            new LineData(accountId: $this->creditAccount->id, credit: 100),
+        ],
+    ])));
+
+    expect($exception?->error)->toBe(PostingError::INVALID_ENTRY)
+        ->and($exception->details)->toBe(['field' => 'lines.0'])
+        ->and(Move::count())->toBe($count);
+})->with([
+    'a percentage that is not a number' => [['7' => 'all']],
+    'a percentage that is not positive' => [['7' => 0]],
+    'a percentage above one hundred'    => [['7' => 150]],
+    'a key that is not an account id'   => [['store' => 100]],
+]);
+
+it('rejects the same source key when a line analytic distribution differs', function () {
+    AccountFacade::posting()->post(postingEntry());
+
+    $error = postingErrorOf(fn () => AccountFacade::posting()->post(postingEntry([
+        'lines' => [
+            new LineData(accountId: $this->debitAccount->id, debit: 100, label: 'Cash', analyticDistribution: ['7' => 100]),
+            new LineData(accountId: $this->creditAccount->id, credit: 100, label: 'Sales'),
+        ],
+    ])));
+
+    expect($error)->toBe(PostingError::DUPLICATE_SOURCE);
+});
+
+function postedPostingInvoice(): Move
+{
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE);
+
+    AccountHelper::productLine($invoice, AccountHelper::account('income'), qty: 2, priceUnit: 100);
+
+    return AccountHelper::post($invoice);
+}
+
+it('leaves no payment or entry behind when a validator refuses to post a registered payment', function () {
+    $invoice = postedPostingInvoice();
+
+    AccountFacade::posting()->registerValidator(rejectingValidator(PostingOperation::POST));
+
+    $payments = Payment::count();
+
+    $moves = Move::count();
+
+    $error = postingErrorOf(fn () => AccountHelper::pay($invoice));
+
+    expect($error)->toBe(PostingError::REJECTED_BY_VALIDATOR)
+        ->and(Payment::count())->toBe($payments)
+        ->and(Move::count())->toBe($moves)
+        ->and($invoice->refresh()->payment_state)->toBe(PaymentState::NOT_PAID);
+});
+
+it('keeps a payment and its entry unchanged when a validator refuses reset to draft', function () {
+    $invoice = AccountHelper::pay(postedPostingInvoice());
+
+    $payment = $invoice->matchedPayments->first();
+
+    $state = $payment->state;
+
+    AccountFacade::posting()->registerValidator(rejectingValidator(PostingOperation::RESET_TO_DRAFT));
+
+    $error = postingErrorOf(fn () => AccountFacade::resetToDraftPayment($payment));
+
+    expect($error)->toBe(PostingError::REJECTED_BY_VALIDATOR)
+        ->and($payment->refresh()->state)->toBe($state)
+        ->and($payment->move->state)->toBe(MoveState::POSTED)
+        ->and($invoice->refresh()->payment_state)->toBe(PaymentState::PAID);
+});
+
+it('resets a payment and its entry to draft together', function () {
+    $invoice = AccountHelper::pay(postedPostingInvoice());
+
+    $payment = AccountFacade::resetToDraftPayment($invoice->matchedPayments->first());
+
+    expect($payment->refresh()->state)->toBe(PaymentStatus::DRAFT)
+        ->and($payment->move->state)->toBe(MoveState::DRAFT)
+        ->and($invoice->refresh()->payment_state)->toBe(PaymentState::NOT_PAID);
 });
