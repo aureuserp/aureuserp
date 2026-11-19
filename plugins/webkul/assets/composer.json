@@ -1,0 +1,30 @@
+{
+    "name": "webkul/assets",
+    "description": "Company assets and employee custody",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Asset\\AssetServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Asset\\": "src/",
+            "Webkul\\Asset\\Database\\Factories\\": "database/factories/",
+            "Webkul\\Asset\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Asset\\Tests\\": "tests/"
+        }
+    }
+}
