@@ -79,21 +79,25 @@ class Message extends Model
     {
         parent::boot();
 
-        $user = Filament::auth()->user() ?? Auth::user();
+        static::creating(function ($data) {
+            $user = Filament::auth()->user() ?? Auth::user();
 
-        if ($user) {
-            static::creating(function ($data) use ($user) {
+            if ($user) {
                 DB::transaction(function () use ($data, $user) {
                     $data->causer_type = $user->getMorphClass();
                     $data->causer_id = $user->id;
                 });
-            });
+            }
+        });
 
-            static::updating(function ($data) use ($user) {
+        static::updating(function ($data) {
+            $user = Filament::auth()->user() ?? Auth::user();
+
+            if ($user) {
                 $data->causer_type = $user->getMorphClass();
                 $data->causer_id = $user->id;
-            });
-        }
+            }
+        });
 
         static::created(function (Message $message) {
             app()->terminating(function () use ($message) {
