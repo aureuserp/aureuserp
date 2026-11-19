@@ -506,6 +506,7 @@ class QuotationForm
                     ->required()
                     ->default(1)
                     ->numeric()
+                    ->minValue(0)
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->suffix(function ($record, Get $get): mixed {
