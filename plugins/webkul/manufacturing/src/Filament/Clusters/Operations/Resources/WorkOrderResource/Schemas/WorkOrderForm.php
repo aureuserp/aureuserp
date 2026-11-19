@@ -191,6 +191,7 @@ class WorkOrderForm
                                         'blockedByWorkOrders',
                                         'name',
                                         modifyQueryUsing: fn (Builder $query, ?WorkOrder $record) => $query
+                                            ->whereHas('manufacturingOrder')
                                             ->when($record, fn (Builder $relationQuery) => $relationQuery->whereKeyNot($record->getKey()))
                                     )
                                     ->getOptionLabelFromRecordUsing(fn (WorkOrder $record): string => $record->display_name)
