@@ -107,9 +107,10 @@ class InventoryServiceProvider extends PackageServiceProvider
                 '2026_05_14_092628_inventories_create_putaway_rules_table',
                 '2026_05_15_103923_create_inventories_putaway_rule_package_types_table',
                 '2026_06_22_104603_add_additional_column_in_inventories_moves_table',
+                '2026_07_21_125000_add_key_to_inventories_tables',
                 '2026_07_21_130000_provision_company_virtual_locations',
                 '2026_08_03_130000_seed_inventories_sequences',
-                '2026_11_06_100000_add_key_to_inventories_tables',
+                '2026_11_06_100000_backfill_inventories_keys',
             ])
             ->runsMigrations()
             ->hasSettings([

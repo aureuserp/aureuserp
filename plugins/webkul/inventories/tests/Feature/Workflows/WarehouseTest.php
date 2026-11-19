@@ -1,12 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Webkul\Inventory\Database\Seeders\DatabaseSeeder as InventoryDatabaseSeeder;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
+use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Warehouse;
@@ -504,6 +507,10 @@ it('keeps a renamed route when the warehouse is saved without step changes', fun
 it('restores inventory keys from the seeded ids and the warehouse structure when names are translated', function () {
     InventoryHelper::warehouse(ReceptionStep::THREE_STEPS, DeliveryStep::THREE_STEPS);
 
+    $otherCompany = Company::factory()->create();
+
+    warehouseFor($otherCompany, 'Entrepôt', 'ENT');
+
     $otherPluginKeys = [
         'location.pre-production',
         'location.post-production',
@@ -528,13 +535,41 @@ it('restores inventory keys from the seeded ids and the warehouse structure when
         }
     }
 
-    (require __DIR__.'/../../../database/migrations/2026_11_06_100000_add_key_to_inventories_tables.php')->backfill();
+    (require __DIR__.'/../../../database/migrations/2026_11_06_100000_backfill_inventories_keys.php')->backfill();
 
     expect(collect($expected['inventories_rules'])->countBy()->get('rule.vendors-stock'))->toBeGreaterThanOrEqual(2)
         ->and($expected['inventories_rules'])->toContain('rule.buy', 'rule.dropship', 'rule.stock-customers-pick')
-        ->and($expected['inventories_locations'])->toContain('location.vendors', 'location.scrap');
+        ->and($expected['inventories_locations'])->toContain('location.vendors', 'location.scrap')
+        ->and(DB::table('inventories_locations')->where('company_id', $otherCompany->id)->whereIn('id', array_keys($expected['inventories_locations']))->pluck('key')->all())
+        ->toContain('location.inventory-adjustment', 'location.production', 'location.scrap');
 
     foreach ($expected as $table => $keys) {
         expect(DB::table($table)->whereIn('id', array_keys($keys))->pluck('key', 'id')->all())->toEqual($keys);
     }
+});
+
+it('keeps user changes, stock and other warehouses when the inventory seeders run again', function () {
+    $seededWarehouse = Warehouse::query()->findOrFail(1);
+
+    $quantity = InventoryHelper::addProductQuantity(InventoryHelper::product(), Location::query()->findOrFail($seededWarehouse->lot_stock_location_id), 5);
+
+    $otherWarehouse = InventoryHelper::warehouse();
+
+    DB::table('inventories_locations')->where('id', $seededWarehouse->lot_stock_location_id)->update(['name' => 'Stock principal']);
+
+    DB::table('inventories_warehouses')->where('id', 1)->update(['code' => 'MTL']);
+
+    DB::table('inventories_rules')->where('key', 'rule.dropship')->delete();
+
+    $counts = collect(['inventories_locations', 'inventories_operation_types', 'inventories_routes', 'inventories_warehouses', 'inventories_route_warehouses'])
+        ->mapWithKeys(fn (string $table): array => [$table => DB::table($table)->count()]);
+
+    Artisan::call('db:seed', ['--class' => InventoryDatabaseSeeder::class, '--force' => true]);
+
+    expect(DB::table('inventories_product_quantities')->where('id', $quantity->id)->value('quantity'))->toEqual(5)
+        ->and(DB::table('inventories_locations')->where('id', $seededWarehouse->lot_stock_location_id)->value('name'))->toBe('Stock principal')
+        ->and(DB::table('inventories_warehouses')->where('id', 1)->value('code'))->toBe('MTL')
+        ->and(DB::table('inventories_operation_types')->where('id', $otherWarehouse->in_type_id)->value('warehouse_id'))->toBe($otherWarehouse->id)
+        ->and(DB::table('inventories_rules')->where('key', 'rule.dropship')->exists())->toBeTrue()
+        ->and(collect($counts->keys())->mapWithKeys(fn (string $table): array => [$table => DB::table($table)->count()]))->toEqual($counts);
 });

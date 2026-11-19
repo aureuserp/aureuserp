@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\URL;
 use Webkul\Inventory\Enums\ManufactureStep;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Models\Company;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../inventories/tests/Helpers/InventoryHelper.php';
@@ -29,6 +30,8 @@ beforeEach(function () {
 });
 
 it('restores manufacturing rule keys from the warehouse structure when names are translated', function () {
+    $otherCompany = Company::factory()->create();
+
     $warehouse = ManufacturingHelper::multiStepWarehouse(ManufactureStep::THREE_STEPS);
 
     $expected = DB::table('inventories_rules')
@@ -43,6 +46,7 @@ it('restores manufacturing rule keys from the warehouse structure when names are
 
     (require __DIR__.'/../../../database/migrations/2026_11_06_100000_backfill_manufacturing_keys.php')->backfill();
 
-    expect($expected)->toHaveCount(3)
+    expect(DB::table('inventories_locations')->where('key', 'location.production')->where('company_id', $otherCompany->id)->exists())->toBeTrue()
+        ->and($expected)->toHaveCount(3)
         ->and(DB::table('inventories_rules')->whereIn('id', array_keys($expected))->pluck('key', 'id')->all())->toEqual($expected);
 });

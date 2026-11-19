@@ -19,9 +19,7 @@ class RuleSeeder extends Seeder
     {
         $user = User::first();
 
-        DB::table('inventories_rules')->delete();
-
-        DB::table('inventories_rules')->insert([
+        DB::table('inventories_rules')->insertOrIgnore([
             [
                 'id'                       => 1,
                 'sort'                     => 1,

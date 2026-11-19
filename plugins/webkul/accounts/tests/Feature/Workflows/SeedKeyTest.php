@@ -30,9 +30,9 @@ it('gives seeded accounts and tax groups a key', function () {
 });
 
 it('keeps renamed journals and accounts when the seeders run again', function () {
-    DB::table('accounts_journals')->where('key', 'journal.sale')->update(['name' => 'Ventes']);
+    DB::table('accounts_journals')->where('key', 'journal.sale')->update(['name' => 'Ventes', 'code' => 'VTE']);
 
-    DB::table('accounts_accounts')->where('key', 'account.current-assets')->update(['name' => 'Actif courant']);
+    DB::table('accounts_accounts')->where('key', 'account.current-assets')->update(['name' => 'Actif courant', 'code' => '411000']);
 
     (new AccountSeeder)->run();
 
@@ -40,7 +40,9 @@ it('keeps renamed journals and accounts when the seeders run again', function ()
 
     expect(DB::table('accounts_journals')->where('key', 'journal.sale')->pluck('name')->all())->toContain('Ventes')
         ->and(DB::table('accounts_journals')->where('id', 1)->value('name'))->toBe('Ventes')
-        ->and(DB::table('accounts_accounts')->where('id', 1)->value('name'))->toBe('Actif courant');
+        ->and(DB::table('accounts_journals')->where('id', 1)->value('code'))->toBe('VTE')
+        ->and(DB::table('accounts_accounts')->where('id', 1)->value('name'))->toBe('Actif courant')
+        ->and(DB::table('accounts_accounts')->where('id', 1)->value('code'))->toBe('411000');
 });
 
 it('carries keys over when accounting is copied to a new company', function () {

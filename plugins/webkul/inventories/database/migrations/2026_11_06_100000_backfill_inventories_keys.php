@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -53,6 +52,12 @@ return new class extends Migration
         'scrap'                   => [10, 'inventory'],
     ];
 
+    protected array $companyLocations = [
+        'inventory-adjustment' => ['inventory', false],
+        'production'           => ['production', false],
+        'scrap'                => ['inventory', true],
+    ];
+
     protected array $seededRoutes = [
         'mto'      => 1,
         'buy'      => 5,
@@ -76,18 +81,6 @@ return new class extends Migration
 
     public function up(): void
     {
-        foreach ($this->warehouseScopedTables as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                $table->string('key')->nullable()->index();
-
-                $table->unique(['company_id', 'warehouse_id', 'key'], $tableName.'_key_unique');
-            });
-        }
-
-        Schema::table('inventories_routes', function (Blueprint $table) {
-            $table->string('key')->nullable()->index();
-        });
-
         $this->backfill();
     }
 
@@ -115,6 +108,18 @@ return new class extends Migration
             );
         }
 
+        foreach ($this->companyLocations as $key => [$type, $isScrap]) {
+            $this->backfillUnique(
+                DB::table('inventories_locations')
+                    ->where('type', $type)
+                    ->where('is_scrap', $isScrap)
+                    ->whereNotNull('company_id')
+                    ->whereNull('warehouse_id'),
+                'inventories_locations',
+                "location.{$key}",
+            );
+        }
+
         $this->backfillUnique(
             DB::table('inventories_operation_types')->where('id', 9)->where('type', 'dropship')->whereNull('warehouse_id'),
             'inventories_operation_types',
@@ -124,6 +129,12 @@ return new class extends Migration
         foreach ($this->seededRoutes as $key => $id) {
             $this->backfillUnique(DB::table('inventories_routes')->where('id', $id), 'inventories_routes', "route.{$key}");
         }
+
+        $this->backfillUnique(
+            DB::table('inventories_routes')->whereIn('id', DB::table('inventories_rules')->where('key', 'rule.stock-customers-mto')->select('route_id')),
+            'inventories_routes',
+            'route.mto',
+        );
 
         $this->backfillUnique(
             DB::table('inventories_rules')->where('id', 14)->where('action', 'buy')->whereNull('warehouse_id'),
@@ -152,28 +163,7 @@ return new class extends Migration
         }
     }
 
-    public function down(): void
-    {
-        foreach ($this->warehouseScopedTables as $tableName) {
-            if (Schema::hasColumn($tableName, 'key')) {
-                Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                    $table->dropUnique($tableName.'_key_unique');
-
-                    $table->dropIndex(['key']);
-
-                    $table->dropColumn('key');
-                });
-            }
-        }
-
-        if (Schema::hasColumn('inventories_routes', 'key')) {
-            Schema::table('inventories_routes', function (Blueprint $table) {
-                $table->dropIndex(['key']);
-
-                $table->dropColumn('key');
-            });
-        }
-    }
+    public function down(): void {}
 
     protected function backfillFromWarehouses(string $table, string $column, string $seedKey): void
     {

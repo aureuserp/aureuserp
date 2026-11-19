@@ -15,9 +15,7 @@ class RouteSeeder extends Seeder
     {
         $user = User::first();
 
-        DB::table('inventories_routes')->delete();
-
-        DB::table('inventories_routes')->insert([
+        DB::table('inventories_routes')->insertOrIgnore([
             [
                 'id'                          => 1,
                 'sort'                        => 1,

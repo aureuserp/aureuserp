@@ -186,6 +186,6 @@ class JournalSeeder extends Seeder
             ],
         ];
 
-        seed_rows('accounts_journals', $journals);
+        seed_rows('accounts_journals', $journals, preserved: ['name', 'code']);
     }
 }

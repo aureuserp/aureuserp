@@ -69,6 +69,10 @@ it('restores unit keys from the seeded ids when the names are translated', funct
         }
     }
 
+    DB::table('unit_of_measures')->whereIn('id', array_keys($expected['unit_of_measures'], 'uom.hours'))->update(['type' => 'reference', 'factor' => 1]);
+
+    DB::table('unit_of_measures')->whereIn('id', array_keys($expected['unit_of_measures'], 'uom.days'))->update(['type' => 'bigger', 'factor' => 0.125]);
+
     (require __DIR__.'/../../../database/migrations/2026_11_06_100000_add_key_to_unit_of_measures_tables.php')->backfill();
 
     expect($expected['unit_of_measure_categories'])->toHaveCount(6)

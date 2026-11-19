@@ -18,32 +18,32 @@ return new class extends Migration
     ];
 
     protected array $units = [
-        'units'    => ['unit', 'reference'],
-        'dozens'   => ['unit', 'bigger'],
-        'kg'       => ['weight', 'reference'],
-        'g'        => ['weight', 'smaller'],
-        't'        => ['weight', 'bigger'],
-        'lb'       => ['weight', 'smaller'],
-        'oz'       => ['weight', 'smaller'],
-        'days'     => ['working-time', 'reference'],
-        'hours'    => ['working-time', 'bigger'],
-        'm'        => ['length', 'reference'],
-        'mm'       => ['length', 'smaller'],
-        'km'       => ['length', 'bigger'],
-        'cm'       => ['length', 'smaller'],
-        'in'       => ['length', 'smaller'],
-        'ft'       => ['length', 'smaller'],
-        'yd'       => ['length', 'smaller'],
-        'mi'       => ['length', 'bigger'],
-        'm2'       => ['surface', 'reference'],
-        'ft2'      => ['surface', 'smaller'],
-        'l'        => ['volume', 'reference'],
-        'm3'       => ['volume', 'bigger'],
-        'fl-oz-us' => ['volume', 'smaller'],
-        'qt-us'    => ['volume', 'smaller'],
-        'gal-us'   => ['volume', 'bigger'],
-        'in3'      => ['volume', 'smaller'],
-        'ft3'      => ['volume', 'bigger'],
+        'units'    => 'unit',
+        'dozens'   => 'unit',
+        'kg'       => 'weight',
+        'g'        => 'weight',
+        't'        => 'weight',
+        'lb'       => 'weight',
+        'oz'       => 'weight',
+        'days'     => 'working-time',
+        'hours'    => 'working-time',
+        'm'        => 'length',
+        'mm'       => 'length',
+        'km'       => 'length',
+        'cm'       => 'length',
+        'in'       => 'length',
+        'ft'       => 'length',
+        'yd'       => 'length',
+        'mi'       => 'length',
+        'm2'       => 'surface',
+        'ft2'      => 'surface',
+        'l'        => 'volume',
+        'm3'       => 'volume',
+        'fl-oz-us' => 'volume',
+        'qt-us'    => 'volume',
+        'gal-us'   => 'volume',
+        'in3'      => 'volume',
+        'ft3'      => 'volume',
     ];
 
     public function up(): void
@@ -67,13 +67,10 @@ return new class extends Migration
         }
 
         foreach (array_keys($this->units) as $index => $key) {
-            [$category, $type] = $this->units[$key];
-
             $this->assignKey(
                 DB::table('unit_of_measures')
                     ->where('id', $index + 1)
-                    ->where('category_id', $this->categories[$category])
-                    ->where('type', $type),
+                    ->where('category_id', $this->categories[$this->units[$key]]),
                 "uom.{$key}",
             );
         }

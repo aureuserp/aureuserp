@@ -40,14 +40,12 @@ return new class extends Migration
                 ->update(['key' => $seedKey]);
         }
 
-        $productionLocationIds = DB::table('inventories_locations')->where('key', 'location.production')->pluck('id');
-
         foreach (DB::table('inventories_warehouses')->get() as $warehouse) {
             foreach ($this->warehouseRules as $key => [$source, $destination, $operationType]) {
                 $references = [
                     'source_location_id'      => $warehouse->{$source} ?? null,
                     'destination_location_id' => $destination === 'location.production'
-                        ? ($productionLocationIds->count() === 1 ? $productionLocationIds->first() : null)
+                        ? DB::table('inventories_locations')->where('type', 'production')->where('company_id', $warehouse->company_id)->orderBy('id')->value('id')
                         : ($warehouse->{$destination} ?? null),
                     'route_id'                => $warehouse->pbm_route_id ?? null,
                     'operation_type_id'       => $warehouse->{$operationType} ?? null,

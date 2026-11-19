@@ -19,9 +19,7 @@ class OperationTypeSeeder extends Seeder
     {
         $user = User::first();
 
-        DB::table('inventories_operation_types')->delete();
-
-        DB::table('inventories_operation_types')->insert([
+        DB::table('inventories_operation_types')->insertOrIgnore([
             [
                 'id'                      => 1,
                 'sort'                    => 1,
@@ -250,11 +248,11 @@ class OperationTypeSeeder extends Seeder
             ],
         ]);
 
-        DB::table('inventories_operation_types')->where('id', 1)->update([
+        DB::table('inventories_operation_types')->where('id', 1)->whereNull('return_operation_type_id')->update([
             'return_operation_type_id' => 2,
         ]);
 
-        DB::table('inventories_operation_types')->where('id', 2)->update([
+        DB::table('inventories_operation_types')->where('id', 2)->whereNull('return_operation_type_id')->update([
             'return_operation_type_id' => 1,
         ]);
     }

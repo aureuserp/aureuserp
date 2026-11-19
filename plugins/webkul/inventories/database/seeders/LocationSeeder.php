@@ -18,27 +18,7 @@ class LocationSeeder extends Seeder
     {
         $user = User::first();
 
-        DB::table('inventories_rules')->delete();
-
-        DB::table('inventories_operations')->delete();
-
-        DB::table('inventories_product_quantities')->delete();
-
-        DB::table('inventories_scraps')->delete();
-
-        DB::table('inventories_moves')->delete();
-
-        DB::table('inventories_move_lines')->delete();
-
-        DB::table('inventories_operation_types')->delete();
-
-        DB::table('inventories_warehouses')->delete();
-
-        DB::table('inventories_routes')->delete();
-
-        DB::table('inventories_locations')->delete();
-
-        DB::table('inventories_locations')->insert([
+        DB::table('inventories_locations')->insertOrIgnore([
             [
                 'id'           => 1,
                 'position_x'   => 0,

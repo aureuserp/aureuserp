@@ -792,7 +792,7 @@ class AccountSeeder extends Seeder
             ],
         ];
 
-        seed_rows('accounts_accounts', $accounts);
+        seed_rows('accounts_accounts', $accounts, preserved: ['name', 'code']);
 
         foreach ($accounts as $account) {
             DB::table('accounts_account_companies')->updateOrInsert([
