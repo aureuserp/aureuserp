@@ -3,11 +3,8 @@
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource as BaseVendorResource;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource\Pages\CreateVendor;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource\Pages\EditVendor;
@@ -52,21 +49,6 @@ class VendorResource extends BaseVendorResource
             ManageBills::class,
             ManagePurchases::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Contacts', [
-                ContactsRelationManager::class,
-            ])
-                ->icon('heroicon-o-users'),
-
-            RelationGroup::make('Addresses', [
-                AddressesRelationManager::class,
-            ])
-                ->icon('heroicon-o-map-pin'),
-        ];
     }
 
     public static function getPages(): array

@@ -71,6 +71,10 @@ class InstallCommand extends Command
                 $this->newLine();
 
                 foreach ($this->package->dependencies as $dependency) {
+                    if ($this->isDependencyInstalled($dependency)) {
+                        continue;
+                    }
+
                     $this->comment('Installing <info>'.$dependency.'</info>...');
 
                     $this->newLine();
@@ -100,6 +104,10 @@ class InstallCommand extends Command
             $this->newLine();
 
             foreach ($this->package->dependencies as $dependency) {
+                if ($this->isDependencyInstalled($dependency)) {
+                    continue;
+                }
+
                 $this->comment('Installing <info>'.$dependency.'</info>...');
 
                 $this->newLine();
@@ -218,6 +226,11 @@ class InstallCommand extends Command
         $this->askToRunSeeders = true;
 
         return $this;
+    }
+
+    protected function isDependencyInstalled(string $dependency): bool
+    {
+        return (bool) Plugin::query()->where('name', $dependency)->value('is_installed');
     }
 
     public function installDependencies(): self

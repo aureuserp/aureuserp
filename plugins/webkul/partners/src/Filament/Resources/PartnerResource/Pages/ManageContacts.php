@@ -31,26 +31,30 @@ class ManageContacts extends ManageRelatedRecords
         return PartnerResource::form($schema);
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()
+                ->label(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.label'))
+                ->icon('heroicon-o-plus-circle')
+                ->mutateDataUsing(function (array $data): array {
+                    $data['creator_id'] = Auth::id();
+
+                    $data['company_id'] = $this->getOwnerRecord()->company_id;
+
+                    return $data;
+                })
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.notification.title'))
+                        ->body(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.notification.body')),
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
-        return PartnerResource::table($table)
-            ->headerActions([
-                CreateAction::make()
-                    ->label(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        $data['company_id'] = $this->getOwnerRecord()->company_id;
-
-                        return $data;
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.notification.title'))
-                            ->body(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.notification.body')),
-                    ),
-            ]);
+        return PartnerResource::table($table);
     }
 }

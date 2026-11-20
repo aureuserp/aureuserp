@@ -3,6 +3,7 @@
 namespace Webkul\Partner\Filament\Resources\PartnerResource\Tables;
 
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -12,11 +13,13 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Notifications\Notification;
-use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -42,69 +45,67 @@ class PartnersTable
         return $table
             ->columns(array_merge([
                 Stack::make([
-                    ImageColumn::make('avatar')
-                        ->height(200)
-                        ->width(250)
-                        ->alignCenter(),
-                    Stack::make([
-                        TextColumn::make('name')
-                            ->weight(FontWeight::Bold)
-                            ->searchable()
-                            ->sortable(),
+                    Split::make([
+                        ImageColumn::make('avatar')
+                            ->circular()
+                            ->imageSize(72)
+                            ->defaultImageUrl(fn (Partner $record): string => (new UiAvatarsProvider)->get($record))
+                            ->grow(false),
+
                         Stack::make([
-                            TextColumn::make('parent.name')
-                                ->label(__('partners::filament/resources/partner.table.columns.parent'))
-                                ->icon(fn (Partner $record) => $record->parent->account_type === AccountType::INDIVIDUAL->value ? 'heroicon-o-user' : 'heroicon-o-building-office')
-                                ->tooltip(__('partners::filament/resources/partner.table.columns.parent'))
-                                ->sortable(),
-                        ])
-                            ->visible(fn (Partner $record) => filled($record->parent)),
-                        Stack::make([
-                            TextColumn::make('job_title')
-                                ->icon('heroicon-m-briefcase')
-                                ->searchable()
-                                ->sortable()
-                                ->label(__('partners::filament/resources/partner.table.groups.job-title')),
-                        ])
-                            ->visible(fn ($record) => filled($record->job_title)),
-                        Stack::make([
-                            TextColumn::make('email')
-                                ->icon('heroicon-o-envelope')
-                                ->searchable()
-                                ->sortable()
-                                ->label(__('partners::filament/resources/partner.table.columns.work-email'))
-                                ->color('gray')
-                                ->limit(20),
-                        ])
-                            ->visible(fn ($record) => filled($record->email)),
-                        Stack::make([
-                            TextColumn::make('phone')
-                                ->icon('heroicon-o-phone')
-                                ->searchable()
-                                ->label(__('partners::filament/resources/partner.table.columns.work-phone'))
-                                ->color('gray')
-                                ->limit(30)
-                                ->sortable(),
-                        ])
-                            ->visible(fn ($record) => filled($record->phone)),
-                        Stack::make([
-                            TextColumn::make('tags.name')
-                                ->badge()
-                                ->state(function (Partner $record): array {
-                                    return $record->tags()->get()->map(fn ($tag) => [
-                                        'label' => $tag->name,
-                                        'color' => $tag->color ?? '#808080',
-                                    ])->toArray();
-                                })
-                                ->badge()
-                                ->formatStateUsing(fn ($state) => $state['label'])
-                                ->color(fn ($state) => Color::generateV3Palette($state['color']))
+                            TextColumn::make('name')
                                 ->weight(FontWeight::Bold)
-                                ->wrap(),
-                        ])
-                            ->visible(fn ($record): bool => (bool) $record->tags?->count()),
-                    ])->space(1),
-                ])->space(4),
+                                ->size(TextSize::Large)
+                                ->searchable()
+                                ->sortable()
+                                ->lineClamp(1)
+                                ->extraAttributes(['class' => 'pe-10']),
+
+                            Stack::make([
+                                TextColumn::make('job_title')
+                                    ->label(__('partners::filament/resources/partner.table.groups.job-title'))
+                                    ->weight(FontWeight::Medium)
+                                    ->searchable()
+                                    ->sortable(),
+                            ])
+                                ->visible(fn ($record) => filled($record->job_title)),
+
+                            Stack::make([
+                                TextColumn::make('parent.name')
+                                    ->label(__('partners::filament/resources/partner.table.columns.parent'))
+                                    ->icon(fn (Partner $record) => $record->parent->account_type === AccountType::INDIVIDUAL->value ? 'heroicon-o-user' : 'heroicon-o-building-office')
+                                    ->color('gray')
+                                    ->tooltip(__('partners::filament/resources/partner.table.columns.parent'))
+                                    ->sortable(),
+                            ])
+                                ->visible(fn (Partner $record) => filled($record->parent)),
+
+                            Stack::make([
+                                TextColumn::make('email')
+                                    ->label(__('partners::filament/resources/partner.table.columns.work-email'))
+                                    ->icon('heroicon-o-envelope')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->sortable()
+                                    ->tooltip(fn (Partner $record): string => $record->email)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn ($record) => filled($record->email)),
+
+                            Stack::make([
+                                TextColumn::make('phone')
+                                    ->label(__('partners::filament/resources/partner.table.columns.work-phone'))
+                                    ->icon('heroicon-o-phone')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->sortable()
+                                    ->limit(30),
+                            ])
+                                ->visible(fn ($record) => filled($record->phone)),
+                        ])->space(1),
+                    ])->from('sm'),
+                ])->space(3),
             ], Registry::renderTable('columns')))
             ->groups(array_merge([
                 Tables\Grouping\Group::make('account_type')
@@ -128,53 +129,63 @@ class PartnersTable
                     ->slideOver(),
             )
             ->filtersFormColumns(2)
-            ->recordActions(array_merge([
+            ->recordActions([
+                Action::make('tags')
+                    ->label(__('partners::filament/resources/partner.table.columns.tags'))
+                    ->view('support::tables.actions.tags', ['relationship' => 'tags'])
+                    ->visible(fn (Partner $record): bool => $record->tags->isNotEmpty()),
                 ActivityTableAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
-                ViewAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
-                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('partners::filament/resources/partner.table.actions.edit.notification.title'))
-                            ->body(__('partners::filament/resources/partner.table.actions.edit.notification.body')),
-                    ),
-                RestoreAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('partners::filament/resources/partner.table.actions.restore.notification.title'))
-                            ->body(__('partners::filament/resources/partner.table.actions.restore.notification.body')),
-                    ),
-                DeleteAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('partners::filament/resources/partner.table.actions.delete.notification.title'))
-                            ->body(__('partners::filament/resources/partner.table.actions.delete.notification.body')),
-                    ),
-                ForceDeleteAction::make()
-                    ->action(function (ForceDeleteAction $action, Partner $record) {
-                        try {
-                            $record->forceDelete();
-                        } catch (QueryException $e) {
+                    ->extraAttributes(['class' => 'ms-auto']),
+                ActionGroup::make(array_merge([
+                    ViewAction::make()
+                        ->hidden(fn ($record) => $record->trashed()),
+                    EditAction::make()
+                        ->hidden(fn ($record) => $record->trashed())
+                        ->successNotification(
                             Notification::make()
-                                ->danger()
-                                ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.title'))
-                                ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.body'))
-                                ->send();
-                            $action->cancel();
-                        }
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.success.title'))
-                            ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.success.body')),
-                    ),
-            ], Registry::renderTable('actions')))
+                                ->success()
+                                ->title(__('partners::filament/resources/partner.table.actions.edit.notification.title'))
+                                ->body(__('partners::filament/resources/partner.table.actions.edit.notification.body')),
+                        ),
+                    RestoreAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('partners::filament/resources/partner.table.actions.restore.notification.title'))
+                                ->body(__('partners::filament/resources/partner.table.actions.restore.notification.body')),
+                        ),
+                    DeleteAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('partners::filament/resources/partner.table.actions.delete.notification.title'))
+                                ->body(__('partners::filament/resources/partner.table.actions.delete.notification.body')),
+                        ),
+                    ForceDeleteAction::make()
+                        ->action(function (ForceDeleteAction $action, Partner $record) {
+                            try {
+                                $record->forceDelete();
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                                $action->cancel();
+                            }
+                        })
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.success.title'))
+                                ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.success.body')),
+                        ),
+                ], Registry::renderTable('actions')))
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray')
+                    ->extraDropdownAttributes(fn (Partner $record): array => $record->trashed() ? ['class' => 'ms-auto'] : []),
+            ])
             ->toolbarActions([
                 BulkActionGroup::make(array_merge([
                     RestoreBulkAction::make()
@@ -213,8 +224,9 @@ class PartnersTable
                 ], Registry::renderTable('bulkActions'))),
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                $query->with(['tags'])->where('account_type', '!=', AccountType::ADDRESS);
+                $query->with(['tags', 'parent'])->where('account_type', '!=', AccountType::ADDRESS);
             })
+            ->recordClasses('fi-ta-card-select')
             ->contentGrid([
                 'sm'  => 1,
                 'md'  => 2,
@@ -222,9 +234,9 @@ class PartnersTable
                 '2xl' => 4,
             ])
             ->paginated([
-                16,
-                32,
-                64,
+                12,
+                24,
+                36,
                 'all',
             ]);
     }

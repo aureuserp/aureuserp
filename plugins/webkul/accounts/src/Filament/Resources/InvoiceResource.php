@@ -20,6 +20,7 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Tables\InvoicesTable;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Invoice;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends Resource
@@ -80,12 +81,18 @@ class InvoiceResource extends Resource
         return InvoiceSummary::class;
     }
 
+    public static function getCreditNoteResource(): string
+    {
+        return CreditNoteResource::class;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->when(Str::contains(static::class, 'InvoiceResource'), function (Builder $query) {
-                $query->where('move_type', MoveType::OUT_INVOICE);
-            })
-            ->orderByDesc('id');
+                $query->whereIn('move_type', is_a(static::$parentResource, PartnerResource::class, true)
+                    ? [MoveType::OUT_INVOICE, MoveType::OUT_REFUND]
+                    : [MoveType::OUT_INVOICE]);
+            });
     }
 }

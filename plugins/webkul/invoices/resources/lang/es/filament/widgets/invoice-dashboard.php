@@ -31,9 +31,15 @@ return [
         'revenue'     => 'Ingresos',
     ],
 
+    'invoice-status'    => [
+        'heading'     => 'Facturas por Estado',
+        'description' => 'Importe facturado por estado de pago',
+    ],
+
     'customer-revenue'  => [
         'heading'      => 'Participación de Ingresos por Cliente',
         'total-billed' => 'Total Facturado',
+        'center-label' => 'Total',
     ],
 
     'salespersons'      => [

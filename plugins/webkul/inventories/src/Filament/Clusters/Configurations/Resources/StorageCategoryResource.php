@@ -4,7 +4,6 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use BackedEnum;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -16,8 +15,6 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryR
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageCapacityByProducts;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageLocations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ViewStorageCategory;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\RelationManagers\CapacityByPackagesRelationManager;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\RelationManagers\CapacityByProductsRelationManager;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Schemas\StorageCategoryForm;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Schemas\StorageCategoryInfolist;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Tables\StorageCategoriesTable;
@@ -81,21 +78,6 @@ class StorageCategoryResource extends Resource
             ManageCapacityByProducts::class,
             ManageLocations::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Capacity By Packages', [
-                CapacityByPackagesRelationManager::class,
-            ])
-                ->icon('heroicon-o-cube'),
-
-            RelationGroup::make('Capacity By Products', [
-                CapacityByProductsRelationManager::class,
-            ])
-                ->icon('heroicon-o-clipboard-document-check'),
-        ];
     }
 
     public static function getPages(): array
