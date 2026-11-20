@@ -393,6 +393,10 @@ class MoveLine extends Model implements Sortable
             return;
         }
 
+        if ($this->exists && $this->account_id && $this->parent_state === MoveState::POSTED) {
+            return;
+        }
+
         $accountId = null;
 
         switch ($this->display_type) {
