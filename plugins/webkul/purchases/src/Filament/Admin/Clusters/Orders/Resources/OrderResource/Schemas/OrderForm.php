@@ -946,7 +946,11 @@ class OrderForm
             return;
         }
 
-        $priceUnit = floatval($get($prefix.'price_unit'));
+        $orderPath = $prefix ? '' : '../../';
+
+        $currency = Currency::find($get($orderPath.'currency_id'));
+
+        $priceUnit = float_round(floatval($get($prefix.'price_unit')), precisionDigits: 4);
 
         $quantity = floatval($get($prefix.'product_qty') ?? 1);
 
@@ -959,22 +963,42 @@ class OrderForm
         $taxes = Tax::whereIn('id', $taxIds)->get();
 
         if ($taxes->isEmpty()) {
-            $subTotal = round($discountedUnit * $quantity, 4);
+            $subTotal = self::roundToCurrency($discountedUnit * $quantity, $currency);
 
             $set($prefix.'price_subtotal', $subTotal);
 
             $set($prefix.'price_tax', 0);
 
             $set($prefix.'price_total', $subTotal);
-        } else {
-            $taxResult = TaxFacade::computeAll($taxes, $discountedUnit, null, $quantity);
 
-            $set($prefix.'price_subtotal', round($taxResult['total_excluded'], 4));
-
-            $set($prefix.'price_tax', round($taxResult['total_included'] - $taxResult['total_excluded'], 4));
-
-            $set($prefix.'price_total', round($taxResult['total_included'], 4));
+            return;
         }
+
+        $taxResult = TaxFacade::computeAll(
+            $taxes,
+            $discountedUnit,
+            $currency,
+            $quantity,
+            Product::find($get($prefix.'product_id')),
+            Partner::find($get($orderPath.'partner_id')),
+        );
+
+        $subTotal = self::roundToCurrency($taxResult['total_excluded'], $currency);
+
+        $total = self::roundToCurrency($taxResult['total_included'], $currency);
+
+        $set($prefix.'price_subtotal', $subTotal);
+
+        $set($prefix.'price_tax', self::roundToCurrency($total - $subTotal, $currency));
+
+        $set($prefix.'price_total', $total);
+    }
+
+    private static function roundToCurrency(float $amount, ?Currency $currency): float
+    {
+        return $currency
+            ? $currency->round($amount)
+            : float_round($amount, precisionDigits: 4);
     }
 
     private static function calculateOrderTotals(Get $get, $livewire): array
@@ -1008,10 +1032,12 @@ class OrderForm
             $grandTotal += floatval($product['price_total'] ?? 0);
         }
 
+        $currency = Currency::find($get('currency_id'));
+
         $totals = [
-            'subtotal'         => round($subtotal, 2),
-            'totalTax'         => round($totalTax, 2),
-            'grandTotal'       => round($grandTotal, 2),
+            'subtotal'         => self::roundToCurrency($subtotal, $currency),
+            'totalTax'         => self::roundToCurrency($totalTax, $currency),
+            'grandTotal'       => self::roundToCurrency($grandTotal, $currency),
             'currency_id'      => $get('currency_id'),
         ];
 

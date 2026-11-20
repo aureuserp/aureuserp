@@ -33,4 +33,11 @@ return [
         'terms-and-conditions'  => 'Terms & Conditions:',
         'additional-terms'      => 'Additional Terms:',
     ],
+
+    'api' => [
+        'purchase-order' => [
+            'currency-locked'   => 'The currency cannot be changed once the purchase order is confirmed.',
+            'order-date-locked' => 'The order deadline cannot be changed once the purchase order is confirmed.',
+        ],
+    ],
 ];

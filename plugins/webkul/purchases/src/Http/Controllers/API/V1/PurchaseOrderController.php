@@ -3,6 +3,7 @@
 namespace Webkul\Purchase\Http\Controllers\API\V1;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
@@ -16,8 +17,6 @@ use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Facades\Tax as TaxFacade;
-use Webkul\Account\Models\Tax;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Product;
 use Webkul\Purchase\Enums\OrderState;
@@ -106,7 +105,7 @@ class PurchaseOrderController extends Controller
 
             $this->syncOrderLines($order, $lines);
 
-            $order->load($this->allowedIncludes);
+            $order = $this->recomputeOrder($order);
 
             return (new OrderResource($order))
                 ->additional(['message' => 'Purchase order created successfully.'])
@@ -146,6 +145,14 @@ class PurchaseOrderController extends Controller
 
         $data = $request->validated();
 
+        $lockedFieldMessage = $this->lockedFieldChangeMessage($order, $data);
+
+        if ($lockedFieldMessage) {
+            return response()->json([
+                'message' => $lockedFieldMessage,
+            ], 422);
+        }
+
         return DB::transaction(function () use ($order, $data) {
             $lines = $data['lines'] ?? null;
             unset($data['lines']);
@@ -156,7 +163,7 @@ class PurchaseOrderController extends Controller
                 $this->syncOrderLines($order, $lines);
             }
 
-            $order->load($this->allowedIncludes);
+            $order = $this->recomputeOrder($order);
 
             return (new OrderResource($order))
                 ->additional(['message' => 'Purchase order updated successfully.']);
@@ -351,8 +358,6 @@ class PurchaseOrderController extends Controller
                 ? Product::find($lineData['product_id'])
                 : null;
 
-            [$priceSubtotal, $priceTax, $priceTotal] = $this->computeLineAmounts($lineData['price_unit'] ?? 0, $lineData['product_qty'] ?? 0, $lineData['discount'] ?? 0, $taxes);
-
             $qtyReceivedMethod = Package::isPluginInstalled('inventories')
                 ? QtyReceivedMethod::STOCK_MOVE
                 : QtyReceivedMethod::MANUAL;
@@ -369,9 +374,6 @@ class PurchaseOrderController extends Controller
                 'product_uom_qty'     => $lineData['product_qty'] ?? 0,
                 'price_unit'          => $lineData['price_unit'] ?? 0,
                 'discount'            => $lineData['discount'] ?? 0,
-                'price_subtotal'      => $priceSubtotal,
-                'price_tax'           => $priceTax,
-                'price_total'         => $priceTotal,
             ], $lineData);
 
             if ($lineId) {
@@ -389,44 +391,32 @@ class PurchaseOrderController extends Controller
             $orderLine->taxes()->sync($taxes);
         }
 
-        $this->syncOrderTotals($order);
+        if (! $order->planned_at) {
+            $order->update(['planned_at' => $order->lines()->max('planned_at')]);
+        }
     }
 
-    protected function computeLineAmounts(float $priceUnit, float $quantity, float $discount, array $taxIds): array
+    protected function lockedFieldChangeMessage(PurchaseOrder $order, array $data): ?string
     {
-        $discountedUnit = $discount > 0 ? $priceUnit * (1 - ($discount / 100)) : $priceUnit;
-
-        $taxes = Tax::whereIn('id', $taxIds)->get();
-
-        if ($taxes->isEmpty()) {
-            $subTotal = round($discountedUnit * $quantity, 4);
-
-            return [$subTotal, 0.0, $subTotal];
+        if (in_array($order->state, [OrderState::DRAFT, OrderState::SENT], true)) {
+            return null;
         }
 
-        $taxResult = TaxFacade::computeAll($taxes, $discountedUnit, null, $quantity);
+        if (array_key_exists('currency_id', $data) && (int) $data['currency_id'] !== (int) $order->currency_id) {
+            return __('purchases::app.api.purchase-order.currency-locked');
+        }
 
-        return [
-            round($taxResult['total_excluded'], 4),
-            round($taxResult['total_included'] - $taxResult['total_excluded'], 4),
-            round($taxResult['total_included'], 4),
-        ];
+        if (array_key_exists('ordered_at', $data) && ! ($order->ordered_at && Carbon::parse($data['ordered_at'])->equalTo($order->ordered_at))) {
+            return __('purchases::app.api.purchase-order.order-date-locked');
+        }
+
+        return null;
     }
 
-    protected function syncOrderTotals(PurchaseOrder $order): void
+    protected function recomputeOrder(PurchaseOrder $order): PurchaseOrder
     {
-        $order->loadMissing('lines');
+        PurchaseOrderFacade::computePurchaseOrder($order->unsetRelation('lines'));
 
-        $untaxed = round((float) $order->lines->sum('price_subtotal'), 4);
-        $tax = round((float) $order->lines->sum('price_tax'), 4);
-        $total = round((float) $order->lines->sum('price_total'), 4);
-
-        $order->update([
-            'untaxed_amount' => $untaxed,
-            'tax_amount'     => $tax,
-            'total_amount'   => $total,
-            'total_cc_amount'=> $total,
-            'planned_at'     => $order->planned_at ?? $order->lines->max('planned_at'),
-        ]);
+        return $order->refresh()->load($this->allowedIncludes);
     }
 }
