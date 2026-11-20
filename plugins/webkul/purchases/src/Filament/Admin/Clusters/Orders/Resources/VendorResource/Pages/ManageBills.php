@@ -2,11 +2,10 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables\Table;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
+use Illuminate\Contracts\Support\Htmlable;
+use Livewire\Livewire;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorBillResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -16,7 +15,9 @@ class ManageBills extends ManageRelatedRecords
 
     protected static string $resource = VendorResource::class;
 
-    protected static string $relationship = 'accountMoves';
+    protected static string $relationship = 'bills';
+
+    protected static ?string $relatedResource = VendorBillResource::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
 
@@ -25,18 +26,13 @@ class ManageBills extends ManageRelatedRecords
         return __('purchases::filament/admin/clusters/orders/resources/vendor/pages/manage-bills.navigation.title');
     }
 
-    public function table(Table $table): Table
+    public function getTitle(): string|Htmlable
     {
-        return BillResource::table($table)
-            ->modifyQueryUsing(fn ($query) => $query->where('partner_id', $this->record->getKey()))
-            ->recordActions([
-                ViewAction::make()
-                    ->url(fn ($record) => BillResource::getUrl('view', ['record' => $record]))
-                    ->openUrlInNewTab(false),
+        return static::getNavigationLabel();
+    }
 
-                EditAction::make()
-                    ->url(fn ($record) => BillResource::getUrl('edit', ['record' => $record]))
-                    ->openUrlInNewTab(false),
-            ]);
+    public static function getNavigationBadge($parameters = []): ?string
+    {
+        return Livewire::current()->getRecord()->bills()->count();
     }
 }

@@ -43,6 +43,11 @@ class InvoiceResource extends BaseInvoiceResource
         return InvoiceSummary::class;
     }
 
+    public static function getCreditNoteResource(): string
+    {
+        return CreditNoteResource::class;
+    }
+
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([

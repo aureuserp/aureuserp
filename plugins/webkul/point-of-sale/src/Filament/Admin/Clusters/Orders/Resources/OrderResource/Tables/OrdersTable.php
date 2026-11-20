@@ -53,7 +53,6 @@ class OrdersTable
                 TextColumn::make('amount_total')
                     ->label(__('point-of-sale::filament/admin/clusters/orders/resources/order.table.columns.amount-total'))
                     ->money(fn (Order $record): ?string => $record->currency?->name)
-                    ->alignEnd()
                     ->summarize(Sum::make()->money(fn (): ?string => Company::first()?->currency?->name))
                     ->sortable(),
                 TextColumn::make('state')

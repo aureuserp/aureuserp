@@ -20,6 +20,7 @@ use Webkul\Account\Filament\Resources\BillResource\Tables\BillsTable;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Bill;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class BillResource extends Resource
@@ -80,12 +81,18 @@ class BillResource extends Resource
         return InvoiceSummary::class;
     }
 
+    public static function getRefundResource(): string
+    {
+        return RefundResource::class;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->when(Str::contains(static::class, 'BillResource'), function (Builder $query) {
-                $query->where('move_type', MoveType::IN_INVOICE);
-            })
-            ->orderByDesc('id');
+                $query->whereIn('move_type', is_a(static::$parentResource, PartnerResource::class, true)
+                    ? [MoveType::IN_INVOICE, MoveType::IN_REFUND]
+                    : [MoveType::IN_INVOICE]);
+            });
     }
 }

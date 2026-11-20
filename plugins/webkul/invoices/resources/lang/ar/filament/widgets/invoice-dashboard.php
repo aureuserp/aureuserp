@@ -31,9 +31,15 @@ return [
         'revenue'     => 'الإيرادات',
     ],
 
+    'invoice-status'    => [
+        'heading'     => 'الفواتير حسب الحالة',
+        'description' => 'المبلغ المفوتر حسب حالة الدفع',
+    ],
+
     'customer-revenue'  => [
         'heading'      => 'حصة الإيرادات حسب العميل',
         'total-billed' => 'إجمالي المفوتر',
+        'center-label' => 'الإجمالي',
     ],
 
     'salespersons'      => [
