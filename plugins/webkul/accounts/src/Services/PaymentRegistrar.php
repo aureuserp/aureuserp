@@ -4,6 +4,7 @@ namespace Webkul\Account\Services;
 
 use Exception;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
@@ -17,6 +18,11 @@ use Webkul\Account\Models\PaymentRegister;
 class PaymentRegistrar
 {
     public function register(PaymentRegister $register): void
+    {
+        DB::transaction(fn () => $this->registerWithinTransaction($register));
+    }
+
+    protected function registerWithinTransaction(PaymentRegister $register): void
     {
         $batches = $this->payableBatches($register);
 
@@ -309,6 +315,23 @@ class PaymentRegistrar
         }
 
         return $payment;
+    }
+
+    public function resetToDraft(Payment $payment): Payment
+    {
+        return DB::transaction(function () use ($payment): Payment {
+            if ($payment->move) {
+                app(MoveWorkflow::class)->resetToDraft($payment->move);
+
+                $payment->refresh();
+            }
+
+            $payment->state = PaymentStatus::DRAFT;
+
+            $payment->save();
+
+            return $payment;
+        });
     }
 
     public function reconcilePayments(array $jobs): void

@@ -121,6 +121,8 @@ class Move extends Model implements Sortable
         'is_move_sent',
         'source_id',
         'medium_id',
+        'source_document_type',
+        'source_document_key',
     ];
 
     protected function getLogAttributeLabels(): array

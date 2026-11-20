@@ -19,6 +19,7 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
+use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Http\Requests\BillRequest;
 use Webkul\Account\Http\Requests\MovePaymentRequest;
@@ -302,7 +303,14 @@ class RefundController extends Controller
             ], 422);
         }
 
-        $refund = AccountFacade::cancelMove($refund);
+        try {
+            $refund = AccountFacade::cancelMove($refund);
+        } catch (PostingException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'error'   => $exception->error->value,
+            ], 422);
+        }
 
         return (new MoveResource($refund->refresh()))
             ->additional(['message' => 'Refund cancelled successfully.']);

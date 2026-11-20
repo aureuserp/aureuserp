@@ -295,6 +295,12 @@ return [
 
             'unreconcile' => [
                 'label' => 'Desvincular',
+
+                'notification' => [
+                    'error' => [
+                        'title' => 'Não foi possível desvincular os lançamentos',
+                    ],
+                ],
             ],
         ],
     ],

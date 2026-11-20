@@ -4,9 +4,11 @@ namespace Webkul\Account\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Services\JournalPoster;
 
 /**
  * @method static Move computeAccountMove(Move $record)
+ * @method static JournalPoster posting()
  */
 class Account extends Facade
 {

@@ -5,10 +5,13 @@ namespace Webkul\Account\Livewire;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Livewire\Component;
+use Throwable;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
@@ -87,10 +90,26 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
             ->icon('heroicon-o-x-circle')
             ->size('xs')
             ->requiresConfirmation()
-            ->action(function (array $arguments) {
+            ->action(function (array $arguments, Action $action) {
                 $partialReconcile = PartialReconcile::find($arguments['partial_id']);
 
-                AccountFacade::unReconcile($partialReconcile);
+                try {
+                    AccountFacade::unReconcile($partialReconcile);
+                } catch (Throwable $exception) {
+                    if (! $exception instanceof PostingException) {
+                        report($exception);
+                    }
+
+                    Notification::make()
+                        ->danger()
+                        ->title(__('accounts::filament/resources/invoice.summary.actions.unreconcile.notification.error.title'))
+                        ->body($exception instanceof PostingException
+                            ? $exception->getMessage()
+                            : __('accounts::system.posting.unexpected-error'))
+                        ->send();
+
+                    $action->halt();
+                }
             })
             ->after(fn () => $this->js('window.location.reload()'));
     }

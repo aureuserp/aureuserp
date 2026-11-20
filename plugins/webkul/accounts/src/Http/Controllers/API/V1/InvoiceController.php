@@ -21,6 +21,7 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
+use Webkul\Account\Exceptions\PostingException;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Http\Requests\InvoiceRequest;
 use Webkul\Account\Http\Requests\MovePaymentRequest;
@@ -305,7 +306,14 @@ class InvoiceController extends Controller
             ], 422);
         }
 
-        $invoice = AccountFacade::cancelMove($invoice);
+        try {
+            $invoice = AccountFacade::cancelMove($invoice);
+        } catch (PostingException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'error'   => $exception->error->value,
+            ], 422);
+        }
 
         return (new MoveResource($invoice->refresh()))
             ->additional(['message' => 'Invoice cancelled successfully.']);
@@ -405,39 +413,46 @@ class InvoiceController extends Controller
             'date'       => ['required', 'date'],
         ]);
 
-        $reversed = DB::transaction(function () use ($invoice, $data) {
-            $moveReversal = MoveReversal::create([
-                'journal_id' => $data['journal_id'],
-                'date'       => $data['date'],
-                'reason'     => $data['reason'],
-            ]);
+        try {
+            $reversed = DB::transaction(function () use ($invoice, $data) {
+                $moveReversal = MoveReversal::create([
+                    'journal_id' => $data['journal_id'],
+                    'date'       => $data['date'],
+                    'reason'     => $data['reason'],
+                ]);
 
-            $moveReversal->moves()->attach($invoice);
+                $moveReversal->moves()->attach($invoice);
 
-            $defaultValues = [
-                'reference'         => Str::limit("Reversal of: {$invoice->name}, {$moveReversal->reason}", 250),
-                'date'              => $moveReversal->date,
-                'invoice_date_due'  => $moveReversal->date,
-                'invoice_date'      => $invoice->isInvoice(true) ? $moveReversal->date : null,
-                'journal_id'        => $moveReversal->journal_id,
-                'invoice_user_id'   => $invoice->invoice_user_id,
-                'auto_post'         => false,
-            ];
+                $defaultValues = [
+                    'reference'         => Str::limit(__('accounts::system.reversal.reference-with-reason', ['name' => $invoice->name, 'reason' => $moveReversal->reason]), 250),
+                    'date'              => $moveReversal->date,
+                    'invoice_date_due'  => $moveReversal->date,
+                    'invoice_date'      => $invoice->isInvoice(true) ? $moveReversal->date : null,
+                    'journal_id'        => $moveReversal->journal_id,
+                    'invoice_user_id'   => $invoice->invoice_user_id,
+                    'auto_post'         => false,
+                ];
 
-            $isCancelNeeded = ! $defaultValues['auto_post'] && $invoice->move_type == MoveType::ENTRY;
+                $isCancelNeeded = ! $defaultValues['auto_post'] && $invoice->move_type == MoveType::ENTRY;
 
-            $reversedMoves = AccountFacade::reverseMoves(
-                collect([$invoice]),
-                $defaultValues,
-                $isCancelNeeded
-            )->each(function ($move) use ($moveReversal) {
-                $moveReversal->newMoves()->attach($move->id);
+                $reversedMoves = AccountFacade::reverseMoves(
+                    collect([$invoice]),
+                    [$defaultValues],
+                    $isCancelNeeded
+                )->each(function ($move) use ($moveReversal) {
+                    $moveReversal->newMoves()->attach($move->id);
+                });
+
+                AccountFacade::computeAccountMove($invoice);
+
+                return $reversedMoves->first();
             });
-
-            AccountFacade::computeAccountMove($invoice);
-
-            return $reversedMoves->first();
-        });
+        } catch (PostingException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'error'   => $exception->error->value,
+            ], 422);
+        }
 
         return (new MoveResource($reversed->refresh()))
             ->additional(['message' => 'Invoice reversed successfully.']);
