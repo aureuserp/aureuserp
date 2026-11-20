@@ -14,7 +14,7 @@ env:
 
 jobs:
   aureus_playwright_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -214,7 +214,7 @@ jobs:
     if: ${{ always() && !cancelled() }}
     needs:
       - aureus_playwright_test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false

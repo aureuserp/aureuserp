@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="mt-4" wire:ignore>
+        <div class="mt-2" wire:ignore>
             <canvas
                 id="operation-type-chart-{{ $operationType->id }}"
                 style="height: 120px;"

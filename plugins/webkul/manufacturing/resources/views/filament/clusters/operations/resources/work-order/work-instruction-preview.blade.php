@@ -37,24 +37,24 @@
 @endphp
 
 <div class="space-y-4">
-    <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-3">
+    <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-3 dark:border-gray-700">
             <div>
-                <p class="text-sm font-medium text-gray-500">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     {{ __('manufacturing::filament/clusters/operations/resources/work-order.infolist.tabs.work-instruction.entries.operation') }}
                 </p>
 
-                <p class="text-base font-semibold text-gray-900">
+                <p class="text-base font-semibold text-gray-900 dark:text-white">
                     {{ $operation?->name ?? '—' }}
                 </p>
             </div>
 
             <div class="text-right">
-                <p class="text-sm font-medium text-gray-500">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
                     {{ __('manufacturing::filament/clusters/operations/resources/work-order.infolist.tabs.work-instruction.entries.worksheet') }}
                 </p>
 
-                <p class="text-sm font-semibold text-gray-900">
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">
                     {{ $worksheetType?->getLabel() ?? '—' }}
                 </p>
             </div>
@@ -62,7 +62,7 @@
 
         <div class="pt-4">
             @if ($worksheetType === OperationWorksheetType::TEXT)
-                <div class="min-h-48 whitespace-pre-wrap rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+                <div class="min-h-48 whitespace-pre-wrap rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
                     {{ filled($operation?->note) ? $operation->note : '—' }}
                 </div>
             @elseif ($worksheetType === OperationWorksheetType::PDF && filled($pdfUrl))
@@ -79,7 +79,7 @@
                     <iframe
                         src="{{ $pdfUrl }}"
                         title="{{ $operation?->name }}"
-                        class="block w-full rounded-lg border border-gray-200 bg-gray-50"
+                        class="block w-full rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
                         style="height: 800px; min-height: 800px;"
                     ></iframe>
                 </div>
@@ -97,13 +97,13 @@
                     <iframe
                         src="{{ $previewUrl }}"
                         title="{{ $operation?->name }}"
-                        class="block w-full rounded-lg border border-gray-200 bg-gray-50"
+                        class="block w-full rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
                         style="height: 800px; min-height: 800px;"
                         allowfullscreen
                     ></iframe>
                 </div>
             @else
-                <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-sm text-gray-500">
+                <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
                     —
                 </div>
             @endif

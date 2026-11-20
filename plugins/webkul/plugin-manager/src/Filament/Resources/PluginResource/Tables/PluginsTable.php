@@ -94,6 +94,7 @@ class PluginsTable
                     ])->space(1),
                 ]),
             ])
+            ->extraAttributes(['class' => 'plugins-table'])
             ->contentGrid([
                 'sm'  => 1,
                 'md'  => 2,

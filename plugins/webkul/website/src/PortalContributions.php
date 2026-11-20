@@ -49,6 +49,7 @@ class PortalContributions
                 ->color('info')
                 ->icon('heroicon-o-globe-alt'),
         ])
+            ->extraAttributes(['class' => 'fi-ta-card-portal-access'])
             ->visible(fn (Partner $record): bool => PortalAccess::isAvailable() && PortalAccess::hasAccess($record));
     }
 

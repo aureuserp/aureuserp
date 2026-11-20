@@ -6,6 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource;
@@ -54,13 +55,17 @@ class EditInvoice extends EditRecord
                 ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\PrintAndSendAction::make(),
             BaseActions\PreviewAction::make()
-                ->setTemplate('accounts::invoice/actions/preview.index'),
+                ->setTemplate($this->getRecord()->move_type == MoveType::OUT_REFUND
+                    ? 'accounts::credit-note/actions/preview.index'
+                    : 'accounts::invoice/actions/preview.index'),
             BaseActions\PayAction::make(),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
-            BaseActions\SetAsCheckedAction::make(),
+            BaseActions\SetAsCheckedAction::make()
+                ->visible(fn (Move $record): bool => $record->move_type != MoveType::OUT_REFUND),
             BaseActions\ReverseAction::make()
                 ->setResource(static::getReverseResource())
+                ->hidden(fn (Move $record): bool => $record->move_type == MoveType::OUT_REFUND)
                 ->label(__('accounts::filament/resources/invoice/pages/edit-invoice.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/invoice/pages/edit-invoice.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),

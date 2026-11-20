@@ -21,6 +21,11 @@ class ValidateAction extends Action
         return 'inventories.operations.validate';
     }
 
+    protected function getLivewireKey(): ?string
+    {
+        return 'validate-action-btn';
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
