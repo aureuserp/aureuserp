@@ -5,7 +5,6 @@ namespace Webkul\Account\Filament\Resources;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\PaymentResource\Pages\CreatePayment;
 use Webkul\Account\Filament\Resources\PaymentResource\Pages\EditPayment;
@@ -68,11 +67,5 @@ class PaymentResource extends Resource
             'view'   => ViewPayment::route('/{record}'),
             'edit'   => EditPayment::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

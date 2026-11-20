@@ -2,15 +2,16 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\EditSkillType;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\ListSkillTypes;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\ManageSkillLevels;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\ManageSkills;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\ViewSkillType;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers\SkillLevelRelationManager;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers\SkillsRelationManager;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Schemas\SkillTypeForm;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Schemas\SkillTypeInfolist;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Tables\SkillTypesTable;
@@ -53,25 +54,29 @@ class SkillTypeResource extends Resource
         return SkillTypesTable::configure($table);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            SkillsRelationManager::class,
-            SkillLevelRelationManager::class,
-        ];
-    }
-
     public static function infolist(Schema $schema): Schema
     {
         return SkillTypeInfolist::configure($schema);
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewSkillType::class,
+            EditSkillType::class,
+            ManageSkills::class,
+            ManageSkillLevels::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ListSkillTypes::route('/'),
-            'view'  => ViewSkillType::route('/{record}'),
-            'edit'  => EditSkillType::route('/{record}/edit'),
+            'index'        => ListSkillTypes::route('/'),
+            'view'         => ViewSkillType::route('/{record}'),
+            'edit'         => EditSkillType::route('/{record}/edit'),
+            'skills'       => ManageSkills::route('/{record}/skills'),
+            'skill-levels' => ManageSkillLevels::route('/{record}/skill-levels'),
         ];
     }
 }

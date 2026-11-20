@@ -171,13 +171,20 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
-            'job-title'    => 'Job Title',
-            'work-email'   => 'Work Email',
-            'work-phone'   => 'Work Phone',
-            'categories'   => 'Tags',
+            'name'            => 'Name',
+            'manager-name'    => 'Manager',
+            'company-name'    => 'Company',
+            'job-title'       => 'Job Title',
+            'work-email'      => 'Work Email',
+            'work-phone'      => 'Work Phone',
+            'categories'      => 'Tags',
+            'department'      => 'Department',
+            'employment-type' => 'Employment Type',
+
+            'status' => [
+                'active'   => 'Active',
+                'archived' => 'Archived',
+            ],
         ],
 
         'filters' => [

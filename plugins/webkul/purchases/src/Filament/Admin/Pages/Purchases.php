@@ -6,6 +6,7 @@ use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
@@ -17,6 +18,8 @@ use Webkul\Purchase\Filament\Admin\Widgets\PurchaseStatsWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\PurchaseTrendWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopOrdersWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\TopPurchasedProductsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\TopRfqsWidget;
+use Webkul\Purchase\Filament\Admin\Widgets\TopVendorsWidget;
 use Webkul\Purchase\Filament\Admin\Widgets\VendorSpendChart;
 use Webkul\Purchase\Models\Order;
 use Webkul\Security\Models\User;
@@ -123,6 +126,16 @@ class Purchases extends BaseDashboard
         ]);
     }
 
+    public function getWidgetsContentComponent(): Component
+    {
+        return parent::getWidgetsContentComponent()
+            ->extraAttributes([
+                'data-dashboard-widgets' => 'true',
+                'wire:loading.class'     => 'dashboard-widgets--loading',
+                'wire:target'            => 'filters',
+            ]);
+    }
+
     public function getWidgets(): array
     {
         return [
@@ -130,7 +143,9 @@ class Purchases extends BaseDashboard
             PurchaseTrendWidget::class,
             VendorSpendChart::class,
             TopOrdersWidget::class,
+            TopRfqsWidget::class,
             TopPurchasedProductsWidget::class,
+            TopVendorsWidget::class,
         ];
     }
 }

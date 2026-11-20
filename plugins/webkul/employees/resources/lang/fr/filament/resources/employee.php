@@ -171,13 +171,20 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Nom',
-            'manager-name' => 'Responsable',
-            'company-name' => 'Société',
-            'job-title'    => 'Intitulé du poste',
-            'work-email'   => 'E-mail professionnel',
-            'work-phone'   => 'Téléphone professionnel',
-            'categories'   => 'Étiquettes',
+            'name'            => 'Nom',
+            'manager-name'    => 'Responsable',
+            'company-name'    => 'Société',
+            'job-title'       => 'Intitulé du poste',
+            'work-email'      => 'E-mail professionnel',
+            'work-phone'      => 'Téléphone professionnel',
+            'categories'      => 'Étiquettes',
+            'department'      => 'Département',
+            'employment-type' => 'Type d\'emploi',
+
+            'status' => [
+                'active'   => 'Actif',
+                'archived' => 'Archivé',
+            ],
         ],
 
         'filters' => [

@@ -11,6 +11,11 @@ class AddressesRelationManager extends RelationManager
 {
     protected static string $relationship = 'addresses';
 
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
+
     public function form(Schema $schema): Schema
     {
         return AddressResource::form($schema);

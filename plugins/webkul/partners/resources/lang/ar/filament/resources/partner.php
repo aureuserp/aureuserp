@@ -65,6 +65,12 @@ return [
             'parent'     => 'الأصل',
             'work-email' => 'البريد الإلكتروني للعمل',
             'work-phone' => 'هاتف العمل',
+            'tags'       => 'الوسوم',
+
+            'status' => [
+                'active'   => 'نشط',
+                'archived' => 'مؤرشف',
+            ],
         ],
 
         'groups' => [

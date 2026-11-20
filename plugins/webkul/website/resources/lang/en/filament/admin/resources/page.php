@@ -34,6 +34,8 @@ return [
                 'fields' => [
                     'is-header-visible' => 'Is Visible Header Menu',
                     'is-footer-visible' => 'Is Visible Footer Menu',
+                    'is-tracked'        => 'Track visitors',
+                    'is-tracked-helper' => 'Record the page views of visitors on this page.',
                 ],
             ],
         ],
@@ -156,6 +158,7 @@ return [
                 'entries' => [
                     'is-header-visible' => 'Is Visible Header Menu',
                     'is-footer-visible' => 'Is Visible Footer Menu',
+                    'is-tracked'        => 'Track visitors',
                 ],
             ],
         ],

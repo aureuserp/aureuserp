@@ -128,9 +128,8 @@ export class SalesFlowPage {
     async editCustomer(originalName: string, updates: Partial<SalesCustomerData>) {
         await this.gotoCustomersPage();
         await this.searchList(originalName);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Edit/i);
-        await this.erpLocators.salesCustomerEditButton.click();
+        await this.openRowActions();
+        await this.clickMenuAction(/Edit/i);
 
         if (updates.name) {
             await this.erpLocators.salesCustomerNameInput.fill(updates.name);
@@ -146,9 +145,8 @@ export class SalesFlowPage {
     async deleteCustomer(name: string) {
         await this.gotoCustomersPage();
         await this.searchList(name);
-        // await this.openRowActions();
-        // await this.clickMenuAction(/Delete/i);
-        await this.erpLocators.salesCustomerDeleteButton.click();
+        await this.openRowActions();
+        await this.clickMenuAction(/Delete/i);
         await this.erpLocators.salesConfirmDeleteButton.click();
         await this.expectSuccessToast();
     }

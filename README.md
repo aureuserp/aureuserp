@@ -245,6 +245,7 @@ These plugins can be installed as needed to extend system functionality:
 | ------------- | ------------------------------------------------------------------------------- |
 | Inventories   | Inventory and warehouse management                                              |
 | Manufacturing | Bill of Materials (BOM), Manufacturing Orders, Work Orders, Work Centers & Operations |
+| Point of Sale | Point of sale terminal, sessions and orders                                     |
 | Products      | Product catalog and management                                                  |
 | Purchases     | Procurement and purchase order management                                       |
 | Sales         | Sales pipeline and opportunity management                                       |
@@ -258,10 +259,11 @@ These plugins can be installed as needed to extend system functionality:
 | Timesheet    | Employee work hour tracking       |
 
 #### 🤝 Customer & Partner Management
-| Module   | Description                                  |
-| -------- | -------------------------------------------- |
-| Contacts | Contact management for customers and vendors |
-| Partners | Partner relationship management              |
+| Module   | Description                                                                          |
+| -------- | ------------------------------------------------------------------------------------ |
+| Contacts | Contact management for customers and vendors                                         |
+| CRM      | Leads, sales pipeline, activities, quotations, sales teams and CRM reporting         |
+| Partners | Partner relationship management                                                      |
 
 #### 📊 Project & Content Management
 | Module   | Description                     |
