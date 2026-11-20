@@ -108,9 +108,9 @@ class EquipmentForm
                                             ->where(owned_by_company($get('company_id'))),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                    ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                     ->native(false)
                                     ->searchable()
                                     ->preload(),

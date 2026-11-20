@@ -159,7 +159,8 @@ class Warehouse extends BaseWarehouse
     {
         $this->pbm_loc_id = Location::create([
             'type'       => LocationType::INTERNAL,
-            'name'       => 'Pre-Production',
+            'key'        => 'location.pre-production',
+            'name'       => __('manufacturing::seeders.locations.pre-production'),
             'barcode'    => $this->code.'PREPRODUCTION',
             'is_scrap'   => false,
             'parent_id'  => $this->view_location_id,
@@ -170,7 +171,8 @@ class Warehouse extends BaseWarehouse
 
         $this->sam_loc_id = Location::create([
             'type'       => LocationType::INTERNAL,
-            'name'       => 'Post-Production',
+            'key'        => 'location.post-production',
+            'name'       => __('manufacturing::seeders.locations.post-production'),
             'barcode'    => $this->code.'POSTPRODUCTION',
             'is_scrap'   => false,
             'parent_id'  => $this->view_location_id,
@@ -184,7 +186,8 @@ class Warehouse extends BaseWarehouse
     {
         $this->pbm_type_id = OperationType::create([
             'sort'                    => 18,
-            'name'                    => 'Pick Components',
+            'key'                     => 'operation-type.pick-components',
+            'name'                    => __('manufacturing::seeders.operation-types.pick-components'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'PC',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -215,7 +218,8 @@ class Warehouse extends BaseWarehouse
 
         $this->sam_type_id = OperationType::create([
             'sort'                    => 20,
-            'name'                    => 'Store Finished Product',
+            'key'                     => 'operation-type.store-finished-product',
+            'name'                    => __('manufacturing::seeders.operation-types.store-finished-product'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
             'sequence_code'           => 'SFP',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -246,7 +250,8 @@ class Warehouse extends BaseWarehouse
 
         $this->manu_type_id = OperationType::create([
             'sort'                    => 19,
-            'name'                    => 'Manufacturing',
+            'key'                     => 'operation-type.manufacturing',
+            'name'                    => __('manufacturing::seeders.operation-types.manufacturing'),
             'type'                    => \Webkul\Inventory\Enums\OperationType::MANUFACTURE,
             'sequence_code'           => 'MO',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -278,10 +283,11 @@ class Warehouse extends BaseWarehouse
     protected function createManufacturingRoutes(): void
     {
         $this->pbm_route_id = Route::create([
-            'name' => match ($this->manufacture_steps) {
-                ManufactureStep::ONE_STEP    => $this->name.': Manufacture (1 step)',
-                ManufactureStep::TWO_STEPS   => $this->name.': Pick components and then manufacture (2 steps)',
-                ManufactureStep::THREE_STEPS => $this->name.': Pick components, manufacture and then store products (3 steps)',
+            'key'      => 'route.manufacture',
+            'name'     => match ($this->manufacture_steps) {
+                ManufactureStep::ONE_STEP    => __('manufacturing::seeders.routes.manufacture-one-step', ['warehouse' => $this->name]),
+                ManufactureStep::TWO_STEPS   => __('manufacturing::seeders.routes.manufacture-two-steps', ['warehouse' => $this->name]),
+                ManufactureStep::THREE_STEPS => __('manufacturing::seeders.routes.manufacture-three-steps', ['warehouse' => $this->name]),
             },
             'product_selectable'          => false,
             'product_category_selectable' => true,
@@ -300,7 +306,8 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 15,
-            'name'                     => $this->code.': Stock → Pre-Production',
+            'key'                      => 'rule.stock-pre-production',
+            'name'                     => __('manufacturing::seeders.rules.stock-pre-production', ['code' => $this->code]),
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -319,7 +326,8 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 16,
-            'name'                     => $this->code.': Pre-Production → Production',
+            'key'                      => 'rule.pre-production-production',
+            'name'                     => __('manufacturing::seeders.rules.pre-production-production', ['code' => $this->code]),
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -338,7 +346,8 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRuleIds[] = Rule::create([
             'sort'                     => 17,
-            'name'                     => $this->code.': Post-Production → Stock',
+            'key'                      => 'rule.post-production-stock',
+            'name'                     => __('manufacturing::seeders.rules.post-production-stock', ['code' => $this->code]),
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -426,9 +435,9 @@ class Warehouse extends BaseWarehouse
 
         $this->manufactureRoute?->update([
             'name' => match ($this->manufacture_steps) {
-                ManufactureStep::ONE_STEP    => $this->name.': Manufacture (1 step)',
-                ManufactureStep::TWO_STEPS   => $this->name.': Pick components and then manufacture (2 steps)',
-                ManufactureStep::THREE_STEPS => $this->name.': Pick components, manufacture and then store products (3 steps)',
+                ManufactureStep::ONE_STEP    => __('manufacturing::seeders.routes.manufacture-one-step', ['warehouse' => $this->name]),
+                ManufactureStep::TWO_STEPS   => __('manufacturing::seeders.routes.manufacture-two-steps', ['warehouse' => $this->name]),
+                ManufactureStep::THREE_STEPS => __('manufacturing::seeders.routes.manufacture-three-steps', ['warehouse' => $this->name]),
             },
             'deleted_at' => $this->manufacture_steps === ManufactureStep::ONE_STEP ? now() : null,
         ]);

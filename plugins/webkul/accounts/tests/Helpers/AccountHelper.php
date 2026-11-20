@@ -60,7 +60,7 @@ class AccountHelper
 
     public static function unitsUom(): UOM
     {
-        return UOM::query()->where('name', 'Units')->firstOrFail();
+        return UOM::query()->where('key', 'uom.units')->firstOrFail();
     }
 
     public static function currency(): Currency

@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyles
@@ -31,9 +32,12 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
     {
         $rows = collect();
 
-        $rows->push([null, 'From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')]);
+        $rows->push([null, __('accounting::filament/clusters/reporting/pages/profit-loss.period', [
+            'from' => format_date($this->dateFrom),
+            'to'   => format_date($this->dateTo),
+        ])]);
         $rows->push([null, null]);
-        $rows->push([null, 'Balance']);
+        $rows->push([null, __('accounting::filament/clusters/reporting.common.balance')]);
         $rows->push([null, null]);
 
         $rowIndex = 5;
@@ -51,7 +55,7 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
                     $accountName = ($account['code'] ? $account['code'].' - ' : '').$account['name'];
                     $rows->push([
                         '            '.$accountName,
-                        number_format($account['balance'], 2),
+                        (float) $account['balance'],
                     ]);
                     $this->rowMetadata[$rowIndex] = 'account_line';
                     $rowIndex++;
@@ -59,7 +63,7 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
 
                 $rows->push([
                     $section['total_label'],
-                    number_format($section['total'], 2),
+                    (float) $section['total'],
                 ]);
                 $this->rowMetadata[$rowIndex] = 'section_total';
                 $rowIndex++;
@@ -77,8 +81,10 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
         }
 
         $rows->push([
-            $this->profitLossData['is_profit'] ? 'Net Profit' : 'Net Loss',
-            number_format(abs($this->profitLossData['net_income']), 2),
+            $this->profitLossData['is_profit']
+                ? __('accounting::filament/clusters/reporting/pages/profit-loss.totals.net-profit')
+                : __('accounting::filament/clusters/reporting/pages/profit-loss.totals.net-loss'),
+            (float) abs($this->profitLossData['net_income']),
         ]);
         $this->rowMetadata[$rowIndex] = 'net_income';
 
@@ -168,6 +174,8 @@ class ProfitAndLossExport implements FromCollection, WithColumnWidths, WithStyle
         }
 
         $sheet->getStyle("B5:B{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $sheet->getStyle("B5:B{$lastRow}")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 
         return [];
     }

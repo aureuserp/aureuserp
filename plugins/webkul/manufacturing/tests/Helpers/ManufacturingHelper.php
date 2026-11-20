@@ -42,7 +42,7 @@ class ManufacturingHelper
 
     public static function unitsUom(): UOM
     {
-        return UOM::query()->where('name', 'Units')->firstOrFail();
+        return UOM::query()->where('key', 'uom.units')->firstOrFail();
     }
 
     public static function product(array $overrides = []): Product

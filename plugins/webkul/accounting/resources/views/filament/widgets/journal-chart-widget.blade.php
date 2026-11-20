@@ -17,7 +17,7 @@
             :href="$this->getUrl('create')"
             tag="a"
         >
-            New
+            {{ __('accounting::filament/widgets/journal-chart-widget.actions.new') }}
         </x-filament::button>
     </x-slot>
 

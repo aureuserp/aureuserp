@@ -54,7 +54,7 @@ class ManageAttributes extends ManageRelatedRecords
                             ->where(hide_deleted_unless_selected($state)),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->disableOptionWhen(function ($value, $state) {
                         return $this->getOwnerRecord()->attributes->contains('attribute_id', $value)

@@ -37,9 +37,22 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function headings(): array
     {
         return [
-            ['Partner Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
+            [__('accounting::filament/clusters/reporting.common.from-to', [
+                'report' => __('accounting::filament/clusters/reporting.pages.partner-ledger.navigation.title'),
+                'from'   => format_date($this->dateFrom),
+                'to'     => format_date($this->dateTo),
+            ])],
             [],
-            ['Partner', 'Journal', 'Account', 'Invoice Date', 'Due Date', 'Debit', 'Credit', 'Balance'],
+            [
+                __('accounting::filament/clusters/reporting.common.partner'),
+                __('accounting::filament/clusters/reporting.common.journal'),
+                __('accounting::filament/clusters/reporting.common.account'),
+                __('accounting::filament/clusters/reporting.common.invoice-date'),
+                __('accounting::filament/clusters/reporting.common.due-date'),
+                __('accounting::filament/clusters/reporting.common.debit'),
+                __('accounting::filament/clusters/reporting.common.credit'),
+                __('accounting::filament/clusters/reporting.common.balance'),
+            ],
         ];
     }
 
@@ -71,8 +84,8 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             if (in_array($partner['id'], $this->expandedPartners)) {
                 if ($partner['opening_balance'] != 0) {
                     $rows[] = [
-                        '        Opening Balance',
-                        $this->dateFrom->format('M d, Y'),
+                        '        '.__('accounting::filament/clusters/reporting.common.opening-balance'),
+                        format_date($this->dateFrom),
                         '',
                         '',
                         '',
@@ -92,8 +105,8 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                         '        '.$move['move_name'].($move['ref'] ? ' ('.$move['ref'].')' : ''),
                         $move['journal_name'] ?? '',
                         ($move['account_code'] ? $move['account_code'].' ' : '').$move['account_name'],
-                        Carbon::parse($move['invoice_date'])->format('M d, Y'),
-                        Carbon::parse($move['invoice_date_due'])->format('M d, Y'),
+                        format_date($move['invoice_date']),
+                        format_date($move['invoice_date_due']),
                         $move['debit'] > 0 ? $move['debit'] : '',
                         $move['credit'] > 0 ? $move['credit'] : '',
                         $runningBalance,
@@ -104,7 +117,7 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         }
 
         $rows[] = [
-            'Total Partner Ledger',
+            __('accounting::filament/clusters/reporting/pages/partner-ledger.table.total'),
             '',
             '',
             '',

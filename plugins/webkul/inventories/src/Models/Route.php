@@ -25,6 +25,7 @@ class Route extends Model implements Sortable
     protected $table = 'inventories_routes';
 
     protected $fillable = [
+        'key',
         'sort',
         'name',
         'product_selectable',

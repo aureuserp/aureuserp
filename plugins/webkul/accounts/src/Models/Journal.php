@@ -33,6 +33,7 @@ class Journal extends Model implements Sortable
     protected $table = 'accounts_journals';
 
     protected $fillable = [
+        'key',
         'default_account_id',
         'suspense_account_id',
         'sort',

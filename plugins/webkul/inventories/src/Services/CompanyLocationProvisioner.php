@@ -31,7 +31,8 @@ class CompanyLocationProvisioner
                     'company_id' => $company->id,
                 ],
                 [
-                    'name'       => $definition['name'],
+                    'key'        => "location.{$definition['key']}",
+                    'name'       => __("inventories::seeders.locations.{$definition['key']}"),
                     'parent_id'  => $parentId,
                     'creator_id' => $company->creator_id ?? Auth::id(),
                 ]
@@ -45,9 +46,9 @@ class CompanyLocationProvisioner
     protected function definitions(): array
     {
         return [
-            ['type' => LocationType::INVENTORY, 'is_scrap' => false, 'name' => 'Inventory Adjustment'],
-            ['type' => LocationType::PRODUCTION, 'is_scrap' => false, 'name' => 'Production'],
-            ['type' => LocationType::INVENTORY, 'is_scrap' => true, 'name' => 'Scrap'],
+            ['type' => LocationType::INVENTORY, 'is_scrap' => false, 'key' => 'inventory-adjustment'],
+            ['type' => LocationType::PRODUCTION, 'is_scrap' => false, 'key' => 'production'],
+            ['type' => LocationType::INVENTORY, 'is_scrap' => true, 'key' => 'scrap'],
         ];
     }
 

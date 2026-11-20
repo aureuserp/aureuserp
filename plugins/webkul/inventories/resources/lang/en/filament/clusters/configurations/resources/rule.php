@@ -188,6 +188,7 @@ return [
                     'partner-address'      => 'Partner Address',
                     'lead-time'            => 'Lead Time',
                     'action-information'   => 'Action Information',
+                    'lead-time-days'       => ':count day|:count days',
                 ],
             ],
 

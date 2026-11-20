@@ -1,10 +1,14 @@
 <?php
 
 use ArPHP\I18N\Arabic;
+use Carbon\Carbon;
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Select;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 use Webkul\Security\Settings\CurrencySettings;
 use Webkul\Support\Database\Dialects\DatabaseDialect;
@@ -13,6 +17,23 @@ use Webkul\Support\Models\Currency;
 use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\SettingsRegistry;
 use Webkul\Support\SupportServiceProvider;
+
+if (! function_exists('seed_rows')) {
+    function seed_rows(string $table, array $rows, string $key = 'id', array $preserved = ['name']): void
+    {
+        foreach ($rows as $row) {
+            $query = DB::table($table)->where($key, $row[$key]);
+
+            if ($query->exists()) {
+                $query->update(Arr::except($row, [...$preserved, $key, 'created_at']));
+
+                continue;
+            }
+
+            DB::table($table)->insert($row);
+        }
+    }
+}
 
 if (! function_exists('settings')) {
     function settings(string $settings): object
@@ -73,21 +94,13 @@ if (! function_exists('money')) {
 
         $currency = $currency instanceof Closure ? $currency() : ($currency ?? default_currency_code());
 
-        $locale = $locale instanceof Closure ? $locale() : ($locale ?? config('app.locale'));
+        $locale = $locale instanceof Closure ? $locale() : $locale;
 
         if ($divideBy > 0) {
             $amount /= $divideBy;
         }
 
-        if (SupportServiceProvider::isRtl()) {
-            return Number::currency($amount, $currency, 'en');
-        }
-
-        if (! str_contains($locale, '-u-nu-')) {
-            $locale .= '-u-nu-latn';
-        }
-
-        return Number::currency($amount, $currency, $locale);
+        return Number::currency($amount, $currency, number_locale($locale));
     }
 
     if (! function_exists('random_color')) {
@@ -128,6 +141,37 @@ if (! function_exists('money')) {
                 ),
             };
         }
+    }
+}
+
+if (! function_exists('number_locale')) {
+    function number_locale(?string $locale = null): string
+    {
+        if (SupportServiceProvider::isRtl()) {
+            return 'en';
+        }
+
+        $locale ??= app()->getLocale();
+
+        return str_contains($locale, '-u-nu-') ? $locale : $locale.'-u-nu-latn';
+    }
+}
+
+if (! function_exists('format_number')) {
+    function format_number(float|int|string|null $value, int $decimals = 2, ?string $locale = null): string
+    {
+        return (string) Number::format((float) $value, precision: $decimals, locale: number_locale($locale));
+    }
+}
+
+if (! function_exists('format_date')) {
+    function format_date(DateTimeInterface|string|null $date, string $format = 'll', ?string $locale = null): string
+    {
+        if (blank($date)) {
+            return '';
+        }
+
+        return Carbon::parse($date)->locale($locale ?? app()->getLocale())->isoFormat($format);
     }
 }
 
@@ -396,6 +440,55 @@ if (! function_exists('hide_deleted_unless_selected')) {
 
             return $query;
         };
+    }
+}
+
+if (! function_exists('trashed_label_suffix')) {
+    function trashed_label_suffix(?Model $record): string
+    {
+        if (! $record || ! method_exists($record, 'trashed') || ! $record->trashed()) {
+            return '';
+        }
+
+        return ' '.__('support::support.trashed-suffix');
+    }
+}
+
+if (! function_exists('is_trashed_option')) {
+    function is_trashed_option(?Field $component, mixed $value): bool
+    {
+        if (! $component instanceof Select || blank($value)) {
+            return false;
+        }
+
+        $relationship = $component->getRelationship();
+
+        if (! $relationship) {
+            return false;
+        }
+
+        $keys = trashed_record_keys(
+            $relationship->getRelated()::class,
+            $component->getQualifiedRelatedKeyNameForRelationship($relationship),
+        );
+
+        return isset($keys[(string) $value]);
+    }
+}
+
+if (! function_exists('trashed_record_keys')) {
+    function trashed_record_keys(string $model, string $keyColumn): array
+    {
+        if (! in_array(SoftDeletes::class, class_uses_recursive($model), true)) {
+            return [];
+        }
+
+        return once(fn (): array => (new $model)->newQuery()
+            ->onlyTrashed()
+            ->pluck($keyColumn)
+            ->map(fn ($key): string => (string) $key)
+            ->flip()
+            ->all());
     }
 }
 

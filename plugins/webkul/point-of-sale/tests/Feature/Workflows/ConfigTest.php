@@ -3,6 +3,7 @@
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Models\Account;
+use Webkul\Account\Models\Journal;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\PointOfSale\Enums\PaymentMethodType;
 use Webkul\PointOfSale\Enums\SessionState;
@@ -174,6 +175,28 @@ it('defaults the journals when none were given', function () {
     expect($config->journal->type)->toBe(JournalType::GENERAL)
         ->and($config->journal->code)->toBe(Config::TERMINAL_JOURNAL_CODE)
         ->and($config->invoiceJournal->type)->toBe(JournalType::SALE);
+});
+
+it('does not recreate the terminal journal once its type was changed', function () {
+    $company = Company::factory()->create();
+
+    Journal::query()->withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->where('code', Config::TERMINAL_JOURNAL_CODE)->update(['code' => 'OLD']);
+
+    Journal::query()->withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->where('key', 'journal.pos-terminal')->delete();
+
+    Journal::create([
+        'key'        => 'journal.pos-terminal',
+        'name'       => 'Retyped Terminal',
+        'code'       => 'RTT',
+        'type'       => JournalType::SALE,
+        'company_id' => $company->id,
+    ]);
+
+    $config = new Config(['company_id' => $company->id]);
+
+    expect((fn () => $this->terminalJournal())->call($config))->toBeNull();
+
+    expect(Journal::query()->withoutGlobalScope(CompanyScope::class)->where('company_id', $company->id)->where('key', 'journal.pos-terminal')->count())->toBe(1);
 });
 
 it('attaches a cash payment method to a brand new terminal', function () {

@@ -50,9 +50,9 @@ class PurchaseAgreementForm
                                             ->where(hide_deleted_unless_selected($state))
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                    ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                     ->searchable()
                                     ->required()
                                     ->preload()
@@ -122,10 +122,10 @@ class PurchaseAgreementForm
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.company'))
                                     ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(function ($label) {
-                                        return str_contains($label, ' (Deleted)');
+                                    ->disableOptionWhen(function ($component, $value) {
+                                        return is_trashed_option($component, $value);
                                     })
                                     ->searchable()
                                     ->required()
@@ -216,10 +216,10 @@ class PurchaseAgreementForm
                     ->distinct()
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
-                        if (str_contains($label, ' (Deleted)')) {
+                        if (is_trashed_option($component, $value)) {
                             return true;
                         }
 

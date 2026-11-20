@@ -82,6 +82,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2026_07_16_000001_create_quick_navigation_favorites_table',
                 '2026_07_30_110000_null_company_on_utm_campaigns',
                 '2026_08_03_120000_create_sequences_table',
+                '2026_11_06_100000_add_key_to_unit_of_measures_tables',
             ])
             ->runsMigrations()
             ->hasSettings([

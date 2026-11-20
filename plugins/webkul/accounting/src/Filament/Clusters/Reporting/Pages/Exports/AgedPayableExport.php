@@ -37,18 +37,18 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
     public function headings(): array
     {
         return [
-            ['Aged Payable - As of '.$this->asOfDate->format('m/d/Y')],
+            [__('accounting::filament/clusters/reporting/pages/aged-payable.heading', ['report' => __('accounting::filament/clusters/reporting.pages.aged-payable.navigation.title'), 'date' => format_date($this->asOfDate)])],
             [],
             [
-                'Partner',
-                'Invoice Date',
-                'At Date',
-                '1-'.$this->period,
-                ($this->period + 1).'-'.($this->period * 2),
-                (($this->period * 2) + 1).'-'.($this->period * 3),
-                (($this->period * 3) + 1).'-'.($this->period * 4),
-                'Older',
-                'Total',
+                __('accounting::filament/clusters/reporting.common.partner'),
+                __('accounting::filament/clusters/reporting.common.invoice-date'),
+                __('accounting::filament/clusters/reporting/pages/aged-payable.table.columns.at-date'),
+                __('accounting::filament/clusters/reporting/pages/aged-payable.table.columns.period-range', ['from' => 1, 'to' => $this->period]),
+                __('accounting::filament/clusters/reporting/pages/aged-payable.table.columns.period-range', ['from' => $this->period + 1, 'to' => $this->period * 2]),
+                __('accounting::filament/clusters/reporting/pages/aged-payable.table.columns.period-range', ['from' => ($this->period * 2) + 1, 'to' => $this->period * 3]),
+                __('accounting::filament/clusters/reporting/pages/aged-payable.table.columns.period-range', ['from' => ($this->period * 3) + 1, 'to' => $this->period * 4]),
+                __('accounting::filament/clusters/reporting/pages/aged-payable.table.columns.older'),
+                __('accounting::filament/clusters/reporting.common.total'),
             ],
         ];
     }
@@ -77,7 +77,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
                 foreach ($partner['lines'] as $line) {
                     $rows[] = [
                         '        '.$line['move_name'],
-                        Carbon::parse($line['invoice_date'])->format('m/d/Y'),
+                        format_date($line['invoice_date']),
                         ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                             ->map(fn ($key) => $line[$key] != 0 ? $line[$key] : '')
                             ->toArray(),
@@ -92,7 +92,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
         }
 
         $rows[] = [
-            'Total Aged Payable',
+            __('accounting::filament/clusters/reporting/pages/aged-payable.totals.total'),
             '',
             ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                 ->map(fn ($key) => $totals[$key] != 0 ? $totals[$key] : '')

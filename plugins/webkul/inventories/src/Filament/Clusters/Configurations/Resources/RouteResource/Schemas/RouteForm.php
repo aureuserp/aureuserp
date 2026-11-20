@@ -40,10 +40,10 @@ class RouteForm
                                     ->where(hide_deleted_unless_selected($state)),
                             )
                             ->getOptionLabelFromRecordUsing(
-                                fn (Model $record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''),
+                                fn (Model $record): string => $record->name.trashed_label_suffix($record),
                             )
                             ->disableOptionWhen(
-                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
+                                fn ($component, $value): bool => is_trashed_option($component, $value),
                             )
                             ->live()
                             ->afterStateUpdated(fn (Set $set, Get $get, $state) => clear_foreign_company_values($set, $get, [

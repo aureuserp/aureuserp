@@ -110,8 +110,8 @@ class QuotationForm
                                             })
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                                             ->columnSpan(1)
-                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)')),
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.trashed_label_suffix($record))
+                                            ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value)),
                                     ]),
                                 DatePicker::make('validity_date')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.expiration'))
@@ -263,10 +263,10 @@ class QuotationForm
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.company'))
                                             ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state)))
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
+                                            ->disableOptionWhen(function ($component, $value) {
+                                                return is_trashed_option($component, $value);
                                             })
                                             ->searchable()
                                             ->preload()
@@ -464,7 +464,7 @@ class QuotationForm
                             ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->selectablePlaceholder(false)
                     ->searchable()
@@ -475,7 +475,7 @@ class QuotationForm
                     ->wrapOptionLabels(false)
                     ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::SALE, OrderState::CANCEL]))
                     ->disableOptionWhen(function ($label, $value, $state, $component) {
-                        $isDeleted = str_contains($label, ' (Deleted)');
+                        $isDeleted = is_trashed_option($component, $value);
 
                         if ($isDeleted) {
                             return true;
@@ -813,10 +813,10 @@ class QuotationForm
                     ->dehydrated(true)
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
-                        if (str_contains($label, ' (Deleted)')) {
+                        if (is_trashed_option($component, $value)) {
                             return true;
                         }
 

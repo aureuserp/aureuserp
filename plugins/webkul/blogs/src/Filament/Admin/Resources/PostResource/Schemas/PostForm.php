@@ -87,10 +87,10 @@ class PostForm
                                     )
                                     ->searchable()
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(function ($label) {
-                                        return str_contains($label, ' (Deleted)');
+                                    ->disableOptionWhen(function ($component, $value) {
+                                        return is_trashed_option($component, $value);
                                     })
                                     ->preload()
                                     ->required(),

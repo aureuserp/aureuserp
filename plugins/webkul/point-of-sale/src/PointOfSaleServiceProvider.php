@@ -78,6 +78,7 @@ class PointOfSaleServiceProvider extends PackageServiceProvider
                 '2026_09_17_100031_add_floating_name_and_is_booked_to_pos_orders_table',
                 '2026_09_17_100032_add_show_margins_and_costs_to_pos_configs_table',
                 '2026_09_17_100033_add_preparation_state_to_pos_orders_table',
+                '2026_11_06_100000_backfill_pos_keys',
             ])
             ->runsMigrations()
             ->hasSettings([

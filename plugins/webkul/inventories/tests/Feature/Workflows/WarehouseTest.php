@@ -1,11 +1,17 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Webkul\Inventory\Database\Seeders\DatabaseSeeder as InventoryDatabaseSeeder;
 use Webkul\Inventory\Enums\DeliveryStep;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
+use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
+use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Support\Models\Company;
@@ -456,4 +462,114 @@ it('allows two companies to own warehouses with the same name and code', functio
     expect($first->name)->toBe($second->name)
         ->and($first->code)->toBe($second->code)
         ->and($first->company_id)->not->toBe($second->company_id);
+});
+
+it('provisions keyed locations, operation types, routes and rules unique per warehouse', function () {
+    $first = InventoryHelper::warehouse();
+
+    $second = InventoryHelper::warehouse();
+
+    foreach ([$first, $second] as $warehouse) {
+        foreach (['inventories_locations' => 6, 'inventories_operation_types' => 8, 'inventories_rules' => 12] as $table => $count) {
+            $keys = DB::table($table)->where('warehouse_id', $warehouse->id)->whereNotNull('key')->pluck('key');
+
+            expect($keys->count())->toBeGreaterThanOrEqual($count)
+                ->and($keys->unique())->toHaveCount($keys->count());
+        }
+    }
+
+    expect(DB::table('inventories_operation_types')->where('id', $first->in_type_id)->value('key'))->toBe('operation-type.receipts')
+        ->and(DB::table('inventories_locations')->where('id', $second->lot_stock_location_id)->value('key'))->toBe('location.stock')
+        ->and(DB::table('inventories_routes')->where('id', $first->reception_route_id)->value('key'))->toBe('route.reception');
+});
+
+it('names provisioned rows in the active locale', function () {
+    App::setLocale('fr');
+
+    $warehouse = InventoryHelper::warehouse();
+
+    App::setLocale('en');
+
+    expect(DB::table('inventories_locations')->where('id', $warehouse->lot_stock_location_id)->value('name'))->toBe('Stock')
+        ->and(DB::table('inventories_operation_types')->where('id', $warehouse->in_type_id)->value('name'))->toBe('Réceptions');
+});
+
+it('keeps a renamed route when the warehouse is saved without step changes', function () {
+    $warehouse = InventoryHelper::warehouse();
+
+    Route::withTrashed()->whereKey($warehouse->reception_route_id)->update(['name' => 'Inbound']);
+
+    $warehouse->refresh()->update(['sort' => 3]);
+
+    expect(Route::withTrashed()->whereKey($warehouse->reception_route_id)->value('name'))->toBe('Inbound');
+});
+
+it('restores inventory keys from the seeded ids and the warehouse structure when names are translated', function () {
+    InventoryHelper::warehouse(ReceptionStep::THREE_STEPS, DeliveryStep::THREE_STEPS);
+
+    $otherCompany = Company::factory()->create();
+
+    warehouseFor($otherCompany, 'Entrepôt', 'ENT');
+
+    $otherPluginKeys = [
+        'location.pre-production',
+        'location.post-production',
+        'operation-type.manufacturing',
+        'operation-type.pick-components',
+        'operation-type.store-finished-product',
+        'operation-type.pos-orders',
+        'operation-type.pos-returns',
+        'route.manufacture',
+        'rule.stock-pre-production',
+        'rule.pre-production-production',
+        'rule.post-production-stock',
+    ];
+
+    $expected = [];
+
+    foreach (['inventories_locations', 'inventories_operation_types', 'inventories_routes', 'inventories_rules'] as $table) {
+        $expected[$table] = DB::table($table)->whereNotNull('key')->whereNotIn('key', $otherPluginKeys)->pluck('key', 'id')->all();
+
+        foreach (array_keys($expected[$table]) as $id) {
+            DB::table($table)->where('id', $id)->update(['key' => null, 'name' => "Nom {$id}"]);
+        }
+    }
+
+    (require __DIR__.'/../../../database/migrations/2026_11_06_100000_backfill_inventories_keys.php')->backfill();
+
+    expect(collect($expected['inventories_rules'])->countBy()->get('rule.vendors-stock'))->toBeGreaterThanOrEqual(2)
+        ->and($expected['inventories_rules'])->toContain('rule.buy', 'rule.dropship', 'rule.stock-customers-pick')
+        ->and($expected['inventories_locations'])->toContain('location.vendors', 'location.scrap')
+        ->and(DB::table('inventories_locations')->where('company_id', $otherCompany->id)->whereIn('id', array_keys($expected['inventories_locations']))->pluck('key')->all())
+        ->toContain('location.inventory-adjustment', 'location.production', 'location.scrap');
+
+    foreach ($expected as $table => $keys) {
+        expect(DB::table($table)->whereIn('id', array_keys($keys))->pluck('key', 'id')->all())->toEqual($keys);
+    }
+});
+
+it('keeps user changes, stock and other warehouses when the inventory seeders run again', function () {
+    $seededWarehouse = Warehouse::query()->findOrFail(1);
+
+    $quantity = InventoryHelper::addProductQuantity(InventoryHelper::product(), Location::query()->findOrFail($seededWarehouse->lot_stock_location_id), 5);
+
+    $otherWarehouse = InventoryHelper::warehouse();
+
+    DB::table('inventories_locations')->where('id', $seededWarehouse->lot_stock_location_id)->update(['name' => 'Stock principal']);
+
+    DB::table('inventories_warehouses')->where('id', 1)->update(['code' => 'MTL']);
+
+    DB::table('inventories_rules')->where('key', 'rule.dropship')->delete();
+
+    $counts = collect(['inventories_locations', 'inventories_operation_types', 'inventories_routes', 'inventories_warehouses', 'inventories_route_warehouses'])
+        ->mapWithKeys(fn (string $table): array => [$table => DB::table($table)->count()]);
+
+    Artisan::call('db:seed', ['--class' => InventoryDatabaseSeeder::class, '--force' => true]);
+
+    expect(DB::table('inventories_product_quantities')->where('id', $quantity->id)->value('quantity'))->toEqual(5)
+        ->and(DB::table('inventories_locations')->where('id', $seededWarehouse->lot_stock_location_id)->value('name'))->toBe('Stock principal')
+        ->and(DB::table('inventories_warehouses')->where('id', 1)->value('code'))->toBe('MTL')
+        ->and(DB::table('inventories_operation_types')->where('id', $otherWarehouse->in_type_id)->value('warehouse_id'))->toBe($otherWarehouse->id)
+        ->and(DB::table('inventories_rules')->where('key', 'rule.dropship')->exists())->toBeTrue()
+        ->and(collect($counts->keys())->mapWithKeys(fn (string $table): array => [$table => DB::table($table)->count()]))->toEqual($counts);
 });

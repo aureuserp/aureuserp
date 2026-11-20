@@ -168,10 +168,10 @@ class PayAction extends Action
                                     }
                                 )
                                 ->getOptionLabelFromRecordUsing(function ($record): string {
-                                    return $record->account_number.' - '.$record->bank?->name.($record->trashed() ? ' (Deleted)' : '');
+                                    return $record->account_number.' - '.$record->bank?->name.trashed_label_suffix($record);
                                 })
-                                ->disableOptionWhen(function ($label) {
-                                    return str_contains($label, ' (Deleted)');
+                                ->disableOptionWhen(function ($component, $value) {
+                                    return is_trashed_option($component, $value);
                                 })
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.recipient-bank-account'))
                                 ->default(fn () => $this->resolvePartnerBankId($paymentRegister, $paymentRegister->journal_id))

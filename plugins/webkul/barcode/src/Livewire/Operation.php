@@ -585,7 +585,7 @@ class Operation extends Component
             })
             ->get()
             ->mapWithKeys(function (Location $location): array {
-                $label = $location->full_name.($location->trashed() ? ' (Deleted)' : '');
+                $label = $location->full_name.trashed_label_suffix($location);
 
                 return [$location->id => $label];
             })

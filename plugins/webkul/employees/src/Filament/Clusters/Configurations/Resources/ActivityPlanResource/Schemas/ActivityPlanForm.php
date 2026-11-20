@@ -45,10 +45,10 @@ class ActivityPlanForm
                             ->preload()
                             ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
                             ->getOptionLabelFromRecordUsing(
-                                fn (Model $record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''),
+                                fn (Model $record): string => $record->name.trashed_label_suffix($record),
                             )
                             ->disableOptionWhen(
-                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
+                                fn ($component, $value): bool => is_trashed_option($component, $value),
                             )
                             ->default(current_company_id())
                             ->live()

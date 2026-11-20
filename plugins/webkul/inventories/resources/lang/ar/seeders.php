@@ -1,0 +1,63 @@
+<?php
+
+return [
+    'locations' => [
+        'physical'                => 'المواقع الفعلية',
+        'partners'                => 'الشركاء',
+        'virtual'                 => 'المواقع الافتراضية',
+        'vendors'                 => 'الموردون',
+        'customers'               => 'العملاء',
+        'inter-company-transit'   => 'عبور بين الشركات',
+        'inter-warehouse-transit' => 'عبور بين المستودعات',
+        'inventory-adjustment'    => 'تسوية المخزون',
+        'production'              => 'الإنتاج',
+        'scrap'                   => 'الخردة',
+        'stock'                   => 'المخزون',
+        'input'                   => 'الإدخال',
+        'quality-control'         => 'مراقبة الجودة',
+        'output'                  => 'الإخراج',
+        'packing-zone'            => 'منطقة التغليف',
+    ],
+
+    'operation-types' => [
+        'receipts'           => 'الاستلامات',
+        'delivery-orders'    => 'أوامر التسليم',
+        'pick'               => 'الانتقاء',
+        'pack'               => 'التغليف',
+        'quality-control'    => 'مراقبة الجودة',
+        'storage'            => 'التخزين',
+        'internal-transfers' => 'التحويلات الداخلية',
+        'cross-dock'         => 'العبور المباشر',
+        'dropship'           => 'الشحن المباشر',
+    ],
+
+    'routes' => [
+        'mto'                   => 'التزويد حسب الطلب (MTO)',
+        'reception-one-step'    => ':warehouse: الاستلام في خطوة واحدة (المخزون)',
+        'reception-two-steps'   => ':warehouse: الاستلام في خطوتين (الإدخال + المخزون)',
+        'reception-three-steps' => ':warehouse: الاستلام في 3 خطوات (الإدخال + الجودة + المخزون)',
+        'delivery-one-step'     => ':warehouse: التسليم في خطوة واحدة (الشحن)',
+        'delivery-two-steps'    => ':warehouse: التسليم في خطوتين (الانتقاء + الشحن)',
+        'delivery-three-steps'  => ':warehouse: التسليم في 3 خطوات (الانتقاء + التغليف + الشحن)',
+        'crossdock'             => ':warehouse: العبور المباشر',
+        'buy'                   => 'شراء',
+        'dropship'              => 'الشحن المباشر',
+    ],
+
+    'rules' => [
+        'vendors-stock'         => ':code: الموردون → المخزون',
+        'stock-customers'       => ':code: المخزون → العملاء',
+        'vendors-customers'     => ':code: الموردون → العملاء',
+        'input-output'          => ':code: الإدخال → الإخراج',
+        'stock-customers-mto'   => ':code: المخزون → العملاء (MTO)',
+        'input-quality-control' => ':code: الإدخال → مراقبة الجودة',
+        'quality-control-stock' => ':code: مراقبة الجودة → المخزون',
+        'stock-customers-pick'  => ':code: المخزون → العملاء',
+        'packing-zone-output'   => ':code: منطقة التغليف → الإخراج',
+        'output-customers'      => ':code: الإخراج → العملاء',
+        'input-stock'           => ':code: الإدخال → المخزون',
+        'buy-customers'         => ':code: خطأ → العملاء',
+        'buy'                   => ':code: المخزون (شراء)',
+        'dropship'              => 'الموردون → العملاء',
+    ],
+];

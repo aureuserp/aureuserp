@@ -90,7 +90,8 @@ class Warehouse extends BaseWarehouse
 
         $this->pos_return_type_id ??= OperationType::create([
             'sort'                    => 21,
-            'name'                    => 'PoS Returns',
+            'key'                     => 'operation-type.pos-returns',
+            'name'                    => __('point-of-sale::seeders.operation-types.pos-returns'),
             'type'                    => OperationTypeEnum::INCOMING,
             'sequence_code'           => 'POSRET',
             'reservation_method'      => ReservationMethod::AT_CONFIRM,
@@ -110,7 +111,8 @@ class Warehouse extends BaseWarehouse
 
         $this->pos_type_id ??= OperationType::create([
             'sort'                     => 20,
-            'name'                     => 'PoS Orders',
+            'key'                      => 'operation-type.pos-orders',
+            'name'                     => __('point-of-sale::seeders.operation-types.pos-orders'),
             'type'                     => OperationTypeEnum::OUTGOING,
             'sequence_code'            => 'POS',
             'reservation_method'       => ReservationMethod::AT_CONFIRM,

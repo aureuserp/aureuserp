@@ -15,13 +15,12 @@ class RouteSeeder extends Seeder
     {
         $user = User::first();
 
-        DB::table('inventories_routes')->delete();
-
-        DB::table('inventories_routes')->insert([
+        DB::table('inventories_routes')->insertOrIgnore([
             [
                 'id'                          => 1,
                 'sort'                        => 1,
-                'name'                        => 'Replenish on Order (MTO)',
+                'key'                         => 'route.mto',
+                'name'                        => __('inventories::seeders.routes.mto'),
                 'product_selectable'          => true,
                 'product_category_selectable' => false,
                 'warehouse_selectable'        => false,
@@ -34,7 +33,8 @@ class RouteSeeder extends Seeder
             ], [
                 'id'                          => 2,
                 'sort'                        => 2,
-                'name'                        => 'Your Company: Receive in 1 step (Stock)',
+                'key'                         => 'route.reception',
+                'name'                        => __('inventories::seeders.routes.reception-one-step', ['warehouse' => 'Your Company']),
                 'product_selectable'          => false,
                 'product_category_selectable' => true,
                 'warehouse_selectable'        => true,
@@ -47,7 +47,8 @@ class RouteSeeder extends Seeder
             ], [
                 'id'                          => 3,
                 'sort'                        => 3,
-                'name'                        => 'Your Company: Deliver in 1 step (Ship)',
+                'key'                         => 'route.delivery',
+                'name'                        => __('inventories::seeders.routes.delivery-one-step', ['warehouse' => 'Your Company']),
                 'product_selectable'          => false,
                 'product_category_selectable' => true,
                 'warehouse_selectable'        => true,
@@ -60,7 +61,8 @@ class RouteSeeder extends Seeder
             ], [
                 'id'                          => 4,
                 'sort'                        => 4,
-                'name'                        => 'Your Company: Cross-Dock',
+                'key'                         => 'route.crossdock',
+                'name'                        => __('inventories::seeders.routes.crossdock', ['warehouse' => 'Your Company']),
                 'product_selectable'          => true,
                 'product_category_selectable' => true,
                 'warehouse_selectable'        => false,
@@ -73,7 +75,8 @@ class RouteSeeder extends Seeder
             ], [
                 'id'                          => 5,
                 'sort'                        => 5,
-                'name'                        => 'Buy',
+                'key'                         => 'route.buy',
+                'name'                        => __('inventories::seeders.routes.buy'),
                 'product_selectable'          => true,
                 'product_category_selectable' => false,
                 'warehouse_selectable'        => false,
@@ -86,7 +89,8 @@ class RouteSeeder extends Seeder
             ], [
                 'id'                          => 6,
                 'sort'                        => 6,
-                'name'                        => 'Dropship',
+                'key'                         => 'route.dropship',
+                'name'                        => __('inventories::seeders.routes.dropship'),
                 'product_selectable'          => true,
                 'product_category_selectable' => true,
                 'warehouse_selectable'        => false,

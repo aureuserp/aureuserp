@@ -98,9 +98,9 @@ class EmployeeForm
                                         modifyQueryUsing: fn (Builder $query, Get $get, $state) => $query->withTrashed()->where(hide_deleted_unless_selected($state))->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $get('company_id') ?? current_company_id())),
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                    ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm(fn (Schema $schema) => DepartmentResource::form($schema)),
@@ -639,9 +639,9 @@ class EmployeeForm
                                                                 $label = $record->name;
 
                                                                 if ($record->trashed()) {
-                                                                    $label .= ' (Deleted)';
+                                                                    $label .= trashed_label_suffix($record);
                                                                 } elseif ($record->employee && $record->id !== $livewire->record?->user_id) {
-                                                                    $label .= ' (Assigned)';
+                                                                    $label .= ' '.__('employees::filament/resources/employee.form.tabs.settings.fields.user-assigned-suffix');
                                                                 }
 
                                                                 return $label;

@@ -90,10 +90,10 @@ class OrderForm
                                             ->where(hide_deleted_unless_selected($state))
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(function ($label) {
-                                        return str_contains($label, ' (Deleted)');
+                                    ->disableOptionWhen(function ($component, $value) {
+                                        return is_trashed_option($component, $value);
                                     })
                                     ->searchable()
                                     ->required()
@@ -132,9 +132,9 @@ class OrderForm
                                                 });
                                         })
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->name.trashed_label_suffix($record);
                                     })
-                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                    ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                     ->searchable()
                                     ->preload()
                                     ->visible(OrderResource::getOrderSettings()->enable_purchase_agreements)
@@ -199,7 +199,7 @@ class OrderForm
                                             return $record->name;
                                         }
 
-                                        return $record->warehouse->name.': '.$record->name.($record->trashed() ? ' (Deleted)' : '');
+                                        return $record->warehouse->name.': '.$record->name.trashed_label_suffix($record);
                                     })
                                     ->required()
                                     ->searchable()
@@ -251,9 +251,9 @@ class OrderForm
                                                     ->where(hide_deleted_unless_selected($state)),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name.trashed_label_suffix($record);
                                             })
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                            ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -450,7 +450,7 @@ class OrderForm
                             ->where(owned_by_company($get('../../company_id'))),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->searchable()
                     ->preload()
@@ -459,7 +459,7 @@ class OrderForm
                     ->wrapOptionLabels(false)
                     ->disabled(fn (Get $get): bool => filled($get('id')) && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED]))
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
-                        if (str_contains($label, ' (Deleted)')) {
+                        if (is_trashed_option($component, $value)) {
                             return true;
                         }
 

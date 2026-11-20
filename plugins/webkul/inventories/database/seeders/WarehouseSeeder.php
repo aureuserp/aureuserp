@@ -17,9 +17,7 @@ class WarehouseSeeder extends Seeder
     {
         $user = User::first();
 
-        DB::table('inventories_warehouses')->delete();
-
-        DB::table('inventories_warehouses')->insert([
+        $inserted = DB::table('inventories_warehouses')->insertOrIgnore([
             [
                 'id'                       => 1,
                 'name'                     => 'Your Company',
@@ -53,6 +51,10 @@ class WarehouseSeeder extends Seeder
             ],
         ]);
 
+        if (! $inserted) {
+            return;
+        }
+
         DB::table('inventories_locations')->whereIn('id', [11, 12, 13, 14, 15, 16])->update([
             'warehouse_id' => 1,
         ]);
@@ -68,8 +70,8 @@ class WarehouseSeeder extends Seeder
             ],
         ]);
 
-        DB::table('inventories_operation_types')->where('id', '<>', 9)->update(['warehouse_id' => 1]);
+        DB::table('inventories_operation_types')->whereIn('id', range(1, 8))->update(['warehouse_id' => 1]);
 
-        DB::table('inventories_rules')->where('id', '<>', 14)->update(['warehouse_id' => 1]);
+        DB::table('inventories_rules')->whereIn('id', range(1, 13))->update(['warehouse_id' => 1]);
     }
 }

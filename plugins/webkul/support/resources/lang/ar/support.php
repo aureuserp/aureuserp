@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'version' => 'الإصدار :version',
+    'trashed-suffix' => '(محذوف)',
+    'version'        => 'الإصدار :version',
 
     'cross-company' => [
         'title'       => 'Cross-company record not allowed',

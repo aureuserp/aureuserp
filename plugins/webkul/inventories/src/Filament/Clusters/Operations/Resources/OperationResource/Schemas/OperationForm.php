@@ -94,9 +94,9 @@ class OperationForm
                                     ->where(hide_deleted_unless_selected($state))
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->name.trashed_label_suffix($record);
                             })
-                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                            ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                             ->searchable()
                             ->preload()
                             ->createOptionForm(fn (Schema $schema): Schema => PartnerResource::form($schema))
@@ -139,10 +139,10 @@ class OperationForm
                                     return $record->name;
                                 }
 
-                                return $record->warehouse->name.': '.$record->name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->warehouse->name.': '.$record->name.trashed_label_suffix($record);
                             })
-                            ->disableOptionWhen(function ($label) {
-                                return str_contains($label, ' (Deleted)');
+                            ->disableOptionWhen(function ($component, $value) {
+                                return is_trashed_option($component, $value);
                             })
                             ->afterStateUpdated(function (Set $set, Get $get) {
                                 $operationType = OperationType::withTrashed()->find($get('operation_type_id'));
@@ -162,10 +162,10 @@ class OperationForm
                                     ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->full_name.trashed_label_suffix($record);
                             })
-                            ->disableOptionWhen(function ($label) {
-                                return str_contains($label, ' (Deleted)');
+                            ->disableOptionWhen(function ($component, $value) {
+                                return is_trashed_option($component, $value);
                             })
                             ->searchable()
                             ->preload()
@@ -183,10 +183,10 @@ class OperationForm
                                     ->where(owned_by_company(static::companyIdFor($get))),
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->full_name.trashed_label_suffix($record);
                             })
-                            ->disableOptionWhen(function ($label) {
-                                return str_contains($label, ' (Deleted)');
+                            ->disableOptionWhen(function ($component, $value) {
+                                return is_trashed_option($component, $value);
                             })
                             ->searchable()
                             ->preload()
@@ -357,10 +357,10 @@ class OperationForm
                     ->preload()
                     ->wrapOptionLabels(false)
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
                     ->disableOptionWhen(function ($value, $state, $component, $label) {
-                        if (str_contains($label, ' (Deleted)')) {
+                        if (is_trashed_option($component, $value)) {
                             return true;
                         }
 
@@ -394,10 +394,10 @@ class OperationForm
                             ->where(hide_deleted_unless_selected($state)),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->full_name.trashed_label_suffix($record);
                     })
-                    ->disableOptionWhen(function ($label) {
-                        return str_contains($label, ' (Deleted)');
+                    ->disableOptionWhen(function ($component, $value) {
+                        return is_trashed_option($component, $value);
                     })
                     ->searchable()
                     ->preload()
@@ -800,10 +800,10 @@ class OperationForm
                                     })
                             )
                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                                return $record->full_name.trashed_label_suffix($record);
                             })
-                            ->disableOptionWhen(function ($label) {
-                                return str_contains($label, ' (Deleted)');
+                            ->disableOptionWhen(function ($component, $value) {
+                                return is_trashed_option($component, $value);
                             })
                             ->searchable()
                             ->preload()

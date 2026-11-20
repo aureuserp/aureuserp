@@ -28,6 +28,7 @@ class Rule extends Model implements Sortable
     protected $table = 'inventories_rules';
 
     protected $fillable = [
+        'key',
         'sort',
         'name',
         'route_sort',

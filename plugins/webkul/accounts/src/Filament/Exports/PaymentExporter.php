@@ -40,12 +40,12 @@ class PaymentExporter extends Exporter
     public static function getCompletedNotificationBody(Export $export): string
     {
         $body = __('accounts::filament/exports/payment.notification.completed', [
-            'count' => number_format($export->successful_rows),
+            'count' => format_number($export->successful_rows, 0),
         ]);
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
             $body .= ' '.__('accounts::filament/exports/payment.notification.failed', [
-                'count' => number_format($failedRowsCount),
+                'count' => format_number($failedRowsCount, 0),
             ]);
         }
 

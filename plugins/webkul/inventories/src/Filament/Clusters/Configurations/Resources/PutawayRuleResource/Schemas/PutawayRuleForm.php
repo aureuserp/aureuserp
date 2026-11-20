@@ -44,10 +44,10 @@ class PutawayRuleForm
                             ->orderBy('full_name')
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->full_name.trashed_label_suffix($record);
                     })
-                    ->disableOptionWhen(function ($label) {
-                        return str_contains($label, ' (Deleted)');
+                    ->disableOptionWhen(function ($component, $value) {
+                        return is_trashed_option($component, $value);
                     })
                     ->preload()
                     ->searchable()
@@ -76,12 +76,6 @@ class PutawayRuleForm
                             ->pluck('full_name', 'id')
                             ->all();
                     })
-                    ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->full_name.($record->trashed() ? ' (Deleted)' : '');
-                    })
-                    ->disableOptionWhen(function ($label) {
-                        return str_contains($label, ' (Deleted)');
-                    })
                     ->searchable()
                     ->required(),
                 Select::make('product_id')
@@ -95,10 +89,10 @@ class PutawayRuleForm
                             ->where(owned_by_company($get('company_id')))
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
-                    ->disableOptionWhen(function ($label) {
-                        return str_contains($label, ' (Deleted)');
+                    ->disableOptionWhen(function ($component, $value) {
+                        return is_trashed_option($component, $value);
                     })
                     ->searchable()
                     ->preload()

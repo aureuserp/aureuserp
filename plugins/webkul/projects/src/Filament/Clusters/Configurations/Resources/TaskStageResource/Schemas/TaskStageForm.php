@@ -27,9 +27,9 @@ class TaskStageForm
                             ->where(hide_deleted_unless_selected($state)),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.trashed_label_suffix($record);
                     })
-                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                    ->disableOptionWhen(fn ($component, $value): bool => is_trashed_option($component, $value))
                     ->hiddenOn(TaskStagesRelationManager::class)
                     ->required()
                     ->searchable()
