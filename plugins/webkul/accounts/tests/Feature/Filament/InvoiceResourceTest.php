@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
@@ -7,6 +8,7 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentStatus;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\CancelAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\ConfirmAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions\PayAction;
@@ -36,6 +38,8 @@ beforeEach(function () {
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 });
+
+afterEach(fn () => Model::preventSilentlyDiscardingAttributes(false));
 
 it('forbids listing invoices without permission', function () {
     FilamentHelper::actingAs([]);
@@ -189,4 +193,47 @@ it('marks all payments paid once the invoice is fully paid in installments', fun
     $invoice->matchedPayments->each(
         fn ($payment) => expect($payment->state)->toBe(PaymentStatus::PAID)
     );
+});
+
+it('creates an invoice with a taxed product line through the create form with strict model writes', function () {
+    FilamentHelper::actingAs(['view_any_account_invoice', 'create_account_invoice']);
+
+    $partner = AccountHelper::partner();
+
+    $product = AccountHelper::product();
+
+    $tax = AccountHelper::tax(type: TypeTaxUse::SALE);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Livewire::test(CreateInvoice::class)
+        ->fillForm([
+            'partner_id'   => $partner->id,
+            'invoice_date' => now(),
+            'journal_id'   => AccountHelper::saleJournal()->id,
+            'currency_id'  => AccountHelper::currency()->id,
+            'products'     => [
+                [
+                    'product_id' => $product->id,
+                    'quantity'   => 2,
+                    'uom_id'     => AccountHelper::unitsUom()->id,
+                    'price_unit' => 100,
+                    'discount'   => 0,
+                    'taxes'      => [$tax->id],
+                ],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $line = Move::query()
+        ->where('partner_id', $partner->id)
+        ->where('move_type', MoveType::OUT_INVOICE)
+        ->firstOrFail()
+        ->invoiceLines()
+        ->firstOrFail();
+
+    expect($line->product_id)->toBe($product->id)
+        ->and((float) $line->quantity)->toBe(2.0)
+        ->and($line->taxes->pluck('id')->all())->toBe([$tax->id]);
 });

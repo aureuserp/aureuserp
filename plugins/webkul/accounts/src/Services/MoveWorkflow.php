@@ -212,7 +212,6 @@ class MoveWorkflow
         }
 
         $move->addMessage([
-            'from' => ['company' => current_company()->toArray()],
             'body' => view($view, ['payload' => $this->buildEmailPayload($move, $lastPartner, $data)])->render(),
             'type' => 'comment',
         ], Auth::user()->id);

@@ -81,7 +81,6 @@ class Payment extends Model
         'partner_id',
         'currency_id',
         'partner_bank_id',
-        'ref',
         'date',
     ];
 

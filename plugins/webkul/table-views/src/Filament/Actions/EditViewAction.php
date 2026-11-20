@@ -8,6 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Width;
 use Guava\IconPicker\Forms\Components\IconPicker;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
@@ -66,7 +67,8 @@ class EditViewAction extends Action
                 $tableView = TableView::find($arguments['view_key']);
 
                 $this->process(function (array $data) use ($tableView): TableView {
-                    $tableView->fill($data);
+                    $tableView->fill(Arr::except($data, ['is_favorite']));
+
                     $tableView->save();
 
                     TableViewFavorite::updateOrCreate(

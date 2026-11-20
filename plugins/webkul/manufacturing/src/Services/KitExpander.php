@@ -2,6 +2,7 @@
 
 namespace Webkul\Manufacturing\Services;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
@@ -92,9 +93,9 @@ class KitExpander
             return [];
         }
 
-        $attributes = $move->replicate()
-            ->fill($this->kitLineAttributes($move, $kitLine, $demand, $produced))
-            ->toArray();
+        $component = $move->replicate()->fill($this->kitLineAttributes($move, $kitLine, $demand, $produced));
+
+        $attributes = Arr::only($component->getAttributes(), $component->getFillable());
 
         if ($move->state === MoveState::ASSIGNED) {
             $attributes['state'] = MoveState::ASSIGNED;
@@ -106,14 +107,15 @@ class KitExpander
     protected function kitLineAttributes(Move $move, $kitLine, float $demand, float $produced): array
     {
         return [
-            'operation_id'    => $move->operation?->id,
-            'product_id'      => $kitLine->product->id,
-            'product_uom'     => $kitLine->uom->id,
-            'product_uom_qty' => $demand,
-            'quantity'        => $produced,
-            'name'            => $move->name,
-            'is_picked'       => $move->is_picked,
-            'bom_line_id'     => $kitLine->id,
+            'operation_id'     => $move->operation?->id,
+            'product_id'       => $kitLine->product->id,
+            'uom_id'           => $kitLine->uom->id,
+            'product_uom_qty'  => $demand,
+            'quantity'         => $produced,
+            'name'             => $move->name,
+            'is_picked'        => $move->is_picked,
+            'bom_line_id'      => $kitLine->id,
+            'package_level_id' => null,
         ];
     }
 

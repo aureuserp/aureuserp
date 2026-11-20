@@ -60,6 +60,7 @@ class UserForm
                                             ->password()
                                             ->revealable(filament()->arePasswordsRevealable())
                                             ->hiddenOn('edit')
+                                            ->dehydrated(false)
                                             ->rule('required', fn ($get) => (bool) $get('password'))
                                             ->same('password'),
                                     ])

@@ -25,9 +25,6 @@ return [
 
         'form' => [
             'fields' => [
-                'activity-plan' => 'خطة النشاط',
-                'plan-date'     => 'تاريخ الخطة',
-                'plan-summary'  => 'ملخص الخطة',
                 'activity-type' => 'نوع النشاط',
                 'due-date'      => 'تاريخ الاستحقاق',
                 'summary'       => 'الملخص',

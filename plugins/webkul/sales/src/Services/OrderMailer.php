@@ -60,7 +60,6 @@ class OrderMailer
         );
 
         $message = $record->addMessage([
-            'from' => ['company' => current_company()->toArray()],
             'body' => view($view, compact('payload'))->render(),
             'type' => 'comment',
         ]);
@@ -82,7 +81,6 @@ class OrderMailer
             );
 
             $record->addMessage([
-                'from' => ['company' => current_company()->toArray()],
                 'body' => view($view, compact('payload'))->render(),
                 'type' => 'comment',
             ]);

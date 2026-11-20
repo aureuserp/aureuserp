@@ -581,7 +581,6 @@ class InvoiceForm
                     ->searchable()
                     ->multiple()
                     ->preload()
-                    ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
@@ -595,10 +594,10 @@ class InvoiceForm
                     ->dehydrated(),
                 Hidden::make('product_uom_qty')
                     ->default(0)
-                    ->dehydrated(),
+                    ->dehydrated(false),
                 Hidden::make('price_tax')
                     ->default(0)
-                    ->dehydrated(),
+                    ->dehydrated(false),
                 Hidden::make('price_total')
                     ->default(0)
                     ->dehydrated(),

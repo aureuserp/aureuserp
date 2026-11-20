@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Livewire\Livewire;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Filament\Resources\BillResource\Pages\CreateBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ListBills;
@@ -35,6 +37,8 @@ beforeEach(function () {
 
     URL::resolveMissingNamedRoutesUsing(fn () => '#');
 });
+
+afterEach(fn () => Model::preventSilentlyDiscardingAttributes(false));
 
 it('forbids listing bills without permission', function () {
     FilamentHelper::actingAs([]);
@@ -174,4 +178,71 @@ it('registers a full payment and marks the bill paid through the action', functi
         ->callAction(PayAction::class);
 
     expect($bill->refresh()->payment_state)->toBe(PaymentState::PAID);
+});
+
+it('creates a bill with a taxed product line through the create form with strict model writes', function () {
+    FilamentHelper::actingAs(['view_any_account_bill', 'create_account_bill']);
+
+    $partner = AccountHelper::partner();
+
+    $product = AccountHelper::product();
+
+    $tax = AccountHelper::tax(type: TypeTaxUse::PURCHASE);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Livewire::test(CreateBill::class)
+        ->fillForm([
+            'partner_id'   => $partner->id,
+            'invoice_date' => now(),
+            'journal_id'   => AccountHelper::purchaseJournal()->id,
+            'currency_id'  => AccountHelper::currency()->id,
+            'products'     => [
+                [
+                    'product_id' => $product->id,
+                    'quantity'   => 2,
+                    'uom_id'     => AccountHelper::unitsUom()->id,
+                    'price_unit' => 100,
+                    'discount'   => 0,
+                    'taxes'      => [$tax->id],
+                ],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $line = Move::query()
+        ->where('partner_id', $partner->id)
+        ->where('move_type', MoveType::IN_INVOICE)
+        ->firstOrFail()
+        ->invoiceLines()
+        ->firstOrFail();
+
+    expect($line->product_id)->toBe($product->id)
+        ->and((float) $line->quantity)->toBe(2.0)
+        ->and($line->taxes->pluck('id')->all())->toBe([$tax->id]);
+});
+
+it('changes the taxes of an existing bill line through the edit form with strict model writes', function () {
+    FilamentHelper::actingAs(['view_any_account_bill', 'update_account_bill']);
+
+    $originalTax = AccountHelper::tax(type: TypeTaxUse::PURCHASE);
+
+    $replacementTax = AccountHelper::tax(amount: 5, type: TypeTaxUse::PURCHASE);
+
+    $bill = AccountHelper::invoice(MoveType::IN_INVOICE, null, null, ['invoice_date' => now()]);
+
+    $line = AccountHelper::productLine($bill, AccountHelper::account('expense'), qty: 2, priceUnit: 100, taxes: [$originalTax]);
+
+    AccountHelper::compute($bill);
+
+    Model::preventSilentlyDiscardingAttributes();
+
+    Livewire::test(EditBill::class, ['record' => $bill->id])
+        ->assertOk()
+        ->set('data.products.record-'.$line->id.'.taxes', [$replacementTax->id])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($line->refresh()->taxes->pluck('id')->all())->toBe([$replacementTax->id]);
 });

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveFactory;
@@ -71,6 +72,7 @@ class Move extends Model
         'restrict_partner_id',
         'warehouse_id',
         'product_packaging_id',
+        'package_level_id',
         'scrap_id',
         'price_unit',
         'company_id',
@@ -733,7 +735,7 @@ class Move extends Model
             $defaults['restrict_partner_id'] = $restrictPartnerId;
         }
 
-        $splitAttributes = array_merge($this->toArray(), $defaults, ['id' => null]);
+        $splitAttributes = array_merge(Arr::only($this->getAttributes(), $this->getFillable()), $defaults);
 
         $remaining = float_round(
             $this->product->uom->computeQuantity(max(0, $this->product_qty - $qty), $this->uom, round: false),
@@ -760,6 +762,7 @@ class Move extends Model
             'deadline'                => $this->deadline,
             // 'rule_id'                 => null,
             'origin_returned_move_id' => $this->origin_returned_move_id,
+            'package_level_id'        => null,
             'move_origin_ids'         => $this->moveOrigins->pluck('id')->all(),
             'move_destination_ids'    => $this->moveDestinations
                 ->filter(fn ($x) => ! in_array($x->state, [MoveState::DONE, MoveState::CANCELED]))

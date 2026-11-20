@@ -140,6 +140,7 @@ class PushRuleRunner
             'is_picked'               => false,
             'origin'                  => $source->origin ?? $source->operation->name ?? '/',
             'operation_id'            => null,
+            'package_level_id'        => null,
             'source_location_id'      => $source->destination_location_id,
             'destination_location_id' => $rule->destination_location_id,
             'final_location_id'       => $source->final_location_id,

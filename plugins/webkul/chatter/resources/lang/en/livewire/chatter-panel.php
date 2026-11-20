@@ -25,9 +25,6 @@ return [
 
         'form' => [
             'fields' => [
-                'activity-plan' => 'Activity Plan',
-                'plan-date'     => 'Plan Date',
-                'plan-summary'  => 'Plan Summary',
                 'activity-type' => 'Activity Type',
                 'due-date'      => 'Due Date',
                 'summary'       => 'Summary',
