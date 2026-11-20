@@ -4,6 +4,7 @@ namespace Webkul\Support;
 
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -157,6 +158,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
         FilamentAsset::register([
             VersionedCss::make('support', __DIR__.'/../resources/dist/support.css'),
+            Js::make('dashboard-charts', __DIR__.'/../resources/js/dashboard-charts.js'),
         ], 'support');
 
         $this->registerFilamentDefaults();

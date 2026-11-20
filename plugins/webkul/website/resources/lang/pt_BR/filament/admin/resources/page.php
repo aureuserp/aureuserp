@@ -34,6 +34,8 @@ return [
                 'fields' => [
                     'is-header-visible' => 'Visível no menu do cabeçalho',
                     'is-footer-visible' => 'Visível no menu do rodapé',
+                    'is-tracked'        => 'Rastrear visitantes',
+                    'is-tracked-helper' => 'Registrar as visualizações dos visitantes nesta página.',
                 ],
             ],
         ],
@@ -156,6 +158,7 @@ return [
                 'entries' => [
                     'is-header-visible' => 'Visível no menu do cabeçalho',
                     'is-footer-visible' => 'Visível no menu do rodapé',
+                    'is-tracked'        => 'Rastrear visitantes',
                 ],
             ],
         ],

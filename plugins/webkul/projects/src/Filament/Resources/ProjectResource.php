@@ -4,7 +4,6 @@ namespace Webkul\Project\Filament\Resources;
 
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -15,9 +14,8 @@ use Webkul\Project\Filament\Resources\ProjectResource\Pages\EditProject;
 use Webkul\Project\Filament\Resources\ProjectResource\Pages\ListProjects;
 use Webkul\Project\Filament\Resources\ProjectResource\Pages\ManageMilestones;
 use Webkul\Project\Filament\Resources\ProjectResource\Pages\ManageTasks;
+use Webkul\Project\Filament\Resources\ProjectResource\Pages\ManageTaskStages;
 use Webkul\Project\Filament\Resources\ProjectResource\Pages\ViewProject;
-use Webkul\Project\Filament\Resources\ProjectResource\RelationManagers\MilestonesRelationManager;
-use Webkul\Project\Filament\Resources\ProjectResource\RelationManagers\TaskStagesRelationManager;
 use Webkul\Project\Filament\Resources\ProjectResource\Schemas\ProjectForm;
 use Webkul\Project\Filament\Resources\ProjectResource\Schemas\ProjectInfolist;
 use Webkul\Project\Filament\Resources\ProjectResource\Tables\ProjectsTable;
@@ -93,33 +91,20 @@ class ProjectResource extends Resource
             EditProject::class,
             ManageTasks::class,
             ManageMilestones::class,
+            ManageTaskStages::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Task Stages', [
-                TaskStagesRelationManager::class,
-            ])
-                ->icon('heroicon-o-squares-2x2'),
-
-            RelationGroup::make('Milestones', [
-                MilestonesRelationManager::class,
-            ])
-                ->icon('heroicon-o-flag'),
-        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'      => ListProjects::route('/'),
-            'create'     => CreateProject::route('/create'),
-            'edit'       => EditProject::route('/{record}/edit'),
-            'view'       => ViewProject::route('/{record}'),
-            'milestones' => ManageMilestones::route('/{record}/milestones'),
-            'tasks'      => ManageTasks::route('/{record}/tasks'),
+            'index'       => ListProjects::route('/'),
+            'create'      => CreateProject::route('/create'),
+            'edit'        => EditProject::route('/{record}/edit'),
+            'view'        => ViewProject::route('/{record}'),
+            'milestones'  => ManageMilestones::route('/{record}/milestones'),
+            'tasks'       => ManageTasks::route('/{record}/tasks'),
+            'task-stages' => ManageTaskStages::route('/{record}/task-stages'),
         ];
     }
 }

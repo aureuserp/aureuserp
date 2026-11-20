@@ -1,5 +1,5 @@
 <x-filament-widgets::widget>
-    <div class="flex flex-col gap-y-6">
+    <div class="flex flex-col gap-y-3">
         <x-filament::tabs class="fi-chip-tabs">
             <x-filament::tabs.item
                 :active="$activeTab === 'all'"

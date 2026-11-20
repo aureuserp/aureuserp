@@ -7,4 +7,8 @@ return [
         'title' => 'Comptabilité configurée',
         'body'  => 'Le plan comptable, les journaux et les paramètres par défaut ont été créés pour cette société.',
     ],
+    'error' => [
+        'title' => 'La configuration comptable n\'a pas été exécutée',
+        'body'  => 'Aucun plan comptable, journal ou paramètre par défaut n\'a été créé. Vérifiez que la société par défaut utilisée comme modèle est entièrement configurée, puis réessayez. Les détails techniques ont été enregistrés.',
+    ],
 ];

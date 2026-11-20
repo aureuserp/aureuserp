@@ -170,13 +170,20 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'الاسم',
-            'manager-name' => 'المدير',
-            'company-name' => 'الشركة',
-            'job-title'    => 'المسمى الوظيفي',
-            'work-email'   => 'البريد الإلكتروني للعمل',
-            'work-phone'   => 'هاتف العمل',
-            'categories'   => 'الوسوم',
+            'name'            => 'الاسم',
+            'manager-name'    => 'المدير',
+            'company-name'    => 'الشركة',
+            'job-title'       => 'المسمى الوظيفي',
+            'work-email'      => 'البريد الإلكتروني للعمل',
+            'work-phone'      => 'هاتف العمل',
+            'categories'      => 'الوسوم',
+            'department'      => 'القسم',
+            'employment-type' => 'نوع التوظيف',
+
+            'status' => [
+                'active'   => 'نشط',
+                'archived' => 'مؤرشف',
+            ],
         ],
 
         'filters' => [

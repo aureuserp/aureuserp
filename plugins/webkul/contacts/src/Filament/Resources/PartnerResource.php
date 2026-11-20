@@ -4,18 +4,17 @@ namespace Webkul\Contact\Filament\Resources;
 
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\CreatePartner;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\EditPartner;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ListPartners;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageAddresses;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageBankAccounts;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageBills;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageContacts;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageInvoices;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ViewPartner;
 use Webkul\Contact\Models\Partner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
 use Webkul\PluginManager\Package;
 use Webkul\Support\Enums\NavigationGroup;
 
@@ -52,22 +51,12 @@ class PartnerResource extends BasePartnerResource
             $items[] = ManageBankAccounts::class;
         }
 
+        if (static::hasInvoicingPlugin()) {
+            $items[] = ManageInvoices::class;
+            $items[] = ManageBills::class;
+        }
+
         return $page->generateNavigationItems($items);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('Contacts', [
-                ContactsRelationManager::class,
-            ])
-                ->icon('heroicon-o-users'),
-
-            RelationGroup::make('Addresses', [
-                AddressesRelationManager::class,
-            ])
-                ->icon('heroicon-o-map-pin'),
-        ];
     }
 
     public static function getPages(): array
@@ -85,6 +74,16 @@ class PartnerResource extends BasePartnerResource
             $pages['bank-accounts'] = ManageBankAccounts::route('/{record}/bank-accounts');
         }
 
+        if (static::hasInvoicingPlugin()) {
+            $pages['invoices'] = ManageInvoices::route('/{record}/invoices');
+            $pages['bills'] = ManageBills::route('/{record}/bills');
+        }
+
         return $pages;
+    }
+
+    protected static function hasInvoicingPlugin(): bool
+    {
+        return Package::isPluginInstalled('invoices') || Package::isPluginInstalled('accounting');
     }
 }
