@@ -141,6 +141,31 @@ class Operation extends Model
         return $this->hasMany(self::class, 'return_id');
     }
 
+    public function isReturn(): bool
+    {
+        $operation = $this;
+
+        $visited = [];
+
+        while ($operation) {
+            if ($operation->return_id) {
+                return true;
+            }
+
+            if (! $operation->back_order_id || in_array($operation->back_order_id, $visited, true)) {
+                return false;
+            }
+
+            $visited[] = $operation->back_order_id;
+
+            $operation = self::withoutGlobalScopes()
+                ->select(['id', 'return_id', 'back_order_id'])
+                ->find($operation->back_order_id);
+        }
+
+        return false;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

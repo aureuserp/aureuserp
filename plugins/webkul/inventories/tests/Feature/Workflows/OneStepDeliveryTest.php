@@ -1053,3 +1053,28 @@ it('throws when only part of a source package is moved while keeping the same re
     expect(fn () => Inventory::completeTransfer($operation->refresh()))
         ->toThrow(Exception::class, __('inventories::filament/clusters/operations/actions/validate.notification.warning.partial-package.body'));
 });
+
+it('leaves the backorder of a manually reserved delivery waiting rather than ready', function () {
+    InventoryHelper::setReservationMethod($this->warehouse->outType, ReservationMethod::MANUAL);
+
+    InventoryHelper::stockUp($this->product, $this->stock, 10);
+
+    $operation = InventoryHelper::delivery($this->warehouse, [[$this->product, 10]]);
+
+    Inventory::confirmTransfer($operation);
+
+    Inventory::reserveTransfer($operation->refresh());
+
+    expect($operation->refresh()->state)->toBe(OperationState::ASSIGNED);
+
+    InventoryHelper::pick($operation->moves->first(), 4);
+
+    Inventory::completeTransfer($operation->refresh());
+
+    $backorder = InventoryHelper::backorderOf($operation);
+
+    expect($backorder)->not->toBeNull()
+        ->and($backorder->moves)->toHaveCount(1)
+        ->and($backorder->moves->first()->state)->toBe(MoveState::CONFIRMED)
+        ->and($backorder->state)->toBe(OperationState::CONFIRMED);
+});

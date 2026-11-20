@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'label' => 'إرجاع',
+    'label'                     => 'إرجاع',
+    'return-of-return-disabled' => 'إرجاع عملية إرجاع معطّل في إعدادات عمليات المخزون.',
 
     'modal' => [
         'form' => [

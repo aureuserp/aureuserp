@@ -16,6 +16,10 @@ class OperationSettings extends Settings
 
     public int $annual_inventory_month;
 
+    public bool $enable_returning_more_than_received;
+
+    public bool $enable_returning_returns;
+
     public static function group(): string
     {
         return 'inventories_operation';

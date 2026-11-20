@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'label' => 'Retour',
+    'label'                     => 'Retour',
+    'return-of-return-disabled' => 'Le retour d\'un retour est désactivé dans les paramètres des opérations d\'inventaire.',
 
     'modal' => [
         'form' => [

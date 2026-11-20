@@ -116,6 +116,7 @@ class InventoryServiceProvider extends PackageServiceProvider
                 '2025_01_17_094023_create_inventories_traceability_settings',
                 '2025_01_17_094024_create_inventories_warehouse_settings',
                 '2025_01_17_094051_create_inventories_logistic_settings',
+                '2026_10_26_100000_add_return_settings_to_inventories_operation_settings',
             ])
             ->runsSettings()
             ->hasSeeder('Webkul\\Inventory\\Database\Seeders\\DatabaseSeeder')

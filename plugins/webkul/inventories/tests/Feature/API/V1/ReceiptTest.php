@@ -1,6 +1,7 @@
 <?php
 
 use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Delivery;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\OperationType;
@@ -11,13 +12,18 @@ use Webkul\Security\Models\User;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
 require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
+require_once __DIR__.'/../../../Helpers/InventoryHelper.php';
 
 beforeEach(function () {
     TestBootstrapHelper::ensurePluginInstalled('inventories');
     SecurityHelper::disableUserEvents();
 });
 
-afterEach(fn () => SecurityHelper::restoreUserEvents());
+afterEach(function () {
+    SecurityHelper::restoreUserEvents();
+
+    InventoryHelper::returnSettings();
+});
 
 function actingAsInventoryReceiptApiUser(array $permissions = []): User
 {
@@ -218,4 +224,60 @@ it('returns return validation error when receipt is not done', function () {
     $this->postJson(receiptRoute('return', $receipt->id))
         ->assertUnprocessable()
         ->assertJsonPath('message', 'Only done operations can be returned.');
+});
+
+function doneApiReceipt(float $quantity): Operation
+{
+    $receipt = InventoryHelper::receipt(InventoryHelper::warehouse(), [[InventoryHelper::product(), $quantity]]);
+
+    Inventory::confirmTransfer($receipt);
+
+    Inventory::completeTransfer($receipt->refresh());
+
+    return $receipt->refresh();
+}
+
+it('returns the remaining quantity of a receipt through the api', function () {
+    actingAsInventoryReceiptApiUser(['update_inventory_receipt']);
+
+    $receipt = doneApiReceipt(10);
+
+    Inventory::createReturn($receipt, [$receipt->moves->first()->id => 3]);
+
+    $this->postJson(receiptRoute('return', $receipt->id))
+        ->assertSuccessful()
+        ->assertJsonPath('message', 'Receipt return created successfully.');
+
+    $returns = Operation::query()->where('return_id', $receipt->id)->orderBy('id')->get();
+
+    expect($returns)->toHaveCount(2)
+        ->and((float) $returns->last()->moves->first()->product_uom_qty)->toBe(7.0);
+});
+
+it('returns a validation error when the receipt has nothing left to return', function () {
+    actingAsInventoryReceiptApiUser(['update_inventory_receipt']);
+
+    $receipt = doneApiReceipt(10);
+
+    Inventory::createReturn($receipt, [$receipt->moves->first()->id => 10]);
+
+    $this->postJson(receiptRoute('return', $receipt->id))
+        ->assertUnprocessable()
+        ->assertJsonPath('message', __('inventories::system.inventory-manager.return.nothing-to-return'));
+});
+
+it('returns a validation error when returning a return through the api', function () {
+    actingAsInventoryReceiptApiUser(['update_inventory_receipt']);
+
+    $receipt = doneApiReceipt(10);
+
+    $return = Inventory::createReturn($receipt, [$receipt->moves->first()->id => 4]);
+
+    Inventory::completeTransfer($return->refresh());
+
+    $this->postJson(receiptRoute('return', $return->id))
+        ->assertUnprocessable()
+        ->assertJsonPath('message', __('inventories::system.inventory-manager.return.return-of-return', ['operation' => $return->refresh()->name]));
+
+    expect(Operation::query()->where('return_id', $return->id)->exists())->toBeFalse();
 });

@@ -27,6 +27,7 @@ use Webkul\Inventory\Models\Scrap;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Models\StorageCategoryCapacity;
 use Webkul\Inventory\Models\Warehouse;
+use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Security\Models\User;
@@ -455,6 +456,19 @@ class InventoryHelper
     public static function returnOf(Operation $operation): ?Operation
     {
         return Operation::query()->where('return_id', $operation->id)->first();
+    }
+
+    public static function returnSettings(bool $moreThanReceived = false, bool $returns = false): OperationSettings
+    {
+        $settings = app(OperationSettings::class);
+
+        $settings->enable_returning_more_than_received = $moreThanReceived;
+
+        $settings->enable_returning_returns = $returns;
+
+        $settings->save();
+
+        return $settings;
     }
 
     public static function quantOf(BaseProduct $product, Location $location, ?int $lotId = null): ?ProductQuantity

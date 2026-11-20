@@ -27,7 +27,13 @@ return [
         ],
 
         'return' => [
-            'origin' => 'إرجاع :operation_name',
+            'origin'               => 'إرجاع :operation_name',
+            'return-of-return'     => 'التحويل :operation هو عملية إرجاع ولا يمكن إرجاعه مرة أخرى.',
+            'more-than-returnable' => 'لا يمكنك إرجاع أكثر من :quantity :uom من :product.',
+            'negative-quantity'    => 'لا يمكنك إرجاع كمية سالبة من :product.',
+            'nothing-to-return'    => 'لا يوجد شيء لإرجاعه. أدخل كمية أكبر من صفر لمنتج واحد على الأقل.',
+            'not-done'             => 'التحويل :operation لم يكتمل بعد، لذلك لا يمكن إرجاعه.',
+            'failed'               => 'تعذر إنشاء المرتجع. حاول مرة أخرى أو تواصل مع المسؤول.',
         ],
     ],
 

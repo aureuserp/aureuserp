@@ -27,7 +27,13 @@ return [
         ],
 
         'return' => [
-            'origin' => 'Retour de :operation_name',
+            'origin'               => 'Retour de :operation_name',
+            'return-of-return'     => 'Le transfert :operation est un retour et ne peut pas être retourné à nouveau.',
+            'more-than-returnable' => 'Vous ne pouvez pas retourner plus de :quantity :uom de :product.',
+            'negative-quantity'    => 'Vous ne pouvez pas retourner une quantité négative de :product.',
+            'nothing-to-return'    => 'Il n\'y a rien à retourner. Saisissez une quantité supérieure à zéro pour au moins un produit.',
+            'not-done'             => 'Le transfert :operation n\'est pas encore terminé et ne peut donc pas être retourné.',
+            'failed'               => 'Le retour n\'a pas pu être créé. Réessayez ou contactez votre administrateur.',
         ],
     ],
 
