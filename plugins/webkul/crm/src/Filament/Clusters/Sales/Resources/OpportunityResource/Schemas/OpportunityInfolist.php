@@ -27,12 +27,27 @@ class OpportunityInfolist
                     ->inline()
                     ->extraAttributes(['class' => 'crm-stepper-previous-active'])
                     ->options(fn (): array => Stage::query()->orderBy('sort')->pluck('name', 'id')->all())
+                    ->visible(fn (Lead $record): bool => ! $record->trashed())
                     ->columnSpanFull(),
 
                 Group::make()
                     ->schema([
+                        Section::make(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.won.title'))
+                            ->icon('heroicon-o-trophy')
+                            ->iconColor('success')
+                            ->extraAttributes(['class' => 'crm-won-section'])
+                            ->visible(fn (Lead $record): bool => ! $record->trashed() && $record->isWon())
+                            ->schema([
+                                TextEntry::make('closed_at')
+                                    ->label(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.sales.entries.closed-at'))
+                                    ->dateTime()
+                                    ->placeholder('—'),
+                            ]),
+
                         Section::make(__('crm::filament/clusters/sales/resources/opportunity.infolist.sections.lost.title'))
                             ->icon('heroicon-o-hand-thumb-down')
+                            ->iconColor('danger')
+                            ->extraAttributes(['class' => 'crm-lost-section'])
                             ->visible(fn (Lead $record): bool => $record->trashed())
                             ->schema([
                                 TextEntry::make('lostReason.name')

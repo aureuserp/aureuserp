@@ -50,6 +50,10 @@ return [
 
     'infolist' => [
         'sections' => [
+            'won' => [
+                'title' => 'مكسوبة',
+            ],
+
             'lost' => [
                 'title' => 'خاسرة',
 

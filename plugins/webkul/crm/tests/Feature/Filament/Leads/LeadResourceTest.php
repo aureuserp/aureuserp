@@ -578,3 +578,26 @@ it('deletes a lead from its page as a soft delete and returns to the leads list'
 
     expect(Lead::withTrashed()->find($lead->id)?->trashed())->toBeTrue();
 });
+
+it('picks the priority with stars on the lead create form and shows the lost section in red', function () {
+    CRMHelper::actingAsCRMUser(['lead']);
+
+    Livewire::test(CreateLead::class)
+        ->assertOk()
+        ->assertSeeHtml('data-priority-stars')
+        ->fillForm(['name' => 'Starred lead', 'priority' => OpportunityPriority::HIGH->value])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $lead = Lead::query()->where('name', 'Starred lead')->firstOrFail();
+
+    expect($lead->priority)->toBe(OpportunityPriority::HIGH);
+
+    Livewire::test(ViewLead::class, ['record' => $lead->id])->assertDontSeeHtml('crm-lost-section');
+
+    $lead->markAsLost(null, 'Gone');
+
+    Livewire::test(ViewLead::class, ['record' => $lead->id])
+        ->assertSeeHtml('crm-lost-section')
+        ->assertSeeHtml('fi-color-danger');
+});

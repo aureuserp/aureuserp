@@ -53,6 +53,27 @@
         setTimeout(() => column.classList.remove('crm-kanban-column-new'), 2800);
     }, 50);
 
+    /**
+     * Moves a card to the place the next server render will give it: the board orders cards by
+     * priority, then by last update, so a card whose priority was just clicked goes to the top of
+     * its new priority group.
+     */
+    window.crmSortKanbanCard ??= (card, priority) => {
+        const list = card?.parentElement;
+
+        if (! list?.matches('[data-kanban-column]')) {
+            return;
+        }
+
+        card.dataset.cardPriority = String(priority);
+
+        const before = [...list.children].find((sibling) => sibling !== card
+            && sibling.matches('[data-kanban-card]')
+            && Number(sibling.dataset.cardPriority ?? 0) <= priority);
+
+        list.insertBefore(card, before ?? null);
+    };
+
     const cardOnlyCalls = ['moveRecord', 'moveKanbanRecords', 'setKanbanCardPriority', 'mountAction', 'unmountAction', 'callMountedAction'];
 
     const layoutNeutralCalls = ['moveRecord', 'moveKanbanRecords', 'setKanbanCardPriority', 'mountAction', 'unmountAction'];

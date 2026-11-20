@@ -3,6 +3,12 @@
 return [
     'title' => 'Oportunidad',
 
+    'chatter' => [
+        'won'      => ':model marcada como ganada',
+        'lost'     => ':model marcada como perdida',
+        'restored' => ':model devuelta al flujo',
+    ],
+
     'log-attributes' => [
         'name'             => 'Oportunidad',
         'stage'            => 'Etapa',

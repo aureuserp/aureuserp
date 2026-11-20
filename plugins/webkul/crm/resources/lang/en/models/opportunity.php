@@ -3,6 +3,12 @@
 return [
     'title' => 'Opportunity',
 
+    'chatter' => [
+        'won'      => ':model marked as won',
+        'lost'     => ':model marked as lost',
+        'restored' => ':model moved back to the pipeline',
+    ],
+
     'log-attributes' => [
         'name'             => 'Opportunity',
         'stage'            => 'Stage',

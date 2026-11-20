@@ -2,6 +2,7 @@
 
 namespace Webkul\Crm\Filament\Concerns;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\ListRecords;
@@ -15,6 +16,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
@@ -48,6 +50,16 @@ trait ShowsSimilarLeadsBoard
         abort_unless(static::getResource()::canView($this->getRecord()), 403);
 
         $this->kanbanFilters = [];
+    }
+
+    /**
+     * The page carries a record, so Filament would hand it to every action that has none of its
+     * own, table actions included. A table action then mounts with that record's key and fails to
+     * resolve when the record is not in the table, which keeps the merge modal from opening.
+     */
+    public function getDefaultActionRecord(Action $action): ?Model
+    {
+        return $action->getTable() ? null : parent::getDefaultActionRecord($action);
     }
 
     public function getTitle(): string|Htmlable

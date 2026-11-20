@@ -218,12 +218,14 @@
                 @php
                     $card = $this->getKanbanCard($record);
                     $recordKey = $record->getKey();
+                    $cardPriority = collect($card->start)->firstWhere('type', 'stars')['value'] ?? null;
                 @endphp
 
                 <div
                     wire:key="kanban-card-{{ $recordKey }}"
                     data-kanban-card
                     data-record-id="{{ $recordKey }}"
+                    @if ($cardPriority !== null) data-card-priority="{{ $cardPriority }}" @endif
                     role="listitem"
                     aria-label="{{ $card->title }}"
                     @if ($card->tooltip) title="{{ $card->tooltip }}" @endif
@@ -312,16 +314,45 @@
                                         @foreach ($items as $item)
                                             @switch ($item['type'])
                                                 @case ('stars')
-                                                    <div data-card-control class="flex items-center" title="{{ $item['tooltip'] }}">
+                                                    <div
+                                                        wire:key="kanban-card-stars-{{ $item['record'] }}-{{ $item['value'] }}"
+                                                        data-card-control
+                                                        class="flex items-center"
+                                                        x-data="{
+                                                            value: {{ Js::from($item['value']) }},
+                                                            labels: {{ Js::from($item['valueLabels']) }},
+                                                            select(star) {
+                                                                this.value = this.value === star ? 0 : star
+
+                                                                window.crmSortKanbanCard?.($el.closest('[data-kanban-card]'), this.value)
+
+                                                                $wire.setKanbanCardPriority({{ Js::from($item['record']) }}, star)
+                                                            },
+                                                        }"
+                                                        x-bind:title="{{ Js::from($item['label'].': ') }} + labels[value]"
+                                                        title="{{ $item['label'] }}: {{ $item['valueLabels'][$item['value']] ?? '' }}"
+                                                    >
                                                         @foreach ($item['labels'] as $star => $starLabel)
                                                             <button
                                                                 type="button"
-                                                                @if ($item['editable']) wire:click="setKanbanCardPriority('{{ $item['record'] }}', {{ $star }})" @else disabled @endif
+                                                                @if ($item['editable']) x-on:click="select({{ $star }})" @else disabled @endif
                                                                 title="{{ $starLabel }}"
                                                                 aria-label="{{ $item['label'] }}: {{ $starLabel }}"
                                                                 @class(['p-0.5', 'hover:scale-110' => $item['editable'], 'cursor-default' => ! $item['editable']])
                                                             >
-                                                                <x-filament::icon :icon="$star <= $item['value'] ? 'heroicon-s-star' : 'heroicon-o-star'" @class(['h-4 w-4', 'text-warning-400' => $star <= $item['value'], 'text-gray-300 dark:text-gray-600' => $star > $item['value']]) />
+                                                                <x-filament::icon
+                                                                    icon="heroicon-s-star"
+                                                                    class="h-4 w-4 text-warning-400"
+                                                                    x-show="value >= {{ $star }}"
+                                                                    @style(['display: none' => $star > $item['value']])
+                                                                />
+
+                                                                <x-filament::icon
+                                                                    icon="heroicon-o-star"
+                                                                    class="h-4 w-4 text-gray-300 dark:text-gray-600"
+                                                                    x-show="value < {{ $star }}"
+                                                                    @style(['display: none' => $star <= $item['value']])
+                                                                />
                                                             </button>
                                                         @endforeach
                                                     </div>

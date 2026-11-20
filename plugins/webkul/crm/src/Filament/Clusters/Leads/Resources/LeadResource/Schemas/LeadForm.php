@@ -14,8 +14,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Crm\Enums\OpportunityPriority;
 use Webkul\Crm\Filament\Clusters\Configurations\Resources\TagResource\Schemas\TagForm;
+use Webkul\Crm\Filament\Forms\Components\PriorityStars;
 use Webkul\Crm\Filament\Support\ProbabilityHint;
 
 class LeadForm
@@ -147,10 +147,8 @@ class LeadForm
                                     ->relationship('team', 'name', modifyQueryUsing: fn (Builder $query, Get $get): Builder => $query->where(owned_by_company($get('company_id'))))
                                     ->searchable()
                                     ->preload(),
-                                Select::make('priority')
-                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.priority'))
-                                    ->options(OpportunityPriority::class)
-                                    ->default(OpportunityPriority::LOW),
+                                PriorityStars::make('priority')
+                                    ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.priority')),
                                 Select::make('tags')
                                     ->label(__('crm::filament/clusters/leads/resources/lead.form.fields.tags'))
                                     ->relationship('tags', 'name')

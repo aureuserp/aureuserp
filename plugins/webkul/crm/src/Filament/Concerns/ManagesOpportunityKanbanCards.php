@@ -96,10 +96,9 @@ trait ManagesOpportunityKanbanCards
                 $shows('priority') ? KanbanCard::stars(
                     $key,
                     $record->priority?->value ?? 0,
-                    collect(OpportunityPriority::cases())->filter(fn (OpportunityPriority $priority): bool => $priority->value > 0)->mapWithKeys(fn (OpportunityPriority $priority): array => [$priority->value => $priority->getLabel()])->all(),
+                    collect(OpportunityPriority::cases())->mapWithKeys(fn (OpportunityPriority $priority): array => [$priority->value => $priority->getLabel()])->all(),
                     $canEdit,
                     __('crm::filament/clusters/sales/resources/opportunity/pages/kanban-opportunities.card.priority'),
-                    $record->priority?->getLabel(),
                 ) : null,
                 KanbanCard::button(
                     str_starts_with((string) $nextActivity?->activityType?->icon, 'heroicon-') ? $nextActivity->activityType->icon : 'heroicon-o-clock',

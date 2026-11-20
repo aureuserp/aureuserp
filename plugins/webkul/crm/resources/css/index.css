@@ -635,3 +635,19 @@ body:has(.crm-kanban-board) {
 .dark .crm-kanban-board .fi-kanban-column.crm-kanban-column-hover {
     outline-color: var(--primary-700);
 }
+
+.crm-lost-section .fi-section .fi-section-header-heading {
+    color: var(--danger-600);
+}
+
+.dark .crm-lost-section .fi-section .fi-section-header-heading {
+    color: var(--danger-400);
+}
+
+.crm-won-section .fi-section .fi-section-header-heading {
+    color: var(--success-600);
+}
+
+.dark .crm-won-section .fi-section .fi-section-header-heading {
+    color: var(--success-400);
+}
