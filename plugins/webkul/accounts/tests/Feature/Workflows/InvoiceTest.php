@@ -491,3 +491,19 @@ it('keeps section and note lines through post without affecting the balance', fu
         ->and((float) $lines->sum(fn ($l) => (float) $l->debit))->toBe(200.0)
         ->and((float) $lines->sum(fn ($l) => (float) $l->credit))->toBe(200.0);
 });
+
+it('keeps the account of a posted product line when the product account changes later', function () {
+    $invoice = AccountHelper::invoice(MoveType::OUT_INVOICE, $this->partner);
+    $line = AccountHelper::productLine($invoice, $this->income, qty: 2, priceUnit: 100);
+
+    AccountHelper::compute($invoice);
+    AccountHelper::post($invoice);
+
+    $postedAccountId = $line->refresh()->account_id;
+
+    $line->product->update(['property_account_income_id' => AccountHelper::account('income')->id]);
+
+    $line->refresh()->save();
+
+    expect($line->refresh()->account_id)->toBe($postedAccountId);
+});
