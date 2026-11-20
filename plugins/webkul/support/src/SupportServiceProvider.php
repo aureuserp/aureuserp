@@ -26,12 +26,13 @@ use Webkul\Support\Livewire\QuickNavigation;
 use Webkul\Support\Services\CompanyContext;
 use Webkul\Support\Support\VersionedCss;
 use Webkul\Support\Traits\HasFilamentDefaults;
+use Webkul\Support\Traits\HasPanelCustomization;
 use Webkul\Support\Traits\HasRouterMacros;
 use Webkul\Support\Traits\HasRtlSupport;
 
 class SupportServiceProvider extends PackageServiceProvider
 {
-    use HasFilamentDefaults;
+    use HasFilamentDefaults, HasPanelCustomization;
     use HasRouterMacros;
     use HasRtlSupport;
 
@@ -186,6 +187,8 @@ class SupportServiceProvider extends PackageServiceProvider
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(SupportPlugin::make());
         });
+
+        $this->registerPanelCustomization();
 
         $this->app->scoped(CompanyContext::class);
 
