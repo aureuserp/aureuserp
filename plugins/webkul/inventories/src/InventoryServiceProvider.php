@@ -143,12 +143,18 @@ class InventoryServiceProvider extends PackageServiceProvider
                         'inventories_locations',
                     ];
 
-                    foreach ($tables as $table) {
-                        if (! Schema::hasTable($table)) {
-                            continue;
-                        }
+                    Schema::disableForeignKeyConstraints();
 
-                        DB::table($table)->delete();
+                    try {
+                        foreach ($tables as $table) {
+                            if (! Schema::hasTable($table)) {
+                                continue;
+                            }
+
+                            DB::table($table)->delete();
+                        }
+                    } finally {
+                        Schema::enableForeignKeyConstraints();
                     }
                 });
 

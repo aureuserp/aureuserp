@@ -31,9 +31,15 @@ return [
         'revenue'     => 'Revenue',
     ],
 
+    'invoice-status'    => [
+        'heading'     => 'Invoices by Status',
+        'description' => 'Invoiced amount by payment status',
+    ],
+
     'customer-revenue'  => [
         'heading'      => 'Customer Revenue Share',
         'total-billed' => 'Total Invoiced',
+        'center-label' => 'Total',
     ],
 
     'salespersons'      => [

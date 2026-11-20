@@ -76,9 +76,9 @@ class TestBootstrapHelper
             }
         });
 
-        static::bootInstalledPluginProviders();
-
         static::restartTestTransaction();
+
+        static::bootInstalledPluginProviders();
     }
 
     private static function onCommittedConnection(callable $callback): void

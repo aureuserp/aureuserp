@@ -3,7 +3,6 @@
 namespace Webkul\Account\Filament\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\CreatePartner;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\EditPartner;
@@ -12,7 +11,6 @@ use Webkul\Account\Filament\Resources\PartnerResource\Pages\ManageAddresses;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\ManageBankAccounts;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\ManageContacts;
 use Webkul\Account\Filament\Resources\PartnerResource\Pages\ViewPartner;
-use Webkul\Account\Filament\Resources\PartnerResource\RelationManagers\BankAccountsRelationManager;
 use Webkul\Account\Models\Partner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
 
@@ -36,17 +34,6 @@ class PartnerResource extends BasePartnerResource
         ]);
 
         return $table;
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            ...parent::getRelations(),
-            RelationGroup::make('Bank Accounts', [
-                BankAccountsRelationManager::class,
-            ])
-                ->icon('heroicon-o-banknotes'),
-        ];
     }
 
     public static function getRecordSubNavigation(Page $page): array

@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "tailwindcss -i resources/css/index.css -o resources/dist/crm.css --watch",
+    "build": "tailwindcss -i resources/css/index.css -o resources/dist/crm.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.12",
+    "tailwindcss": "^4.1.12"
+  }
+}

@@ -322,7 +322,7 @@ class QuotationForm
     public static function getProductRepeater(): Repeater
     {
         return Repeater::make('products')
-            ->relationship('lines')
+            ->relationship('lines', modifyQueryUsing: fn (Builder $query): Builder => $query->orderBy('sort')->orderBy('id'))
             ->hiddenLabel()
             ->live()
             ->reactive()

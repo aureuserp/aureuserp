@@ -41,6 +41,12 @@
         <testsuite name="EmployeeFeature">
             <directory>plugins/webkul/employees/tests/Feature</directory>
         </testsuite>
+        <testsuite name="CrmFeature">
+            <directory>plugins/webkul/crm/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="WebsiteFeature">
+            <directory>plugins/webkul/website/tests/Feature</directory>
+        </testsuite>
         <testsuite name="SecurityFeature">
             <directory>plugins/webkul/security/tests/Feature</directory>
         </testsuite>
