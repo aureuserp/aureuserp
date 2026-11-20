@@ -12,10 +12,12 @@ use Webkul\Purchase\Events\OrderConfirmed;
 use Webkul\Purchase\Events\OrderDrafted;
 use Webkul\Purchase\Events\OrderLocked;
 use Webkul\Purchase\Events\OrderUnlocked;
+use Webkul\Purchase\Exceptions\OrderApprovalException;
 use Webkul\Purchase\Mail\VendorPurchaseOrderMail;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Security\Enums\PermissionType;
+use Webkul\Security\Models\User;
 
 class OrderWorkflow
 {
@@ -84,23 +86,40 @@ class OrderWorkflow
         $record->addAttachments([$pdfPath], ['message_id' => $message->id]);
     }
 
-    public function confirm(Order $record): Order
+    public function confirm(Order $record, ?User $actor = null): Order
     {
-        $settings = settings(OrderSettings::class);
+        return acting_as($actor, function () use ($record): Order {
+            $settings = settings(OrderSettings::class);
 
-        $needsApproval = $settings->enable_order_approval
-            && $record->total_amount >= $settings->order_validation_amount;
+            $needsApproval = $settings->enable_order_approval
+                && $record->total_amount >= $settings->order_validation_amount;
 
-        if (! $needsApproval || $this->canApprove(Auth::user())) {
-            return $this->approve($record, $settings);
-        }
+            if (! $needsApproval || $this->canApprove(Auth::user())) {
+                return $this->confirmApproved($record, $settings);
+            }
 
-        $record->update(['state' => PurchaseEnums\OrderState::TO_APPROVE]);
+            $record->update(['state' => PurchaseEnums\OrderState::TO_APPROVE]);
 
-        return $this->calculator->recompute($record);
+            return $this->calculator->recompute($record);
+        });
     }
 
-    protected function approve(Order $record, OrderSettings $settings): Order
+    public function approve(Order $record, ?User $actor = null): Order
+    {
+        return acting_as($actor, function () use ($record): Order {
+            if ($record->state !== PurchaseEnums\OrderState::TO_APPROVE) {
+                throw new OrderApprovalException(__('purchases::system.order-workflow.approve.not-waiting-approval'));
+            }
+
+            if (! $this->canApprove(Auth::user())) {
+                throw new OrderApprovalException(__('purchases::system.order-workflow.approve.not-allowed'));
+            }
+
+            return $this->confirmApproved($record, settings(OrderSettings::class));
+        });
+    }
+
+    protected function confirmApproved(Order $record, OrderSettings $settings): Order
     {
         $record->update([
             'state' => $settings->enable_lock_confirmed_orders

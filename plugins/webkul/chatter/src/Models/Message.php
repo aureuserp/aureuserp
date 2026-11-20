@@ -6,7 +6,6 @@ use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Webkul\Chatter\Services\ChatterNotificationService;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
@@ -79,21 +78,20 @@ class Message extends Model
     {
         parent::boot();
 
-        $user = Filament::auth()->user() ?? Auth::user();
+        $assignCauser = function (Message $message): void {
+            $user = Filament::auth()->user() ?? Auth::user();
 
-        if ($user) {
-            static::creating(function ($data) use ($user) {
-                DB::transaction(function () use ($data, $user) {
-                    $data->causer_type = $user->getMorphClass();
-                    $data->causer_id = $user->id;
-                });
-            });
+            if (! $user) {
+                return;
+            }
 
-            static::updating(function ($data) use ($user) {
-                $data->causer_type = $user->getMorphClass();
-                $data->causer_id = $user->id;
-            });
-        }
+            $message->causer_type = $user->getMorphClass();
+            $message->causer_id = $user->id;
+        };
+
+        static::creating($assignCauser);
+
+        static::updating($assignCauser);
 
         static::created(function (Message $message) {
             app()->terminating(function () use ($message) {

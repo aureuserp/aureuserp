@@ -224,6 +224,17 @@ class Order extends Model
         }
     }
 
+    public function getChatterLink(): string
+    {
+        $url = $this->getChatterResourceUrl();
+
+        if (! $url) {
+            return e($this->name);
+        }
+
+        return '<a href="'.e($url).'" target="_blank" class="fi-color fi-color-primary fi-text-color-600 dark:fi-text-color-300 fi-link fi-size-sm">'.e($this->name).'</a>';
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -259,7 +270,7 @@ class Order extends Model
 
         if ($companyCurrencyId && $this->currency_id && (int) $this->currency_id !== (int) $companyCurrencyId) {
             $companyCurrency = Currency::find($companyCurrencyId);
-            $orderCurrency   = Currency::find($this->currency_id);
+            $orderCurrency = Currency::find($this->currency_id);
 
             $this->currency_rate = ($companyCurrency && $orderCurrency)
                 ? (float) $orderCurrency->getConversionRate($companyCurrency, $orderCurrency)
