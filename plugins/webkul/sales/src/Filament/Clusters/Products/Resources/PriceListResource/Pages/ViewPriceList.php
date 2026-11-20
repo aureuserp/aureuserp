@@ -8,4 +8,9 @@ use Webkul\Sale\Filament\Clusters\Products\Resources\PriceListResource;
 class ViewPriceList extends BaseViewPriceList
 {
     protected static string $resource = PriceListResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [];
+    }
 }

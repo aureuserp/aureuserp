@@ -4,20 +4,16 @@ namespace Webkul\Project\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Exception;
-use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Project\Models\Task;
+use Webkul\Support\Filament\Widgets\DashboardChartWidget;
 
-class TaskByStateChart extends ChartWidget
+class TaskByStateChart extends DashboardChartWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
-
-    protected ?string $heading = 'Tasks By State';
-
-    protected ?string $maxHeight = '250px';
 
     protected static ?int $sort = 1;
 
@@ -33,10 +29,8 @@ class TaskByStateChart extends ChartWidget
 
     protected function getData(): array
     {
-        $datasets = [
-            'datasets' => [],
-            'labels'   => [],
-        ];
+        $labels = [];
+        $data = [];
 
         foreach (TaskState::cases() as $state) {
             $query = Task::query();
@@ -63,8 +57,8 @@ class TaskByStateChart extends ChartWidget
 
             $this->applyDateFilters($query);
 
-            $datasets['labels'][] = TaskState::options()[$state->value];
-            $datasets['datasets'][] = $query->where('state', $state->value)->count();
+            $labels[] = TaskState::options()[$state->value];
+            $data[] = $query->where('state', $state->value)->count();
         }
 
         $colors = TaskState::colors();
@@ -72,22 +66,22 @@ class TaskByStateChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'data'            => $datasets['datasets'],
+                    'data'            => $data,
                     'backgroundColor' => array_map(
-                        fn ($state) => match ($colors[$state] ?? 'gray') {
-                            'gray'    => '#a1a1aa',
-                            'warning' => '#fbbf24',
-                            'success' => '#22c55e',
-                            'danger'  => '#ef4444',
-                            'primary' => '#3b82f6',
-                            default   => '#cccccc',
-                        },
+                        fn ($state): string => $this->brandColor($colors[$state] ?? 'gray'),
                         array_keys(TaskState::options())
                     ),
+                    'borderWidth'     => 0,
+                    'hoverOffset'     => 0,
                 ],
             ],
-            'labels' => $datasets['labels'],
+            'labels' => $labels,
         ];
+    }
+
+    protected function getOptions(): array
+    {
+        return $this->doughnutChartOptions();
     }
 
     private function applyDateFilters($query): void
@@ -121,6 +115,6 @@ class TaskByStateChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
     }
 }

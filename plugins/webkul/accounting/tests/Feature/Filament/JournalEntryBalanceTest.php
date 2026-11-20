@@ -172,8 +172,8 @@ it('keeps balance consistent and the totals zero after reversing a taxed entry',
 
     $reversal = AccountHelper::reverse($entry)->refresh();
 
-    $originals = $entry->refresh()->lines->values();
-    $reversed = $reversal->lines->values();
+    $originals = $entry->refresh()->lines->sortBy(fn ($line): float => (float) $line->balance)->values();
+    $reversed = $reversal->lines->sortBy(fn ($line): float => -(float) $line->balance)->values();
 
     expect($reversed)->toHaveCount($originals->count());
 

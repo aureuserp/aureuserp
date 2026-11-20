@@ -13,12 +13,17 @@ trait FiltersDashboardOrders
 
     protected function applyOrderFilters(Builder $query, string $table = 'pos_orders'): Builder
     {
+        return $this->applyNonDateOrderFilters($query, $table)
+            ->when($this->getFilterStartDate(), fn (Builder $query, Carbon $date) => $query->where("{$table}.ordered_at", '>=', $date))
+            ->when($this->getFilterEndDate(), fn (Builder $query, Carbon $date) => $query->where("{$table}.ordered_at", '<=', $date));
+    }
+
+    protected function applyNonDateOrderFilters(Builder $query, string $table = 'pos_orders'): Builder
+    {
         return $query
             ->when($this->getFilterIds('selectedTerminals'), fn (Builder $query, array $ids) => $query->whereIn("{$table}.config_id", $ids))
             ->when($this->getFilterIds('selectedSalespersons'), fn (Builder $query, array $ids) => $query->whereIn("{$table}.user_id", $ids))
             ->when($this->getFilterIds('selectedCustomers'), fn (Builder $query, array $ids) => $query->whereIn("{$table}.partner_id", $ids))
-            ->when($this->getFilterStartDate(), fn (Builder $query, Carbon $date) => $query->where("{$table}.ordered_at", '>=', $date))
-            ->when($this->getFilterEndDate(), fn (Builder $query, Carbon $date) => $query->where("{$table}.ordered_at", '<=', $date))
             ->when(
                 $this->hasProductFilters(),
                 fn (Builder $query) => $query->whereHas('lines', fn (Builder $query) => $this->applyOrderLineProductFilters($query)),
@@ -67,5 +72,35 @@ trait FiltersDashboardOrders
         $date = $this->pageFilters['endDate'] ?? null;
 
         return filled($date) ? Carbon::parse($date)->endOfDay() : null;
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    protected function currentOrderRange(): array
+    {
+        return [
+            $this->getFilterStartDate() ?? now()->subMonth()->startOfDay(),
+            $this->getFilterEndDate() ?? now()->endOfDay(),
+        ];
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    protected function previousOrderRange(): array
+    {
+        [$start, $end] = $this->currentOrderRange();
+
+        $length = $start->diffInSeconds($end);
+
+        $previousEnd = (clone $start)->subSecond();
+
+        return [(clone $previousEnd)->subSeconds($length), $previousEnd];
+    }
+
+    protected function dashboardCurrency(): ?string
+    {
+        return current_company()?->currency?->name;
     }
 }

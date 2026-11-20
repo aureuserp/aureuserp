@@ -2,6 +2,8 @@
 
 namespace Webkul\Employee\Filament\Resources\EmployeeResource\Tables;
 
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -9,11 +11,13 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
+use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Notifications\Notification;
-use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
@@ -38,69 +42,87 @@ class EmployeesTable
         return $table
             ->columns(array_merge([
                 Stack::make([
-                    ImageColumn::make('partner.avatar')
-                        ->imageHeight(150)
-                        ->width(200),
+                    Split::make([
+                        ImageColumn::make('partner.avatar')
+                            ->circular()
+                            ->imageSize(72)
+                            ->defaultImageUrl(fn (Employee $record): string => (new UiAvatarsProvider)->get($record))
+                            ->grow(false),
+
+                        Stack::make([
+                            TextColumn::make('name')
+                                ->label(__('employees::filament/resources/employee.table.columns.name'))
+                                ->weight(FontWeight::Bold)
+                                ->size(TextSize::Large)
+                                ->searchable()
+                                ->sortable()
+                                ->lineClamp(1)
+                                ->extraAttributes(['class' => 'pe-10']),
+
+                            Stack::make([
+                                TextColumn::make('job_title')
+                                    ->label(__('employees::filament/resources/employee.table.columns.job-title'))
+                                    ->weight(FontWeight::Medium)
+                                    ->searchable()
+                                    ->sortable(),
+                            ])
+                                ->visible(fn ($record) => filled($record->job_title)),
+
+                            Stack::make([
+                                TextColumn::make('department.name')
+                                    ->label(__('employees::filament/resources/employee.table.columns.department'))
+                                    ->icon('heroicon-o-building-office')
+                                    ->color('gray'),
+                            ])
+                                ->visible(fn ($record) => filled($record->department_id)),
+
+                            Stack::make([
+                                TextColumn::make('work_email')
+                                    ->label(__('employees::filament/resources/employee.table.columns.work-email'))
+                                    ->icon('heroicon-o-envelope')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->sortable()
+                                    ->tooltip(fn (Employee $record): string => $record->work_email)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn ($record) => filled($record->work_email)),
+
+                            Stack::make([
+                                TextColumn::make('work_phone')
+                                    ->label(__('employees::filament/resources/employee.table.columns.work-phone'))
+                                    ->icon('heroicon-o-phone')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->sortable()
+                                    ->limit(30),
+                            ])
+                                ->visible(fn ($record) => filled($record->work_phone)),
+                        ])->space(1),
+                    ])->from('sm'),
+
                     Stack::make([
-                        TextColumn::make('name')
-                            ->label(__('employees::filament/resources/employee.table.columns.name'))
-                            ->weight(FontWeight::Bold)
-                            ->searchable()
-                            ->sortable(),
-                        Stack::make([
-                            TextColumn::make('job_title')
-                                ->icon('heroicon-m-briefcase')
-                                ->searchable()
-                                ->sortable()
-                                ->label(__('employees::filament/resources/employee.table.columns.job-title')),
-                        ])
-                            ->visible(fn ($record) => filled($record->job_title)),
-                        Stack::make([
-                            TextColumn::make('work_email')
-                                ->icon('heroicon-o-envelope')
-                                ->searchable()
-                                ->sortable()
-                                ->label(__('employees::filament/resources/employee.table.columns.work-email'))
-                                ->color('gray')
-                                ->limit(20),
-                        ])
-                            ->visible(fn ($record) => filled($record->work_email)),
-                        Stack::make([
-                            TextColumn::make('work_phone')
-                                ->icon('heroicon-o-phone')
-                                ->searchable()
-                                ->label(__('employees::filament/resources/employee.table.columns.work-phone'))
-                                ->color('gray')
-                                ->limit(30)
-                                ->sortable(),
-                        ])
-                            ->visible(fn ($record) => filled($record->work_phone)),
-                        Stack::make([
-                            TextColumn::make('categories.name')
-                                ->label(__('employees::filament/resources/employee.table.columns.categories'))
-                                ->badge()
-                                ->state(function (Employee $record): array {
-                                    return $record->categories->map(fn ($category) => [
-                                        'label' => $category->name,
-                                        'color' => $category->color ?? '#808080',
-                                    ])->toArray();
-                                })
-                                ->formatStateUsing(fn ($state) => $state['label'])
-                                ->color(fn ($state) => Color::generateV3Palette($state['color']))
-                                ->weight(FontWeight::Bold),
-                        ])
-                            ->visible(fn ($record): bool => (bool) $record->categories->count()),
-                    ])->space(1),
-                ])->space(4),
+                        TextColumn::make('employmentType.name')
+                            ->label(__('employees::filament/resources/employee.table.columns.employment-type'))
+                            ->badge()
+                            ->icon('heroicon-m-briefcase')
+                            ->color('gray'),
+                    ])
+                        ->visible(fn ($record) => filled($record->employee_type)),
+                ])->space(3),
             ], $customColumns))
+            ->recordClasses('fi-ta-card-select')
             ->contentGrid([
-                'md' => 2,
-                'xl' => 4,
+                'sm'  => 1,
+                'md'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
             ])
             ->paginated([
-                18,
+                12,
+                24,
                 36,
-                72,
                 'all',
             ])
             ->filtersFormColumns(3)
@@ -522,26 +544,32 @@ class EmployeesTable
             ->defaultSort('name')
             ->persistSortInSession()
             ->recordActions([
-                ActivityTableAction::make(),
-                ViewAction::make()
-                    ->outlined(),
-                EditAction::make()
-                    ->outlined(),
-                RestoreAction::make()
-                    ->outlined()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('employees::filament/resources/employee.table.actions.restore.notification.title'))
-                            ->body(__('employees::filament/resources/employee.table.actions.restore.notification.body'))
-                    ),
-                DeleteAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('employees::filament/resources/employee.table.actions.delete.notification.title'))
-                            ->body(__('employees::filament/resources/employee.table.actions.delete.notification.body'))
-                    ),
+                Action::make('categories')
+                    ->label(__('employees::filament/resources/employee.table.columns.categories'))
+                    ->view('support::tables.actions.tags', ['relationship' => 'categories'])
+                    ->visible(fn (Employee $record): bool => $record->categories->isNotEmpty()),
+                ActivityTableAction::make()
+                    ->extraAttributes(['class' => 'ms-auto']),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    RestoreAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('employees::filament/resources/employee.table.actions.restore.notification.title'))
+                                ->body(__('employees::filament/resources/employee.table.actions.restore.notification.body'))
+                        ),
+                    DeleteAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('employees::filament/resources/employee.table.actions.delete.notification.title'))
+                                ->body(__('employees::filament/resources/employee.table.actions.delete.notification.body'))
+                        ),
+                ])
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -583,6 +611,6 @@ class EmployeesTable
                         ),
                 ]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['categories']));
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['categories', 'department', 'employmentType', 'partner']));
     }
 }
