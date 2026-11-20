@@ -34,6 +34,8 @@ return [
                 'fields' => [
                     'is-header-visible' => 'مرئي في قائمة الرأس',
                     'is-footer-visible' => 'مرئي في قائمة التذييل',
+                    'is-tracked'        => 'تتبع الزوار',
+                    'is-tracked-helper' => 'تسجيل مشاهدات الزوار لهذه الصفحة.',
                 ],
             ],
         ],
@@ -156,6 +158,7 @@ return [
                 'entries' => [
                     'is-header-visible' => 'مرئي في قائمة الرأس',
                     'is-footer-visible' => 'مرئي في قائمة التذييل',
+                    'is-tracked'        => 'تتبع الزوار',
                 ],
             ],
         ],

@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Exports\BillExporter;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
@@ -48,7 +49,7 @@ class BillsTable
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')
-                    ->label(__('accounts::filament/resources/bill.table.columns.customer'))
+                    ->label(__('accounts::filament/resources/bill.table.columns.vendor'))
                     ->placeholder('-')
                     ->searchable()
                     ->sortable(),
@@ -175,6 +176,7 @@ class BillsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ], $customColumns))
+            ->defaultSort('id', 'desc')
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/bill.table.groups.name'))
@@ -183,6 +185,7 @@ class BillsTable
                     ->label(__('accounts::filament/resources/bill.table.groups.bill-partner-display-name'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('invoice_date')
+                    ->date()
                     ->label(__('accounts::filament/resources/bill.table.groups.bill-date'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('checked')
@@ -313,8 +316,18 @@ class BillsTable
             ->recordActions([
                 ActivityTableAction::make(),
                 ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
+                    ViewAction::make()
+                        ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
+                            ? ($record->move_type === MoveType::IN_REFUND
+                                ? $resource::getRefundResource()::getUrl('view', ['record' => $record])
+                                : $resource::getUrl('view', ['record' => $record], shouldGuessMissingParameters: true))
+                            : null),
+                    EditAction::make()
+                        ->url(fn ($record): ?string => $resource::getParentResourceRegistration()
+                            ? ($record->move_type === MoveType::IN_REFUND
+                                ? $resource::getRefundResource()::getUrl('edit', ['record' => $record])
+                                : $resource::getUrl('edit', ['record' => $record], shouldGuessMissingParameters: true))
+                            : null),
                     DeleteAction::make()
                         ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)
                         ->successNotification(

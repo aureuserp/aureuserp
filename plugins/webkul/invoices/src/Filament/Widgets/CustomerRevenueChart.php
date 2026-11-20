@@ -6,30 +6,39 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Invoice\Filament\Widgets\Concerns\HasInvoiceDashboardFilters;
+use Webkul\Support\Filament\Concerns\HasChartTheme;
 
 class CustomerRevenueChart extends ChartWidget
 {
-    use HasInvoiceDashboardFilters, HasWidgetShield;
-
-    protected const RAMP = ['#184f95', '#2a78d6', '#5598e7', '#86b6ef'];
+    use HasChartTheme, HasInvoiceDashboardFilters, HasWidgetShield;
 
     protected const TOP_SLICES = 3;
 
-    protected const INK_MUTED = '#898781';
-
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
 
     protected static bool $isLazy = true;
 
     protected ?string $maxHeight = '300px';
+
+    /**
+     * @var array{labels: list<string>, data: list<float>}|null
+     */
+    protected ?array $resolvedData = null;
 
     public function getHeading(): string|Htmlable|null
     {
         return __('invoices::filament/widgets/invoice-dashboard.customer-revenue.heading');
     }
 
-    protected function getData(): array
+    /**
+     * @return array{labels: list<string>, data: list<float>}
+     */
+    protected function resolveChartData(): array
     {
+        if ($this->resolvedData !== null) {
+            return $this->resolvedData;
+        }
+
         $rows = $this->customerInvoices()
             ->leftJoin('partners_partners', 'partners_partners.id', '=', 'accounts_account_moves.partner_id')
             ->groupBy('partners_partners.id', 'partners_partners.name')
@@ -54,13 +63,21 @@ class CustomerRevenueChart extends ChartWidget
             $data[] = $other;
         }
 
+        return $this->resolvedData = ['labels' => $labels, 'data' => $data];
+    }
+
+    protected function getData(): array
+    {
+        ['labels' => $labels, 'data' => $data] = $this->resolveChartData();
+
         return [
             'datasets' => [
                 [
-                    'label'           => __('invoices::filament/widgets/invoice-dashboard.customer-revenue.total-billed'),
+                    'label'           => '',
                     'data'            => $data,
-                    'backgroundColor' => array_slice(self::RAMP, 0, max(count($data), 1)),
+                    'backgroundColor' => array_slice($this->chartRamp(), 0, max(count($data), 1)),
                     'borderWidth'     => 0,
+                    'hoverOffset'     => 0,
                 ],
             ],
             'labels' => $labels,
@@ -69,19 +86,34 @@ class CustomerRevenueChart extends ChartWidget
 
     protected function getOptions(): array
     {
+        $total = array_sum($this->resolveChartData()['data']);
+
         return [
             'maintainAspectRatio' => false,
-            'cutout'              => '58%',
+            'cutout'              => '62%',
+            'layout'              => ['padding' => 26],
+            'interaction'         => $this->chartInteraction('nearest', true),
             'plugins'             => [
-                'legend' => [
+                'entrance'   => ['type' => 'sweep', 'duration' => 900],
+
+                'hoverGrow'  => ['grow' => 20, 'speed' => 0.16],
+
+                'legend'     => [
                     'position' => 'right',
                     'labels'   => [
-                        'color'         => self::INK_MUTED,
-                        'boxWidth'      => 10,
-                        'boxHeight'     => 10,
+                        'color'         => $this->brandColor('gray', 500),
+                        'boxWidth'      => 12,
+                        'boxHeight'     => 12,
                         'usePointStyle' => true,
+                        'pointStyle'    => 'rectRounded',
                         'padding'       => 14,
                     ],
+                ],
+                'tooltip'    => array_merge($this->chartTooltip(), ['percentage' => true]),
+                'centerText' => [
+                    'text'       => compact_money($total, $this->dashboardCurrency()),
+                    'label'      => __('invoices::filament/widgets/invoice-dashboard.customer-revenue.center-label'),
+                    'labelColor' => $this->brandColor('gray', 500),
                 ],
             ],
         ];

@@ -47,6 +47,11 @@ class BillResource extends BaseBillResource
         return InvoiceSummary::class;
     }
 
+    public static function getRefundResource(): string
+    {
+        return RefundResource::class;
+    }
+
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([

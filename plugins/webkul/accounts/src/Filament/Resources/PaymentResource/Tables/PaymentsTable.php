@@ -70,6 +70,7 @@ class PaymentsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ], $customColumns))
+            ->defaultSort('id', 'desc')
             ->groups([
                 Tables\Grouping\Group::make('name')
                     ->label(__('accounts::filament/resources/payment.table.groups.name'))

@@ -3,19 +3,21 @@
 namespace Webkul\Website\Filament\Admin\Widgets;
 
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Webkul\Blog\Models\Post;
 use Webkul\PluginManager\Package;
+use Webkul\Support\Filament\Widgets\DashboardStatsWidget;
 use Webkul\Website\Models\Page;
 
-class StatsOverview extends BaseWidget
+class StatsOverview extends DashboardStatsWidget
 {
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 2;
-
-    protected int|string|array $columnSpan = 'full';
 
     public function getHeading(): ?string
     {
@@ -88,27 +90,140 @@ class StatsOverview extends BaseWidget
     {
         $data = $this->getData();
 
-        return [
-            Stat::make(__('website::filament/admin/widgets/stats-overview.total-pages.title'), $data['totalPagesCount'])
-                ->description(__('website::filament/admin/widgets/stats-overview.total-pages.description')),
+        [$start, $end] = $this->period();
 
-            Stat::make(__('website::filament/admin/widgets/stats-overview.total-pages-publish.title'), $data['totalPublishPageCount'])
-                ->description(__('website::filament/admin/widgets/stats-overview.total-pages-publish.description')),
+        [$previousStart, $previousEnd] = $this->previousPeriod($start, $end);
 
-            Stat::make(__('website::filament/admin/widgets/stats-overview.total-pages-draft.title'), $data['totalDraftPageCount'])
-                ->description(__('website::filament/admin/widgets/stats-overview.total-pages-draft.description')),
+        $authorId = $this->filters['author_id'] ?? null;
 
-            ...(Package::isPluginInstalled('blogs') ? [
-                Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs.title'), $data['blogs']['totalBlogs'])
-                    ->description(__('website::filament/admin/widgets/stats-overview.total-blogs.description')),
-
-                Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs-publish.title'), $data['blogs']['totalPublishedBlogs'])
-                    ->description(__('website::filament/admin/widgets/stats-overview.total-blogs-publish.description')),
-
-                Stat::make(__('website::filament/admin/widgets/stats-overview.total-blogs-draft.title'), $data['blogs']['totalDraftBlogs'])
-                    ->description(__('website::filament/admin/widgets/stats-overview.total-blogs-draft.description')),
-            ] : []
+        $stats = [
+            $this->trendStat(
+                __('website::filament/admin/widgets/stats-overview.total-pages.title'),
+                'heroicon-o-document-text',
+                'primary',
+                $data['totalPagesCount'],
+                Page::query(),
+                $start,
+                $end,
+                $previousStart,
+                $previousEnd,
+            ),
+            $this->trendStat(
+                __('website::filament/admin/widgets/stats-overview.total-pages-publish.title'),
+                'heroicon-o-check-circle',
+                'success',
+                $data['totalPublishPageCount'],
+                Page::query()->where('is_published', true),
+                $start,
+                $end,
+                $previousStart,
+                $previousEnd,
+            ),
+            $this->trendStat(
+                __('website::filament/admin/widgets/stats-overview.total-pages-draft.title'),
+                'heroicon-o-pencil-square',
+                'warning',
+                $data['totalDraftPageCount'],
+                Page::query()->where('is_published', false),
+                $start,
+                $end,
+                $previousStart,
+                $previousEnd,
             ),
         ];
+
+        if (Package::isPluginInstalled('blogs')) {
+            $stats[] = $this->trendStat(
+                __('website::filament/admin/widgets/stats-overview.total-blogs.title'),
+                'heroicon-o-newspaper',
+                'info',
+                $data['blogs']['totalBlogs'],
+                Post::query()->when($authorId, fn (Builder $q) => $q->where('author_id', $authorId)),
+                $start,
+                $end,
+                $previousStart,
+                $previousEnd,
+            );
+
+            $stats[] = $this->trendStat(
+                __('website::filament/admin/widgets/stats-overview.total-blogs-publish.title'),
+                'heroicon-o-check-badge',
+                'primary',
+                $data['blogs']['totalPublishedBlogs'],
+                Post::query()->where('is_published', true)->when($authorId, fn (Builder $q) => $q->where('author_id', $authorId)),
+                $start,
+                $end,
+                $previousStart,
+                $previousEnd,
+            );
+
+            $stats[] = $this->trendStat(
+                __('website::filament/admin/widgets/stats-overview.total-blogs-draft.title'),
+                'heroicon-o-document',
+                'danger',
+                $data['blogs']['totalDraftBlogs'],
+                Post::query()->where('is_published', false)->when($authorId, fn (Builder $q) => $q->where('author_id', $authorId)),
+                $start,
+                $end,
+                $previousStart,
+                $previousEnd,
+            );
+        }
+
+        return $stats;
+    }
+
+    protected function trendStat(string $label, string $icon, string $color, int $value, Builder $base, Carbon $start, Carbon $end, Carbon $previousStart, Carbon $previousEnd): Stat
+    {
+        $series = $this->monthlySeries(clone $base, $start, $end);
+
+        $current = (float) (clone $base)->whereBetween('created_at', [$start, $end])->count();
+
+        $previous = (float) (clone $base)->whereBetween('created_at', [$previousStart, $previousEnd])->count();
+
+        return $this->themedStat($label, $icon, $color, number_format($value), $current, $previous, $series);
+    }
+
+    /**
+     * @return list<int>
+     */
+    protected function monthlySeries(Builder $query, Carbon $start, Carbon $end): array
+    {
+        return Trend::query($query)
+            ->between(start: $start, end: $end)
+            ->perMonth()
+            ->count()
+            ->map(fn (TrendValue $value): int => (int) $value->aggregate)
+            ->all();
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    protected function period(): array
+    {
+        $filters = $this->filters;
+
+        $start = ! empty($filters['from_date'])
+            ? Carbon::parse($filters['from_date'])->startOfDay()
+            : now()->startOfYear();
+
+        $end = ! empty($filters['to_date'])
+            ? Carbon::parse($filters['to_date'])->endOfDay()
+            : now()->endOfDay();
+
+        return [$start, $end];
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    protected function previousPeriod(Carbon $start, Carbon $end): array
+    {
+        $length = $start->diffInDays($end) + 1;
+
+        $previousEnd = (clone $start)->subDay()->endOfDay();
+
+        return [(clone $previousEnd)->subDays($length - 1)->startOfDay(), $previousEnd];
     }
 }

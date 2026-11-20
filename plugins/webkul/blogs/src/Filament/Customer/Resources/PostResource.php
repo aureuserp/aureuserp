@@ -43,6 +43,11 @@ class PostResource extends Resource
         return CategoryResource::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('is_published', true);
+    }
+
     public static function getGlobalSearchEloquentQuery(): Builder
     {
         return parent::getGlobalSearchEloquentQuery()->with(['category'])->where('is_published', true);

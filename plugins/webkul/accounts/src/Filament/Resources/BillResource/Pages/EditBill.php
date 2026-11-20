@@ -6,6 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
@@ -53,13 +54,16 @@ class EditBill extends EditRecord
                 ->resource($this->getResource())
                 ->activityPlans($this->getRecord()->activityPlans()),
             BaseActions\PreviewAction::make()
-                ->setTemplate('accounts::bill/actions/preview.index'),
+                ->setTemplate($this->getRecord()->move_type == MoveType::IN_REFUND
+                    ? 'accounts::refund/actions/preview.index'
+                    : 'accounts::bill/actions/preview.index'),
             BaseActions\PayAction::make(),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\ReverseAction::make()
                 ->setResource(static::getReverseResource())
+                ->hidden(fn (Move $record): bool => $record->move_type == MoveType::IN_REFUND)
                 ->label(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),

@@ -2,14 +2,15 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages\EditActivityPlan;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages\ListActivityPlans;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages\ManageActivityPlanTemplates;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
-use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Schemas\ActivityPlanForm;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Schemas\ActivityPlanInfolist;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Tables\ActivityPlansTable;
@@ -50,19 +51,22 @@ class ActivityPlanResource extends Resource
         return ActivityPlanInfolist::configure($schema);
     }
 
-    public static function getRelations(): array
+    public static function getRecordSubNavigation(Page $page): array
     {
-        return [
-            ActivityTemplateRelationManager::class,
-        ];
+        return $page->generateNavigationItems([
+            ViewActivityPlan::class,
+            EditActivityPlan::class,
+            ManageActivityPlanTemplates::class,
+        ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListActivityPlans::route('/'),
-            'view'   => ViewActivityPlan::route('/{record}'),
-            'edit'   => EditActivityPlan::route('/{record}/edit'),
+            'index'     => ListActivityPlans::route('/'),
+            'view'      => ViewActivityPlan::route('/{record}'),
+            'edit'      => EditActivityPlan::route('/{record}/edit'),
+            'templates' => ManageActivityPlanTemplates::route('/{record}/templates'),
         ];
     }
 }

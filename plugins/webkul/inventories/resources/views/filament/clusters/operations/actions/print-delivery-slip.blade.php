@@ -35,7 +35,7 @@
 
         .header {
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .left-info {
@@ -56,39 +56,39 @@
         }
 
         .slip-title {
-            font-size: 24px;
+            font-size: 22px;
             color: #1a4587;
-            margin: 25px 0;
-            padding: 15px 0;
+            margin: 15px 0;
+            padding: 8px 0;
             border-bottom: 2px solid #1a4587;
         }
 
         .details-table {
             width: 100%;
-            margin: 20px 0;
+            margin: 10px 0;
             border-collapse: collapse;
         }
 
         .details-table td {
-            padding: 10px;
+            padding: 6px 8px;
             vertical-align: top;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
+            margin: 15px 0;
         }
 
         .items-table th {
             background: #1a4587;
             color: white;
-            padding: 12px;
+            padding: 8px 10px;
             text-align: left;
         }
 
         .items-table td {
-            padding: 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e9ecef;
         }
 
@@ -99,7 +99,7 @@
         .note {
             color: #666;
             font-size: 0.9em;
-            margin-top: 30px;
+            margin-top: 15px;
             text-align: center;
         }
     </style>
@@ -111,7 +111,7 @@
             <!-- Header Section -->
             <div class="header">
                 <div class="left-info">
-                    <div style="font-size: 28px; color: #1a4587; margin-bottom: 10px;">{{ $record->company->name }}</div>
+                    <div style="font-size: 22px; color: #1a4587; margin-bottom: 6px;">{{ $record->company->name }}</div>
 
                     @if ($record->company->partner)
                         <div>
@@ -121,55 +121,37 @@
                                 ,{{ $record->company->partner->street2 }}
                             @endif
                         </div>
-                        
+
                         <div>
                             {{ $record->company->partner->city }},
 
                             @if ($record->company->partner->state)
                                 {{ $record->company->partner->state->name }},
                             @endif
-                            
+
                             {{ $record->company->partner->zip }}
                         </div>
-                        
+
                         @if ($record->company->partner->country)
-                            <div>
-                                {{ $record->company->partner->country->name }}
-                            </div>
+                            <div>{{ $record->company->partner->country->name }}</div>
                         @endif
-                        
+
                         @if ($record->company->email)
-                            <div>
-                                Email: 
-                                {{ $record->company->email }}
-                            </div>
+                            <div>Email: {{ $record->company->email }}</div>
                         @endif
-                        
+
                         @if ($record->company->phone)
-                            <div>
-                                Phone: 
-                                {{ $record->company->phone }}
-                            </div>
+                            <div>Phone: {{ $record->company->phone }}</div>
                         @endif
                     @endif
                 </div>
-                
-                <div class="clearfix"></div>
-            </div>
-            
-            <!-- Header Section -->
-            <div class="header">
-                <div class="left-info">
-                </div>
 
-                <div class="right-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">{{ __('inventories::app.documents.delivery-address') }}</div>
-                    
-                    @if($record->partner)
+                @if ($record->partner)
+                    <div class="right-info">
+                        <div style="font-weight: bold; margin-bottom: 15px;">{{ __('inventories::app.documents.delivery-address') }}</div>
+
                         <div style="margin-top: 15px;">
-                            <div>
-                                {{ $record->partner->name }}
-                            </div>
+                            <div style="font-size: 22px; margin-bottom: 6px;">{{ $record->partner->name }}</div>
 
                             <div>
                                 {{ $record->partner->street1 }}
@@ -178,40 +160,32 @@
                                     ,{{ $record->partner->street2 }}
                                 @endif
                             </div>
-                            
+
                             <div>
                                 {{ $record->partner->city }},
 
                                 @if ($record->partner->state)
                                     {{ $record->partner->state->name }},
                                 @endif
-                                
+
                                 {{ $record->partner->zip }}
                             </div>
-                            
+
                             @if ($record->partner->country)
-                                <div>
-                                    {{ $record->partner->country->name }}
-                                </div>
+                                <div>{{ $record->partner->country->name }}</div>
                             @endif
-                            
+
                             @if ($record->partner->email)
-                                <div>
-                                    Email: 
-                                    {{ $record->partner->email }}
-                                </div>
+                                <div>Email: {{ $record->partner->email }}</div>
                             @endif
-                            
+
                             @if ($record->partner->phone)
-                                <div>
-                                    Phone: 
-                                    {{ $record->partner->phone }}
-                                </div>
+                                <div>Phone: {{ $record->partner->phone }}</div>
                             @endif
                         </div>
-                    @endif
-                </div>
-                
+                    </div>
+                @endif
+
                 <div class="clearfix"></div>
             </div>
 

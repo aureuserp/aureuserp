@@ -13,7 +13,7 @@ permissions:
 jobs:
   publish_report:
     if: github.event.workflow_run.conclusion == 'failure'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Publish failure report
 
     env:

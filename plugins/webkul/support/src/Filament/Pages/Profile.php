@@ -340,7 +340,7 @@ class Profile extends Page implements HasForms
 
         $userData = $user->only(['name', 'email', 'avatar', 'language']);
 
-        $userData['avatar'] = $user->partner->avatar;
+        $userData['avatar'] = $user?->partner?->avatar;
 
         if (empty($userData['language'])) {
             $userData['language'] = app()->getLocale();
