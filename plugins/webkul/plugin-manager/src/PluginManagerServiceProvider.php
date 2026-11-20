@@ -19,6 +19,7 @@ class PluginManagerServiceProvider extends PackageServiceProvider
     {
         $package->name(static::$name)
             ->isCore()
+            ->hasConfigFile('plugin-manager')
             ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
