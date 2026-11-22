@@ -43,6 +43,9 @@ class ManageTaskStages extends ManageRelatedRecords
                 CreateAction::make()
                     ->label(__('projects::filament/resources/project/relation-managers/task-stages.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
+                    ->fillForm(fn (): array => [
+                        'project_id' => $this->getOwnerRecord()->id,
+                    ])
                     ->successNotification(
                         Notification::make()
                             ->success()
