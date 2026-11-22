@@ -38,6 +38,7 @@ class TaskForm
                         FormProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
+                            ->visible(fn (FormProgressStepper $component): bool => filled($component->getOptions()))
                             ->required()
                             ->options(fn (Get $get, ?Task $record) => TaskStage::where('project_id', $get('project_id') ?? $record?->project_id)->orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
                             ->default(fn (Get $get) => TaskResource::getDefaultStageId($get('project_id'))),

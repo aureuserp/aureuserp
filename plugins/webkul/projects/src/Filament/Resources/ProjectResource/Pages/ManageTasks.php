@@ -43,7 +43,7 @@ class ManageTasks extends ManageRelatedRecords
             CreateAction::make()
                 ->label(__('projects::filament/resources/project/pages/manage-tasks.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->url(TaskResource::getUrl('create')),
+                ->url(fn (): string => TaskResource::getUrl('create', ['project_id' => $this->getOwnerRecord()->id])),
         ];
     }
 
