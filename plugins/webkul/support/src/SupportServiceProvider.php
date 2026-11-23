@@ -126,6 +126,17 @@ class SupportServiceProvider extends PackageServiceProvider
         );
 
         FilamentView::registerRenderHook(
+            PanelsRenderHook::GLOBAL_SEARCH_END,
+            function (): string {
+                if (filament()->getCurrentPanel()?->getId() !== 'admin') {
+                    return '';
+                }
+
+                return view('support::global-search')->render();
+            },
+        );
+
+        FilamentView::registerRenderHook(
             PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE,
             function (): string {
                 $page = Livewire::current();

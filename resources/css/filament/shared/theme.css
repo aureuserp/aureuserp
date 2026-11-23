@@ -407,7 +407,7 @@
 }
 
 .fi-app-menu-backdrop {
-    @apply absolute inset-0 bg-gray-950/50 backdrop-blur-sm dark:bg-gray-950/75 md:bg-white/85 md:bg-linear-to-r md:from-primary-50/90 md:via-white/80 md:to-primary-100/90 md:backdrop-blur-xl md:dark:bg-gray-950/90 md:dark:from-gray-950/90 md:dark:via-primary-950/50 md:dark:to-primary-950/80;
+    @apply absolute inset-0 md:sticky md:inset-auto md:top-0 md:-mb-[100vh] md:h-screen bg-gray-950/50 backdrop-blur-sm dark:bg-gray-950/75 md:bg-white/85 md:bg-linear-to-r md:from-primary-50/90 md:via-white/80 md:to-primary-100/90 md:backdrop-blur-xl md:dark:bg-gray-950/90 md:dark:from-gray-950/90 md:dark:via-primary-950/50 md:dark:to-primary-950/80;
 }
 
 .fi-app-menu-panel {
