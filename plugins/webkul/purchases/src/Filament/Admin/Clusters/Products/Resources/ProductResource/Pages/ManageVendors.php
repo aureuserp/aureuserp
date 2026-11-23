@@ -63,36 +63,40 @@ class ManageVendors extends ManageRelatedRecords
         return $schema;
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()
+                ->label(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.label'))
+                ->icon('heroicon-o-plus-circle')
+                ->mutateDataUsing(function (array $data): array {
+                    $data['product_id'] ??= $this->getOwnerRecord()->id;
+
+                    $data['creator_id'] = Auth::id();
+
+                    return $data;
+                })
+                ->action(function (array $data) {
+                    if ($this->getOwnerRecord()->is_configurable) {
+                        ProductSupplier::create($data);
+                    } else {
+                        $data['product_id'] = $this->getOwnerRecord()->id;
+
+                        $this->getOwnerRecord()->sellers()->create($data);
+                    }
+                })
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.notification.title'))
+                        ->body(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.notification.body')),
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
         return VendorPriceResource::table($table)
-            ->headerActions([
-                CreateAction::make()
-                    ->label(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['product_id'] ??= $this->getOwnerRecord()->id;
-
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
-                    })
-                    ->action(function (array $data) {
-                        if ($this->getOwnerRecord()->is_configurable) {
-                            ProductSupplier::create($data);
-                        } else {
-                            $data['product_id'] = $this->getOwnerRecord()->id;
-
-                            $this->getOwnerRecord()->sellers()->create($data);
-                        }
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.notification.title'))
-                            ->body(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.notification.body')),
-                    ),
-            ])
             ->emptyStateActions([]);
     }
 }

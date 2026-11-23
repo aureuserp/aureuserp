@@ -204,6 +204,62 @@ class ManageQuantities extends ManageRelatedRecords
             ->columns(1);
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()
+                ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.label'))
+                ->icon('heroicon-o-plus-circle')
+                ->mutateDataUsing(function (array $data): array {
+                    $data['product_id'] ??= $this->getOwnerRecord()->id;
+
+                    $data['location_id'] = $data['location_id'] ?? $this->defaultStockLocationId();
+
+                    $data['company_id'] = $this->getOwnerRecord()->company_id;
+
+                    $data['inventory_diff_quantity'] = $data['quantity'];
+
+                    return $data;
+                })
+                ->before(function (array $data) {
+                    $productId = $data['product_id'] ?? $this->getOwnerRecord()->id;
+
+                    $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? $this->defaultStockLocationId())
+                        ->where('product_id', $productId)
+                        ->where('package_id', $data['package_id'] ?? null)
+                        ->where('lot_id', $data['lot_id'] ?? null)
+                        ->exists();
+
+                    if ($existingQuantity) {
+                        Notification::make()
+                            ->title(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.before.notification.title'))
+                            ->body(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.before.notification.body'))
+                            ->warning()
+                            ->send();
+
+                        $this->halt();
+                    }
+                })
+                ->action(function (array $data) {
+                    if ($this->getOwnerRecord()->is_configurable) {
+                        $record = ProductQuantity::create($data);
+                    } else {
+                        $data['product_id'] = $this->getOwnerRecord()->id;
+
+                        $record = $this->getOwnerRecord()->quantities()->create($data);
+                    }
+
+                    return $record;
+                })
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.notification.title'))
+                        ->body(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.notification.body')),
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
         return $table
@@ -274,58 +330,6 @@ class ManageQuantities extends ManageRelatedRecords
                     ->sortable()
                     ->placeholder('—')
                     ->visible(static::getProductSettings()->enable_uom),
-            ])
-            ->headerActions([
-                CreateAction::make()
-                    ->label(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['product_id'] ??= $this->getOwnerRecord()->id;
-
-                        $data['location_id'] = $data['location_id'] ?? $this->defaultStockLocationId();
-
-                        $data['company_id'] = $this->getOwnerRecord()->company_id;
-
-                        $data['inventory_diff_quantity'] = $data['quantity'];
-
-                        return $data;
-                    })
-                    ->before(function (array $data) {
-                        $productId = $data['product_id'] ?? $this->getOwnerRecord()->id;
-
-                        $existingQuantity = ProductQuantity::where('location_id', $data['location_id'] ?? $this->defaultStockLocationId())
-                            ->where('product_id', $productId)
-                            ->where('package_id', $data['package_id'] ?? null)
-                            ->where('lot_id', $data['lot_id'] ?? null)
-                            ->exists();
-
-                        if ($existingQuantity) {
-                            Notification::make()
-                                ->title(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.before.notification.title'))
-                                ->body(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.before.notification.body'))
-                                ->warning()
-                                ->send();
-
-                            $this->halt();
-                        }
-                    })
-                    ->action(function (array $data) {
-                        if ($this->getOwnerRecord()->is_configurable) {
-                            $record = ProductQuantity::create($data);
-                        } else {
-                            $data['product_id'] = $this->getOwnerRecord()->id;
-
-                            $record = $this->getOwnerRecord()->quantities()->create($data);
-                        }
-
-                        return $record;
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.notification.title'))
-                            ->body(__('inventories::filament/clusters/products/resources/product/pages/manage-quantities.table.header-actions.create.notification.body')),
-                    ),
             ])
             ->recordActions([
                 DeleteAction::make()
