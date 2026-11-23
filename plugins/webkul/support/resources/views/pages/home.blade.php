@@ -36,6 +36,8 @@
     </div>
 
     <style>
+        .fi-home-apps .fi-app-menu-backdrop { position: sticky; inset: auto; top: 0; height: calc(100vh - var(--topbar-height, 3.5rem)); margin-bottom: calc(var(--topbar-height, 3.5rem) - 100vh); }
+
         @media (max-width: 767px) {
             .fi-home-apps .fi-app-menu-backdrop { background: rgba(255, 255, 255, 0.9); }
             html.dark .fi-home-apps .fi-app-menu-backdrop { background: rgba(3, 7, 18, 0.9); }
