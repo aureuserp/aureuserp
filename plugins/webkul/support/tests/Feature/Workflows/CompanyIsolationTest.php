@@ -162,3 +162,23 @@ it('leaves a new utm campaign shared across companies', function () {
 
     expect(UtmCampaign::query()->pluck('id'))->toContain($campaign->id);
 });
+
+it('shows only the branch records and shared records when only the branch is active', function () {
+    $parent = CompanyHelper::company();
+    $branch = CompanyHelper::company();
+    $branch->forceFill(['parent_id' => $parent->id])->saveQuietly();
+
+    $inParent = UtmCampaign::factory()->company($parent)->create();
+    $inBranch = UtmCampaign::factory()->company($branch)->create();
+
+    $shared = UtmCampaign::factory()->company($parent)->create();
+    $shared->forceFill(['company_id' => null])->saveQuietly();
+
+    CompanyHelper::actingAsCompanyUser([$parent, $branch], activeIds: [$branch->id]);
+
+    $visible = UtmCampaign::query()->pluck('id');
+
+    expect($visible)->toContain($inBranch->id)
+        ->toContain($shared->id)
+        ->not->toContain($inParent->id);
+});
