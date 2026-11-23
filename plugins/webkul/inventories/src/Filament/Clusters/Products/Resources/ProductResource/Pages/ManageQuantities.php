@@ -118,7 +118,7 @@ class ManageQuantities extends ManageRelatedRecords
                     ->relationship(
                         name: 'product',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('parent_id', $this->getOwnerRecord()->id),
+                        modifyQueryUsing: fn (Builder $query) => $query->where('parent_id', $this->getOwnerRecord()->id)->whereNull('deleted_at'),
                     )
                     ->searchable()
                     ->preload()
