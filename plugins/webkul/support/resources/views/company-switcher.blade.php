@@ -13,11 +13,36 @@
                 </x-filament::link>
             </x-slot>
 
+            @php
+                $byParent = $companies->groupBy('parent_id');
+                $ids = $companies->pluck('id')->all();
+
+                $flatten = function ($company, int $depth) use (&$flatten, $byParent) {
+                    $rows = [['company' => $company, 'depth' => $depth]];
+
+                    foreach ($byParent->get($company->id, collect()) as $child) {
+                        $rows = array_merge($rows, $flatten($child, $depth + 1));
+                    }
+
+                    return $rows;
+                };
+
+                $ordered = [];
+
+                foreach ($companies as $company) {
+                    if (! in_array($company->parent_id, $ids, true)) {
+                        $ordered = array_merge($ordered, $flatten($company, 0));
+                    }
+                }
+            @endphp
+
             <form method="POST" action="{{ route('company-context.set') }}" x-data>
                 @csrf
 
                 <div style="display:flex;flex-direction:column;gap:0.125rem;padding:0.5rem;max-height:18rem;overflow-y:auto;">
-                    @foreach ($companies as $company)
+                    @foreach ($ordered as $row)
+                        @php($company = $row['company'])
+                        @php($depth = $row['depth'])
                         <div
                             @click="
                                 const boxes = [...$root.querySelectorAll('input[type=checkbox]')];
@@ -35,8 +60,12 @@
                             "
                             onmouseover="this.style.background='rgba(128,128,128,0.14)'"
                             onmouseout="this.style.background='transparent'"
-                            style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.625rem;border-radius:0.5rem;font-size:0.875rem;cursor:pointer;transition:background .1s;"
+                            style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.625rem;padding-left:{{ 0.625 + $depth * 1.25 }}rem;border-radius:0.5rem;font-size:0.875rem;cursor:pointer;transition:background .1s;"
                         >
+                            @if ($depth > 0)
+                                <span style="color:rgba(128,128,128,0.6);flex-shrink:0;font-size:0.75rem;line-height:1;">└</span>
+                            @endif
+
                             <x-filament::input.checkbox
                                 name="companies[]"
                                 value="{{ $company->id }}"
