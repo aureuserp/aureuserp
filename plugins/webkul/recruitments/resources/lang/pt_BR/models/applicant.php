@@ -5,9 +5,7 @@ return [
 
     'log-attributes' => [
         'stage'                 => 'Etapa',
-        'company'               => 'Empresa',
         'recruiter'             => 'Recrutador',
-        'date_closed'           => 'Data de contratação',
         'job'                   => 'Cargo',
         'salary_proposed_extra' => 'Extras do salário proposto',
         'salary_expected_extra' => 'Extras do salário esperado',

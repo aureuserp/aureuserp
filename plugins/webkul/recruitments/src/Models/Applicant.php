@@ -86,9 +86,7 @@ class Applicant extends Model
     {
         return [
             'stage.name'            => __('recruitments::models/applicant.log-attributes.stage'),
-            'company.name'          => __('recruitments::models/applicant.log-attributes.company'),
             'recruiter.name'        => __('recruitments::models/applicant.log-attributes.recruiter'),
-            'date_closed'           => __('recruitments::models/applicant.log-attributes.date_closed'),
             'job.name'              => __('recruitments::models/applicant.log-attributes.job'),
             'salary_proposed_extra' => __('recruitments::models/applicant.log-attributes.salary_proposed_extra'),
             'salary_expected_extra' => __('recruitments::models/applicant.log-attributes.salary_expected_extra'),

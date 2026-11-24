@@ -5,9 +5,7 @@ return [
 
     'log-attributes' => [
         'stage'                 => 'المرحلة',
-        'company'               => 'الشركة',
         'recruiter'             => 'المسؤول عن التوظيف',
-        'date_closed'           => 'تاريخ التوظيف',
         'job'                   => 'المنصب الوظيفي',
         'salary_proposed_extra' => 'مزايا الراتب المقترح',
         'salary_expected_extra' => 'مزايا الراتب المتوقع',
