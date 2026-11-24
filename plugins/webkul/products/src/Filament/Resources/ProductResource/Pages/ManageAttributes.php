@@ -82,6 +82,41 @@ class ManageAttributes extends ManageRelatedRecords
             ->columns(1);
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            GenerateVariantsAction::make(),
+            CreateAction::make()
+                ->label(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.label'))
+                ->icon('heroicon-o-plus-circle')
+                ->mutateDataUsing(function (array $data): array {
+                    $data['creator_id'] = Auth::id();
+
+                    return $data;
+                })
+                ->before(function (CreateAction $action) {
+                    $product = $this->getOwnerRecord();
+
+                    if ($product->is_configurable || ! $product->isInUse()) {
+                        return;
+                    }
+
+                    ProductInUseException::make($product, 'attributes')->notify();
+
+                    $action->cancel();
+                })
+                ->after(function (ProductAttribute $record) {
+                    $this->updateOrCreateVariants($record);
+                })
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.notification.title'))
+                        ->body(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.notification.body')),
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
         return $table
@@ -94,42 +129,9 @@ class ManageAttributes extends ManageRelatedRecords
                     ->label(__('products::filament/resources/product/pages/manage-attributes.table.columns.values'))
                     ->badge(),
             ])
-            ->headerActions([
-                GenerateVariantsAction::make(),
-                CreateAction::make()
-                    ->label(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
-                    })
-                    ->before(function (CreateAction $action) {
-                        $product = $this->getOwnerRecord();
-
-                        if ($product->is_configurable || ! $product->isInUse()) {
-                            return;
-                        }
-
-                        ProductInUseException::make($product, 'attributes')->notify();
-
-                        $action->cancel();
-                    })
-                    ->after(function (ProductAttribute $record) {
-                        $this->updateOrCreateVariants($record);
-                    })
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.notification.title'))
-                            ->body(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.notification.body')),
-                    ),
-            ])
             ->recordActions([
                 EditAction::make()
                     ->before(function (EditAction $action, ProductAttribute $record) {
-                        // The injected $data is empty at this point; the submitted state only
-                        // lives on the mounted action.
                         $keptOptionIds = array_map('intval', $action->getRawData()['options'] ?? []);
 
                         $removedValueIds = $record->values()
@@ -183,6 +185,6 @@ class ManageAttributes extends ManageRelatedRecords
             ]);
         });
 
-        $this->replaceMountedTableAction('products.generate.variants');
+        $this->mountAction('products.generate.variants');
     }
 }

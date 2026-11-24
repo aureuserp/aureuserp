@@ -36,42 +36,44 @@ class ManageBillsOfMaterials extends ManageRelatedRecords
         return BillsOfMaterialResource::form($schema);
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            CreateAction::make()
+                ->label(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.label'))
+                ->icon('heroicon-o-plus-circle')
+                ->fillForm(function (): array {
+                    return [
+                        'product_id'         => $this->getOwnerRecord()->id,
+                        'uom_id'             => $this->getOwnerRecord()->uom_id,
+                        'company_id'         => $this->getOwnerRecord()->company_id,
+                        'quantity'           => 1,
+                        'type'               => BillOfMaterialType::NORMAL->value,
+                        'ready_to_produce'   => BillOfMaterialReadyToProduce::ALL_AVAILABLE->value,
+                        'consumption'        => BillOfMaterialConsumption::WARNING->value,
+                        'produce_delay'      => 0,
+                        'days_to_prepare_mo' => 0,
+                    ];
+                })
+                ->mutateDataUsing(function (array $data): array {
+                    $data['product_id'] ??= $this->getOwnerRecord()->id;
+                    $data['uom_id'] ??= $this->getOwnerRecord()->uom_id;
+                    $data['company_id'] ??= $this->getOwnerRecord()->company_id;
+
+                    return BillsOfMaterialResource::normalizeProductVariantData($data);
+                })
+                ->modalWidth(Width::SevenExtraLarge)
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notifications.success.title'))
+                        ->body(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notifications.success.body')),
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
-        $table = BillsOfMaterialResource::table($table);
-
-        return $table
-            ->headerActions([
-                CreateAction::make()
-                    ->label(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.label'))
-                    ->icon('heroicon-o-plus-circle')
-                    ->fillForm(function (): array {
-                        return [
-                            'product_id'         => $this->getOwnerRecord()->id,
-                            'uom_id'             => $this->getOwnerRecord()->uom_id,
-                            'company_id'         => $this->getOwnerRecord()->company_id,
-                            'quantity'           => 1,
-                            'type'               => BillOfMaterialType::NORMAL->value,
-                            'ready_to_produce'   => BillOfMaterialReadyToProduce::ALL_AVAILABLE->value,
-                            'consumption'        => BillOfMaterialConsumption::WARNING->value,
-                            'produce_delay'      => 0,
-                            'days_to_prepare_mo' => 0,
-                        ];
-                    })
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['product_id'] ??= $this->getOwnerRecord()->id;
-                        $data['uom_id'] ??= $this->getOwnerRecord()->uom_id;
-                        $data['company_id'] ??= $this->getOwnerRecord()->company_id;
-
-                        return BillsOfMaterialResource::normalizeProductVariantData($data);
-                    })
-                    ->modalWidth(Width::SevenExtraLarge)
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notifications.success.title'))
-                            ->body(__('manufacturing::filament/clusters/products/resources/product/pages/bill-of-materials.header-actions.create.notifications.success.body')),
-                    ),
-            ]);
+        return BillsOfMaterialResource::table($table);
     }
 }
