@@ -110,6 +110,23 @@ class Employee extends Model
         'work_permit_scheduled_activity' => 'boolean',
     ];
 
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                        => __('employees::models/employee.log-attributes.name'),
+            'calendar.name'               => __('employees::models/employee.log-attributes.calendar'),
+            'department.name'             => __('employees::models/employee.log-attributes.department'),
+            'certificate'                 => __('employees::models/employee.log-attributes.certificate'),
+            'study_field'                 => __('employees::models/employee.log-attributes.study_field'),
+            'study_school'                => __('employees::models/employee.log-attributes.study_school'),
+            'distance_home_work'          => __('employees::models/employee.log-attributes.distance_home_work'),
+            'distance_home_work_unit'     => __('employees::models/employee.log-attributes.distance_home_work_unit'),
+            'job.name'                    => __('employees::models/employee.log-attributes.job'),
+            'departureReason.name'        => __('employees::models/employee.log-attributes.departure_reason'),
+            'departure_date'              => __('employees::models/employee.log-attributes.departure_date'),
+        ];
+    }
+
     public function getModelTitle(): string
     {
         return __('employees::models/employee.title');

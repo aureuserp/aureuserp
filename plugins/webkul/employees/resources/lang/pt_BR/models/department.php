@@ -2,4 +2,8 @@
 
 return [
     'title' => 'Departamento',
+
+    'log-attributes' => [
+        'manager' => 'Gerente',
+    ],
 ];

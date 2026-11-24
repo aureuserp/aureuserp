@@ -38,6 +38,13 @@ class Department extends Model
         'color',
     ];
 
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'manager.name' => __('employees::models/department.log-attributes.manager'),
+        ];
+    }
+
     public function getModelTitle(): string
     {
         return __('employees::models/department.title');
