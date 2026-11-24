@@ -4,13 +4,13 @@
             wire:key="non-follower-{{ $follower->partner->id }}"
             class="group flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60"
         >
-            <div class="flex min-w-0 items-center gap-2">
+            <div @class(['flex min-w-0 items-center gap-2', 'italic opacity-25' => $follower->partner->trashed()])>
                 <x-filament-panels::avatar.user
                     size="sm"
                     :user="$follower->partner"
                 />
                 <div class="min-w-0 leading-4">
-                    <h3 class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ $follower->partner->name }}</h3>
+                    <h3 class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ $follower->partner->name }}@if ($follower->partner->trashed()) ({{ __('chatter::filament/resources/actions/chatter/follower-action.setup.deleted') }})@endif</h3>
                     <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ $follower->partner->email }}</p>
                 </div>
             </div>

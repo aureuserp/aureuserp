@@ -185,7 +185,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public function removeFollower($partnerId)
     {
-        $partner = Partner::findOrFail($partnerId);
+        $partner = Partner::withTrashed()->findOrFail($partnerId);
 
         $this->record->removeFollower($partner);
 
