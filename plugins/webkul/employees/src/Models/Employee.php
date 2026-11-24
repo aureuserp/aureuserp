@@ -17,6 +17,7 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\Scopes\CompanyScope;
 use Webkul\Support\Models\State;
 use Webkul\Support\Traits\BelongsToCompany;
@@ -85,6 +86,9 @@ class Employee extends Model
         'emergency_contact',
         'emergency_phone',
         'employee_type',
+        'joining_date',
+        'salary',
+        'salary_currency_id',
         'barcode',
         'pin',
         'address_id',
@@ -104,6 +108,8 @@ class Employee extends Model
     ];
 
     protected $casts = [
+        'joining_date'                   => 'date',
+        'salary'                         => 'decimal:4',
         'is_active'                      => 'boolean',
         'is_flexible'                    => 'boolean',
         'is_fully_flexible'              => 'boolean',
@@ -204,6 +210,11 @@ class Employee extends Model
     public function employmentType(): BelongsTo
     {
         return $this->belongsTo(EmploymentType::class, 'employee_type');
+    }
+
+    public function salaryCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'salary_currency_id');
     }
 
     public function categories()

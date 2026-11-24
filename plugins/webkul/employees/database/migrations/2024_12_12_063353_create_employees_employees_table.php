@@ -74,7 +74,7 @@ return new class extends Migration
             $table->string('study_school')->nullable()->comment('Study School');
             $table->string('emergency_contact')->nullable()->comment('Emergency Contact');
             $table->string('emergency_phone')->nullable()->comment('Emergency Phone');
-            $table->string('employee_type')->default('employee')->comment('Employee Type');
+            $table->string('employee_type')->nullable()->comment('Employee Type');
             $table->string('barcode')->nullable()->comment('Barcode');
             $table->string('pin')->nullable()->comment('Pin');
             $table->string('visa_expire')->nullable()->comment('Visa Expire');
