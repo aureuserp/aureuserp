@@ -9,6 +9,7 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Services\CompanyContext;
 
 require_once __DIR__.'/../../../../../support/tests/Helpers/SecurityHelper.php';
 require_once __DIR__.'/../../../../../support/tests/Helpers/TestBootstrapHelper.php';
@@ -142,6 +143,8 @@ it('creates a tax with repartition lines', function () {
     $company = Company::factory()->create(['currency_id' => $currency->id]);
     $user->forceFill(['default_company_id' => $company->id])->saveQuietly();
     $user->allowedCompanies()->sync([$company->id]);
+
+    app()->forgetInstance(CompanyContext::class);
 
     $payload = taxPayload(['company_id' => $company->id]);
 
