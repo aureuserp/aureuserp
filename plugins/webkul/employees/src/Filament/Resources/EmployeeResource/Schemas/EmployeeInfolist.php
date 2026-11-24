@@ -20,6 +20,7 @@ use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\TextSize;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as SupportCollection;
+use Webkul\Employee\Enums\MaritalStatus;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmployeeResume;
 use Webkul\Employee\Models\EmployeeResumeAttachment;
@@ -99,6 +100,9 @@ class EmployeeInfolist
                                 TextEntry::make('coach.name')
                                     ->placeholder('—')
                                     ->label(__('employees::filament/resources/employee.infolist.sections.entries.coach')),
+                                TextEntry::make('employmentType.name')
+                                    ->placeholder('—')
+                                    ->label(__('employees::filament/resources/employee.table.columns.employment-type')),
                             ]),
                         ...$customInfolistEntries,
                     ])->columnSpanFull(),
@@ -208,6 +212,9 @@ class EmployeeInfolist
                                                         ->placeholder('—')
                                                         ->url(fn (?string $state) => $state ? "tel:{$state}" : '#')
                                                         ->icon('heroicon-o-phone'),
+                                                    TextEntry::make('bankAccount.account_number')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.bank-account'))
+                                                        ->placeholder('—'),
                                                     TextEntry::make('private_email')
                                                         ->label(__('employees::filament/resources/employee.infolist.tabs.private-information.entries.private-email'))
                                                         ->placeholder('—')
@@ -234,6 +241,36 @@ class EmployeeInfolist
                                                         ->placeholder('—')
                                                         ->url(fn (?string $state) => $state ? "tel:{$state}" : '#')
                                                         ->icon('heroicon-o-phone'),
+                                                ]),
+                                            Fieldset::make(__('employees::filament/resources/employee.form.tabs.private-information.fields.family-status'))
+                                                ->schema([
+                                                    TextEntry::make('marital')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.marital-status'))
+                                                        ->formatStateUsing(fn (?string $state): ?string => MaritalStatus::options()[$state] ?? $state)
+                                                        ->placeholder('—'),
+                                                    TextEntry::make('spouse_complete_name')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.spouse-name'))
+                                                        ->placeholder('—'),
+                                                    TextEntry::make('spouse_birthdate')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.spouse-birthday'))
+                                                        ->placeholder('—')
+                                                        ->date('F j, Y'),
+                                                    TextEntry::make('children')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.number-of-children'))
+                                                        ->placeholder('—'),
+                                                ]),
+                                            Fieldset::make(__('employees::filament/resources/employee.form.tabs.private-information.fields.education'))
+                                                ->schema([
+                                                    TextEntry::make('certificate')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.certificate-level'))
+                                                        ->formatStateUsing(fn (?string $state): ?string => $state ? __('employees::filament/resources/employee.form.tabs.private-information.fields.'.($state === 'graduate' ? 'graduated' : $state)) : null)
+                                                        ->placeholder('—'),
+                                                    TextEntry::make('study_field')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.field-of-study'))
+                                                        ->placeholder('—'),
+                                                    TextEntry::make('study_school')
+                                                        ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.school'))
+                                                        ->placeholder('—'),
                                                 ]),
                                             Fieldset::make(__('employees::filament/resources/employee.infolist.tabs.private-information.entries.work-permit'))
                                                 ->schema([

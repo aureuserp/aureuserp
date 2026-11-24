@@ -25,7 +25,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Paul Williams',
                 'job_title'      => 'Experienced Developer',
                 'work_email'     => 'paul@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -34,7 +33,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'John Doe',
                 'job_title'      => 'Junior Developer',
                 'work_email'     => 'john@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -43,7 +41,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Jane Smith',
                 'job_title'      => 'Project Manager',
                 'work_email'     => 'jane@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -52,7 +49,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Ravi Kumar',
                 'job_title'      => 'Team Lead',
                 'work_email'     => 'ravi@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -61,7 +57,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Emily Davis',
                 'job_title'      => 'QA Engineer',
                 'work_email'     => 'emily@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -70,7 +65,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Michael Brown',
                 'job_title'      => 'UX Designer',
                 'work_email'     => 'michael@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -79,7 +73,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Hiro Tanaka',
                 'job_title'      => 'Backend Developer',
                 'work_email'     => 'hiro@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -88,7 +81,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Linda Ndlovu',
                 'job_title'      => 'HR Manager',
                 'work_email'     => 'linda@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -97,7 +89,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Hans Müller',
                 'job_title'      => 'Frontend Developer',
                 'work_email'     => 'hans@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
             [
@@ -106,7 +97,6 @@ class EmployeeSeeder extends Seeder
                 'name'           => 'Grace Wilson',
                 'job_title'      => 'Data Scientist',
                 'work_email'     => 'grace@example.com',
-                'employee_type'  => 'employee',
                 'is_active'      => true,
             ],
         ];
