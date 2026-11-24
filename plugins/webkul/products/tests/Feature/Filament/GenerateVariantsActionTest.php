@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\URL;
@@ -73,7 +74,7 @@ it('reports the underlying failure when variant generation breaks', function () 
     );
 
     Livewire::test(ManageAttributes::class, ['record' => $product->getRouteKey()])
-        ->callAction('products.generate.variants')
+        ->callAction(TestAction::make('products.generate.variants'))
         ->assertNotified();
 
     Exceptions::assertReported(
@@ -92,7 +93,7 @@ it('notifies and reports when variant generation raises an error rather than an 
     );
 
     Livewire::test(ManageAttributes::class, ['record' => $product->getRouteKey()])
-        ->callAction('products.generate.variants')
+        ->callAction(TestAction::make('products.generate.variants'))
         ->assertNotified();
 
     Exceptions::assertReported(
@@ -106,7 +107,7 @@ it('does not report anything when variant generation succeeds', function () {
     $product = productReadyForVariants();
 
     Livewire::test(ManageAttributes::class, ['record' => $product->getRouteKey()])
-        ->callAction('products.generate.variants')
+        ->callAction(TestAction::make('products.generate.variants'))
         ->assertNotified();
 
     Exceptions::assertNothingReported();
