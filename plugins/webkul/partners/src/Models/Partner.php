@@ -73,6 +73,24 @@ class Partner extends Authenticatable implements FilamentUser
         'is_active'    => 'boolean',
     ];
 
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'name'         => __('partners::models/partner.log-attributes.name'),
+            'email'        => __('partners::models/partner.log-attributes.email'),
+            'phone'        => __('partners::models/partner.log-attributes.phone'),
+            'parent.name'  => __('partners::models/partner.log-attributes.parent_company'),
+            'user.name'    => __('partners::models/partner.log-attributes.user'),
+            'tax_id'       => __('partners::models/partner.log-attributes.tax_id'),
+            'street1'      => __('partners::models/partner.log-attributes.street1'),
+            'street2'      => __('partners::models/partner.log-attributes.street2'),
+            'city'         => __('partners::models/partner.log-attributes.city'),
+            'zip'          => __('partners::models/partner.log-attributes.zip'),
+            'state.name'   => __('partners::models/partner.log-attributes.state'),
+            'country.name' => __('partners::models/partner.log-attributes.country'),
+        ];
+    }
+
     public function getModelTitle(): string
     {
         return 'Partner';
