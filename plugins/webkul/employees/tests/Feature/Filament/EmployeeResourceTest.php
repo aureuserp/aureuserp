@@ -7,6 +7,7 @@ use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\CreateEmployee;
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ViewEmployee;
 use Webkul\Employee\Models\Employee;
 use Webkul\Employee\Models\EmploymentType;
+use Webkul\Support\Models\Currency;
 
 require_once __DIR__.'/../../../../support/tests/Helpers/TestBootstrapHelper.php';
 require_once __DIR__.'/../../../../support/tests/Helpers/FilamentHelper.php';
@@ -55,4 +56,30 @@ it('creates an employee with or without employment type and renders private info
         ->assertSee('Kareem Omar')
         ->assertSee('Computer Science')
         ->assertSee('Aden University');
+});
+
+it('saves and renders joining date and salary fields', function () {
+    $currency = Currency::factory()->create(['name' => 'USD Test']);
+
+    Livewire::test(CreateEmployee::class)
+        ->fillForm([
+            'name'               => 'Huda Saleh',
+            'joining_date'       => '2024-03-15',
+            'salary'             => 1250.50,
+            'salary_currency_id' => $currency->id,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $employee = Employee::where('name', 'Huda Saleh')->firstOrFail();
+
+    expect($employee->joining_date?->toDateString())->toBe('2024-03-15')
+        ->and((float) $employee->salary)->toBe(1250.5)
+        ->and($employee->salary_currency_id)->toBe($currency->id);
+
+    Livewire::test(ViewEmployee::class, ['record' => $employee->getRouteKey()])
+        ->assertOk()
+        ->assertSee('March 15, 2024')
+        ->assertSee('1,250.50')
+        ->assertSee('USD Test');
 });

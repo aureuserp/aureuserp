@@ -172,6 +172,17 @@ class EmployeeInfolist
                                                     ColorEntry::make('color')
                                                         ->placeholder('—')
                                                         ->label(__('employees::filament/resources/employee.infolist.tabs.work-information.entries.color')),
+                                                    TextEntry::make('joining_date')
+                                                        ->label(__('employees::filament/resources/employee.infolist.tabs.work-information.entries.joining-date'))
+                                                        ->placeholder('—')
+                                                        ->date('F j, Y'),
+                                                    TextEntry::make('salary')
+                                                        ->label(__('employees::filament/resources/employee.infolist.tabs.work-information.entries.salary'))
+                                                        ->placeholder('—')
+                                                        ->numeric(decimalPlaces: 2),
+                                                    TextEntry::make('salaryCurrency.name')
+                                                        ->label(__('employees::filament/resources/employee.infolist.tabs.work-information.entries.salary-currency'))
+                                                        ->placeholder('—'),
                                                 ]),
                                         ])->columnSpan(1),
                                     ]),
