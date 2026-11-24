@@ -48,7 +48,7 @@ class ChatterNotificationService
         foreach ($followers as $follower) {
             $partner = $follower->partner;
 
-            if (! $partner?->email) {
+            if (! $partner?->email || $partner->trashed()) {
                 continue;
             }
 
@@ -256,6 +256,7 @@ class ChatterNotificationService
         return $record->followers()
             ->with('partner.user')
             ->get()
+            ->reject(fn ($follower) => $follower->partner?->trashed())
             ->map(fn ($follower) => $follower->partner?->user)
             ->filter()
             ->reject(fn (User $user) => in_array((int) $user->id, array_map('intval', $excludedIds), true))

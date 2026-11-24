@@ -1,10 +1,12 @@
-    <?php
+<?php
 
     return [
         'setup' => [
             'title'               => 'Seguidores',
             'submit-action-title' => 'Adicionar seguidor',
             'tooltip'             => 'Adicionar seguidor',
+
+            'deleted'             => 'Excluído',
 
             'form' => [
                 'fields' => [

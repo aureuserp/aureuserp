@@ -29,6 +29,6 @@ class Follower extends Model
 
     public function partner(): BelongsTo
     {
-        return $this->belongsTo(Partner::class, 'partner_id');
+        return $this->belongsTo(Partner::class, 'partner_id')->withTrashed();
     }
 }
