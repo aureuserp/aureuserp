@@ -184,6 +184,7 @@
                             $groupExtraTopbarAttributeBag = $group->getExtraTopbarAttributeBag();
                             $isGroupActive = $group->isActive();
                             $groupIcon = $group->getIcon();
+                            $isDashboardGroup = $groupLabel === \Webkul\Support\Enums\NavigationGroup::Dashboard->getLabel();
 
                             if ($isAdminPanel && ! $isGroupActive) {
                                 continue;
@@ -191,8 +192,103 @@
                         @endphp
 
                         @if ($groupLabel)
-                            @if ($isAdminPanel)
-                                {{-- Admin panel: show active group name as a plain bold heading --}}
+                            @if ($isAdminPanel && $isDashboardGroup)
+                                @php
+                                    $dashboardBuckets = [
+                                        [
+                                            'label' => __('admin.navigation.sale'),
+                                            'icon' => \Webkul\Support\Enums\NavigationGroup::Sale->getIcon(),
+                                            'segments' => ['sales', 'crm', 'point-of-sale', 'invoice'],
+                                            'items' => [],
+                                        ],
+                                    ];
+
+                                    $dashboardLoose = [];
+
+                                    foreach ($group->getItems() as $item) {
+                                        $segment = \Illuminate\Support\Str::afterLast($item->getUrl(), '/');
+
+                                        $matched = false;
+
+                                        foreach ($dashboardBuckets as $index => $bucket) {
+                                            if (in_array($segment, $bucket['segments'], true)) {
+                                                $dashboardBuckets[$index]['items'][] = $item;
+
+                                                $matched = true;
+
+                                                break;
+                                            }
+                                        }
+
+                                        if (! $matched) {
+                                            $dashboardLoose[] = $item;
+                                        }
+                                    }
+                                @endphp
+
+                                <li class="fi-topbar-item">
+                                    <span class="fi-topbar-app-name">
+                                        <a {{ \Filament\Support\generate_href_html($group->getItems()->first()->getUrl()) }}>
+                                            {{ $groupLabel }}
+                                        </a>
+                                    </span>
+                                </li>
+
+                                @foreach ($dashboardBuckets as $bucket)
+                                    @continue(empty($bucket['items']))
+
+                                    @php
+                                        $isBucketActive = collect($bucket['items'])->contains(fn ($bucketItem) => $bucketItem->isActive());
+                                    @endphp
+
+                                    <x-filament::dropdown placement="bottom-start" teleport>
+                                        <x-slot name="trigger">
+                                            <x-filament-panels::topbar.item
+                                                :active="$isBucketActive"
+                                            >
+                                                {{ $bucket['label'] }}
+                                            </x-filament-panels::topbar.item>
+                                        </x-slot>
+
+                                        <x-filament::dropdown.list>
+                                            @foreach ($bucket['items'] as $item)
+                                                @php
+                                                    $isItemActive = $item->isActive();
+                                                    $itemIcon = $isItemActive ? ($item->getActiveIcon() ?? $item->getIcon()) : $item->getIcon();
+                                                @endphp
+
+                                                <x-filament::dropdown.list.item
+                                                    :badge="$item->getBadge()"
+                                                    :badge-color="$item->getBadgeColor()"
+                                                    :badge-tooltip="$item->getBadgeTooltip()"
+                                                    :color="$isItemActive ? 'primary' : 'gray'"
+                                                    :href="$item->getUrl()"
+                                                    :icon="$itemIcon"
+                                                    tag="a"
+                                                    :target="$item->shouldOpenUrlInNewTab() ? '_blank' : null"
+                                                >
+                                                    {{ $item->getLabel() }}
+                                                </x-filament::dropdown.list.item>
+                                            @endforeach
+                                        </x-filament::dropdown.list>
+                                    </x-filament::dropdown>
+                                @endforeach
+
+                                @foreach ($dashboardLoose as $item)
+                                    <x-filament-panels::topbar.item
+                                        :active="$item->isActive()"
+                                        :active-icon="$item->getActiveIcon()"
+                                        :badge="$item->getBadge()"
+                                        :badge-color="$item->getBadgeColor()"
+                                        :badge-tooltip="$item->getBadgeTooltip()"
+                                        :icon="$item->getIcon()"
+                                        :should-open-url-in-new-tab="$item->shouldOpenUrlInNewTab()"
+                                        :url="$item->getUrl()"
+                                    >
+                                        {{ $item->getLabel() }}
+                                    </x-filament-panels::topbar.item>
+                                @endforeach
+                            @elseif ($isAdminPanel)
                                 <li class="fi-topbar-item">
                                     <span class="fi-topbar-app-name">
                                         <a {{ \Filament\Support\generate_href_html($group->getItems()->first()->getUrl()) }}>

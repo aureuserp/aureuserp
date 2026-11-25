@@ -37,9 +37,12 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
+            'name'            => 'Name',
+            'manager-name'    => 'Manager',
+            'company-name'    => 'Company',
+            'parent'          => 'Parent Department',
+            'employees'       => 'Employees',
+            'employees-count' => ':count Employees',
         ],
 
         'groups' => [

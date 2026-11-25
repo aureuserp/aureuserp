@@ -9,9 +9,11 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Nombre',
-            'manager-name' => 'Responsable',
-            'company-name' => 'Empresa',
+            'name'             => 'Nombre',
+            'manager-name'     => 'Responsable',
+            'department-name'  => 'Departamento',
+            'company-name'     => 'Empresa',
+            'total-applicants' => ':count candidatos',
         ],
 
         'actions' => [

@@ -7,6 +7,8 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\Size;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -18,6 +20,7 @@ class JobByPositionsTable
     {
         return $table
             ->modifyQueryUsing(fn ($query) => $query
+                ->with(['department.manager'])
                 ->withCount([
                     'applications as new_applicants_count' => fn ($query) => $query->where('stage_id', 1),
                     'applications as total_applicants_count',
@@ -25,35 +28,52 @@ class JobByPositionsTable
             )
             ->columns([
                 Stack::make([
-                    Stack::make([
+                    Split::make([
                         TextColumn::make('name')
                             ->weight(FontWeight::Bold)
-                            ->label(__('Name'))
+                            ->size(TextSize::Large)
                             ->label(__('recruitments::filament/clusters/applications/resources/job-by-application.table.columns.name'))
                             ->searchable()
+                            ->sortable()
+                            ->lineClamp(1)
+                            ->tooltip(fn ($record): string => $record->name)
+                            ->grow(true),
+
+                        TextColumn::make('total_applicants_count')
+                            ->badge()
+                            ->color('info')
+                            ->icon('heroicon-m-user-group')
+                            ->state(fn ($record): string => __('recruitments::filament/clusters/applications/resources/job-by-application.table.columns.total-applicants', [
+                                'count' => $record->total_applicants_count ?? 0,
+                            ]))
+                            ->grow(false),
+                    ]),
+
+                    Stack::make([
+                        TextColumn::make('department.name')
+                            ->icon('heroicon-m-building-office-2')
+                            ->color('gray')
+                            ->label(__('recruitments::filament/clusters/applications/resources/job-by-application.table.columns.department-name'))
+                            ->searchable()
                             ->sortable(),
-                        Stack::make([
-                            TextColumn::make('department.manager.name')
-                                ->icon('heroicon-m-briefcase')
-                                ->label(__('Manager'))
-                                ->label(__('recruitments::filament/clusters/applications/resources/job-by-application.table.columns.manager-name'))
-                                ->sortable()
-                                ->searchable(),
-                        ]),
-                        Stack::make([
-                            TextColumn::make('company.name')
-                                ->searchable()
-                                ->label(__('recruitments::filament/clusters/applications/resources/job-by-application.table.columns.company-name'))
-                                ->icon('heroicon-m-building-office-2')
-                                ->searchable(),
-                        ])
-                            ->visible(fn ($record) => filled($record?->company?->name)),
-                    ])->space(1),
-                ])->space(4),
+                    ])
+                        ->visible(fn ($record) => filled($record?->department?->name)),
+
+                    Stack::make([
+                        TextColumn::make('department.manager.name')
+                            ->icon('heroicon-m-user')
+                            ->color('gray')
+                            ->label(__('recruitments::filament/clusters/applications/resources/job-by-application.table.columns.manager-name'))
+                            ->sortable()
+                            ->searchable(),
+                    ])
+                        ->visible(fn ($record) => filled($record?->department?->manager?->name)),
+                ])->space(2),
             ])
             ->contentGrid([
-                'md' => 2,
-                'xl' => 2,
+                'md'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
             ])
             ->recordActions([
                 Action::make('applications')
@@ -134,7 +154,10 @@ class JobByPositionsTable
                                 ],
                             ]));
                         }),
-                ]),
+                ])
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray')
+                    ->extraDropdownAttributes(['class' => 'ms-auto']),
             ]);
     }
 }

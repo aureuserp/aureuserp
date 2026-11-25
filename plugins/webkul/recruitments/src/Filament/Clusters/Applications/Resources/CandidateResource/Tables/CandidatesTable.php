@@ -2,23 +2,28 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Tables;
 
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Notifications\Notification;
-use Filament\Support\Colors\Color;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Chatter\Filament\Actions\ActivityTableAction;
 use Webkul\Recruitment\Models\Candidate;
 
@@ -29,53 +34,89 @@ class CandidatesTable
         return $table
             ->columns(array_merge([
                 Stack::make([
-                    Stack::make([
-                        TextColumn::make('name')
-                            ->weight(FontWeight::Bold)
-                            ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.name'))
-                            ->searchable()
-                            ->sortable(),
-                        Stack::make([
-                            TextColumn::make('categories.name')
-                                ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.tags'))
-                                ->badge()
-                                ->searchable()
-                                ->weight(FontWeight::Bold)
-                                ->wrap()
-                                ->state(function (Candidate $record): array {
-                                    return $record->categories->map(fn ($category) => [
-                                        'label' => $category->name,
-                                        'color' => $category->color ?? '#808080',
-                                    ])->toArray();
-                                })
-                                ->formatStateUsing(fn ($state) => $state['label'])
-                                ->color(fn ($state) => Color::generateV3Palette($state['color'])),
-                            TextColumn::make('priority')
-                                ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.evaluation'))
-                                ->color('warning')
-                                ->formatStateUsing(function ($state) {
-                                    $html = '<div class="flex gap-1" style="margin-top: 6px;">';
-                                    for ($i = 1; $i <= 3; $i++) {
-                                        $iconType = $i <= $state ? 'heroicon-s-star' : 'heroicon-o-star';
-                                        $html .= view('filament::components.icon', [
-                                            'icon'  => $iconType,
-                                            'class' => 'w-5 h-5',
-                                        ])->render();
-                                    }
-                                    $html .= '</div>';
+                    Split::make([
+                        ImageColumn::make('partner.avatar')
+                            ->circular()
+                            ->imageSize(64)
+                            ->defaultImageUrl(fn (Candidate $record): string => (new UiAvatarsProvider)->get($record))
+                            ->grow(false),
 
-                                    return new HtmlString($html);
-                                }),
-                        ])
-                            ->visible(fn ($record) => filled($record?->categories?->count())),
-                    ])->space(1),
-                ])
-                    ->space(4),
+                        Stack::make([
+                            TextColumn::make('name')
+                                ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.name'))
+                                ->weight(FontWeight::Bold)
+                                ->size(TextSize::Large)
+                                ->searchable()
+                                ->sortable()
+                                ->lineClamp(1)
+                                ->tooltip(fn (Candidate $record): string => $record->name)
+                                ->extraAttributes(['class' => 'fi-ta-card-title']),
+
+                            Stack::make([
+                                TextColumn::make('degree.name')
+                                    ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.degree'))
+                                    ->icon('heroicon-o-academic-cap')
+                                    ->weight(FontWeight::Medium)
+                                    ->tooltip(fn (Candidate $record): ?string => $record->degree?->name)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Candidate $record): bool => filled($record->degree_id)),
+
+                            Stack::make([
+                                TextColumn::make('email_from')
+                                    ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.email'))
+                                    ->icon('heroicon-o-envelope')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->sortable()
+                                    ->tooltip(fn (Candidate $record): string => $record->email_from)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Candidate $record): bool => filled($record->email_from)),
+
+                            Stack::make([
+                                TextColumn::make('phone')
+                                    ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.phone'))
+                                    ->icon('heroicon-o-phone')
+                                    ->color('gray')
+                                    ->searchable()
+                                    ->sortable()
+                                    ->tooltip(fn (Candidate $record): string => $record->phone)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Candidate $record): bool => filled($record->phone)),
+
+                            Stack::make([
+                                TextColumn::make('manager.name')
+                                    ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.manager'))
+                                    ->icon('heroicon-o-user')
+                                    ->color('gray')
+                                    ->tooltip(fn (Candidate $record): ?string => $record->manager?->name)
+                                    ->lineClamp(1)
+                                    ->extraAttributes(['class' => 'break-all']),
+                            ])
+                                ->visible(fn (Candidate $record): bool => filled($record->manager_id)),
+                        ])->space(1),
+                    ])->from('sm'),
+                ])->space(3),
             ], $customColumns))
+            ->recordClasses('fi-ta-card-select')
             ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
+                'sm'  => 1,
+                'md'  => 2,
+                'xl'  => 3,
+                '2xl' => 4,
             ])
+            ->paginated([
+                12,
+                24,
+                36,
+                'all',
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['partner', 'degree', 'manager', 'categories']))
             ->filtersFormColumns(2)
             ->filters(array_merge([
                 QueryBuilder::make()
@@ -133,16 +174,29 @@ class CandidatesTable
                     ->collapsible(),
             ])
             ->recordActions([
-                ActivityTableAction::make(),
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('recruitments::filament/clusters/applications/resources/candidate.table.actions.delete.notification.title'))
-                            ->body(__('recruitments::filament/clusters/applications/resources/candidate.table.actions.delete.notification.body'))
-                    ),
+                Action::make('evaluation')
+                    ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.evaluation'))
+                    ->view('recruitments::tables.actions.evaluation'),
+                Action::make('tags')
+                    ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.columns.tags'))
+                    ->view('support::tables.actions.tags', ['relationship' => 'categories'])
+                    ->visible(fn (Candidate $record): bool => $record->categories->isNotEmpty()),
+                ActivityTableAction::make()
+                    ->extraAttributes(['class' => 'fi-ta-card-top-right']),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('recruitments::filament/clusters/applications/resources/candidate.table.actions.delete.notification.title'))
+                                ->body(__('recruitments::filament/clusters/applications/resources/candidate.table.actions.delete.notification.body'))
+                        ),
+                ])
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray')
+                    ->extraDropdownAttributes(['class' => 'ms-auto']),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

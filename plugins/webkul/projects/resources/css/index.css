@@ -1,0 +1,485 @@
+@import "tailwindcss";
+@import "../../../support/resources/css/colors.css";
+
+@variant dark (&:where(.dark, .dark *));
+
+@source '../../resources/views';
+@source '../../src/Filament';
+@source '../../../../../vendor/wezlo/filament-kanban/resources/views';
+
+.fi-ta-ctn .projects-kanban-board {
+    padding: 1rem 1rem 0;
+}
+
+.fi-ta-main:has(> .projects-kanban-board) > .fi-ta-content-ctn {
+    display: none;
+}
+
+.fi-ta-ctn:has(.projects-task-graph) thead,
+.fi-ta-ctn:has(.projects-kanban-board) thead {
+    display: none;
+}
+
+.projects-view-shimmer {
+    padding: 1rem;
+}
+
+.projects-view-shimmer[style*="block"] ~ *,
+.fi-ta-ctn:has(.projects-view-shimmer[style*="block"]) .fi-pagination {
+    display: none !important;
+}
+
+.projects-list-shimmer {
+    display: flex;
+    flex-direction: column;
+}
+
+.projects-list-shimmer-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.25rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.projects-list-shimmer-row:last-child {
+    border-bottom: 0;
+}
+
+.dark .projects-list-shimmer-row {
+    border-color: var(--gray-700);
+}
+
+.projects-graph-shimmer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem;
+}
+
+.projects-graph-shimmer-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 1rem;
+    height: 300px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.projects-graph-shimmer-bar {
+    flex: 1;
+    max-width: 28px;
+    border-radius: 4px 4px 0 0;
+}
+
+.dark .projects-graph-shimmer-bars {
+    border-color: var(--gray-700);
+}
+
+.projects-graph {
+    padding: 1rem 1rem 0;
+}
+
+.projects-graph-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.projects-graph-canvas {
+    animation: projects-view-fade 0.25s ease-out;
+}
+
+.projects-kanban-column-primary {
+    background-color: var(--primary-50);
+    border-color: var(--primary-200);
+}
+
+.dark .projects-kanban-column-primary {
+    background-color: color-mix(in oklab, var(--primary-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--primary-400) 60%, transparent);
+}
+
+.projects-kanban-count-primary {
+    background-color: var(--primary-100);
+    color: var(--primary-700);
+}
+
+.dark .projects-kanban-count-primary {
+    background-color: color-mix(in oklab, var(--primary-400) 20%, transparent);
+    color: var(--primary-400);
+}
+
+.projects-kanban-column-success {
+    background-color: var(--success-50);
+    border-color: var(--success-200);
+}
+
+.dark .projects-kanban-column-success {
+    background-color: color-mix(in oklab, var(--success-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--success-400) 60%, transparent);
+}
+
+.projects-kanban-count-success {
+    background-color: var(--success-100);
+    color: var(--success-700);
+}
+
+.dark .projects-kanban-count-success {
+    background-color: color-mix(in oklab, var(--success-400) 20%, transparent);
+    color: var(--success-400);
+}
+
+.projects-kanban-column-warning {
+    background-color: var(--warning-50);
+    border-color: var(--warning-200);
+}
+
+.dark .projects-kanban-column-warning {
+    background-color: color-mix(in oklab, var(--warning-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--warning-400) 60%, transparent);
+}
+
+.projects-kanban-count-warning {
+    background-color: var(--warning-100);
+    color: var(--warning-700);
+}
+
+.dark .projects-kanban-count-warning {
+    background-color: color-mix(in oklab, var(--warning-400) 20%, transparent);
+    color: var(--warning-400);
+}
+
+.projects-kanban-column-danger {
+    background-color: var(--danger-50);
+    border-color: var(--danger-200);
+}
+
+.dark .projects-kanban-column-danger {
+    background-color: color-mix(in oklab, var(--danger-500) 18%, transparent);
+    border-color: color-mix(in oklab, var(--danger-400) 60%, transparent);
+}
+
+.projects-kanban-count-danger {
+    background-color: var(--danger-100);
+    color: var(--danger-700);
+}
+
+.dark .projects-kanban-count-danger {
+    background-color: color-mix(in oklab, var(--danger-400) 20%, transparent);
+    color: var(--danger-400);
+}
+
+.projects-kanban-column-gray {
+    background-color: var(--gray-50);
+    border-color: var(--gray-200);
+}
+
+.dark .projects-kanban-column-gray {
+    background-color: rgb(255 255 255 / 0.05);
+    border-color: var(--gray-600);
+}
+
+.projects-kanban-count-gray {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.dark .projects-kanban-count-gray {
+    background-color: rgb(255 255 255 / 0.1);
+    color: var(--gray-400);
+}
+
+.projects-kanban-color-dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+
+.projects-kanban-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 9999px;
+    background-color: var(--primary-100);
+    color: var(--primary-700);
+}
+
+.dark .projects-kanban-avatar {
+    background-color: color-mix(in oklab, var(--primary-400) 20%, transparent);
+    color: var(--primary-300);
+}
+
+.projects-kanban-board .fi-kanban-column,
+.projects-kanban-board .projects-kanban-add-column {
+    height: calc(100dvh - var(--projects-board-offset, 19.5rem));
+    max-height: none;
+}
+
+.projects-kanban-board {
+    user-select: none;
+}
+
+.projects-kanban-board .projects-kanban-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 2rem 1rem;
+    border: 1px dashed var(--gray-200);
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.dark .projects-kanban-board .projects-kanban-empty {
+    border-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+}
+
+.projects-kanban-board .projects-kanban-empty-board {
+    flex: 1 1 auto;
+    height: calc(100dvh - var(--projects-board-offset, 19.5rem));
+    min-height: 0;
+}
+
+.projects-kanban-board .projects-kanban-empty-column {
+    flex: 0 0 auto;
+    min-height: 10rem;
+    margin: 0.25rem;
+}
+
+.projects-kanban-board .fi-kanban-cards:has([data-kanban-card]) .projects-kanban-empty-column {
+    display: none;
+}
+
+.projects-kanban-board.projects-kanban-loading .projects-kanban-columns {
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+}
+
+@keyframes projects-view-fade {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.projects-kanban-board,
+.projects-view-shimmer,
+.projects-kanban-shimmer[style*="block"] {
+    animation: projects-view-fade 0.2s ease-out;
+}
+
+.projects-kanban-board .projects-kanban-columns {
+    transition: opacity 0.15s ease;
+}
+
+.projects-kanban-board .fi-kanban-column {
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.projects-kanban-board .fi-kanban-card {
+    transition: box-shadow 0.15s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.projects-layout-switcher .fi-icon-btn {
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.projects-kanban-shimmer {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    padding: 1rem;
+    background-color: var(--color-white);
+}
+
+.projects-kanban-shimmer[style*="block"] {
+    display: block;
+}
+
+.dark .projects-kanban-shimmer {
+    background-color: var(--gray-900);
+}
+
+.projects-board-shimmer-columns {
+    display: flex;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.projects-board-shimmer-column {
+    display: flex;
+    flex: 0 0 20rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: calc(100dvh - var(--projects-board-offset, 19.5rem));
+    overflow: hidden;
+    padding: 0.75rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    background-color: var(--gray-50);
+}
+
+.projects-board-shimmer-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--color-white);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.projects-board-shimmer-line {
+    height: 0.75rem;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+    background-size: 200% 100%;
+    animation: projects-board-shimmer 1.2s ease-in-out infinite;
+}
+
+.projects-board-shimmer-title {
+    width: 40%;
+    height: 1rem;
+}
+
+.projects-board-shimmer-bar {
+    height: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.dark .projects-board-shimmer-column {
+    border-color: var(--gray-700);
+    background-color: rgb(255 255 255 / 0.05);
+}
+
+.dark .projects-board-shimmer-card {
+    background-color: var(--gray-900);
+}
+
+.dark .projects-board-shimmer-line {
+    background: linear-gradient(90deg, var(--gray-700) 25%, var(--gray-600) 50%, var(--gray-700) 75%);
+    background-size: 200% 100%;
+}
+
+.projects-kanban-board.projects-kanban-loading .projects-kanban-shimmer {
+    display: block;
+}
+
+.projects-list-shimmer-row .projects-board-shimmer-line {
+    height: 0.875rem;
+}
+
+@keyframes projects-board-shimmer {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+.fi-ta-ctn:has(.projects-layout-switcher) .fi-ta-content-loading .fi-ta-row .fi-ta-cell {
+    position: relative;
+    color: transparent !important;
+}
+
+.fi-ta-ctn:has(.projects-layout-switcher) .fi-ta-content-loading .fi-ta-row .fi-ta-cell > * {
+    visibility: hidden;
+}
+
+.fi-ta-ctn:has(.projects-layout-switcher) .fi-ta-content-loading .fi-ta-row .fi-ta-cell::after {
+    display: block;
+    width: 72%;
+    height: 0.875rem;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+    background-size: 200% 100%;
+    animation: projects-board-shimmer 1.2s ease-in-out infinite;
+    content: "";
+}
+
+.dark .fi-ta-ctn:has(.projects-layout-switcher) .fi-ta-content-loading .fi-ta-row .fi-ta-cell::after {
+    background: linear-gradient(90deg, var(--gray-700) 25%, var(--gray-600) 50%, var(--gray-700) 75%);
+    background-size: 200% 100%;
+}
+
+.projects-layout-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.125rem;
+    border-radius: 0.5rem;
+    background-color: var(--gray-100);
+}
+
+.dark .projects-layout-switcher {
+    background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+}
+
+.projects-layout-switcher .fi-icon-btn {
+    margin: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+}
+
+.projects-layout-switcher .fi-icon-btn[aria-selected="true"] {
+    background-color: var(--color-white);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+}
+
+.dark .projects-layout-switcher .fi-icon-btn[aria-selected="true"] {
+    background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    box-shadow: none;
+}
+
+.projects-kanban-add-column {
+    cursor: pointer;
+}
+
+.fi-kanban-card.fi-kanban-card-ghost {
+    opacity: 0;
+}
+
+.fi-kanban-card.fi-kanban-card-drag {
+    rotate: -3deg;
+    cursor: grabbing;
+    box-shadow: 0 12px 28px -6px rgb(0 0 0 / 0.25), 0 4px 10px -4px rgb(0 0 0 / 0.15);
+}
+
+.projects-kanban-board .fi-kanban-column:has(.fi-kanban-card-ghost) {
+    border-color: var(--primary-400);
+    background-color: var(--primary-50);
+    box-shadow: inset 0 0 0 1px var(--primary-400);
+}
+
+.dark .projects-kanban-board .fi-kanban-column:has(.fi-kanban-card-ghost) {
+    border-color: color-mix(in oklab, var(--primary-400) 60%, transparent);
+    background-color: color-mix(in oklab, var(--primary-500) 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-400) 60%, transparent);
+}
+
+.fi-body:has(.projects-kanban-board) .fi-main-ctn {
+    min-height: 0;
+}
+
+body:has(.projects-kanban-board) {
+    padding-bottom: 0 !important;
+}

@@ -9,9 +9,11 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'الاسم',
-            'manager-name' => 'المدير',
-            'company-name' => 'الشركة',
+            'name'             => 'الاسم',
+            'manager-name'     => 'المدير',
+            'department-name'  => 'القسم',
+            'company-name'     => 'الشركة',
+            'total-applicants' => ':count مرشحين',
         ],
 
         'actions' => [

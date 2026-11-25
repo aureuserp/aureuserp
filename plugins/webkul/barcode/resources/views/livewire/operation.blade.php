@@ -364,7 +364,7 @@
             @endforeach
         </footer>
 
-        <div class="fixed inset-0 z-30 flex items-end justify-center bg-slate-950/35 sm:items-center sm:p-2"
+        <div class="fixed inset-0 z-30 flex items-end justify-center bg-gray-950/50 sm:items-center sm:p-2"
             x-show="confirmPending"
             x-cloak
             x-transition:enter="transition ease-out duration-200"
