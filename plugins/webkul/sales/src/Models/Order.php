@@ -98,6 +98,7 @@ class Order extends Model
         'amount_tax'      => 'decimal:4',
         'amount_total'    => 'decimal:4',
         'amount_untaxed'  => 'decimal:4',
+        'commitment_date' => 'date',
         'validity_date'   => 'date',
         'date_order'      => 'date',
         'signed_on'       => 'date',

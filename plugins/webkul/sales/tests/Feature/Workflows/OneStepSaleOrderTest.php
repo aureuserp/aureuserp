@@ -10,6 +10,7 @@ use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Enums\ReceptionStep;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Move;
+use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 use Webkul\Sale\Enums\AdvancedPayment;
@@ -57,6 +58,28 @@ it('creates a single delivery linked to the order line when the sale order is co
         ->and((float) $move->product_uom_qty)->toBe(10.0)
         ->and($move->source_location_id)->toBe($this->warehouse->lot_stock_location_id)
         ->and($move->destinationLocation->type)->toBe(LocationType::CUSTOMER);
+});
+
+it('confirms a sale order that has a delivery date', function () {
+    $product = $this->product;
+
+    ProductQuantity::factory()->create([
+        'product_id'        => $product->id,
+        'location_id'       => $this->warehouse->lot_stock_location_id,
+        'quantity'          => 10,
+        'reserved_quantity' => 0,
+        'incoming_at'       => now(),
+        'company_id'        => SaleHelper::company()->id,
+    ]);
+
+    $order = SaleHelper::order(['warehouse_id' => $this->warehouse->id, 'commitment_date' => '2026-11-30']);
+
+    SaleHelper::line($order, $product, 10, 100);
+
+    $order = SaleOrderFacade::confirmSaleOrder($order->refresh());
+
+    expect($order->state)->toBe(OrderState::SALE)
+        ->and($order->commitment_date->toDateString())->toBe('2026-11-30');
 });
 
 it('removes the delivered quantity from stock when the delivery is validated', function () {
