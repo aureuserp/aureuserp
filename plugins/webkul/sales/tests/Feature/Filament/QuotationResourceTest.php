@@ -124,6 +124,15 @@ it('renders the quotation edit page', function () {
     Livewire::test(EditQuotation::class, ['record' => $quotation->id])->assertOk();
 });
 
+it('shows the expiration field on the edit page of a saved quotation', function () {
+    $user = FilamentHelper::actingAs(['view_any_sale_quotation', 'update_sale_quotation']);
+
+    $quotation = quotationRecord($user->id);
+
+    Livewire::test(EditQuotation::class, ['record' => $quotation->id])
+        ->assertFormFieldIsVisible('validity_date');
+});
+
 it('offers the confirm action on a draft quotation', function () {
     $user = FilamentHelper::actingAs(['view_any_sale_quotation', 'update_sale_quotation']);
 
