@@ -5323,6 +5323,12 @@ export class Till {
             }
         }
 
+        const collected = order.payments.filter((payment) => !floatIsZero(payment.amount, { precisionRounding: this.currency.rounding }))
+
+        if (collected.length) {
+            order.payments = collected
+        }
+
         const totals = this.orderTotals(order)
 
         if (totals.change > 0) {
