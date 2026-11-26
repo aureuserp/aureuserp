@@ -8,6 +8,10 @@
 
             .chatter-panel > .fi-modal-header {
                 display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
                 padding: 15px 20px !important;
                 margin-top: -64px;
                 background-color: var(--color-white);
@@ -21,6 +25,13 @@
 
             :where(.dark) .chatter-panel > .fi-modal-header {
                 background-color: var(--gray-900);
+            }
+
+            @media (max-width: 639px) {
+                .chatter-panel > .fi-modal-header > .chatter-header-actions {
+                    order: 3;
+                    width: 100%;
+                }
             }
         </style>
     @else
@@ -51,7 +62,22 @@
         </style>
     @endif
 
-    <div class="chatter-panel">
+    <div
+        class="chatter-panel"
+        @if ($this->inModal)
+            x-data="{
+                init() {
+                    history.pushState({ chatterModal: true }, '');
+                    this._onPop = () => typeof isOpen !== 'undefined' && isOpen && close();
+                    window.addEventListener('popstate', this._onPop);
+                },
+                destroy() {
+                    window.removeEventListener('popstate', this._onPop);
+                    history.state?.chatterModal && history.back();
+                },
+            }"
+        @endif
+    >
         <div class="fi-modal-header flex fi-sticky fi-vertical-align-center">
             <div class="flex items-center gap-3 flex-1">
                 <div class="fi-modal-icon-ctn">
@@ -67,7 +93,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="chatter-header-actions flex flex-wrap items-center gap-2">
                 @if ($this->messageAction->isVisible())
                     {{ $this->messageAction }}
                 @endif
@@ -80,6 +106,18 @@
                     {{ $this->activityAction }}
                 @endif
             </div>
+
+            @if ($this->inModal)
+                <x-filament::icon-button
+                    color="gray"
+                    :icon="\Filament\Support\Icons\Heroicon::XMark"
+                    :icon-alias="\Filament\Support\View\SupportIconAlias::MODAL_CLOSE_BUTTON"
+                    icon-size="lg"
+                    :label="__('filament::components/modal.actions.close.label')"
+                    x-on:click="close()"
+                    class="!m-0 bg-gray-100 text-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
+                />
+            @endif
         </div>
 
         <div class="chatter-panel-container p-4 w-full">
