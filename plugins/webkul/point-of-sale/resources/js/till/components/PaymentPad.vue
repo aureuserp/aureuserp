@@ -11,17 +11,17 @@ const key = 'flex min-h-[clamp(2.1rem,4.6vh,3.25rem)] items-center justify-cente
 
 const plain = `${key} border-gray-200 bg-white text-gray-950 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800`
 
-const bump = `${key} border-success-200 bg-success-100 text-success-800 hover:bg-success-200 dark:border-success-500/30 dark:bg-success-500/20 dark:text-success-200`
+const bump = `${key} border-success-200 bg-success-100 text-success-800 hover:bg-success-200 dark:border-success-500/30 dark:bg-success-500/20 dark:text-success-200 dark:hover:bg-success-500/30`
 
 const rows = [
     [{ k: '1' }, { k: '2' }, { k: '3' }, { k: '+10', tone: bump }],
     [{ k: '4' }, { k: '5' }, { k: '6' }, { k: '+20', tone: bump }],
     [{ k: '7' }, { k: '8' }, { k: '9' }, { k: '+50', tone: bump }],
     [
-        { k: '-', label: '+/-', tone: `${key} border-warning-200 bg-warning-100 text-warning-900 hover:bg-warning-200 dark:border-warning-500/30 dark:bg-warning-500/20 dark:text-warning-200` },
+        { k: '-', label: '+/-', tone: `${key} border-warning-200 bg-warning-100 text-warning-900 hover:bg-warning-200 dark:border-warning-500/30 dark:bg-warning-500/20 dark:text-warning-200 dark:hover:bg-warning-500/30` },
         { k: '0' },
-        { k: '.', tone: `${key} border-info-200 bg-info-100 text-info-900 hover:bg-info-200 dark:border-info-500/30 dark:bg-info-500/20 dark:text-info-200` },
-        { k: 'Backspace', label: '⌫', tone: `${key} border-danger-200 bg-danger-100 text-danger-800 hover:bg-danger-200 dark:border-danger-500/30 dark:bg-danger-500/20 dark:text-danger-200` },
+        { k: '.', tone: `${key} border-info-200 bg-info-100 text-info-900 hover:bg-info-200 dark:border-info-500/30 dark:bg-info-500/20 dark:text-info-200 dark:hover:bg-info-500/30` },
+        { k: 'Backspace', label: '⌫', tone: `${key} border-danger-200 bg-danger-100 text-danger-800 hover:bg-danger-200 dark:border-danger-500/30 dark:bg-danger-500/20 dark:text-danger-200 dark:hover:bg-danger-500/30` },
     ],
 ]
 </script>
