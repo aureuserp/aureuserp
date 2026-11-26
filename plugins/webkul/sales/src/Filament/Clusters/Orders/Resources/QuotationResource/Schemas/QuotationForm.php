@@ -118,7 +118,6 @@ class QuotationForm
                                     ->native(false)
                                     ->default(fn (QuotationAndOrderSettings $settings) => now()->addDays($settings->default_quotation_validity))
                                     ->required()
-                                    ->hidden(fn ($record) => $record)
                                     ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::SALE, OrderState::CANCEL])),
                                 DatePicker::make('date_order')
                                     ->label(function ($record) {
