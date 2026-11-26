@@ -778,7 +778,8 @@
     display: flex;
     align-items: flex-start;
     min-height: 6rem;
-    padding: 1.1rem 1.25rem 2.25rem 4.9rem;
+    padding-block: 1.1rem 2.25rem;
+    padding-inline: 4.9rem 1.25rem;
     overflow: hidden;
     border-radius: 1rem;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
