@@ -1,21 +1,7 @@
 <x-filament-panels::page>
     @php($report = $this->getReport())
 
-    <x-filament::section>
-        <x-slot name="heading">
-            {{ __('point-of-sale::filament/admin/clusters/reporting/pages/session-report.filters.heading') }}
-        </x-slot>
-
-        <x-filament::input.wrapper>
-            <x-filament::input.select wire:model.live="sessionId">
-                <option value="">{{ __('point-of-sale::filament/admin/clusters/reporting/pages/session-report.filters.choose') }}</option>
-
-                @foreach ($this->getSessions() as $session)
-                    <option value="{{ $session->id }}">{{ $session->name }} — {{ $session->config?->name }}</option>
-                @endforeach
-            </x-filament::input.select>
-        </x-filament::input.wrapper>
-    </x-filament::section>
+    {{ $this->filtersForm }}
 
     @if ($report)
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
